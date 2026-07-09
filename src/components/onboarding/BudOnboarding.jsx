@@ -20,12 +20,25 @@ const STEPS = [
     ],
   },
   {
+    id: "photo",
+    type: "photo",
+    message: "Nice to meet you! 😊 Want to add a profile photo? It helps classmates recognize you in communities and study groups. Totally optional!",
+  },
+  {
     id: "location",
     type: "text",
     message: "Where are you based? This helps me show you relevant opportunities and adjust to your timezone.",
     fields: [
       { key: "country", placeholder: "Country" },
       { key: "city", placeholder: "City" },
+    ],
+  },
+  {
+    id: "dob",
+    type: "text",
+    message: "When's your birthday? 🎂 I'll make sure to celebrate with you! This is completely optional.",
+    fields: [
+      { key: "date_of_birth", placeholder: "Date of birth (optional)" },
     ],
   },
   {
@@ -54,6 +67,7 @@ const STEPS = [
     fields: [
       { key: "level", placeholder: "Level / Year (e.g., 300L)" },
       { key: "expected_graduation", placeholder: "Expected graduation year" },
+      { key: "student_id", placeholder: "Student ID (optional)" },
     ],
   },
   {
@@ -80,6 +94,15 @@ const STEPS = [
     ],
   },
   {
+    id: "schedule",
+    type: "text",
+    message: "When do you usually study? And what times work best for reminders? I'll make sure notifications don't interrupt your flow.",
+    fields: [
+      { key: "study_hours", placeholder: "Usual study hours (e.g., 6pm - 10pm)" },
+      { key: "preferred_reminder_times", placeholder: "Preferred reminder times (optional)" },
+    ],
+  },
+  {
     id: "goals",
     type: "chips-multi",
     field: "goals",
@@ -100,6 +123,8 @@ const STEPS = [
     fields: [
       { key: "dream_job", placeholder: "Dream job (optional)" },
       { key: "industries", placeholder: "Industries of interest (optional)" },
+      { key: "skills_to_develop", placeholder: "Skills you want to develop (optional)" },
+      { key: "preferred_countries", placeholder: "Preferred countries to work in (optional)" },
     ],
   },
   {
@@ -122,6 +147,8 @@ export default function BudOnboarding() {
   const [data, setData] = useState({});
   const [chips, setChips] = useState([]);
   const [texts, setTexts] = useState({});
+  const [photoUrl, setPhotoUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const scrollRef = useRef(null);
@@ -146,6 +173,7 @@ export default function BudOnboarding() {
     setIsTyping(true);
     setChips([]);
     setTexts({});
+    setPhotoUrl(null);
     setTimeout(() => {
       setMessages(prev => [...prev, { role: "bud", content: step.message, stepIndex: index }]);
       setStepIndex(index);
@@ -158,6 +186,9 @@ export default function BudOnboarding() {
     if (step.type === "info") return null;
     if (step.type === "chips-multi" || step.type === "chips-single") {
       return chips.length > 0 ? chips.join(", ") : null;
+    }
+    if (step.type === "photo") {
+      return photoUrl ? "Photo added ✓" : null;
     }
     if (step.type === "text") {
       const vals = step.fields.map(f => texts[f.key]).filter(Boolean);
@@ -177,6 +208,8 @@ export default function BudOnboarding() {
       setData(prev => ({ ...prev, [step.field]: chips }));
     } else if (step.type === "chips-single" && chips.length > 0) {
       setData(prev => ({ ...prev, [step.field]: chips[0] }));
+    } else if (step.type === "photo") {
+      if (photoUrl) setData(prev => ({ ...prev, profile_photo: photoUrl }));
     } else if (step.type === "text") {
       const textData = {};
       step.fields.forEach(f => {
@@ -196,12 +229,26 @@ export default function BudOnboarding() {
   const finish = async () => {
     setIsSaving(true);
     try {
-      await base44.auth.updateMe({ ...data, onboarding_completed: true });
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      await base44.auth.updateMe({ ...data, time_zone: timeZone, onboarding_completed: true });
       await queryClient.invalidateQueries(["currentUser"]);
     } catch (e) {
       // ignore
     }
     setIsSaving(false);
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setPhotoUrl(file_url);
+    } catch (err) {
+      // ignore
+    }
+    setUploading(false);
   };
 
   const toggleChip = (option) => {
@@ -214,7 +261,7 @@ export default function BudOnboarding() {
   };
 
   const currentStep = stepIndex >= 0 ? STEPS[stepIndex] : null;
-  const canContinue = currentStep?.type === "info" || chips.length > 0 || Object.values(texts).some(Boolean);
+  const canContinue = currentStep?.type === "info" || currentStep?.type === "photo" || chips.length > 0 || Object.values(texts).some(Boolean);
   const isLastStep = stepIndex === STEPS.length - 1;
   const progress = stepIndex >= 0 ? ((stepIndex + 1) / STEPS.length) * 100 : 0;
 
@@ -309,6 +356,33 @@ export default function BudOnboarding() {
               <>Continue <ChevronRight className="w-4 h-4" /></>
             )}
             </button>
+          ) : currentStep.type === "photo" ? (
+            <div className="space-y-3">
+              <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" id="photo-upload" />
+              <label
+                htmlFor="photo-upload"
+                className="flex flex-col items-center justify-center w-full py-8 rounded-2xl bg-white border-2 border-dashed border-black/[0.1] cursor-pointer hover:border-[#28A745]/40 transition-colors"
+              >
+                {uploading ? (
+                  <div className="w-8 h-8 rounded-full border-2 border-[#28A745] border-t-transparent animate-spin" />
+                ) : photoUrl ? (
+                  <img src={photoUrl} alt="Profile" className="w-20 h-20 rounded-full object-cover" />
+                ) : (
+                  <div className="w-20 h-20 rounded-full bg-[#F5F5F7] flex items-center justify-center">
+                    <User className="w-8 h-8 text-[#86868B]" />
+                  </div>
+                )}
+                <span className="text-[12px] font-medium text-[#28A745] mt-2">
+                  {photoUrl ? "Change photo" : "Upload photo"}
+                </span>
+              </label>
+              <button
+                onClick={handleContinue}
+                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors"
+              >
+                Continue <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
           ) : currentStep.type === "text" ? (
             <div className="space-y-2">
               {currentStep.fields.map((field) => (

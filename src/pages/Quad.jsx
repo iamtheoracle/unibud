@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, PenLine, Image, Video, BarChart3, Calendar, Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, BadgeCheck } from "lucide-react";
+import TrendingSection from "@/components/quad/TrendingSection";
+import CommunitiesPreview from "@/components/quad/CommunitiesPreview";
 
 const stories = [
   { name: "Your Story", isYou: true },
@@ -177,6 +179,9 @@ export default function Quad() {
           </motion.div>
         ))}
       </div>
+
+      <TrendingSection />
+      <CommunitiesPreview />
     </div>
   );
 }

@@ -25,6 +25,7 @@ import Marketplace from '@/pages/Marketplace';
 import Opportunities from '@/pages/Opportunities';
 import Me from '@/pages/Me';
 import Notifications from '@/pages/Notifications';
+import BudMemory from '@/pages/BudMemory';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/me" element={<Me />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/bud-memory" element={<BudMemory />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

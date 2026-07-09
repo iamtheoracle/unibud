@@ -1,6 +1,8 @@
 import React from "react";
 import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle } from "lucide-react";
 import { motion } from "framer-motion";
+import StudyMatching from "@/components/connect/StudyMatching";
+import EventsSection from "@/components/connect/EventsSection";
 
 const quickActions = [
   { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-[#28A745]/10", iconColor: "text-[#28A745]" },
@@ -114,6 +116,9 @@ export default function Connect() {
           ))}
         </div>
       </div>
+
+      <StudyMatching />
+      <EventsSection />
     </div>
   );
 }
