@@ -27,6 +27,8 @@ export default function AppLayout() {
     }
     if (!user.university) {
       navigate("/university-selection", { replace: true });
+    } else if (!user.university_connected && !user.preferred_name) {
+      navigate("/university-connect", { replace: true });
     } else if (!user.preferred_name) {
       navigate("/student-profile", { replace: true });
     } else if (!user.onboarding_completed) {

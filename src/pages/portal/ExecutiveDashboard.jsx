@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Users, TrendingUp, Building, DollarSign, Activity, Globe } from "lucide-react";
+import { Users, TrendingUp, Building, Activity, Globe } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { KpiCard, SectionCard } from "@/components/portal/PortalUI";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";

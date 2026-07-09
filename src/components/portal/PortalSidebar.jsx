@@ -6,7 +6,7 @@ import {
   LineChart, BarChart3, LifeBuoy, FileEdit, Bot, Settings, Wrench,
   Mountain, LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
   BookOpen, CalendarDays, Megaphone, CheckSquare, PlayCircle, UsersRound,
-  Video, ClipboardList, Search, Bell, Menu,
+  Video, ClipboardList, FolderOpen,
 } from "lucide-react";
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
 import { base44 } from "@/api/base44Client";
@@ -16,7 +16,7 @@ const ICON_MAP = {
   LayoutDashboard, Activity, ScrollText, Boxes, Users, ShieldCheck, Landmark,
   LineChart, BarChart3, LifeBuoy, FileEdit, Bot, Settings, Wrench,
   Building, Layers, GraduationCap, BookOpen, CalendarDays, Megaphone,
-  CheckSquare, PlayCircle, UsersRound, Video, ClipboardList,
+  CheckSquare, PlayCircle, UsersRound, Video, ClipboardList, FolderOpen,
 };
 
 export default function PortalSidebar({ user, onNavigate }) {

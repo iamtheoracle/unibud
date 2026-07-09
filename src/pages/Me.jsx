@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Settings, ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
-  BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain
+  BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link, useNavigate } from "react-router-dom";
@@ -39,6 +39,7 @@ const menuSections = [
     title: "Settings",
     items: [
       { icon: Brain, label: "Bud Memory", path: "/bud-memory" },
+      { icon: Link2, label: "Connected Accounts", path: "/connected-accounts" },
       { icon: Bell, label: "Notifications", path: "/notifications" },
       { icon: Palette, label: "Appearance", path: "/me" },
       { icon: Shield, label: "Privacy & Security", path: "/me" },

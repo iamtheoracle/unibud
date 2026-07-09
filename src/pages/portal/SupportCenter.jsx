@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import { Search, MessageSquare, HeartHandshake } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { KpiCard, SectionCard, DataTable, StatusPill } from "@/components/portal/PortalUI";

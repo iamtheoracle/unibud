@@ -48,7 +48,7 @@ export default function UniversitySelection() {
     try {
       const uniName = uniSelected ? uniSelected.name : uniSearch;
       await base44.auth.updateMe({ country, university: uniName, campus, faculty, department, course_major: courseMajor, level });
-      navigate("/student-profile");
+      navigate("/university-connect");
     } catch {}
     setLoading(false);
   };

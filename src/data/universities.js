@@ -39,6 +39,48 @@ export const UNIVERSITIES = [
   { name: "University of New South Wales", short: "UNSW", country: "Australia", accent: "#00549E", campuses: ["Kensington"] },
 ];
 
+// Universities with official integration support
+// Each entry lists the connection methods available for that university
+export const INTEGRATION_SUPPORT = {
+  "University of Benin": ["matriculation_number", "student_email"],
+  "University of Lagos": ["matriculation_number", "student_email"],
+  "University of Ibadan": ["matriculation_number", "student_email"],
+  "Obafemi Awolowo University": ["matriculation_number", "student_email"],
+  "Covenant University": ["matriculation_number", "student_email", "student_portal"],
+  "Ahmadu Bello University": ["matriculation_number", "student_email"],
+  "University of Nigeria, Nsukka": ["matriculation_number", "student_email"],
+  "Federal University of Technology, Akure": ["matriculation_number", "student_email"],
+  "Lagos State University": ["matriculation_number", "student_email"],
+  "University of Port Harcourt": ["matriculation_number", "student_email"],
+  "University of Ghana": ["student_email", "student_portal"],
+  "Kwame Nkrumah University of Science and Technology": ["student_email"],
+  "Ashesi University": ["student_email", "student_portal"],
+  "University of Nairobi": ["student_email"],
+  "University of Cape Town": ["student_email", "student_portal"],
+  "University of the Witwatersrand": ["student_email", "student_portal"],
+  "University of Oxford": ["student_email", "official_login"],
+  "University of Cambridge": ["student_email", "official_login"],
+  "Imperial College London": ["student_email", "official_login"],
+  "Harvard University": ["student_email", "official_login"],
+  "Massachusetts Institute of Technology": ["student_email", "official_login"],
+  "Stanford University": ["student_email", "official_login"],
+  "Yale University": ["student_email", "official_login"],
+  "University of Toronto": ["student_email", "official_login"],
+  "University of British Columbia": ["student_email", "official_login"],
+  "McGill University": ["student_email", "official_login"],
+  "University of Melbourne": ["student_email", "official_login"],
+  "University of New South Wales": ["student_email", "official_login"],
+};
+
+export function getUniversityIntegrations(uniName) {
+  return INTEGRATION_SUPPORT[uniName] || [];
+}
+
+export function hasIntegrationSupport(uniName) {
+  const methods = INTEGRATION_SUPPORT[uniName] || [];
+  return methods.length > 0 && !methods.every((m) => m === "manual");
+}
+
 export const LEVELS = [
   "100 Level", "200 Level", "300 Level", "400 Level", "500 Level", "600 Level",
   "Year 1", "Year 2", "Year 3", "Year 4", "Year 5",

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Shield, MoreVertical, ChevronDown, UserCog } from "lucide-react";
+import { Search, Shield, UserCog } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { KpiCard, SectionCard, DataTable, PortalBadge, StatusPill } from "@/components/portal/PortalUI";
 import { ROLE_HIERARCHY, normalizeRole } from "@/lib/portalConfig";

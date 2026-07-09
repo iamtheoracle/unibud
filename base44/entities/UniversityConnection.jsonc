@@ -1,0 +1,71 @@
+{
+  "name": "UniversityConnection",
+  "type": "object",
+  "properties": {
+    "university": {
+      "type": "string",
+      "description": "Name of the university the student is connecting to"
+    },
+    "connection_method": {
+      "type": "string",
+      "enum": [
+        "student_portal",
+        "matriculation_number",
+        "student_email",
+        "official_login",
+        "manual"
+      ],
+      "default": "manual",
+      "description": "The method used to connect the student's university account"
+    },
+    "identifier": {
+      "type": "string",
+      "description": "Matriculation number, student email, or portal username"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "connected",
+        "disconnected",
+        "error"
+      ],
+      "default": "pending"
+    },
+    "consent_given": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the student has explicitly consented to data synchronization"
+    },
+    "consent_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_synced": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "synced_data": {
+      "type": "object",
+      "description": "JSON blob containing synchronized academic data (faculty, department, level, courses, timetable, assignments, exams, grades, calendar, announcements)"
+    },
+    "sync_status": {
+      "type": "string",
+      "enum": [
+        "never",
+        "syncing",
+        "success",
+        "partial",
+        "failed"
+      ],
+      "default": "never"
+    },
+    "error_message": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "university",
+    "connection_method"
+  ]
+}

@@ -27,8 +27,10 @@ import Opportunities from '@/pages/Opportunities';
 import Me from '@/pages/Me';
 import Notifications from '@/pages/Notifications';
 import BudMemory from '@/pages/BudMemory';
+import ConnectedAccounts from '@/pages/ConnectedAccounts';
 import Welcome from '@/pages/Welcome';
 import UniversitySelection from '@/pages/UniversitySelection';
+import UniversityConnect from '@/pages/UniversityConnect';
 import StudentProfile from '@/pages/StudentProfile';
 import LearningPreferences from '@/pages/onboarding/LearningPreferences';
 import AcademicGoals from '@/pages/onboarding/AcademicGoals';
@@ -52,6 +54,27 @@ import AuditLogs from '@/pages/portal/oracle/AuditLogs';
 import SystemHealth from '@/pages/portal/oracle/SystemHealth';
 import SecurityCenter from '@/pages/portal/oracle/SecurityCenter';
 import SupportCenter from '@/pages/portal/SupportCenter';
+import Universities from '@/pages/portal/Universities';
+import Analytics from '@/pages/portal/Analytics';
+import Reports from '@/pages/portal/Reports';
+import Content from '@/pages/portal/Content';
+import BudConfig from '@/pages/portal/BudConfig';
+import PortalSettings from '@/pages/portal/PortalSettings';
+import Maintenance from '@/pages/portal/Maintenance';
+import Faculties from '@/pages/portal/Faculties';
+import Departments from '@/pages/portal/Departments';
+import Lecturers from '@/pages/portal/Lecturers';
+import PortalCourses from '@/pages/portal/PortalCourses';
+import AcademicCalendar from '@/pages/portal/AcademicCalendar';
+import PortalAnnouncements from '@/pages/portal/PortalAnnouncements';
+import Classes from '@/pages/portal/Classes';
+import PortalLive from '@/pages/portal/PortalLive';
+import PortalAssignments from '@/pages/portal/PortalAssignments';
+import Attendance from '@/pages/portal/Attendance';
+import Grades from '@/pages/portal/Grades';
+import Materials from '@/pages/portal/Materials';
+import Recordings from '@/pages/portal/Recordings';
+import PortalStudyGroups from '@/pages/portal/PortalStudyGroups';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -91,6 +114,7 @@ const AuthenticatedApp = () => {
       <Route path="/welcome" element={<Welcome />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/welcome" replace />} />}>
         <Route path="/university-selection" element={<UniversitySelection />} />
+        <Route path="/university-connect" element={<UniversityConnect />} />
         <Route path="/student-profile" element={<StudentProfile />} />
         <Route path="/onboarding/learning-preferences" element={<LearningPreferences />} />
         <Route path="/onboarding/academic-goals" element={<AcademicGoals />} />
@@ -114,6 +138,7 @@ const AuthenticatedApp = () => {
           <Route path="/me" element={<Me />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/bud-memory" element={<BudMemory />} />
+          <Route path="/connected-accounts" element={<ConnectedAccounts />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />
@@ -123,6 +148,27 @@ const AuthenticatedApp = () => {
           <Route path="system-health" element={<SystemHealth />} />
           <Route path="security" element={<SecurityCenter />} />
           <Route path="support" element={<SupportCenter />} />
+          <Route path="universities" element={<Universities />} />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="content" element={<Content />} />
+          <Route path="bud-config" element={<BudConfig />} />
+          <Route path="settings" element={<PortalSettings />} />
+          <Route path="maintenance" element={<Maintenance />} />
+          <Route path="faculties" element={<Faculties />} />
+          <Route path="departments" element={<Departments />} />
+          <Route path="lecturers" element={<Lecturers />} />
+          <Route path="courses" element={<PortalCourses />} />
+          <Route path="calendar" element={<AcademicCalendar />} />
+          <Route path="announcements" element={<PortalAnnouncements />} />
+          <Route path="classes" element={<Classes />} />
+          <Route path="live" element={<PortalLive />} />
+          <Route path="assignments" element={<PortalAssignments />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="grades" element={<Grades />} />
+          <Route path="materials" element={<Materials />} />
+          <Route path="recordings" element={<Recordings />} />
+          <Route path="study-groups" element={<PortalStudyGroups />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
