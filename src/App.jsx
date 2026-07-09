@@ -233,16 +233,16 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <FeatureFlagProvider>
-          <QueryClientProvider client={queryClientInstance}>
+        <QueryClientProvider client={queryClientInstance}>
+          <FeatureFlagProvider>
             <Router>
               <ScrollToTop />
               <AuthenticatedApp />
               <SplashScreen />
             </Router>
             <Toaster />
-          </QueryClientProvider>
-        </FeatureFlagProvider>
+          </FeatureFlagProvider>
+        </QueryClientProvider>
       </ThemeProvider>
     </AuthProvider>
   )
