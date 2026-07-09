@@ -1,0 +1,34 @@
+{
+  "name": "BudConversation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "context": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "study",
+        "tutoring",
+        "guidance",
+        "general"
+      ],
+      "default": "general"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

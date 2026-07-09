@@ -1,0 +1,72 @@
+{
+  "name": "Assignment",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "submitted",
+        "graded",
+        "late"
+      ],
+      "default": "pending"
+    },
+    "grade": {
+      "type": "number"
+    },
+    "max_grade": {
+      "type": "number",
+      "default": 100
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "assignment",
+        "quiz",
+        "exam",
+        "lab",
+        "project"
+      ],
+      "default": "assignment"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "submission_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "course_code"
+  ]
+}

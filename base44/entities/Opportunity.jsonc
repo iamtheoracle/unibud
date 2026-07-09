@@ -1,0 +1,61 @@
+{
+  "name": "Opportunity",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "scholarship",
+        "internship",
+        "job",
+        "competition",
+        "exchange",
+        "research",
+        "grant",
+        "fellowship",
+        "volunteering",
+        "mentorship"
+      ],
+      "default": "scholarship"
+    },
+    "description": {
+      "type": "string"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "location": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "string"
+    },
+    "eligibility": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "is_saved": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ]
+}
