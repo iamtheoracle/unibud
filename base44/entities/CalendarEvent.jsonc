@@ -1,0 +1,65 @@
+{
+  "name": "CalendarEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "exam",
+        "assignment",
+        "class",
+        "tradition",
+        "study_session",
+        "live_class",
+        "personal",
+        "deadline",
+        "event",
+        "mentorship"
+      ],
+      "default": "personal"
+    },
+    "source_entity": {
+      "type": "string",
+      "description": "Entity name if event is synced from another source"
+    },
+    "source_id": {
+      "type": "string",
+      "description": "ID of the source entity record"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "is_all_day": {
+      "type": "boolean",
+      "default": false
+    },
+    "color": {
+      "type": "string"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "date"
+  ]
+}

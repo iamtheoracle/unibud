@@ -1,0 +1,67 @@
+{
+  "name": "WellnessEntry",
+  "type": "object",
+  "properties": {
+    "entry_type": {
+      "type": "string",
+      "enum": [
+        "mood",
+        "journal",
+        "bud_conversation"
+      ],
+      "default": "mood"
+    },
+    "mood": {
+      "type": "string",
+      "enum": [
+        "great",
+        "good",
+        "okay",
+        "low",
+        "struggling"
+      ],
+      "default": "okay"
+    },
+    "mood_score": {
+      "type": "number",
+      "default": 3,
+      "description": "1-5 scale, 1 = struggling, 5 = great"
+    },
+    "energy_level": {
+      "type": "number",
+      "default": 3,
+      "description": "1-5 scale"
+    },
+    "stress_level": {
+      "type": "number",
+      "default": 3,
+      "description": "1-5 scale, 1 = relaxed, 5 = very stressed"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": true
+    },
+    "bud_response": {
+      "type": "string"
+    },
+    "entry_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "entry_type"
+  ]
+}

@@ -55,6 +55,8 @@ const menuSections = [
       { icon: Users, label: "Mentorship", path: "/mentorship" },
       { icon: Heart, label: "Student Support", path: "/student-support" },
       { icon: Shield, label: "Student Government", path: "/student-government" },
+      { icon: Calendar, label: "Calendar", path: "/calendar" },
+      { icon: Heart, label: "Wellbeing", path: "/wellbeing" },
       { icon: Bell, label: "Notifications", path: "/notifications" },
       { icon: Palette, label: "Appearance", path: "/me" },
       { icon: Shield, label: "Privacy & Security", path: "/me" },

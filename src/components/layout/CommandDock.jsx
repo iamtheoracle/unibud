@@ -5,7 +5,7 @@ import {
   Sparkles, Bell, CalendarPlus, Clock, PenLine, Image as ImageIcon,
   PartyPopper, TrendingUp, UserPlus, Users, MessageCircle, GraduationCap,
   Search, ScanLine, BookOpen, Mic, Lightbulb, Workflow, Video, HelpCircle,
-  Tag, Bookmark, ChevronUp, PlayCircle, Target, Award, BarChart3,
+  Tag, Bookmark, ChevronUp, PlayCircle, Target, Award, BarChart3, Heart,
 } from "lucide-react";
 
 const CONTEXT_ACTIONS = {
@@ -14,12 +14,6 @@ const CONTEXT_ACTIONS = {
     { icon: BookOpen, label: "Exams", path: "/academics" },
     { icon: Bell, label: "Reminder", path: "/notifications" },
     { icon: CalendarPlus, label: "Events", path: "/campus-traditions" },
-  ],
-  "/academics": [
-    { icon: PlayCircle, label: "Study Session", path: "/study-session" },
-    { icon: GraduationCap, label: "Log Grade", path: "/academics" },
-    { icon: Target, label: "Study Goal", path: "/academics" },
-    { icon: Users, label: "Study Group", path: "/study-groups" },
   ],
   "/quad": [
     { icon: PenLine, label: "Post", path: "/quad" },
@@ -39,6 +33,19 @@ const CONTEXT_ACTIONS = {
     { icon: Award, label: "Achievements", path: "/achievements" },
     { icon: BarChart3, label: "Progress", path: "/academics" },
     { icon: Sparkles, label: "Insights", path: "/academic-analytics" },
+  ],
+  "/academics": [
+    { icon: PlayCircle, label: "Study Session", path: "/study-session" },
+    { icon: CalendarPlus, label: "Calendar", path: "/calendar" },
+    { icon: Target, label: "Study Goal", path: "/academics" },
+    { icon: Users, label: "Study Group", path: "/study-groups" },
+    { icon: GraduationCap, label: "Log Grade", path: "/academics" },
+  ],
+  "/wellbeing": [
+    { icon: Heart, label: "Journal", path: "/wellbeing" },
+    { icon: BookOpen, label: "Mood", path: "/wellbeing" },
+    { icon: Lightbulb, label: "Resources", path: "/wellbeing" },
+    { icon: Sparkles, label: "Ask Bud", path: "/bud" },
   ],
   "/library": [
     { icon: Search, label: "Search", path: "/library" },

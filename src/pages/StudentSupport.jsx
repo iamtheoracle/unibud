@@ -91,7 +91,7 @@ export default function StudentSupport() {
       </div>
 
       {/* Encouragement banner */}
-      <div className="px-4 mb-5">
+      <div className="px-4 mb-4">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -105,6 +105,23 @@ export default function StudentSupport() {
             </p>
           </div>
         </motion.div>
+      </div>
+
+      {/* Wellbeing quick link */}
+      <div className="px-4 mb-5">
+        <button
+          onClick={() => navigate("/wellbeing")}
+          className="w-full flex items-center gap-3 p-3.5 rounded-[16px] bg-card border border-border/40 spring-tap hover:bg-muted/30 transition-colors"
+        >
+          <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Heart className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="font-heading font-semibold text-[13px] text-foreground">Private Wellbeing Space</p>
+            <p className="text-[11px] text-muted-foreground">Track your mood, write a journal, talk to Bud privately</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </button>
       </div>
 
       <AnimatePresence mode="wait">
