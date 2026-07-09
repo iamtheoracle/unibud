@@ -92,6 +92,12 @@ import Grades from '@/pages/portal/Grades';
 import Materials from '@/pages/portal/Materials';
 import Recordings from '@/pages/portal/Recordings';
 import PortalStudyGroups from '@/pages/portal/PortalStudyGroups';
+import OracleDashboard from '@/pages/portal/oracle/OracleDashboard';
+import Approvals from '@/pages/portal/Approvals';
+import FeatureFlags from '@/pages/portal/FeatureFlags';
+import PortalNotifications from '@/pages/portal/PortalNotifications';
+import PortalMarketplace from '@/pages/portal/PortalMarketplace';
+import PortalEvents from '@/pages/portal/PortalEvents';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -203,6 +209,12 @@ const AuthenticatedApp = () => {
           <Route path="materials" element={<Materials />} />
           <Route path="recordings" element={<Recordings />} />
           <Route path="study-groups" element={<PortalStudyGroups />} />
+          <Route path="oracle" element={<OracleDashboard />} />
+          <Route path="approvals" element={<Approvals />} />
+          <Route path="feature-flags" element={<FeatureFlags />} />
+          <Route path="notifications" element={<PortalNotifications />} />
+          <Route path="marketplace" element={<PortalMarketplace />} />
+          <Route path="events" element={<PortalEvents />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

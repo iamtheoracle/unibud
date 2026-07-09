@@ -107,17 +107,45 @@ export function getPortalNavigation(role) {
           section: "Overview",
           items: [
             { label: "Dashboard", icon: "LayoutDashboard", path: "/portal" },
-            { label: "System Health", icon: "Activity", path: "/portal/system-health" },
-            { label: "Audit Logs", icon: "ScrollText", path: "/portal/audit-logs" },
+            { label: "Oracle", icon: "Crown", path: "/portal/oracle" },
           ],
         },
         {
-          section: "Platform Control",
+          section: "Institutions",
           items: [
-            { label: "Module Control", icon: "Boxes", path: "/portal/modules" },
-            { label: "User Management", icon: "Users", path: "/portal/users" },
-            { label: "Security Center", icon: "ShieldCheck", path: "/portal/security" },
-            { label: "University Management", icon: "Landmark", path: "/portal/universities" },
+            { label: "Universities", icon: "Landmark", path: "/portal/universities" },
+            { label: "Faculties", icon: "Building", path: "/portal/faculties" },
+            { label: "Departments", icon: "Layers", path: "/portal/departments" },
+          ],
+        },
+        {
+          section: "People",
+          items: [
+            { label: "Students", icon: "Users", path: "/portal/users" },
+            { label: "Lecturers", icon: "GraduationCap", path: "/portal/lecturers" },
+          ],
+        },
+        {
+          section: "Academic",
+          items: [
+            { label: "Courses", icon: "BookOpen", path: "/portal/courses" },
+          ],
+        },
+        {
+          section: "Platform",
+          items: [
+            { label: "Marketplace", icon: "ShoppingBag", path: "/portal/marketplace" },
+            { label: "Events", icon: "CalendarDays", path: "/portal/events" },
+            { label: "Content", icon: "FileEdit", path: "/portal/content" },
+            { label: "Bud AI", icon: "Bot", path: "/portal/bud-config" },
+          ],
+        },
+        {
+          section: "Operations",
+          items: [
+            { label: "Support", icon: "LifeBuoy", path: "/portal/support" },
+            { label: "Approvals", icon: "ClipboardCheck", path: "/portal/approvals" },
+            { label: "Notifications", icon: "Bell", path: "/portal/notifications" },
           ],
         },
         {
@@ -128,18 +156,15 @@ export function getPortalNavigation(role) {
           ],
         },
         {
-          section: "Operations",
-          items: [
-            { label: "Support Center", icon: "LifeBuoy", path: "/portal/support" },
-            { label: "Content", icon: "FileEdit", path: "/portal/content" },
-            { label: "Bud Management", icon: "Bot", path: "/portal/bud-config" },
-          ],
-        },
-        {
           section: "System",
           items: [
-            { label: "Settings", icon: "Settings", path: "/portal/settings" },
+            { label: "Feature Flags", icon: "Flag", path: "/portal/feature-flags" },
+            { label: "Security", icon: "ShieldCheck", path: "/portal/security" },
+            { label: "System Health", icon: "Activity", path: "/portal/system-health" },
+            { label: "Audit Logs", icon: "ScrollText", path: "/portal/audit-logs" },
+            { label: "Module Control", icon: "Boxes", path: "/portal/modules" },
             { label: "Maintenance", icon: "Wrench", path: "/portal/maintenance" },
+            { label: "Settings", icon: "Settings", path: "/portal/settings" },
           ],
         },
       ];
@@ -350,6 +375,12 @@ const PATH_ACCESS = {
   "/portal/materials": ["lecturer"],
   "/portal/recordings": ["lecturer"],
   "/portal/study-groups": ["lecturer"],
+  "/portal/oracle": ["oracle"],
+  "/portal/approvals": ["oracle"],
+  "/portal/feature-flags": ["oracle"],
+  "/portal/notifications": ["oracle"],
+  "/portal/marketplace": ["oracle"],
+  "/portal/events": ["oracle"],
 };
 
 export function canAccessPath(role, path) {

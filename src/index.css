@@ -257,4 +257,18 @@
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+  .portal-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, hsl(var(--primary) / 0.04), transparent),
+      hsl(var(--background));
+  }
+
+  .portal-card-hover {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .portal-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-elevated);
+  }
 }
