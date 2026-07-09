@@ -1,5 +1,5 @@
-import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import BottomNav from "@/components/layout/BottomNav";
@@ -15,6 +15,17 @@ export default function AppLayout() {
     queryFn: () => base44.auth.me(),
     retry: false,
   });
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) return;
+    if (!user.university) {
+      navigate("/university-selection", { replace: true });
+    } else if (!user.preferred_name && !user.onboarding_completed) {
+      navigate("/student-profile", { replace: true });
+    }
+  }, [user, navigate]);
 
   const showOnboarding = user && !user.onboarding_completed && !hideDock;
 

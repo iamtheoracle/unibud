@@ -8,33 +8,8 @@ const STEPS = [
   {
     id: "intro",
     type: "info",
-    message: "Let's set up your UNIBUD experience! 🎓\n\nI'll ask a few quick questions to personalize everything — your courses, schedule, recommendations, and more.\n\nThis takes about 3 minutes, and you can skip anything. Ready?",
+    message: "Great! You're all set up. 🎓\n\nNow let me learn a bit more about how you study best — your learning style, goals, and interests. This helps me personalize everything for you.\n\nThis takes about 2 minutes, and you can skip anything. Ready?",
     buttonText: "Let's Go",
-  },
-  {
-    id: "university",
-    type: "text",
-    message: "Let's start with where you study. This helps me show you the right courses, events, and opportunities.",
-    fields: [
-      { key: "country", placeholder: "Country" },
-      { key: "university", placeholder: "University" },
-      { key: "campus", placeholder: "Campus (optional)" },
-      { key: "faculty", placeholder: "Faculty" },
-      { key: "department", placeholder: "Department" },
-      { key: "course_major", placeholder: "Course / Major" },
-      { key: "level", placeholder: "Level / Year (e.g., 300L)" },
-    ],
-  },
-  {
-    id: "profile",
-    type: "profile",
-    message: "Let's set up your profile! Add a photo so classmates can recognize you, and a few details to personalize your experience.",
-    fields: [
-      { key: "preferred_name", placeholder: "Preferred name / nickname" },
-      { key: "student_id", placeholder: "Student ID (optional)" },
-      { key: "expected_graduation", placeholder: "Expected graduation year" },
-      { key: "date_of_birth", placeholder: "Date of birth (optional)" },
-    ],
   },
   {
     id: "learning_preferences",

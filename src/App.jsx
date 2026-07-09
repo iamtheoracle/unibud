@@ -28,6 +28,8 @@ import Me from '@/pages/Me';
 import Notifications from '@/pages/Notifications';
 import BudMemory from '@/pages/BudMemory';
 import Welcome from '@/pages/Welcome';
+import UniversitySelection from '@/pages/UniversitySelection';
+import StudentProfile from '@/pages/StudentProfile';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
 const AuthenticatedApp = () => {
@@ -67,6 +69,8 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/welcome" element={<Welcome />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/welcome" replace />} />}>
+        <Route path="/university-selection" element={<UniversitySelection />} />
+        <Route path="/student-profile" element={<StudentProfile />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/academics" element={<Academics />} />
