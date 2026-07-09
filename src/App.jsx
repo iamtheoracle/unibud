@@ -38,6 +38,9 @@ import MeetBud from '@/pages/onboarding/MeetBud';
 import PreparingCampus from '@/pages/onboarding/PreparingCampus';
 import LiveHome from '@/pages/LiveHome';
 import LiveClass from '@/pages/LiveClass';
+import Library from '@/pages/Library';
+import PdfReader from '@/pages/PdfReader';
+import Assignments from '@/pages/Assignments';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
 const AuthenticatedApp = () => {
@@ -94,6 +97,9 @@ const AuthenticatedApp = () => {
           <Route path="/connect" element={<Connect />} />
           <Route path="/bud" element={<Bud />} />
           <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/library" element={<Library />} />
+          <Route path="/library/read/:resourceId" element={<PdfReader />} />
+          <Route path="/assignments" element={<Assignments />} />
           <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/me" element={<Me />} />
           <Route path="/notifications" element={<Notifications />} />

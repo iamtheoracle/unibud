@@ -7,6 +7,26 @@ import LiveControlBar from "@/components/live/LiveControlBar";
 import LiveBudPanel from "@/components/live/LiveBudPanel";
 import LiveChatPanel from "@/components/live/LiveChatPanel";
 import LiveParticipantList from "@/components/live/LiveParticipantList";
+import LivePoll from "@/components/live/LivePoll";
+import LiveQuiz from "@/components/live/LiveQuiz";
+import BreakoutRooms from "@/components/live/BreakoutRooms";
+
+const MOCK_POLL = {
+  question: "Which traversal visits root before children?",
+  options: [
+    { text: "In-order", votes: 3 },
+    { text: "Pre-order", votes: 8 },
+    { text: "Post-order", votes: 2 },
+    { text: "Level-order", votes: 1 },
+  ],
+};
+
+const MOCK_QUIZ = {
+  questions: [
+    { question: "What is the time complexity of BST search?", options: ["O(1)", "O(log n)", "O(n²)", "O(n log n)"], correct: 1 },
+    { question: "Which property makes a valid BST?", options: ["Left > Root", "Left < Root < Right", "Unordered", "All equal"], correct: 1 },
+  ],
+};
 
 export default function LiveClass() {
   const navigate = useNavigate();
@@ -61,6 +81,9 @@ export default function LiveClass() {
         {panel === "bud" && <LiveBudPanel key="bud" onClose={() => setPanel(null)} />}
         {panel === "chat" && <LiveChatPanel key="chat" onClose={() => setPanel(null)} />}
         {panel === "participants" && <LiveParticipantList key="ppl" onClose={() => setPanel(null)} />}
+        {panel === "poll" && <LivePoll key="poll" poll={MOCK_POLL} onClose={() => setPanel(null)} />}
+        {panel === "quiz" && <LiveQuiz key="quiz" quiz={MOCK_QUIZ} onClose={() => setPanel(null)} />}
+        {panel === "breakout" && <BreakoutRooms key="br" onClose={() => setPanel(null)} />}
       </AnimatePresence>
 
       <LiveControlBar

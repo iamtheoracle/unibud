@@ -1,0 +1,39 @@
+{
+  "name": "Collection",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "personal",
+        "course_folder",
+        "shared"
+      ],
+      "default": "personal"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "resource_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "color": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

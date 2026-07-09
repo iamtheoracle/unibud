@@ -1,123 +1,229 @@
 import React, { useState } from "react";
-import { Search, Bookmark, MapPin, Calendar, ExternalLink, Award, Briefcase, GraduationCap, Globe, Trophy } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import SectionHeader from "@/components/ui/SectionHeader";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import { Search, Sparkles, MapPin, Calendar, Award, Briefcase, GraduationCap, Globe, Trophy, Bookmark, BookmarkCheck, ChevronRight, CheckCircle2, Clock, FileCheck, Target, Bell } from "lucide-react";
 
-const types = ["All", "Scholarships", "Internships", "Jobs", "Competitions", "Research"];
+const TYPES = ["All", "Scholarship", "Internship", "Job", "Competition", "Fellowship", "Grant"];
 
-const opportunities = [
-  { title: "Africa Merit Scholarship 2026", org: "Global Education Fund", type: "scholarship", deadline: "Aug 15, 2026", amount: "$10,000", location: "Global", tags: ["STEM", "Undergrad"], saved: false },
-  { title: "Software Engineering Intern", org: "TechCorp Africa", type: "internship", deadline: "Jul 30, 2026", amount: "₦350,000/mo", location: "Lagos, NG", tags: ["Tech", "Remote"], saved: true },
-  { title: "Inter-University Hackathon 2026", org: "UNIBUD Network", type: "competition", deadline: "Jul 25, 2026", amount: "$5,000 Prize", location: "Virtual", tags: ["Tech", "Innovation"], saved: false },
-  { title: "Graduate Research Assistant", org: "MIT Collaboration", type: "research", deadline: "Sep 1, 2026", amount: "$2,500/mo", location: "Cambridge, US", tags: ["PhD", "AI"], saved: false },
-  { title: "Junior Data Analyst", org: "FinTech Solutions", type: "job", deadline: "Aug 5, 2026", amount: "₦500,000/mo", location: "Remote", tags: ["Data", "Entry-level"], saved: true },
+const typeIcons = { scholarship: GraduationCap, internship: Briefcase, competition: Trophy, research: Globe, job: Briefcase, fellowship: Award, grant: Award, exchange: Globe, volunteering: Briefcase, mentorship: Briefcase };
+const typeColors = { scholarship: "#16A34A", internship: "#2563EB", competition: "#DAAF37", research: "#7C3AED", job: "#DC2626", fellowship: "#F59E0B", grant: "#16A34A" };
+
+const TRACKER_STATUSES = [
+  { key: "interested", label: "Interested", color: "#A3A3A3" },
+  { key: "preparing", label: "Preparing", color: "#F59E0B" },
+  { key: "applied", label: "Applied", color: "#2563EB" },
+  { key: "interview", label: "Interview", color: "#7C3AED" },
+  { key: "offered", label: "Offered", color: "#16A34A" },
+  { key: "rejected", label: "Rejected", color: "#DC2626" },
 ];
-
-const typeIcons = { scholarship: GraduationCap, internship: Briefcase, competition: Trophy, research: Globe, job: Briefcase };
-const typeColors = { scholarship: "from-emerald-500 to-emerald-600", internship: "from-blue-500 to-blue-600", competition: "from-amber-500 to-amber-600", research: "from-purple-500 to-purple-600", job: "from-rose-500 to-rose-600" };
 
 export default function Opportunities() {
   const [activeType, setActiveType] = useState("All");
+  const [showAI, setShowAI] = useState(false);
+  const [aiQuery, setAiQuery] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiMatches, setAiMatches] = useState(null);
+  const [showEligibility, setShowEligibility] = useState(false);
+  const [tab, setTab] = useState("discover");
+  const qc = useQueryClient();
 
-  const filtered = activeType === "All" ? opportunities : opportunities.filter((o) => o.type === activeType.toLowerCase().slice(0, -1));
+  const { data: opportunities } = useQuery({ queryKey: ["opportunities"], queryFn: () => base44.entities.Opportunity.list("-created_date", 50) });
+  const { data: trackers } = useQuery({ queryKey: ["applicationTrackers"], queryFn: () => base44.entities.ApplicationTracker.list() });
+
+  const filtered = activeType === "All" ? opportunities : opportunities?.filter(o => o.type === activeType.toLowerCase()) || [];
+  const savedOpps = opportunities?.filter(o => o.is_saved) || [];
+  const upcomingDeadlines = trackers?.filter(t => t.deadline).sort((a, b) => new Date(a.deadline) - new Date(b.deadline)).slice(0, 5) || [];
+
+  const toggleSave = async (opp) => {
+    await base44.entities.Opportunity.update(opp.id, { is_saved: !opp.is_saved });
+    qc.invalidateQueries({ queryKey: ["opportunities"] });
+  };
+
+  const trackOpportunity = async (opp) => {
+    await base44.entities.ApplicationTracker.create({ opportunity_title: opp.title, organization: opp.organization, type: opp.type, status: "interested", deadline: opp.deadline, amount: opp.amount, link: opp.link });
+    qc.invalidateQueries({ queryKey: ["applicationTrackers"] });
+  };
+
+  const handleAIMatch = async () => {
+    if (!aiQuery.trim()) return;
+    setAiLoading(true);
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: `A student says: "${aiQuery}". From these opportunities: ${JSON.stringify(opportunities?.map(o => ({ title: o.title, type: o.type, eligibility: o.eligibility, tags: o.tags })))}. Return matching titles.`,
+        response_json_schema: { type: "object", properties: { matches: { type: "array", items: { type: "string" } }, reasoning: { type: "string" } } },
+      });
+      setAiMatches({ matches: res?.matches || [], reasoning: res?.reasoning || "" });
+    } catch { setAiMatches({ matches: [], reasoning: "" }); }
+    setAiLoading(false);
+  };
 
   return (
     <div className="min-h-screen">
-      <div className="pt-12 pb-3 px-5">
-        <h1 className="font-heading font-bold text-[22px] tracking-tight">Opportunities</h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">Discover your next big step</p>
-      </div>
-
-      {/* Search */}
-      <div className="px-4 mb-3">
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search opportunities..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
+      <div className="flex items-center justify-between pt-12 pb-3 px-5">
+        <div>
+          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Opportunities</h1>
+          <p className="text-[12px] text-muted-foreground">Discover your next big step</p>
         </div>
+        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow"><Trophy className="w-5 h-5 text-primary-foreground" /></div>
       </div>
 
-      {/* Type Filter */}
-      <div className="px-4 mb-4 overflow-x-auto no-scrollbar">
-        <div className="flex gap-2">
-          {types.map((type) => (
-            <button
-              key={type}
-              onClick={() => setActiveType(type)}
-              className={`px-3.5 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${
-                activeType === type
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-white border border-border/50 text-muted-foreground"
-              }`}
-            >
-              {type}
+      <div className="px-4 mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-xl">
+        <button onClick={() => setTab("discover")} className={`flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all ${tab === "discover" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>Discover</button>
+        <button onClick={() => setTab("tracker")} className={`flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all ${tab === "tracker" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>Tracker</button>
+        <button onClick={() => setTab("saved")} className={`flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all ${tab === "saved" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>Saved</button>
+      </div>
+
+      {tab === "discover" && (
+        <>
+          <div className="px-4 pb-2">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input type="text" placeholder="Search opportunities..." className="w-full pl-9 pr-4 h-[44px] rounded-2xl bg-card border border-border/50 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </div>
+          </div>
+
+          <div className="px-4 pb-3">
+            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-2xl font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(218,175,55,0.3)]" : "bg-card border border-primary/20 text-primary"}`}>
+              <Sparkles className="w-4 h-4" /> AI Match Finder
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Featured */}
-      <div className="px-4 mb-4">
-        <GlassCard className="p-4 bg-gradient-to-br from-primary/5 via-purple-50 to-emerald-50 border-primary/10" delay={0.05}>
-          <div className="flex items-center gap-2 mb-2">
-            <Award className="w-4 h-4 text-achievement" />
-            <span className="text-[11px] font-semibold text-achievement">Featured Opportunity</span>
           </div>
-          <h3 className="font-heading font-bold text-[15px] mb-1">Africa Merit Scholarship 2026</h3>
-          <p className="text-[12px] text-muted-foreground mb-2">Full tuition coverage for outstanding STEM students across Africa</p>
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] font-semibold text-primary">$10,000</span>
-            <span className="text-[10px] text-muted-foreground">Deadline: Aug 15</span>
-          </div>
-        </GlassCard>
-      </div>
 
-      {/* List */}
-      <div className="px-4 space-y-3 pb-8">
-        <SectionHeader title="All Opportunities" subtitle={`${filtered.length} found`} icon={Briefcase} />
-        {filtered.map((opp, i) => {
-          const Icon = typeIcons[opp.type] || Briefcase;
-          return (
-            <GlassCard key={i} variant="solid" className="p-4" delay={0.1 + i * 0.04}>
-              <div className="flex items-start gap-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${typeColors[opp.type] || "from-slate-400 to-slate-500"} flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                  <Icon className="w-5 h-5 text-white" strokeWidth={1.8} />
+          {showAI && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="px-4 pb-3">
+              <div className="bg-card rounded-2xl p-3 premium-shadow border border-primary/20">
+                <div className="flex gap-2 mb-2">
+                  <input type="text" value={aiQuery} onChange={e => setAiQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAIMatch()} placeholder="Tell Bud about yourself..." className="flex-1 px-3 h-[40px] rounded-xl bg-muted text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <button onClick={handleAIMatch} disabled={aiLoading} className="px-3 h-[40px] rounded-xl bg-primary text-primary-foreground font-semibold text-[12px] disabled:opacity-50">{aiLoading ? "..." : "Match"}</button>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="font-heading font-semibold text-[13px] leading-snug">{opp.title}</p>
-                      <p className="text-[11px] text-muted-foreground">{opp.org}</p>
-                    </div>
-                    <button className="flex-shrink-0">
-                      <Bookmark className={`w-4 h-4 ${opp.saved ? "text-primary fill-primary" : "text-muted-foreground"}`} strokeWidth={1.8} />
-                    </button>
+                {aiMatches && (
+                  <div className="mt-2">
+                    {aiMatches.reasoning && <p className="text-[11px] text-muted-foreground mb-2 flex items-start gap-1"><Sparkles className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" /> {aiMatches.reasoning}</p>}
+                    {aiMatches.matches.length > 0 && (
+                      <div className="space-y-2">
+                        {aiMatches.matches.map(title => {
+                          const opp = opportunities?.find(o => o.title === title);
+                          if (!opp) return null;
+                          return <OpportunityCard key={opp.id} opp={opp} onToggleSave={() => toggleSave(opp)} onTrack={() => trackOpportunity(opp)} compact />;
+                        })}
+                      </div>
+                    )}
                   </div>
-                  <p className="font-heading font-bold text-[14px] text-primary mt-1">{opp.amount}</p>
-                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-2.5 h-2.5 text-muted-foreground" />
-                      <span className="text-[10px] text-muted-foreground">{opp.location}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-2.5 h-2.5 text-muted-foreground" />
-                      <span className="text-[10px] text-muted-foreground">{opp.deadline}</span>
-                    </div>
-                  </div>
-                  <div className="flex gap-1.5 mt-2">
-                    {opp.tags.map((tag) => (
-                      <span key={tag} className="px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[9px] font-semibold">{tag}</span>
-                    ))}
-                  </div>
-                </div>
+                )}
               </div>
-            </GlassCard>
-          );
-        })}
-      </div>
+            </motion.div>
+          )}
+
+          <div className="px-4 pb-3">
+            <button onClick={() => setShowEligibility(!showEligibility)} className="w-full bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Target className="w-5 h-5 text-primary" /></div>
+              <div className="flex-1 text-left"><p className="font-heading font-semibold text-[13px] text-foreground">Eligibility Checker</p><p className="text-[11px] text-muted-foreground">Find opportunities you qualify for</p></div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+
+          {showEligibility && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 pb-3">
+              <div className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
+                <p className="text-[12px] font-semibold text-foreground mb-3">Quick Profile</p>
+                <div className="space-y-2">
+                  <select className="w-full h-[40px] rounded-xl bg-muted px-3 text-[12px] text-foreground"><option>Level: 300 Level</option><option>100 Level</option><option>200 Level</option><option>400 Level</option><option>Postgraduate</option></select>
+                  <select className="w-full h-[40px] rounded-xl bg-muted px-3 text-[12px] text-foreground"><option>GPA: 4.0+</option><option>3.5+</option><option>3.0+</option><option>Any</option></select>
+                  <select className="w-full h-[40px] rounded-xl bg-muted px-3 text-[12px] text-foreground"><option>Field: Computer Science</option><option>Engineering</option><option>Medicine</option><option>Business</option><option>Any</option></select>
+                </div>
+                <button className="mt-3 w-full h-[40px] rounded-xl bg-primary text-primary-foreground font-semibold text-[12px] flex items-center justify-center gap-1.5"><Target className="w-4 h-4" /> Check Eligibility</button>
+              </div>
+            </motion.div>
+          )}
+
+          <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+            {TYPES.map(t => (
+              <button key={t} onClick={() => setActiveType(t)} className={`px-3.5 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${activeType === t ? "bg-foreground text-background shadow-sm" : "bg-card border border-border/50 text-muted-foreground"}`}>{t}</button>
+            ))}
+          </div>
+
+          <div className="px-4 space-y-3 pb-8">
+            {filtered?.map((opp, i) => <OpportunityCard key={opp.id} opp={opp} onToggleSave={() => toggleSave(opp)} onTrack={() => trackOpportunity(opp)} delay={i * 0.04} />)}
+          </div>
+        </>
+      )}
+
+      {tab === "tracker" && (
+        <div className="px-4 pb-8 space-y-4">
+          {upcomingDeadlines.length > 0 && (
+            <>
+              <p className="font-heading font-bold text-[14px] text-foreground flex items-center gap-1.5"><Bell className="w-4 h-4 text-primary" /> Upcoming Deadlines</p>
+              {upcomingDeadlines.map((t, i) => {
+                const days = Math.ceil((new Date(t.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                return (
+                  <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${days <= 3 ? "bg-destructive/10" : "bg-primary/10"}`}><Clock className={`w-4 h-4 ${days <= 3 ? "text-destructive" : "text-primary"}`} /></div>
+                    <div className="flex-1 min-w-0"><p className="font-semibold text-[12px] text-foreground truncate">{t.opportunity_title}</p><p className="text-[10px] text-muted-foreground">{t.organization}</p></div>
+                    <span className={`text-[10px] font-bold ${days <= 3 ? "text-destructive" : "text-muted-foreground"}`}>{days}d left</span>
+                  </motion.div>
+                );
+              })}
+            </>
+          )}
+          <p className="font-heading font-bold text-[14px] text-foreground mt-2">All Applications</p>
+          {trackers && trackers.length > 0 ? trackers.map((t, i) => {
+            const status = TRACKER_STATUSES.find(s => s.key === t.status);
+            return (
+              <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
+                <div className="flex items-start gap-3 mb-2">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${typeColors[t.type] || "#DAAF37"}15` }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "#DAAF37" }} /></div>
+                  <div className="flex-1 min-w-0"><p className="font-heading font-semibold text-[13px] text-foreground">{t.opportunity_title}</p><p className="text-[11px] text-muted-foreground">{t.organization}</p></div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold" style={{ backgroundColor: `${status?.color}15`, color: status?.color }}>{status?.label}</span>
+                  {t.deadline && <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(t.deadline).toLocaleDateString("en", { month: "short", day: "numeric" })}</span>}
+                </div>
+              </motion.div>
+            );
+          }) : <EmptyState icon={FileCheck} title="No tracked applications" subtitle="Track opportunities to stay organized" />}
+        </div>
+      )}
+
+      {tab === "saved" && (
+        <div className="px-4 pb-8 space-y-3">
+          {savedOpps.length > 0 ? savedOpps.map((opp, i) => <OpportunityCard key={opp.id} opp={opp} onToggleSave={() => toggleSave(opp)} onTrack={() => trackOpportunity(opp)} delay={i * 0.04} />) : <EmptyState icon={Bookmark} title="No saved opportunities" subtitle="Bookmark opportunities to find them here" />}
+        </div>
+      )}
     </div>
   );
+}
+
+function OpportunityCard({ opp, onToggleSave, onTrack, delay = 0, compact }) {
+  const Icon = typeIcons[opp.type] || Briefcase;
+  const color = typeColors[opp.type] || "#DAAF37";
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}15` }}><Icon className="w-5 h-5" style={{ color }} /></div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div><p className="font-heading font-semibold text-[13px] leading-snug text-foreground">{opp.title}</p><p className="text-[11px] text-muted-foreground">{opp.organization}</p></div>
+            <button onClick={onToggleSave} className="flex-shrink-0">{opp.is_saved ? <BookmarkCheck className="w-4 h-4 text-primary" /> : <Bookmark className="w-4 h-4 text-muted-foreground" />}</button>
+          </div>
+          {opp.amount && <p className="font-heading font-bold text-[14px] text-primary mt-1">{opp.amount}</p>}
+          <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+            {opp.location && <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><MapPin className="w-2.5 h-2.5" /> {opp.location}</span>}
+            {opp.deadline && <span className="flex items-center gap-1 text-[10px] text-muted-foreground"><Calendar className="w-2.5 h-2.5" /> {opp.deadline}</span>}
+          </div>
+          {opp.tags && opp.tags.length > 0 && <div className="flex gap-1.5 mt-2">{opp.tags.slice(0, 3).map(tag => <span key={tag} className="px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[9px] font-semibold">{tag}</span>)}</div>}
+          {!compact && (
+            <div className="flex gap-2 mt-3">
+              <button onClick={onTrack} className="flex-1 h-[36px] rounded-xl bg-primary/10 text-primary font-semibold text-[11px] flex items-center justify-center gap-1"><FileCheck className="w-3.5 h-3.5" /> Track</button>
+              {opp.link && <a href={opp.link} target="_blank" rel="noreferrer" className="flex-1 h-[36px] rounded-xl bg-foreground text-background font-semibold text-[11px] flex items-center justify-center gap-1">Apply <ChevronRight className="w-3 h-3" /></a>}
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function EmptyState({ icon: Icon, title, subtitle }) {
+  return <div className="text-center py-12"><Icon className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" /><p className="text-[13px] font-semibold text-foreground">{title}</p><p className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</p></div>;
 }

@@ -1,0 +1,62 @@
+{
+  "name": "ApplicationTracker",
+  "type": "object",
+  "properties": {
+    "opportunity_title": {
+      "type": "string"
+    },
+    "organization": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "scholarship",
+        "internship",
+        "job",
+        "competition",
+        "exchange",
+        "research",
+        "grant",
+        "fellowship",
+        "volunteering",
+        "mentorship"
+      ],
+      "default": "scholarship"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "interested",
+        "preparing",
+        "applied",
+        "interview",
+        "offered",
+        "rejected",
+        "withdrawn"
+      ],
+      "default": "interested"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "amount": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "opportunity_title",
+    "type"
+  ]
+}
