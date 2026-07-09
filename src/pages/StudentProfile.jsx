@@ -43,8 +43,8 @@ export default function StudentProfile() {
     try {
       const payload = { ...data };
       if (photoUrl) payload.profile_photo = photoUrl;
-      await base44.auth.updateMe(payload);
-      navigate("/");
+      await base44.auth.updateMe({ ...payload, onboarding_step: "learning_preferences" });
+      navigate("/onboarding/learning-preferences");
     } catch {}
     setLoading(false);
   };

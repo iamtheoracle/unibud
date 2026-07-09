@@ -30,6 +30,12 @@ import BudMemory from '@/pages/BudMemory';
 import Welcome from '@/pages/Welcome';
 import UniversitySelection from '@/pages/UniversitySelection';
 import StudentProfile from '@/pages/StudentProfile';
+import LearningPreferences from '@/pages/onboarding/LearningPreferences';
+import AcademicGoals from '@/pages/onboarding/AcademicGoals';
+import StudySchedule from '@/pages/onboarding/StudySchedule';
+import Interests from '@/pages/onboarding/Interests';
+import MeetBud from '@/pages/onboarding/MeetBud';
+import PreparingCampus from '@/pages/onboarding/PreparingCampus';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
 const AuthenticatedApp = () => {
@@ -71,6 +77,12 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/welcome" replace />} />}>
         <Route path="/university-selection" element={<UniversitySelection />} />
         <Route path="/student-profile" element={<StudentProfile />} />
+        <Route path="/onboarding/learning-preferences" element={<LearningPreferences />} />
+        <Route path="/onboarding/academic-goals" element={<AcademicGoals />} />
+        <Route path="/onboarding/study-schedule" element={<StudySchedule />} />
+        <Route path="/onboarding/interests" element={<Interests />} />
+        <Route path="/onboarding/meet-bud" element={<MeetBud />} />
+        <Route path="/onboarding/preparing-campus" element={<PreparingCampus />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/academics" element={<Academics />} />

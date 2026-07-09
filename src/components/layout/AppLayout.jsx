@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import BottomNav from "@/components/layout/BottomNav";
 import CommandDock from "@/components/layout/CommandDock";
-import BudOnboarding from "@/components/onboarding/BudOnboarding";
+import CampusTutorial from "@/components/onboarding/CampusTutorial";
 
 export default function AppLayout() {
   const location = useLocation();
@@ -22,12 +22,20 @@ export default function AppLayout() {
     if (!user) return;
     if (!user.university) {
       navigate("/university-selection", { replace: true });
-    } else if (!user.preferred_name && !user.onboarding_completed) {
+    } else if (!user.preferred_name) {
       navigate("/student-profile", { replace: true });
+    } else if (!user.onboarding_completed) {
+      const STEP_ROUTES = {
+        learning_preferences: "/onboarding/learning-preferences",
+        academic_goals: "/onboarding/academic-goals",
+        study_schedule: "/onboarding/study-schedule",
+        interests: "/onboarding/interests",
+        meet_bud: "/onboarding/meet-bud",
+        preparing_campus: "/onboarding/preparing-campus",
+      };
+      navigate(STEP_ROUTES[user.onboarding_step] || "/onboarding/learning-preferences", { replace: true });
     }
   }, [user, navigate]);
-
-  const showOnboarding = user && !user.onboarding_completed && !hideDock;
 
   return (
     <div className="min-h-screen bg-background">
@@ -40,7 +48,7 @@ export default function AppLayout() {
           <CommandDock />
         </>
       )}
-      {showOnboarding && <BudOnboarding />}
+      <CampusTutorial user={user} />
     </div>
   );
 }
