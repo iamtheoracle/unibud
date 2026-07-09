@@ -1,0 +1,45 @@
+{
+  "name": "University Connect Background Sync",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "university_connect_bg_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_sync": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "universityConnectBgSync",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Background Sync",
+            "description": "Sync all connected students"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Periodically synchronizes academic data for all connected students and generates smart reminders",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 6,
+      "interval_unit": "hours",
+      "interval_anchor": "2026-07-09T09:00:00Z",
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

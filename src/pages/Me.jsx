@@ -6,7 +6,7 @@ import {
   Settings, ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
-  PartyPopper, Rocket, Calendar,
+  PartyPopper, Rocket, Calendar, Users,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link, useNavigate } from "react-router-dom";
@@ -50,6 +50,7 @@ const menuSections = [
       { icon: Link2, label: "Connected Accounts", path: "/connected-accounts" },
       { icon: Compass, label: "Discover", path: "/discover" },
       { icon: PartyPopper, label: "Campus Life", path: "/campus-traditions" },
+      { icon: Users, label: "Mentorship", path: "/mentorship" },
       { icon: Heart, label: "Student Support", path: "/student-support" },
       { icon: Shield, label: "Student Government", path: "/student-government" },
       { icon: Bell, label: "Notifications", path: "/notifications" },
