@@ -15,7 +15,7 @@ export default function BottomNav() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
       <div className="max-w-lg mx-auto px-4 pb-3">
-        <nav className="pointer-events-auto bg-[#1A1A1A] rounded-[28px] px-2 py-2 flex items-center justify-around shadow-[0_8px_32px_rgba(0,0,0,0.18)]">
+        <nav className="pointer-events-auto bg-card rounded-[28px] px-2 py-2 flex items-center justify-around border border-border/50 backdrop-blur-xl premium-shadow">
           {navItems.map((item) => {
             const isActive = item.path === "/"
               ? location.pathname === "/"
@@ -30,12 +30,12 @@ export default function BottomNav() {
               >
                 <Icon
                   className={`w-[22px] h-[22px] transition-colors duration-200 ${
-                    isActive ? "text-[#28A745]" : "text-[#86868B]"
+                    isActive ? "text-primary" : "text-muted-foreground"
                   }`}
                   strokeWidth={isActive ? 2.4 : 2}
                 />
                 <span className={`text-[10px] font-semibold transition-colors duration-200 ${
-                  isActive ? "text-white" : "text-[#86868B]"
+                  isActive ? "text-foreground" : "text-muted-foreground"
                 }`}>
                   {item.label}
                 </span>

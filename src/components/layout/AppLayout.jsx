@@ -19,7 +19,7 @@ export default function AppLayout() {
   const showOnboarding = user && !user.onboarding_completed && !hideDock;
 
   return (
-    <div className="min-h-screen bg-[#F5F5F7]">
+    <div className="min-h-screen bg-background">
       <div className="max-w-lg mx-auto relative pb-28">
         <Outlet />
       </div>

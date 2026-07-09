@@ -12,7 +12,7 @@ export default function CommandDock() {
         onClick={() => navigate("/bud")}
         whileTap={{ scale: 0.9 }}
         whileHover={{ scale: 1.05 }}
-        className="w-14 h-14 rounded-full flex items-center justify-center bg-gradient-to-br from-[#28A745] to-[#1a7a35] text-white shadow-[0_4px_24px_rgba(40,167,69,0.4)]"
+        className="w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_rgba(218,175,55,0.35)]"
       >
         <Sparkles className="w-6 h-6" strokeWidth={2} />
       </motion.button>
