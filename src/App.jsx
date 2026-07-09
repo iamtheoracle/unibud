@@ -26,6 +26,8 @@ import Opportunities from '@/pages/Opportunities';
 import Me from '@/pages/Me';
 import Notifications from '@/pages/Notifications';
 import BudMemory from '@/pages/BudMemory';
+import Welcome from '@/pages/Welcome';
+import SplashScreen from '@/components/onboarding/SplashScreen';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -62,7 +64,8 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route path="/welcome" element={<Welcome />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/welcome" replace />} />}>
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/academics" element={<Academics />} />
@@ -88,6 +91,7 @@ function App() {
         <Router>
           <ScrollToTop />
           <AuthenticatedApp />
+          <SplashScreen />
         </Router>
         <Toaster />
       </QueryClientProvider>
