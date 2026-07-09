@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Mountain } from "lucide-react";
 
 export default function SplashScreen() {
   const [phase, setPhase] = useState(() =>
@@ -8,11 +9,11 @@ export default function SplashScreen() {
 
   useEffect(() => {
     if (phase !== "show") return;
-    const t1 = setTimeout(() => setPhase("fade"), 2200);
+    const t1 = setTimeout(() => setPhase("fade"), 2400);
     const t2 = setTimeout(() => {
       sessionStorage.setItem("splashShown", "true");
       setPhase("done");
-    }, 2800);
+    }, 3000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [phase]);
 
@@ -23,27 +24,38 @@ export default function SplashScreen() {
       initial={{ opacity: 1 }}
       animate={{ opacity: phase === "fade" ? 0 : 1 }}
       transition={{ duration: 0.6, ease: "easeInOut" }}
-      className="fixed inset-0 z-[100] bg-[#0D0D0D] flex flex-col items-center justify-center"
+      className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center overflow-hidden"
     >
+      {/* Subtle background lighting */}
       <motion.div
-        initial={{ scale: 0.7, opacity: 0 }}
+        className="absolute top-[20%] left-[10%] w-[60%] h-[40%] rounded-full bg-primary/[0.06] blur-[100px] pointer-events-none"
+        animate={{ x: [0, 30, 0], y: [0, 15, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <motion.div
+        initial={{ scale: 0.75, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-20 h-20 rounded-3xl flex items-center justify-center shadow-[0_8px_40px_rgba(218,175,55,0.3)]"
-        style={{ background: 'linear-gradient(135deg, #DAAF37, #B8941E)' }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 w-20 h-20 rounded-[24px] bg-primary flex items-center justify-center gold-glow"
       >
-        <svg className="w-10 h-10 text-[#0D0D0D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-          <path d="M2 17l10 5 10-5" />
-          <path d="M2 12l10 5 10-5" />
-        </svg>
+        <Mountain className="w-10 h-10 text-primary-foreground" strokeWidth={2.2} />
       </motion.div>
 
-      <motion.h1
-        initial={{ opacity: 0, y: 10 }}
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.6 }}
-        className="font-heading font-extrabold text-[24px] tracking-tight text-white mt-6"
+        transition={{ delay: 0.5, duration: 0.6 }}
+        className="relative z-10 text-[10px] font-heading font-medium text-muted-foreground tracking-[0.2em] uppercase mt-6 mb-0.5"
+      >
+        University Buddy
+      </motion.p>
+
+      <motion.h1
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, duration: 0.6 }}
+        className="relative z-10 font-heading font-extrabold text-[24px] tracking-tight text-foreground leading-none"
       >
         UNIBUD
       </motion.h1>
@@ -51,8 +63,8 @@ export default function SplashScreen() {
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8, duration: 0.6 }}
-        className="text-[13px] text-[#DAAF37] mt-1.5 font-medium"
+        transition={{ delay: 1.1, duration: 0.6 }}
+        className="relative z-10 text-[13px] text-primary font-semibold mt-2"
       >
         The Future Starts Together.
       </motion.p>

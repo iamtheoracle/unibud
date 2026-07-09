@@ -307,11 +307,11 @@ export default function BudOnboarding() {
   const progress = stepIndex >= 0 ? ((stepIndex + 1) / STEPS.length) * 100 : 0;
 
   return (
-    <div className="fixed inset-0 z-[60] bg-[#F5F5F7] flex flex-col">
+    <div className="fixed inset-0 z-[60] bg-background flex flex-col">
       {/* Progress bar */}
-      <div className="h-1 bg-[#E5E5EA] flex-shrink-0">
+      <div className="h-1 bg-muted flex-shrink-0">
         <motion.div
-          className="h-full bg-[#28A745]"
+          className="h-full bg-primary"
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         />
@@ -320,16 +320,16 @@ export default function BudOnboarding() {
       {/* Top bar */}
       <div className="flex items-center justify-between px-5 py-3 flex-shrink-0">
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center shadow-sm">
-            <Sparkles className="w-4.5 h-4.5 text-white" />
+          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+            <Sparkles className="w-4.5 h-4.5 text-primary-foreground" />
           </div>
           <div>
-            <p className="font-heading font-bold text-[14px] text-[#1A1A1A]">Bud</p>
-            <p className="text-[10px] text-[#28A745] font-medium">Getting to know you</p>
+            <p className="font-heading font-bold text-[14px] text-foreground">Bud</p>
+            <p className="text-[10px] text-primary font-medium">Getting to know you</p>
           </div>
         </div>
         {!isLastStep && currentStep?.type !== "info" && currentStep?.type !== "setup" && (
-          <button onClick={handleSkip} className="flex items-center gap-1 text-[12px] font-semibold text-[#86868B] hover:text-[#1A1A1A] transition-colors">
+          <button onClick={handleSkip} className="flex items-center gap-1 text-[12px] font-semibold text-muted-foreground hover:text-foreground transition-colors">
             <SkipForward className="w-3.5 h-3.5" />
             Skip
           </button>
@@ -346,14 +346,14 @@ export default function BudOnboarding() {
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.role === "bud" && (
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center flex-shrink-0 mr-2 mt-0.5">
-                <Sparkles className="w-3.5 h-3.5 text-white" />
+              <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0 mr-2 mt-0.5">
+                <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
               </div>
             )}
             <div className={`max-w-[82%] px-4 py-3 ${
               msg.role === "user"
-                ? "bg-[#1A1A1A] text-white rounded-2xl rounded-br-md"
-                : "bg-white text-[#1A1A1A] rounded-2xl rounded-bl-md shadow-sm border border-black/[0.04]"
+                ? "bg-foreground text-background rounded-2xl rounded-br-md"
+                : "bg-card text-foreground rounded-2xl rounded-bl-md premium-shadow border border-border/50"
             }`}>
               <p className="text-[13px] leading-relaxed whitespace-pre-wrap">{msg.content}</p>
             </div>
@@ -362,13 +362,13 @@ export default function BudOnboarding() {
 
         {isTyping && (
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-white" />
+            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-3.5 h-3.5 text-primary-foreground" />
             </div>
-            <div className="bg-white rounded-2xl rounded-bl-md shadow-sm border border-black/[0.04] px-4 py-3 flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-[#28A745]/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <div className="w-1.5 h-1.5 bg-[#28A745]/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <div className="w-1.5 h-1.5 bg-[#28A745]/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            <div className="bg-card rounded-2xl rounded-bl-md premium-shadow border border-border/50 px-4 py-3 flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <div className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           </div>
         )}
@@ -376,8 +376,8 @@ export default function BudOnboarding() {
         {isSaving && (
           <div className="flex justify-center py-8">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 rounded-full border-2 border-[#28A745] border-t-transparent animate-spin" />
-              <p className="text-[12px] text-[#86868B] font-medium">Welcome to campus...</p>
+              <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              <p className="text-[12px] text-muted-foreground font-medium">Welcome to campus...</p>
             </div>
           </div>
         )}
@@ -385,12 +385,12 @@ export default function BudOnboarding() {
 
       {/* Response area */}
       {!isTyping && !isSaving && currentStep && (
-        <div className="px-4 pb-6 pt-3 flex-shrink-0 bg-[#F5F5F7] border-t border-black/[0.04]">
+        <div className="px-4 pb-6 pt-3 flex-shrink-0 bg-background border-t border-border/30">
           {currentStep.type === "info" ? (
             <div className="space-y-2">
               <button
                 onClick={handleContinue}
-                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors"
+                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
               >
                 {isLastStep ? (
                   <>{currentStep.buttonText || "Get Started"} <Check className="w-4 h-4" /></>
@@ -401,14 +401,14 @@ export default function BudOnboarding() {
               {currentStep.secondaryButtonText && (
                 <button
                   onClick={handleContinue}
-                  className="w-full py-3.5 rounded-2xl bg-white text-[#1A1A1A] font-heading font-semibold text-[14px] border border-black/[0.08] shadow-sm hover:bg-[#F5F5F7] transition-colors"
+                  className="w-full py-3.5 rounded-2xl bg-card text-foreground font-heading font-semibold text-[14px] border border-border/50 shadow-sm hover:bg-muted transition-colors"
                 >
                   {currentStep.secondaryButtonText}
                 </button>
               )}
             </div>
           ) : currentStep.type === "setup" ? (
-            <div className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-4">
+            <div className="bg-card rounded-2xl premium-shadow border border-border/50 p-4">
               <div className="space-y-2.5">
                 {currentStep.setupItems.map((item, i) => (
                   <motion.div
@@ -418,10 +418,10 @@ export default function BudOnboarding() {
                     transition={{ duration: 0.3 }}
                     className="flex items-center gap-2.5"
                   >
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${i < setupProgress ? "bg-[#28A745]" : "bg-[#E5E5EA]"}`}>
-                      {i < setupProgress && <Check className="w-3 h-3 text-white" />}
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${i < setupProgress ? "bg-primary" : "bg-muted"}`}>
+                      {i < setupProgress && <Check className="w-3 h-3 text-primary-foreground" />}
                     </div>
-                    <span className={`text-[12px] transition-colors ${i < setupProgress ? "text-[#1A1A1A] font-medium" : "text-[#86868B]"}`}>{item}</span>
+                    <span className={`text-[12px] transition-colors ${i < setupProgress ? "text-foreground font-medium" : "text-muted-foreground"}`}>{item}</span>
                   </motion.div>
                 ))}
               </div>
@@ -436,17 +436,17 @@ export default function BudOnboarding() {
                     <button
                       key={p.key}
                       onClick={() => setPermissions(prev => ({ ...prev, [p.key]: !prev[p.key] }))}
-                      className="w-full flex items-center gap-3 p-3 rounded-2xl bg-white border border-black/[0.06] shadow-sm"
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl bg-card border border-border/50 premium-shadow"
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${isEnabled ? "bg-[#28A745]/10" : "bg-[#F5F5F7]"}`}>
-                        <Icon className={`w-4 h-4 ${isEnabled ? "text-[#28A745]" : "text-[#86868B]"}`} />
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${isEnabled ? "bg-primary/10" : "bg-muted"}`}>
+                        <Icon className={`w-4 h-4 ${isEnabled ? "text-primary" : "text-muted-foreground"}`} />
                       </div>
                       <div className="flex-1 text-left">
-                        <p className="font-heading font-semibold text-[12px] text-[#1A1A1A]">{p.label}</p>
-                        <p className="text-[10px] text-[#86868B]">{p.desc}</p>
+                        <p className="font-heading font-semibold text-[12px] text-foreground">{p.label}</p>
+                        <p className="text-[10px] text-muted-foreground">{p.desc}</p>
                       </div>
-                      <div className={`w-9 h-5 rounded-full p-0.5 transition-colors flex-shrink-0 ${isEnabled ? "bg-[#28A745]" : "bg-[#E5E5EA]"}`}>
-                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${isEnabled ? "translate-x-4" : "translate-x-0"}`} />
+                      <div className={`w-9 h-5 rounded-full p-0.5 transition-colors flex-shrink-0 ${isEnabled ? "bg-primary" : "bg-muted"}`}>
+                        <div className={`w-4 h-4 rounded-full bg-card shadow-sm transition-transform ${isEnabled ? "translate-x-4" : "translate-x-0"}`} />
                       </div>
                     </button>
                   );
@@ -454,7 +454,7 @@ export default function BudOnboarding() {
               </div>
               <button
                 onClick={handleContinue}
-                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors"
+                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"
               >
                 Continue <ChevronRight className="w-4 h-4" />
               </button>
@@ -464,17 +464,17 @@ export default function BudOnboarding() {
               <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" id="photo-upload-profile" />
               <label htmlFor="photo-upload-profile" className="flex items-center gap-3 cursor-pointer">
                 {uploading ? (
-                  <div className="w-16 h-16 rounded-full border-2 border-[#28A745] border-t-transparent animate-spin" />
+                  <div className="w-16 h-16 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                 ) : photoUrl ? (
                   <img src={photoUrl} alt="Profile" className="w-16 h-16 rounded-full object-cover" />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-[#F5F5F7] flex items-center justify-center">
-                    <User className="w-6 h-6 text-[#86868B]" />
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
+                    <User className="w-6 h-6 text-muted-foreground" />
                   </div>
                 )}
                 <div>
-                  <p className="text-[12px] font-medium text-[#28A745]">{photoUrl ? "Change photo" : "Upload photo"}</p>
-                  <p className="text-[10px] text-[#86868B]">Optional</p>
+                  <p className="text-[12px] font-medium text-primary">{photoUrl ? "Change photo" : "Upload photo"}</p>
+                  <p className="text-[10px] text-muted-foreground">Optional</p>
                 </div>
               </label>
               {currentStep.fields.map((field) => (
@@ -484,13 +484,13 @@ export default function BudOnboarding() {
                   value={texts[field.key] || ""}
                   onChange={(e) => setTexts(prev => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.placeholder}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-black/[0.06] text-[13px] text-[#1A1A1A] placeholder:text-[#86868B] focus:outline-none focus:ring-2 focus:ring-[#28A745]/30 shadow-sm"
+                  className="w-full px-4 py-3 rounded-2xl bg-card border border-border/50 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 premium-shadow"
                 />
               ))}
               <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors disabled:opacity-40 disabled:shadow-none"
+                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:shadow-none"
               >
                 Continue <ChevronRight className="w-4 h-4" />
               </button>
@@ -506,8 +506,8 @@ export default function BudOnboarding() {
                       onClick={() => toggleChip(option)}
                       className={`px-3.5 py-2 rounded-full text-[12px] font-semibold transition-all ${
                         selected
-                          ? "bg-[#28A745] text-white shadow-sm"
-                          : "bg-white text-[#1A1A1A] border border-black/[0.08] hover:border-[#28A745]/30"
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "bg-card text-foreground border border-border/50 hover:border-primary/30"
                       }`}
                     >
                       {selected && <Check className="w-3 h-3 inline mr-1" />}
@@ -523,13 +523,13 @@ export default function BudOnboarding() {
                   value={texts[field.key] || ""}
                   onChange={(e) => setTexts(prev => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.placeholder}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-black/[0.06] text-[13px] text-[#1A1A1A] placeholder:text-[#86868B] focus:outline-none focus:ring-2 focus:ring-[#28A745]/30 shadow-sm mb-3"
+                  className="w-full px-4 py-3 rounded-2xl bg-card border border-border/50 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 premium-shadow mb-3"
                 />
               ))}
               <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors disabled:opacity-40 disabled:shadow-none"
+                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:shadow-none"
               >
                 Continue <ChevronRight className="w-4 h-4" />
               </button>
@@ -543,13 +543,13 @@ export default function BudOnboarding() {
                   value={texts[field.key] || ""}
                   onChange={(e) => setTexts(prev => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.placeholder}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-black/[0.06] text-[13px] text-[#1A1A1A] placeholder:text-[#86868B] focus:outline-none focus:ring-2 focus:ring-[#28A745]/30 shadow-sm"
+                  className="w-full px-4 py-3 rounded-2xl bg-card border border-border/50 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 premium-shadow"
                 />
               ))}
               <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors disabled:opacity-40 disabled:shadow-none"
+                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:shadow-none"
               >
                 Continue <ChevronRight className="w-4 h-4" />
               </button>
@@ -565,8 +565,8 @@ export default function BudOnboarding() {
                       onClick={() => toggleChip(option)}
                       className={`px-3.5 py-2 rounded-full text-[12px] font-semibold transition-all ${
                         selected
-                          ? "bg-[#28A745] text-white shadow-sm"
-                          : "bg-white text-[#1A1A1A] border border-black/[0.08] hover:border-[#28A745]/30"
+                          ? "bg-primary text-primary-foreground shadow-sm"
+                          : "bg-card text-foreground border border-border/50 hover:border-primary/30"
                       }`}
                     >
                       {selected && <Check className="w-3 h-3 inline mr-1" />}
@@ -578,7 +578,7 @@ export default function BudOnboarding() {
               <button
                 onClick={handleContinue}
                 disabled={!canContinue}
-                className="w-full py-3.5 rounded-2xl bg-[#28A745] text-white font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-[#1a7a35] transition-colors disabled:opacity-40 disabled:shadow-none"
+                className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] shadow-sm flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors disabled:opacity-40 disabled:shadow-none"
               >
                 Continue <ChevronRight className="w-4 h-4" />
               </button>
