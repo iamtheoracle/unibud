@@ -192,6 +192,13 @@ export default function Me() {
             <span className="text-[13px] font-medium text-destructive">Sign Out</span>
           </button>
         </GlassCard>
+
+        {/* Branding */}
+        <div className="text-center pt-4 pb-2">
+          <p className="text-[9px] text-muted-foreground/60">A My Realm Product</p>
+          <p className="text-[8px] text-muted-foreground/40 mt-0.5">My Realm Network Limited · RC: 9645700</p>
+          <p className="text-[8px] text-muted-foreground/40">© 2026 My Realm Network Limited. All Rights Reserved.</p>
+        </div>
       </div>
     </div>
   );

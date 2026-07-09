@@ -67,8 +67,17 @@ export const ROLE_HIERARCHY = [
   { key: "faculty_admin", name: "Faculty Administrator", level: 4, description: "Manage faculty departments, programs, and reports.", isPortal: true },
   { key: "university_admin", name: "University Administrator", level: 5, description: "Manage university faculties, students, and settings.", isPortal: true },
   { key: "operations_staff", name: "Operations Staff", level: 6, description: "Support, moderation, content, and university onboarding.", isPortal: true },
+  { key: "operator", name: "Operator", level: 6, description: "Platform operations support.", isPortal: true },
+  { key: "senior_operator", name: "Senior Operator", level: 7, description: "Senior platform operations with expanded access.", isPortal: true },
+  { key: "moderator", name: "Moderator", level: 6, description: "Content moderation and user management.", isPortal: true },
+  { key: "finance_manager", name: "Finance Manager", level: 7, description: "Financial oversight and marketplace revenue.", isPortal: true },
+  { key: "support_manager", name: "Support Manager", level: 7, description: "Support team management and ticket escalation.", isPortal: true },
+  { key: "compliance_officer", name: "Compliance Officer", level: 8, description: "Platform compliance and audit oversight.", isPortal: true },
+  { key: "developer", name: "Developer", level: 8, description: "System configuration and feature management.", isPortal: true },
+  { key: "platform_admin", name: "Platform Admin", level: 9, description: "Platform administration with broad access.", isPortal: true },
+  { key: "super_admin", name: "Super Admin", level: 10, description: "Highest platform authority below Oracle. Can manage all platform staff.", isPortal: true },
   { key: "executive", name: "Executive / Co-Founder", level: 7, description: "Strategic dashboards, growth, and business intelligence.", isPortal: true },
-  { key: "oracle", name: "Oracle", level: 8, description: "Supreme platform authority. Full control over all modules and settings.", isPortal: true },
+  { key: "oracle", name: "Oracle", level: 99, description: "Supreme platform authority. Full control over all modules and settings. Protected root account.", isPortal: true },
 ];
 
 // Legacy role mapping
@@ -84,6 +93,33 @@ export function normalizeRole(role) {
 export function isPortalRole(role) {
   const normalized = normalizeRole(role);
   return ROLE_HIERARCHY.find((r) => r.key === normalized)?.isPortal ?? false;
+}
+
+const PLATFORM_ROLES = [
+  "operator", "senior_operator", "moderator", "finance_manager",
+  "support_manager", "compliance_officer", "developer",
+  "platform_admin", "super_admin", "operations_staff", "executive",
+];
+
+const UNIVERSITY_ROLES = ["lecturer", "department_admin", "faculty_admin", "university_admin"];
+
+export function isPlatformRole(role) {
+  const normalized = normalizeRole(role);
+  return PLATFORM_ROLES.includes(normalized);
+}
+
+export function isUniversityRole(role) {
+  const normalized = normalizeRole(role);
+  return UNIVERSITY_ROLES.includes(normalized);
+}
+
+export function isOracleRole(role) {
+  const normalized = normalizeRole(role);
+  return normalized === "oracle";
+}
+
+export function isProtectedRole(role) {
+  return isOracleRole(role);
 }
 
 export function getRoleName(role) {
@@ -334,6 +370,19 @@ export function getPortalNavigation(role) {
         },
       ];
 
+    case "operator":
+    case "senior_operator":
+    case "moderator":
+    case "finance_manager":
+    case "support_manager":
+    case "compliance_officer":
+    case "developer":
+    case "platform_admin":
+    case "super_admin":
+    case "operations_staff":
+    case "executive":
+      return getPlatformNavigation(normalized);
+
     default:
       return [
         {
@@ -344,6 +393,89 @@ export function getPortalNavigation(role) {
         },
       ];
   }
+}
+
+function getPlatformNavigation(role) {
+  const isSuperAdmin = role === "super_admin";
+  const isPlatformAdmin = role === "platform_admin" || isSuperAdmin || role === "executive";
+  const isDeveloper = role === "developer" || isPlatformAdmin;
+  const isCompliance = role === "compliance_officer" || isPlatformAdmin;
+  const isFinance = role === "finance_manager" || isPlatformAdmin;
+  const isSupport = role === "support_manager" || role === "moderator" || role === "operator" || role === "senior_operator" || isPlatformAdmin;
+  const isOpsStaff = role === "operations_staff" || isPlatformAdmin;
+
+  const sections = [
+    {
+      section: "Overview",
+      items: [
+        { label: "Dashboard", icon: "LayoutDashboard", path: "/portal" },
+      ],
+    },
+  ];
+
+  if (isPlatformAdmin || isSupport) {
+    sections.push({
+      section: "Institutions",
+      items: [
+        { label: "Universities", icon: "Landmark", path: "/portal/universities" },
+        { label: "Faculties", icon: "Building", path: "/portal/faculties" },
+        { label: "Departments", icon: "Layers", path: "/portal/departments" },
+        { label: "Students", icon: "Users", path: "/portal/users" },
+        { label: "Lecturers", icon: "GraduationCap", path: "/portal/lecturers" },
+        { label: "Courses", icon: "BookOpen", path: "/portal/courses" },
+      ],
+    });
+  }
+
+  sections.push({
+    section: "Platform",
+    items: [
+      { label: "Marketplace", icon: "ShoppingBag", path: "/portal/marketplace" },
+      { label: "Events", icon: "CalendarDays", path: "/portal/events" },
+      { label: "Content", icon: "FileEdit", path: "/portal/content" },
+      { label: "Bud AI", icon: "Bot", path: "/portal/bud-config" },
+    ],
+  });
+
+  sections.push({
+    section: "Operations",
+    items: [
+      { label: "Support", icon: "LifeBuoy", path: "/portal/support" },
+      { label: "Approvals", icon: "ClipboardCheck", path: "/portal/approvals" },
+      { label: "Notifications", icon: "Bell", path: "/portal/notifications" },
+    ],
+  });
+
+  if (isFinance || isPlatformAdmin) {
+    sections.push({
+      section: "Intelligence",
+      items: [
+        { label: "Analytics", icon: "LineChart", path: "/portal/analytics" },
+        { label: "Reports", icon: "BarChart3", path: "/portal/reports" },
+      ],
+    });
+  }
+
+  if (isDeveloper || isCompliance || isSuperAdmin) {
+    sections.push({
+      section: "System",
+      items: [
+        { label: "Feature Flags", icon: "Flag", path: "/portal/feature-flags" },
+        { label: "Security", icon: "ShieldCheck", path: "/portal/security" },
+        { label: "System Health", icon: "Activity", path: "/portal/system-health" },
+        { label: "Audit Logs", icon: "ScrollText", path: "/portal/audit-logs" },
+        { label: "Module Control", icon: "Boxes", path: "/portal/modules" },
+        { label: "Maintenance", icon: "Wrench", path: "/portal/maintenance" },
+      ],
+    });
+  }
+
+  if (isSuperAdmin || isPlatformAdmin) {
+    sections[sections.length - 1]?.items.push({ label: "Invitations", icon: "UserPlus", path: "/portal/invitations" });
+    sections[sections.length - 1]?.items.push({ label: "Settings", icon: "Settings", path: "/portal/settings" });
+  }
+
+  return sections;
 }
 
 // ─── Access Control ───────────────────────────────────────────────────────────
@@ -376,16 +508,17 @@ const PATH_ACCESS = {
   "/portal/recordings": ["lecturer"],
   "/portal/study-groups": ["lecturer"],
   "/portal/oracle": ["oracle"],
-  "/portal/approvals": ["oracle"],
-  "/portal/feature-flags": ["oracle"],
-  "/portal/notifications": ["oracle"],
-  "/portal/marketplace": ["oracle"],
-  "/portal/events": ["oracle"],
+  "/portal/approvals": ["oracle", "super_admin", "platform_admin", "support_manager"],
+  "/portal/feature-flags": ["oracle", "super_admin", "platform_admin", "developer"],
+  "/portal/notifications": ["oracle", "super_admin", "platform_admin", "support_manager"],
+  "/portal/marketplace": ["oracle", "super_admin", "platform_admin", "finance_manager"],
+  "/portal/events": ["oracle", "super_admin", "platform_admin", "support_manager"],
+  "/portal/invitations": ["oracle", "super_admin"],
 };
 
 export function canAccessPath(role, path) {
   const normalized = normalizeRole(role);
-  if (normalized === "oracle") return true;
+  if (normalized === "oracle" || normalized === "super_admin") return true;
   const allowed = PATH_ACCESS[path];
   if (!allowed) return true; // Dashboard and unlisted paths are open to all portal users
   return allowed.includes(normalized);

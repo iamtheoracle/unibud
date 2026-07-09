@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Mountain, ArrowRight, Lock, KeyRound, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mountain, ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, Shield, User, MessageCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const cards = [
@@ -24,6 +24,7 @@ const cards = [
 
 export default function Welcome() {
   const navigate = useNavigate();
+  const [showStaffOptions, setShowStaffOptions] = useState(false);
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
@@ -116,20 +117,62 @@ export default function Welcome() {
           onClick={() => navigate("/register")}
           className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors mb-2.5"
         >
-          Create Account
+          <User className="w-[18px] h-[18px]" strokeWidth={2.2} />
+          Create Student Account
           <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} />
         </motion.button>
 
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={() => navigate("/login")}
-          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-n6 flex items-center justify-center gap-2 hover:bg-n7 transition-colors mb-3"
+          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-n6 flex items-center justify-center gap-2 hover:bg-n7 transition-colors mb-2.5"
         >
           <Lock className="w-[16px] h-[16px]" strokeWidth={2} />
           Sign In
         </motion.button>
 
-        <div className="text-center">
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setShowStaffOptions(!showStaffOptions)}
+          className="w-full h-[44px] rounded-2xl bg-transparent text-n3 font-heading font-medium text-[13px] flex items-center justify-center gap-2 hover:bg-n7/50 transition-colors"
+        >
+          <Building2 className="w-[15px] h-[15px]" strokeWidth={2} />
+          Staff Sign In
+          <ChevronDown className={`w-4 h-4 transition-transform ${showStaffOptions ? "rotate-180" : ""}`} />
+        </motion.button>
+
+        <AnimatePresence>
+          {showStaffOptions && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="pt-2.5 space-y-2">
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate("/university-staff-login")}
+                  className="w-full h-[48px] rounded-2xl bg-n7 text-white font-heading font-semibold text-[14px] border border-n6 flex items-center justify-center gap-2 hover:bg-n6 transition-colors"
+                >
+                  <Building2 className="w-[16px] h-[16px]" strokeWidth={2} />
+                  University Staff
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => navigate("/platform-staff-login")}
+                  className="w-full h-[48px] rounded-2xl bg-n7 text-white font-heading font-semibold text-[14px] border border-n6 flex items-center justify-center gap-2 hover:bg-n6 transition-colors"
+                >
+                  <Shield className="w-[16px] h-[16px]" strokeWidth={2} />
+                  Platform Staff
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="text-center mt-3">
           <Link
             to="/forgot-password"
             className="text-[12px] text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1"
@@ -140,7 +183,7 @@ export default function Welcome() {
         </div>
       </motion.div>
 
-      {/* Limited access to Bud */}
+      {/* Meet Bud first */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -156,6 +199,12 @@ export default function Welcome() {
           signing in. After that, Bud will gently invite you to create an account.
         </p>
       </motion.div>
+
+      {/* Branding */}
+      <div className="relative z-10 px-6 pb-4 text-center">
+        <p className="text-[9px] text-muted-foreground/60">A My Realm Product · My Realm Network Limited · RC: 9645700</p>
+        <p className="text-[8px] text-muted-foreground/40 mt-0.5">© 2026 My Realm Network Limited. All Rights Reserved.</p>
+      </div>
     </div>
   );
 }

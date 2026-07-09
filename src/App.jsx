@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
+import { FeatureFlagProvider } from '@/lib/FeatureFlagContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -14,6 +15,8 @@ import Login from '@/pages/Login';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
+import UniversityStaffLogin from '@/pages/UniversityStaffLogin';
+import PlatformStaffLogin from '@/pages/PlatformStaffLogin';
 
 // App pages
 import AppLayout from '@/components/layout/AppLayout';
@@ -98,6 +101,7 @@ import FeatureFlags from '@/pages/portal/FeatureFlags';
 import PortalNotifications from '@/pages/portal/PortalNotifications';
 import PortalMarketplace from '@/pages/portal/PortalMarketplace';
 import PortalEvents from '@/pages/portal/PortalEvents';
+import PlatformInvitations from '@/pages/portal/PlatformInvitations';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -135,6 +139,8 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/welcome" element={<Welcome />} />
+      <Route path="/university-staff-login" element={<UniversityStaffLogin />} />
+      <Route path="/platform-staff-login" element={<PlatformStaffLogin />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/welcome" replace />} />}>
         <Route path="/university-selection" element={<UniversitySelection />} />
         <Route path="/university-connect" element={<UniversityConnect />} />
@@ -215,6 +221,7 @@ const AuthenticatedApp = () => {
           <Route path="notifications" element={<PortalNotifications />} />
           <Route path="marketplace" element={<PortalMarketplace />} />
           <Route path="events" element={<PortalEvents />} />
+          <Route path="invitations" element={<PlatformInvitations />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />
@@ -226,14 +233,16 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <QueryClientProvider client={queryClientInstance}>
-          <Router>
-            <ScrollToTop />
-            <AuthenticatedApp />
-            <SplashScreen />
-          </Router>
-          <Toaster />
-        </QueryClientProvider>
+        <FeatureFlagProvider>
+          <QueryClientProvider client={queryClientInstance}>
+            <Router>
+              <ScrollToTop />
+              <AuthenticatedApp />
+              <SplashScreen />
+            </Router>
+            <Toaster />
+          </QueryClientProvider>
+        </FeatureFlagProvider>
       </ThemeProvider>
     </AuthProvider>
   )

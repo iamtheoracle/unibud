@@ -2,17 +2,23 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, Compass, Users, User, Video, Library } from "lucide-react";
+import { useFeatureFlags } from "@/lib/FeatureFlagContext";
 
-const navItems = [
-  { path: "/", icon: Home, label: "Campus" },
-  { path: "/quad", icon: Compass, label: "Quad" },
-  { path: "/live", icon: Video, label: "Live" },
-  { path: "/library", icon: Library, label: "Library" },
-  { path: "/me", icon: User, label: "Me" },
+const allNavItems = [
+  { path: "/", icon: Home, label: "Campus", flag: "campus" },
+  { path: "/quad", icon: Compass, label: "Quad", flag: "quad" },
+  { path: "/connect", icon: Users, label: "Connect", flag: "connect" },
+  { path: "/bud", icon: Compass, label: "Bud", flag: "bud" },
+  { path: "/live", icon: Video, label: "Live", flag: "live" },
+  { path: "/library", icon: Library, label: "Library", flag: "library" },
+  { path: "/me", icon: User, label: "Me", flag: null },
 ];
 
 export default function BottomNav() {
   const location = useLocation();
+  const { isModuleEnabled } = useFeatureFlags();
+
+  const navItems = allNavItems.filter((item) => !item.flag || isModuleEnabled(item.flag));
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">

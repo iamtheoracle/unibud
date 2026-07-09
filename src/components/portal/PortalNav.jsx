@@ -12,6 +12,18 @@ import {
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
 import { base44 } from "@/api/base44Client";
 import { PortalBadge } from "@/components/portal/PortalUI";
+import { useFeatureFlags } from "@/lib/FeatureFlagContext";
+
+const NAV_FLAG_MAP = {
+  "/portal/marketplace": "marketplace",
+  "/portal/events": "events",
+  "/portal/bud-config": "bud_management",
+  "/portal/content": "content",
+  "/portal/support": "student_support",
+  "/portal/live": "live",
+  "/portal/announcements": "campus",
+  "/portal/study-groups": "study_groups",
+};
 
 const ICON_MAP = {
   LayoutDashboard, Activity, ScrollText, Boxes, Users, ShieldCheck, Landmark,
@@ -26,6 +38,17 @@ export default function PortalNav({ user, collapsed = false, onNavigate }) {
   const navigate = useNavigate();
   const role = normalizeRole(user?.role);
   const nav = getPortalNavigation(role);
+  const { isModuleEnabled } = useFeatureFlags();
+
+  const filterByFlag = (items) => items.filter((item) => {
+    const flag = NAV_FLAG_MAP[item.path];
+    return !flag || isModuleEnabled(flag);
+  });
+
+  const filteredNav = nav.map((section) => ({
+    ...section,
+    items: filterByFlag(section.items),
+  })).filter((section) => section.items.length > 0);
 
   const handleLogout = async () => {
     await base44.auth.logout("/login");
@@ -77,7 +100,7 @@ export default function PortalNav({ user, collapsed = false, onNavigate }) {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-3 no-scrollbar">
-        {nav.map((section, si) => (
+        {filteredNav.map((section, si) => (
           <div key={si} className="mb-3">
             {!collapsed && (
               <p className="px-5 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider mb-1.5">{section.section}</p>
