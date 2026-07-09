@@ -2,66 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
-    --background: 240 12% 96%;
-    --foreground: 0 0% 10%;
+    --background: 0 0% 96%;
+    --foreground: 0 0% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 0 0% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 134 61% 41%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 12% 95%;
+    --popover-foreground: 0 0% 5%;
+    --primary: 43 68% 54%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 0 0% 90%;
     --secondary-foreground: 0 0% 15%;
-    --muted: 240 8% 94%;
-    --muted-foreground: 0 0% 46%;
-    --accent: 134 61% 95%;
-    --accent-foreground: 134 61% 35%;
-    --destructive: 0 72% 55%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 43 68% 54%;
+    --accent-foreground: 0 0% 5%;
+    --destructive: 0 73% 51%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 134 61% 41%;
-    --radius: 1rem;
+    --border: 0 0% 83%;
+    --input: 0 0% 83%;
+    --ring: 43 68% 54%;
+    --radius: 1.25rem;
 
-    /* UNIBUD Semantic Colors */
-    --unibud-success: 152 60% 42%;
-    --unibud-warning: 38 92% 55%;
-    --unibud-error: 0 72% 55%;
-    --unibud-info: 210 80% 55%;
-    --unibud-achievement: 45 93% 55%;
-    --unibud-progress: 220 72% 50%;
-    --unibud-wellbeing: 280 60% 55%;
-    --unibud-opportunity: 160 60% 45%;
+    /* UNIBUD Brand Master Sheet — Exact Official Palette */
+    --unibud-gold: 43 68% 54%;
+    --unibud-black: 0 0% 5%;
+    --unibud-white: 0 0% 100%;
 
-    /* Glass system */
-    --glass-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(255, 255, 255, 0.5);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    /* Neutrals */
+    --unibud-n1: 0 0% 10%;
+    --unibud-n2: 0 0% 15%;
+    --unibud-n3: 0 0% 25%;
+    --unibud-n4: 0 0% 45%;
+    --unibud-n5: 0 0% 64%;
+    --unibud-n6: 0 0% 83%;
+    --unibud-n7: 0 0% 96%;
+
+    /* Semantic */
+    --unibud-blue: 217 89% 53%;
+    --unibud-purple: 262 83% 58%;
+    --unibud-green: 142 72% 29%;
+    --unibud-red: 0 73% 51%;
+    --unibud-orange: 38 92% 50%;
+
+    /* Glass system — matte black surfaces with subtle blur */
+    --glass-bg: rgba(13, 13, 13, 0.72);
+    --glass-border: rgba(218, 175, 55, 0.15);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     --glass-blur: 20px;
 
-    --chart-1: 134 61% 41%;
-    --chart-2: 152 60% 42%;
-    --chart-3: 38 92% 55%;
-    --chart-4: 280 60% 55%;
-    --chart-5: 160 60% 45%;
+    --glass-light-bg: rgba(255, 255, 255, 0.72);
+    --glass-light-border: rgba(0, 0, 0, 0.06);
+    --glass-light-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
 
-    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --chart-1: 43 68% 54%;
+    --chart-2: 142 72% 29%;
+    --chart-3: 217 89% 53%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 38 92% 50%;
+
+    --font-heading: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 134 61% 41%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 134 61% 95%;
-    --sidebar-accent-foreground: 134 61% 35%;
-    --sidebar-border: 0 0% 92%;
-    --sidebar-ring: 134 61% 41%;
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 83%;
+    --sidebar-primary: 43 68% 54%;
+    --sidebar-primary-foreground: 0 0% 5%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 96%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 43 68% 54%;
+  }
+
+  .dark {
+    --background: 0 0% 5%;
+    --foreground: 0 0% 96%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 96%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 43 68% 54%;
+    --primary-foreground: 0 0% 5%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 96%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 43 68% 54%;
+    --accent-foreground: 0 0% 5%;
+    --destructive: 0 73% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 43 68% 54%;
   }
 }
 
@@ -82,38 +119,40 @@
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
   }
+  .glass-light {
+    background: var(--glass-light-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-light-border);
+    box-shadow: var(--glass-light-shadow);
+  }
   .glass-strong {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(13, 13, 13, 0.85);
     backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(218, 175, 55, 0.12);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
   }
-  .glass-subtle {
-    background: rgba(255, 255, 255, 0.55);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  }
-  .text-gradient {
-    background: linear-gradient(135deg, hsl(134 61% 41%), hsl(160 60% 45%));
+  .text-gold-gradient {
+    background: linear-gradient(135deg, hsl(43 68% 54%), hsl(43 68% 60%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  .unibud-glow {
-    box-shadow: 0 0 30px rgba(40, 167, 69, 0.15), 0 8px 32px rgba(0, 0, 0, 0.06);
+  .premium-shadow {
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+  }
+  .gold-glow {
+    box-shadow: 0 0 30px rgba(218, 175, 55, 0.2), 0 8px 32px rgba(0, 0, 0, 0.08);
   }
   .card-hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .card-hover:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
   }
 
-  /* Hide scrollbar */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
