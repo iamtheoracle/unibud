@@ -62,41 +62,46 @@ export default function Opportunities() {
 
   return (
     <div className="min-h-screen">
-      <div className="flex items-center justify-between pt-12 pb-3 px-5">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="flex items-center justify-between pt-12 pb-3 px-5"
+      >
         <div>
           <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Opportunities</h1>
           <p className="text-[12px] text-muted-foreground">Discover your next big step</p>
         </div>
         <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow"><Trophy className="w-5 h-5 text-primary-foreground" /></div>
-      </div>
+      </motion.div>
 
-      <div className="px-4 mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-xl">
-        <button onClick={() => setTab("discover")} className={`flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all ${tab === "discover" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>Discover</button>
-        <button onClick={() => setTab("tracker")} className={`flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all ${tab === "tracker" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>Tracker</button>
-        <button onClick={() => setTab("saved")} className={`flex-1 py-2 rounded-lg text-[11px] font-semibold transition-all ${tab === "saved" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>Saved</button>
+      <div className="px-4 mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
+        <button onClick={() => setTab("discover")} className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "discover" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>Discover</button>
+        <button onClick={() => setTab("tracker")} className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "tracker" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>Tracker</button>
+        <button onClick={() => setTab("saved")} className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "saved" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>Saved</button>
       </div>
 
       {tab === "discover" && (
         <>
           <div className="px-4 pb-2">
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input type="text" placeholder="Search opportunities..." className="w-full pl-9 pr-4 h-[44px] rounded-2xl bg-card border border-border/50 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input type="text" placeholder="Search opportunities..." className="w-full pl-10 pr-4 h-[44px] rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow" />
             </div>
           </div>
 
           <div className="px-4 pb-3">
-            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-2xl font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(218,175,55,0.3)]" : "bg-card border border-primary/20 text-primary"}`}>
+            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(212,175,55,0.3)]" : "bg-card border border-primary/20 text-primary soft-shadow"}`}>
               <Sparkles className="w-4 h-4" /> AI Match Finder
             </button>
           </div>
 
           {showAI && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="px-4 pb-3">
-              <div className="bg-card rounded-2xl p-3 premium-shadow border border-primary/20">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="px-4 pb-3 overflow-hidden">
+              <div className="bg-card rounded-[20px] p-3.5 soft-shadow border border-primary/20">
                 <div className="flex gap-2 mb-2">
-                  <input type="text" value={aiQuery} onChange={e => setAiQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAIMatch()} placeholder="Tell Bud about yourself..." className="flex-1 px-3 h-[40px] rounded-xl bg-muted text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  <button onClick={handleAIMatch} disabled={aiLoading} className="px-3 h-[40px] rounded-xl bg-primary text-primary-foreground font-semibold text-[12px] disabled:opacity-50">{aiLoading ? "..." : "Match"}</button>
+                  <input type="text" value={aiQuery} onChange={e => setAiQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAIMatch()} placeholder="Tell Bud about yourself..." className="flex-1 px-3.5 h-[40px] rounded-[14px] bg-muted text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <button onClick={handleAIMatch} disabled={aiLoading} className="px-3.5 h-[40px] rounded-[14px] bg-primary text-primary-foreground font-semibold text-[12px] disabled:opacity-50 spring-tap">{aiLoading ? "..." : "Match"}</button>
                 </div>
                 {aiMatches && (
                   <div className="mt-2">
@@ -117,8 +122,8 @@ export default function Opportunities() {
           )}
 
           <div className="px-4 pb-3">
-            <button onClick={() => setShowEligibility(!showEligibility)} className="w-full bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Target className="w-5 h-5 text-primary" /></div>
+            <button onClick={() => setShowEligibility(!showEligibility)} className="w-full bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 spring-tap card-hover">
+              <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center"><Target className="w-5 h-5 text-primary" /></div>
               <div className="flex-1 text-left"><p className="font-heading font-semibold text-[13px] text-foreground">Eligibility Checker</p><p className="text-[11px] text-muted-foreground">Find opportunities you qualify for</p></div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
@@ -126,21 +131,21 @@ export default function Opportunities() {
 
           {showEligibility && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 pb-3">
-              <div className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
+              <div className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40">
                 <p className="text-[12px] font-semibold text-foreground mb-3">Quick Profile</p>
                 <div className="space-y-2">
-                  <select className="w-full h-[40px] rounded-xl bg-muted px-3 text-[12px] text-foreground"><option>Level: 300 Level</option><option>100 Level</option><option>200 Level</option><option>400 Level</option><option>Postgraduate</option></select>
-                  <select className="w-full h-[40px] rounded-xl bg-muted px-3 text-[12px] text-foreground"><option>GPA: 4.0+</option><option>3.5+</option><option>3.0+</option><option>Any</option></select>
-                  <select className="w-full h-[40px] rounded-xl bg-muted px-3 text-[12px] text-foreground"><option>Field: Computer Science</option><option>Engineering</option><option>Medicine</option><option>Business</option><option>Any</option></select>
+                  <select className="w-full h-[40px] rounded-[14px] bg-muted px-3.5 text-[12px] text-foreground"><option>Level: 300 Level</option><option>100 Level</option><option>200 Level</option><option>400 Level</option><option>Postgraduate</option></select>
+                  <select className="w-full h-[40px] rounded-[14px] bg-muted px-3.5 text-[12px] text-foreground"><option>GPA: 4.0+</option><option>3.5+</option><option>3.0+</option><option>Any</option></select>
+                  <select className="w-full h-[40px] rounded-[14px] bg-muted px-3.5 text-[12px] text-foreground"><option>Field: Computer Science</option><option>Engineering</option><option>Medicine</option><option>Business</option><option>Any</option></select>
                 </div>
-                <button className="mt-3 w-full h-[40px] rounded-xl bg-primary text-primary-foreground font-semibold text-[12px] flex items-center justify-center gap-1.5"><Target className="w-4 h-4" /> Check Eligibility</button>
+                <button className="mt-3 w-full h-[40px] rounded-[14px] bg-primary text-primary-foreground font-semibold text-[12px] flex items-center justify-center gap-1.5 spring-tap"><Target className="w-4 h-4" /> Check Eligibility</button>
               </div>
             </motion.div>
           )}
 
           <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
             {TYPES.map(t => (
-              <button key={t} onClick={() => setActiveType(t)} className={`px-3.5 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${activeType === t ? "bg-foreground text-background shadow-sm" : "bg-card border border-border/50 text-muted-foreground"}`}>{t}</button>
+              <button key={t} onClick={() => setActiveType(t)} className={`px-4 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap ${activeType === t ? "bg-foreground text-background soft-shadow" : "bg-card border border-border/40 text-muted-foreground"}`}>{t}</button>
             ))}
           </div>
 
@@ -158,8 +163,8 @@ export default function Opportunities() {
               {upcomingDeadlines.map((t, i) => {
                 const days = Math.ceil((new Date(t.deadline) - new Date()) / (1000 * 60 * 60 * 24));
                 return (
-                  <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${days <= 3 ? "bg-destructive/10" : "bg-primary/10"}`}><Clock className={`w-4 h-4 ${days <= 3 ? "text-destructive" : "text-primary"}`} /></div>
+                  <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover">
+                    <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center ${days <= 3 ? "bg-destructive/10" : "bg-primary/10"}`}><Clock className={`w-[18px] h-[18px] ${days <= 3 ? "text-destructive" : "text-primary"}`} /></div>
                     <div className="flex-1 min-w-0"><p className="font-semibold text-[12px] text-foreground truncate">{t.opportunity_title}</p><p className="text-[10px] text-muted-foreground">{t.organization}</p></div>
                     <span className={`text-[10px] font-bold ${days <= 3 ? "text-destructive" : "text-muted-foreground"}`}>{days}d left</span>
                   </motion.div>
@@ -171,9 +176,9 @@ export default function Opportunities() {
           {trackers && trackers.length > 0 ? trackers.map((t, i) => {
             const status = TRACKER_STATUSES.find(s => s.key === t.status);
             return (
-              <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
-                <div className="flex items-start gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: withAlpha(typeColors[t.type] || "hsl(var(--unibud-gold))") }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "hsl(var(--unibud-gold))" }} /></div>
+              <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover">
+                <div className="flex items-start gap-3 mb-2.5">
+                  <div className="w-11 h-11 rounded-[16px] flex items-center justify-center" style={{ backgroundColor: withAlpha(typeColors[t.type] || "hsl(var(--unibud-gold))") }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "hsl(var(--unibud-gold))" }} /></div>
                   <div className="flex-1 min-w-0"><p className="font-heading font-semibold text-[13px] text-foreground">{t.opportunity_title}</p><p className="text-[11px] text-muted-foreground">{t.organization}</p></div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -199,9 +204,9 @@ function OpportunityCard({ opp, onToggleSave, onTrack, delay = 0, compact }) {
   const Icon = typeIcons[opp.type] || Briefcase;
   const color = typeColors[opp.type] || "hsl(var(--unibud-gold))";
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: withAlpha(color) }}><Icon className="w-5 h-5" style={{ color }} /></div>
+        <div className="w-11 h-11 rounded-[16px] flex items-center justify-center flex-shrink-0" style={{ backgroundColor: withAlpha(color) }}><Icon className="w-5 h-5" style={{ color }} /></div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div><p className="font-heading font-semibold text-[13px] leading-snug text-foreground">{opp.title}</p><p className="text-[11px] text-muted-foreground">{opp.organization}</p></div>
@@ -215,8 +220,8 @@ function OpportunityCard({ opp, onToggleSave, onTrack, delay = 0, compact }) {
           {opp.tags && opp.tags.length > 0 && <div className="flex gap-1.5 mt-2">{opp.tags.slice(0, 3).map(tag => <span key={tag} className="px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[9px] font-semibold">{tag}</span>)}</div>}
           {!compact && (
             <div className="flex gap-2 mt-3">
-              <button onClick={onTrack} className="flex-1 h-[36px] rounded-xl bg-primary/10 text-primary font-semibold text-[11px] flex items-center justify-center gap-1"><FileCheck className="w-3.5 h-3.5" /> Track</button>
-              {opp.link && <a href={opp.link} target="_blank" rel="noreferrer" className="flex-1 h-[36px] rounded-xl bg-foreground text-background font-semibold text-[11px] flex items-center justify-center gap-1">Apply <ChevronRight className="w-3 h-3" /></a>}
+              <button onClick={onTrack} className="flex-1 h-[36px] rounded-[14px] bg-primary/10 text-primary font-semibold text-[11px] flex items-center justify-center gap-1 spring-tap"><FileCheck className="w-3.5 h-3.5" /> Track</button>
+              {opp.link && <a href={opp.link} target="_blank" rel="noreferrer" className="flex-1 h-[36px] rounded-[14px] bg-foreground text-background font-semibold text-[11px] flex items-center justify-center gap-1 spring-tap">Apply <ChevronRight className="w-3 h-3" /></a>}
             </div>
           )}
         </div>
@@ -226,5 +231,5 @@ function OpportunityCard({ opp, onToggleSave, onTrack, delay = 0, compact }) {
 }
 
 function EmptyState({ icon: Icon, title, subtitle }) {
-  return <div className="text-center py-12"><Icon className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" /><p className="text-[13px] font-semibold text-foreground">{title}</p><p className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</p></div>;
+  return <div className="text-center py-12"><div className="w-14 h-14 rounded-[20px] bg-muted flex items-center justify-center mx-auto mb-3"><Icon className="w-6 h-6 text-muted-foreground" strokeWidth={1.8} /></div><p className="text-[13px] font-semibold text-foreground">{title}</p><p className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</p></div>;
 }

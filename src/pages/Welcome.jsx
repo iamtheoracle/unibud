@@ -54,7 +54,7 @@ export default function Welcome() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="flex flex-col items-center mb-7"
         >
-          <div className="w-16 h-16 rounded-[20px] bg-primary flex items-center justify-center mb-3 gold-glow">
+          <div className="w-16 h-16 rounded-[22px] bg-primary flex items-center justify-center mb-3 gold-glow">
             <Mountain className="w-8 h-8 text-primary-foreground" strokeWidth={2.2} />
           </div>
           <p className="text-[10px] font-heading font-medium text-muted-foreground tracking-[0.18em] uppercase mb-0.5">
@@ -86,9 +86,9 @@ export default function Welcome() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[24px] p-4 premium-shadow border border-border/30 flex items-start gap-3.5"
+              className="bg-card rounded-[24px] p-4 premium-shadow border border-border/30 flex items-start gap-3.5 card-hover"
             >
-              <div className="w-11 h-11 rounded-2xl bg-muted flex items-center justify-center text-xl flex-shrink-0">
+              <div className="w-11 h-11 rounded-[14px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
                 {card.emoji}
               </div>
               <div className="flex-1 pt-0.5">

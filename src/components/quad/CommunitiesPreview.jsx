@@ -14,7 +14,7 @@ export default function CommunitiesPreview() {
     <div className="px-4 pb-8">
       <div className="flex items-center justify-between mb-3 px-1">
         <h3 className="font-heading font-bold text-[16px] text-foreground">Communities</h3>
-        <button className="text-[12px] font-semibold text-primary flex items-center">
+        <button className="text-[12px] font-semibold text-primary flex items-center spring-tap">
           See all <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
@@ -24,10 +24,11 @@ export default function CommunitiesPreview() {
             key={i}
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex-shrink-0 w-[130px] text-center"
+            transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            whileTap={{ scale: 0.97 }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex-shrink-0 w-[135px] text-center card-hover"
           >
-            <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center text-2xl mx-auto mb-2">{c.icon}</div>
+            <div className="w-12 h-12 rounded-[16px] bg-muted flex items-center justify-center text-2xl mx-auto mb-2">{c.icon}</div>
             <p className="font-semibold text-[11px] text-foreground leading-tight">{c.name}</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">{c.members} members</p>
           </motion.button>

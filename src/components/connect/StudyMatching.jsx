@@ -21,16 +21,16 @@ export default function StudyMatching() {
             key={i}
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex-shrink-0 w-[140px]"
+            transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex-shrink-0 w-[145px] card-hover"
           >
             <div className="relative">
-              <img src={m.avatar} alt={m.name} className="w-full h-20 rounded-xl object-cover mb-2" />
-              <span className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold">{m.match}</span>
+              <img src={m.avatar} alt={m.name} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
+              <span className="absolute top-1.5 right-1.5 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold shadow-sm">{m.match}</span>
             </div>
             <p className="font-heading font-semibold text-[12px] text-foreground truncate">{m.name}</p>
             <p className="text-[10px] text-muted-foreground">{m.course}</p>
-            <button className="w-full mt-2 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold">Connect</button>
+            <button className="w-full mt-2 py-1.5 rounded-[12px] bg-primary/10 text-primary text-[11px] font-semibold spring-tap">Connect</button>
           </motion.div>
         ))}
       </div>

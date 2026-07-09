@@ -38,7 +38,12 @@ export default function LiveHome() {
 
   return (
     <div>
-      <div className="flex items-center justify-between pt-12 pb-2 px-5">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="flex items-center justify-between pt-12 pb-2 px-5"
+      >
         <div>
           <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">UNIBUD Live</h1>
           <p className="text-[12px] text-muted-foreground">Your virtual classroom</p>
@@ -46,18 +51,18 @@ export default function LiveHome() {
         <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
           <Video className="w-5 h-5 text-primary-foreground" />
         </div>
-      </div>
+      </motion.div>
 
       <div className="px-4 pt-4 pb-2 grid grid-cols-3 gap-2.5">
-        <motion.button whileTap={{ scale: 0.96 }} onClick={() => startMeeting("Instant Meeting")} className="bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex flex-col items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Zap className="w-5 h-5 text-primary" /></div>
+        <motion.button whileTap={{ scale: 0.96 }} onClick={() => startMeeting("Instant Meeting")} className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex flex-col items-center gap-2 card-hover">
+          <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center"><Zap className="w-5 h-5 text-primary" /></div>
           <span className="text-[11px] font-semibold text-foreground">Instant</span>
         </motion.button>
-        <motion.button whileTap={{ scale: 0.96 }} onClick={() => document.getElementById("join-input")?.focus()} className="bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex flex-col items-center gap-2">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Keyboard className="w-5 h-5 text-primary" /></div>
+        <motion.button whileTap={{ scale: 0.96 }} onClick={() => document.getElementById("join-input")?.focus()} className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex flex-col items-center gap-2 card-hover">
+          <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center"><Keyboard className="w-5 h-5 text-primary" /></div>
           <span className="text-[11px] font-semibold text-foreground">Join Code</span>
         </motion.button>
-        <motion.button whileTap={{ scale: 0.96 }} onClick={() => startMeeting("New Live Class")} className="bg-card rounded-2xl p-3.5 premium-shadow border border-border/30 flex flex-col items-center gap-2">
+        <motion.button whileTap={{ scale: 0.96 }} onClick={() => startMeeting("New Live Class")} className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex flex-col items-center gap-2 card-hover">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Plus className="w-5 h-5 text-primary" /></div>
           <span className="text-[11px] font-semibold text-foreground">Create</span>
         </motion.button>
@@ -65,8 +70,8 @@ export default function LiveHome() {
 
       <div className="px-4 pb-2">
         <div className="flex gap-2">
-          <input id="join-input" type="text" value={joinCode} onChange={e => setJoinCode(e.target.value)} onKeyDown={e => e.key === "Enter" && handleJoinCode()} placeholder="Enter class code..." className="flex-1 px-4 h-[44px] rounded-2xl bg-card border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          <button onClick={handleJoinCode} disabled={!joinCode.trim()} className="px-4 h-[44px] rounded-2xl bg-primary text-primary-foreground font-semibold text-[13px] disabled:opacity-50">Join</button>
+          <input id="join-input" type="text" value={joinCode} onChange={e => setJoinCode(e.target.value)} onKeyDown={e => e.key === "Enter" && handleJoinCode()} placeholder="Enter class code..." className="flex-1 px-4 h-[44px] rounded-[16px] bg-card border border-border/40 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow" />
+          <button onClick={handleJoinCode} disabled={!joinCode.trim()} className="px-4 h-[44px] rounded-[16px] bg-primary text-primary-foreground font-semibold text-[13px] disabled:opacity-50 spring-tap">Join</button>
         </div>
       </div>
 

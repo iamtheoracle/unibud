@@ -21,10 +21,10 @@ export default function CareerNetwork() {
             key={i}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3.5 flex items-center gap-3"
+            transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3.5 card-hover"
           >
-            <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+            <div className="w-12 h-12 rounded-[16px] bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
               <img src={opp.logo} alt={opp.company} className="w-7 h-7 object-contain" />
             </div>
             <div className="flex-1 min-w-0">
@@ -36,7 +36,7 @@ export default function CareerNetwork() {
                 {opp.verified && <span className="text-[10px] text-primary font-medium ml-1">Verified</span>}
               </div>
             </div>
-            <button className="px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-semibold">Apply</button>
+            <button className="px-3.5 py-2 rounded-full bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Apply</button>
           </motion.div>
         ))}
       </div>

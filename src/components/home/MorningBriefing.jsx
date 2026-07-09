@@ -23,16 +23,16 @@ export default function MorningBriefing({ user }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-[24px] p-5 premium-shadow bg-card border border-border/50"
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="relative overflow-hidden rounded-[24px] p-5 elevated-shadow bg-card border border-border/40"
     >
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-primary/8" />
       <div className="relative">
         <div className="flex items-center gap-2.5 mb-2.5">
-          <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-sm">
-            <Sparkles className="w-4 h-4 text-primary-foreground" strokeWidth={2.2} />
+          <div className="w-10 h-10 rounded-[14px] bg-primary flex items-center justify-center shadow-sm">
+            <Sparkles className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2.2} />
           </div>
           <div>
             <p className="text-muted-foreground text-[10px] font-medium uppercase tracking-wide">{today}</p>

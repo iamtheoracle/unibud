@@ -1,13 +1,14 @@
 import React from "react";
-import { CloudSun, Droplets, Wind, Eye } from "lucide-react";
 import { motion } from "framer-motion";
+import { CloudSun, Droplets, Wind, Eye } from "lucide-react";
 
 export default function WeatherCard() {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl p-5 premium-shadow bg-gradient-to-br from-info to-info/80"
+      transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+      className="relative overflow-hidden rounded-[24px] p-5 elevated-shadow bg-gradient-to-br from-info to-info/80"
     >
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
       <div className="absolute -bottom-12 -left-4 w-24 h-24 rounded-full bg-white/5" />
@@ -24,7 +25,7 @@ export default function WeatherCard() {
           <span className="font-heading font-extrabold text-[40px] text-white leading-none">28°</span>
         </div>
 
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-white/20">
+        <div className="flex items-center gap-5 mt-4 pt-3.5 border-t border-white/15">
           <div className="flex items-center gap-1.5">
             <Droplets className="w-3.5 h-3.5 text-white/70" />
             <div>

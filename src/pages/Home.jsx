@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Bell, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import MorningBriefing from "@/components/home/MorningBriefing";
@@ -25,27 +26,39 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between pt-12 pb-2 px-5">
-        <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">UNIBUD</h1>
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="flex items-center justify-between pt-12 pb-2 px-5"
+      >
+        <div>
+          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">UNIBUD</h1>
+        </div>
         <div className="flex items-center gap-2.5">
-          <Link to="/notifications" className="relative w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center">
+          <Link to="/notifications" className="relative w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
             <Bell className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
             <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-primary rounded-full border-2 border-card text-[9px] font-bold text-primary-foreground flex items-center justify-center">3</span>
           </Link>
-          <Link to="/me" className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 shadow-sm flex items-center justify-center text-primary-foreground font-bold text-sm">
+          <Link to="/me" className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 soft-shadow flex items-center justify-center text-primary-foreground font-bold text-sm spring-tap">
             {firstName.charAt(0)}
           </Link>
         </div>
-      </div>
+      </motion.div>
 
       {/* Greeting */}
-      <div className="px-5 pb-4">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+        className="px-5 pb-5"
+      >
         <h2 className="font-heading font-bold text-[20px] tracking-tight text-foreground">{greeting}, {firstName} 👋</h2>
         <div className="flex items-center gap-1 mt-0.5">
           <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
           <span className="text-[12px] text-muted-foreground font-medium">{user?.university || "University of Benin"}</span>
         </div>
-      </div>
+      </motion.div>
 
       <div className="px-4 space-y-5 pb-8">
         <MorningBriefing user={user} />

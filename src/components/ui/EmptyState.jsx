@@ -6,12 +6,18 @@ export default function EmptyState({ icon: Icon, title, description, action, cla
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       className={`flex flex-col items-center justify-center py-12 px-6 text-center ${className}`}
     >
       {Icon && (
-        <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mb-4">
-          <Icon className="w-6 h-6 text-muted-foreground" strokeWidth={1.8} />
-        </div>
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
+          className="w-16 h-16 rounded-[20px] bg-primary/8 flex items-center justify-center mb-4"
+        >
+          <Icon className="w-7 h-7 text-primary" strokeWidth={1.8} />
+        </motion.div>
       )}
       <h3 className="font-heading font-semibold text-[15px] text-foreground mb-1">{title}</h3>
       {description && (

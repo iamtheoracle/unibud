@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Calendar, FileText, Award, Clock, ChevronRight, GraduationCap, BarChart3, Search } from "lucide-react";
+import { BookOpen, Clock, ChevronRight, Search } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import StatusBadge from "@/components/ui/StatusBadge";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -44,21 +44,26 @@ export default function Academics() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="pt-12 pb-3 px-5">
-        <h1 className="font-heading font-bold text-[22px] tracking-tight">Academics</h1>
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="pt-12 pb-3 px-5"
+      >
+        <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Academics</h1>
         <p className="text-[13px] text-muted-foreground mt-0.5">Your academic workspace</p>
-      </div>
+      </motion.div>
 
       {/* Tabs */}
       <div className="px-4 mb-4">
-        <div className="flex gap-1.5 p-1 bg-muted/60 rounded-xl">
+        <div className="flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 px-3 rounded-lg text-[12px] font-semibold transition-all duration-200 ${
+              className={`flex-1 py-2.5 px-3 rounded-[12px] text-[12px] font-semibold transition-all duration-300 ${
                 activeTab === tab
-                  ? "bg-card text-foreground shadow-sm"
+                  ? "bg-card text-foreground soft-shadow"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -73,33 +78,33 @@ export default function Academics() {
           <>
             {/* Search */}
             <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search courses..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow"
               />
             </div>
 
             {mockCourses.map((course, i) => (
               <GlassCard key={course.code} variant="solid" className="p-4" delay={i * 0.05}>
-                <div className="flex items-start gap-3">
-                  <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                <div className="flex items-start gap-3.5">
+                  <div className={`w-12 h-12 rounded-[16px] bg-gradient-to-br ${course.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
                     <BookOpen className="w-5 h-5 text-white" strokeWidth={1.8} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-0.5">
-                      <span className="font-heading font-bold text-[13px]">{course.code}</span>
+                      <span className="font-heading font-bold text-[13px] text-foreground">{course.code}</span>
                       <span className="text-[10px] text-muted-foreground">{course.credits} Credits</span>
                     </div>
                     <p className="text-[12px] text-muted-foreground mb-0.5 truncate">{course.title}</p>
-                    <p className="text-[10px] text-muted-foreground mb-2">{course.lecturer}</p>
+                    <p className="text-[10px] text-muted-foreground mb-2.5">{course.lecturer}</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${course.progress}%` }}
-                          transition={{ duration: 0.8, delay: 0.3 + i * 0.1 }}
+                          transition={{ duration: 0.9, delay: 0.3 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
                           className={`h-full rounded-full bg-gradient-to-r ${course.color}`}
                         />
                       </div>
@@ -116,16 +121,16 @@ export default function Academics() {
           <>
             {timetable.map((day, di) => (
               <div key={day.day}>
-                <p className="font-heading font-semibold text-[13px] mb-2 text-muted-foreground">{day.day}</p>
-                <div className="space-y-2">
+                <p className="font-heading font-semibold text-[13px] mb-2.5 text-muted-foreground px-1">{day.day}</p>
+                <div className="space-y-2.5">
                   {day.classes.map((cls, ci) => (
-                    <GlassCard key={ci} variant="solid" className="p-3" delay={di * 0.05 + ci * 0.03}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-                          {cls.type === "lab" ? <BarChart3 className="w-4 h-4 text-primary" /> : <BookOpen className="w-4 h-4 text-primary" />}
+                    <GlassCard key={ci} variant="solid" className="p-3.5" delay={di * 0.05 + ci * 0.03}>
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center">
+                          <BookOpen className="w-[18px] h-[18px] text-primary" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-heading font-semibold text-[12px]">{cls.code}</p>
+                          <p className="font-heading font-semibold text-[12px] text-foreground">{cls.code}</p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                               <Clock className="w-2.5 h-2.5" />{cls.time}
@@ -145,17 +150,17 @@ export default function Academics() {
 
         {activeTab === "Tasks" && (
           <>
-            <SectionHeader title="Pending Tasks" subtitle="3 tasks due" icon={FileText} />
+            <SectionHeader title="Pending Tasks" subtitle="3 tasks due" icon={BookOpen} />
             {[
               { title: "Data Structures Assignment 3", course: "CSC 301", due: "Tomorrow", priority: "high" },
               { title: "Linear Algebra Problem Set", course: "MTH 201", due: "In 3 days", priority: "medium" },
               { title: "Physics Lab Report", course: "PHY 203", due: "In 5 days", priority: "low" },
             ].map((task, i) => (
-              <GlassCard key={i} variant="solid" className="p-3" delay={i * 0.05}>
-                <div className="flex items-center gap-3">
+              <GlassCard key={i} variant="solid" className="p-3.5" delay={i * 0.05}>
+                <div className="flex items-center gap-3.5">
                   <div className="w-5 h-5 rounded-md border-2 border-border flex-shrink-0" />
                   <div className="flex-1">
-                    <p className="font-heading font-semibold text-[12px]">{task.title}</p>
+                    <p className="font-heading font-semibold text-[12px] text-foreground">{task.title}</p>
                     <p className="text-[10px] text-muted-foreground">{task.course} · Due {task.due}</p>
                   </div>
                   <StatusBadge status={task.priority} />
@@ -167,32 +172,31 @@ export default function Academics() {
 
         {activeTab === "Grades" && (
           <>
-            <GlassCard variant="solid" className="p-4" delay={0.05}>
+            <GlassCard variant="solid" className="p-5" delay={0.05}>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="font-heading font-bold text-2xl text-gradient">4.20</p>
-                  <p className="text-[11px] text-muted-foreground">Cumulative GPA</p>
+                  <p className="font-heading font-extrabold text-3xl text-gradient">4.20</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Cumulative GPA</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-heading font-bold text-lg">4.35</p>
-                  <p className="text-[11px] text-muted-foreground">Semester GPA</p>
+                  <p className="font-heading font-bold text-xl text-foreground">4.35</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Semester GPA</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <Award className="w-3.5 h-3.5 text-achievement" />
-                <span className="text-[11px] font-medium text-achievement">2nd Class Upper Division</span>
+              <div className="flex items-center gap-1.5 pt-2 border-t border-border/30">
+                <span className="text-[11px] font-medium text-primary">2nd Class Upper Division</span>
               </div>
             </GlassCard>
 
             {grades.map((g, i) => (
-              <GlassCard key={i} variant="solid" className="p-3" delay={0.1 + i * 0.04}>
+              <GlassCard key={i} variant="solid" className="p-3.5" delay={0.1 + i * 0.04}>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-heading font-semibold text-[12px]">{g.code} — {g.title}</p>
-                    <p className="text-[10px] text-muted-foreground">{g.credits} Credits · {g.points} Points</p>
+                    <p className="font-heading font-semibold text-[12px] text-foreground">{g.code} — {g.title}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{g.credits} Credits · {g.points} Points</p>
                   </div>
-                  <div className="w-9 h-9 rounded-xl bg-success/10 flex items-center justify-center">
-                    <span className="font-heading font-bold text-[14px] text-success">{g.grade}</span>
+                  <div className="w-10 h-10 rounded-[14px] bg-success/10 flex items-center justify-center">
+                    <span className="font-heading font-bold text-[15px] text-success">{g.grade}</span>
                   </div>
                 </div>
               </GlassCard>

@@ -34,12 +34,12 @@ export default function CampusPulse() {
         {pulseItems.map((item, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 overflow-hidden flex items-center gap-3 p-2.5"
+            transition={{ delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden flex items-center gap-3.5 p-2.5 card-hover"
           >
-            <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+            <div className="w-14 h-14 rounded-[14px] overflow-hidden flex-shrink-0 bg-muted">
               <img src={item.image} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">

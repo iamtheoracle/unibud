@@ -18,20 +18,20 @@ export default function TodaySchedule() {
         {scheduleItems.map((item, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3.5 flex items-stretch gap-3"
+            transition={{ delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-stretch gap-3.5 card-hover"
           >
             <div className="w-[3px] rounded-full flex-shrink-0" style={{ backgroundColor: item.accent }} />
-            <div className="text-center min-w-[42px] pt-0.5">
+            <div className="text-center min-w-[44px] pt-0.5">
               <p className="font-heading font-bold text-[13px] text-foreground">{item.time}</p>
-              <p className="text-[10px] text-muted-foreground">{item.endTime}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{item.endTime}</p>
             </div>
             <div className="flex-1">
               <p className="font-heading font-semibold text-[14px] text-foreground">{item.title}</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">{item.location}</p>
-              <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-semibold">{item.type}</span>
+              <span className="inline-block mt-2 px-2.5 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-semibold">{item.type}</span>
             </div>
           </motion.div>
         ))}

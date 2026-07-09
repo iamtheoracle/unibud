@@ -22,10 +22,11 @@ export default function TrendingSection() {
             key={i}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="w-full bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex items-center gap-3 text-left"
+            transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3 text-left card-hover"
           >
-            <span className="font-heading font-extrabold text-[18px] text-muted w-5">{i + 1}</span>
+            <span className="font-heading font-extrabold text-[18px] text-muted-foreground/60 w-5">{i + 1}</span>
             <div className="flex-1">
               <p className="font-medium text-[12px] text-foreground leading-snug">{item.title}</p>
               <div className="flex items-center gap-1 mt-1">

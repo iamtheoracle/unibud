@@ -21,10 +21,10 @@ export default function MentorshipSection() {
             key={i}
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex-shrink-0 w-[200px]"
+            transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex-shrink-0 w-[205px] card-hover"
           >
-            <div className="flex items-center gap-2.5 mb-2">
+            <div className="flex items-center gap-2.5 mb-2.5">
               <img src={m.avatar} alt={m.name} className="w-11 h-11 rounded-full object-cover" />
               <div className="flex-1 min-w-0">
                 <p className="font-heading font-semibold text-[12px] text-foreground truncate">{m.name}</p>
@@ -36,12 +36,12 @@ export default function MentorshipSection() {
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-foreground mb-1.5 leading-snug">{m.expertise}</p>
+            <p className="text-[10px] text-foreground mb-2 leading-snug">{m.expertise}</p>
             <div className="flex items-center gap-2 mb-2.5">
               <span className="text-[10px] font-semibold text-warning">★ {m.rating}</span>
               <span className="text-[10px] text-muted-foreground">{m.sessions} sessions</span>
             </div>
-            <button className="w-full py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-semibold">Request</button>
+            <button className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Request</button>
           </motion.div>
         ))}
       </div>

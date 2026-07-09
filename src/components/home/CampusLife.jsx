@@ -15,17 +15,18 @@ export default function CampusLife() {
   return (
     <div>
       <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Campus Life</h3>
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-3 gap-2.5">
         {services.map((service, i) => (
           <motion.button
             key={i}
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.04 }}
-            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex flex-col items-center gap-1.5"
+            transition={{ delay: i * 0.04, type: "spring", stiffness: 300, damping: 24 }}
+            whileTap={{ scale: 0.96 }}
+            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex flex-col items-center gap-2 card-hover"
           >
-            <div className={`w-9 h-9 rounded-xl ${service.color} flex items-center justify-center`}>
-              <service.icon className={`w-[18px] h-[18px] ${service.iconColor}`} strokeWidth={2} />
+            <div className={`w-10 h-10 rounded-[14px] ${service.color} flex items-center justify-center`}>
+              <service.icon className={`w-[18px] h-[18px] ${service.iconColor}`} strokeWidth={2.2} />
             </div>
             <span className="text-[10px] font-medium text-foreground">{service.label}</span>
           </motion.button>

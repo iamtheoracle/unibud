@@ -33,20 +33,25 @@ export default function Connect() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        className="pt-12 pb-3 px-5 flex items-center justify-between"
+      >
         <div>
           <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Connect</h1>
           <p className="text-[12px] text-muted-foreground font-medium">People. Groups. Opportunities.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center">
+          <button className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
             <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
           </button>
-          <button className="w-10 h-10 rounded-full bg-primary shadow-sm flex items-center justify-center">
+          <button className="w-10 h-10 rounded-full bg-primary soft-shadow flex items-center justify-center spring-tap">
             <Plus className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* Quick Actions */}
       <div className="px-4 mb-5">
@@ -56,11 +61,12 @@ export default function Connect() {
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-card rounded-2xl shadow-sm border border-border/30 p-3.5 text-left"
+              transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 24 }}
+              whileTap={{ scale: 0.97 }}
+              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 text-left card-hover"
             >
-              <div className={`w-9 h-9 rounded-xl ${action.color} flex items-center justify-center mb-2`}>
-                <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2} />
+              <div className={`w-10 h-10 rounded-[14px] ${action.color} flex items-center justify-center mb-2.5`}>
+                <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2.2} />
               </div>
               <p className="font-heading font-semibold text-[13px] text-foreground">{action.label}</p>
               <p className="text-[10px] text-muted-foreground mt-0.5">{action.desc}</p>
@@ -81,13 +87,13 @@ export default function Connect() {
               key={i}
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex-shrink-0 w-[140px]"
+              transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex-shrink-0 w-[145px] card-hover"
             >
-              <img src={student.avatar} alt={student.name} className="w-full h-20 rounded-xl object-cover mb-2" />
+              <img src={student.avatar} alt={student.name} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
               <p className="font-heading font-semibold text-[12px] text-foreground truncate">{student.name}</p>
               <p className="text-[10px] text-muted-foreground mb-2.5 truncate">{student.major}</p>
-              <button className="w-full py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-semibold">Connect</button>
+              <button className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Connect</button>
             </motion.div>
           ))}
         </div>
@@ -105,23 +111,23 @@ export default function Connect() {
               key={i}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-card rounded-2xl shadow-sm border border-border/30 p-3.5 flex items-center gap-3"
+              transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3.5 card-hover"
             >
-              <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center text-xl flex-shrink-0">{group.icon}</div>
+              <div className="w-12 h-12 rounded-[16px] bg-muted flex items-center justify-center text-xl flex-shrink-0">{group.icon}</div>
               <div className="flex-1">
                 <p className="font-heading font-semibold text-[13px] text-foreground">{group.name}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="text-[10px] text-muted-foreground">{group.members}</span>
                   {group.active && (
-                    <span className="flex items-center gap-1 text-[10px] text-primary font-medium">
-                      <Circle className="w-2 h-2 fill-success text-primary" />
+                    <span className="flex items-center gap-1 text-[10px] text-success font-medium">
+                      <Circle className="w-2 h-2 fill-success text-success" />
                       Active
                     </span>
                   )}
                 </div>
               </div>
-              <button className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold">Join</button>
+              <button className="px-3.5 py-2 rounded-full bg-primary/10 text-primary text-[11px] font-semibold spring-tap">Join</button>
             </motion.div>
           ))}
         </div>

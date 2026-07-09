@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 import { Calendar, BookOpen, FileText, ClipboardList, NotebookPen, Library, ShoppingBag, LayoutGrid } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -19,12 +20,19 @@ export default function QuickActions() {
       <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Quick Actions</h3>
       <div className="flex gap-3 overflow-x-auto no-scrollbar">
         {actions.map((action, i) => (
-          <Link key={i} to={action.path} className="flex flex-col items-center gap-1.5 flex-shrink-0">
-            <div className="w-12 h-12 rounded-2xl bg-card shadow-sm border border-border/30 flex items-center justify-center">
-              <action.icon className={`w-5 h-5 ${action.color}`} strokeWidth={2} />
-            </div>
-            <span className="text-[10px] font-medium text-foreground">{action.label}</span>
-          </Link>
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 24 }}
+          >
+            <Link to={action.path} className="flex flex-col items-center gap-2 flex-shrink-0 spring-tap">
+              <div className="w-12 h-12 rounded-[18px] bg-card soft-shadow border border-border/40 flex items-center justify-center">
+                <action.icon className={`w-5 h-5 ${action.color}`} strokeWidth={2.2} />
+              </div>
+              <span className="text-[10px] font-medium text-foreground">{action.label}</span>
+            </Link>
+          </motion.div>
         ))}
       </div>
     </div>
