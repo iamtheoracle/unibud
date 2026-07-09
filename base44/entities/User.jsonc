@@ -2,11 +2,18 @@
   "properties": {
     "role": {
       "type": "string",
-      "description": "The role of the user in the app",
+      "description": "The role of the user in the platform",
       "enum": [
-        "admin",
-        "user"
-      ]
+        "student",
+        "lecturer",
+        "department_admin",
+        "faculty_admin",
+        "university_admin",
+        "operations_staff",
+        "executive",
+        "oracle"
+      ],
+      "default": "student"
     }
   },
   "required": [

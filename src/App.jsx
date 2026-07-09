@@ -43,6 +43,16 @@ import PdfReader from '@/pages/PdfReader';
 import Assignments from '@/pages/Assignments';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
+// Portal imports
+import PortalLayout from '@/components/portal/PortalLayout';
+import PortalDashboard from '@/pages/portal/PortalDashboard';
+import ModuleControl from '@/pages/portal/oracle/ModuleControl';
+import UserManagement from '@/pages/portal/oracle/UserManagement';
+import AuditLogs from '@/pages/portal/oracle/AuditLogs';
+import SystemHealth from '@/pages/portal/oracle/SystemHealth';
+import SecurityCenter from '@/pages/portal/oracle/SecurityCenter';
+import SupportCenter from '@/pages/portal/SupportCenter';
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
@@ -104,6 +114,15 @@ const AuthenticatedApp = () => {
           <Route path="/me" element={<Me />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/bud-memory" element={<BudMemory />} />
+        </Route>
+        <Route path="/portal" element={<PortalLayout />}>
+          <Route index element={<PortalDashboard />} />
+          <Route path="modules" element={<ModuleControl />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="audit-logs" element={<AuditLogs />} />
+          <Route path="system-health" element={<SystemHealth />} />
+          <Route path="security" element={<SecurityCenter />} />
+          <Route path="support" element={<SupportCenter />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

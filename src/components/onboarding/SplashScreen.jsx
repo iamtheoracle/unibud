@@ -68,6 +68,15 @@ export default function SplashScreen() {
       >
         The Future Starts Together.
       </motion.p>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.6 }}
+        className="relative z-10 text-[9px] text-muted-foreground/60 font-medium tracking-wide mt-8"
+      >
+        A My Realm Product
+      </motion.p>
     </motion.div>
   );
 }

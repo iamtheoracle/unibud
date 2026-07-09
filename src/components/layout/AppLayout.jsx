@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { isPortalRole } from "@/lib/portalConfig";
 import BottomNav from "@/components/layout/BottomNav";
 import CommandDock from "@/components/layout/CommandDock";
 import CampusTutorial from "@/components/onboarding/CampusTutorial";
@@ -20,6 +21,10 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!user) return;
+    if (isPortalRole(user.role)) {
+      navigate("/portal", { replace: true });
+      return;
+    }
     if (!user.university) {
       navigate("/university-selection", { replace: true });
     } else if (!user.preferred_name) {
