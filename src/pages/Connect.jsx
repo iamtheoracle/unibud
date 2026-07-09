@@ -3,6 +3,10 @@ import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle } from "luci
 import { motion } from "framer-motion";
 import StudyMatching from "@/components/connect/StudyMatching";
 import EventsSection from "@/components/connect/EventsSection";
+import MentorshipSection from "@/components/connect/MentorshipSection";
+import CareerNetwork from "@/components/connect/CareerNetwork";
+import MessagesPreview from "@/components/connect/MessagesPreview";
+import SafetyBanner from "@/components/connect/SafetyBanner";
 
 const quickActions = [
   { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-[#28A745]/10", iconColor: "text-[#28A745]" },
@@ -65,6 +69,9 @@ export default function Connect() {
         </div>
       </div>
 
+      {/* Messages Preview */}
+      <MessagesPreview />
+
       {/* Students You May Know */}
       <div className="mb-5">
         <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A] px-5 mb-3">Students You May Know</h3>
@@ -85,6 +92,9 @@ export default function Connect() {
           ))}
         </div>
       </div>
+
+      {/* Study Matching */}
+      <StudyMatching />
 
       {/* Active Groups */}
       <div className="px-4 pb-8">
@@ -117,8 +127,17 @@ export default function Connect() {
         </div>
       </div>
 
-      <StudyMatching />
+      {/* Mentorship */}
+      <MentorshipSection />
+
+      {/* Events */}
       <EventsSection />
+
+      {/* Career Network */}
+      <CareerNetwork />
+
+      {/* Safety */}
+      <SafetyBanner />
     </div>
   );
 }
