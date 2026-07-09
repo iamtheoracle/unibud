@@ -8,7 +8,6 @@ import {
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
   PartyPopper, Rocket, Calendar, Users,
 } from "lucide-react";
-// BookOpen already imported above
 import GlassCard from "@/components/ui/GlassCard";
 import { Link, useNavigate } from "react-router-dom";
 import AcademicProgressSection from "@/components/me/AcademicProgressSection";
