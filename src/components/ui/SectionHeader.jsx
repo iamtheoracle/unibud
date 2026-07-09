@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 export default function SectionHeader({ title, subtitle, action, actionLink, icon: Icon }) {
   return (
-    <div className="flex items-center justify-between mb-3">
+    <div className="flex items-center justify-between mb-3 px-1">
       <div className="flex items-center gap-2">
         {Icon && (
           <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
