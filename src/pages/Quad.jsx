@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Search, PenLine, Image, Video, BarChart3, Calendar, Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, BadgeCheck } from "lucide-react";
 import TrendingSection from "@/components/quad/TrendingSection";
 import CommunitiesPreview from "@/components/quad/CommunitiesPreview";
+import CampusTraditionsGallery from "@/components/quad/CampusTraditionsGallery";
 
 const stories = [
   { name: "Your Story", isYou: true },
@@ -136,6 +137,9 @@ export default function Quad() {
           ))}
         </div>
       </div>
+
+      {/* Campus Traditions */}
+      <CampusTraditionsGallery />
 
       {/* Feed */}
       <div className="px-4 space-y-3 pb-8">

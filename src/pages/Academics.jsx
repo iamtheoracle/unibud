@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { BookOpen, Clock, ChevronRight, Search } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import ProgressDashboard from "@/components/academics/ProgressDashboard";
 import StatusBadge from "@/components/ui/StatusBadge";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { Link } from "react-router-dom";
 
-const tabs = ["Courses", "Timetable", "Tasks", "Grades"];
+const tabs = ["Progress", "Courses", "Timetable", "Tasks", "Grades"];
 
 const mockCourses = [
   { code: "CSC 301", title: "Data Structures & Algorithms", lecturer: "Dr. Adeyemi", progress: 68, credits: 4, color: "from-info to-info/80" },
@@ -39,7 +40,7 @@ const grades = [
 ];
 
 export default function Academics() {
-  const [activeTab, setActiveTab] = useState("Courses");
+  const [activeTab, setActiveTab] = useState("Progress");
 
   return (
     <div className="min-h-screen">
@@ -56,12 +57,12 @@ export default function Academics() {
 
       {/* Tabs */}
       <div className="px-4 mb-4">
-        <div className="flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
+        <div className="flex gap-1.5 p-1 bg-muted/60 rounded-[16px] overflow-x-auto no-scrollbar">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2.5 px-3 rounded-[12px] text-[12px] font-semibold transition-all duration-300 ${
+              className={`flex-1 py-2.5 px-2 rounded-[12px] text-[11px] font-semibold transition-all duration-300 whitespace-nowrap ${
                 activeTab === tab
                   ? "bg-card text-foreground soft-shadow"
                   : "text-muted-foreground hover:text-foreground"
@@ -74,6 +75,10 @@ export default function Academics() {
       </div>
 
       <div className="px-4 pb-8 space-y-4">
+        {activeTab === "Progress" && (
+          <ProgressDashboard />
+        )}
+
         {activeTab === "Courses" && (
           <>
             {/* Search */}
