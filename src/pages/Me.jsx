@@ -13,6 +13,8 @@ import { Link, useNavigate } from "react-router-dom";
 import AcademicProgressSection from "@/components/me/AcademicProgressSection";
 import CampusLifeSection from "@/components/me/CampusLifeSection";
 import BadgesSection from "@/components/me/BadgesSection";
+import StudyStatsSection from "@/components/me/StudyStatsSection";
+import MilestonesSection from "@/components/milestones/MilestonesSection";
 
 const quickStats = [
   { label: "GPA", value: "4.20", icon: Award, color: "text-primary" },
@@ -126,9 +128,27 @@ export default function Me() {
         <CampusLifeSection />
       </div>
 
+      {/* Study Stats */}
+      <div className="px-4 mb-5">
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <BarChart3 className="w-4 h-4 text-primary" />
+          <h2 className="font-heading font-bold text-[15px] text-foreground">Weekly Progress</h2>
+        </div>
+        <StudyStatsSection />
+      </div>
+
       {/* Digital Badges */}
       <div className="px-4 mb-5">
         <BadgesSection />
+      </div>
+
+      {/* Recent Milestones */}
+      <div className="px-4 mb-5">
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <PartyPopper className="w-4 h-4 text-primary" />
+          <h2 className="font-heading font-bold text-[15px] text-foreground">Recent Milestones</h2>
+        </div>
+        <MilestonesSection />
       </div>
 
       {/* Menu Sections */}

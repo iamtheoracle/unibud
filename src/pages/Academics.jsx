@@ -3,13 +3,15 @@ import { motion } from "framer-motion";
 import { BookOpen, Clock, ChevronRight, Search, Users, Plus } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ProgressDashboard from "@/components/academics/ProgressDashboard";
+import GradeLogger from "@/components/academics/GradeLogger";
+import StudyGoalsTracker from "@/components/academics/StudyGoalsTracker";
 import StatusBadge from "@/components/ui/StatusBadge";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
-const tabs = ["Progress", "Courses", "Timetable", "Tasks", "Grades", "Groups"];
+const tabs = ["Progress", "Goals", "Grades", "Courses", "Timetable", "Tasks", "Analytics", "Groups"];
 
 const mockCourses = [
   { code: "CSC 301", title: "Data Structures & Algorithms", lecturer: "Dr. Adeyemi", progress: 68, credits: 4, color: "from-info to-info/80" },
@@ -32,13 +34,6 @@ const timetable = [
     { code: "CSC 305", time: "10:00 - 12:00", location: "LT 2", type: "lecture" },
     { code: "CSC 301", time: "2:00 - 4:00", location: "Lab 1", type: "tutorial" },
   ]},
-];
-
-const grades = [
-  { code: "CSC 201", title: "Intro to Programming", grade: "A", points: 5.0, credits: 4 },
-  { code: "MTH 101", title: "Calculus I", grade: "B+", points: 4.5, credits: 3 },
-  { code: "PHY 101", title: "General Physics", grade: "A-", points: 4.5, credits: 3 },
-  { code: "ENG 101", title: "Use of English", grade: "B", points: 4.0, credits: 2 },
 ];
 
 export default function Academics() {
@@ -79,6 +74,23 @@ export default function Academics() {
       <div className="px-4 pb-8 space-y-4">
         {activeTab === "Progress" && (
           <ProgressDashboard />
+        )}
+
+        {activeTab === "Goals" && (
+          <StudyGoalsTracker />
+        )}
+
+        {activeTab === "Grades" && (
+          <GradeLogger />
+        )}
+
+        {activeTab === "Analytics" && (
+          <>
+            <Link to="/academic-analytics" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-[14px] bg-primary/10 text-primary text-[12px] font-semibold mb-3">
+              View Full Analytics Dashboard <ChevronRight className="w-4 h-4" />
+            </Link>
+            <ProgressDashboard />
+          </>
         )}
 
         {activeTab === "Courses" && (
@@ -186,39 +198,6 @@ export default function Academics() {
           </>
         )}
 
-        {activeTab === "Grades" && (
-          <>
-            <GlassCard variant="solid" className="p-5" delay={0.05}>
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="font-heading font-extrabold text-3xl text-gradient">4.20</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Cumulative GPA</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-heading font-bold text-xl text-foreground">4.35</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Semester GPA</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5 pt-2 border-t border-border/30">
-                <span className="text-[11px] font-medium text-primary">2nd Class Upper Division</span>
-              </div>
-            </GlassCard>
-
-            {grades.map((g, i) => (
-              <GlassCard key={i} variant="solid" className="p-3.5" delay={0.1 + i * 0.04}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-heading font-semibold text-[12px] text-foreground">{g.code} — {g.title}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{g.credits} Credits · {g.points} Points</p>
-                  </div>
-                  <div className="w-10 h-10 rounded-[14px] bg-success/10 flex items-center justify-center">
-                    <span className="font-heading font-bold text-[15px] text-success">{g.grade}</span>
-                  </div>
-                </div>
-              </GlassCard>
-            ))}
-          </>
-        )}
       </div>
     </div>
   );

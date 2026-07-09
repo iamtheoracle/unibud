@@ -1,0 +1,56 @@
+{
+  "name": "Grade",
+  "type": "object",
+  "properties": {
+    "course_code": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "assessment_type": {
+      "type": "string",
+      "enum": [
+        "assignment",
+        "quiz",
+        "test",
+        "lab",
+        "project",
+        "midterm",
+        "exam"
+      ],
+      "default": "assignment"
+    },
+    "score": {
+      "type": "number"
+    },
+    "max_score": {
+      "type": "number",
+      "default": 100
+    },
+    "weight": {
+      "type": "number",
+      "default": 10
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "semester": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "course_code",
+    "assessment_type",
+    "score",
+    "max_score"
+  ]
+}

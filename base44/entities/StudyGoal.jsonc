@@ -1,0 +1,67 @@
+{
+  "name": "StudyGoal",
+  "type": "object",
+  "properties": {
+    "week_label": {
+      "type": "string"
+    },
+    "target_hours": {
+      "type": "number",
+      "default": 20
+    },
+    "target_assignments": {
+      "type": "number",
+      "default": 5
+    },
+    "target_quizzes": {
+      "type": "number",
+      "default": 3
+    },
+    "target_reading_sessions": {
+      "type": "number",
+      "default": 5
+    },
+    "target_attendance": {
+      "type": "number",
+      "default": 90
+    },
+    "completed_hours": {
+      "type": "number",
+      "default": 0
+    },
+    "completed_assignments": {
+      "type": "number",
+      "default": 0
+    },
+    "completed_quizzes": {
+      "type": "number",
+      "default": 0
+    },
+    "completed_reading_sessions": {
+      "type": "number",
+      "default": 0
+    },
+    "completed_attendance": {
+      "type": "number",
+      "default": 0
+    },
+    "experience_points": {
+      "type": "number",
+      "default": 0
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "streak_days": {
+      "type": "number",
+      "default": 0
+    },
+    "bud_insight": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "week_label"
+  ]
+}

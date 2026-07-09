@@ -57,6 +57,8 @@ import CampusTraditionsCalendar from '@/pages/CampusTraditionsCalendar';
 import Celebrations from '@/pages/Celebrations';
 import StudentAchievements from '@/pages/StudentAchievements';
 import SplashScreen from '@/components/onboarding/SplashScreen';
+import StudySession from '@/pages/StudySession';
+import AcademicAnalytics from '@/pages/AcademicAnalytics';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -165,6 +167,8 @@ const AuthenticatedApp = () => {
           <Route path="/traditions-calendar" element={<CampusTraditionsCalendar />} />
           <Route path="/celebrations" element={<Celebrations />} />
           <Route path="/achievements" element={<StudentAchievements />} />
+          <Route path="/study-session" element={<StudySession />} />
+          <Route path="/academic-analytics" element={<AcademicAnalytics />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />

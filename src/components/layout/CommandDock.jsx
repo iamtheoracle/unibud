@@ -5,26 +5,40 @@ import {
   Sparkles, Bell, CalendarPlus, Clock, PenLine, Image as ImageIcon,
   PartyPopper, TrendingUp, UserPlus, Users, MessageCircle, GraduationCap,
   Search, ScanLine, BookOpen, Mic, Lightbulb, Workflow, Video, HelpCircle,
-  Tag, Bookmark, ChevronUp,
+  Tag, Bookmark, ChevronUp, PlayCircle, Target, Award, BarChart3,
 } from "lucide-react";
 
 const CONTEXT_ACTIONS = {
   "/": [
-    { icon: Bell, label: "Reminder", path: "/notifications" },
-    { icon: CalendarPlus, label: "Event", path: "/campus-traditions" },
     { icon: Clock, label: "Timetable", path: "/academics" },
+    { icon: BookOpen, label: "Exams", path: "/academics" },
+    { icon: Bell, label: "Reminder", path: "/notifications" },
+    { icon: CalendarPlus, label: "Events", path: "/campus-traditions" },
+  ],
+  "/academics": [
+    { icon: PlayCircle, label: "Study Session", path: "/study-session" },
+    { icon: GraduationCap, label: "Log Grade", path: "/academics" },
+    { icon: Target, label: "Study Goal", path: "/academics" },
+    { icon: Users, label: "Study Group", path: "/study-groups" },
   ],
   "/quad": [
     { icon: PenLine, label: "Post", path: "/quad" },
     { icon: ImageIcon, label: "Story", path: "/quad" },
-    { icon: PartyPopper, label: "Event", path: "/campus-traditions" },
+    { icon: Award, label: "Achievement", path: "/achievements" },
+    { icon: MessageCircle, label: "Discuss", path: "/quad" },
     { icon: TrendingUp, label: "Trends", path: "/discover" },
   ],
   "/connect": [
-    { icon: UserPlus, label: "Friends", path: "/connect" },
-    { icon: Users, label: "Group", path: "/connect" },
-    { icon: MessageCircle, label: "Chat", path: "/connect" },
-    { icon: GraduationCap, label: "Mentor", path: "/connect" },
+    { icon: GraduationCap, label: "Find Mentor", path: "/mentorship" },
+    { icon: MessageCircle, label: "Start Chat", path: "/connect" },
+    { icon: Users, label: "Create Group", path: "/study-groups" },
+    { icon: UserPlus, label: "Study Partner", path: "/connect" },
+  ],
+  "/me": [
+    { icon: UserPlus, label: "Edit Profile", path: "/student-profile" },
+    { icon: Award, label: "Achievements", path: "/achievements" },
+    { icon: BarChart3, label: "Progress", path: "/academics" },
+    { icon: Sparkles, label: "Insights", path: "/academic-analytics" },
   ],
   "/library": [
     { icon: Search, label: "Search", path: "/library" },

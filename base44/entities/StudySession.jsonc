@@ -1,0 +1,65 @@
+{
+  "name": "StudySession",
+  "type": "object",
+  "properties": {
+    "courses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subject": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "planned_duration_minutes": {
+      "type": "number",
+      "default": 25
+    },
+    "notes": {
+      "type": "string"
+    },
+    "productivity_score": {
+      "type": "number",
+      "default": 0
+    },
+    "focus_mode": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "completed"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "study_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "bud_feedback": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "duration_minutes"
+  ]
+}
