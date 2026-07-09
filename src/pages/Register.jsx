@@ -98,7 +98,7 @@ export default function Register() {
           <Check className="w-12 h-12 text-primary" strokeWidth={3} />
         </motion.div>
         <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="font-heading font-bold text-[20px] text-foreground mb-1">Welcome to UNIBUD! 🎉</motion.h2>
-        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-[14px] text-muted-foreground">Setting up your experience...</motion.p>
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-[14px] text-muted-foreground">Preparing your companion...</motion.p>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="mt-6 w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     );
@@ -161,7 +161,7 @@ export default function Register() {
         <AuthLogo />
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="text-center mb-7">
           <h2 className="font-heading font-bold text-[22px] tracking-tight text-foreground mb-1">Create Account</h2>
-          <p className="text-[14px] text-muted-foreground">Join UNIBUD in seconds.</p>
+          <p className="text-[14px] text-muted-foreground">Your university companion is waiting.</p>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-card rounded-[24px] p-5 premium-shadow border border-border/30">

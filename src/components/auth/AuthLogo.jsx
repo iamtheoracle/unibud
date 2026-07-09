@@ -18,11 +18,11 @@ export default function AuthLogo({ delay = 0, size = "md" }) {
         <Mountain className={`${dims.icon} text-primary-foreground`} strokeWidth={2.2} />
       </div>
       <p className={`${dims.tag} font-heading font-medium text-muted-foreground tracking-[0.18em] uppercase mb-0.5`}>
-        University Buddy
-      </p>
-      <h1 className={`${dims.title} font-heading font-extrabold tracking-tight text-foreground leading-none`}>
-        UNIBUD
-      </h1>
+        Intelligent University Companion
+        </p>
+        <h1 className={`${dims.title} font-heading font-extrabold tracking-tight text-foreground leading-none`}>
+         UNIBUD
+        </h1>
     </motion.div>
   );
 }

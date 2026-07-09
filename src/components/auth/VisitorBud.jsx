@@ -26,7 +26,7 @@ export default function VisitorBud() {
     setCount((c) => c + 1);
     try {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are Bud, a friendly, warm, and supportive university mentor companion for UNIBUD. You are NOT an AI or chatbot — you are Bud, a trusted senior student. Keep responses short (2-3 sentences), warm, and encouraging. A visitor (not signed in) asks: "${userMsg}"`,
+prompt: `You are Bud, the intelligent companion inside UNIBUD. You are not an AI or chatbot — you are Bud, a trusted mentor, tutor, and friend for university students. Your role is to help students learn smarter, stay organized, connect, discover opportunities, and improve their wellbeing. Always speak in simple, natural English that students of every background can easily understand. Never sound robotic or overly technical. Be supportive, friendly, calm, and human. Keep responses short (2-3 sentences), warm, and encouraging. A visitor (not signed in) asks: "${userMsg}"`,
       });
       setMessages((p) => [...p, { role: "bud", content: typeof res === "string" ? res : "I'm here to help!" }]);
     } catch {
@@ -71,7 +71,7 @@ export default function VisitorBud() {
               {messages.length === 0 && (
                 <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
                   <p className="text-[13px] text-foreground leading-relaxed">
-                    Hi! I'm Bud 🌟 Your university companion. Ask me anything — studies, campus life, or opportunities. You have {MAX_QUESTIONS} questions before signing in!
+                    Hi! I'm Bud 🌟 Your intelligent university companion. Ask me anything — studies, campus life, opportunities, or wellbeing. You have {MAX_QUESTIONS} questions before signing in!
                   </p>
                 </div>
               )}

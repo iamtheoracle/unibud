@@ -12,9 +12,9 @@ const ITEMS = [
 
 const BUD_MESSAGES = [
   "I'm almost ready.",
-  "Finding useful opportunities...",
-  "Preparing today's dashboard...",
-  "Getting everything ready...",
+  "Finding opportunities for you...",
+  "Preparing your personalized dashboard...",
+  "Getting everything ready for your journey...",
 ];
 
 export default function PreparingCampus() {

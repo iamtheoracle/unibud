@@ -48,7 +48,7 @@ export default function SplashScreen() {
         transition={{ delay: 0.5, duration: 0.6 }}
         className="relative z-10 text-[10px] font-heading font-medium text-muted-foreground tracking-[0.2em] uppercase mt-6 mb-0.5"
       >
-        University Buddy
+        Intelligent University Companion
       </motion.p>
 
       <motion.h1

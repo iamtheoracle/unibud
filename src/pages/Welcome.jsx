@@ -7,18 +7,18 @@ import { base44 } from "@/api/base44Client";
 const cards = [
   {
     emoji: "📚",
-    title: "Study Smarter",
-    desc: "Learn with Bud using videos, sketches, quizzes and personalised study plans.",
+    title: "Learn Smarter",
+    desc: "Bud explains difficult topics, builds quizzes, and creates study plans tailored to you.",
   },
   {
     emoji: "🌍",
-    title: "Connect",
-    desc: "Meet classmates, lecturers, mentors and communities from universities around the world.",
+    title: "Stay Connected",
+    desc: "Meet classmates, join study groups, attend live classes, and build friendships that last.",
   },
   {
     emoji: "🚀",
-    title: "Grow",
-    desc: "Discover scholarships, internships, careers, competitions and opportunities.",
+    title: "Build Your Future",
+    desc: "Discover scholarships, internships, careers, and opportunities — all in one companion.",
   },
 ];
 
@@ -58,14 +58,14 @@ export default function Welcome() {
             <Mountain className="w-8 h-8 text-primary-foreground" strokeWidth={2.2} />
           </div>
           <p className="text-[10px] font-heading font-medium text-muted-foreground tracking-[0.18em] uppercase mb-0.5">
-            University Buddy
-          </p>
-          <h1 className="font-heading font-extrabold text-[28px] tracking-tight text-foreground leading-none">
-            UNIBUD
-          </h1>
-          <p className="text-[13px] text-primary font-semibold mt-1.5">
-            The Future Starts Together.
-          </p>
+            Intelligent University Companion
+            </p>
+            <h1 className="font-heading font-extrabold text-[28px] tracking-tight text-foreground leading-none">
+             UNIBUD
+            </h1>
+            <p className="text-[13px] text-primary font-semibold mt-1.5">
+             The Future Starts Together.
+            </p>
         </motion.div>
 
         {/* Subtitle */}
@@ -75,7 +75,7 @@ export default function Welcome() {
           transition={{ delay: 0.4, duration: 0.6 }}
           className="text-center text-[14px] text-muted-foreground leading-relaxed mb-7 max-w-[300px] mx-auto"
         >
-          Everything you need for university, all in one place.
+          Your intelligent companion for university life. Learn smarter, stay organized, connect with classmates, and build your future — all in one place.
         </motion.p>
 
         {/* Three premium floating cards */}
@@ -149,11 +149,11 @@ export default function Welcome() {
       >
         <div className="flex items-center justify-center gap-1.5 mb-1">
           <Sparkles className="w-3 h-3 text-primary" strokeWidth={2} />
-          <p className="text-[11px] font-semibold text-foreground">Limited access to Bud</p>
+          <p className="text-[11px] font-semibold text-foreground">Meet Bud first</p>
         </div>
         <p className="text-[10px] text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
-          Visitors may ask Bud up to three questions before signing in. After three
-          questions Bud politely asks them to create an account.
+          Curious about your future companion? Ask Bud up to three questions before
+          signing in. After that, Bud will gently invite you to create an account.
         </p>
       </motion.div>
     </div>

@@ -5,9 +5,9 @@ import { base44 } from "@/api/base44Client";
 import { Sparkles, ArrowRight, MessageCircle, BookOpen, Play, PenTool, Layers, FileQuestion, Calendar, FileText, Award, Briefcase, GraduationCap } from "lucide-react";
 
 const MESSAGES = [
-  "Hi 👋 I'm Bud.",
-  "I'm here to make university life easier.",
-  "I'll help you study smarter, stay organized, discover opportunities and achieve your goals.",
+  "Hi 👋 I'm Bud, your university companion.",
+  "I'm here to make university life simpler, calmer, and more enjoyable.",
+  "I'll help you learn smarter, stay organized, connect with classmates, and build your future.",
 ];
 
 const CAPABILITIES = [
@@ -22,6 +22,7 @@ const CAPABILITIES = [
   { icon: Briefcase, label: "Discover internships" },
   { icon: GraduationCap, label: "Prepare for exams" },
   { icon: MessageCircle, label: "Answer university questions" },
+  { icon: Sparkles, label: "Support your wellbeing" },
 ];
 
 export default function MeetBud() {
