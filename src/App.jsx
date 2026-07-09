@@ -43,6 +43,10 @@ import LiveClass from '@/pages/LiveClass';
 import Library from '@/pages/Library';
 import PdfReader from '@/pages/PdfReader';
 import Assignments from '@/pages/Assignments';
+import Challenges from '@/pages/Challenges';
+import Discover from '@/pages/Discover';
+import StudentSupport from '@/pages/StudentSupport';
+import StudentGovernment from '@/pages/StudentGovernment';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
 // Portal imports
@@ -139,6 +143,10 @@ const AuthenticatedApp = () => {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/bud-memory" element={<BudMemory />} />
           <Route path="/connected-accounts" element={<ConnectedAccounts />} />
+          <Route path="/challenges" element={<Challenges />} />
+          <Route path="/discover" element={<Discover />} />
+          <Route path="/student-support" element={<StudentSupport />} />
+          <Route path="/student-government" element={<StudentGovernment />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />

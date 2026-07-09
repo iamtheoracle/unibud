@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle } from "lucide-react";
+import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle, Trophy, Heart, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import StudyMatching from "@/components/connect/StudyMatching";
 import EventsSection from "@/components/connect/EventsSection";
@@ -7,12 +7,15 @@ import MentorshipSection from "@/components/connect/MentorshipSection";
 import CareerNetwork from "@/components/connect/CareerNetwork";
 import MessagesPreview from "@/components/connect/MessagesPreview";
 import SafetyBanner from "@/components/connect/SafetyBanner";
+import { Link } from "react-router-dom";
 
 const quickActions = [
-  { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-primary/10", iconColor: "text-primary" },
-  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info" },
-  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-purple/10", iconColor: "text-purple" },
-  { icon: Briefcase, label: "Opportunities", desc: "Internships & jobs", color: "bg-warning/10", iconColor: "text-warning" },
+  { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-primary/10", iconColor: "text-primary", path: "/connect" },
+  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info", path: "/connect" },
+  { icon: Trophy, label: "Challenges", desc: "Compete & win", color: "bg-purple/10", iconColor: "text-purple", path: "/challenges" },
+  { icon: Shield, label: "Government", desc: "Student leaders", color: "bg-success/10", iconColor: "text-success", path: "/student-government" },
+  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/connect" },
+  { icon: Heart, label: "Support", desc: "We're here for you", color: "bg-error/10", iconColor: "text-error", path: "/student-support" },
 ];
 
 const students = [
@@ -57,20 +60,20 @@ export default function Connect() {
       <div className="px-4 mb-5">
         <div className="grid grid-cols-2 gap-2.5">
           {quickActions.map((action, i) => (
-            <motion.button
+            <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 24 }}
-              whileTap={{ scale: 0.97 }}
-              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 text-left card-hover"
             >
-              <div className={`w-10 h-10 rounded-[14px] ${action.color} flex items-center justify-center mb-2.5`}>
-                <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2.2} />
-              </div>
-              <p className="font-heading font-semibold text-[13px] text-foreground">{action.label}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">{action.desc}</p>
-            </motion.button>
+              <Link to={action.path} className="block bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 text-left card-hover spring-tap">
+                <div className={`w-10 h-10 rounded-[14px] ${action.color} flex items-center justify-center mb-2.5`}>
+                  <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2.2} />
+                </div>
+                <p className="font-heading font-semibold text-[13px] text-foreground">{action.label}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{action.desc}</p>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>

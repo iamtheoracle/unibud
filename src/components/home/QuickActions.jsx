@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, BookOpen, FileText, ClipboardList, NotebookPen, Library, ShoppingBag, LayoutGrid } from "lucide-react";
+import { Calendar, BookOpen, FileText, ClipboardList, NotebookPen, Library, ShoppingBag, Compass } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const actions = [
@@ -11,7 +11,7 @@ const actions = [
   { icon: NotebookPen, label: "Notes", path: "/academics", color: "text-purple" },
   { icon: Library, label: "Library", path: "/academics", color: "text-success" },
   { icon: ShoppingBag, label: "Market", path: "/marketplace", color: "text-warning" },
-  { icon: LayoutGrid, label: "More", path: "/academics", color: "text-muted-foreground" },
+  { icon: Compass, label: "Discover", path: "/discover", color: "text-primary" },
 ];
 
 export default function QuickActions() {
