@@ -12,7 +12,7 @@ const withAlpha = (hsl, a = 0.08) => hsl.replace("))", ") / " + a + ")");
 const typeColors = { scholarship: "hsl(var(--unibud-green))", internship: "hsl(var(--unibud-blue))", competition: "hsl(var(--unibud-gold))", research: "hsl(var(--unibud-purple))", job: "hsl(var(--unibud-red))", fellowship: "hsl(var(--unibud-orange))", grant: "hsl(var(--unibud-green))" };
 
 const TRACKER_STATUSES = [
-  { key: "interested", label: "Interested", color: "hsl(var(--unibud-n5))" },
+  { key: "interested", label: "Interested", color: "hsl(var(--unibud-n3))" },
   { key: "preparing", label: "Preparing", color: "hsl(var(--unibud-orange))" },
   { key: "applied", label: "Applied", color: "hsl(var(--unibud-blue))" },
   { key: "interview", label: "Interview", color: "hsl(var(--unibud-purple))" },

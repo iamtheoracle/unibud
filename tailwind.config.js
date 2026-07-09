@@ -6,11 +6,17 @@ module.exports = {
   	extend: {
   		borderRadius: {
   			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)',
+  			md: '0.75rem',
+  			sm: '0.5rem',
         xl: '1.25rem',
         '2xl': '1.5rem',
         '3xl': '2rem'
+  		},
+  		spacing: {
+  			'15': '3.75rem',
+  			'30': '7.5rem',
+  			'40': '10rem',
+  			'48': '12rem',
   		},
   		colors: {
   			background: 'hsl(var(--background))',

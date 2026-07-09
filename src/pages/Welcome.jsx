@@ -109,7 +109,7 @@ export default function Welcome() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 mx-4 mb-3 rounded-[28px] bg-black p-5 elevated-shadow border border-n1"
+        className="relative z-10 mx-4 mb-3 rounded-[28px] bg-black p-5 elevated-shadow border border-n6"
       >
         <motion.button
           whileTap={{ scale: 0.98 }}
@@ -123,7 +123,7 @@ export default function Welcome() {
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={() => navigate("/login")}
-          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-n2 flex items-center justify-center gap-2 hover:bg-n1 transition-colors mb-3"
+          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-n6 flex items-center justify-center gap-2 hover:bg-n7 transition-colors mb-3"
         >
           <Lock className="w-[16px] h-[16px]" strokeWidth={2} />
           Sign In
