@@ -1,0 +1,65 @@
+{
+  "name": "StaffAnnouncement",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "audience": {
+      "type": "string",
+      "enum": [
+        "entire_university",
+        "faculty",
+        "department",
+        "course",
+        "class",
+        "lecturers",
+        "students"
+      ],
+      "default": "entire_university"
+    },
+    "target_name": {
+      "type": "string",
+      "description": "Name of the targeted faculty/department/course/class"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "normal",
+        "high",
+        "urgent"
+      ],
+      "default": "normal"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "published",
+        "archived"
+      ],
+      "default": "published"
+    },
+    "publish_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "pinned": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "message",
+    "audience"
+  ]
+}
