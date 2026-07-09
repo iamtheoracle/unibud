@@ -20,10 +20,10 @@ export default function DeadlinesCard() {
           <GlassCard key={i} variant="solid" className="p-3" delay={0.2 + i * 0.05}>
             <div className="flex items-center gap-3">
               <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                d.priority === "high" ? "bg-red-50" : d.priority === "medium" ? "bg-amber-50" : "bg-blue-50"
+                d.priority === "high" ? "bg-destructive/10" : d.priority === "medium" ? "bg-warning/10" : "bg-info/10"
               }`}>
                 <FileText className={`w-4 h-4 ${
-                  d.priority === "high" ? "text-red-500" : d.priority === "medium" ? "text-amber-500" : "text-blue-500"
+                  d.priority === "high" ? "text-destructive" : d.priority === "medium" ? "text-warning" : "text-info"
                 }`} />
               </div>
               <div className="flex-1 min-w-0">
@@ -32,7 +32,7 @@ export default function DeadlinesCard() {
                   <span className="text-[10px] text-muted-foreground">{d.course}</span>
                   <span className="text-[10px] text-muted-foreground">·</span>
                   <span className={`text-[10px] font-medium ${
-                    moment(d.due).diff(moment(), "days") <= 1 ? "text-red-500" : "text-muted-foreground"
+                    moment(d.due).diff(moment(), "days") <= 1 ? "text-destructive" : "text-muted-foreground"
                   }`}>
                     {moment(d.due).fromNow()}
                   </span>

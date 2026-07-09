@@ -9,10 +9,10 @@ import MessagesPreview from "@/components/connect/MessagesPreview";
 import SafetyBanner from "@/components/connect/SafetyBanner";
 
 const quickActions = [
-  { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-[#28A745]/10", iconColor: "text-[#28A745]" },
-  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-blue-500/10", iconColor: "text-blue-500" },
-  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-purple-500/10", iconColor: "text-purple-500" },
-  { icon: Briefcase, label: "Opportunities", desc: "Internships & jobs", color: "bg-amber-500/10", iconColor: "text-amber-500" },
+  { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-primary/10", iconColor: "text-primary" },
+  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info" },
+  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-purple/10", iconColor: "text-purple" },
+  { icon: Briefcase, label: "Opportunities", desc: "Internships & jobs", color: "bg-warning/10", iconColor: "text-warning" },
 ];
 
 const students = [
@@ -35,15 +35,15 @@ export default function Connect() {
       {/* Header */}
       <div className="pt-12 pb-3 px-5 flex items-center justify-between">
         <div>
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-[#1A1A1A]">Connect</h1>
-          <p className="text-[12px] text-[#86868B] font-medium">People. Groups. Opportunities.</p>
+          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Connect</h1>
+          <p className="text-[12px] text-muted-foreground font-medium">People. Groups. Opportunities.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
-            <Search className="w-[18px] h-[18px] text-[#1A1A1A]" strokeWidth={1.8} />
+          <button className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center">
+            <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
           </button>
-          <button className="w-10 h-10 rounded-full bg-[#28A745] shadow-sm flex items-center justify-center">
-            <Plus className="w-[18px] h-[18px] text-white" strokeWidth={2} />
+          <button className="w-10 h-10 rounded-full bg-primary shadow-sm flex items-center justify-center">
+            <Plus className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
           </button>
         </div>
       </div>
@@ -57,13 +57,13 @@ export default function Connect() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3.5 text-left"
+              className="bg-card rounded-2xl shadow-sm border border-border/30 p-3.5 text-left"
             >
               <div className={`w-9 h-9 rounded-xl ${action.color} flex items-center justify-center mb-2`}>
                 <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2} />
               </div>
-              <p className="font-heading font-semibold text-[13px] text-[#1A1A1A]">{action.label}</p>
-              <p className="text-[10px] text-[#86868B] mt-0.5">{action.desc}</p>
+              <p className="font-heading font-semibold text-[13px] text-foreground">{action.label}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{action.desc}</p>
             </motion.button>
           ))}
         </div>
@@ -74,7 +74,7 @@ export default function Connect() {
 
       {/* Students You May Know */}
       <div className="mb-5">
-        <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A] px-5 mb-3">Students You May Know</h3>
+        <h3 className="font-heading font-bold text-[16px] text-foreground px-5 mb-3">Students You May Know</h3>
         <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
           {students.map((student, i) => (
             <motion.div
@@ -82,12 +82,12 @@ export default function Connect() {
               initial={{ opacity: 0, x: 10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3 flex-shrink-0 w-[140px]"
+              className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex-shrink-0 w-[140px]"
             >
               <img src={student.avatar} alt={student.name} className="w-full h-20 rounded-xl object-cover mb-2" />
-              <p className="font-heading font-semibold text-[12px] text-[#1A1A1A] truncate">{student.name}</p>
-              <p className="text-[10px] text-[#86868B] mb-2.5 truncate">{student.major}</p>
-              <button className="w-full py-1.5 rounded-lg bg-[#28A745] text-white text-[11px] font-semibold">Connect</button>
+              <p className="font-heading font-semibold text-[12px] text-foreground truncate">{student.name}</p>
+              <p className="text-[10px] text-muted-foreground mb-2.5 truncate">{student.major}</p>
+              <button className="w-full py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-semibold">Connect</button>
             </motion.div>
           ))}
         </div>
@@ -98,7 +98,7 @@ export default function Connect() {
 
       {/* Active Groups */}
       <div className="px-4 pb-8">
-        <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A] mb-3 px-1">Active Groups</h3>
+        <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Active Groups</h3>
         <div className="space-y-2.5">
           {groups.map((group, i) => (
             <motion.div
@@ -106,22 +106,22 @@ export default function Connect() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3.5 flex items-center gap-3"
+              className="bg-card rounded-2xl shadow-sm border border-border/30 p-3.5 flex items-center gap-3"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#F5F5F7] flex items-center justify-center text-xl flex-shrink-0">{group.icon}</div>
+              <div className="w-11 h-11 rounded-xl bg-muted flex items-center justify-center text-xl flex-shrink-0">{group.icon}</div>
               <div className="flex-1">
-                <p className="font-heading font-semibold text-[13px] text-[#1A1A1A]">{group.name}</p>
+                <p className="font-heading font-semibold text-[13px] text-foreground">{group.name}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] text-[#86868B]">{group.members}</span>
+                  <span className="text-[10px] text-muted-foreground">{group.members}</span>
                   {group.active && (
-                    <span className="flex items-center gap-1 text-[10px] text-[#28A745] font-medium">
-                      <Circle className="w-2 h-2 fill-[#28A745] text-[#28A745]" />
+                    <span className="flex items-center gap-1 text-[10px] text-primary font-medium">
+                      <Circle className="w-2 h-2 fill-success text-primary" />
                       Active
                     </span>
                   )}
                 </div>
               </div>
-              <button className="px-3 py-1.5 rounded-full bg-[#28A745]/10 text-[#28A745] text-[11px] font-semibold">Join</button>
+              <button className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold">Join</button>
             </motion.div>
           ))}
         </div>

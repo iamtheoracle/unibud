@@ -9,11 +9,11 @@ import { Link } from "react-router-dom";
 const tabs = ["Courses", "Timetable", "Tasks", "Grades"];
 
 const mockCourses = [
-  { code: "CSC 301", title: "Data Structures & Algorithms", lecturer: "Dr. Adeyemi", progress: 68, credits: 4, color: "from-blue-500 to-blue-600" },
-  { code: "MTH 201", title: "Linear Algebra", lecturer: "Prof. Okafor", progress: 45, credits: 3, color: "from-purple-500 to-purple-600" },
-  { code: "PHY 203", title: "Quantum Mechanics", lecturer: "Dr. Ibrahim", progress: 72, credits: 3, color: "from-emerald-500 to-emerald-600" },
-  { code: "ENG 201", title: "Technical Writing", lecturer: "Mrs. Johnson", progress: 90, credits: 2, color: "from-amber-500 to-amber-600" },
-  { code: "CSC 305", title: "Operating Systems", lecturer: "Dr. Nnamdi", progress: 30, credits: 4, color: "from-rose-500 to-rose-600" },
+  { code: "CSC 301", title: "Data Structures & Algorithms", lecturer: "Dr. Adeyemi", progress: 68, credits: 4, color: "from-info to-info/80" },
+  { code: "MTH 201", title: "Linear Algebra", lecturer: "Prof. Okafor", progress: 45, credits: 3, color: "from-purple to-purple/80" },
+  { code: "PHY 203", title: "Quantum Mechanics", lecturer: "Dr. Ibrahim", progress: 72, credits: 3, color: "from-success to-success/80" },
+  { code: "ENG 201", title: "Technical Writing", lecturer: "Mrs. Johnson", progress: 90, credits: 2, color: "from-warning to-warning/80" },
+  { code: "CSC 305", title: "Operating Systems", lecturer: "Dr. Nnamdi", progress: 30, credits: 4, color: "from-destructive to-destructive/80" },
 ];
 
 const timetable = [
@@ -58,7 +58,7 @@ export default function Academics() {
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2 px-3 rounded-lg text-[12px] font-semibold transition-all duration-200 ${
                 activeTab === tab
-                  ? "bg-white text-foreground shadow-sm"
+                  ? "bg-card text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -77,7 +77,7 @@ export default function Academics() {
               <input
                 type="text"
                 placeholder="Search courses..."
-                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </div>
 
@@ -191,8 +191,8 @@ export default function Academics() {
                     <p className="font-heading font-semibold text-[12px]">{g.code} — {g.title}</p>
                     <p className="text-[10px] text-muted-foreground">{g.credits} Credits · {g.points} Points</p>
                   </div>
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
-                    <span className="font-heading font-bold text-[14px] text-emerald-600">{g.grade}</span>
+                  <div className="w-9 h-9 rounded-xl bg-success/10 flex items-center justify-center">
+                    <span className="font-heading font-bold text-[14px] text-success">{g.grade}</span>
                   </div>
                 </div>
               </GlassCard>

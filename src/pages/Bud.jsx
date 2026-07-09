@@ -55,12 +55,12 @@ Respond helpfully, concisely, and warmly as Bud.`,
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center shadow-md">
-            <Sparkles className="w-4.5 h-4.5 text-white" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
+            <Sparkles className="w-4.5 h-4.5 text-primary-foreground" />
           </div>
           <div>
             <h1 className="font-heading font-bold text-[15px]">Bud</h1>
-            <p className="text-[10px] text-emerald-500 font-medium">Online · Ready to help</p>
+            <p className="text-[10px] text-success font-medium">Online · Ready to help</p>
           </div>
         </div>
         <button className="w-8 h-8 rounded-lg hover:bg-muted/60 flex items-center justify-center">
@@ -76,8 +76,8 @@ Respond helpfully, concisely, and warmly as Bud.`,
             animate={{ opacity: 1, y: 0 }}
             className="pt-8 text-center"
           >
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Sparkles className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Sparkles className="w-8 h-8 text-primary-foreground" />
             </div>
             <h2 className="font-heading font-bold text-xl mb-1">Hey there! I'm Bud 👋</h2>
             <p className="text-[13px] text-muted-foreground mb-6 max-w-xs mx-auto">
@@ -91,7 +91,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 + i * 0.08 }}
                   onClick={() => sendMessage(topic.label)}
-                  className="p-3 rounded-2xl bg-white border border-border/50 text-left card-hover shadow-sm"
+                  className="p-3 rounded-2xl bg-card border border-border/50 text-left card-hover shadow-sm"
                 >
                   <span className="text-lg mb-1 block">{topic.icon}</span>
                   <p className="text-[12px] font-medium text-foreground leading-snug">{topic.label}</p>
@@ -111,8 +111,8 @@ Respond helpfully, concisely, and warmly as Bud.`,
           >
             <div className={`max-w-[85%] ${
               msg.role === "user"
-                ? "bg-primary text-white rounded-2xl rounded-br-md px-4 py-2.5"
-                : "bg-white border border-border/50 rounded-2xl rounded-bl-md px-4 py-2.5 shadow-sm"
+                ? "bg-primary text-primary-foreground rounded-2xl rounded-br-md px-4 py-2.5"
+                : "bg-card border border-border/50 rounded-2xl rounded-bl-md px-4 py-2.5 shadow-sm"
             }`}>
               {msg.role === "bud" && (
                 <div className="flex items-center gap-1.5 mb-1">
@@ -129,7 +129,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white border border-border/50 rounded-2xl rounded-bl-md w-fit shadow-sm"
+            className="flex items-center gap-2 px-4 py-2.5 bg-card border border-border/50 rounded-2xl rounded-bl-md w-fit shadow-sm"
           >
             <Sparkles className="w-3 h-3 text-primary" />
             <div className="flex gap-1">
@@ -150,7 +150,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage(input)}
               placeholder="Ask Bud anything..."
-              className="w-full px-4 py-3 pr-10 rounded-2xl bg-white border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
+              className="w-full px-4 py-3 pr-10 rounded-2xl bg-card border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm"
             />
             <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
               <Mic className="w-4 h-4" />
@@ -159,7 +159,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim()}
-            className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center text-white shadow-md disabled:opacity-50 disabled:shadow-none transition-all"
+            className="w-11 h-11 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground shadow-md disabled:opacity-50 disabled:shadow-none transition-all"
           >
             <Send className="w-4 h-4" />
           </button>

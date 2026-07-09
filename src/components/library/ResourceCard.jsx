@@ -9,7 +9,7 @@ const TYPE_ICONS = {
 
 export default function ResourceCard({ resource, onClick }) {
   const Icon = TYPE_ICONS[resource.type] || Book;
-  const accent = resource.accent_color || "#DAAF37";
+  const accent = resource.accent_color || "hsl(var(--primary))";
 
   return (
     <motion.div whileTap={{ scale: 0.97 }} onClick={onClick} className="flex-shrink-0 w-[150px] bg-card rounded-[18px] overflow-hidden premium-shadow border border-border/30 cursor-pointer">
@@ -21,12 +21,12 @@ export default function ResourceCard({ resource, onClick }) {
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}20` }}>
               <Icon className="w-6 h-6" style={{ color: accent }} />
             </div>
-            <span className="text-[10px] font-semibold text-foreground/60 capitalize text-center px-2">{resource.type.replace("_", " ")}</span>
+            <span className="text-[10px] font-semibold text-muted-foreground capitalize text-center px-2">{resource.type.replace("_", " ")}</span>
           </div>
         )}
         {resource.is_downloaded && (
           <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-success flex items-center justify-center">
-            <Download className="w-3 h-3 text-success-foreground" />
+            <Download className="w-3 h-3 text-white" />
           </div>
         )}
         {resource.reading_progress > 0 && (

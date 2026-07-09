@@ -15,7 +15,7 @@ const listings = [
 ];
 
 const catIcons = { textbooks: "📚", electronics: "💻", furniture: "🪑", tutoring: "🎓", services: "⚡" };
-const catColors = { textbooks: "from-blue-400 to-blue-500", electronics: "from-purple-400 to-purple-500", furniture: "from-amber-400 to-amber-500", tutoring: "from-emerald-400 to-emerald-500", services: "from-pink-400 to-pink-500" };
+const catColors = { textbooks: "from-info to-info/80", electronics: "from-purple to-purple/80", furniture: "from-warning to-warning/80", tutoring: "from-success to-success/80", services: "from-destructive to-destructive/80" };
 
 export default function Marketplace() {
   const [activeCat, setActiveCat] = useState("All");
@@ -36,10 +36,10 @@ export default function Marketplace() {
           <input
             type="text"
             placeholder="Search marketplace..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
-        <button className="w-10 h-10 rounded-xl bg-white border border-border/50 flex items-center justify-center">
+        <button className="w-10 h-10 rounded-xl bg-card border border-border/50 flex items-center justify-center">
           <Filter className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
@@ -54,7 +54,7 @@ export default function Marketplace() {
               className={`px-3.5 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${
                 activeCat === cat
                   ? "bg-foreground text-background shadow-sm"
-                  : "bg-white border border-border/50 text-muted-foreground"
+                  : "bg-card border border-border/50 text-muted-foreground"
               }`}
             >
               {cat}
@@ -68,7 +68,7 @@ export default function Marketplace() {
         {filtered.map((item, i) => (
           <GlassCard key={i} variant="solid" className="p-4" delay={i * 0.05}>
             <div className="flex gap-3">
-              <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${catColors[item.category] || "from-slate-300 to-slate-400"} flex items-center justify-center text-2xl flex-shrink-0`}>
+              <div className={`w-20 h-20 rounded-xl bg-gradient-to-br ${catColors[item.category] || "from-muted to-muted-foreground/50"} flex items-center justify-center text-2xl flex-shrink-0`}>
                 {catIcons[item.category] || "📦"}
               </div>
               <div className="flex-1 min-w-0">
@@ -84,13 +84,13 @@ export default function Marketplace() {
                     <span className="px-1.5 py-0.5 rounded-full bg-muted text-[9px] font-semibold">{item.condition}</span>
                   )}
                   <div className="flex items-center gap-0.5">
-                    <Star className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />
+                    <Star className="w-2.5 h-2.5 text-warning fill-warning" />
                     <span className="text-[10px] font-medium">{item.rating}</span>
                   </div>
                   {item.verified && (
                     <div className="flex items-center gap-0.5">
-                      <Shield className="w-2.5 h-2.5 text-emerald-500" />
-                      <span className="text-[9px] text-emerald-600 font-medium">Verified</span>
+                      <Shield className="w-2.5 h-2.5 text-success" />
+                      <span className="text-[9px] text-success font-medium">Verified</span>
                     </div>
                   )}
                 </div>

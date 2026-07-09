@@ -13,8 +13,8 @@ export default function TrendingSection() {
   return (
     <div className="px-4 pb-8">
       <div className="flex items-center gap-1.5 mb-3 px-1">
-        <Flame className="w-4 h-4 text-orange-500" />
-        <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A]">Trending on Campus</h3>
+        <Flame className="w-4 h-4 text-warning" />
+        <h3 className="font-heading font-bold text-[16px] text-foreground">Trending on Campus</h3>
       </div>
       <div className="space-y-2">
         {trending.map((item, i) => (
@@ -23,15 +23,15 @@ export default function TrendingSection() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="w-full bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3 flex items-center gap-3 text-left"
+            className="w-full bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex items-center gap-3 text-left"
           >
-            <span className="font-heading font-extrabold text-[18px] text-[#E5E5EA] w-5">{i + 1}</span>
+            <span className="font-heading font-extrabold text-[18px] text-muted w-5">{i + 1}</span>
             <div className="flex-1">
-              <p className="font-medium text-[12px] text-[#1A1A1A] leading-snug">{item.title}</p>
+              <p className="font-medium text-[12px] text-foreground leading-snug">{item.title}</p>
               <div className="flex items-center gap-1 mt-1">
-                {item.type === "study" && <TrendingUp className="w-3 h-3 text-[#86868B]" />}
-                {item.type === "discussion" && <MessageCircle className="w-3 h-3 text-[#86868B]" />}
-                <span className="text-[10px] text-[#86868B] font-medium">{item.engagement}</span>
+                {item.type === "study" && <TrendingUp className="w-3 h-3 text-muted-foreground" />}
+                {item.type === "discussion" && <MessageCircle className="w-3 h-3 text-muted-foreground" />}
+                <span className="text-[10px] text-muted-foreground font-medium">{item.engagement}</span>
               </div>
             </div>
           </motion.button>

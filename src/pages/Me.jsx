@@ -12,9 +12,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 const stats = [
   { label: "GPA", value: "4.20", icon: Award, color: "text-primary" },
-  { label: "Streak", value: "5 days", icon: Flame, color: "text-orange-500" },
-  { label: "Courses", value: "6", icon: BookOpen, color: "text-emerald-500" },
-  { label: "Rank", value: "Top 15%", icon: Trophy, color: "text-amber-500" },
+  { label: "Streak", value: "5 days", icon: Flame, color: "text-warning" },
+  { label: "Courses", value: "6", icon: BookOpen, color: "text-success" },
+  { label: "Rank", value: "Top 15%", icon: Trophy, color: "text-warning" },
 ];
 
 const menuSections = [
@@ -66,9 +66,9 @@ export default function Me() {
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center mx-auto mb-3 shadow-lg"
+          className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mx-auto mb-3 shadow-lg"
         >
-          <span className="text-white font-heading font-bold text-2xl">
+          <span className="text-primary-foreground font-heading font-bold text-2xl">
             {user?.full_name?.charAt(0) || "U"}
           </span>
         </motion.div>
@@ -121,12 +121,12 @@ export default function Me() {
         <GlassCard variant="solid" className="overflow-hidden" delay={0.3}>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full hover:bg-red-50 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 w-full hover:bg-destructive/10 transition-colors"
           >
-            <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center">
-              <LogOut className="w-3.5 h-3.5 text-red-500" />
+            <div className="w-7 h-7 rounded-lg bg-destructive/10 flex items-center justify-center">
+              <LogOut className="w-3.5 h-3.5 text-destructive" />
             </div>
-            <span className="text-[13px] font-medium text-red-500">Sign Out</span>
+            <span className="text-[13px] font-medium text-destructive">Sign Out</span>
           </button>
         </GlassCard>
       </div>

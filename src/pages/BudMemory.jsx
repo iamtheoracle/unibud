@@ -103,37 +103,37 @@ export default function BudMemory() {
     <div className="min-h-screen pb-8">
       {/* Header */}
       <div className="pt-12 pb-3 px-5 flex items-center gap-3">
-        <Link to="/me" className="w-9 h-9 rounded-full bg-white shadow-sm flex items-center justify-center">
-          <ArrowLeft className="w-[18px] h-[18px] text-[#1A1A1A]" strokeWidth={2} />
+        <Link to="/me" className="w-9 h-9 rounded-full bg-card shadow-sm flex items-center justify-center">
+          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
         </Link>
         <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center shadow-sm">
-            <Sparkles className="w-4.5 h-4.5 text-white" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-sm">
+            <Sparkles className="w-4.5 h-4.5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="font-heading font-extrabold text-[20px] tracking-tight text-[#1A1A1A]">Bud Memory</h1>
-            <p className="text-[11px] text-[#86868B]">What Bud remembers about you</p>
+            <h1 className="font-heading font-extrabold text-[20px] tracking-tight text-foreground">Bud Memory</h1>
+            <p className="text-[11px] text-muted-foreground">What Bud remembers about you</p>
           </div>
         </div>
       </div>
 
       <div className="px-4 space-y-4">
         {/* Info banner */}
-        <div className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-4">
-          <p className="text-[12px] text-[#86868B] leading-relaxed">
+        <div className="bg-card rounded-2xl shadow-sm border border-border/30 p-4">
+          <p className="text-[12px] text-muted-foreground leading-relaxed">
             Bud uses this information to personalize your study plans, reminders, recommendations, and more. You're always in control — edit, delete, export, or disable memory anytime.
           </p>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2">
-          <button onClick={exportMemory} className="flex-1 bg-white rounded-2xl shadow-sm border border-black/[0.04] py-3 flex flex-col items-center gap-1">
-            <Download className="w-4 h-4 text-[#28A745]" />
-            <span className="text-[11px] font-semibold text-[#1A1A1A]">Export</span>
+          <button onClick={exportMemory} className="flex-1 bg-card rounded-2xl shadow-sm border border-border/30 py-3 flex flex-col items-center gap-1">
+            <Download className="w-4 h-4 text-primary" />
+            <span className="text-[11px] font-semibold text-foreground">Export</span>
           </button>
-          <button onClick={toggleMemory} className="flex-1 bg-white rounded-2xl shadow-sm border border-black/[0.04] py-3 flex flex-col items-center gap-1">
-            <Power className={`w-4 h-4 ${memoryDisabled ? "text-red-500" : "text-[#28A745]"}`} />
-            <span className="text-[11px] font-semibold text-[#1A1A1A]">{memoryDisabled ? "Enable" : "Disable"}</span>
+          <button onClick={toggleMemory} className="flex-1 bg-card rounded-2xl shadow-sm border border-border/30 py-3 flex flex-col items-center gap-1">
+            <Power className={`w-4 h-4 ${memoryDisabled ? "text-red-500" : "text-primary"}`} />
+            <span className="text-[11px] font-semibold text-foreground">{memoryDisabled ? "Enable" : "Disable"}</span>
           </button>
         </div>
 
@@ -143,15 +143,15 @@ export default function BudMemory() {
           if (!hasData) return null;
           return (
             <div key={catName}>
-              <p className="text-[11px] font-semibold text-[#86868B] uppercase tracking-wider mb-2 px-1">{catName}</p>
-              <div className="bg-white rounded-2xl shadow-sm border border-black/[0.04] overflow-hidden">
+              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">{catName}</p>
+              <div className="bg-card rounded-2xl shadow-sm border border-border/30 overflow-hidden">
                 {fields.filter(f => user?.[f.key]).map((field, i, arr) => {
                   const val = user[field.key];
                   const displayVal = Array.isArray(val) ? val.join(", ") : val;
                   return (
-                    <div key={field.key} className={`flex items-center gap-3 px-4 py-3 ${i < arr.length - 1 ? "border-b border-black/[0.04]" : ""}`}>
+                    <div key={field.key} className={`flex items-center gap-3 px-4 py-3 ${i < arr.length - 1 ? "border-b border-border/30" : ""}`}>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] text-[#86868B]">{field.label}</p>
+                        <p className="text-[11px] text-muted-foreground">{field.label}</p>
                         {editing === field.key ? (
                           <input
                             value={editValue}
@@ -162,20 +162,20 @@ export default function BudMemory() {
                             className="w-full mt-1 px-2 py-1 rounded-lg border border-[#28A745]/30 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#28A745]/20"
                           />
                         ) : (
-                          <p className="text-[13px] font-medium text-[#1A1A1A] truncate">{displayVal}</p>
+                          <p className="text-[13px] font-medium text-foreground truncate">{displayVal}</p>
                         )}
                       </div>
                       {editing === field.key ? (
-                        <button onClick={saveEdit} disabled={saving} className="w-8 h-8 rounded-lg bg-[#28A745]/10 flex items-center justify-center">
-                          <Check className="w-4 h-4 text-[#28A745]" />
+                        <button onClick={saveEdit} disabled={saving} className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-primary" />
                         </button>
                       ) : (
                         <div className="flex gap-1">
-                          <button onClick={() => startEdit(field.key, val)} className="w-8 h-8 rounded-lg hover:bg-[#F5F5F7] flex items-center justify-center">
-                            <Pencil className="w-3.5 h-3.5 text-[#86868B]" />
+                          <button onClick={() => startEdit(field.key, val)} className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center">
+                            <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
                           </button>
-                          <button onClick={() => deleteField(field.key)} className="w-8 h-8 rounded-lg hover:bg-red-50 flex items-center justify-center">
-                            <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                          <button onClick={() => deleteField(field.key)} className="w-8 h-8 rounded-lg hover:bg-destructive/10 flex items-center justify-center">
+                            <Trash2 className="w-3.5 h-3.5 text-destructive" />
                           </button>
                         </div>
                       )}
@@ -192,9 +192,9 @@ export default function BudMemory() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="bg-amber-50 border border-amber-200 rounded-2xl p-4"
+            className="bg-warning/10 border border-warning/20 rounded-2xl p-4"
           >
-            <p className="text-[12px] text-amber-700">
+            <p className="text-[12px] text-warning">
               Memory is disabled. Bud won't use your stored preferences for personalization until you re-enable it.
             </p>
           </motion.div>

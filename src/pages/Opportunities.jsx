@@ -8,15 +8,16 @@ import { Search, Sparkles, MapPin, Calendar, Award, Briefcase, GraduationCap, Gl
 const TYPES = ["All", "Scholarship", "Internship", "Job", "Competition", "Fellowship", "Grant"];
 
 const typeIcons = { scholarship: GraduationCap, internship: Briefcase, competition: Trophy, research: Globe, job: Briefcase, fellowship: Award, grant: Award, exchange: Globe, volunteering: Briefcase, mentorship: Briefcase };
-const typeColors = { scholarship: "#16A34A", internship: "#2563EB", competition: "#DAAF37", research: "#7C3AED", job: "#DC2626", fellowship: "#F59E0B", grant: "#16A34A" };
+const withAlpha = (hsl, a = 0.08) => hsl.replace("))", ") / " + a + ")");
+const typeColors = { scholarship: "hsl(var(--unibud-green))", internship: "hsl(var(--unibud-blue))", competition: "hsl(var(--unibud-gold))", research: "hsl(var(--unibud-purple))", job: "hsl(var(--unibud-red))", fellowship: "hsl(var(--unibud-orange))", grant: "hsl(var(--unibud-green))" };
 
 const TRACKER_STATUSES = [
-  { key: "interested", label: "Interested", color: "#A3A3A3" },
-  { key: "preparing", label: "Preparing", color: "#F59E0B" },
-  { key: "applied", label: "Applied", color: "#2563EB" },
-  { key: "interview", label: "Interview", color: "#7C3AED" },
-  { key: "offered", label: "Offered", color: "#16A34A" },
-  { key: "rejected", label: "Rejected", color: "#DC2626" },
+  { key: "interested", label: "Interested", color: "hsl(var(--unibud-n5))" },
+  { key: "preparing", label: "Preparing", color: "hsl(var(--unibud-orange))" },
+  { key: "applied", label: "Applied", color: "hsl(var(--unibud-blue))" },
+  { key: "interview", label: "Interview", color: "hsl(var(--unibud-purple))" },
+  { key: "offered", label: "Offered", color: "hsl(var(--unibud-green))" },
+  { key: "rejected", label: "Rejected", color: "hsl(var(--unibud-red))" },
 ];
 
 export default function Opportunities() {
@@ -172,11 +173,11 @@ export default function Opportunities() {
             return (
               <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }} className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
                 <div className="flex items-start gap-3 mb-2">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${typeColors[t.type] || "#DAAF37"}15` }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "#DAAF37" }} /></div>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: withAlpha(typeColors[t.type] || "hsl(var(--unibud-gold))") }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "hsl(var(--unibud-gold))" }} /></div>
                   <div className="flex-1 min-w-0"><p className="font-heading font-semibold text-[13px] text-foreground">{t.opportunity_title}</p><p className="text-[11px] text-muted-foreground">{t.organization}</p></div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold" style={{ backgroundColor: `${status?.color}15`, color: status?.color }}>{status?.label}</span>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold" style={{ backgroundColor: withAlpha(status?.color), color: status?.color }}>{status?.label}</span>
                   {t.deadline && <span className="text-[10px] text-muted-foreground flex items-center gap-1"><Calendar className="w-3 h-3" /> {new Date(t.deadline).toLocaleDateString("en", { month: "short", day: "numeric" })}</span>}
                 </div>
               </motion.div>
@@ -196,11 +197,11 @@ export default function Opportunities() {
 
 function OpportunityCard({ opp, onToggleSave, onTrack, delay = 0, compact }) {
   const Icon = typeIcons[opp.type] || Briefcase;
-  const color = typeColors[opp.type] || "#DAAF37";
+  const color = typeColors[opp.type] || "hsl(var(--unibud-gold))";
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay }} className="bg-card rounded-2xl p-4 premium-shadow border border-border/30">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}15` }}><Icon className="w-5 h-5" style={{ color }} /></div>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: withAlpha(color) }}><Icon className="w-5 h-5" style={{ color }} /></div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div><p className="font-heading font-semibold text-[13px] leading-snug text-foreground">{opp.title}</p><p className="text-[11px] text-muted-foreground">{opp.organization}</p></div>

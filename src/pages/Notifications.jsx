@@ -13,12 +13,12 @@ const notifications = [
 ];
 
 const typeConfig = {
-  academic: { icon: BookOpen, color: "bg-blue-50 text-blue-500" },
-  opportunity: { icon: Award, color: "bg-emerald-50 text-emerald-500" },
-  social: { icon: Users, color: "bg-pink-50 text-pink-500" },
-  system: { icon: Settings, color: "bg-slate-100 text-slate-500" },
-  achievement: { icon: Award, color: "bg-amber-50 text-amber-500" },
-  emergency: { icon: AlertTriangle, color: "bg-red-50 text-red-500" },
+  academic: { icon: BookOpen, color: "bg-info/10 text-info" },
+  opportunity: { icon: Award, color: "bg-success/10 text-success" },
+  social: { icon: Users, color: "bg-purple/10 text-purple" },
+  system: { icon: Settings, color: "bg-muted text-muted-foreground" },
+  achievement: { icon: Award, color: "bg-warning/10 text-warning" },
+  emergency: { icon: AlertTriangle, color: "bg-destructive/10 text-destructive" },
 };
 
 export default function Notifications() {

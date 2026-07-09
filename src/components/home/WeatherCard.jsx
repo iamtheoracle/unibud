@@ -7,8 +7,7 @@ export default function WeatherCard() {
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-3xl p-5 shadow-sm"
-      style={{ background: "linear-gradient(135deg, #28A745 0%, #1a7a35 100%)" }}
+      className="relative overflow-hidden rounded-3xl p-5 premium-shadow bg-gradient-to-br from-info to-info/80"
     >
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
       <div className="absolute -bottom-12 -left-4 w-24 h-24 rounded-full bg-white/5" />

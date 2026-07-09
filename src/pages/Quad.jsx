@@ -53,15 +53,15 @@ export default function Quad() {
       {/* Header */}
       <div className="pt-12 pb-3 px-5 flex items-center justify-between">
         <div>
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-[#1A1A1A]">Quad</h1>
-          <p className="text-[12px] text-[#86868B] font-medium">The heart of campus</p>
+          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Quad</h1>
+          <p className="text-[12px] text-muted-foreground font-medium">The heart of campus</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
-            <Search className="w-[18px] h-[18px] text-[#1A1A1A]" strokeWidth={1.8} />
+          <button className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center">
+            <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
           </button>
-          <button className="w-10 h-10 rounded-full bg-[#28A745] shadow-sm flex items-center justify-center">
-            <PenLine className="w-[18px] h-[18px] text-white" strokeWidth={2} />
+          <button className="w-10 h-10 rounded-full bg-primary shadow-sm flex items-center justify-center">
+            <PenLine className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
           </button>
         </div>
       </div>
@@ -71,16 +71,16 @@ export default function Quad() {
         <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
           {stories.map((story, i) => (
             <div key={i} className="flex flex-col items-center gap-1 flex-shrink-0">
-              <div className={`w-14 h-14 rounded-full p-[2px] ${story.isYou ? "bg-[#E5E5EA]" : "bg-gradient-to-tr from-[#28A745] to-[#1a7a35]"}`}>
-                <div className="w-full h-full rounded-full bg-white p-[2px]">
+              <div className={`w-14 h-14 rounded-full p-[2px] ${story.isYou ? "bg-muted" : "bg-gradient-to-tr from-primary to-primary/80"}`}>
+                <div className="w-full h-full rounded-full bg-card p-[2px]">
                   {story.isYou ? (
-                    <div className="w-full h-full rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#86868B] text-xl font-light">+</div>
+                    <div className="w-full h-full rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xl font-light">+</div>
                   ) : (
                     <img src={story.avatar} alt={story.name} className="w-full h-full rounded-full object-cover" />
                   )}
                 </div>
               </div>
-              <span className="text-[10px] font-medium text-[#1A1A1A] max-w-[60px] truncate">{story.name}</span>
+              <span className="text-[10px] font-medium text-foreground max-w-[60px] truncate">{story.name}</span>
             </div>
           ))}
         </div>
@@ -88,27 +88,27 @@ export default function Quad() {
 
       {/* Status Update */}
       <div className="px-4 mb-3">
-        <div className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3">
+        <div className="bg-card rounded-2xl shadow-sm border border-border/30 p-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">Y</div>
-            <div className="flex-1 py-2 px-3 rounded-xl bg-[#F5F5F7] text-[12px] text-[#86868B]">What's happening on campus?</div>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center text-primary-foreground text-[11px] font-bold flex-shrink-0">Y</div>
+            <div className="flex-1 py-2 px-3 rounded-xl bg-muted text-[12px] text-muted-foreground">What's happening on campus?</div>
           </div>
-          <div className="flex items-center gap-1 mt-2.5 pt-2.5 border-t border-black/[0.04]">
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+          <div className="flex items-center gap-1 mt-2.5 pt-2.5 border-t border-border/30">
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-muted transition-colors">
               <Image className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
-              <span className="text-[11px] font-medium text-[#1A1A1A]">Photo</span>
+              <span className="text-[11px] font-medium text-foreground">Photo</span>
             </button>
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-muted transition-colors">
               <Video className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
-              <span className="text-[11px] font-medium text-[#1A1A1A]">Video</span>
+              <span className="text-[11px] font-medium text-foreground">Video</span>
             </button>
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-muted transition-colors">
               <BarChart3 className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
-              <span className="text-[11px] font-medium text-[#1A1A1A]">Poll</span>
+              <span className="text-[11px] font-medium text-foreground">Poll</span>
             </button>
-            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-muted transition-colors">
               <Calendar className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
-              <span className="text-[11px] font-medium text-[#1A1A1A]">Event</span>
+              <span className="text-[11px] font-medium text-foreground">Event</span>
             </button>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function Quad() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all ${
-                activeTab === tab ? "bg-[#1A1A1A] text-white" : "bg-white text-[#86868B] border border-black/[0.06]"
+                activeTab === tab ? "bg-foreground text-background" : "bg-card text-muted-foreground border border-border/40"
               }`}
             >
               {tab}
@@ -139,41 +139,41 @@ export default function Quad() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-white rounded-2xl shadow-sm border border-black/[0.04] overflow-hidden"
+            className="bg-card rounded-2xl shadow-sm border border-border/30 overflow-hidden"
           >
             <div className="p-3.5">
               <div className="flex items-center gap-2.5 mb-2.5">
                 <img src={post.avatar} alt={post.author} className="w-9 h-9 rounded-full object-cover" />
                 <div className="flex-1">
                   <div className="flex items-center gap-1">
-                    <span className="font-heading font-semibold text-[13px] text-[#1A1A1A]">{post.author}</span>
-                    {post.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#28A745] fill-[#28A745]" />}
+                    <span className="font-heading font-semibold text-[13px] text-foreground">{post.author}</span>
+                    {post.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#28A745] fill-success" />}
                   </div>
-                  <p className="text-[10px] text-[#86868B]">{post.handle} · {post.time} ago</p>
+                  <p className="text-[10px] text-muted-foreground">{post.handle} · {post.time} ago</p>
                 </div>
-                <button className="w-7 h-7 rounded-lg hover:bg-[#F5F5F7] flex items-center justify-center">
-                  <MoreHorizontal className="w-4 h-4 text-[#86868B]" />
+                <button className="w-7 h-7 rounded-lg hover:bg-muted flex items-center justify-center">
+                  <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                 </button>
               </div>
-              <p className="text-[13px] leading-relaxed text-[#1A1A1A]">{post.content}</p>
+              <p className="text-[13px] leading-relaxed text-foreground">{post.content}</p>
             </div>
             {post.image && <img src={post.image} alt="" className="w-full h-48 object-cover" />}
-            <div className="flex items-center gap-1 px-3.5 py-2.5 border-t border-black/[0.04]">
-              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
-                <Heart className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
-                <span className="text-[11px] font-semibold text-[#86868B]">{post.likes}</span>
+            <div className="flex items-center gap-1 px-3.5 py-2.5 border-t border-border/30">
+              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-muted transition-colors">
+                <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+                <span className="text-[11px] font-semibold text-muted-foreground">{post.likes}</span>
               </button>
-              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
-                <MessageCircle className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
-                <span className="text-[11px] font-semibold text-[#86868B]">{post.comments}</span>
+              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-muted transition-colors">
+                <MessageCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+                <span className="text-[11px] font-semibold text-muted-foreground">{post.comments}</span>
               </button>
-              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
-                <Share2 className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
-                <span className="text-[11px] font-semibold text-[#86868B]">{post.shares}</span>
+              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-muted transition-colors">
+                <Share2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+                <span className="text-[11px] font-semibold text-muted-foreground">{post.shares}</span>
               </button>
               <div className="flex-1" />
-              <button className="py-1.5 px-2 rounded-lg hover:bg-[#F5F5F7] transition-colors">
-                <Bookmark className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
+              <button className="py-1.5 px-2 rounded-lg hover:bg-muted transition-colors">
+                <Bookmark className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
               </button>
             </div>
           </motion.div>

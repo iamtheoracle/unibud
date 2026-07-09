@@ -109,7 +109,7 @@ export default function Welcome() {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 mx-4 mb-3 rounded-[28px] bg-[#0D0D0D] p-5 elevated-shadow border border-[#1A1A1A]"
+        className="relative z-10 mx-4 mb-3 rounded-[28px] bg-black p-5 elevated-shadow border border-n1"
       >
         <motion.button
           whileTap={{ scale: 0.98 }}
@@ -123,7 +123,7 @@ export default function Welcome() {
         <motion.button
           whileTap={{ scale: 0.98 }}
           onClick={() => navigate("/login")}
-          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-[#262626] flex items-center justify-center gap-2 hover:bg-[#1A1A1A] transition-colors mb-3"
+          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-n2 flex items-center justify-center gap-2 hover:bg-n1 transition-colors mb-3"
         >
           <Lock className="w-[16px] h-[16px]" strokeWidth={2} />
           Sign In
@@ -132,7 +132,7 @@ export default function Welcome() {
         <div className="text-center">
           <Link
             to="/forgot-password"
-            className="text-[12px] text-[#A3A3A3] hover:text-primary transition-colors flex items-center justify-center gap-1"
+            className="text-[12px] text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1"
           >
             <KeyRound className="w-3 h-3" />
             Forgot Password?

@@ -10,9 +10,9 @@ const announcements = [
 ];
 
 const typeColors = {
-  academic: "bg-blue-50 text-blue-600",
-  opportunity: "bg-emerald-50 text-emerald-600",
-  system: "bg-purple-50 text-purple-600",
+  academic: "bg-info/10 text-info",
+  opportunity: "bg-success/10 text-success",
+  system: "bg-purple/10 text-purple",
 };
 
 export default function AnnouncementsCard() {

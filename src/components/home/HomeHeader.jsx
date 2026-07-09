@@ -19,13 +19,13 @@ export default function HomeHeader({ user }) {
         <h1 className="font-heading font-bold text-[22px] text-foreground tracking-tight">{firstName} 👋</h1>
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-100">
-          <Sun className="w-3.5 h-3.5 text-amber-500" />
-          <span className="text-[11px] font-semibold text-amber-700">28°</span>
+        <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-warning/10 border border-warning/20">
+          <Sun className="w-3.5 h-3.5 text-warning" />
+          <span className="text-[11px] font-semibold text-warning">28°</span>
         </div>
-        <Link to="/notifications" className="relative w-9 h-9 rounded-full bg-white border border-border/60 flex items-center justify-center shadow-sm">
+        <Link to="/notifications" className="relative w-9 h-9 rounded-full bg-card border border-border/60 flex items-center justify-center shadow-sm">
           <Bell className="w-4 h-4 text-foreground" strokeWidth={1.8} />
-          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-destructive rounded-full border-2 border-white" />
+          <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-destructive rounded-full border-2 border-card" />
         </Link>
       </div>
     </motion.div>

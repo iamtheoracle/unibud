@@ -4,9 +4,9 @@ import SectionHeader from "@/components/ui/SectionHeader";
 import { Clock, MapPin, Calendar } from "lucide-react";
 
 const mockClasses = [
-  { code: "CSC 301", title: "Data Structures", time: "8:00 AM", endTime: "10:00 AM", location: "LT 5", color: "from-blue-500 to-blue-600", isNow: true },
-  { code: "MTH 201", title: "Linear Algebra", time: "11:00 AM", endTime: "1:00 PM", location: "Room 204", color: "from-purple-500 to-purple-600", isNow: false },
-  { code: "PHY 203", title: "Quantum Mechanics", time: "2:00 PM", endTime: "4:00 PM", location: "Lab 3", color: "from-emerald-500 to-emerald-600", isNow: false },
+  { code: "CSC 301", title: "Data Structures", time: "8:00 AM", endTime: "10:00 AM", location: "LT 5", color: "from-info to-info/80", isNow: true },
+  { code: "MTH 201", title: "Linear Algebra", time: "11:00 AM", endTime: "1:00 PM", location: "Room 204", color: "from-purple to-purple/80", isNow: false },
+  { code: "PHY 203", title: "Quantum Mechanics", time: "2:00 PM", endTime: "4:00 PM", location: "Lab 3", color: "from-success to-success/80", isNow: false },
 ];
 
 export default function TodayScheduleCard() {
@@ -22,7 +22,7 @@ export default function TodayScheduleCard() {
                 <div className="flex items-center gap-2 mb-0.5">
                   <span className="font-heading font-bold text-[13px]">{cls.code}</span>
                   {cls.isNow && (
-                    <span className="px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-white animate-pulse-soft">
+                    <span className="px-1.5 py-0.5 rounded-full bg-primary text-[9px] font-bold text-primary-foreground animate-pulse-soft">
                       NOW
                     </span>
                   )}

@@ -12,8 +12,8 @@ export default function MentorshipSection() {
   return (
     <div className="px-4 pb-8">
       <div className="flex items-center gap-1.5 mb-3 px-1">
-        <Sparkles className="w-4 h-4 text-[#28A745]" />
-        <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A]">Find a Mentor</h3>
+        <Sparkles className="w-4 h-4 text-primary" />
+        <h3 className="font-heading font-bold text-[16px] text-foreground">Find a Mentor</h3>
       </div>
       <div className="flex gap-3 overflow-x-auto no-scrollbar">
         {mentors.map((m, i) => (
@@ -22,26 +22,26 @@ export default function MentorshipSection() {
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3 flex-shrink-0 w-[200px]"
+            className="bg-card rounded-2xl shadow-sm border border-border/30 p-3 flex-shrink-0 w-[200px]"
           >
             <div className="flex items-center gap-2.5 mb-2">
               <img src={m.avatar} alt={m.name} className="w-11 h-11 rounded-full object-cover" />
               <div className="flex-1 min-w-0">
-                <p className="font-heading font-semibold text-[12px] text-[#1A1A1A] truncate">{m.name}</p>
-                <p className="text-[10px] text-[#86868B] truncate">{m.role}</p>
+                <p className="font-heading font-semibold text-[12px] text-foreground truncate">{m.name}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{m.role}</p>
               </div>
               {m.verified && (
-                <span className="w-4 h-4 rounded-full bg-[#28A745] flex items-center justify-center flex-shrink-0">
-                  <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <span className="w-4 h-4 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                  <svg className="w-2.5 h-2.5 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </span>
               )}
             </div>
-            <p className="text-[10px] text-[#1A1A1A] mb-1.5 leading-snug">{m.expertise}</p>
+            <p className="text-[10px] text-foreground mb-1.5 leading-snug">{m.expertise}</p>
             <div className="flex items-center gap-2 mb-2.5">
-              <span className="text-[10px] font-semibold text-amber-500">★ {m.rating}</span>
-              <span className="text-[10px] text-[#86868B]">{m.sessions} sessions</span>
+              <span className="text-[10px] font-semibold text-warning">★ {m.rating}</span>
+              <span className="text-[10px] text-muted-foreground">{m.sessions} sessions</span>
             </div>
-            <button className="w-full py-1.5 rounded-lg bg-[#28A745] text-white text-[11px] font-semibold">Request</button>
+            <button className="w-full py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-semibold">Request</button>
           </motion.div>
         ))}
       </div>

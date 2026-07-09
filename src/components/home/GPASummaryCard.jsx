@@ -23,8 +23,8 @@ export default function GPASummaryCard() {
             />
             <defs>
               <linearGradient id="gpaGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="hsl(220, 72%, 50%)" />
-                <stop offset="100%" stopColor="hsl(280, 60%, 55%)" />
+                <stop offset="0%" stopColor="hsl(var(--unibud-blue))" />
+                <stop offset="100%" stopColor="hsl(var(--unibud-purple))" />
               </linearGradient>
             </defs>
           </svg>
@@ -40,7 +40,7 @@ export default function GPASummaryCard() {
           <p className="text-[11px] text-muted-foreground">Out of {maxGpa} · 2nd Class Upper</p>
           <div className="flex gap-3 mt-2">
             <div className="text-center">
-              <p className="font-heading font-bold text-[13px] text-emerald-600">A</p>
+              <p className="font-heading font-bold text-[13px] text-success">A</p>
               <p className="text-[9px] text-muted-foreground">Best</p>
             </div>
             <div className="text-center">
