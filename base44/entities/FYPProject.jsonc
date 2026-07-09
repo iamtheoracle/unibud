@@ -1,0 +1,117 @@
+{
+  "name": "FYPProject",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "supervisor_name": {
+      "type": "string"
+    },
+    "project_type": {
+      "type": "string",
+      "enum": [
+        "software",
+        "hardware",
+        "research",
+        "prototype",
+        "design",
+        "mixed"
+      ],
+      "default": "software"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "featured"
+      ],
+      "default": "completed"
+    },
+    "report_url": {
+      "type": "string"
+    },
+    "poster_url": {
+      "type": "string"
+    },
+    "presentation_url": {
+      "type": "string"
+    },
+    "video_url": {
+      "type": "string"
+    },
+    "github_url": {
+      "type": "string"
+    },
+    "prototype_url": {
+      "type": "string"
+    },
+    "cover_image_url": {
+      "type": "string"
+    },
+    "team_members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "year": {
+      "type": "number"
+    },
+    "grade": {
+      "type": "string"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "student_name"
+  ]
+}

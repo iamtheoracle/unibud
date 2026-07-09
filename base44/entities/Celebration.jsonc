@@ -1,0 +1,63 @@
+{
+  "name": "Celebration",
+  "type": "object",
+  "properties": {
+    "student_name": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "milestone_type": {
+      "type": "string",
+      "enum": [
+        "graduation_countdown",
+        "birthday",
+        "award_winner",
+        "competition_winner",
+        "club_launch",
+        "achievement",
+        "deans_list",
+        "research_publication",
+        "startup_launch",
+        "student_business",
+        "certification",
+        "leadership_role"
+      ],
+      "default": "achievement"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "celebration_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "reactions_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_reacted": {
+      "type": "boolean",
+      "default": false
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "student_name",
+    "milestone_type",
+    "title"
+  ]
+}

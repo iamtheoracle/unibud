@@ -47,6 +47,10 @@ import Challenges from '@/pages/Challenges';
 import Discover from '@/pages/Discover';
 import StudentSupport from '@/pages/StudentSupport';
 import StudentGovernment from '@/pages/StudentGovernment';
+import FYPHub from '@/pages/FYPHub';
+import CampusTraditions from '@/pages/CampusTraditions';
+import Celebrations from '@/pages/Celebrations';
+import StudentAchievements from '@/pages/StudentAchievements';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
 // Portal imports
@@ -147,6 +151,10 @@ const AuthenticatedApp = () => {
           <Route path="/discover" element={<Discover />} />
           <Route path="/student-support" element={<StudentSupport />} />
           <Route path="/student-government" element={<StudentGovernment />} />
+          <Route path="/fyp-hub" element={<FYPHub />} />
+          <Route path="/campus-traditions" element={<CampusTraditions />} />
+          <Route path="/celebrations" element={<Celebrations />} />
+          <Route path="/achievements" element={<StudentAchievements />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />

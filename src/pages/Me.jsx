@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import {
   Settings, ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
-  BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass
+  BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
+  PartyPopper, Rocket
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,7 +31,10 @@ const menuSections = [
   {
     title: "Achievements",
     items: [
-      { icon: Trophy, label: "Badges & Certificates", path: "/me" },
+      { icon: Award, label: "Achievement Timeline", path: "/achievements" },
+      { icon: Trophy, label: "Challenges", path: "/challenges" },
+      { icon: PartyPopper, label: "Celebrations", path: "/celebrations" },
+      { icon: Rocket, label: "FYP Hub", path: "/fyp-hub" },
       { icon: Star, label: "Portfolio & Projects", path: "/me" },
       { icon: Globe, label: "Career Readiness", path: "/opportunities" },
     ],
@@ -41,6 +45,7 @@ const menuSections = [
       { icon: Brain, label: "Bud Memory", path: "/bud-memory" },
       { icon: Link2, label: "Connected Accounts", path: "/connected-accounts" },
       { icon: Compass, label: "Discover", path: "/discover" },
+      { icon: PartyPopper, label: "Campus Life", path: "/campus-traditions" },
       { icon: Trophy, label: "Challenges", path: "/challenges" },
       { icon: Heart, label: "Student Support", path: "/student-support" },
       { icon: Shield, label: "Student Government", path: "/student-government" },
