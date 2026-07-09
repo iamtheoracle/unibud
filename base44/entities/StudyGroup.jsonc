@@ -35,6 +35,30 @@
     "subject": {
       "type": "string"
     },
+    "course_code": {
+      "type": "string"
+    },
+    "lecturer": {
+      "type": "string"
+    },
+    "semester": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "share_link": {
+      "type": "string"
+    },
+    "meeting_url": {
+      "type": "string"
+    },
     "members_count": {
       "type": "number",
       "default": 0
@@ -54,6 +78,16 @@
     },
     "accent_color": {
       "type": "string"
+    },
+    "is_joined": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [

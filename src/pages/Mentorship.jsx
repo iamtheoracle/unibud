@@ -237,6 +237,7 @@ export default function Mentorship() {
 }
 
 function MentorMiniCard({ mentor, onConnect, delay }) {
+  const navigate = useNavigate();
   const RoleIcon = roleIcons[mentor.role] || Users;
   const color = roleColors[mentor.role] || "hsl(var(--unibud-gold))";
   return (
@@ -244,7 +245,8 @@ function MentorMiniCard({ mentor, onConnect, delay }) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay, type: "spring", stiffness: 300, damping: 24 }}
-      className="flex-shrink-0 w-[200px] bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 card-hover"
+      onClick={() => navigate(`/mentor/${mentor.id}`)}
+      className="flex-shrink-0 w-[200px] bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 card-hover cursor-pointer"
     >
       <div className="flex items-center gap-2.5 mb-2">
         {mentor.avatar_url ? (
@@ -287,6 +289,7 @@ function MentorMiniCard({ mentor, onConnect, delay }) {
 }
 
 function MentorCard({ mentor, onConnect, delay }) {
+  const navigate = useNavigate();
   const RoleIcon = roleIcons[mentor.role] || Users;
   const color = roleColors[mentor.role] || "hsl(var(--unibud-gold))";
   return (
@@ -294,7 +297,8 @@ function MentorCard({ mentor, onConnect, delay }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover"
+      onClick={() => navigate(`/mentor/${mentor.id}`)}
+      className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover cursor-pointer"
     >
       <div className="flex items-start gap-3">
         {mentor.avatar_url ? (

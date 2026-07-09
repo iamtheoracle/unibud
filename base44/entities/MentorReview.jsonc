@@ -1,0 +1,34 @@
+{
+  "name": "MentorReview",
+  "type": "object",
+  "properties": {
+    "mentor_id": {
+      "type": "string"
+    },
+    "mentor_name": {
+      "type": "string"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number",
+      "default": 5
+    },
+    "review_text": {
+      "type": "string"
+    },
+    "session_type": {
+      "type": "string"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "mentor_id",
+    "student_name",
+    "rating"
+  ]
+}

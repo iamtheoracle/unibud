@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import MorningBriefing from "@/components/home/MorningBriefing";
 import AcademicSnapshot from "@/components/home/AcademicSnapshot";
+import ExamCountdown from "@/components/home/ExamCountdown";
 import SmartRecommendations from "@/components/home/SmartRecommendations";
 import QuickActions from "@/components/home/QuickActions";
 import CampusLife from "@/components/home/CampusLife";
@@ -64,6 +65,7 @@ export default function Home() {
         <MorningBriefing user={user} />
         <WeatherCard />
         <AcademicSnapshot />
+        <ExamCountdown />
         <TodaySchedule />
         <SmartRecommendations />
         <QuickActions />

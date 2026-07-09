@@ -48,6 +48,9 @@ import Discover from '@/pages/Discover';
 import StudentSupport from '@/pages/StudentSupport';
 import StudentGovernment from '@/pages/StudentGovernment';
 import Mentorship from '@/pages/Mentorship';
+import MentorProfile from '@/pages/MentorProfile';
+import StudyGroups from '@/pages/StudyGroups';
+import StudyGroupDetail from '@/pages/StudyGroupDetail';
 import FYPHub from '@/pages/FYPHub';
 import CampusTraditions from '@/pages/CampusTraditions';
 import CampusTraditionsCalendar from '@/pages/CampusTraditionsCalendar';
@@ -154,6 +157,9 @@ const AuthenticatedApp = () => {
           <Route path="/student-support" element={<StudentSupport />} />
           <Route path="/student-government" element={<StudentGovernment />} />
           <Route path="/mentorship" element={<Mentorship />} />
+          <Route path="/mentor/:mentorId" element={<MentorProfile />} />
+          <Route path="/study-groups" element={<StudyGroups />} />
+          <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
           <Route path="/fyp-hub" element={<FYPHub />} />
           <Route path="/campus-traditions" element={<CampusTraditions />} />
           <Route path="/traditions-calendar" element={<CampusTraditionsCalendar />} />

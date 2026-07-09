@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Clock, ChevronRight, Search } from "lucide-react";
+import { BookOpen, Clock, ChevronRight, Search, Users, Plus } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import ProgressDashboard from "@/components/academics/ProgressDashboard";
 import StatusBadge from "@/components/ui/StatusBadge";
 import SectionHeader from "@/components/ui/SectionHeader";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 
-const tabs = ["Progress", "Courses", "Timetable", "Tasks", "Grades"];
+const tabs = ["Progress", "Courses", "Timetable", "Tasks", "Grades", "Groups"];
 
 const mockCourses = [
   { code: "CSC 301", title: "Data Structures & Algorithms", lecturer: "Dr. Adeyemi", progress: 68, credits: 4, color: "from-info to-info/80" },
@@ -175,6 +177,15 @@ export default function Academics() {
           </>
         )}
 
+        {activeTab === "Groups" && (
+          <>
+            <Link to="/study-groups" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-[14px] bg-primary text-primary-foreground text-[13px] font-semibold spring-tap mb-3">
+              <Plus className="w-4 h-4" /> Create Study Group
+            </Link>
+            <StudyGroupsPreview />
+          </>
+        )}
+
         {activeTab === "Grades" && (
           <>
             <GlassCard variant="solid" className="p-5" delay={0.05}>
@@ -209,6 +220,47 @@ export default function Academics() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function StudyGroupsPreview() {
+  const { data: groups, isLoading } = useQuery({
+    queryKey: ["studyGroupsPreview"],
+    queryFn: () => base44.entities.StudyGroup.list("-created_date", 5),
+  });
+
+  if (isLoading) return <div className="h-20 rounded-[20px] shimmer" />;
+  if (!groups || groups.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <Users className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+        <p className="text-[12px] text-muted-foreground">No study groups yet</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {groups.map((group, i) => (
+        <Link key={group.id} to={`/study-groups/${group.id}`}>
+          <GlassCard variant="solid" className="p-3.5" delay={i * 0.04}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-[12px] flex items-center justify-center" style={{ backgroundColor: (group.accent_color || "hsl(var(--unibud-gold))").replace("))", ") / 0.12)") }}>
+                <Users className="w-4 h-4" style={{ color: group.accent_color || "hsl(var(--unibud-gold))" }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-heading font-semibold text-[13px] text-foreground truncate">{group.name}</p>
+                <p className="text-[10px] text-muted-foreground">{group.course_code || group.subject} · {group.members_count || 0} members</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </div>
+          </GlassCard>
+        </Link>
+      ))}
+      <Link to="/study-groups" className="block text-center text-[12px] text-primary font-semibold py-2">
+        View All Study Groups
+      </Link>
     </div>
   );
 }
