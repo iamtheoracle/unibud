@@ -49,6 +49,7 @@ import StudentSupport from '@/pages/StudentSupport';
 import StudentGovernment from '@/pages/StudentGovernment';
 import FYPHub from '@/pages/FYPHub';
 import CampusTraditions from '@/pages/CampusTraditions';
+import CampusTraditionsCalendar from '@/pages/CampusTraditionsCalendar';
 import Celebrations from '@/pages/Celebrations';
 import StudentAchievements from '@/pages/StudentAchievements';
 import SplashScreen from '@/components/onboarding/SplashScreen';
@@ -153,6 +154,7 @@ const AuthenticatedApp = () => {
           <Route path="/student-government" element={<StudentGovernment />} />
           <Route path="/fyp-hub" element={<FYPHub />} />
           <Route path="/campus-traditions" element={<CampusTraditions />} />
+          <Route path="/traditions-calendar" element={<CampusTraditionsCalendar />} />
           <Route path="/celebrations" element={<Celebrations />} />
           <Route path="/achievements" element={<StudentAchievements />} />
         </Route>

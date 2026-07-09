@@ -6,14 +6,17 @@ import {
   Settings, ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
-  PartyPopper, Rocket
+  PartyPopper, Rocket, Calendar,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link, useNavigate } from "react-router-dom";
+import AcademicProgressSection from "@/components/me/AcademicProgressSection";
+import CampusLifeSection from "@/components/me/CampusLifeSection";
+import BadgesSection from "@/components/me/BadgesSection";
 
-const stats = [
+const quickStats = [
   { label: "GPA", value: "4.20", icon: Award, color: "text-primary" },
-  { label: "Streak", value: "5 days", icon: Flame, color: "text-warning" },
+  { label: "Streak", value: "12d", icon: Flame, color: "text-warning" },
   { label: "Courses", value: "6", icon: BookOpen, color: "text-success" },
   { label: "Rank", value: "Top 15%", icon: Trophy, color: "text-primary" },
 ];
@@ -24,7 +27,7 @@ const menuSections = [
     items: [
       { icon: BarChart3, label: "Learning Analytics", path: "/academics" },
       { icon: FileText, label: "Transcript & Results", path: "/academics" },
-      { icon: Bookmark, label: "Saved Resources", path: "/academics" },
+      { icon: Bookmark, label: "Saved Resources", path: "/library" },
       { icon: Target, label: "Academic Goals", path: "/academics" },
     ],
   },
@@ -35,6 +38,7 @@ const menuSections = [
       { icon: Trophy, label: "Challenges", path: "/challenges" },
       { icon: PartyPopper, label: "Celebrations", path: "/celebrations" },
       { icon: Rocket, label: "FYP Hub", path: "/fyp-hub" },
+      { icon: Calendar, label: "Traditions Calendar", path: "/traditions-calendar" },
       { icon: Star, label: "Portfolio & Projects", path: "/me" },
       { icon: Globe, label: "Career Readiness", path: "/opportunities" },
     ],
@@ -46,7 +50,6 @@ const menuSections = [
       { icon: Link2, label: "Connected Accounts", path: "/connected-accounts" },
       { icon: Compass, label: "Discover", path: "/discover" },
       { icon: PartyPopper, label: "Campus Life", path: "/campus-traditions" },
-      { icon: Trophy, label: "Challenges", path: "/challenges" },
       { icon: Heart, label: "Student Support", path: "/student-support" },
       { icon: Shield, label: "Student Government", path: "/student-government" },
       { icon: Bell, label: "Notifications", path: "/notifications" },
@@ -76,36 +79,55 @@ export default function Me() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="pt-12 pb-6 px-5 text-center"
+        className="pt-12 pb-5 px-5 text-center"
       >
         <motion.div
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
-          className="w-24 h-24 rounded-[28px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-3.5 gold-glow"
+          className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-3 gold-glow"
         >
-          <span className="text-primary-foreground font-heading font-bold text-3xl">
+          <span className="text-primary-foreground font-heading font-bold text-2xl">
             {user?.full_name?.charAt(0) || "U"}
           </span>
         </motion.div>
-        <h1 className="font-heading font-bold text-[22px] text-foreground">{user?.full_name || "Student"}</h1>
-        <p className="text-[12px] text-muted-foreground mt-0.5">{user?.email}</p>
-        <span className="inline-block mt-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-semibold">
+        <h1 className="font-heading font-bold text-[20px] text-foreground">{user?.full_name || "Student"}</h1>
+        <p className="text-[11px] text-muted-foreground mt-0.5">{user?.email}</p>
+        <span className="inline-block mt-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
           Computer Science · 300 Level
         </span>
       </motion.div>
 
-      {/* Stats */}
-      <div className="px-4 mb-6">
-        <div className="grid grid-cols-4 gap-2.5">
-          {stats.map((stat, i) => (
-            <GlassCard key={i} variant="solid" className="p-3 text-center" delay={i * 0.04}>
-              <stat.icon className={`w-[18px] h-[18px] mx-auto mb-1.5 ${stat.color}`} strokeWidth={2.2} />
-              <p className="font-heading font-bold text-[14px] text-foreground">{stat.value}</p>
-              <p className="text-[9px] text-muted-foreground mt-0.5">{stat.label}</p>
+      {/* Quick Stats */}
+      <div className="px-4 mb-5">
+        <div className="grid grid-cols-4 gap-2">
+          {quickStats.map((stat, i) => (
+            <GlassCard key={i} variant="solid" className="p-2.5 text-center" delay={i * 0.04}>
+              <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} strokeWidth={2.2} />
+              <p className="font-heading font-bold text-[13px] text-foreground">{stat.value}</p>
+              <p className="text-[8px] text-muted-foreground mt-0.5">{stat.label}</p>
             </GlassCard>
           ))}
         </div>
+      </div>
+
+      {/* Academic Progress Dashboard */}
+      <div className="px-4 mb-5">
+        <div className="flex items-center gap-2 mb-3 px-1">
+          <BarChart3 className="w-4 h-4 text-primary" />
+          <h2 className="font-heading font-bold text-[15px] text-foreground">Academic Progress</h2>
+        </div>
+        <AcademicProgressSection />
+      </div>
+
+      {/* Campus Journey */}
+      <div className="px-4 mb-5">
+        <CampusLifeSection />
+      </div>
+
+      {/* Digital Badges */}
+      <div className="px-4 mb-5">
+        <BadgesSection />
       </div>
 
       {/* Menu Sections */}

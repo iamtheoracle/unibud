@@ -4,6 +4,7 @@ import { Search, PenLine, Image, Video, BarChart3, Calendar, Heart, MessageCircl
 import TrendingSection from "@/components/quad/TrendingSection";
 import CommunitiesPreview from "@/components/quad/CommunitiesPreview";
 import CampusTraditionsGallery from "@/components/quad/CampusTraditionsGallery";
+import CelebrationsCarousel from "@/components/quad/CelebrationsCarousel";
 
 const stories = [
   { name: "Your Story", isYou: true },
@@ -140,6 +141,9 @@ export default function Quad() {
 
       {/* Campus Traditions */}
       <CampusTraditionsGallery />
+
+      {/* Celebrations */}
+      <CelebrationsCarousel />
 
       {/* Feed */}
       <div className="px-4 space-y-3 pb-8">
