@@ -65,7 +65,7 @@ export default function Me() {
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-20 h-20 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-3 shadow-lg"
+          className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center mx-auto mb-3 shadow-lg"
         >
           <span className="text-white font-heading font-bold text-2xl">
             {user?.full_name?.charAt(0) || "U"}

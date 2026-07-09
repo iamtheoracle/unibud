@@ -6,25 +6,25 @@
 
 @layer base {
   :root {
-    --background: 40 20% 98%;
-    --foreground: 220 20% 10%;
+    --background: 240 12% 96%;
+    --foreground: 0 0% 10%;
     --card: 0 0% 100%;
-    --card-foreground: 220 20% 10%;
+    --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 20% 10%;
-    --primary: 220 72% 50%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 134 61% 41%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 40 15% 95%;
-    --secondary-foreground: 220 20% 15%;
-    --muted: 40 10% 94%;
-    --muted-foreground: 220 10% 46%;
-    --accent: 220 72% 96%;
-    --accent-foreground: 220 72% 40%;
+    --secondary: 240 12% 95%;
+    --secondary-foreground: 0 0% 15%;
+    --muted: 240 8% 94%;
+    --muted-foreground: 0 0% 46%;
+    --accent: 134 61% 95%;
+    --accent-foreground: 134 61% 35%;
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 10% 90%;
-    --input: 220 10% 90%;
-    --ring: 220 72% 50%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 134 61% 41%;
     --radius: 1rem;
 
     /* UNIBUD Semantic Colors */
@@ -43,7 +43,7 @@
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
     --glass-blur: 20px;
 
-    --chart-1: 220 72% 50%;
+    --chart-1: 134 61% 41%;
     --chart-2: 152 60% 42%;
     --chart-3: 38 92% 55%;
     --chart-4: 280 60% 55%;
@@ -56,12 +56,12 @@
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 220 72% 50%;
+    --sidebar-primary: 134 61% 41%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 72% 96%;
-    --sidebar-accent-foreground: 220 72% 40%;
-    --sidebar-border: 220 10% 92%;
-    --sidebar-ring: 220 72% 50%;
+    --sidebar-accent: 134 61% 95%;
+    --sidebar-accent-foreground: 134 61% 35%;
+    --sidebar-border: 0 0% 92%;
+    --sidebar-ring: 134 61% 41%;
   }
 }
 
@@ -97,13 +97,13 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
   }
   .text-gradient {
-    background: linear-gradient(135deg, hsl(220 72% 50%), hsl(280 60% 55%));
+    background: linear-gradient(135deg, hsl(134 61% 41%), hsl(160 60% 45%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   .unibud-glow {
-    box-shadow: 0 0 30px rgba(59, 130, 246, 0.15), 0 8px 32px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 0 30px rgba(40, 167, 69, 0.15), 0 8px 32px rgba(0, 0, 0, 0.06);
   }
   .card-hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

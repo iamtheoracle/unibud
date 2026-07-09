@@ -32,7 +32,7 @@ export default function Bud() {
 
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are Bud, a warm and encouraging AI study companion for university students. You're not a cold assistant — you're a trusted friend who happens to be incredibly knowledgeable. Speak naturally using simple English. Use emojis sparingly. Be supportive and make learning feel enjoyable. If a student struggles, try a different teaching approach — use analogies, stories, or step-by-step breakdowns.
+        prompt: `You are Bud, a warm and encouraging study companion for university students. You're not a cold assistant — you're a trusted friend who happens to be incredibly knowledgeable. Speak naturally using simple English. Use emojis sparingly. Be supportive and make learning feel enjoyable. If a student struggles, try a different teaching approach — use analogies, stories, or step-by-step breakdowns.
 
 Student message: ${text}
 
@@ -55,7 +55,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
           <ArrowLeft className="w-4 h-4" />
         </Link>
         <div className="flex items-center gap-2.5 flex-1">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center shadow-md">
             <Sparkles className="w-4.5 h-4.5 text-white" />
           </div>
           <div>
@@ -76,7 +76,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
             animate={{ opacity: 1, y: 0 }}
             className="pt-8 text-center"
           >
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center mx-auto mb-4 shadow-lg">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
             <h2 className="font-heading font-bold text-xl mb-1">Hey there! I'm Bud 👋</h2>
@@ -159,7 +159,7 @@ Respond helpfully, concisely, and warmly as Bud.`,
           <button
             onClick={() => sendMessage(input)}
             disabled={!input.trim()}
-            className="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-md disabled:opacity-50 disabled:shadow-none transition-all"
+            className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center text-white shadow-md disabled:opacity-50 disabled:shadow-none transition-all"
           >
             <Send className="w-4 h-4" />
           </button>

@@ -1,70 +1,126 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, MessageCircle, Share2, MoreHorizontal, Image, PenLine, BarChart3, Award, TrendingUp, Bookmark } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import StatusBadge from "@/components/ui/StatusBadge";
+import { Search, PenLine, Image, Video, BarChart3, Calendar, Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, BadgeCheck } from "lucide-react";
 
-const feedTabs = ["For You", "Trending", "Academic", "Campus"];
+const stories = [
+  { name: "Your Story", isYou: true },
+  { name: "Adaeze", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" },
+  { name: "Femi", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" },
+  { name: "Aisha", avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=100&q=80" },
+  { name: "David", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" },
+];
 
-const mockPosts = [
+const feedTabs = ["For you", "Trending", "Following", "Clubs", "Courses"];
+
+const posts = [
   {
-    author: "Adaeze Okafor", role: "student", avatar: "AO",
+    author: "Adaeze Okafor",
+    handle: "Computer Science · 300L",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80",
+    verified: true,
+    time: "2h",
     content: "Just finished building my first full-stack project for CSC 301! 🚀 Shoutout to Dr. Adeyemi for the amazing Data Structures lectures. Anyone interested in collaborating on the next assignment?",
-    time: "2h ago", likes: 24, comments: 8, type: "post",
-    tags: ["#CSC301", "#DataStructures"],
+    image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80",
+    likes: 24, comments: 8, shares: 3,
   },
   {
-    author: "Dr. Ibrahim", role: "lecturer", avatar: "DI",
+    author: "Dr. Ibrahim",
+    handle: "Physics Department · Lecturer",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&q=80",
+    verified: true,
+    time: "4h",
     content: "📢 Quantum Mechanics (PHY 203) extra tutorial session this Friday at 3PM in Lab 3. Bring your problem sets. All students welcome!",
-    time: "4h ago", likes: 45, comments: 12, type: "news", verified: true,
+    likes: 45, comments: 12, shares: 8,
   },
   {
-    author: "UNIBUD Chess Club", role: "club", avatar: "CC",
+    author: "UNIBUD Chess Club",
+    handle: "Official Club",
+    avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=100&q=80",
+    verified: true,
+    time: "6h",
     content: "♟️ Inter-University Chess Championship this Saturday! Registration closes tomorrow. Top 3 winners get certificates and cash prizes. Sign up at the Student Centre.",
-    time: "6h ago", likes: 31, comments: 5, type: "event",
-    tags: ["#Chess", "#Competition"],
-  },
-  {
-    author: "Emeka Nwosu", role: "student", avatar: "EN",
-    content: "Poll: Which study method works best for you before exams?",
-    time: "8h ago", likes: 56, comments: 23, type: "poll",
-    pollOptions: [
-      { text: "Practice questions", votes: 45 },
-      { text: "Group study", votes: 28 },
-      { text: "Summarized notes", votes: 32 },
-      { text: "Teaching others", votes: 19 },
-    ],
+    likes: 31, comments: 5, shares: 12,
   },
 ];
 
-const roleColors = {
-  student: "bg-blue-100 text-blue-700",
-  lecturer: "bg-purple-100 text-purple-700",
-  club: "bg-emerald-100 text-emerald-700",
-};
-
 export default function Quad() {
-  const [activeTab, setActiveTab] = useState("For You");
+  const [activeTab, setActiveTab] = useState("For you");
 
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="pt-12 pb-3 px-5">
-        <h1 className="font-heading font-bold text-[22px] tracking-tight">Quad</h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">Your digital campus square</p>
+      <div className="pt-12 pb-3 px-5 flex items-center justify-between">
+        <div>
+          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-[#1A1A1A]">Quad</h1>
+          <p className="text-[12px] text-[#86868B] font-medium">The heart of campus</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
+            <Search className="w-[18px] h-[18px] text-[#1A1A1A]" strokeWidth={1.8} />
+          </button>
+          <button className="w-10 h-10 rounded-full bg-[#28A745] shadow-sm flex items-center justify-center">
+            <PenLine className="w-[18px] h-[18px] text-white" strokeWidth={2} />
+          </button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <div className="px-4 mb-4 overflow-x-auto no-scrollbar">
+      {/* Stories */}
+      <div className="px-4 mb-4">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-1">
+          {stories.map((story, i) => (
+            <div key={i} className="flex flex-col items-center gap-1 flex-shrink-0">
+              <div className={`w-14 h-14 rounded-full p-[2px] ${story.isYou ? "bg-[#E5E5EA]" : "bg-gradient-to-tr from-[#28A745] to-[#1a7a35]"}`}>
+                <div className="w-full h-full rounded-full bg-white p-[2px]">
+                  {story.isYou ? (
+                    <div className="w-full h-full rounded-full bg-[#F5F5F7] flex items-center justify-center text-[#86868B] text-xl font-light">+</div>
+                  ) : (
+                    <img src={story.avatar} alt={story.name} className="w-full h-full rounded-full object-cover" />
+                  )}
+                </div>
+              </div>
+              <span className="text-[10px] font-medium text-[#1A1A1A] max-w-[60px] truncate">{story.name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Status Update */}
+      <div className="px-4 mb-3">
+        <div className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0">Y</div>
+            <div className="flex-1 py-2 px-3 rounded-xl bg-[#F5F5F7] text-[12px] text-[#86868B]">What's happening on campus?</div>
+          </div>
+          <div className="flex items-center gap-1 mt-2.5 pt-2.5 border-t border-black/[0.04]">
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+              <Image className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
+              <span className="text-[11px] font-medium text-[#1A1A1A]">Photo</span>
+            </button>
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+              <Video className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
+              <span className="text-[11px] font-medium text-[#1A1A1A]">Video</span>
+            </button>
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+              <BarChart3 className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
+              <span className="text-[11px] font-medium text-[#1A1A1A]">Poll</span>
+            </button>
+            <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+              <Calendar className="w-4 h-4 text-[#28A745]" strokeWidth={1.8} />
+              <span className="text-[11px] font-medium text-[#1A1A1A]">Event</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Feed Tabs */}
+      <div className="px-4 mb-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {feedTabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all ${
-                activeTab === tab
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-white border border-border/50 text-muted-foreground"
+              className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all ${
+                activeTab === tab ? "bg-[#1A1A1A] text-white" : "bg-white text-[#86868B] border border-black/[0.06]"
               }`}
             >
               {tab}
@@ -73,108 +129,52 @@ export default function Quad() {
         </div>
       </div>
 
-      {/* Create Post */}
-      <div className="px-4 mb-4">
-        <GlassCard variant="solid" className="p-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-[11px] font-bold">
-              Y
-            </div>
-            <div className="flex-1 py-2 px-3 rounded-xl bg-muted/50 text-[12px] text-muted-foreground">
-              Share something with the campus...
-            </div>
-            <div className="flex gap-1.5">
-              <button className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                <Image className="w-4 h-4 text-blue-500" />
-              </button>
-              <button className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center">
-                <BarChart3 className="w-4 h-4 text-purple-500" />
-              </button>
-            </div>
-          </div>
-        </GlassCard>
-      </div>
-
       {/* Feed */}
       <div className="px-4 space-y-3 pb-8">
-        {mockPosts.map((post, i) => (
-          <GlassCard key={i} variant="solid" className="p-4" delay={i * 0.06}>
-            {/* Author */}
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold ${roleColors[post.role]}`}>
-                {post.avatar}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-heading font-semibold text-[13px]">{post.author}</span>
-                  {post.verified && (
-                    <div className="w-4 h-4 rounded-full bg-blue-500 flex items-center justify-center">
-                      <Award className="w-2.5 h-2.5 text-white" />
-                    </div>
-                  )}
+        {posts.map((post, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="bg-white rounded-2xl shadow-sm border border-black/[0.04] overflow-hidden"
+          >
+            <div className="p-3.5">
+              <div className="flex items-center gap-2.5 mb-2.5">
+                <img src={post.avatar} alt={post.author} className="w-9 h-9 rounded-full object-cover" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-1">
+                    <span className="font-heading font-semibold text-[13px] text-[#1A1A1A]">{post.author}</span>
+                    {post.verified && <BadgeCheck className="w-3.5 h-3.5 text-[#28A745] fill-[#28A745]" />}
+                  </div>
+                  <p className="text-[10px] text-[#86868B]">{post.handle} · {post.time} ago</p>
                 </div>
-                <p className="text-[10px] text-muted-foreground">{post.time}</p>
+                <button className="w-7 h-7 rounded-lg hover:bg-[#F5F5F7] flex items-center justify-center">
+                  <MoreHorizontal className="w-4 h-4 text-[#86868B]" />
+                </button>
               </div>
-              <button className="w-7 h-7 rounded-lg hover:bg-muted/60 flex items-center justify-center">
-                <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
-              </button>
+              <p className="text-[13px] leading-relaxed text-[#1A1A1A]">{post.content}</p>
             </div>
-
-            {/* Content */}
-            <p className="text-[13px] leading-relaxed text-foreground mb-2">{post.content}</p>
-
-            {/* Tags */}
-            {post.tags && (
-              <div className="flex gap-1.5 mb-3 flex-wrap">
-                {post.tags.map((tag) => (
-                  <span key={tag} className="text-[11px] font-medium text-primary">{tag}</span>
-                ))}
-              </div>
-            )}
-
-            {/* Poll */}
-            {post.pollOptions && (
-              <div className="space-y-1.5 mb-3">
-                {post.pollOptions.map((opt, oi) => {
-                  const total = post.pollOptions.reduce((s, o) => s + o.votes, 0);
-                  const pct = Math.round((opt.votes / total) * 100);
-                  return (
-                    <div key={oi} className="relative overflow-hidden rounded-lg border border-border/50">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6, delay: 0.3 + oi * 0.1 }}
-                        className="absolute inset-y-0 left-0 bg-primary/8"
-                      />
-                      <div className="relative flex items-center justify-between px-3 py-2">
-                        <span className="text-[12px] font-medium">{opt.text}</span>
-                        <span className="text-[11px] font-semibold text-muted-foreground">{pct}%</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex items-center gap-1 pt-2 border-t border-border/30">
-              <button className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
-                <span className="text-[11px] font-medium text-muted-foreground">{post.likes}</span>
+            {post.image && <img src={post.image} alt="" className="w-full h-48 object-cover" />}
+            <div className="flex items-center gap-1 px-3.5 py-2.5 border-t border-black/[0.04]">
+              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+                <Heart className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
+                <span className="text-[11px] font-semibold text-[#86868B]">{post.likes}</span>
               </button>
-              <button className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                <MessageCircle className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
-                <span className="text-[11px] font-medium text-muted-foreground">{post.comments}</span>
+              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+                <MessageCircle className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
+                <span className="text-[11px] font-semibold text-[#86868B]">{post.comments}</span>
               </button>
-              <button className="flex items-center gap-1.5 py-1.5 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                <Share2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+              <button className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+                <Share2 className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
+                <span className="text-[11px] font-semibold text-[#86868B]">{post.shares}</span>
               </button>
               <div className="flex-1" />
-              <button className="py-1.5 px-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <Bookmark className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+              <button className="py-1.5 px-2 rounded-lg hover:bg-[#F5F5F7] transition-colors">
+                <Bookmark className="w-4 h-4 text-[#86868B]" strokeWidth={1.8} />
               </button>
             </div>
-          </GlassCard>
+          </motion.div>
         ))}
       </div>
     </div>

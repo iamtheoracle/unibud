@@ -1,149 +1,118 @@
-import React, { useState } from "react";
+import React from "react";
+import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle } from "lucide-react";
 import { motion } from "framer-motion";
-import { Search, UserPlus, MessageCircle, Users, GraduationCap, Briefcase, Star, ChevronRight } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import SectionHeader from "@/components/ui/SectionHeader";
 
-const connectTabs = ["Discover", "Classmates", "Clubs", "Mentors"];
-
-const people = [
-  { name: "Chioma Eze", dept: "Computer Science", level: "300L", mutual: 5, avatar: "CE", tag: "Study Partner", color: "from-pink-400 to-rose-500" },
-  { name: "Femi Adeyinka", dept: "Mathematics", level: "200L", mutual: 3, avatar: "FA", tag: "Project Team", color: "from-blue-400 to-indigo-500" },
-  { name: "Aisha Bello", dept: "Physics", level: "300L", mutual: 8, avatar: "AB", tag: "Classmate", color: "from-emerald-400 to-green-500" },
-  { name: "David Okonkwo", dept: "Engineering", level: "400L", mutual: 2, avatar: "DO", tag: "Mentor", color: "from-purple-400 to-violet-500" },
+const quickActions = [
+  { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-[#28A745]/10", iconColor: "text-[#28A745]" },
+  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-blue-500/10", iconColor: "text-blue-500" },
+  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-purple-500/10", iconColor: "text-purple-500" },
+  { icon: Briefcase, label: "Opportunities", desc: "Internships & jobs", color: "bg-amber-500/10", iconColor: "text-amber-500" },
 ];
 
-const clubs = [
-  { name: "UNIBUD Developers", members: 234, category: "Tech", icon: "💻" },
-  { name: "Chess Club", members: 89, category: "Sports", icon: "♟️" },
-  { name: "Literary Society", members: 156, category: "Arts", icon: "📚" },
-  { name: "Entrepreneurship Hub", members: 312, category: "Business", icon: "🚀" },
+const students = [
+  { name: "Chioma Eze", major: "Computer Science · 300L", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80" },
+  { name: "Femi Adeyinka", major: "Mathematics · 200L", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" },
+  { name: "Aisha Bello", major: "Physics · 300L", avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80" },
+  { name: "David Okonkwo", major: "Engineering · 400L", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80" },
 ];
 
-const mentors = [
-  { name: "Prof. Okafor", dept: "Mathematics", expertise: "Linear Algebra, Calculus", rating: 4.9, sessions: 120 },
-  { name: "Dr. Adeyemi", dept: "Computer Science", expertise: "Algorithms, AI", rating: 4.8, sessions: 95 },
+const groups = [
+  { name: "Computer Science Hub", members: "1,234 members", icon: "💻", active: true },
+  { name: "UNIBUD Developers", members: "234 members", icon: "🚀", active: true },
+  { name: "Chess Club", members: "89 members", icon: "♟️", active: false },
+  { name: "Entrepreneurship Hub", members: "312 members", icon: "💼", active: true },
 ];
 
 export default function Connect() {
-  const [activeTab, setActiveTab] = useState("Discover");
-
   return (
     <div className="min-h-screen">
-      <div className="pt-12 pb-3 px-5">
-        <h1 className="font-heading font-bold text-[22px] tracking-tight">Connect</h1>
-        <p className="text-[13px] text-muted-foreground mt-0.5">Your campus network</p>
-      </div>
-
-      {/* Search */}
-      <div className="px-4 mb-4">
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Find students, clubs, mentors..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-white border border-border/50 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
+      {/* Header */}
+      <div className="pt-12 pb-3 px-5 flex items-center justify-between">
+        <div>
+          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-[#1A1A1A]">Connect</h1>
+          <p className="text-[12px] text-[#86868B] font-medium">People. Groups. Opportunities.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center">
+            <Search className="w-[18px] h-[18px] text-[#1A1A1A]" strokeWidth={1.8} />
+          </button>
+          <button className="w-10 h-10 rounded-full bg-[#28A745] shadow-sm flex items-center justify-center">
+            <Plus className="w-[18px] h-[18px] text-white" strokeWidth={2} />
+          </button>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="px-4 mb-4 overflow-x-auto no-scrollbar">
-        <div className="flex gap-2">
-          {connectTabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap transition-all ${
-                activeTab === tab
-                  ? "bg-foreground text-background shadow-sm"
-                  : "bg-white border border-border/50 text-muted-foreground"
-              }`}
+      {/* Quick Actions */}
+      <div className="px-4 mb-5">
+        <div className="grid grid-cols-2 gap-2.5">
+          {quickActions.map((action, i) => (
+            <motion.button
+              key={i}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3.5 text-left"
             >
-              {tab}
-            </button>
+              <div className={`w-9 h-9 rounded-xl ${action.color} flex items-center justify-center mb-2`}>
+                <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2} />
+              </div>
+              <p className="font-heading font-semibold text-[13px] text-[#1A1A1A]">{action.label}</p>
+              <p className="text-[10px] text-[#86868B] mt-0.5">{action.desc}</p>
+            </motion.button>
           ))}
         </div>
       </div>
 
-      <div className="px-4 space-y-4 pb-8">
-        {(activeTab === "Discover" || activeTab === "Classmates") && (
-          <>
-            <SectionHeader title="People You May Know" icon={Users} />
-            {people.map((p, i) => (
-              <GlassCard key={i} variant="solid" className="p-3" delay={i * 0.05}>
-                <div className="flex items-center gap-3">
-                  <div className={`w-11 h-11 rounded-full bg-gradient-to-br ${p.color} flex items-center justify-center text-white text-[12px] font-bold`}>
-                    {p.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-heading font-semibold text-[13px]">{p.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{p.dept} · {p.level}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-semibold">{p.tag}</span>
-                      <span className="text-[9px] text-muted-foreground">{p.mutual} mutual</span>
-                    </div>
-                  </div>
-                  <button className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center hover:bg-primary/20 transition-colors">
-                    <UserPlus className="w-4 h-4 text-primary" />
-                  </button>
-                </div>
-              </GlassCard>
-            ))}
-          </>
-        )}
+      {/* Students You May Know */}
+      <div className="mb-5">
+        <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A] px-5 mb-3">Students You May Know</h3>
+        <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
+          {students.map((student, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3 flex-shrink-0 w-[140px]"
+            >
+              <img src={student.avatar} alt={student.name} className="w-full h-20 rounded-xl object-cover mb-2" />
+              <p className="font-heading font-semibold text-[12px] text-[#1A1A1A] truncate">{student.name}</p>
+              <p className="text-[10px] text-[#86868B] mb-2.5 truncate">{student.major}</p>
+              <button className="w-full py-1.5 rounded-lg bg-[#28A745] text-white text-[11px] font-semibold">Connect</button>
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
-        {activeTab === "Clubs" && (
-          <>
-            <SectionHeader title="Campus Clubs & Societies" icon={Users} />
-            {clubs.map((club, i) => (
-              <GlassCard key={i} variant="solid" className="p-4" delay={i * 0.05}>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-muted/60 flex items-center justify-center text-xl">
-                    {club.icon}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-heading font-semibold text-[13px]">{club.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{club.members} members · {club.category}</p>
-                  </div>
-                  <button className="px-3 py-1.5 rounded-full bg-primary text-white text-[11px] font-semibold">
-                    Join
-                  </button>
+      {/* Active Groups */}
+      <div className="px-4 pb-8">
+        <h3 className="font-heading font-bold text-[16px] text-[#1A1A1A] mb-3 px-1">Active Groups</h3>
+        <div className="space-y-2.5">
+          {groups.map((group, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-white rounded-2xl shadow-sm border border-black/[0.04] p-3.5 flex items-center gap-3"
+            >
+              <div className="w-11 h-11 rounded-xl bg-[#F5F5F7] flex items-center justify-center text-xl flex-shrink-0">{group.icon}</div>
+              <div className="flex-1">
+                <p className="font-heading font-semibold text-[13px] text-[#1A1A1A]">{group.name}</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[10px] text-[#86868B]">{group.members}</span>
+                  {group.active && (
+                    <span className="flex items-center gap-1 text-[10px] text-[#28A745] font-medium">
+                      <Circle className="w-2 h-2 fill-[#28A745] text-[#28A745]" />
+                      Active
+                    </span>
+                  )}
                 </div>
-              </GlassCard>
-            ))}
-          </>
-        )}
-
-        {activeTab === "Mentors" && (
-          <>
-            <SectionHeader title="Available Mentors" icon={GraduationCap} />
-            {mentors.map((m, i) => (
-              <GlassCard key={i} variant="solid" className="p-4" delay={i * 0.05}>
-                <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-[14px] font-bold">
-                    {m.name.charAt(0)}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-heading font-semibold text-[13px]">{m.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{m.dept}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">{m.expertise}</p>
-                    <div className="flex items-center gap-3 mt-2">
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                        <span className="text-[11px] font-semibold">{m.rating}</span>
-                      </div>
-                      <span className="text-[10px] text-muted-foreground">{m.sessions} sessions</span>
-                    </div>
-                  </div>
-                  <button className="px-3 py-1.5 rounded-full bg-primary text-white text-[11px] font-semibold">
-                    Book
-                  </button>
-                </div>
-              </GlassCard>
-            ))}
-          </>
-        )}
+              </div>
+              <button className="px-3 py-1.5 rounded-full bg-[#28A745]/10 text-[#28A745] text-[11px] font-semibold">Join</button>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -31,9 +31,9 @@ const AuthenticatedApp = () => {
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-b from-[hsl(40,20%,98%)] via-white to-[hsl(220,30%,97%)]">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#F5F5F7]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg animate-pulse">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#28A745] to-[#1a7a35] flex items-center justify-center shadow-lg animate-pulse">
             <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
               <path d="M2 17l10 5 10-5" />
