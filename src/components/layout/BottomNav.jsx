@@ -1,10 +1,11 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Compass, Users, User } from "lucide-react";
+import { Home, Compass, Users, User, Video } from "lucide-react";
 
 const navItems = [
   { path: "/", icon: Home, label: "Campus" },
   { path: "/quad", icon: Compass, label: "Quad" },
+  { path: "/live", icon: Video, label: "Live" },
   { path: "/connect", icon: Users, label: "Connect" },
   { path: "/me", icon: User, label: "Me" },
 ];

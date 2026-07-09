@@ -36,6 +36,8 @@ import StudySchedule from '@/pages/onboarding/StudySchedule';
 import Interests from '@/pages/onboarding/Interests';
 import MeetBud from '@/pages/onboarding/MeetBud';
 import PreparingCampus from '@/pages/onboarding/PreparingCampus';
+import LiveHome from '@/pages/LiveHome';
+import LiveClass from '@/pages/LiveClass';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 
 const AuthenticatedApp = () => {
@@ -83,8 +85,10 @@ const AuthenticatedApp = () => {
         <Route path="/onboarding/interests" element={<Interests />} />
         <Route path="/onboarding/meet-bud" element={<MeetBud />} />
         <Route path="/onboarding/preparing-campus" element={<PreparingCampus />} />
+        <Route path="/live/class/:classId" element={<LiveClass />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/live" element={<LiveHome />} />
           <Route path="/academics" element={<Academics />} />
           <Route path="/quad" element={<Quad />} />
           <Route path="/connect" element={<Connect />} />
