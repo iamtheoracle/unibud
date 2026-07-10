@@ -121,6 +121,8 @@ import PortalNotifications from '@/pages/portal/PortalNotifications';
 import PortalMarketplace from '@/pages/portal/PortalMarketplace';
 import PortalEvents from '@/pages/portal/PortalEvents';
 import PlatformInvitations from '@/pages/portal/PlatformInvitations';
+import InstitutionConfig from '@/pages/portal/InstitutionConfig';
+import InstitutionOutreach from '@/pages/portal/InstitutionOutreach';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -254,6 +256,8 @@ const AuthenticatedApp = () => {
           <Route path="marketplace" element={<PortalMarketplace />} />
           <Route path="events" element={<PortalEvents />} />
           <Route path="invitations" element={<PlatformInvitations />} />
+          <Route path="institution-config" element={<InstitutionConfig />} />
+          <Route path="institution-outreach" element={<InstitutionOutreach />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

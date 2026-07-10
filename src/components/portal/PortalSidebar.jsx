@@ -6,7 +6,7 @@ import {
   LineChart, BarChart3, LifeBuoy, FileEdit, Bot, Settings, Wrench,
   LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
   BookOpen, CalendarDays, Megaphone, CheckSquare, PlayCircle, UsersRound,
-  Video, ClipboardList, FolderOpen,
+  Video, ClipboardList, FolderOpen, IdCard, Mail, Flag, Building2,
 } from "lucide-react";
 import UnibudMark from "@/components/brand/UnibudMark";
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
@@ -17,6 +17,7 @@ const ICON_MAP = {
   LineChart, BarChart3, LifeBuoy, FileEdit, Bot, Settings, Wrench,
   Building, Layers, GraduationCap, BookOpen, CalendarDays, Megaphone,
   CheckSquare, PlayCircle, UsersRound, Video, ClipboardList, FolderOpen,
+  IdCard, Mail, Flag, Building2,
 };
 
 export default function PortalSidebar({ user, onNavigate }) {

@@ -150,6 +150,8 @@ export function getPortalNavigation(role) {
           section: "Institutions",
           items: [
             { label: "Universities", icon: "Landmark", path: "/portal/universities" },
+            { label: "Institution Config", icon: "Building2", path: "/portal/institution-config" },
+            { label: "Outreach", icon: "Mail", path: "/portal/institution-outreach" },
             { label: "Faculties", icon: "Building", path: "/portal/faculties" },
             { label: "Departments", icon: "Layers", path: "/portal/departments" },
           ],
@@ -263,8 +265,9 @@ export function getPortalNavigation(role) {
           ],
         },
         {
-          section: "University",
+          section: "Institution",
           items: [
+            { label: "Configuration Center", icon: "Building2", path: "/portal/institution-config" },
             { label: "Faculties", icon: "Building", path: "/portal/faculties" },
             { label: "Departments", icon: "Layers", path: "/portal/departments" },
             { label: "Lecturers", icon: "GraduationCap", path: "/portal/lecturers" },
@@ -418,6 +421,8 @@ function getPlatformNavigation(role) {
       section: "Institutions",
       items: [
         { label: "Universities", icon: "Landmark", path: "/portal/universities" },
+        { label: "Institution Config", icon: "Building2", path: "/portal/institution-config" },
+        { label: "Outreach", icon: "Mail", path: "/portal/institution-outreach" },
         { label: "Faculties", icon: "Building", path: "/portal/faculties" },
         { label: "Departments", icon: "Layers", path: "/portal/departments" },
         { label: "Students", icon: "Users", path: "/portal/users" },
@@ -486,6 +491,8 @@ const PATH_ACCESS = {
   "/portal/audit-logs": ["oracle", "executive"],
   "/portal/system-health": ["oracle", "executive"],
   "/portal/universities": ["oracle", "operations_staff"],
+  "/portal/institution-config": ["oracle", "university_admin", "operations_staff"],
+  "/portal/institution-outreach": ["oracle", "operations_staff"],
   "/portal/maintenance": ["oracle"],
   "/portal/settings": ["oracle"],
   "/portal/bud-config": ["oracle"],

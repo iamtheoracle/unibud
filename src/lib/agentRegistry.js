@@ -423,6 +423,92 @@ export function buildBudPrompt(text, agents, user) {
   return buildUndergraduatePrompt(text, agents, user);
 }
 
+/**
+ * Builds institution-aware context for Bud prompts.
+ *
+ * Bud understands that every institution is unique — different types (universities,
+ * polytechnics, colleges of education, technical institutes, community colleges),
+ * different academic structures, different student identifier systems, different
+ * traditions, and different academic calendars.
+ *
+ * Bud also understands data provenance — whether information comes from a verified
+ * institution, official synchronization, public information, student contributions,
+ * or community reports.
+ */
+function buildInstitutionContext(user) {
+  if (!user?.university) return "";
+
+  let context = "\n\nINSTITUTION CONTEXT:";
+
+  // Institution type
+  const institutionTypeLabels = {
+    university: "University",
+    polytechnic: "Polytechnic",
+    college_of_education: "College of Education",
+    technical_institute: "Technical Institute",
+    higher_college: "Higher College",
+    community_college: "Community College",
+    other: "Higher Education Institution",
+  };
+  if (user.institution_type) {
+    context += `\nInstitution type: ${institutionTypeLabels[user.institution_type] || user.institution_type}`;
+  }
+
+  // Verification status — Bud knows whether the institution has officially joined
+  const verificationLabels = {
+    verified: "Verified Institution — has officially joined UNIBUD and manages its own data",
+    community_supported: "Community Supported — students are active but the institution has not yet officially joined",
+    awaiting_verification: "Awaiting Verification — the institution has been invited and is in the onboarding process",
+    not_onboarded: "Not Yet Onboarded — the institution has not yet joined UNIBUD",
+  };
+  if (user.institution_verification_status) {
+    context += `\nInstitution verification: ${verificationLabels[user.institution_verification_status] || user.institution_verification_status}`;
+  }
+
+  context += `\nInstitution: ${user.university}`;
+
+  // Academic structure
+  if (user.institution_term_type) {
+    context += `\nTerm system: ${user.institution_term_type}`;
+  }
+  if (user.institution_credit_system) {
+    context += `\nCredit system: ${user.institution_credit_system}`;
+  }
+
+  // Matriculation timing — critical for understanding when students get their permanent IDs
+  if (user.matriculation_timing && user.matriculation_timing !== "not_applicable") {
+    context += `\nMatriculation timing: ${user.matriculation_timing}`;
+    if (user.matriculation_timing === "weeks_after_start") {
+      context += " — students may not have their matriculation number for weeks or months after lectures begin. They still have full access to UNIBUD during this time.";
+    }
+  } else if (user.matriculation_timing === "not_applicable") {
+    context += "\nMatriculation: This institution does not use matriculation numbers. Students use other identifiers (Student ID, Registration Number, etc.)";
+  }
+
+  // Primary identifier type
+  if (user.primary_identifier_type && user.primary_identifier_type !== "matriculation_number") {
+    context += `\nPrimary student identifier: ${user.primary_identifier_type}`;
+  }
+
+  // Institution terminology
+  if (user.institution_terminology && typeof user.institution_terminology === "object") {
+    const terms = Object.entries(user.institution_terminology).filter(([, v]) => v);
+    if (terms.length > 0) {
+      context += `\nInstitution terminology: ${terms.map(([k, v]) => `${k} = "${v}"`).join(", ")}`;
+    }
+  }
+
+  context += `\n\nIMPORTANT INSTITUTION AWARENESS:
+• Every institution has its own academic structure, traditions, and terminology — never assume one system applies everywhere.
+• Students always have full access to UNIBUD regardless of whether their institution has officially joined.
+• Some institutions matriculate students weeks or months after lectures begin — never block a student's experience because they don't have a matriculation number yet.
+• Some institutions never use matriculation numbers and rely on Student IDs or other identifiers instead.
+• When providing information about an institution, always consider whether it comes from a verified source, official synchronization, public information, student contributions, or community reports. Be transparent about data sources.
+• Respect each institution's unique academic calendar, admission process, registration process, and traditions.`;
+
+  return context;
+}
+
 function buildUndergraduatePrompt(text, agents, user) {
   let prompt = `You are Bud, the intelligent companion inside UNIBUD — the university operating system that connects, organizes, and powers student life.
 
@@ -441,9 +527,9 @@ Based on the student's message, these capabilities are relevant right now:`;
   }
 
   if (user) {
+    prompt += buildInstitutionContext(user);
     prompt += "\n\nStudent context:";
     const fields = [
-      ["University", user.university],
       ["Faculty", user.faculty],
       ["Department", user.department],
       ["Level", user.level],
@@ -516,6 +602,7 @@ Available features for postgraduate students:
 • Ask Bud anything about research, career, or wellbeing`;
 
   if (user) {
+    prompt += buildInstitutionContext(user);
     prompt += "\n\nPostgraduate context:";
     const fields = [
       ["Programme type", pgLabels[user.postgraduate_type] || user.postgraduate_type],
@@ -580,6 +667,7 @@ Available features for alumni:
 • Ask Bud anything about career, networking, or staying connected`;
 
   if (user) {
+    prompt += buildInstitutionContext(user);
     prompt += "\n\nAlumni context:";
     const fields = [
       ["University", user.university],
@@ -671,6 +759,7 @@ Available pre-university features on UNIBUD:
 • Ask Bud anything about university life`;
 
   if (user) {
+    prompt += buildInstitutionContext(user);
     prompt += "\n\nFuture Student context:";
     const fields = [
       ["Education level", levelLabels[user.education_level] || user.education_level],

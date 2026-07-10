@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Bell, MapPin } from "lucide-react";
+import { Bell, MapPin, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -17,6 +17,7 @@ import FutureStudentDashboard from "@/components/future-student/FutureStudentDas
 import AlumniDashboard from "@/components/journey/AlumniDashboard";
 import PostgraduateDashboard from "@/components/journey/PostgraduateDashboard";
 import JourneyStageBanner from "@/components/journey/JourneyStageBanner";
+import InstitutionStatusBadge from "@/components/institution/InstitutionStatusBadge";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function Home() {
@@ -30,6 +31,14 @@ export default function Home() {
     queryKey: ["notifications"],
     queryFn: () => base44.entities.Notification.list("-created_date", 50),
     enabled: !isDemoMode,
+  });
+  const { data: institution } = useQuery({
+    queryKey: ["institutionByUser", user?.university],
+    queryFn: async () => {
+      const results = await base44.entities.Institution.filter({ name: user.university });
+      return results[0] || null;
+    },
+    enabled: !isDemoMode && !!user?.university,
   });
 
   // Future Students get a dedicated pre-university experience
@@ -97,6 +106,40 @@ export default function Home() {
       {/* Journey Stage Banner — Bud always knows where you are */}
       {!isDemoMode && (user?.user_type === "student" || user?.user_type === "postgraduate") && (
         <JourneyStageBanner user={user} />
+      )}
+
+      {/* Institution Status — students always have full access regardless */}
+      {!isDemoMode && user?.university && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.08 }}
+          className="px-5 pb-4"
+        >
+          <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-card border border-border/20 soft-shadow">
+            <div className="flex items-center gap-2 min-w-0">
+              <InstitutionStatusBadge
+                status={institution?.verification_status || "not_onboarded"}
+                size="sm"
+              />
+              <span className="text-[10px] text-muted-foreground truncate">
+                {institution?.verification_status === "verified"
+                  ? "Official institution features unlocked"
+                  : institution?.verification_status === "awaiting_verification"
+                  ? "Your institution is joining UNIBUD"
+                  : "Full UNIBUD experience available — invite your institution to unlock official features"}
+              </span>
+            </div>
+            {(!institution || institution.verification_status !== "verified") && (
+              <Link
+                to="/student-support"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-primary/8 text-primary text-[10px] font-semibold whitespace-nowrap spring-tap"
+              >
+                <Sparkles className="w-3 h-3" /> Invite
+              </Link>
+            )}
+          </div>
+        </motion.div>
       )}
 
       <div className="px-5 sm:px-0 space-y-6 pb-10 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">

@@ -3,41 +3,62 @@ export const COUNTRIES = [
   "United Kingdom", "United States", "Canada", "Australia",
   "Germany", "France", "Netherlands", "Sweden",
   "United Arab Emirates", "India", "China", "Japan",
-  "Brazil", "Jamaica",
+  "Brazil", "Jamaica", "Ireland", "Singapore", "Malaysia",
+  "Saudi Arabia", "Qatar", "Rwanda", "Uganda", "Tanzania",
+  "Zambia", "Zimbabwe", "Sierra Leone", "Liberia", "Cameroon",
 ];
 
+// All entries now include a `type` field to support universities, polytechnics,
+// colleges of education, technical institutes, higher colleges, and community colleges.
+// The INSTITUTIONS alias provides a type-inclusive export for new code.
 export const UNIVERSITIES = [
-  { name: "University of Benin", short: "UNIBEN", country: "Nigeria", accent: "#0B6E4F", campuses: ["Main Campus", "UGES", "Ekehuan Campus"], matric_format: { pattern: "UNIBEN/{year}/{number}", example: "UNIBEN/2026/123456", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNIBEN", "year", "serial_6"] } },
-  { name: "University of Lagos", short: "UNILAG", country: "Nigeria", accent: "#003399", campuses: ["Akoka Campus", "Idi Araba Campus"], matric_format: { pattern: "UNILAG/{year}/{number}", example: "UNILAG/2026/008921", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNILAG", "year", "serial_6"] } },
-  { name: "University of Ibadan", short: "UI", country: "Nigeria", accent: "#002060", campuses: ["Main Campus"], matric_format: { pattern: "UI/{year}/{number}", example: "UI/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["UI", "year", "serial_6"] } },
-  { name: "Obafemi Awolowo University", short: "OAU", country: "Nigeria", accent: "#006633", campuses: ["Ile-Ife Campus"], matric_format: { pattern: "OAU/{year}/{number}", example: "OAU/2026/019874", description: "Prefix / Admission Year / 6-digit serial", segments: ["OAU", "year", "serial_6"] } },
-  { name: "Covenant University", short: "CU", country: "Nigeria", accent: "#1B3A6B", campuses: ["Ota Campus"], matric_format: { pattern: "CU/{year}/{number}", example: "CU/2026/000123", description: "Prefix / Admission Year / 6-digit serial", segments: ["CU", "year", "serial_6"] } },
-  { name: "Ahmadu Bello University", short: "ABU", country: "Nigeria", accent: "#006A4E", campuses: ["Zaria Campus"], matric_format: { pattern: "ABU/{year}/{number}", example: "ABU/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["ABU", "year", "serial_6"] } },
-  { name: "University of Nigeria, Nsukka", short: "UNN", country: "Nigeria", accent: "#009A44", campuses: ["Nsukka Campus", "Enugu Campus"], matric_format: { pattern: "UNN/{year}/{number}", example: "UNN/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNN", "year", "serial_6"] } },
-  { name: "Federal University of Technology, Akure", short: "FUTA", country: "Nigeria", accent: "#006400", campuses: ["Akure Campus"], matric_format: { pattern: "FUTA/{year}/{number}", example: "FUTA/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["FUTA", "year", "serial_6"] } },
-  { name: "Lagos State University", short: "LASU", country: "Nigeria", accent: "#0033A0", campuses: ["Ojo Campus", "Epe Campus"], matric_format: { pattern: "LASU/{year}/{number}", example: "LASU/2027/004512", description: "Prefix / Admission Year / 6-digit serial", segments: ["LASU", "year", "serial_6"] } },
-  { name: "University of Port Harcourt", short: "UNIPORT", country: "Nigeria", accent: "#003D7A", campuses: ["Choba Campus"], matric_format: { pattern: "UNIPORT/{year}/{number}", example: "UNIPORT/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNIPORT", "year", "serial_6"] } },
-  { name: "University of Ghana", short: "UG", country: "Ghana", accent: "#003B5C", campuses: ["Legon Campus"], matric_format: { pattern: "UG/{year}/{number}", example: "UG/2026/10902345", description: "Prefix / Admission Year / 8-digit serial", segments: ["UG", "year", "serial_8"] } },
-  { name: "Kwame Nkrumah University of Science and Technology", short: "KNUST", country: "Ghana", accent: "#0066B3", campuses: ["Kumasi Campus"], matric_format: { pattern: "KNUST/{year}/{number}", example: "KNUST/2026/012345", description: "Prefix / Admission Year / 6-digit serial", segments: ["KNUST", "year", "serial_6"] } },
-  { name: "Ashesi University", short: "AU", country: "Ghana", accent: "#1A237E", campuses: ["Berekuso Campus"], matric_format: { pattern: "AU/{year}/{number}", example: "AU/2026/000123", description: "Prefix / Admission Year / 6-digit serial", segments: ["AU", "year", "serial_6"] } },
-  { name: "University of Nairobi", short: "UoN", country: "Kenya", accent: "#5C2D91", campuses: ["Main Campus", "Chiromo Campus"], matric_format: { pattern: "UoN/{year}/{number}", example: "UoN/2026/01/123456", description: "Prefix / Year / Campus Code / 6-digit serial", segments: ["UoN", "year", "campus", "serial_6"] } },
-  { name: "Strathmore University", short: "SU", country: "Kenya", accent: "#0066B3", campuses: ["Nairobi Campus"], matric_format: { pattern: "SU/{year}/{number}", example: "SU/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["SU", "year", "serial_6"] } },
-  { name: "University of Cape Town", short: "UCT", country: "South Africa", accent: "#003B5C", campuses: ["Rondebosch Campus"], matric_format: { pattern: "UCT/{year}/{number}", example: "UCT/2026/0123456", description: "Prefix / Admission Year / 7-digit serial", segments: ["UCT", "year", "serial_7"] } },
-  { name: "University of the Witwatersrand", short: "Wits", country: "South Africa", accent: "#003B5C", campuses: ["Braamfontein Campus"], matric_format: { pattern: "Wits/{year}/{number}", example: "Wits/2026/0012345", description: "Prefix / Admission Year / 7-digit serial", segments: ["Wits", "year", "serial_7"] } },
-  { name: "Stellenbosch University", short: "SU", country: "South Africa", accent: "#7A0010", campuses: ["Stellenbosch Campus"], matric_format: { pattern: "SU/{year}/{number}", example: "SU/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["SU", "year", "serial_6"] } },
-  { name: "University of Oxford", short: "Oxford", country: "United Kingdom", accent: "#002147", campuses: ["Oxford"], matric_format: { pattern: "{college}/{year}/{number}", example: "BRAS/2026/0123", description: "College Code / Year / 4-digit serial", segments: ["college", "year", "serial_4"] } },
-  { name: "University of Cambridge", short: "Cambridge", country: "United Kingdom", accent: "#003B71", campuses: ["Cambridge"], matric_format: { pattern: "{college}/{year}/{number}", example: "TRN/2026/0123", description: "College Code / Year / 4-digit serial", segments: ["college", "year", "serial_4"] } },
-  { name: "Imperial College London", short: "Imperial", country: "United Kingdom", accent: "#003E74", campuses: ["South Kensington"], matric_format: { pattern: "ICL/{year}/{number}", example: "ICL/2026/012345", description: "Prefix / Admission Year / 6-digit serial", segments: ["ICL", "year", "serial_6"] } },
-  { name: "Harvard University", short: "Harvard", country: "United States", accent: "#A51C30", campuses: ["Cambridge"], matric_format: { pattern: "{number}", example: "81234567", description: "8-digit HUID", segments: ["serial_8"] } },
-  { name: "Massachusetts Institute of Technology", short: "MIT", country: "United States", accent: "#8A1B1B", campuses: ["Cambridge"], matric_format: { pattern: "{number}", example: "912345678", description: "9-digit MIT ID", segments: ["serial_9"] } },
-  { name: "Stanford University", short: "Stanford", country: "United States", accent: "#8C1515", campuses: ["Stanford"], matric_format: { pattern: "{number}", example: "06123456", description: "8-digit Stanford ID", segments: ["serial_8"] } },
-  { name: "Yale University", short: "Yale", country: "United States", accent: "#0F4D92", campuses: ["New Haven"], matric_format: { pattern: "{number}", example: "B012345", description: "7-character Yale NetID", segments: ["serial_7"] } },
-  { name: "University of Toronto", short: "UofT", country: "Canada", accent: "#002A5C", campuses: ["St. George", "Mississauga", "Scarborough"], matric_format: { pattern: "{number}", example: "1001234567", description: "10-digit student number", segments: ["serial_10"] } },
-  { name: "University of British Columbia", short: "UBC", country: "Canada", accent: "#002145", campuses: ["Vancouver", "Okanagan"], matric_format: { pattern: "{number}", example: "01234567", description: "8-digit student number", segments: ["serial_8"] } },
-  { name: "McGill University", short: "McGill", country: "Canada", accent: "#ED1B2D", campuses: ["Downtown", "Macdonald"], matric_format: { pattern: "{number}", example: "26123456", description: "9-digit McGill ID", segments: ["serial_9"] } },
-  { name: "University of Melbourne", short: "UniMelb", country: "Australia", accent: "#003F7D", campuses: ["Parkville"], matric_format: { pattern: "{number}", example: "0123456", description: "7-digit student ID", segments: ["serial_7"] } },
-  { name: "University of New South Wales", short: "UNSW", country: "Australia", accent: "#00549E", campuses: ["Kensington"], matric_format: { pattern: "z{number}", example: "z5234567", description: "Lowercase z + 7-digit number", segments: ["prefix_z", "serial_7"] } },
+  { name: "University of Benin", short: "UNIBEN", country: "Nigeria", accent: "#0B6E4F", campuses: ["Main Campus", "UGES", "Ekehuan Campus"], matric_format: { pattern: "UNIBEN/{year}/{number}", example: "UNIBEN/2026/123456", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNIBEN", "year", "serial_6"] }, type: "university" },
+  { name: "University of Lagos", short: "UNILAG", country: "Nigeria", accent: "#003399", campuses: ["Akoka Campus", "Idi Araba Campus"], matric_format: { pattern: "UNILAG/{year}/{number}", example: "UNILAG/2026/008921", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNILAG", "year", "serial_6"] }, type: "university" },
+  { name: "University of Ibadan", short: "UI", country: "Nigeria", accent: "#002060", campuses: ["Main Campus"], matric_format: { pattern: "UI/{year}/{number}", example: "UI/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["UI", "year", "serial_6"] }, type: "university" },
+  { name: "Obafemi Awolowo University", short: "OAU", country: "Nigeria", accent: "#006633", campuses: ["Ile-Ife Campus"], matric_format: { pattern: "OAU/{year}/{number}", example: "OAU/2026/019874", description: "Prefix / Admission Year / 6-digit serial", segments: ["OAU", "year", "serial_6"] }, type: "university" },
+  { name: "Covenant University", short: "CU", country: "Nigeria", accent: "#1B3A6B", campuses: ["Ota Campus"], matric_format: { pattern: "CU/{year}/{number}", example: "CU/2026/000123", description: "Prefix / Admission Year / 6-digit serial", segments: ["CU", "year", "serial_6"] }, type: "university" },
+  { name: "Ahmadu Bello University", short: "ABU", country: "Nigeria", accent: "#006A4E", campuses: ["Zaria Campus"], matric_format: { pattern: "ABU/{year}/{number}", example: "ABU/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["ABU", "year", "serial_6"] }, type: "university" },
+  { name: "University of Nigeria, Nsukka", short: "UNN", country: "Nigeria", accent: "#009A44", campuses: ["Nsukka Campus", "Enugu Campus"], matric_format: { pattern: "UNN/{year}/{number}", example: "UNN/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNN", "year", "serial_6"] }, type: "university" },
+  { name: "Federal University of Technology, Akure", short: "FUTA", country: "Nigeria", accent: "#006400", campuses: ["Akure Campus"], matric_format: { pattern: "FUTA/{year}/{number}", example: "FUTA/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["FUTA", "year", "serial_6"] }, type: "university" },
+  { name: "Lagos State University", short: "LASU", country: "Nigeria", accent: "#0033A0", campuses: ["Ojo Campus", "Epe Campus"], matric_format: { pattern: "LASU/{year}/{number}", example: "LASU/2027/004512", description: "Prefix / Admission Year / 6-digit serial", segments: ["LASU", "year", "serial_6"] }, type: "university" },
+  { name: "University of Port Harcourt", short: "UNIPORT", country: "Nigeria", accent: "#003D7A", campuses: ["Choba Campus"], matric_format: { pattern: "UNIPORT/{year}/{number}", example: "UNIPORT/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["UNIPORT", "year", "serial_6"] }, type: "university" },
+  { name: "University of Ghana", short: "UG", country: "Ghana", accent: "#003B5C", campuses: ["Legon Campus"], matric_format: { pattern: "UG/{year}/{number}", example: "UG/2026/10902345", description: "Prefix / Admission Year / 8-digit serial", segments: ["UG", "year", "serial_8"] }, type: "university" },
+  { name: "Kwame Nkrumah University of Science and Technology", short: "KNUST", country: "Ghana", accent: "#0066B3", campuses: ["Kumasi Campus"], matric_format: { pattern: "KNUST/{year}/{number}", example: "KNUST/2026/012345", description: "Prefix / Admission Year / 6-digit serial", segments: ["KNUST", "year", "serial_6"] }, type: "university" },
+  { name: "Ashesi University", short: "AU", country: "Ghana", accent: "#1A237E", campuses: ["Berekuso Campus"], matric_format: { pattern: "AU/{year}/{number}", example: "AU/2026/000123", description: "Prefix / Admission Year / 6-digit serial", segments: ["AU", "year", "serial_6"] }, type: "university" },
+  { name: "University of Nairobi", short: "UoN", country: "Kenya", accent: "#5C2D91", campuses: ["Main Campus", "Chiromo Campus"], matric_format: { pattern: "UoN/{year}/{number}", example: "UoN/2026/01/123456", description: "Prefix / Year / Campus Code / 6-digit serial", segments: ["UoN", "year", "campus", "serial_6"] }, type: "university" },
+  { name: "Strathmore University", short: "SU", country: "Kenya", accent: "#0066B3", campuses: ["Nairobi Campus"], matric_format: { pattern: "SU/{year}/{number}", example: "SU/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["SU", "year", "serial_6"] }, type: "university" },
+  { name: "University of Cape Town", short: "UCT", country: "South Africa", accent: "#003B5C", campuses: ["Rondebosch Campus"], matric_format: { pattern: "UCT/{year}/{number}", example: "UCT/2026/0123456", description: "Prefix / Admission Year / 7-digit serial", segments: ["UCT", "year", "serial_7"] }, type: "university" },
+  { name: "University of the Witwatersrand", short: "Wits", country: "South Africa", accent: "#003B5C", campuses: ["Braamfontein Campus"], matric_format: { pattern: "Wits/{year}/{number}", example: "Wits/2026/0012345", description: "Prefix / Admission Year / 7-digit serial", segments: ["Wits", "year", "serial_7"] }, type: "university" },
+  { name: "Stellenbosch University", short: "SU", country: "South Africa", accent: "#7A0010", campuses: ["Stellenbosch Campus"], matric_format: { pattern: "SU/{year}/{number}", example: "SU/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["SU", "year", "serial_6"] }, type: "university" },
+  { name: "University of Oxford", short: "Oxford", country: "United Kingdom", accent: "#002147", campuses: ["Oxford"], matric_format: { pattern: "{college}/{year}/{number}", example: "BRAS/2026/0123", description: "College Code / Year / 4-digit serial", segments: ["college", "year", "serial_4"] }, type: "university" },
+  { name: "University of Cambridge", short: "Cambridge", country: "United Kingdom", accent: "#003B71", campuses: ["Cambridge"], matric_format: { pattern: "{college}/{year}/{number}", example: "TRN/2026/0123", description: "College Code / Year / 4-digit serial", segments: ["college", "year", "serial_4"] }, type: "university" },
+  { name: "Imperial College London", short: "Imperial", country: "United Kingdom", accent: "#003E74", campuses: ["South Kensington"], matric_format: { pattern: "ICL/{year}/{number}", example: "ICL/2026/012345", description: "Prefix / Admission Year / 6-digit serial", segments: ["ICL", "year", "serial_6"] }, type: "university" },
+  { name: "Harvard University", short: "Harvard", country: "United States", accent: "#A51C30", campuses: ["Cambridge"], matric_format: { pattern: "{number}", example: "81234567", description: "8-digit HUID", segments: ["serial_8"] }, type: "university" },
+  { name: "Massachusetts Institute of Technology", short: "MIT", country: "United States", accent: "#8A1B1B", campuses: ["Cambridge"], matric_format: { pattern: "{number}", example: "912345678", description: "9-digit MIT ID", segments: ["serial_9"] }, type: "university" },
+  { name: "Stanford University", short: "Stanford", country: "United States", accent: "#8C1515", campuses: ["Stanford"], matric_format: { pattern: "{number}", example: "06123456", description: "8-digit Stanford ID", segments: ["serial_8"] }, type: "university" },
+  { name: "Yale University", short: "Yale", country: "United States", accent: "#0F4D92", campuses: ["New Haven"], matric_format: { pattern: "{number}", example: "B012345", description: "7-character Yale NetID", segments: ["serial_7"] }, type: "university" },
+  { name: "University of Toronto", short: "UofT", country: "Canada", accent: "#002A5C", campuses: ["St. George", "Mississauga", "Scarborough"], matric_format: { pattern: "{number}", example: "1001234567", description: "10-digit student number", segments: ["serial_10"] }, type: "university" },
+  { name: "University of British Columbia", short: "UBC", country: "Canada", accent: "#002145", campuses: ["Vancouver", "Okanagan"], matric_format: { pattern: "{number}", example: "01234567", description: "8-digit student number", segments: ["serial_8"] }, type: "university" },
+  { name: "McGill University", short: "McGill", country: "Canada", accent: "#ED1B2D", campuses: ["Downtown", "Macdonald"], matric_format: { pattern: "{number}", example: "26123456", description: "9-digit McGill ID", segments: ["serial_9"] }, type: "university" },
+  { name: "University of Melbourne", short: "UniMelb", country: "Australia", accent: "#003F7D", campuses: ["Parkville"], matric_format: { pattern: "{number}", example: "0123456", description: "7-digit student ID", segments: ["serial_7"] }, type: "university" },
+  { name: "University of New South Wales", short: "UNSW", country: "Australia", accent: "#00549E", campuses: ["Kensington"], matric_format: { pattern: "z{number}", example: "z5234567", description: "Lowercase z + 7-digit number", segments: ["prefix_z", "serial_7"] }, type: "university" },
+
+  // ─── Polytechnics ───────────────────────────────────────────────────────────
+  { name: "Yaba College of Technology", short: "YABATECH", country: "Nigeria", accent: "#006400", campuses: ["Yaba Campus", "Epe Campus"], matric_format: { pattern: "YCT/{year}/{number}", example: "YCT/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["YCT", "year", "serial_6"] }, type: "polytechnic" },
+  { name: "Federal Polytechnic, Auchi", short: "AUCHI", country: "Nigeria", accent: "#006A4E", campuses: ["Auchi Campus"], matric_format: { pattern: "FPN/{year}/{number}", example: "FPN/2026/001234", description: "Prefix / Admission Year / 6-digit serial", segments: ["FPN", "year", "serial_6"] }, type: "polytechnic" },
+  { name: "Kenya Technical Teachers College", short: "KTTC", country: "Kenya", accent: "#0066B3", campuses: ["Nairobi Campus"], matric_format: { pattern: "KTTC/{year}/{number}", example: "KTTC/2026/00123", description: "Prefix / Year / 5-digit serial", segments: ["KTTC", "year", "serial_5"] }, type: "technical_institute" },
+
+  // ─── Colleges of Education ──────────────────────────────────────────────────
+  { name: "Adeniran Ogunsanya College of Education", short: "AOCOED", country: "Nigeria", accent: "#1B3A6B", campuses: ["Oto-Ijanikin Campus"], matric_format: { pattern: "AOCOED/{year}/{number}", example: "AOCOED/2026/00123", description: "Prefix / Year / 5-digit serial", segments: ["AOCOED", "year", "serial_5"] }, type: "college_of_education" },
+  { name: "Alvan Ikoku Federal College of Education", short: "AIFCE", country: "Nigeria", accent: "#006A4E", campuses: ["Owerri Campus"], matric_format: { pattern: "AIFCE/{year}/{number}", example: "AIFCE/2026/00123", description: "Prefix / Year / 5-digit serial", segments: ["AIFCE", "year", "serial_5"] }, type: "college_of_education" },
+
+  // ─── Higher Colleges & Community Colleges ───────────────────────────────────
+  { name: "Berry College", short: "Berry", country: "United States", accent: "#003B5C", campuses: ["Mount Berry Campus"], matric_format: { pattern: "{number}", example: "0012345", description: "7-digit student ID", segments: ["serial_7"] }, type: "higher_college" },
+  { name: "Santa Monica College", short: "SMC", country: "United States", accent: "#0033A0", campuses: ["Santa Monica Campus"], matric_format: { pattern: "{number}", example: "01234567", description: "8-digit student ID", segments: ["serial_8"] }, type: "community_college" },
 ];
+
+// Alias for type-inclusive access — all institutions, not just universities
+export const INSTITUTIONS = UNIVERSITIES;
 
 // Universities with official integration support
 // Each entry lists the connection methods available for that university
@@ -153,4 +174,21 @@ export function getMatricPlaceholder(uniName) {
   const format = getMatricFormat(uniName);
   if (!format) return "e.g., CSC/2026/01452";
   return `e.g., ${format.example}`;
+}
+
+// Get institution type from institution name
+export function getInstitutionTypeFromName(name) {
+  const inst = UNIVERSITIES.find((u) => u.name === name);
+  return inst?.type || "university";
+}
+
+// Get institutions by type
+export function getInstitutionsByType(type) {
+  return UNIVERSITIES.filter((u) => (u.type || "university") === type);
+}
+
+// Get all institution types available in the data
+export function getAvailableInstitutionTypes() {
+  const types = new Set(UNIVERSITIES.map((u) => u.type || "university"));
+  return Array.from(types);
 }
