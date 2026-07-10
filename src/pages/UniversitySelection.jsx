@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Search, ChevronDown, Globe, ArrowRight, Loader2, Check, Building, MapPin } from "lucide-react";
+import { Search, ChevronDown, Globe, ArrowRight, Loader2, Check, Building, MapPin, Rocket, GraduationCap, Sparkles } from "lucide-react";
 import AuthLogo from "@/components/auth/AuthLogo";
 import { COUNTRIES, UNIVERSITIES, LEVELS } from "@/data/universities";
 
 export default function UniversitySelection() {
   const navigate = useNavigate();
+  const [showPathChoice, setShowPathChoice] = useState(true);
   const [country, setCountry] = useState("");
   const [uniSearch, setUniSearch] = useState("");
   const [uniSelected, setUniSelected] = useState(null);
@@ -63,6 +64,74 @@ export default function UniversitySelection() {
       <div className="flex-1 overflow-y-auto px-6 pt-10 pb-8 relative z-10 no-scrollbar">
         <AuthLogo size="md" />
 
+        <AnimatePresence mode="wait">
+          {showPathChoice ? (
+            <motion.div
+              key="path-choice"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="mb-6"
+            >
+              <div className="mb-6">
+                <h2 className="font-heading font-bold text-[22px] tracking-tight text-foreground mb-1">Welcome to UNIBUD</h2>
+                <p className="text-[14px] text-muted-foreground">Are you already a university student, or preparing for admission?</p>
+              </div>
+
+              <div className="space-y-3">
+                {/* Future Student Path */}
+                <button
+                  onClick={() => { setShowPathChoice(false); navigate("/future-student-onboarding"); }}
+                  className="w-full text-left p-5 rounded-[24px] border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 transition-all spring-tap"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-[18px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Rocket className="w-7 h-7 text-primary" strokeWidth={2} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-heading font-bold text-[15px] text-foreground flex items-center gap-1.5">
+                        Future Student
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary font-semibold">PRE-UNIVERSITY</span>
+                      </p>
+                      <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
+                        Preparing for WAEC, NECO, JAMB, or admission? Start your journey here — explore universities, prep courses, scholarships, and mentorship before you're admitted.
+                      </p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-primary flex-shrink-0" strokeWidth={2} />
+                  </div>
+                </button>
+
+                {/* Current Student Path */}
+                <button
+                  onClick={() => setShowPathChoice(false)}
+                  className="w-full text-left p-5 rounded-[24px] border border-border/40 bg-card hover:border-border/70 transition-all spring-tap"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 rounded-[18px] bg-success/10 flex items-center justify-center flex-shrink-0">
+                      <GraduationCap className="w-7 h-7 text-success" strokeWidth={2} />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-heading font-bold text-[15px] text-foreground">Current University Student</p>
+                      <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
+                        Already enrolled? Select your university and connect your student account to unlock everything.
+                      </p>
+                    </div>
+                    <ArrowRight className="w-5 h-5 text-muted-foreground flex-shrink-0" strokeWidth={2} />
+                  </div>
+                </button>
+              </div>
+
+              <p className="text-center text-[11px] text-muted-foreground mt-4 flex items-center justify-center gap-1">
+                <Sparkles className="w-3 h-3 text-primary" />
+                Don't worry — you can transition seamlessly when you're admitted
+              </p>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+
+        {!showPathChoice && (
+          <>
         {/* Progress */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-1.5">
@@ -182,6 +251,8 @@ export default function UniversitySelection() {
             {loading ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <>Continue <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
           </button>
         </motion.div>
+        </>
+        )}
       </div>
     </div>
   );

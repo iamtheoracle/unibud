@@ -24,6 +24,68 @@
       ],
       "default": "student"
     },
+    "user_type": {
+      "type": "string",
+      "description": "Whether the user is an enrolled student, a future (pre-university) student, or an alumni",
+      "enum": [
+        "student",
+        "future_student",
+        "alumni"
+      ],
+      "default": "student"
+    },
+    "education_level": {
+      "type": "string",
+      "description": "For future students: current education stage. Helps Bud tailor preparation advice.",
+      "enum": [
+        "secondary_school",
+        "waec_candidate",
+        "neco_candidate",
+        "jamb_candidate",
+        "a_level",
+        "transfer",
+        "direct_entry",
+        ""
+      ],
+      "default": ""
+    },
+    "exam_status": {
+      "type": "string",
+      "description": "For future students: current examination preparation status",
+      "enum": [
+        "preparing",
+        "registered",
+        "completed",
+        "awaiting_result",
+        "admitted",
+        ""
+      ],
+      "default": ""
+    },
+    "target_universities": {
+      "type": "array",
+      "description": "For future students: universities they are applying to or aspiring to attend",
+      "items": {
+        "type": "string"
+      }
+    },
+    "target_faculty": {
+      "type": "string",
+      "description": "For future students: faculty they aspire to join"
+    },
+    "target_department": {
+      "type": "string",
+      "description": "For future students: department they aspire to join"
+    },
+    "admission_year": {
+      "type": "number",
+      "description": "For future students: the year they plan to be admitted"
+    },
+    "transitioned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when a future student transitioned to a full student account"
+    },
     "matriculation_number": {
       "type": "string",
       "description": "University-specific matriculation number. Unique within each university. Format is university-defined \u2014 no global format enforced."

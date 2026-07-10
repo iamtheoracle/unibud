@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { User, Camera, ArrowRight, Loader2, Check, ChevronDown, SkipForward, Sparkles } from "lucide-react";
+import { User, Camera, ArrowRight, Loader2, Check, ChevronDown, SkipForward, Sparkles, Rocket, GraduationCap } from "lucide-react";
 import AuthLogo from "@/components/auth/AuthLogo";
 
 const currentYear = new Date().getFullYear();
@@ -32,6 +32,21 @@ export default function StudentProfile() {
   const [uploading, setUploading] = useState(false);
   const [values, setValues] = useState({});
   const [loading, setLoading] = useState(false);
+  const [userType, setUserType] = useState("student");
+
+  const handleUserTypeSelect = (type) => {
+    setUserType(type);
+    if (type === "future_student") {
+      // Pre-fill user_type so the backend knows
+      setValues((p) => ({ ...p, user_type: "future_student" }));
+    } else {
+      setValues((p) => {
+        const copy = { ...p };
+        delete copy.user_type;
+        return copy;
+      });
+    }
+  };
 
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];

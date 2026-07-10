@@ -38,6 +38,7 @@ import Welcome from '@/pages/Welcome';
 import UniversitySelection from '@/pages/UniversitySelection';
 import UniversityConnect from '@/pages/UniversityConnect';
 import StudentProfile from '@/pages/StudentProfile';
+import FutureStudentOnboarding from '@/pages/FutureStudentOnboarding';
 import LearningPreferences from '@/pages/onboarding/LearningPreferences';
 import AcademicGoals from '@/pages/onboarding/AcademicGoals';
 import StudySchedule from '@/pages/onboarding/StudySchedule';
@@ -159,6 +160,7 @@ const AuthenticatedApp = () => {
         <Route path="/university-selection" element={<UniversitySelection />} />
         <Route path="/university-connect" element={<UniversityConnect />} />
         <Route path="/student-profile" element={<StudentProfile />} />
+        <Route path="/future-student-onboarding" element={<FutureStudentOnboarding />} />
         <Route path="/onboarding/learning-preferences" element={<LearningPreferences />} />
         <Route path="/onboarding/academic-goals" element={<AcademicGoals />} />
         <Route path="/onboarding/study-schedule" element={<StudySchedule />} />

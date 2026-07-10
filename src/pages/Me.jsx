@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -6,7 +6,7 @@ import {
   ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
-  PartyPopper, Rocket, Calendar, Users,
+  PartyPopper, Rocket, Calendar, Users, GraduationCap,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link } from "react-router-dom";
@@ -17,7 +17,9 @@ import StudyStatsSection from "@/components/me/StudyStatsSection";
 import MilestonesSection from "@/components/milestones/MilestonesSection";
 import HighlightShelf from "@/components/stories/HighlightShelf";
 import MatriculationCard from "@/components/me/MatriculationCard";
+import TransitionToStudent from "@/components/future-student/TransitionToStudent";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import { getEducationLevel, getExamStatus } from "@/lib/futureStudentConfig";
 
 const menuSections = [
   {
@@ -64,6 +66,7 @@ const menuSections = [
 
 export default function Me() {
   const { isDemoMode } = useDemoMode();
+  const [showTransition, setShowTransition] = useState(false);
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
@@ -150,6 +153,40 @@ export default function Me() {
         </span>
       </motion.div>
 
+      {/* Future Student Banner + Transition */}
+      {!isDemoMode && user?.user_type === "future_student" && (
+        <div className="px-5 mb-6">
+          <div className="rounded-[24px] bg-gradient-to-br from-primary to-primary/80 p-5 shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
+            <div className="flex items-center gap-2 mb-2">
+              <Rocket className="w-5 h-5 text-white" />
+              <p className="font-heading font-bold text-[15px] text-white">Future Student</p>
+            </div>
+            <div className="flex items-center gap-3 mb-3 text-white/90 text-[12px]">
+              {user.education_level && (
+                <span className="px-2.5 py-1 rounded-full bg-white/15 font-medium">
+                  {getEducationLevel(user.education_level)?.short || user.education_level}
+                </span>
+              )}
+              {user.exam_status && (
+                <span className="px-2.5 py-1 rounded-full bg-white/15 font-medium">
+                  {getExamStatus(user.exam_status)?.label || user.exam_status}
+                </span>
+              )}
+            </div>
+            <p className="text-[12px] text-white/85 leading-relaxed mb-3">
+              Been admitted? Transition your account to a full student profile — all your history, conversations, and progress stay with you.
+            </p>
+            <button
+              onClick={() => setShowTransition(true)}
+              className="w-full h-[46px] rounded-2xl bg-white/20 text-white font-heading font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap"
+            >
+              <GraduationCap className="w-[18px] h-[18px]" /> Transition to Student Account
+            </button>
+          </div>
+          <TransitionToStudent open={showTransition} onClose={() => setShowTransition(false)} user={user} />
+        </div>
+      )}
+
       {/* Quick Stats */}
       <div className="px-5 mb-6">
         <div className="grid grid-cols-4 gap-2.5">
@@ -164,7 +201,7 @@ export default function Me() {
       </div>
 
       {/* Matriculation Number */}
-      {!isDemoMode && (
+      {!isDemoMode && user?.user_type !== "future_student" && (
         <div className="px-5 mb-6">
           <MatriculationCard user={user} />
         </div>

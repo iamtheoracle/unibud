@@ -13,6 +13,7 @@ import CampusLife from "@/components/home/CampusLife";
 import WeatherCard from "@/components/home/WeatherCard";
 import CampusPulse from "@/components/home/CampusPulse";
 import TodaySchedule from "@/components/home/TodaySchedule";
+import FutureStudentDashboard from "@/components/future-student/FutureStudentDashboard";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function Home() {
@@ -27,6 +28,11 @@ export default function Home() {
     queryFn: () => base44.entities.Notification.list("-created_date", 50),
     enabled: !isDemoMode,
   });
+
+  // Future Students get a dedicated pre-university experience
+  if (!isDemoMode && user?.user_type === "future_student") {
+    return <FutureStudentDashboard user={user} />;
+  }
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";

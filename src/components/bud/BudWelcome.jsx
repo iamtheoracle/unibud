@@ -1,16 +1,27 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Clock, MessageSquare } from "lucide-react";
+import { Sparkles, Clock, MessageSquare, Rocket } from "lucide-react";
 import SuggestedPrompts from "./SuggestedPrompts";
 import QuickActions from "./QuickActions";
 import BudCategories from "./BudCategories";
 import { formatLastActivity } from "@/lib/agentRegistry";
+import { isFutureStudent } from "@/lib/futureStudentConfig";
+
+const FUTURE_STUDENT_PROMPTS = [
+  { label: "What's university life really like?", icon: Sparkles, prompt: "Tell me what university life is really like. What should I expect and how can I prepare?" },
+  { label: "Help me prepare for my exams", icon: Rocket, prompt: "I'm preparing for my exams. Can you help me create a study plan and give me tips?" },
+  { label: "How do I choose the right university?", icon: Sparkles, prompt: "How do I choose the right university? What should I consider when comparing options?" },
+  { label: "Find scholarships I can apply for", icon: Rocket, prompt: "Find scholarships I might be eligible for as a future student preparing for admission." },
+  { label: "Connect me with a student mentor", icon: Sparkles, prompt: "I'd love to connect with a verified university student mentor. Who's available?" },
+  { label: "Tips for surviving my first year", icon: Rocket, prompt: "Give me university survival tips for my first year. What do students wish they knew earlier?" },
+];
 
 export default function BudWelcome({ user, onPrompt, conversations, onOpenConversation }) {
   const recentConvs = (conversations || []).slice(0, 3);
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const name = user?.preferred_name || user?.full_name?.split(" ")[0] || "there";
+  const futureStudent = isFutureStudent(user);
 
   return (
     <div className="flex-1 overflow-y-auto px-4 pb-4 no-scrollbar">
@@ -28,11 +39,18 @@ export default function BudWelcome({ user, onPrompt, conversations, onOpenConver
         >
           <Sparkles className="w-10 h-10 text-primary-foreground" />
         </motion.div>
+        {futureStudent && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold mb-2">
+            <Rocket className="w-3 h-3" /> Future Student Companion
+          </span>
+        )}
         <h2 className="font-heading font-bold text-[22px] text-foreground mb-1.5">
           {greeting}, {name}! 👋
         </h2>
         <p className="text-[13px] text-muted-foreground mb-6 max-w-xs mx-auto leading-relaxed">
-          I'm Bud — your mentor, tutor, and companion. I can help with academics, careers, wellness, campus life, and more. What's on your mind?
+          {futureStudent
+            ? "I'm Bud — your companion before, during, and after university. Ask me anything about university life, exam prep, scholarships, careers, or just say hi!"
+            : "I'm Bud — your mentor, tutor, and companion. I can help with academics, careers, wellness, campus life, and more. What's on your mind?"}
         </p>
       </motion.div>
 
@@ -52,8 +70,27 @@ export default function BudWelcome({ user, onPrompt, conversations, onOpenConver
         transition={{ delay: 0.15, duration: 0.4 }}
         className="mb-5"
       >
-        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">Suggested</p>
-        <SuggestedPrompts onSelect={onPrompt} />
+        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
+          {futureStudent ? "Start Here" : "Suggested"}
+        </p>
+        {futureStudent ? (
+          <div className="space-y-2">
+            {FUTURE_STUDENT_PROMPTS.map((prompt, i) => (
+              <button
+                key={i}
+                onClick={() => onPrompt(prompt.prompt)}
+                className="w-full text-left p-3 rounded-[16px] bg-card border border-border/40 soft-shadow card-hover spring-tap flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-[12px] bg-primary/8 flex items-center justify-center flex-shrink-0">
+                  <prompt.icon className="w-4 h-4 text-primary" strokeWidth={2} />
+                </div>
+                <p className="text-[12px] font-medium text-foreground flex-1">{prompt.label}</p>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <SuggestedPrompts onSelect={onPrompt} />
+        )}
       </motion.div>
 
       <motion.div
