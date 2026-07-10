@@ -1,0 +1,82 @@
+{
+  "name": "QuadComment",
+  "type": "object",
+  "properties": {
+    "post_id": {
+      "type": "string",
+      "description": "ID of the QuadPost this comment belongs to"
+    },
+    "content": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "admin",
+        "club"
+      ],
+      "default": "student"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent comment ID for nested replies; null/empty for top-level comments"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "voice_url": {
+      "type": "string",
+      "description": "Voice reply audio URL (uploaded via UploadFile)"
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reactions": {
+      "type": "object",
+      "description": "Aggregate reaction counts: { like: 3, love: 1, ... }"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total reaction count"
+    },
+    "replies_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_edited": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "post_id",
+    "content",
+    "author_name"
+  ]
+}

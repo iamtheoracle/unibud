@@ -21,22 +21,52 @@
       ],
       "default": "student"
     },
+    "author_handle": {
+      "type": "string",
+      "description": "Department \u00b7 Level or role descriptor shown under author name"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
     "type": {
       "type": "string",
       "enum": [
-        "post",
-        "discussion",
+        "text",
+        "photo",
+        "video",
+        "document",
+        "note",
         "poll",
         "event",
-        "news",
-        "achievement"
+        "question",
+        "marketplace",
+        "lost_found",
+        "achievement",
+        "club_update",
+        "research",
+        "study_resource",
+        "discussion",
+        "post",
+        "news"
       ],
-      "default": "post"
+      "default": "text"
     },
     "media_urls": {
       "type": "array",
       "items": {
         "type": "string"
+      }
+    },
+    "media_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "image",
+          "video",
+          "document"
+        ]
       }
     },
     "tags": {
@@ -45,20 +75,97 @@
         "type": "string"
       }
     },
-    "community": {
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "location": {
       "type": "string"
+    },
+    "university": {
+      "type": "string",
+      "description": "University scope \u2014 only students from this university see the post by default"
+    },
+    "department": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "campus",
+        "department",
+        "course",
+        "study_group",
+        "club",
+        "friend",
+        "public"
+      ],
+      "default": "campus"
+    },
+    "reactions": {
+      "type": "object",
+      "description": "Aggregate reaction counts keyed by type: { like: 5, celebrate: 2, love: 1, ... }"
     },
     "likes_count": {
       "type": "number",
-      "default": 0
+      "default": 0,
+      "description": "Total reaction count (sum of all reaction types)"
     },
     "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "shares_count": {
       "type": "number",
       "default": 0
     },
     "is_pinned": {
       "type": "boolean",
       "default": false
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": false
+    },
+    "draft_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "scheduled"
+      ],
+      "default": "published"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "poll_data": {
+      "type": "object",
+      "description": "{ question: string, options: [{ id, text, votes: number }], expires_at: string }"
+    },
+    "event_data": {
+      "type": "object",
+      "description": "{ title, date, start_time, end_time, location, description }"
+    },
+    "link_preview": {
+      "type": "object",
+      "description": "{ url, title, description, image_url }"
+    },
+    "edited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "community": {
+      "type": "string"
     }
   },
   "required": [
