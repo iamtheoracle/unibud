@@ -48,7 +48,6 @@ export default function ProactiveBud({ onAction }) {
     ...urgentAssignments.map((a) => ({
       id: a.id,
       icon: ClipboardList,
-      label: a.label || a.label,
       title: a.title || a.name || "Assignment",
       message: `Assignment due ${a.label}: ${a.title || a.name || "Untitled"}`,
       prompt: `I have an assignment due ${a.label}: "${a.title || a.name || ""}". Help me plan and get it done.`,

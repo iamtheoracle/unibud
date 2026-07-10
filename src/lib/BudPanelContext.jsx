@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, useRef } from "react";
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
@@ -139,11 +140,13 @@ export function BudPanelProvider({ children }) {
   }, [isTyping, attachments, messages, screenContext, user, saveConversation]);
 
   // Auto-send pending prompt when panel opens
-  React.useEffect(() => {
+  useEffect(() => {
     if (isOpen && pendingPrompt) {
       const promptToSend = pendingPrompt;
-      setPendingPrompt(null);
-      const timer = setTimeout(() => sendMessage(promptToSend), 300);
+      const timer = setTimeout(() => {
+        setPendingPrompt(null);
+        sendMessage(promptToSend);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen, pendingPrompt, sendMessage]);
@@ -201,7 +204,9 @@ export function BudPanelProvider({ children }) {
   return (
     <BudPanelContext.Provider value={value}>
       {children}
-      {isOpen && <BudPanel />}
+      <AnimatePresence>
+        {isOpen && <BudPanel />}
+      </AnimatePresence>
     </BudPanelContext.Provider>
   );
 }
