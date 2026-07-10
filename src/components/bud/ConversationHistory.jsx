@@ -22,14 +22,14 @@ export default function ConversationHistory({ open, onClose, conversations, onOp
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 z-50"
+            className="fixed inset-0 bg-black/40 z-[62]"
           />
           <motion.div
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", stiffness: 360, damping: 36 }}
-            className="fixed left-0 top-0 bottom-0 w-[85%] max-w-sm bg-background z-50 flex flex-col"
+            className="fixed left-0 top-0 bottom-0 w-[85%] max-w-sm bg-background z-[63] flex flex-col"
           >
             <div className="pt-12 pb-3 px-5 flex items-center gap-3">
               <div className="flex-1">
