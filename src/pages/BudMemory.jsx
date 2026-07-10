@@ -132,7 +132,7 @@ export default function BudMemory() {
             <span className="text-[11px] font-semibold text-foreground">Export</span>
           </button>
           <button onClick={toggleMemory} className="flex-1 bg-card rounded-2xl shadow-sm border border-border/30 py-3 flex flex-col items-center gap-1">
-            <Power className={`w-4 h-4 ${memoryDisabled ? "text-red-500" : "text-primary"}`} />
+            <Power className={`w-4 h-4 ${memoryDisabled ? "text-destructive" : "text-primary"}`} />
             <span className="text-[11px] font-semibold text-foreground">{memoryDisabled ? "Enable" : "Disable"}</span>
           </button>
         </div>
@@ -159,7 +159,7 @@ export default function BudMemory() {
                             onBlur={saveEdit}
                             onKeyDown={(e) => e.key === "Enter" && saveEdit()}
                             autoFocus
-                            className="w-full mt-1 px-2 py-1 rounded-lg border border-[#28A745]/30 text-[13px] focus:outline-none focus:ring-2 focus:ring-[#28A745]/20"
+                            className="w-full mt-1 px-2 py-1 rounded-lg border border-success/30 text-[13px] focus:outline-none focus:ring-2 focus:ring-success/20"
                           />
                         ) : (
                           <p className="text-[13px] font-medium text-foreground truncate">{displayVal}</p>

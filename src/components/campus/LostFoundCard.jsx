@@ -9,7 +9,7 @@ export default function LostFoundCard({ item, index = 0, onContact }) {
   const catMeta = LOST_FOUND_CATEGORIES[item.category] || LOST_FOUND_CATEGORIES.other;
   const Icon = getIcon(catMeta.icon);
   const isLost = item.type === "lost";
-  const accentColor = item.accent_color || (isLost ? "0 73% 51%" : "142 72% 29%");
+  const accentColor = item.accent_color || (isLost ? "0 72% 51%" : "142 71% 45%");
 
   return (
     <motion.div

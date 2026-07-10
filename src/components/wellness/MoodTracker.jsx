@@ -12,7 +12,7 @@ const MOODS = [
   { key: "great", emoji: "😄", label: "Great", score: 5, color: "text-success" },
   { key: "good", emoji: "🙂", label: "Good", score: 4, color: "text-info" },
   { key: "okay", emoji: "😐", label: "Okay", score: 3, color: "text-warning" },
-  { key: "low", emoji: "😔", label: "Low", score: 2, color: "text-orange-400" },
+  { key: "low", emoji: "😔", label: "Low", score: 2, color: "text-warning" },
   { key: "struggling", emoji: "😢", label: "Struggling", score: 1, color: "text-destructive" },
 ];
 

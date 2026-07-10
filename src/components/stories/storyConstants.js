@@ -31,18 +31,18 @@ export const HIGHLIGHT_CATEGORIES = [
 ];
 
 export const TEXT_BACKGROUNDS = [
-  "linear-gradient(135deg, #1a1a2e, #16213e)",
-  "linear-gradient(135deg, #D4AF37, #F59E0B)",
-  "linear-gradient(135deg, #7C3AED, #2563EB)",
-  "linear-gradient(135deg, #16A34A, #0D9488)",
+  "linear-gradient(135deg, #1C1C20, #131316)",
+  "linear-gradient(135deg, #6D28D9, #A78BFA)",
+  "linear-gradient(135deg, #6D28D9, #3B82F6)",
+  "linear-gradient(135deg, #10B981, #14B8A6)",
   "linear-gradient(135deg, #DC2626, #F59E0B)",
-  "linear-gradient(135deg, #000000, #1F1F1F)",
-  "#2563EB",
-  "#7C3AED",
-  "#16A34A",
-  "#D4AF37",
+  "linear-gradient(135deg, #131316, #1C1C20)",
+  "#3B82F6",
+  "#6D28D9",
+  "#10B981",
+  "#6D28D9",
   "#DC2626",
-  "#000000",
+  "#1C1C20",
 ];
 
 export const STORY_DURATION_DEFAULT = 5;

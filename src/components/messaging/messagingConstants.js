@@ -7,19 +7,19 @@ import {
 } from "lucide-react";
 
 export const CONVERSATION_TYPES = {
-  direct: { label: "Direct", icon: MessageCircle, color: "217 89% 53%" },
-  group: { label: "Group", icon: Users, color: "262 83% 58%" },
-  study_group: { label: "Study Group", icon: BookOpen, color: "142 72% 29%" },
-  course: { label: "Course", icon: BookOpen, color: "46 65% 52%" },
+  direct: { label: "Direct", icon: MessageCircle, color: "217 91% 60%" },
+  group: { label: "Group", icon: Users, color: "263 71% 50%" },
+  study_group: { label: "Study Group", icon: BookOpen, color: "142 71% 45%" },
+  course: { label: "Course", icon: BookOpen, color: "263 71% 50%" },
   department: { label: "Department", icon: School, color: "38 92% 50%" },
-  faculty: { label: "Faculty", icon: Building2, color: "217 89% 53%" },
-  club: { label: "Club", icon: Trophy, color: "262 83% 58%" },
-  project_team: { label: "Project Team", icon: FlaskConical, color: "142 72% 29%" },
-  event_team: { label: "Event Team", icon: Calendar, color: "0 73% 51%" },
-  competition_team: { label: "Competition", icon: Award, color: "46 65% 52%" },
-  mentor: { label: "Mentor", icon: Briefcase, color: "142 72% 29%" },
-  lecturer: { label: "Lecturer", icon: GraduationCap, color: "217 89% 53%" },
-  alumni: { label: "Alumni", icon: Users, color: "262 83% 58%" },
+  faculty: { label: "Faculty", icon: Building2, color: "217 91% 60%" },
+  club: { label: "Club", icon: Trophy, color: "263 71% 50%" },
+  project_team: { label: "Project Team", icon: FlaskConical, color: "142 71% 45%" },
+  event_team: { label: "Event Team", icon: Calendar, color: "0 72% 51%" },
+  competition_team: { label: "Competition", icon: Award, color: "263 71% 50%" },
+  mentor: { label: "Mentor", icon: Briefcase, color: "142 71% 45%" },
+  lecturer: { label: "Lecturer", icon: GraduationCap, color: "217 91% 60%" },
+  alumni: { label: "Alumni", icon: Users, color: "263 71% 50%" },
 };
 
 export const MESSAGE_TYPES = {

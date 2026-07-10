@@ -25,7 +25,7 @@ export default function LiveHome() {
     const newClass = await base44.entities.LiveClass.create({
       title, course_code: "LIVE", lecturer_name: "You", status: "live",
       participants_count: 1, class_code: Math.random().toString(36).slice(2, 8).toUpperCase(),
-      recording_enabled: true, accent_color: "#DAAF37",
+      recording_enabled: true, accent_color: "#6D28D9",
     });
     navigate(`/live/class/${newClass.id}`);
   };

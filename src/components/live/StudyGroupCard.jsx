@@ -7,7 +7,7 @@ const TYPE_ICONS = { private: Lock, public: Globe, department: Users, faculty: U
 export default function StudyGroupCard({ group }) {
   const TypeIcon = TYPE_ICONS[group.type] || Globe;
   const RoomIcon = group.room_type === "voice" ? Mic : VideoIcon;
-  const accent = group.accent_color || "#DAAF37";
+  const accent = group.accent_color || "#6D28D9";
 
   return (
     <motion.div whileTap={{ scale: 0.98 }} className="flex-shrink-0 w-[200px] bg-card rounded-[20px] p-4 premium-shadow border border-border/30 cursor-pointer">

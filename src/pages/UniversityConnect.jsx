@@ -280,7 +280,7 @@ export default function UniversityConnect() {
                 onClick={handleConnect}
                 disabled={!identifier.trim() || !consent || connecting}
                 style={btnStyle}
-                className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_4px_20px_rgba(218,175,55,0.3)]"
+                className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]"
               >
                 {connecting ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <>Connect Account <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
               </button>
@@ -315,7 +315,7 @@ export default function UniversityConnect() {
               onClick={handleManual}
               disabled={connecting}
               style={btnStyle}
-              className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_4px_20px_rgba(218,175,55,0.3)]"
+              className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]"
             >
               {connecting ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <>Continue <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
             </button>

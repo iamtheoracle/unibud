@@ -96,7 +96,7 @@ export default function Opportunities() {
           </div>
 
           <div className="px-4 pb-3">
-            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(212,175,55,0.3)]" : "bg-card border border-primary/20 text-primary soft-shadow"}`}>
+            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]" : "bg-card border border-primary/20 text-primary soft-shadow"}`}>
               <Sparkles className="w-4 h-4" /> AI Match Finder
             </button>
           </div>

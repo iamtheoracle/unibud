@@ -114,7 +114,7 @@ export default function MeetBud() {
       <AnimatePresence>
         {showButtons && (
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex-shrink-0 px-6 pb-6 pt-3 relative z-10 space-y-2">
-            <button onClick={handleContinue} disabled={loading} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-[0_4px_20px_rgba(218,175,55,0.3)]">
+            <button onClick={handleContinue} disabled={loading} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]">
               Let's Go <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} />
             </button>
             <button onClick={handleContinue} disabled={loading} className="w-full h-[48px] rounded-2xl bg-card text-foreground font-heading font-semibold text-[14px] border border-border/50 flex items-center justify-center gap-2 hover:bg-muted/50 transition-colors">

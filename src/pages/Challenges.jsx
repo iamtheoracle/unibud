@@ -4,12 +4,10 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Trophy, Users, Calendar, ArrowLeft, Search, Flame,
-  TrendingUp, Globe, Sparkles, ChevronRight, Crown, Award,
+  Trophy, Users, Calendar, ArrowLeft, Flame, Globe, Sparkles, Crown, Award,
   Code, BookOpen, Camera, Music, Lightbulb, Rocket, Dumbbell,
-  Heart, Brain, Target, Zap, UserPlus, CheckCircle2, Clock,
+  Heart, Brain, UserPlus, CheckCircle2, Clock,
 } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const TYPE_FILTERS = ["All", "Academic", "Coding", "Reading", "Photography", "Dance", "Innovation", "Startup", "Sports", "Quiz", "Fitness", "Hackathon"];
 
@@ -177,7 +175,7 @@ function FeaturedChallenge({ challenge, onJoin }) {
           )}
         </div>
         <button onClick={onJoin}
-          className={`w-full h-[44px] rounded-[16px] font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap ${challenge.is_joined ? "bg-muted text-foreground" : "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(212,175,55,0.3)]"}`}>
+          className={`w-full h-[44px] rounded-[16px] font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap ${challenge.is_joined ? "bg-muted text-foreground" : "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]"}`}>
           {challenge.is_joined ? <><CheckCircle2 className="w-4 h-4" /> Joined</> : <><UserPlus className="w-4 h-4" /> Join Challenge</>}
         </button>
       </div>

@@ -78,7 +78,7 @@ export default function Library() {
           <button onClick={() => setAiSearch(false)} className={`flex-1 h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${!aiSearch ? "bg-foreground text-background soft-shadow" : "bg-card border border-border/40 text-muted-foreground"}`}>
             <Search className="w-4 h-4" /> Search
           </button>
-          <button onClick={() => setAiSearch(true)} className={`flex-1 h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${aiSearch ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(212,175,55,0.3)]" : "bg-card border border-border/40 text-muted-foreground"}`}>
+          <button onClick={() => setAiSearch(true)} className={`flex-1 h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${aiSearch ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]" : "bg-card border border-border/40 text-muted-foreground"}`}>
             <Sparkles className="w-4 h-4" /> AI Search
           </button>
         </div>

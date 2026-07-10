@@ -43,7 +43,7 @@ prompt: `You are Bud, the intelligent companion inside UNIBUD. You are not an AI
         whileTap={{ scale: 0.9 }}
         whileHover={{ scale: 1.05 }}
         onClick={() => setOpen(!open)}
-        className="fixed bottom-5 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_rgba(218,175,55,0.35)]"
+        className="fixed bottom-5 right-4 z-50 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_rgba(109,40,217,0.35)]"
       >
         {open ? <X className="w-6 h-6" /> : <Sparkles className="w-6 h-6" strokeWidth={2} />}
       </motion.button>

@@ -85,7 +85,7 @@ export default function PdfReader() {
       </div>
 
       <div className="px-4 pb-5 pt-2 flex items-center gap-2 bg-gradient-to-t from-background via-background/95 to-transparent">
-        <button onClick={() => setShowBud(true)} className="flex-1 h-[48px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(218,175,55,0.3)]">
+        <button onClick={() => setShowBud(true)} className="flex-1 h-[48px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]">
           <Sparkles className="w-[18px] h-[18px]" /> Ask Bud
         </button>
         <button className="w-12 h-12 rounded-2xl glass flex items-center justify-center text-foreground"><Download className="w-5 h-5" /></button>

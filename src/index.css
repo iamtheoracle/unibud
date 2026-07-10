@@ -6,77 +6,77 @@
 
 @layer base {
   :root {
-    /* === LIGHT MODE — UNIBUD Brand Master Sheet v1.0 === */
-    --background: 0 0% 96%;          /* #F5F5F5 */
-    --foreground: 0 0% 0%;           /* #000000 */
-    --card: 0 0% 100%;                /* #FFFFFF */
-    --card-foreground: 0 0% 0%;      /* #000000 */
-    --popover: 0 0% 100%;            /* #FFFFFF */
-    --popover-foreground: 0 0% 0%;
-    --primary: 46 65% 52%;           /* #D4AF37 */
-    --primary-foreground: 0 0% 0%;   /* #000000 */
-    --secondary: 0 0% 96%;            /* #F5F5F5 */
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 94%;               /* #F0F0F0 = N1 */
-    --muted-foreground: 0 0% 45%;    /* #737373 = N4 */
-    --accent: 46 65% 52%;            /* #D4AF37 */
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 73% 51%;        /* #DC2626 */
+    /* === LIGHT MODE — UNIBUD Design System v2.0 (Royal Purple) === */
+    --background: 240 20% 97%;        /* Soft White — #F7F7F9 */
+    --foreground: 240 10% 8%;         /* Near Black — #131316 */
+    --card: 0 0% 100%;                /* Pure White */
+    --card-foreground: 240 10% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 8%;
+    --primary: 263 71% 50%;           /* Royal Purple — #6D28D9 */
+    --primary-foreground: 0 0% 100%;  /* White on purple */
+    --secondary: 240 5% 96%;          /* Very Light Grey */
+    --secondary-foreground: 240 10% 8%;
+    --muted: 240 5% 94%;             /* Light Grey */
+    --muted-foreground: 240 4% 46%;  /* Medium Grey */
+    --accent: 263 30% 95%;            /* Very light purple tint for hover */
+    --accent-foreground: 263 71% 40%; /* Purple text on light hover */
+    --destructive: 0 72% 51%;        /* Modern Red — #DC2626 */
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 84%;              /* #D6D6D6 = N2 */
-    --input: 0 0% 84%;               /* #D6D6D6 = N2 */
-    --ring: 46 65% 52%;              /* #D4AF37 */
+    --border: 240 6% 90%;            /* Light border */
+    --input: 240 6% 90%;
+    --ring: 263 71% 50%;             /* Royal Purple */
     --radius: 1.25rem;                 /* 20px — premium, spacious */
 
     /* Surface tones */
-    --surface: 0 0% 100%;            /* #FFFFFF */
-    --surface-secondary: 0 0% 96%;   /* #F5F5F5 */
-    --surface-elevated: 0 0% 100%;   /* #FFFFFF */
-    --foreground-secondary: 0 0% 21%; /* #363636 = N5 */
-    --foreground-tertiary: 0 0% 45%;  /* #737373 = N4 */
+    --surface: 0 0% 100%;            /* Pure White */
+    --surface-secondary: 240 5% 96%; /* Very Light Grey */
+    --surface-elevated: 0 0% 100%;   /* Pure White */
+    --foreground-secondary: 240 6% 21%; /* Dark Grey */
+    --foreground-tertiary: 240 4% 46%;  /* Medium Grey */
 
     /* Semantic — identical in both themes */
-    --unibud-gold: 46 65% 52%;       /* #D4AF37 */
-    --unibud-blue: 217 89% 53%;      /* #2563EB */
-    --unibud-purple: 262 83% 58%;    /* #7C3AED */
-    --unibud-green: 142 72% 29%;     /* #16A34A */
-    --unibud-orange: 38 92% 50%;     /* #F59E0B */
-    --unibud-red: 0 73% 51%;         /* #DC2626 */
+    --unibud-gold: 263 71% 50%;       /* Royal Purple (primary alias) */
+    --unibud-blue: 217 91% 60%;       /* Professional Blue — #3B82F6 */
+    --unibud-purple: 263 71% 50%;     /* Royal Purple */
+    --unibud-green: 142 71% 45%;      /* Emerald Green — #10B981 */
+    --unibud-orange: 38 92% 50%;      /* Soft Amber — #F59E0B */
+    --unibud-red: 0 72% 51%;         /* Modern Red — #DC2626 */
 
     /* Neutral palette — N1 (lightest) → N7 (darkest), absolute in both themes */
-    --unibud-black: 0 0% 0%;         /* #000000 */
-    --unibud-white: 0 0% 100%;       /* #FFFFFF */
-    --unibud-n1: 0 0% 94%;           /* #F0F0F0 */
-    --unibud-n2: 0 0% 84%;           /* #D6D6D6 */
-    --unibud-n3: 0 0% 65%;           /* #A7A7A7 */
-    --unibud-n4: 0 0% 45%;           /* #737373 */
-    --unibud-n5: 0 0% 21%;           /* #363636 */
-    --unibud-n6: 0 0% 15%;           /* #262626 */
-    --unibud-n7: 0 0% 12%;           /* #1F1F1F */
+    --unibud-black: 240 10% 8%;       /* Near Black */
+    --unibud-white: 0 0% 100%;       /* Pure White */
+    --unibud-n1: 240 5% 96%;
+    --unibud-n2: 240 6% 88%;
+    --unibud-n3: 240 5% 65%;
+    --unibud-n4: 240 4% 46%;
+    --unibud-n5: 240 6% 21%;
+    --unibud-n6: 240 8% 14%;
+    --unibud-n7: 240 8% 12%;
 
     /* Semantic foregrounds — absolute, same in light & dark */
     --unibud-green-foreground: 0 0% 100%;  /* white on green */
-    --unibud-orange-foreground: 0 0% 0%;   /* black on gold */
+    --unibud-orange-foreground: 0 0% 0%;   /* black on amber */
     --unibud-red-foreground: 0 0% 100%;    /* white on red */
     --unibud-blue-foreground: 0 0% 100%;   /* white on blue */
     --unibud-purple-foreground: 0 0% 100%; /* white on purple */
 
     /* Glass — light mode */
-    --glass-bg: rgba(255, 255, 255, 0.68);
-    --glass-border: rgba(0, 0, 0, 0.04);
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-border: rgba(109, 40, 217, 0.06);
     --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
     --glass-blur: 16px;
-    --surface-grouped: 0 0% 98%;
+    --surface-grouped: 240 8% 98%;
 
     --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.025), 0 1px 3px rgba(0, 0, 0, 0.012);
     --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.045), 0 2px 6px rgba(0, 0, 0, 0.02);
     --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.025);
     --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.07), 0 6px 16px rgba(0, 0, 0, 0.03);
 
-    --chart-1: 46 65% 52%;
-    --chart-2: 142 72% 29%;
-    --chart-3: 217 89% 53%;
-    --chart-4: 262 83% 58%;
+    --chart-1: 263 71% 50%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 217 91% 60%;
+    --chart-4: 263 71% 60%;
     --chart-5: 38 92% 50%;
 
     --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
@@ -102,64 +102,64 @@
     --space-48: 12rem;    /* 192px */
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 21%;
-    --sidebar-primary: 46 65% 52%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 84%;
-    --sidebar-ring: 46 65% 52%;
+    --sidebar-foreground: 240 6% 21%;
+    --sidebar-primary: 263 71% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 263 30% 95%;
+    --sidebar-accent-foreground: 263 71% 40%;
+    --sidebar-border: 240 6% 90%;
+    --sidebar-ring: 263 71% 50%;
   }
 
   .dark {
-    /* === DARK MODE — UNIBUD Brand Master Sheet v1.0 === */
-    --background: 0 0% 0%;           /* #000000 */
-    --foreground: 0 0% 100%;         /* #FFFFFF */
-    --card: 0 0% 12%;                /* #1F1F1F = N7 */
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 12%;             /* #1F1F1F = N7 */
-    --popover-foreground: 0 0% 100%;
-    --primary: 46 65% 52%;           /* #D4AF37 */
-    --primary-foreground: 0 0% 0%;   /* #000000 */
-    --secondary: 0 0% 12%;           /* #1F1F1F = N7 */
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;               /* #262626 = N6 */
-    --muted-foreground: 0 0% 65%;    /* #A7A7A7 = N3 */
-    --accent: 46 65% 52%;            /* #D4AF37 */
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 73% 51%;        /* #DC2626 */
+    /* === DARK MODE — UNIBUD Design System v2.0 (Deep Charcoal) === */
+    --background: 240 10% 8%;          /* Deep Charcoal — #131316 */
+    --foreground: 0 0% 98%;          /* Near White */
+    --card: 240 8% 12%;              /* Charcoal Surface — #1C1C20 */
+    --card-foreground: 0 0% 98%;
+    --popover: 240 8% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 265 75% 60%;           /* Brighter Royal Purple for dark — #A78BFA */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 8% 14%;         /* Dark Charcoal */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 8% 16%;             /* Dark Grey */
+    --muted-foreground: 240 5% 65%;  /* Medium Grey */
+    --accent: 263 30% 18%;           /* Dark purple tint for hover */
+    --accent-foreground: 265 75% 72%; /* Light purple text on dark hover */
+    --destructive: 0 72% 51%;        /* Modern Red */
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 15%;              /* #262626 = N6 */
-    --input: 0 0% 15%;               /* #262626 = N6 */
-    --ring: 46 65% 52%;              /* #D4AF37 */
+    --border: 240 8% 20%;            /* Dark border */
+    --input: 240 8% 20%;
+    --ring: 265 75% 60%;
 
     /* Surface tones */
-    --surface: 0 0% 12%;             /* #1F1F1F = N7 */
-    --surface-secondary: 0 0% 0%;    /* #000000 */
-    --surface-elevated: 0 0% 21%;    /* #363636 = N5 */
-    --foreground-secondary: 0 0% 84%; /* #D6D6D6 = N2 */
-    --foreground-tertiary: 0 0% 65%;  /* #A7A7A7 = N3 */
+    --surface: 240 8% 12%;            /* Charcoal Surface */
+    --surface-secondary: 240 10% 8%;  /* Deep Charcoal */
+    --surface-elevated: 240 6% 16%;   /* Elevated Charcoal */
+    --foreground-secondary: 240 5% 84%; /* Light Grey */
+    --foreground-tertiary: 240 5% 65%;  /* Medium Grey */
 
-    /* Glass — dark mode: pure black with premium blur */
-    --glass-bg: rgba(0, 0, 0, 0.68);
-    --glass-border: rgba(212, 175, 55, 0.08);
+    /* Glass — dark mode: deep charcoal with premium blur */
+    --glass-bg: rgba(18, 18, 22, 0.78);
+    --glass-border: rgba(167, 139, 250, 0.12);
     --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     --glass-blur: 24px;
-    --surface-grouped: 0 0% 8%;
+    --surface-grouped: 240 8% 10%;
 
-    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
-    --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.12);
-    --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
-    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.2);
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.12);
+    --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
+    --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.25);
 
-    --sidebar-background: 0 0% 0%;
-    --sidebar-foreground: 0 0% 65%;
-    --sidebar-primary: 46 65% 52%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 46 65% 52%;
+    --sidebar-background: 240 10% 8%;
+    --sidebar-foreground: 240 5% 65%;
+    --sidebar-primary: 265 75% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 263 30% 18%;
+    --sidebar-accent-foreground: 265 75% 72%;
+    --sidebar-border: 240 8% 20%;
+    --sidebar-ring: 265 75% 60%;
   }
 }
 
@@ -190,14 +190,14 @@
     box-shadow: var(--glass-shadow);
   }
   .glass-strong {
-    background: hsl(var(--card) / 0.80);
+    background: hsl(var(--card) / 0.82);
     backdrop-filter: blur(32px) saturate(1.2);
     -webkit-backdrop-filter: blur(32px) saturate(1.2);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-elevated);
   }
   .text-gold-gradient {
-    background: linear-gradient(135deg, hsl(46 65% 52%), hsl(46 65% 58%));
+    background: linear-gradient(135deg, hsl(263 71% 55%), hsl(265 75% 65%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -209,7 +209,7 @@
     background: hsl(var(--surface-grouped));
   }
   .primary-card-gradient {
-    background-image: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card)) 55%, hsl(var(--muted) / 0.4) 100%);
+    background-image: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card)) 55%, hsl(var(--primary) / 0.04) 100%);
   }
   .soft-shadow {
     box-shadow: var(--shadow-soft);
@@ -218,7 +218,7 @@
     box-shadow: var(--shadow-elevated);
   }
   .gold-glow {
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), var(--shadow-premium);
+    box-shadow: 0 0 30px hsl(263 71% 50% / 0.25), var(--shadow-premium);
   }
   .card-hover {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);

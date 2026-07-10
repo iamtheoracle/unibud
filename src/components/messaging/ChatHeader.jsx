@@ -33,7 +33,7 @@ export default function ChatHeader({ conversation, user, typingUser, onBack, onC
             </div>
           )}
           {isDirect && other && (
-            <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-background" />
+            <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-success border-2 border-background" />
           )}
         </div>
 

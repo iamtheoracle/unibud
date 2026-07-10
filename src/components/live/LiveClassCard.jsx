@@ -6,7 +6,7 @@ import { Video, Clock, Users, Play } from "lucide-react";
 export default function LiveClassCard({ liveClass }) {
   const navigate = useNavigate();
   const isLive = liveClass.status === "live";
-  const accent = liveClass.accent_color || "#DAAF37";
+  const accent = liveClass.accent_color || "#6D28D9";
 
   return (
     <motion.div whileTap={{ scale: 0.98 }} onClick={() => navigate(`/live/class/${liveClass.id}`)} className="flex-shrink-0 w-[240px] bg-card rounded-[20px] p-4 premium-shadow border border-border/30 cursor-pointer">

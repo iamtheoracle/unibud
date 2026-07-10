@@ -76,7 +76,7 @@ export default function CampusTutorial({ user }) {
                   Skip Tour
                 </button>
               )}
-              <button onClick={handleNext} className={`h-[48px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] hover:bg-primary/90 transition-colors shadow-[0_4px_20px_rgba(218,175,55,0.3)] ${isLast ? "flex-1" : "flex-[2]"}`}>
+              <button onClick={handleNext} className={`h-[48px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] hover:bg-primary/90 transition-colors shadow-[0_4px_20px_rgba(109, 40, 217,0.3)] ${isLast ? "flex-1" : "flex-[2]"}`}>
                 {isLast ? "Get Started" : "Next"}
               </button>
             </div>

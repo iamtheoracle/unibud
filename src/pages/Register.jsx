@@ -135,7 +135,7 @@ export default function Register() {
               </div>
             )}
 
-            <button onClick={handleVerify} disabled={loading || otpCode.length < 6} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_rgba(218,175,55,0.3)]">
+            <button onClick={handleVerify} disabled={loading || otpCode.length < 6} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]">
               {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Verifying...</> : <><Check className="w-[18px] h-[18px]" /> Verify</>}
             </button>
 
@@ -214,7 +214,7 @@ export default function Register() {
               </div>
             </div>
 
-            <button type="submit" disabled={loading} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_rgba(218,175,55,0.3)]">
+            <button type="submit" disabled={loading} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]">
               {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Creating account...</> : <>Continue <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
             </button>
           </form>

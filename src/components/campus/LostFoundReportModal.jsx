@@ -47,7 +47,7 @@ export default function LostFoundReportModal({ open, onClose, user, onCreated })
     if (!title.trim() || !user) return;
     setSubmitting(true);
     try {
-      const accentColor = type === "lost" ? "0 73% 51%" : "142 72% 29%";
+      const accentColor = type === "lost" ? "0 72% 51%" : "142 71% 45%";
       const created = await base44.entities.LostFoundItem.create({
         title: title.trim(),
         description: description.trim(),

@@ -7,7 +7,7 @@ import UnibudMark from "./UnibudMark";
  * Variants:
  *   light — black on light backgrounds
  *   dark  — white on dark backgrounds
- *   gold  — gold mark + gold-gradient "UNIBUD" for premium / splash
+ *   gold  — purple mark + purple-gradient "UNIBUD" for premium / splash
  *
  * Do not recreate, reinterpret, or modify proportions.
  */
