@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Sparkles, Pencil, Trash2, Download, Power, Check, ChevronRight } from "lucide-react";
+import { ArrowLeft, Sparkles, Pencil, Trash2, Download, Power, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -61,7 +61,7 @@ export default function BudMemory() {
     try {
       const val = editValue.trim();
       await base44.auth.updateMe({ [editing]: val.includes(",") ? val.split(",").map(s => s.trim()) : val });
-      await queryClient.invalidateQueries(["currentUser"]);
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       setEditing(null);
     } catch (e) {}
     setSaving(false);
@@ -70,7 +70,7 @@ export default function BudMemory() {
   const deleteField = async (key) => {
     try {
       await base44.auth.updateMe({ [key]: null });
-      await queryClient.invalidateQueries(["currentUser"]);
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     } catch (e) {}
   };
 
@@ -93,7 +93,7 @@ export default function BudMemory() {
     setMemoryDisabled(newVal);
     try {
       await base44.auth.updateMe({ memory_disabled: newVal });
-      await queryClient.invalidateQueries(["currentUser"]);
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
     } catch (e) {
       setMemoryDisabled(!newVal);
     }

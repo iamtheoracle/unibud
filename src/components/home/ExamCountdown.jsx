@@ -153,7 +153,7 @@ export default function ExamCountdown() {
           { label: "Hours", value: timeLeft.hours },
           { label: "Mins", value: timeLeft.minutes },
           { label: "Secs", value: timeLeft.seconds },
-        ].map((u, i) => (
+        ].map((u) => (
           <div key={u.label} className={unitStyle + " bg-muted/40 rounded-[12px] py-2"}>
             <span className="font-heading font-extrabold text-[18px] text-foreground tabular-nums leading-none">
               {String(u.value).padStart(2, "0")}

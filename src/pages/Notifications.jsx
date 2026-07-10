@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowLeft, Bell, BookOpen, Users, Award, AlertTriangle, Settings, Check, Inbox } from "lucide-react";
+import { ArrowLeft, Bell, BookOpen, Users, Award, AlertTriangle, Settings, Inbox } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";

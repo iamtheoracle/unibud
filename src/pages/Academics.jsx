@@ -34,6 +34,7 @@ const DEMO_TIMETABLE = [
 export default function Academics() {
   const { isDemoMode } = useDemoMode();
   const [activeTab, setActiveTab] = useState("Progress");
+  const [courseSearch, setCourseSearch] = useState("");
 
   const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ["academicsCourses"],
@@ -51,7 +52,11 @@ export default function Academics() {
     enabled: !isDemoMode,
   });
 
-  const courseList = isDemoMode ? DEMO_COURSES : (courses || []);
+  const courseList = (isDemoMode ? DEMO_COURSES : (courses || [])).filter((c) => {
+    if (!courseSearch.trim()) return true;
+    const q = courseSearch.toLowerCase();
+    return (c.code || "").toLowerCase().includes(q) || (c.title || "").toLowerCase().includes(q) || (c.lecturer || "").toLowerCase().includes(q);
+  });
   const timetableByDay = isDemoMode ? DEMO_TIMETABLE : groupTimetableByDay(timetable || []);
   const pendingAssignments = (assignments || []).filter((a) => a.status === "pending");
 
@@ -100,7 +105,7 @@ export default function Academics() {
           <>
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input type="text" placeholder="Search courses..." className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow" />
+              <input type="text" value={courseSearch} onChange={(e) => setCourseSearch(e.target.value)} placeholder="Search courses..." className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow" />
             </div>
             {coursesLoading && !isDemoMode ? (
               [1, 2, 3].map((i) => <div key={i} className="h-[90px] rounded-[20px] shimmer" />)

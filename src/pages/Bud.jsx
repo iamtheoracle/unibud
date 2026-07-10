@@ -77,7 +77,7 @@ export default function Bud() {
         });
         setActiveConversationId(conv.id);
       }
-      queryClient.invalidateQueries(["budConversations"]);
+      queryClient.invalidateQueries({ queryKey: ["budConversations"] });
     } catch {}
   };
 

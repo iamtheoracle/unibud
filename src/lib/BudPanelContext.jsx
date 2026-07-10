@@ -91,7 +91,7 @@ export function BudPanelProvider({ children }) {
         });
         setActiveConversationId(conv.id);
       }
-      queryClient.invalidateQueries(["budConversations"]);
+      queryClient.invalidateQueries({ queryKey: ["budConversations"] });
     } catch {}
   }, [isDemoMode, activeConversationId, queryClient]);
 

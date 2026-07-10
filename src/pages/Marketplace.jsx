@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Search, Filter, Plus, Package, Heart } from "lucide-react";
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import GlassCard from "@/components/ui/GlassCard";
@@ -21,6 +20,7 @@ const catColors = { textbooks: "from-info to-info/80", electronics: "from-purple
 export default function Marketplace() {
   const { isDemoMode } = useDemoMode();
   const [activeCat, setActiveCat] = useState("All");
+  const [search, setSearch] = useState("");
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ["marketplaceListings"],
@@ -29,7 +29,12 @@ export default function Marketplace() {
   });
 
   const allListings = isDemoMode ? DEMO_LISTINGS : (listings || []);
-  const filtered = activeCat === "All" ? allListings : allListings.filter((l) => l.category === activeCat.toLowerCase());
+  const byCat = activeCat === "All" ? allListings : allListings.filter((l) => l.category === activeCat.toLowerCase());
+  const filtered = byCat.filter((l) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return l.title?.toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q) || (l.location || "").toLowerCase().includes(q);
+  });
 
   return (
     <div className="min-h-screen">
@@ -42,7 +47,7 @@ export default function Marketplace() {
       <div className="px-4 mb-3 flex gap-2.5">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input type="text" placeholder="Search marketplace..." className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow" />
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search marketplace..." className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow" />
         </div>
         <button className="w-12 h-12 rounded-[16px] bg-card border border-border/40 flex items-center justify-center soft-shadow spring-tap">
           <Filter className="w-[18px] h-[18px] text-muted-foreground" />

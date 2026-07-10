@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  UserPlus, Mail, Shield, Clock, Check, X, Crown, Users, ChevronRight,
+  UserPlus, Mail, Shield, Clock, Check, X, Crown, Users,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { PortalPageHeader, SectionCard, StatusPill, SmartList } from "@/components/portal/PortalUI";
@@ -48,7 +48,7 @@ export default function PlatformInvitations() {
       setMessage(`Invitation sent to ${email}`);
       setEmail("");
       setShowInvite(false);
-      qc.invalidateQueries(["portalUsers"]);
+      qc.invalidateQueries({ queryKey: ["portalUsers"] });
     } catch (err) {
       setError(err.message || "Failed to send invitation");
     } finally {

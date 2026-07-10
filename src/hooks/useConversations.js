@@ -39,15 +39,15 @@ export function useConversations(user) {
 
   useEffect(() => {
     const unsubscribe = base44.entities.Conversation.subscribe((event) => {
-      queryClient.invalidateQueries(["conversations"]);
-      queryClient.invalidateQueries(["conversations-archived"]);
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["conversations-archived"] });
     });
     return unsubscribe;
   }, [queryClient]);
 
   useEffect(() => {
     const unsubscribe = base44.entities.Message.subscribe((event) => {
-      queryClient.invalidateQueries(["conversations"]);
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     });
     return unsubscribe;
   }, [queryClient]);
@@ -70,7 +70,7 @@ export function useConversations(user) {
   const updateConversation = useCallback(
     async (id, updates) => {
       await base44.entities.Conversation.update(id, updates);
-      queryClient.invalidateQueries(["conversations"]);
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
     [queryClient]
   );

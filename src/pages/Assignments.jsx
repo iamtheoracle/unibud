@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Calendar, Clock, FileText, AlertCircle, CheckCircle2, Circle, Sparkles, GraduationCap, PenTool, Award, ChevronRight } from "lucide-react";
+import { Calendar, Clock, FileText, AlertCircle, CheckCircle2, Circle, Sparkles, GraduationCap, PenTool, Award } from "lucide-react";
+import { useBudPanel } from "@/lib/BudPanelContext";
 
 const TABS = ["Assignments", "Exams", "Revision", "Practice"];
 
@@ -11,6 +12,7 @@ const PRIORITY_COLORS = { high: "text-destructive", medium: "text-primary", low:
 export default function Assignments() {
   const [tab, setTab] = useState("Assignments");
   const qc = useQueryClient();
+  const { openBud } = useBudPanel();
 
   const { data: assignments } = useQuery({ queryKey: ["assignments"], queryFn: () => base44.entities.Assignment.list("-due_date", 50) });
   const { data: exams } = useQuery({ queryKey: ["exams"], queryFn: () => base44.entities.Exam.list("date", 50) });
@@ -54,11 +56,11 @@ export default function Assignments() {
 
             {pending.length > 0 && <SectionTitle title="Pending" />}
             {pending.map((a, i) => (
-              <AssignmentItem key={a.id} assignment={a} onToggle={() => toggleStatus(a)} delay={i * 0.05} />
+              <AssignmentItem key={a.id} assignment={a} onToggle={() => toggleStatus(a)} delay={i * 0.05} openBud={openBud} />
             ))}
             {submitted.length > 0 && <SectionTitle title="Submitted" />}
             {submitted.map((a, i) => (
-              <AssignmentItem key={a.id} assignment={a} onToggle={() => toggleStatus(a)} delay={i * 0.05} />
+              <AssignmentItem key={a.id} assignment={a} onToggle={() => toggleStatus(a)} delay={i * 0.05} openBud={openBud} />
             ))}
             {pending.length === 0 && submitted.length === 0 && (
               <EmptyState icon={FileText} title="No assignments yet" subtitle="Your assignments will appear here" />
@@ -76,14 +78,14 @@ export default function Assignments() {
           </>
         )}
 
-        {tab === "Revision" && <RevisionPlanner exams={upcomingExams} />}
+        {tab === "Revision" && <RevisionPlanner exams={upcomingExams} openBud={openBud} />}
         {tab === "Practice" && <PracticeTests />}
       </div>
     </div>
   );
 }
 
-function AssignmentItem({ assignment, onToggle, delay }) {
+function AssignmentItem({ assignment, onToggle, delay, openBud }) {
   const [showBud, setShowBud] = useState(false);
   const isOverdue = assignment.status === "pending" && new Date(assignment.due_date) < new Date();
   const done = assignment.status === "submitted" || assignment.status === "graded";
@@ -113,7 +115,7 @@ function AssignmentItem({ assignment, onToggle, delay }) {
       {showBud && (
         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-3 pt-3 border-t border-border/30 overflow-hidden">
           <p className="text-[11px] text-muted-foreground mb-2">Ask Bud for help with this assignment</p>
-          <button className="w-full h-[40px] rounded-[14px] bg-primary text-primary-foreground font-semibold text-[12px] flex items-center justify-center gap-1.5 spring-tap">
+          <button onClick={() => openBud("Help me with my " + assignment.course_code + " assignment: " + assignment.title + ". " + (assignment.description || ""))} className="w-full h-[40px] rounded-[14px] bg-primary text-primary-foreground font-semibold text-[12px] flex items-center justify-center gap-1.5 spring-tap">
             <Sparkles className="w-4 h-4" /> Get Help from Bud
           </button>
         </motion.div>
@@ -156,7 +158,7 @@ function ExamCard({ exam, delay }) {
   );
 }
 
-function RevisionPlanner({ exams }) {
+function RevisionPlanner({ exams, openBud }) {
   return (
     <>
       <SectionTitle title="Revision Plan" />
@@ -174,7 +176,7 @@ function RevisionPlanner({ exams }) {
               </div>
             ))}
           </div>
-          <button className="mt-3 w-full h-[40px] rounded-[14px] bg-primary/10 text-primary font-semibold text-[12px] flex items-center justify-center gap-1.5 spring-tap">
+          <button onClick={() => openBud("Create a revision plan for my " + e.course_code + " exam on " + new Date(e.date).toLocaleDateString() + ". Topics: " + ((e.topics || []).join(", ") || "all course content"))} className="mt-3 w-full h-[40px] rounded-[14px] bg-primary/10 text-primary font-semibold text-[12px] flex items-center justify-center gap-1.5 spring-tap">
             <Sparkles className="w-4 h-4" /> Generate Plan with Bud
           </button>
         </motion.div>

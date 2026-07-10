@@ -30,7 +30,7 @@ export default function ChatView({ conversationId, user, onBack }) {
     if (!conversationId) return;
     const unsubscribe = base44.entities.Conversation.subscribe((event) => {
       if (event.data?.id === conversationId) {
-        queryClient.invalidateQueries(["conversation", conversationId]);
+        queryClient.invalidateQueries({ queryKey: ["conversation", conversationId] });
       }
     });
     return unsubscribe;

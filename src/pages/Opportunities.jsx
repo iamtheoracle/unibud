@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Sparkles, MapPin, Calendar, Award, Briefcase, GraduationCap, Globe, Trophy, Bookmark, BookmarkCheck, ChevronRight, CheckCircle2, Clock, FileCheck, Target, Bell } from "lucide-react";
+import { Search, Sparkles, MapPin, Calendar, Award, Briefcase, GraduationCap, Globe, Trophy, Bookmark, BookmarkCheck, ChevronRight, Clock, FileCheck, Target, Bell } from "lucide-react";
 
 const TYPES = ["All", "Scholarship", "Internship", "Job", "Competition", "Fellowship", "Grant"];
 
@@ -22,6 +21,7 @@ const TRACKER_STATUSES = [
 
 export default function Opportunities() {
   const [activeType, setActiveType] = useState("All");
+  const [search, setSearch] = useState("");
   const [showAI, setShowAI] = useState(false);
   const [aiQuery, setAiQuery] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
@@ -33,7 +33,12 @@ export default function Opportunities() {
   const { data: opportunities } = useQuery({ queryKey: ["opportunities"], queryFn: () => base44.entities.Opportunity.list("-created_date", 50) });
   const { data: trackers } = useQuery({ queryKey: ["applicationTrackers"], queryFn: () => base44.entities.ApplicationTracker.list() });
 
-  const filtered = activeType === "All" ? opportunities : opportunities?.filter(o => o.type === activeType.toLowerCase()) || [];
+  const byType = activeType === "All" ? opportunities : opportunities?.filter(o => o.type === activeType.toLowerCase()) || [];
+  const filtered = byType?.filter(o => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return o.title?.toLowerCase().includes(q) || o.organization?.toLowerCase().includes(q) || (o.tags || []).some(t => t.toLowerCase().includes(q));
+  }) || [];
   const savedOpps = opportunities?.filter(o => o.is_saved) || [];
   const upcomingDeadlines = trackers?.filter(t => t.deadline).sort((a, b) => new Date(a.deadline) - new Date(b.deadline)).slice(0, 5) || [];
 
@@ -86,7 +91,7 @@ export default function Opportunities() {
           <div className="px-4 pb-2">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input type="text" placeholder="Search opportunities..." className="w-full pl-10 pr-4 h-[44px] rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow" />
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search opportunities..." className="w-full pl-10 pr-4 h-[44px] rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow" />
             </div>
           </div>
 
