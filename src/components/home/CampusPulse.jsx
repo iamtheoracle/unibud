@@ -80,7 +80,7 @@ export default function CampusPulse() {
             transition={{ delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
             <Link to={item.path}>
-              <div className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden flex items-center gap-3.5 p-2.5 card-hover">
+              <div className="bg-card rounded-[20px] soft-shadow border border-border/20 overflow-hidden flex items-center gap-3.5 p-3 card-hover">
                 <div className="w-14 h-14 rounded-[14px] overflow-hidden flex-shrink-0 bg-muted flex items-center justify-center">
                   {item.type === "study" && <Users className="w-5 h-5 text-muted-foreground" />}
                   {item.type === "event" && <Trophy className="w-5 h-5 text-muted-foreground" />}

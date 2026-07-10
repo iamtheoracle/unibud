@@ -33,7 +33,7 @@ export default function MorningBriefing({ user }) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-[24px] p-5 elevated-shadow bg-card border border-border/40"
+      className="relative overflow-hidden rounded-[24px] p-5 elevated-shadow bg-card border border-border/15 primary-card-gradient"
     >
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-primary/8" />
       <div className="relative">

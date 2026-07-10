@@ -53,7 +53,7 @@ export default function TodaySchedule() {
           ))}
         </div>
       ) : schedule.length === 0 ? (
-        <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+        <div className="bg-card rounded-[20px] soft-shadow border border-border/20">
           <EmptyState
             icon={Calendar}
             title="No classes today"
@@ -73,7 +73,7 @@ export default function TodaySchedule() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-stretch gap-3.5 card-hover"
+              className="bg-card rounded-[20px] soft-shadow border border-border/20 p-4 flex items-stretch gap-3.5 card-hover"
             >
               <div className="w-[3px] rounded-full flex-shrink-0" style={{ backgroundColor: item.accent }} />
               <div className="text-center min-w-[44px] pt-0.5">

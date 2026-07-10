@@ -8,9 +8,9 @@ module.exports = {
   			lg: 'var(--radius)',
   			md: '0.75rem',
   			sm: '0.5rem',
-        xl: '1.25rem',
-        '2xl': '1.5rem',
-        '3xl': '2rem'
+        xl: '1.5rem',
+        '2xl': '1.75rem',
+        '3xl': '2.25rem'
   		},
   		spacing: {
   			'15': '3.75rem',

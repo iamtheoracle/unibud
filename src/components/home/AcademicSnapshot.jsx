@@ -69,7 +69,7 @@ export default function AcademicSnapshot() {
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 24 }}
-          className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 text-center card-hover"
+          className="bg-card rounded-[20px] soft-shadow border border-border/20 p-3.5 text-center card-hover"
         >
           <stat.icon className={"w-[18px] h-[18px] mx-auto mb-1.5 " + stat.color} strokeWidth={2.2} />
           <p className="font-heading font-bold text-[15px] text-foreground">{stat.value}</p>

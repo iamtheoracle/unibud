@@ -26,7 +26,7 @@
     --border: 0 0% 84%;              /* #D6D6D6 = N2 */
     --input: 0 0% 84%;               /* #D6D6D6 = N2 */
     --ring: 46 65% 52%;              /* #D4AF37 */
-    --radius: 1rem;                   /* 16px — Brand Master Sheet */
+    --radius: 1.25rem;                 /* 20px — premium, spacious */
 
     /* Surface tones */
     --surface: 0 0% 100%;            /* #FFFFFF */
@@ -62,14 +62,16 @@
     --unibud-purple-foreground: 0 0% 100%; /* white on purple */
 
     /* Glass — light mode */
-    --glass-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(0, 0, 0, 0.06);
-    --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-    --glass-blur: 12px;
+    --glass-bg: rgba(255, 255, 255, 0.68);
+    --glass-border: rgba(0, 0, 0, 0.04);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    --glass-blur: 16px;
+    --surface-grouped: 0 0% 98%;
 
-    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
-    --shadow-premium: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.03);
-    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.025), 0 1px 3px rgba(0, 0, 0, 0.012);
+    --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.045), 0 2px 6px rgba(0, 0, 0, 0.02);
+    --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.025);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.07), 0 6px 16px rgba(0, 0, 0, 0.03);
 
     --chart-1: 46 65% 52%;
     --chart-2: 142 72% 29%;
@@ -139,14 +141,16 @@
     --foreground-tertiary: 0 0% 65%;  /* #A7A7A7 = N3 */
 
     /* Glass — dark mode: pure black with premium blur */
-    --glass-bg: rgba(0, 0, 0, 0.72);
-    --glass-border: rgba(212, 175, 55, 0.10);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    --glass-blur: 20px;
+    --glass-bg: rgba(0, 0, 0, 0.68);
+    --glass-border: rgba(212, 175, 55, 0.08);
+    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    --glass-blur: 24px;
+    --surface-grouped: 0 0% 8%;
 
-    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.15);
-    --shadow-premium: 0 4px 24px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2);
-    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.25);
+    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.25), 0 2px 6px rgba(0, 0, 0, 0.12);
+    --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.2);
 
     --sidebar-background: 0 0% 0%;
     --sidebar-foreground: 0 0% 65%;
@@ -186,9 +190,9 @@
     box-shadow: var(--glass-shadow);
   }
   .glass-strong {
-    background: hsl(var(--card) / 0.85);
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
+    background: hsl(var(--card) / 0.80);
+    backdrop-filter: blur(32px) saturate(1.2);
+    -webkit-backdrop-filter: blur(32px) saturate(1.2);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-elevated);
   }
@@ -201,6 +205,12 @@
   .premium-shadow {
     box-shadow: var(--shadow-premium);
   }
+  .surface-grouped {
+    background: hsl(var(--surface-grouped));
+  }
+  .primary-card-gradient {
+    background-image: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card)) 55%, hsl(var(--muted) / 0.4) 100%);
+  }
   .soft-shadow {
     box-shadow: var(--shadow-soft);
   }
@@ -211,11 +221,11 @@
     box-shadow: 0 0 30px rgba(212, 175, 55, 0.2), var(--shadow-premium);
   }
   .card-hover {
-    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .card-hover:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-elevated);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
   }
 
   .press-scale {
@@ -269,6 +279,6 @@
   }
   .portal-card-hover:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-elevated);
+    box-shadow: var(--shadow-hover);
   }
 }

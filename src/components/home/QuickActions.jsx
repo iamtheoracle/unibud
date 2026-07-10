@@ -27,7 +27,7 @@ export default function QuickActions() {
             transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 24 }}
           >
             <Link to={action.path} className="flex flex-col items-center gap-2 flex-shrink-0 spring-tap">
-              <div className="w-12 h-12 rounded-[18px] bg-card soft-shadow border border-border/40 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-[18px] bg-card soft-shadow border border-border/20 flex items-center justify-center">
                 <action.icon className={`w-5 h-5 ${action.color}`} strokeWidth={2.2} />
               </div>
               <span className="text-[10px] font-medium text-foreground">{action.label}</span>

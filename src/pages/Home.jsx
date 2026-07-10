@@ -66,7 +66,7 @@ export default function Home() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-        className="px-5 pb-5"
+        className="px-5 pb-6"
       >
         <h2 className="font-heading font-bold text-[20px] tracking-tight text-foreground">{greeting}, {firstName}</h2>
         <div className="flex items-center gap-1 mt-0.5">
@@ -75,13 +75,15 @@ export default function Home() {
         </div>
       </motion.div>
 
-      <div className="px-4 space-y-5 pb-8">
+      <div className="px-5 space-y-6 pb-10">
         <MorningBriefing user={user} />
         <WeatherCard />
         <AcademicSnapshot />
         <ExamCountdown />
-        <TodaySchedule />
-        <SmartRecommendations />
+        <div className="surface-grouped rounded-[24px] p-5 space-y-5">
+          <TodaySchedule />
+          <SmartRecommendations />
+        </div>
         <QuickActions />
         <CampusPulse />
         <CampusLife />

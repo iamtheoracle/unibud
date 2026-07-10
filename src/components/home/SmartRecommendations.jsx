@@ -118,7 +118,7 @@ export default function SmartRecommendations() {
               <Link to={rec.path} className="block">
                 <motion.div
                   whileTap={{ scale: 0.98 }}
-                  className="w-full bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3.5 text-left card-hover"
+                  className="w-full bg-card rounded-[20px] soft-shadow border border-border/20 p-4 flex items-center gap-3.5 text-left card-hover"
                 >
                   <div className="w-11 h-11 rounded-[14px] bg-muted flex items-center justify-center text-lg flex-shrink-0">{rec.icon}</div>
                   <div className="flex-1 min-w-0">

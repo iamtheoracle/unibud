@@ -82,7 +82,7 @@ export default function BudPanel() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className="fixed bottom-0 left-0 right-0 z-[61] lg:left-auto lg:top-0 lg:bottom-0 lg:right-0 lg:w-[420px] h-[80vh] lg:h-full glass-strong rounded-t-[28px] lg:rounded-t-none lg:rounded-l-[28px] flex flex-col overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-[61] lg:left-auto lg:top-0 lg:bottom-0 lg:right-0 lg:w-[420px] h-[80vh] lg:h-full glass-strong rounded-t-[32px] lg:rounded-t-none lg:rounded-l-[32px] flex flex-col overflow-hidden"
       >
         {/* Drag overlay */}
         <AnimatePresence>
@@ -91,7 +91,7 @@ export default function BudPanel() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-20 bg-primary/10 backdrop-blur-sm rounded-t-[28px] lg:rounded-l-[28px] flex items-center justify-center border-2 border-dashed border-primary/40 m-3 rounded-[20px]"
+              className="absolute inset-0 z-20 bg-primary/10 backdrop-blur-sm rounded-t-[32px] lg:rounded-l-[32px] flex items-center justify-center border-2 border-dashed border-primary/40 m-3 rounded-[20px]"
             >
               <div className="text-center">
                 <Upload className="w-10 h-10 text-primary mx-auto mb-2" strokeWidth={1.5} />

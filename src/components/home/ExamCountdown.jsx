@@ -68,7 +68,7 @@ export default function ExamCountdown() {
 
   if (isLoading) {
     return (
-      <div className="h-[200px] rounded-[20px] shimmer" />
+      <div className="h-[200px] rounded-[24px] shimmer" />
     );
   }
 
@@ -77,7 +77,7 @@ export default function ExamCountdown() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-card rounded-[20px] p-5 border border-border/40 soft-shadow"
+        className="bg-card rounded-[24px] p-5 border border-border/20 soft-shadow"
       >
         <div className="flex items-center gap-2 mb-2">
           <Calendar className="w-4 h-4 text-primary" />
@@ -105,7 +105,7 @@ export default function ExamCountdown() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-card rounded-[20px] p-4 border border-border/40 soft-shadow overflow-hidden"
+      className="bg-card rounded-[24px] p-5 border border-border/20 soft-shadow overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center gap-2 mb-3">

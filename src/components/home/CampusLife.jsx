@@ -27,7 +27,7 @@ export default function CampusLife() {
             transition={{ delay: i * 0.04, type: "spring", stiffness: 300, damping: 24 }}
             whileTap={{ scale: 0.96 }}
             onClick={() => navigate(service.path)}
-            className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex flex-col items-center gap-2 card-hover"
+            className="bg-card rounded-[20px] soft-shadow border border-border/20 p-3.5 flex flex-col items-center gap-2 card-hover"
           >
             <div className={`w-10 h-10 rounded-[14px] ${service.color} flex items-center justify-center`}>
               <service.icon className={`w-[18px] h-[18px] ${service.iconColor}`} strokeWidth={2.2} />

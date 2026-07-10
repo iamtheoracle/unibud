@@ -70,7 +70,7 @@ export default function WeatherCard() {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        className="rounded-[24px] p-5 elevated-shadow h-[140px] shimmer"
+        className="rounded-[28px] p-6 elevated-shadow h-[140px] shimmer"
       />
     );
   }
@@ -81,7 +81,7 @@ export default function WeatherCard() {
         initial={{ opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-        className="rounded-[24px] p-5 elevated-shadow bg-card border border-border/40"
+        className="rounded-[28px] p-6 elevated-shadow bg-card border border-border/25"
       >
         <div className="flex items-center gap-2">
           <CloudRain className="w-5 h-5 text-muted-foreground" strokeWidth={1.8} />
@@ -97,7 +97,7 @@ export default function WeatherCard() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-[24px] p-5 elevated-shadow bg-gradient-to-br from-info to-info/80"
+      className="relative overflow-hidden rounded-[28px] p-6 elevated-shadow bg-gradient-to-br from-info to-info/80"
     >
       <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
       <div className="absolute -bottom-12 -left-4 w-24 h-24 rounded-full bg-white/5" />
