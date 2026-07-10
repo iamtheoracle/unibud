@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { Search, ChevronDown, Globe, ArrowRight, Loader2, Check, Building, MapPin, Rocket, GraduationCap, Sparkles, Award, FlaskConical } from "lucide-react";
 import AuthLogo from "@/components/auth/AuthLogo";
 import { COUNTRIES, UNIVERSITIES, LEVELS } from "@/data/universities";
+import { ensureCommunityInstitution } from "@/lib/institutionService";
 
 export default function UniversitySelection() {
   const navigate = useNavigate();
@@ -48,7 +49,12 @@ export default function UniversitySelection() {
     setLoading(true);
     try {
       const uniName = uniSelected ? uniSelected.name : uniSearch;
+      // Save the student's selection to their profile
       await base44.auth.updateMe({ country, university: uniName, campus, faculty, department, course_major: courseMajor, level });
+      // Ensure a Community Supported institution profile exists so the student's
+      // institution is recognized on the platform and can be claimed later.
+      // This runs in the background — it must not block onboarding if it fails.
+      ensureCommunityInstitution(uniName, country).catch(() => {});
       navigate("/university-connect");
     } catch {}
     setLoading(false);

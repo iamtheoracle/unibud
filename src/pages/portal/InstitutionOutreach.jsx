@@ -10,6 +10,7 @@ import GlassCard from "@/components/ui/GlassCard";
 import {
   INSTITUTION_TYPES, OUTREACH_STATUSES, getOutreachStatus,
 } from "@/lib/institutionConfig";
+import { claimInstitutionProfile } from "@/lib/institutionService";
 import { useToast } from "@/components/ui/use-toast";
 
 const STATUS_ICONS = {
@@ -60,12 +61,32 @@ export default function InstitutionOutreach() {
 
   const handleStatusUpdate = async (id, newStatus) => {
     try {
+      const outreachItem = (outreachList || []).find((o) => o.id === id);
       const updates = { outreach_status: newStatus };
       if (newStatus === "accepted") updates.onboarded_at = new Date().toISOString();
       if (["responded", "accepted", "declined"].includes(newStatus)) updates.response_at = new Date().toISOString();
       await base44.entities.InstitutionOutreach.update(id, updates);
+
+      // When accepted, claim the existing Community Supported institution profile
+      // (or create a new verified one). All existing students, communities, and
+      // history remain intact — only the verification status changes.
+      if (newStatus === "accepted" && outreachItem) {
+        const currentUser = await base44.auth.me().catch(() => null);
+        const claimed = await claimInstitutionProfile(outreachItem, currentUser?.id);
+        if (claimed) {
+          queryClient.invalidateQueries({ queryKey: ["institutionByUser"] });
+        }
+      }
+
       queryClient.invalidateQueries({ queryKey: ["institutionOutreach"] });
-      toast({ title: "Status Updated", description: `Marked as ${getOutreachStatus(newStatus).label}` });
+      const statusLabel = getOutreachStatus(newStatus).label;
+      toast({
+        title: newStatus === "accepted" ? "Institution Onboarded" : "Status Updated",
+        description:
+          newStatus === "accepted"
+            ? `${outreachItem?.institution_name || "Institution"} is now verified. Existing student data is preserved.`
+            : `Marked as ${statusLabel}`,
+      });
     } catch {
       toast({ title: "Error", description: "Could not update status.", variant: "destructive" });
     }
