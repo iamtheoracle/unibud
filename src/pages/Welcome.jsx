@@ -1,38 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, User, PlayCircle } from "lucide-react";
+import { ArrowRight, Lock, ChevronDown, Building2, PlayCircle, KeyRound } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import UnibudLogo from "@/components/brand/UnibudLogo";
+import WelcomeBackground from "@/components/welcome/WelcomeBackground";
+import WelcomeLoader from "@/components/welcome/WelcomeLoader";
 
-const cards = [
-  {
-    emoji: "📚",
-    title: "Learn Smarter",
-    desc: "Bud explains difficult topics, builds quizzes, and creates study plans tailored to you.",
-  },
-  {
-    emoji: "🌍",
-    title: "Stay Connected",
-    desc: "Meet classmates, join study groups, attend live classes, and build friendships that last.",
-  },
-  {
-    emoji: "🚀",
-    title: "Build Your Future",
-    desc: "Discover scholarships, internships, careers, and opportunities — all in one companion.",
-  },
-];
+const ease = [0.16, 1, 0.3, 1];
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { enterDemoMode } = useDemoMode();
+  const [isLoading, setIsLoading] = useState(true);
   const [showStaffOptions, setShowStaffOptions] = useState(false);
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
       if (authed) navigate("/");
     });
+    const timer = setTimeout(() => setIsLoading(false), 1400);
+    return () => clearTimeout(timer);
   }, [navigate]);
 
   const handleDemoMode = () => {
@@ -41,175 +30,173 @@ export default function Welcome() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      {/* Premium background lighting */}
-      <motion.div
-        className="absolute top-[-15%] left-[-10%] w-[70%] h-[45%] rounded-full bg-primary/[0.05] blur-[100px] pointer-events-none"
-        animate={{ x: [0, 40, 0], y: [0, 25, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute top-[25%] right-[-15%] w-[60%] h-[40%] rounded-full bg-primary/[0.03] blur-[100px] pointer-events-none"
-        animate={{ x: [0, -30, 0], y: [0, 20, 0] }}
-        transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <div className="min-h-[100dvh] bg-background flex flex-col relative overflow-hidden">
+      <WelcomeBackground />
 
-      {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto px-6 pt-14 pb-4 relative z-10 no-scrollbar">
-        {/* Official Logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center mb-6"
-        >
-          <UnibudLogo variant="gold" size="xl" showLine />
-          <motion.p
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <WelcomeLoader key="loader" />
+        ) : (
+          <motion.div
+            key="content"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-primary font-heading font-semibold text-[15px] mt-3"
+            transition={{ duration: 0.6, ease }}
+            className="flex-1 flex flex-col relative z-10"
           >
-            The Future Starts Together.
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            className="text-[12px] text-muted-foreground mt-0.5"
-          >
-            One campus. Endless possibilities.
-          </motion.p>
-        </motion.div>
-
-        {/* Three premium floating cards */}
-        <div className="space-y-3 mb-6">
-          {cards.map((card, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[20px] p-4 premium-shadow border border-border/30 flex items-start gap-3.5 card-hover"
+            {/* === Center: Logo + Headline + Description === */}
+            <div
+              className="flex-1 flex flex-col items-center justify-center px-6"
+              style={{ paddingTop: "max(env(safe-area-inset-top), 2.5rem)" }}
             >
-              <div className="w-11 h-11 rounded-[14px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
-                {card.emoji}
-              </div>
-              <div className="flex-1 pt-0.5">
-                <h3 className="font-heading font-bold text-[14px] text-foreground mb-0.5">
-                  {card.title}
-                </h3>
-                <p className="text-[12px] text-muted-foreground leading-relaxed">
-                  {card.desc}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Floating black bottom sheet for authentication */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 mx-4 mb-3 rounded-[28px] bg-black p-5 elevated-shadow border border-n6"
-      >
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={() => navigate("/register")}
-          className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors mb-2.5"
-        >
-          <User className="w-[18px] h-[18px]" strokeWidth={2.2} />
-          Create Student Account
-          <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} />
-        </motion.button>
-
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={() => navigate("/login")}
-          className="w-full h-[52px] rounded-2xl bg-transparent text-white font-heading font-semibold text-[15px] border border-n6 flex items-center justify-center gap-2 hover:bg-n7 transition-colors mb-2.5"
-        >
-          <Lock className="w-[16px] h-[16px]" strokeWidth={2} />
-          Sign In
-        </motion.button>
-
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setShowStaffOptions(!showStaffOptions)}
-          className="w-full h-[44px] rounded-2xl bg-transparent text-n3 font-heading font-medium text-[13px] flex items-center justify-center gap-2 hover:bg-n7/50 transition-colors"
-        >
-          <Building2 className="w-[15px] h-[15px]" strokeWidth={2} />
-          Staff Sign In
-          <ChevronDown className={`w-4 h-4 transition-transform ${showStaffOptions ? "rotate-180" : ""}`} />
-        </motion.button>
-
-        <AnimatePresence>
-          {showStaffOptions && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="overflow-hidden"
-            >
-              <div className="pt-2.5 space-y-2">
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate("/university-staff-login")}
-                  className="w-full h-[48px] rounded-2xl bg-n7 text-white font-heading font-semibold text-[14px] border border-n6 flex items-center justify-center gap-2 hover:bg-n6 transition-colors"
+              <div className="max-w-md mx-auto w-full flex flex-col items-center">
+                {/* Official Logo */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1, duration: 0.8, ease }}
                 >
-                  <Building2 className="w-[16px] h-[16px]" strokeWidth={2} />
-                  University Staff
-                </motion.button>
+                  <UnibudLogo variant="gold" size="xl" />
+                </motion.div>
+
+                {/* Headline */}
+                <motion.h1
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35, duration: 0.7, ease }}
+                  className="font-heading font-extrabold text-[27px] md:text-[31px] text-foreground text-center mt-8 tracking-tight leading-tight"
+                >
+                  Your University Companion
+                </motion.h1>
+
+                {/* Description */}
+                <motion.p
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.7, ease }}
+                  className="text-[14px] md:text-[15px] text-muted-foreground text-center mt-3 max-w-[320px] leading-relaxed"
+                >
+                  Everything you need for university life in one place. Learn, connect, collaborate and succeed.
+                </motion.p>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
 
-        {/* Demo Mode */}
-        <motion.button
-          whileTap={{ scale: 0.98 }}
-          onClick={handleDemoMode}
-          className="w-full h-[48px] rounded-2xl bg-transparent text-primary font-heading font-semibold text-[14px] border border-primary/30 flex items-center justify-center gap-2 hover:bg-primary/5 transition-colors mb-2"
-        >
-          <PlayCircle className="w-[18px] h-[18px]" strokeWidth={2} />
-          Try Demo Mode
-        </motion.button>
+            {/* === Bottom: Actions + Links + Trust === */}
+            <div
+              className="px-5 relative z-10"
+              style={{ paddingBottom: "max(env(safe-area-inset-bottom), 1rem)" }}
+            >
+              <div className="max-w-md mx-auto w-full">
+                {/* Glass action panel */}
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.65, duration: 0.7, ease }}
+                  className="glass rounded-[28px] p-5"
+                >
+                  {/* Primary: Get Started */}
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate("/register")}
+                    className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[16px] flex items-center justify-center gap-2 spring-tap gold-glow"
+                    aria-label="Get Started — Create your account"
+                  >
+                    Get Started
+                    <ArrowRight className="w-5 h-5" strokeWidth={2.2} />
+                  </motion.button>
 
-        <div className="text-center mt-3">
-          <Link
-            to="/forgot-password"
-            className="text-[12px] text-muted-foreground hover:text-primary transition-colors flex items-center justify-center gap-1"
-          >
-            <KeyRound className="w-3 h-3" />
-            Forgot Password?
-          </Link>
-        </div>
-      </motion.div>
+                  {/* Secondary: Sign In */}
+                  <motion.button
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => navigate("/login")}
+                    className="w-full h-[54px] rounded-2xl bg-card/60 border border-border/40 text-foreground font-heading font-semibold text-[16px] flex items-center justify-center gap-2 spring-tap mt-2.5"
+                    aria-label="Sign In — Returning users"
+                  >
+                    <Lock className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={2} />
+                    Sign In
+                  </motion.button>
 
-      {/* Meet Bud first */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.3, duration: 0.5 }}
-        className="relative z-10 px-6 pb-6 text-center"
-      >
-        <div className="flex items-center justify-center gap-1.5 mb-1">
-          <Sparkles className="w-3 h-3 text-primary" strokeWidth={2} />
-          <p className="text-[11px] font-semibold text-foreground">Meet Bud first</p>
-        </div>
-        <p className="text-[10px] text-muted-foreground leading-relaxed max-w-[280px] mx-auto">
-          Curious about your future companion? Ask Bud up to three questions before
-          signing in. After that, Bud will gently invite you to create an account.
-        </p>
-      </motion.div>
+                  {/* Tertiary links */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.85, duration: 0.6 }}
+                    className="flex items-center justify-center gap-3.5 mt-4"
+                  >
+                    <button
+                      onClick={() => setShowStaffOptions(!showStaffOptions)}
+                      className="text-[12px] text-muted-foreground font-medium flex items-center gap-1 hover:text-foreground transition-colors"
+                    >
+                      <Building2 className="w-3 h-3" strokeWidth={2} />
+                      Staff
+                      <ChevronDown
+                        className={`w-3 h-3 transition-transform ${showStaffOptions ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                    <span className="w-1 h-1 rounded-full bg-border" />
+                    <button
+                      onClick={handleDemoMode}
+                      className="text-[12px] text-muted-foreground font-medium flex items-center gap-1 hover:text-foreground transition-colors"
+                    >
+                      <PlayCircle className="w-3 h-3" strokeWidth={2} />
+                      Demo
+                    </button>
+                    <span className="w-1 h-1 rounded-full bg-border" />
+                    <Link
+                      to="/forgot-password"
+                      className="text-[12px] text-muted-foreground font-medium flex items-center gap-1 hover:text-foreground transition-colors"
+                    >
+                      <KeyRound className="w-3 h-3" strokeWidth={2} />
+                      Forgot
+                    </Link>
+                  </motion.div>
 
-      {/* Branding */}
-      <div className="relative z-10 px-6 pb-4 text-center">
-        <p className="text-[9px] text-muted-foreground/60">A My Realm Product · My Realm Network Limited · RC: 9645700</p>
-        <p className="text-[8px] text-muted-foreground/40 mt-0.5">© 2026 My Realm Network Limited. All Rights Reserved.</p>
-      </div>
+                  {/* Staff options (expandable) */}
+                  <AnimatePresence>
+                    {showStaffOptions && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease }}
+                        className="overflow-hidden"
+                      >
+                        <button
+                          onClick={() => navigate("/university-staff-login")}
+                          className="w-full mt-3 h-[46px] rounded-2xl bg-muted/40 border border-border/30 text-foreground font-heading font-medium text-[14px] flex items-center justify-center gap-2 spring-tap"
+                        >
+                          <Building2 className="w-4 h-4" strokeWidth={2} />
+                          University Staff Sign In
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+
+                {/* Trust line */}
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 1, duration: 0.6 }}
+                  className="text-center text-[12px] text-muted-foreground/70 mt-6"
+                >
+                  Trusted by students, lecturers and universities.
+                </motion.p>
+
+                {/* Branding */}
+                <div className="text-center mt-3">
+                  <p className="text-[9px] text-muted-foreground/50">
+                    A My Realm Product · My Realm Network Limited · RC: 9645700
+                  </p>
+                  <p className="text-[8px] text-muted-foreground/35 mt-0.5">
+                    © 2026 My Realm Network Limited. All Rights Reserved.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
