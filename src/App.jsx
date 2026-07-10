@@ -74,6 +74,12 @@ import Wellbeing from '@/pages/Wellbeing';
 import Calendar from '@/pages/Calendar';
 import Shorts from '@/pages/Shorts';
 import HighlightDetail from '@/pages/HighlightDetail';
+import CareerHub from '@/pages/CareerHub';
+import Scholarships from '@/pages/Scholarships';
+import ResearchHub from '@/pages/ResearchHub';
+import Portfolio from '@/pages/Portfolio';
+import Companies from '@/pages/Companies';
+import CVBuilder from '@/pages/CVBuilder';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -200,6 +206,12 @@ const AuthenticatedApp = () => {
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/shorts" element={<Shorts />} />
           <Route path="/highlight/:highlightId" element={<HighlightDetail />} />
+          <Route path="/career" element={<CareerHub />} />
+          <Route path="/scholarships" element={<Scholarships />} />
+          <Route path="/research" element={<ResearchHub />} />
+          <Route path="/portfolio" element={<Portfolio />} />
+          <Route path="/companies" element={<Companies />} />
+          <Route path="/cv-builder" element={<CVBuilder />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />

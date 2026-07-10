@@ -7,7 +7,7 @@ import {
   ArrowLeft, TrendingUp, Globe, Flame, Trophy, Sparkles,
   ChevronRight, Users, Award, Briefcase, ShoppingBag,
   Lightbulb, Rocket, Music, Dumbbell, Cpu,
-  Building2, Calendar, Package,
+  Building2, Calendar, Package, FlaskConical, FileText, GraduationCap,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDemoMode } from "@/lib/DemoModeContext";
@@ -107,6 +107,35 @@ export default function Discover() {
                 <div className="flex-1 min-w-0">
                   <p className="text-[12px] font-semibold text-foreground">{space.label}</p>
                   <p className="text-[9px] text-muted-foreground truncate">{space.desc}</p>
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Professional Hub */}
+      <div className="px-4 mb-5">
+        <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
+          <Briefcase className="w-4 h-4 text-primary" /> Professional
+        </h3>
+        <div className="grid grid-cols-2 gap-2.5">
+          {[
+            { icon: Briefcase, label: "Career Hub", path: "/career", desc: "Jobs & internships", color: "text-info", bg: "bg-info/10" },
+            { icon: Award, label: "Scholarships", path: "/scholarships", desc: "Funding & grants", color: "text-success", bg: "bg-success/10" },
+            { icon: FlaskConical, label: "Research", path: "/research", desc: "Groups & labs", color: "text-purple", bg: "bg-purple/10" },
+            { icon: Building2, label: "Companies", path: "/companies", desc: "Hiring & sponsors", color: "text-warning", bg: "bg-warning/10" },
+            { icon: FileText, label: "Portfolio", path: "/portfolio", desc: "Showcase work", color: "text-primary", bg: "bg-primary/10" },
+            { icon: GraduationCap, label: "CV Builder", path: "/cv-builder", desc: "Professional CV", color: "text-info", bg: "bg-info/10" },
+          ].map((item, i) => (
+            <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.04 }}>
+              <Link to={item.path} className="flex items-center gap-2.5 p-3 rounded-[18px] bg-card soft-shadow border border-border/40 spring-tap card-hover">
+                <div className={"w-9 h-9 rounded-[12px] " + item.bg + " flex items-center justify-center flex-shrink-0"}>
+                  <item.icon className={"w-4 h-4 " + item.color} strokeWidth={2.2} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-semibold text-foreground">{item.label}</p>
+                  <p className="text-[9px] text-muted-foreground truncate">{item.desc}</p>
                 </div>
               </Link>
             </motion.div>
