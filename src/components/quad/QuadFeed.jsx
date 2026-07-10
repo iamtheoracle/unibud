@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Inbox, Loader2, ChevronUp, RefreshCw } from "lucide-react";
+import { Inbox, ChevronUp, RefreshCw } from "lucide-react";
 import { useInfiniteFeed, getCachedFeed } from "@/hooks/useInfiniteFeed";
 import { base44 } from "@/api/base44Client";
 import PostCard from "./PostCard";
@@ -170,8 +170,8 @@ export default function QuadFeed({ user, university }) {
 
             {/* Infinite scroll sentinel */}
             {hasNextPage && (
-              <div ref={sentinelRef} className="flex items-center justify-center py-4">
-                <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+              <div ref={sentinelRef} className="py-4">
+                <PostSkeleton />
               </div>
             )}
 

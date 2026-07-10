@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { MapPin, Clock, Users, Bookmark, Star, Calendar } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
+import { hapticTap, hapticImpact } from "@/lib/haptics";
 import {
   getIcon, EVENT_TYPES, formatEventDate, formatEventTime, getDaysUntil,
 } from "./campusConstants";
@@ -28,6 +29,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
 
   const handleRSVP = async (status) => {
     if (!user) return;
+    hapticImpact();
     const prevRSVP = rsvp;
     const newRSVP = prevRSVP === status ? null : status;
     setRsvp(newRSVP);
@@ -51,6 +53,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
   };
 
   const toggleSave = () => {
+    hapticTap();
     const newSaved = !saved;
     setSaved(newSaved);
     try {

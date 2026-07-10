@@ -6,6 +6,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
+import { hapticTap, hapticImpact } from "@/lib/haptics";
 import ReactionBar from "./ReactionBar";
 import PostMediaGallery from "./PostMediaGallery";
 import PostMenu from "./PostMenu";
@@ -37,6 +38,7 @@ export default function PostCard({ post, user, index = 0 }) {
   const isOwner = post.author_name === (user?.full_name || user?.email?.split("@")[0]);
 
   const handleReact = useCallback(async (reaction) => {
+    hapticTap();
     const currentReaction = getUserReaction(post.id);
     const newReactions = { ...localReactions };
 
@@ -64,12 +66,14 @@ export default function PostCard({ post, user, index = 0 }) {
   }, [post.id, localReactions, qc]);
 
   const handleBookmark = () => {
+    hapticTap();
     const nowBookmarked = toggleBookmarkLocal(post.id);
     setBookmarked(nowBookmarked);
     toast({ title: nowBookmarked ? "Saved to bookmarks" : "Removed from bookmarks" });
   };
 
   const handleShare = () => {
+    hapticTap();
     setShareOpen(true);
   };
 

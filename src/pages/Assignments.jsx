@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Calendar, Clock, FileText, AlertCircle, CheckCircle2, Circle, Sparkles, GraduationCap, PenTool, Award } from "lucide-react";
 import { useBudPanel } from "@/lib/BudPanelContext";
+import { hapticTap, hapticImpact } from "@/lib/haptics";
+import { useToast } from "@/components/ui/use-toast";
 
 const TABS = ["Assignments", "Exams", "Revision", "Practice"];
 
@@ -13,6 +15,7 @@ export default function Assignments() {
   const [tab, setTab] = useState("Assignments");
   const qc = useQueryClient();
   const { openBud } = useBudPanel();
+  const { toast } = useToast();
 
   const { data: assignments } = useQuery({ queryKey: ["assignments"], queryFn: () => base44.entities.Assignment.list("-due_date", 50) });
   const { data: exams } = useQuery({ queryKey: ["exams"], queryFn: () => base44.entities.Exam.list("date", 50) });
@@ -23,8 +26,26 @@ export default function Assignments() {
   const overdue = pending.filter(a => new Date(a.due_date) < new Date());
 
   const toggleStatus = async (a) => {
-    await base44.entities.Assignment.update(a.id, { status: a.status === "pending" ? "submitted" : "pending" });
-    qc.invalidateQueries({ queryKey: ["assignments"] });
+    const newStatus = a.status === "pending" ? "submitted" : "pending";
+    const prevStatus = a.status;
+    hapticImpact();
+    // Optimistic update
+    qc.setQueryData(["assignments"], (old) => {
+      if (!old) return old;
+      return old.map((item) => item.id === a.id ? { ...item, status: newStatus } : item);
+    });
+    toast({ title: newStatus === "submitted" ? "Assignment submitted" : "Assignment moved to pending" });
+    try {
+      await base44.entities.Assignment.update(a.id, { status: newStatus });
+      qc.invalidateQueries({ queryKey: ["assignments"] });
+    } catch (err) {
+      // Rollback on failure
+      qc.setQueryData(["assignments"], (old) => {
+        if (!old) return old;
+        return old.map((item) => item.id === a.id ? { ...item, status: prevStatus } : item);
+      });
+      toast({ title: "Failed to update assignment", variant: "destructive" });
+    }
   };
 
   return (
@@ -44,13 +65,21 @@ export default function Assignments() {
 
       <div className="px-4 mb-4 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
         {TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)} className={`flex-1 py-2.5 px-2 rounded-[12px] text-[11px] font-semibold transition-all ${tab === t ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>{t}</button>
+          <button key={t} onClick={() => { hapticTap(); setTab(t); }} className={`flex-1 py-2.5 px-2 rounded-[12px] text-[11px] font-semibold transition-all ${tab === t ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>{t}</button>
         ))}
       </div>
 
       <div className="px-4 pb-8 space-y-4">
         {tab === "Assignments" && (
           <>
+            {!assignments ? (
+              <>
+                <div className="h-[64px] rounded-[20px] shimmer" />
+                <div className="h-[64px] rounded-[20px] shimmer" />
+                {[1,2,3].map(i => <div key={i} className="h-[100px] rounded-[20px] shimmer" />)}
+              </>
+            ) : (
+            <>
             <DeadlineCard count={overdue.length} label="Overdue" urgent />
             <DeadlineCard count={pending.length} label="Pending" />
 
@@ -64,6 +93,8 @@ export default function Assignments() {
             ))}
             {pending.length === 0 && submitted.length === 0 && (
               <EmptyState icon={FileText} title="No assignments yet" subtitle="Your assignments will appear here" />
+            )}
+            </>
             )}
           </>
         )}
@@ -93,7 +124,7 @@ function AssignmentItem({ assignment, onToggle, delay, openBud }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover">
       <div className="flex items-start gap-3">
-        <button onClick={onToggle} className="mt-0.5 spring-tap">
+        <button onClick={(e) => { e.stopPropagation(); hapticTap(); onToggle(); }} className="mt-0.5 spring-tap">
           {done ? <CheckCircle2 className="w-5 h-5 text-success" /> : isOverdue ? <AlertCircle className="w-5 h-5 text-destructive" /> : <Circle className="w-5 h-5 text-muted-foreground" />}
         </button>
         <div className="flex-1 min-w-0">

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Users, UserPlus, Check, BadgeCheck, Crown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { hapticImpact } from "@/lib/haptics";
 import { getIcon, CLUB_CATEGORIES } from "./campusConstants";
 
 export default function ClubCard({ club, user, index = 0, onView }) {
@@ -17,6 +18,7 @@ export default function ClubCard({ club, user, index = 0, onView }) {
   const handleJoin = async (e) => {
     e.stopPropagation();
     if (joined || !user) return;
+    hapticImpact();
     setJoining(true);
     setJoined(true);
     setMembersCount((c) => c + 1);

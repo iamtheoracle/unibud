@@ -5,10 +5,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Search, Plus, Users, BookOpen, Lock, Globe,
-  ChevronRight, Loader2, Hash, GraduationCap, Video, Mic,
-  Sparkles, X, Calendar,
+  ChevronRight, Hash, GraduationCap, Video, Mic,
+  Sparkles, X, Calendar, Check,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import { useToast } from "@/components/ui/use-toast";
+import { hapticTap, hapticImpact } from "@/lib/haptics";
 
 const typeConfig = {
   public: { icon: Globe, color: "text-info", label: "Public" },
@@ -28,6 +30,7 @@ const accentColors = [
 export default function StudyGroups() {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [showCreate, setShowCreate] = useState(false);
@@ -102,13 +105,35 @@ export default function StudyGroups() {
   };
 
   const handleJoin = async (group) => {
+    hapticImpact();
+    // Optimistic update — update cache immediately
+    qc.setQueryData(["studyGroups"], (old) => {
+      if (!old) return old;
+      return old.map((g) =>
+        g.id === group.id
+          ? { ...g, is_joined: true, members_count: (g.members_count || 0) + 1 }
+          : g
+      );
+    });
+    toast({ title: `Joined ${group.name}` });
     try {
       await base44.entities.StudyGroup.update(group.id, {
         is_joined: true,
         members_count: (group.members_count || 0) + 1,
       });
       qc.invalidateQueries({ queryKey: ["studyGroups"] });
-    } catch (err) {}
+    } catch (err) {
+      // Rollback on failure
+      qc.setQueryData(["studyGroups"], (old) => {
+        if (!old) return old;
+        return old.map((g) =>
+          g.id === group.id
+            ? { ...g, is_joined: false, members_count: group.members_count || 0 }
+            : g
+        );
+      });
+      toast({ title: "Failed to join group", variant: "destructive" });
+    }
   };
 
   return (
@@ -206,7 +231,7 @@ function GroupMiniCard({ group, onJoin, delay }) {
       <p className="text-[9px] text-muted-foreground mb-2">{group.course_code || group.subject || "General"}</p>
       <div className="flex items-center justify-between">
         <span className="text-[9px] text-muted-foreground">{group.members_count || 0} members</span>
-        <button onClick={onJoin} className="px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[9px] font-semibold spring-tap">
+        <button onClick={(e) => { e.stopPropagation(); hapticTap(); onJoin(); }} className="px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[9px] font-semibold spring-tap press-scale">
           Join
         </button>
       </div>
@@ -244,10 +269,14 @@ function GroupCard({ group, onJoin, delay }) {
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-3" />
         </div>
-        {!group.is_joined && (
-          <button onClick={(e) => { e.preventDefault(); onJoin(); }} className="w-full mt-3 py-2 rounded-[12px] bg-primary/10 text-primary text-[11px] font-semibold spring-tap">
+        {!group.is_joined ? (
+          <button onClick={(e) => { e.preventDefault(); hapticTap(); onJoin(); }} className="w-full mt-3 py-2 rounded-[12px] bg-primary/10 text-primary text-[11px] font-semibold spring-tap press-scale">
             Join Group
           </button>
+        ) : (
+          <div className="w-full mt-3 py-2 rounded-[12px] bg-success/10 text-success text-[11px] font-semibold flex items-center justify-center gap-1">
+            <Check className="w-3.5 h-3.5" /> Joined
+          </div>
         )}
       </Link>
     </motion.div>

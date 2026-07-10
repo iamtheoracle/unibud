@@ -4,6 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ArrowLeft, Search, Calendar } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import { useToast } from "@/components/ui/use-toast";
+import { hapticTap } from "@/lib/haptics";
 import EmptyState from "@/components/ui/EmptyState";
 import EventCard from "@/components/campus/EventCard";
 import { EVENT_TYPES, getIcon } from "@/components/campus/campusConstants";
@@ -68,6 +70,7 @@ const FILTER_KEYS = ["all", ...Object.keys(EVENT_TYPES)];
 export default function CampusEvents() {
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const { toast } = useToast();
   const { isDemoMode } = useDemoMode();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -108,6 +111,8 @@ export default function CampusEvents() {
 
   const handleAddToCalendar = async (event) => {
     if (!event) return;
+    hapticTap();
+    toast({ title: `Adding "${event.title}" to calendar...` });
     try {
       await base44.entities.CalendarEvent.create({
         title: event.title,
@@ -121,8 +126,9 @@ export default function CampusEvents() {
         source_id: event.id,
       });
       qc.invalidateQueries({ queryKey: ["calendarEvents"] });
+      toast({ title: "Added to your calendar" });
     } catch {
-      // ignore
+      toast({ title: "Failed to add to calendar", variant: "destructive" });
     }
   };
 
