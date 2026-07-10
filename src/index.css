@@ -65,7 +65,7 @@
     --glass-bg: rgba(255, 255, 255, 0.66);
     --glass-border: rgba(124, 58, 237, 0.08);
     --glass-shadow: 0 10px 38px rgba(0, 0, 0, 0.05);
-    --glass-blur: 20px;
+    --glass-blur: 16px;
     --surface-grouped: 220 14% 96%;
 
     --shadow-soft: 0 3px 10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.018);
@@ -144,7 +144,7 @@
     --glass-bg: rgba(17, 17, 17, 0.72);
     --glass-border: rgba(167, 139, 250, 0.15);
     --glass-shadow: 0 14px 48px rgba(0, 0, 0, 0.55);
-    --glass-blur: 28px;
+    --glass-blur: 24px;
     --surface-grouped: 220 10% 8%;
 
     --shadow-soft: 0 3px 15px rgba(0, 0, 0, 0.24), 0 1px 4px rgba(0, 0, 0, 0.14);
@@ -191,8 +191,8 @@
   }
   .glass-strong {
     background: hsl(var(--card) / 0.76);
-    backdrop-filter: blur(38px) saturate(1.25);
-    -webkit-backdrop-filter: blur(38px) saturate(1.25);
+    backdrop-filter: blur(32px) saturate(1.2);
+    -webkit-backdrop-filter: blur(32px) saturate(1.2);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-elevated);
   }
