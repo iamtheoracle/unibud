@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import {
   Calendar, MapPin, Users, Heart, Share2, Bookmark, ChevronRight,
   PartyPopper, Users as UsersIcon, GraduationCap, Award, BookOpen,
   Briefcase, Trophy, Rocket, Lightbulb, Dumbbell, Flag, Globe,
-  MessageCircle, Code, Palette, Music, Star, Flame, Clock,
+  MessageCircle, Code, Palette, Music, Star,
 } from "lucide-react";
 
 const typeIcons = {
@@ -65,7 +65,6 @@ function getCountdown(dateStr) {
 }
 
 export default function CampusTraditionsGallery() {
-  const qc = useQueryClient();
   const [joinedIds, setJoinedIds] = useState(new Set());
   const [interestedIds, setInterestedIds] = useState(new Set());
   const [savedIds, setSavedIds] = useState(new Set());

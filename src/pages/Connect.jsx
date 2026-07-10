@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle, Trophy, Heart, Shield, Inbox } from "lucide-react";
+import { Search, Plus, UserPlus, Users, Calendar, Circle, Trophy, Heart, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
