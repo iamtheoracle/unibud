@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Sparkles, Clock, MessageSquare } from "lucide-react";
 import SuggestedPrompts from "./SuggestedPrompts";
 import QuickActions from "./QuickActions";
+import BudCategories from "./BudCategories";
 import { formatLastActivity } from "@/lib/agentRegistry";
 
 export default function BudWelcome({ user, onPrompt, conversations, onOpenConversation }) {
@@ -55,11 +56,20 @@ export default function BudWelcome({ user, onPrompt, conversations, onOpenConver
         <SuggestedPrompts onSelect={onPrompt} />
       </motion.div>
 
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+        className="mb-4"
+      >
+        <BudCategories onPrompt={onPrompt} />
+      </motion.div>
+
       {recentConvs.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
+          transition={{ delay: 0.25, duration: 0.4 }}
           className="mb-4"
         >
           <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">Recent Conversations</p>

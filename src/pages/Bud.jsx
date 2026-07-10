@@ -10,6 +10,7 @@ import BudWelcome from "@/components/bud/BudWelcome";
 import ChatMessage from "@/components/bud/ChatMessage";
 import AgentActivityIndicator from "@/components/bud/AgentActivityIndicator";
 import ChatInput from "@/components/bud/ChatInput";
+import BudCategories from "@/components/bud/BudCategories";
 import ConversationHistory from "@/components/bud/ConversationHistory";
 
 export default function Bud() {
@@ -169,7 +170,7 @@ export default function Bud() {
           <div>
             <h1 className="font-heading font-bold text-[15px] text-foreground">Bud</h1>
             <p className="text-[10px] text-success font-medium flex items-center gap-1">
-              Online · 20 agents ready
+              Online · Always here for you
             </p>
           </div>
         </div>
@@ -207,6 +208,7 @@ export default function Bud() {
           <AnimatePresence>
             {isTyping && <AgentActivityIndicator agents={activeAgents} />}
           </AnimatePresence>
+          <BudCategories onPrompt={handleSend} />
         </div>
       )}
 

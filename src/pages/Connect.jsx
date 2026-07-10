@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useNavigate } from "react-router-dom";
 import StudyMatching from "@/components/connect/StudyMatching";
+import StudentSearch from "@/components/connect/StudentSearch";
 import EventsSection from "@/components/connect/EventsSection";
 import MentorshipSection from "@/components/connect/MentorshipSection";
 import CareerNetwork from "@/components/connect/CareerNetwork";
@@ -40,6 +41,12 @@ const DEMO_GROUPS = [
 export default function Connect() {
   const { isDemoMode } = useDemoMode();
   const navigate = useNavigate();
+
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
+  });
 
   const { data: connections, isLoading: connectionsLoading } = useQuery({
     queryKey: ["socialConnections"],
@@ -110,44 +117,10 @@ export default function Connect() {
       {/* Messages Preview */}
       <MessagesPreview />
 
-      {/* Students You May Know */}
-      <div className="mb-6">
-        <h3 className="font-heading font-bold text-[16px] text-foreground px-5 mb-3">Students You May Know</h3>
-        {connectionsLoading && !isDemoMode ? (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-5">
-            {[1, 2, 3].map((i) => <div key={i} className="w-[145px] h-[180px] rounded-[20px] shimmer flex-shrink-0" />)}
-          </div>
-        ) : students.length === 0 ? (
-          <div className="px-5">
-            <div className="bg-card rounded-[20px] soft-shadow border border-border/20">
-              <EmptyState icon={UserPlus} title="No connections yet" description="Connect with classmates to build your network" action={<Link to="/connect" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">Find Friends</Link>} />
-            </div>
-          </div>
-        ) : (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-5">
-            {students.map((student, i) => (
-              <motion.div
-                key={student.id || i}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-card rounded-[20px] soft-shadow border border-border/20 p-3.5 flex-shrink-0 w-[145px] card-hover"
-              >
-                {student.avatar_url ? (
-                  <img src={student.avatar_url} alt={student.full_name || student.name || "Student"} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
-                ) : (
-                  <div className="w-full h-20 rounded-[14px] bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mb-2.5">
-                    <Users className="w-8 h-8 text-primary/50" />
-                  </div>
-                )}
-                <p className="font-heading font-semibold text-[12px] text-foreground truncate">{student.full_name || student.name || "Student"}</p>
-                <p className="text-[10px] text-muted-foreground mb-2.5 truncate">{student.department || student.major || ""}</p>
-                <button onClick={() => navigate("/messages")} className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Connect</button>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* Scalable student discovery with infinite scroll */}
+      {!isDemoMode && (
+        <StudentSearch university={user?.university} enabled={!!user} />
+      )}
 
       {/* Study Matching */}
       <StudyMatching />
