@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Video, ClipboardList, Users, GraduationCap, PlayCircle, CalendarDays, FolderOpen } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DashboardCard, SectionCard, PortalPageHeader, StatusPill, SmartList } from "@/components/portal/PortalUI";
+import QuickActionsPanel from "@/components/portal/QuickActionsPanel";
 import { useNavigate } from "react-router-dom";
 
 export default function LecturerDashboard({ user }) {
@@ -42,6 +43,8 @@ export default function LecturerDashboard({ user }) {
         title="Lecturer Portal"
         subtitle={`Welcome back, ${user?.full_name?.split(" ")[0] || "Lecturer"}. Manage your classes, assignments, and students.`}
       />
+
+      <QuickActionsPanel user={user} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <DashboardCard icon={GraduationCap} value={myCourses.length} title="My Courses" accent="primary" delay={0} onClick={() => navigate("/portal/courses")} />

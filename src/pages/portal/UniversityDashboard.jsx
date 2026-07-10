@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Users, GraduationCap, Building, BookOpen, Layers, BarChart3, CalendarDays } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DashboardCard, SectionCard, PortalPageHeader, StatusPill, SmartList } from "@/components/portal/PortalUI";
+import QuickActionsPanel from "@/components/portal/QuickActionsPanel";
 import { useNavigate } from "react-router-dom";
 
 export default function UniversityDashboard({ user }) {
@@ -35,6 +36,8 @@ export default function UniversityDashboard({ user }) {
   return (
     <div className="space-y-6">
       <PortalPageHeader title={myUni} subtitle="University administration dashboard — manage faculties, departments, and students." />
+
+      <QuickActionsPanel user={user} />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <DashboardCard icon={Users} value={students.length} title="Students" accent="primary" delay={0} onClick={() => navigate("/portal/users")} />
