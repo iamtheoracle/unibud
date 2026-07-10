@@ -2,16 +2,23 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MapPin, Clock, Users, Bookmark, Star, Calendar } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   getIcon, EVENT_TYPES, formatEventDate, formatEventTime, getDaysUntil,
 } from "./campusConstants";
 
 export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
+  const qc = useQueryClient();
   const existingRSVP = user && event.rsvp_list
     ? event.rsvp_list.find((r) => r.user_id === user.id)
     : null;
   const [rsvp, setRsvp] = useState(existingRSVP?.status || null);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(() => {
+    try {
+      const data = localStorage.getItem("saved_events");
+      return data ? JSON.parse(data).includes(event.id) : false;
+    } catch { return false; }
+  });
   const [attendees, setAttendees] = useState(event.attendees_count || 0);
 
   const typeMeta = EVENT_TYPES[event.type] || EVENT_TYPES.other;
@@ -37,9 +44,22 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
         attendees_count: Math.max(0, attendees + countDelta),
       });
       setAttendees((a) => Math.max(0, a + countDelta));
+      qc.invalidateQueries({ queryKey: ["campusEvents"] });
     } catch {
       setRsvp(prevRSVP);
     }
+  };
+
+  const toggleSave = () => {
+    const newSaved = !saved;
+    setSaved(newSaved);
+    try {
+      const data = localStorage.getItem("saved_events") || "[]";
+      const arr = JSON.parse(data);
+      if (newSaved) arr.push(event.id);
+      else arr.splice(arr.indexOf(event.id), 1);
+      localStorage.setItem("saved_events", JSON.stringify(arr));
+    } catch {}
   };
 
   return (
@@ -123,7 +143,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
           </div>
           <div className="flex items-center gap-1.5">
             <button
-              onClick={() => setSaved(!saved)}
+              onClick={toggleSave}
               className="w-7 h-7 rounded-full flex items-center justify-center spring-tap hover:bg-muted"
             >
               <Bookmark className={"w-3.5 h-3.5 " + (saved ? "text-primary fill-primary" : "text-muted-foreground")} />

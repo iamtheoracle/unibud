@@ -106,6 +106,7 @@ export default function StudyGroupDetail() {
         members_count: (group?.members_count || 0) + 1,
       });
       qc.invalidateQueries({ queryKey: ["studyGroup", groupId] });
+      qc.invalidateQueries({ queryKey: ["studyGroups"] });
       await base44.entities.StudyGroupMessage.create({
         group_id: groupId,
         sender_name: "System",

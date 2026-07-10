@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ArrowLeft, Search, Calendar } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
@@ -67,6 +67,7 @@ const FILTER_KEYS = ["all", ...Object.keys(EVENT_TYPES)];
 
 export default function CampusEvents() {
   const navigate = useNavigate();
+  const qc = useQueryClient();
   const { isDemoMode } = useDemoMode();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
@@ -119,6 +120,7 @@ export default function CampusEvents() {
         source_entity: "CampusEvent",
         source_id: event.id,
       });
+      qc.invalidateQueries({ queryKey: ["calendarEvents"] });
     } catch {
       // ignore
     }

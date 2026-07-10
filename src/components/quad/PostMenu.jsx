@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MoreHorizontal, Pin, Trash2, Flag, Copy, Pencil, Globe, Bookmark } from "lucide-react";
+import { MoreHorizontal, Pin, Trash2, Flag, Copy, Globe, Bookmark } from "lucide-react";
 
 const MENU_ITEMS = [
   { id: "pin", label: "Pin", icon: Pin, show: (isOwner) => isOwner },
   { id: "bookmark", label: "Bookmark", icon: Bookmark, show: () => true },
   { id: "copy", label: "Copy text", icon: Copy, show: () => true },
   { id: "translate", label: "Translate", icon: Globe, show: () => true },
-  { id: "edit", label: "Edit", icon: Pencil, show: (isOwner) => isOwner },
   { id: "report", label: "Report", icon: Flag, show: () => true, danger: false },
   { id: "delete", label: "Delete", icon: Trash2, show: (isOwner) => isOwner, danger: true },
 ];

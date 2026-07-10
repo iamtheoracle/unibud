@@ -2,16 +2,33 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Plus, Calendar as CalendarIcon } from "lucide-react";
+import { Plus, Calendar as CalendarIcon, RefreshCw, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import GlassCard from "@/components/ui/GlassCard";
 import CalendarGrid from "@/components/calendar/CalendarGrid";
 import CalendarDayDetail from "@/components/calendar/CalendarDayDetail";
 import AddEventModal from "@/components/calendar/AddEventModal";
 
 export default function Calendar() {
+  const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   const [showAdd, setShowAdd] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+
+  const handleGoogleSync = async () => {
+    setSyncing(true);
+    try {
+      const result = await base44.functions.invoke("googleCalendarSync", { action: "sync" });
+      toast({
+        title: "Calendar synced",
+        description: `${result.created || 0} created, ${result.updated || 0} updated in Google Calendar`,
+      });
+    } catch {
+      toast({ title: "Sync failed", description: "Please try again later", variant: "destructive" });
+    }
+    setSyncing(false);
+  };
 
   const { data: exams = [] } = useQuery({
     queryKey: ["calendarExams"],
@@ -84,12 +101,22 @@ export default function Calendar() {
           </div>
         )}
 
-        <button
-          onClick={() => setShowAdd(true)}
-          className="w-full h-14 rounded-[16px] bg-primary text-primary-foreground font-heading font-semibold text-[14px] flex items-center justify-center gap-2 spring-tap gold-glow"
-        >
-          <Plus className="w-5 h-5" /> Add Custom Event
-        </button>
+        <div className="flex gap-2.5">
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex-1 h-14 rounded-[16px] bg-primary text-primary-foreground font-heading font-semibold text-[14px] flex items-center justify-center gap-2 spring-tap gold-glow"
+          >
+            <Plus className="w-5 h-5" /> Add Event
+          </button>
+          <button
+            onClick={handleGoogleSync}
+            disabled={syncing}
+            className="h-14 px-5 rounded-[16px] bg-card border border-border/40 text-foreground font-heading font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap disabled:opacity-50 soft-shadow"
+          >
+            {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            Sync
+          </button>
+        </div>
       </div>
 
       {showAdd && (

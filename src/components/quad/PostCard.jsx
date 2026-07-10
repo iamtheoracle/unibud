@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MessageCircle, Share2, Bookmark, BadgeCheck, MapPin, Pin,
+  MessageCircle, Share2, Bookmark, BadgeCheck, MapPin, Pin, Loader2,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/components/ui/use-toast";
 import ReactionBar from "./ReactionBar";
 import PostMediaGallery from "./PostMediaGallery";
 import PostMenu from "./PostMenu";
@@ -19,12 +20,16 @@ import {
 
 export default function PostCard({ post, user, index = 0 }) {
   const qc = useQueryClient();
+  const { toast } = useToast();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [bookmarked, setBookmarked] = useState(() => isBookmarked(post.id));
   const [isPinned, setIsPinned] = useState(post.is_pinned || false);
   const [localLikes, setLocalLikes] = useState(post.likes_count || 0);
   const [localReactions, setLocalReactions] = useState(post.reactions || {});
+  const [localShares, setLocalShares] = useState(post.shares_count || 0);
+  const [translatedContent, setTranslatedContent] = useState(null);
+  const [translating, setTranslating] = useState(false);
 
   const authorName = post.author_name || "Anonymous";
   const authorHandle = post.author_handle || post.university || "";
@@ -61,13 +66,15 @@ export default function PostCard({ post, user, index = 0 }) {
   const handleBookmark = () => {
     const nowBookmarked = toggleBookmarkLocal(post.id);
     setBookmarked(nowBookmarked);
-    try {
-      base44.entities.QuadPost.update(post.id, { shares_count: (post.shares_count || 0) + (nowBookmarked ? 1 : 0) });
-    } catch {}
+    toast({ title: nowBookmarked ? "Saved to bookmarks" : "Removed from bookmarks" });
   };
 
   const handleShare = () => {
     setShareOpen(true);
+  };
+
+  const handleShareComplete = () => {
+    setLocalShares((s) => s + 1);
     try {
       base44.entities.QuadPost.update(post.id, { shares_count: (post.shares_count || 0) + 1 });
     } catch {}
@@ -84,16 +91,44 @@ export default function PostCard({ post, user, index = 0 }) {
         break;
       case "copy":
         navigator.clipboard?.writeText(post.content);
+        toast({ title: "Copied to clipboard" });
         break;
       case "delete":
         base44.entities.QuadPost.delete(post.id).then(() => {
           qc.invalidateQueries({ queryKey: ["quadFeed"] });
-        }).catch(() => {});
+          toast({ title: "Post deleted" });
+        }).catch(() => {
+          toast({ title: "Failed to delete post", variant: "destructive" });
+        });
         break;
       case "translate":
+        if (translatedContent) {
+          setTranslatedContent(null);
+          return;
+        }
+        setTranslating(true);
         base44.integrations.Core.InvokeLLM({
           prompt: `Translate to English. If already English, translate to French. Return only the translation:\n\n${post.content}`,
-        }).then(() => {}).catch(() => {});
+        }).then((result) => {
+          setTranslatedContent(typeof result === "string" ? result : String(result || ""));
+        }).catch(() => {
+          toast({ title: "Translation failed", variant: "destructive" });
+        }).finally(() => setTranslating(false));
+        break;
+      case "report":
+        if (!user) return;
+        base44.entities.ContentReport.create({
+          content_type: "quad_post",
+          content_id: post.id,
+          reporter_name: user?.full_name || user?.email || "Anonymous",
+          reporter_id: user?.id || "",
+          reason: "other",
+          description: "Reported from post menu",
+        }).then(() => {
+          toast({ title: "Post reported to moderators" });
+        }).catch(() => {
+          toast({ title: "Failed to report post", variant: "destructive" });
+        });
         break;
       default:
         break;
@@ -161,8 +196,21 @@ export default function PostCard({ post, user, index = 0 }) {
       {post.content && (
         <div className="px-4 pb-3">
           <p className="text-[13px] leading-relaxed text-foreground whitespace-pre-wrap break-words">
-            {renderRichContent(post.content)}
+            {renderRichContent(translatedContent || post.content)}
           </p>
+          {translating && (
+            <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
+              <Loader2 className="w-3 h-3 animate-spin" /> Translating...
+            </p>
+          )}
+          {translatedContent && (
+            <button
+              onClick={() => setTranslatedContent(null)}
+              className="text-[10px] text-primary font-semibold mt-1.5 spring-tap"
+            >
+              Show original
+            </button>
+          )}
         </div>
       )}
 
@@ -213,7 +261,7 @@ export default function PostCard({ post, user, index = 0 }) {
           className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-muted transition-colors spring-tap"
         >
           <Share2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
-          <span className="text-[11px] font-semibold text-muted-foreground">{formatCount(post.shares_count || 0)}</span>
+          <span className="text-[11px] font-semibold text-muted-foreground">{formatCount(localShares)}</span>
         </button>
 
         <div className="flex-1" />
@@ -246,6 +294,7 @@ export default function PostCard({ post, user, index = 0 }) {
         open={shareOpen}
         onClose={() => setShareOpen(false)}
         postUrl={`${window.location.origin}/quad`}
+        onShare={handleShareComplete}
       />
     </motion.div>
   );

@@ -6,7 +6,7 @@ import { SHARE_TARGETS } from "./quadConstants";
 /**
  * Bottom sheet modal for sharing a post to various targets.
  */
-export default function ShareSheet({ open, onClose, postUrl }) {
+export default function ShareSheet({ open, onClose, postUrl, onShare }) {
   const [copied, setCopied] = useState(false);
   const [sharedTo, setSharedTo] = useState(null);
 
@@ -17,9 +17,11 @@ export default function ShareSheet({ open, onClose, postUrl }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       });
+      if (onShare) onShare();
       return;
     }
     setSharedTo(target.id);
+    if (onShare) onShare();
     setTimeout(() => {
       setSharedTo(null);
       onClose();

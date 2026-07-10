@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Search, Filter, Plus, Package, Heart } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { useToast } from "@/components/ui/use-toast";
 import GlassCard from "@/components/ui/GlassCard";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDemoMode } from "@/lib/DemoModeContext";
@@ -19,8 +20,13 @@ const catColors = { textbooks: "from-info to-info/80", electronics: "from-purple
 
 export default function Marketplace() {
   const { isDemoMode } = useDemoMode();
+  const qc = useQueryClient();
+  const { toast } = useToast();
   const [activeCat, setActiveCat] = useState("All");
   const [search, setSearch] = useState("");
+  const [savedItems, setSavedItems] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("marketplace_saved") || "[]"); } catch { return []; }
+  });
 
   const { data: listings, isLoading } = useQuery({
     queryKey: ["marketplaceListings"],
@@ -36,6 +42,18 @@ export default function Marketplace() {
     return l.title?.toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q) || (l.location || "").toLowerCase().includes(q);
   });
 
+  const toggleSave = (itemId) => {
+    const newSaved = savedItems.includes(itemId)
+      ? savedItems.filter((id) => id !== itemId)
+      : [...savedItems, itemId];
+    setSavedItems(newSaved);
+    try { localStorage.setItem("marketplace_saved", JSON.stringify(newSaved)); } catch {}
+  };
+
+  const handleListItem = () => {
+    toast({ title: "Listing creation coming soon", description: "You'll be able to sell items directly from the app" });
+  };
+
   return (
     <div className="min-h-screen">
       <div className="pt-12 pb-3 px-5">
@@ -49,8 +67,8 @@ export default function Marketplace() {
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search marketplace..." className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow" />
         </div>
-        <button className="w-12 h-12 rounded-[16px] bg-card border border-border/40 flex items-center justify-center soft-shadow spring-tap">
-          <Filter className="w-[18px] h-[18px] text-muted-foreground" />
+        <button onClick={handleListItem} className="w-12 h-12 rounded-[16px] bg-primary flex items-center justify-center soft-shadow spring-tap gold-glow">
+          <Plus className="w-[18px] h-[18px] text-primary-foreground" />
         </button>
       </div>
 
@@ -80,7 +98,7 @@ export default function Marketplace() {
               title="No listings yet"
               description="Be the first to list an item on the campus marketplace"
               action={
-                <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">
+                <button onClick={handleListItem} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">
                   <Plus className="w-3.5 h-3.5" /> List Item
                 </button>
               }
@@ -96,8 +114,8 @@ export default function Marketplace() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between gap-2">
                     <p className="font-heading font-semibold text-[13px] leading-snug text-foreground">{item.title}</p>
-                    <button className="flex-shrink-0 spring-tap">
-                      <Heart className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+                    <button onClick={() => toggleSave(item.id)} className="flex-shrink-0 spring-tap">
+                      <Heart className={"w-4 h-4 " + (savedItems.includes(item.id) ? "text-primary fill-primary" : "text-muted-foreground")} strokeWidth={1.8} />
                     </button>
                   </div>
                   <p className="font-heading font-bold text-[16px] text-primary mt-1">₦{(item.price || 0).toLocaleString()}</p>
