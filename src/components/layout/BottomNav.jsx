@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, Compass, MessageCircle, User, Video, Library, Clapperboard } from "lucide-react";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
+import { useBudPanel } from "@/lib/BudPanelContext";
 import UnibudMark from "@/components/brand/UnibudMark";
 
 const allNavItems = [
@@ -19,6 +20,7 @@ const allNavItems = [
 export default function BottomNav() {
   const location = useLocation();
   const { isModuleEnabled } = useFeatureFlags();
+  const { openBud } = useBudPanel();
 
   const navItems = allNavItems.filter((item) => !item.flag || isModuleEnabled(item.flag));
 
@@ -39,9 +41,9 @@ export default function BottomNav() {
             // Bud — official center gold button
             if (item.isCenter) {
               return (
-                <Link
+                <button
                   key={item.path}
-                  to={item.path}
+                  onClick={() => openBud()}
                   className="relative flex flex-col items-center gap-0.5 -mt-5"
                 >
                   <motion.div
@@ -58,7 +60,7 @@ export default function BottomNav() {
                   }`}>
                     {item.label}
                   </span>
-                </Link>
+                </button>
               );
             }
 

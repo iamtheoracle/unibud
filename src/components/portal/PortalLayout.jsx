@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, Search, Bell, MessageSquare, Zap, Sun, Moon,
   ChevronDown, Settings, LogOut, ChevronLeft,
-  Megaphone, UserPlus, FileBarChart, Activity,
+  Megaphone, UserPlus, FileBarChart, Activity, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { isPortalRole, normalizeRole, canAccessPath } from "@/lib/portalConfig";
@@ -13,6 +13,7 @@ import { useTheme } from "@/lib/ThemeContext";
 import PortalNav from "@/components/portal/PortalNav";
 import UnibudMark from "@/components/brand/UnibudMark";
 import { PortalBadge } from "@/components/portal/PortalUI";
+import { useBudPanel } from "@/lib/BudPanelContext";
 
 const QUICK_ACTIONS = [
   { label: "New Announcement", icon: Megaphone, path: "/portal/announcements", roles: ["oracle", "university_admin", "lecturer"] },
@@ -29,6 +30,7 @@ export default function PortalLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [quickActionsOpen, setQuickActionsOpen] = useState(false);
+  const { openBud } = useBudPanel();
   const profileRef = useRef(null);
   const quickActionsRef = useRef(null);
 
@@ -294,6 +296,23 @@ export default function PortalLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Bud floating button */}
+      <motion.button
+        onClick={() => openBud()}
+        whileTap={{ scale: 0.88 }}
+        whileHover={{ scale: 1.05 }}
+        className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_rgba(212,175,55,0.35)]"
+        aria-label="Open Bud"
+      >
+        <motion.div
+          className="absolute inset-0 rounded-full border-2 border-primary"
+          initial={{ scale: 1, opacity: 0.5 }}
+          animate={{ scale: 1.4, opacity: 0 }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+        />
+        <Sparkles className="w-6 h-6" strokeWidth={2} />
+      </motion.button>
     </div>
   );
 }

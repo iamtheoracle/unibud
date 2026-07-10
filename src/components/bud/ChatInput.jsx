@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Send, Mic, Paperclip, X, FileText } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
-export default function ChatInput({ value, onChange, onSend, attachments, onFileUpload, onRemoveAttachment, disabled }) {
+export default function ChatInput({ value, onChange, onSend, attachments, onFileUpload, onRemoveAttachment, disabled, compact = false }) {
   const fileInputRef = useRef(null);
   const { isListening, isSupported, toggleListening } = useVoiceInput();
 
@@ -19,7 +19,7 @@ export default function ChatInput({ value, onChange, onSend, attachments, onFile
   };
 
   return (
-    <div className="p-4 pb-24">
+    <div className={compact ? "p-3" : "p-4 pb-24"}>
       {attachments && attachments.length > 0 && (
         <div className="flex gap-2 mb-2 flex-wrap">
           {attachments.map((att, i) => (

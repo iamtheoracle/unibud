@@ -10,6 +10,7 @@ import { DemoModeProvider } from '@/lib/DemoModeContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { BudPanelProvider } from '@/lib/BudPanelContext';
 
 // Auth pages
 import Login from '@/pages/Login';
@@ -266,9 +267,11 @@ function App() {
           <FeatureFlagProvider>
             <DemoModeProvider>
             <Router>
-              <ScrollToTop />
-              <AuthenticatedApp />
-              <SplashScreen />
+              <BudPanelProvider>
+                <ScrollToTop />
+                <AuthenticatedApp />
+                <SplashScreen />
+              </BudPanelProvider>
             </Router>
             <Toaster />
         </DemoModeProvider>
