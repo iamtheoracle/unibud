@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mountain, ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, User, MessageCircle, PlayCircle } from "lucide-react";
+import { ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, User, PlayCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import UnibudLogo from "@/components/brand/UnibudLogo";
 
 const cards = [
   {
@@ -41,7 +42,7 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      {/* Slowly moving background lighting */}
+      {/* Premium background lighting */}
       <motion.div
         className="absolute top-[-15%] left-[-10%] w-[70%] h-[45%] rounded-full bg-primary/[0.05] blur-[100px] pointer-events-none"
         animate={{ x: [0, 40, 0], y: [0, 25, 0] }}
@@ -55,36 +56,31 @@ export default function Welcome() {
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto px-6 pt-14 pb-4 relative z-10 no-scrollbar">
-        {/* Logo */}
+        {/* Official Logo */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center mb-7"
+          className="flex flex-col items-center mb-6"
         >
-          <div className="w-16 h-16 rounded-[22px] bg-primary flex items-center justify-center mb-3 gold-glow">
-            <Mountain className="w-8 h-8 text-primary-foreground" strokeWidth={2.2} />
-          </div>
-          <p className="text-[10px] font-heading font-medium text-muted-foreground tracking-[0.18em] uppercase mb-0.5">
-            Intelligent University Companion
-            </p>
-            <h1 className="font-heading font-extrabold text-[28px] tracking-tight text-foreground leading-none">
-             UNIBUD
-            </h1>
-            <p className="text-[13px] text-primary font-semibold mt-1.5">
-             The Future Starts Together.
-            </p>
+          <UnibudLogo variant="gold" size="xl" showLine />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className="text-primary font-heading font-semibold text-[15px] mt-3"
+          >
+            The Future Starts Together.
+          </motion.p>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            className="text-[12px] text-muted-foreground mt-0.5"
+          >
+            One campus. Endless possibilities.
+          </motion.p>
         </motion.div>
-
-        {/* Subtitle */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="text-center text-[14px] text-muted-foreground leading-relaxed mb-7 max-w-[300px] mx-auto"
-        >
-          Your intelligent companion for university life. Learn smarter, stay organized, connect with classmates, and build your future — all in one place.
-        </motion.p>
 
         {/* Three premium floating cards */}
         <div className="space-y-3 mb-6">
@@ -93,8 +89,8 @@ export default function Welcome() {
               key={i}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[24px] p-4 premium-shadow border border-border/30 flex items-start gap-3.5 card-hover"
+              transition={{ delay: 0.6 + i * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-card rounded-[20px] p-4 premium-shadow border border-border/30 flex items-start gap-3.5 card-hover"
             >
               <div className="w-11 h-11 rounded-[14px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
                 {card.emoji}

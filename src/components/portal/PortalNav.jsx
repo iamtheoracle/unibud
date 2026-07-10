@@ -1,17 +1,17 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard, Activity, ScrollText, Boxes, Users, ShieldCheck, Landmark,
   LineChart, BarChart3, LifeBuoy, FileEdit, Bot, Settings, Wrench,
-  Mountain, LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
+  LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
   BookOpen, CalendarDays, Megaphone, CheckSquare, PlayCircle, UsersRound,
   Video, ClipboardList, FolderOpen, Crown, ShoppingBag, ClipboardCheck,
   Bell, Flag,
 } from "lucide-react";
+import UnibudMark from "@/components/brand/UnibudMark";
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
 import { base44 } from "@/api/base44Client";
-import { PortalBadge } from "@/components/portal/PortalUI";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
 
 const NAV_FLAG_MAP = {
@@ -60,8 +60,8 @@ export default function PortalNav({ user, collapsed = false, onNavigate }) {
     <div className={`flex flex-col h-full glass-strong border-r border-border/30 transition-all duration-300 ${sidebarWidth}`}>
       {/* Logo */}
       <div className={`flex items-center gap-3 px-5 py-5 border-b border-border/20 ${collapsed ? "justify-center px-0" : ""}`}>
-        <div className="w-10 h-10 rounded-[14px] bg-primary flex items-center justify-center gold-glow flex-shrink-0">
-          <Mountain className="w-5 h-5 text-primary-foreground" strokeWidth={2.2} />
+        <div className="w-10 h-10 rounded-[14px] bg-black flex items-center justify-center gold-glow flex-shrink-0">
+          <UnibudMark className="w-5 h-5 text-primary" />
         </div>
         {!collapsed && (
           <div className="min-w-0 flex-1">

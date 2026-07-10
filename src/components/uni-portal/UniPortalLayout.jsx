@@ -4,10 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, Search, Bell, MessageSquare, Sun, Moon, ChevronDown,
-  Settings, LogOut, ChevronLeft, Zap, Mountain,
+  Settings, LogOut, ChevronLeft, Zap,
   CheckSquare, ClipboardList, Video, FolderOpen, Megaphone,
   Library, FileText, CalendarDays, Users,
 } from "lucide-react";
+import UnibudMark from "@/components/brand/UnibudMark";
 import { base44 } from "@/api/base44Client";
 import { isUniRole, getUniRoleName, canAccessUniPath, getUniQuickActions } from "@/lib/uniPortalConfig";
 import { useTheme } from "@/lib/ThemeContext";
@@ -20,7 +21,7 @@ const QUICK_ICON_MAP = {
 export default function UniPortalLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { theme, changeTheme } = useTheme();
+  const { changeTheme } = useTheme();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -53,8 +54,8 @@ export default function UniPortalLayout() {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center premium-shadow animate-pulse">
-            <Mountain className="w-6 h-6 text-primary-foreground" strokeWidth={2.2} />
+          <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center premium-shadow animate-pulse">
+            <UnibudMark className="w-6 h-6 text-primary" />
           </div>
           <p className="text-[13px] font-medium text-muted-foreground">Loading University Portal...</p>
         </motion.div>

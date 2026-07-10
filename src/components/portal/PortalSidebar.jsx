@@ -1,16 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard, Activity, ScrollText, Boxes, Users, ShieldCheck, Landmark,
   LineChart, BarChart3, LifeBuoy, FileEdit, Bot, Settings, Wrench,
-  Mountain, LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
+  LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
   BookOpen, CalendarDays, Megaphone, CheckSquare, PlayCircle, UsersRound,
   Video, ClipboardList, FolderOpen,
 } from "lucide-react";
+import UnibudMark from "@/components/brand/UnibudMark";
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
 import { base44 } from "@/api/base44Client";
-import { PortalBadge } from "@/components/portal/PortalUI";
 
 const ICON_MAP = {
   LayoutDashboard, Activity, ScrollText, Boxes, Users, ShieldCheck, Landmark,
@@ -33,8 +33,8 @@ export default function PortalSidebar({ user, onNavigate }) {
     <div className="flex flex-col h-full bg-black text-white">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-n7">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center gold-glow flex-shrink-0">
-          <Mountain className="w-5 h-5 text-primary-foreground" strokeWidth={2.2} />
+        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center gold-glow flex-shrink-0">
+          <UnibudMark className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0">
           <p className="font-heading font-extrabold text-[15px] tracking-tight leading-none">UNIBUD</p>

@@ -4,13 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu, Search, Bell, MessageSquare, Zap, Sun, Moon,
-  ChevronDown, User, Settings, LogOut, ChevronLeft,
-  Megaphone, UserPlus, FileBarChart, Activity, Building2,
+  ChevronDown, Settings, LogOut, ChevronLeft,
+  Megaphone, UserPlus, FileBarChart, Activity,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { isPortalRole, normalizeRole, getRoleName, canAccessPath } from "@/lib/portalConfig";
+import { isPortalRole, normalizeRole, canAccessPath } from "@/lib/portalConfig";
 import { useTheme } from "@/lib/ThemeContext";
 import PortalNav from "@/components/portal/PortalNav";
+import UnibudMark from "@/components/brand/UnibudMark";
 import { PortalBadge } from "@/components/portal/PortalUI";
 
 const QUICK_ACTIONS = [
@@ -60,8 +61,8 @@ export default function PortalLayout() {
           animate={{ scale: 1, opacity: 1 }}
           className="flex flex-col items-center gap-3"
         >
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center premium-shadow animate-pulse">
-            <span className="text-primary-foreground font-heading font-bold text-lg">U</span>
+          <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center premium-shadow animate-pulse">
+            <UnibudMark className="w-6 h-6 text-primary" />
           </div>
           <p className="text-[13px] font-medium text-muted-foreground">Loading Operations Center...</p>
         </motion.div>

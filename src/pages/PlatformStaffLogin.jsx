@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Lock, ArrowLeft, AlertCircle, Eye, EyeOff, Mountain } from "lucide-react";
+import { Shield, Lock, ArrowLeft, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { isPlatformRole, isOracleRole } from "@/lib/portalConfig";
+import UnibudMark from "@/components/brand/UnibudMark";
 
 export default function PlatformStaffLogin() {
   const navigate = useNavigate();
@@ -74,8 +75,8 @@ export default function PlatformStaffLogin() {
           className="w-full max-w-sm"
         >
           <div className="flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-[20px] bg-primary flex items-center justify-center mb-3 gold-glow relative">
-              <Mountain className="w-7 h-7 text-primary-foreground" strokeWidth={2.2} />
+            <div className="w-14 h-14 rounded-[20px] bg-black flex items-center justify-center mb-3 gold-glow relative">
+              <UnibudMark className="w-7 h-7 text-primary" />
               <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-error flex items-center justify-center">
                 <Shield className="w-3 h-3 text-white" />
               </div>

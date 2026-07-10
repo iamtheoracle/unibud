@@ -61,6 +61,7 @@ import CampusTraditionsCalendar from '@/pages/CampusTraditionsCalendar';
 import Celebrations from '@/pages/Celebrations';
 import StudentAchievements from '@/pages/StudentAchievements';
 import SplashScreen from '@/components/onboarding/SplashScreen';
+import UnibudMark from '@/components/brand/UnibudMark';
 import StudySession from '@/pages/StudySession';
 import AcademicAnalytics from '@/pages/AcademicAnalytics';
 import Wellbeing from '@/pages/Wellbeing';
@@ -111,12 +112,8 @@ const AuthenticatedApp = () => {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center premium-shadow animate-pulse">
-            <svg className="w-6 h-6 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5" />
-              <path d="M2 12l10 5 10-5" />
-            </svg>
+          <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center premium-shadow animate-pulse">
+            <UnibudMark className="w-6 h-6 text-primary" />
           </div>
           <p className="text-[13px] font-medium text-muted-foreground">Loading UNIBUD...</p>
         </div>

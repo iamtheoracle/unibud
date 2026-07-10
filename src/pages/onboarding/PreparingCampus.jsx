@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Check, Sparkles, Mountain } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
+import UnibudMark from "@/components/brand/UnibudMark";
 
 const ITEMS = [
   "Loading university information", "Building your timetable", "Finding your classmates",
@@ -55,8 +56,8 @@ export default function PreparingCampus() {
 
       {/* Logo */}
       <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }} className="flex items-center gap-2 mb-8 relative z-10">
-        <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center gold-glow">
-          <Mountain className="w-5 h-5 text-primary-foreground" strokeWidth={2.2} />
+        <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center gold-glow">
+          <UnibudMark className="w-5 h-5 text-primary" />
         </div>
         <span className="font-heading font-extrabold text-[17px] text-foreground">UNIBUD</span>
       </motion.div>

@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   LayoutDashboard, BookOpen, Users, Library, ClipboardList, FileText,
   CheckSquare, Video, FolderOpen, UsersRound, FlaskConical, CalendarDays,
   Megaphone, MessageSquare, BarChart3, LineChart, ClipboardCheck, Bell,
-  Settings, User, Mountain, LogOut, X, ChevronLeft,
+  Settings, User, LogOut, X, ChevronLeft,
 } from "lucide-react";
+import UnibudMark from "@/components/brand/UnibudMark";
 import { getUniNav, getUniRoleName } from "@/lib/uniPortalConfig";
 import { base44 } from "@/api/base44Client";
 
@@ -40,8 +41,8 @@ export default function UniPortalSidebar({ user, collapsed = false, onNavigate }
     <div className={`flex flex-col h-full glass-strong border-r border-border/30 transition-all duration-300 ${width}`}>
       {/* Logo */}
       <div className={`flex items-center gap-3 px-5 py-5 border-b border-border/20 ${collapsed ? "justify-center px-0" : ""}`}>
-        <div className="w-10 h-10 rounded-[14px] bg-primary flex items-center justify-center gold-glow flex-shrink-0">
-          <Mountain className="w-5 h-5 text-primary-foreground" strokeWidth={2.2} />
+        <div className="w-10 h-10 rounded-[14px] bg-black flex items-center justify-center gold-glow flex-shrink-0">
+          <UnibudMark className="w-5 h-5 text-primary" />
         </div>
         {!collapsed && (
           <div className="min-w-0 flex-1">

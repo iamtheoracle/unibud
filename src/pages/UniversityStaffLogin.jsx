@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Building2, Lock, ArrowLeft, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Lock, ArrowLeft, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { isUniversityRole } from "@/lib/portalConfig";
+import UnibudMark from "@/components/brand/UnibudMark";
 
 export default function UniversityStaffLogin() {
   const navigate = useNavigate();
@@ -66,8 +67,8 @@ export default function UniversityStaffLogin() {
           className="w-full max-w-sm"
         >
           <div className="flex flex-col items-center mb-8">
-            <div className="w-14 h-14 rounded-[20px] bg-primary flex items-center justify-center mb-3 gold-glow">
-              <Building2 className="w-7 h-7 text-primary-foreground" strokeWidth={2.2} />
+            <div className="w-14 h-14 rounded-[20px] bg-black flex items-center justify-center mb-3 gold-glow">
+              <UnibudMark className="w-7 h-7 text-primary" />
             </div>
             <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">University Portal</h1>
             <p className="text-[13px] text-muted-foreground mt-1 text-center">Sign in for lecturers and university administrators</p>
