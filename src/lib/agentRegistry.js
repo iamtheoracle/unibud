@@ -105,8 +105,8 @@ export const AGENTS = [
     color: "text-primary",
     bg: "bg-primary/10",
     category: "Academic",
-    keywords: ["portal", "sync", "university portal", "sync courses", "sync grades", "attendance", "portal data", "import"],
-    capabilities: ["Course synchronization", "Grade import", "Attendance tracking", "Announcement sync"],
+    keywords: ["portal", "sync", "university portal", "sync courses", "sync grades", "attendance", "portal data", "import", "matric", "matriculation", "matric number", "find student", "student record", "student search", "verify student", "student id"],
+    capabilities: ["Course synchronization", "Grade import", "Attendance tracking", "Announcement sync", "Matriculation number lookup", "Student verification"],
     modules: ["university-portal", "academics"],
     enabledByDefault: true,
     optional: true,
@@ -423,6 +423,8 @@ Based on the student's message, these capabilities are relevant right now:`;
       ["Faculty", user.faculty],
       ["Department", user.department],
       ["Level", user.level],
+      ["Matriculation number", user.matriculation_number],
+      ["Matriculation verified", user.matriculation_verified ? "Yes" : null],
       ["Preferred study time", user.preferred_study_time],
       ["Goals", Array.isArray(user.goals) ? user.goals.join(", ") : user.goals],
       ["Interests", Array.isArray(user.interests) ? user.interests.join(", ") : user.interests],
@@ -433,6 +435,14 @@ Based on the student's message, these capabilities are relevant right now:`;
     fields.forEach(([label, val]) => {
       if (val) prompt += `\n${label}: ${val}`;
     });
+  }
+
+  // Matriculation search context for authorized staff
+  if (user) {
+    const staffRoles = ["lecturer", "department_admin", "faculty_admin", "university_admin", "operator", "senior_operator", "moderator", "compliance_officer", "platform_admin", "super_admin", "operations_staff", "executive", "oracle"];
+    if (staffRoles.includes(user.role)) {
+      prompt += "\n\nYou have staff permissions. If the user asks to find a student by matriculation number (e.g. \"Find student with matriculation number CSC/2026/01452\"), the system will automatically search and provide results. Matriculation numbers are unique within each university and follow university-specific formats.";
+    }
   }
 
   prompt += `\n\nStudent message: ${text}

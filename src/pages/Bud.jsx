@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
+import { detectMatricNumber } from "@/lib/matriculationPrivacy";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudWelcome from "@/components/bud/BudWelcome";
 import ChatMessage from "@/components/bud/ChatMessage";
@@ -100,7 +101,31 @@ export default function Bud() {
     setIsTyping(true);
 
     try {
-      const prompt = buildBudPrompt(trimmed, agents, user);
+      let matricSearchContext = "";
+      // Detect matriculation number patterns for pre-search (authorized staff only)
+      const { isMatric, extracted } = detectMatricNumber(trimmed);
+      if (isMatric && extracted) {
+        try {
+          const searchResponse = await base44.functions.invoke("studentSearch", {
+            action: "find_by_matric",
+            matriculation_number: extracted,
+            university: user?.university,
+          });
+          const searchData = searchResponse.data || searchResponse;
+          if (searchData.results && searchData.results.length > 0) {
+            const students = searchData.results.map((r) =>
+              `${r.full_name} — ${r.matriculation_number || "(masked)"} — ${r.department || "N/A"} · ${r.faculty || "N/A"} · ${r.level || "N/A"}L — ${r.university}${r.is_verified ? " [Verified]" : ""}`
+            ).join("\n");
+            matricSearchContext = `\n\n[Matriculation Search Results for "${extracted}"]:\n${students}\n\nUse this data to answer the user's question about the student.`;
+          } else if (searchData.permissionDenied) {
+            matricSearchContext = `\n\n[Matriculation Search]: You do not have permission to search by exact matriculation number. Only authorized staff can perform this action.`;
+          } else {
+            matricSearchContext = `\n\n[Matriculation Search]: No student found with matriculation number "${extracted}".`;
+          }
+        } catch {}
+      }
+
+      const prompt = buildBudPrompt(trimmed, agents, user) + matricSearchContext;
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
         ...(fileUrls.length > 0 ? { file_urls: fileUrls } : {}),

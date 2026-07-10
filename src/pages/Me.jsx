@@ -16,6 +16,7 @@ import BadgesSection from "@/components/me/BadgesSection";
 import StudyStatsSection from "@/components/me/StudyStatsSection";
 import MilestonesSection from "@/components/milestones/MilestonesSection";
 import HighlightShelf from "@/components/stories/HighlightShelf";
+import MatriculationCard from "@/components/me/MatriculationCard";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const menuSections = [
@@ -161,6 +162,13 @@ export default function Me() {
           ))}
         </div>
       </div>
+
+      {/* Matriculation Number */}
+      {!isDemoMode && (
+        <div className="px-5 mb-6">
+          <MatriculationCard user={user} />
+        </div>
+      )}
 
       {/* Academic Progress Dashboard */}
       <div className="px-5 mb-6">

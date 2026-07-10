@@ -1,23 +1,26 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, X, ChevronDown, Users, Loader2 } from "lucide-react";
-import { useEntityInfinite } from "@/hooks/useEntityInfinite";
+import { Search, X, Users, Loader2, BadgeCheck, Shield } from "lucide-react";
+import { useStudentSearch } from "@/hooks/useStudentSearch";
 import EmptyState from "@/components/ui/EmptyState";
 
 const PAGE_SIZE = 15;
 
 const FILTER_OPTIONS = [
   { key: "all", label: "All" },
-  { key: "recent", label: "Recently Active" },
-  { key: "course", label: "Course Mates" },
-  { key: "study", label: "Study Partners" },
-  { key: "mutual", label: "Mutual Connections" },
-  { key: "new", label: "New Students" },
+  { key: "my_department", label: "My Department" },
+  { key: "my_faculty", label: "My Faculty" },
+  { key: "my_level", label: "My Level" },
+  { key: "verified", label: "Verified" },
 ];
 
 /**
  * Scalable student search with infinite scrolling and server-side filtering.
- * Never loads all students at once — uses cursor-based pagination.
+ * Searches by: Full Name, Matriculation Number, Department, Faculty, Level,
+ * Course, University, and Student ID.
+ *
+ * Matriculation numbers are masked server-side based on viewer role and
+ * each student's privacy settings. Only authorized staff see full numbers.
  */
 export default function StudentSearch({ university, enabled = true }) {
   const [search, setSearch] = useState("");
@@ -25,23 +28,10 @@ export default function StudentSearch({ university, enabled = true }) {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const sentinelRef = useRef(null);
 
-  // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search.trim()), 350);
     return () => clearTimeout(timer);
   }, [search]);
-
-  const query = React.useMemo(() => {
-    const q = {};
-    if (university) q.university = university;
-    if (debouncedSearch) {
-      q.$or = [
-        { full_name: { $regex: debouncedSearch, $options: "i" } },
-        { email: { $regex: debouncedSearch, $options: "i" } },
-      ];
-    }
-    return q;
-  }, [university, debouncedSearch]);
 
   const {
     items,
@@ -49,16 +39,14 @@ export default function StudentSearch({ university, enabled = true }) {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useEntityInfinite({
-    entityName: "SocialConnection",
-    queryKey: ["studentSearch", university, debouncedSearch, activeFilter],
-    query,
-    pageSize: PAGE_SIZE,
+  } = useStudentSearch({
+    university,
+    query: debouncedSearch,
+    filterType: activeFilter,
     enabled: enabled && !!university,
-    cacheKey: null,
+    pageSize: PAGE_SIZE,
   });
 
-  // Infinite scroll observer
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
@@ -89,7 +77,7 @@ export default function StudentSearch({ university, enabled = true }) {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, matric number, or email..."
+            placeholder="Search by name, matric no, dept, faculty, level..."
             className="w-full pl-10 pr-9 py-2.5 rounded-[14px] bg-card border border-border/40 text-[12px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow"
           />
           {search && (
@@ -123,17 +111,17 @@ export default function StudentSearch({ university, enabled = true }) {
       {/* Student list with infinite scroll */}
       <div className="px-4">
         {isLoading ? (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="w-[145px] h-[180px] rounded-[20px] shimmer flex-shrink-0" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-[150px] rounded-[18px] shimmer" />
             ))}
           </div>
         ) : items.length === 0 ? (
           <div className="bg-card rounded-[20px] soft-shadow border border-border/20">
             <EmptyState
               icon={Users}
-              title={debouncedSearch ? "No students found" : "No connections yet"}
-              description={debouncedSearch ? "Try a different name or filter." : "Connect with classmates to build your network."}
+              title={debouncedSearch ? "No students found" : "No students yet"}
+              description={debouncedSearch ? "Try a different name, matric number, or filter." : "Students will appear here once they set up their profiles."}
             />
           </div>
         ) : (
@@ -158,9 +146,13 @@ export default function StudentSearch({ university, enabled = true }) {
 }
 
 function StudentCard({ student, index }) {
-  const name = student.full_name || student.username || student.name || "Student";
+  const name = student.full_name || "Student";
+  const avatar = student.avatar_url || "";
   const dept = student.department || student.faculty || "";
-  const avatar = student.avatar_url || student.image || "";
+  const level = student.level ? student.level + "L" : "";
+  const matric = student.matriculation_number;
+  const matricVisible = student.is_matric_visible;
+  const isVerified = student.is_verified;
 
   return (
     <motion.div
@@ -176,8 +168,19 @@ function StudentCard({ student, index }) {
           <span className="text-[16px] font-bold text-primary">{name.charAt(0).toUpperCase()}</span>
         </div>
       )}
-      <p className="font-heading font-semibold text-[11px] text-foreground truncate">{name}</p>
-      {dept && <p className="text-[9px] text-muted-foreground truncate">{dept}</p>}
+      <div className="flex items-center gap-1 mb-0.5">
+        <p className="font-heading font-semibold text-[11px] text-foreground truncate flex-1">{name}</p>
+        {isVerified && <BadgeCheck className="w-3 h-3 text-primary flex-shrink-0" />}
+      </div>
+      {dept && <p className="text-[9px] text-muted-foreground truncate">{dept}{level ? " · " + level : ""}</p>}
+      {matric && (
+        <div className="flex items-center gap-1 mt-1">
+          <Shield className="w-2.5 h-2.5 text-muted-foreground/60" />
+          <p className={"text-[8px] font-mono " + (matricVisible ? "text-foreground" : "text-muted-foreground/60")}>
+            {matric}
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 }

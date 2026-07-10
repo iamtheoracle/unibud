@@ -9,9 +9,18 @@ const currentYear = new Date().getFullYear();
 const gradYears = Array.from({ length: 7 }, (_, i) => currentYear + i);
 const PRONOUNS = ["he/him", "she/her", "they/them", "Prefer not to say", "Other"];
 
-const FIELDS = [
+const LEVELS = ["100", "200", "300", "400", "500", "600"];
+
+const ACADEMIC_FIELDS = [
+  { key: "matriculation_number", label: "Matriculation Number", placeholder: "e.g., CSC/2026/01452", required: false, hint: "Your official university matriculation number. Unique to you within your university.", type: "text", mono: true },
+  { key: "faculty", label: "Faculty", placeholder: "e.g., Science", required: false, hint: "Helps filter classmates, events, and resources.", type: "text" },
+  { key: "department", label: "Department", placeholder: "e.g., Computer Science", required: false, hint: "Connects you with departmental communities.", type: "text" },
+  { key: "level", label: "Level", placeholder: "", required: false, hint: "Your current academic level.", type: "select", options: LEVELS },
+  { key: "student_id", label: "Student ID", placeholder: "e.g., UNI2024001", required: false, hint: "Connects your timetable and academic records.", type: "text" },
+];
+
+const PERSONAL_FIELDS = [
   { key: "preferred_name", label: "Preferred Name", placeholder: "e.g., Alex", required: true, hint: "How Bud and classmates will greet you." },
-  { key: "student_id", label: "Student ID", placeholder: "e.g., UNI2024001", required: false, hint: "Connects your timetable and academic records." },
   { key: "expected_graduation", label: "Expected Graduation Year", placeholder: "", required: false, hint: "Helps track progress and suggest timely opportunities.", type: "select", options: gradYears },
   { key: "date_of_birth", label: "Date of Birth", placeholder: "", required: false, hint: "Enables birthday celebrations and age-appropriate recommendations.", type: "date" },
   { key: "pronouns", label: "Pronouns", placeholder: "", required: false, hint: "Ensures everyone addresses you respectfully.", type: "select", options: PRONOUNS },
@@ -44,6 +53,21 @@ export default function StudentProfile() {
       const payload = { ...data };
       if (photoUrl) payload.profile_photo = photoUrl;
       await base44.auth.updateMe({ ...payload, onboarding_step: "learning_preferences" });
+
+      // Sync matriculation data to StudentRecord for directory search
+      if (payload.matriculation_number || payload.faculty || payload.department || payload.level) {
+        try {
+          await base44.functions.invoke("studentSearch", {
+            action: "upsert_record",
+            matriculation_number: payload.matriculation_number || undefined,
+            faculty: payload.faculty || undefined,
+            department: payload.department || undefined,
+            level: payload.level || undefined,
+            student_id: payload.student_id || undefined,
+          });
+        } catch {}
+      }
+
       navigate("/onboarding/learning-preferences");
     } catch {}
     setLoading(false);
@@ -96,37 +120,80 @@ export default function StudentProfile() {
             <p className="text-[11px] text-muted-foreground mt-2 text-center max-w-[200px]">Helps classmates recognize you in communities and study groups.</p>
           </div>
 
-          {/* Fields */}
-          {FIELDS.map((field) => (
-            <div key={field.key} className="space-y-1.5">
-              <label className="text-[12px] font-semibold text-foreground">
-                {field.label}
-                {field.required ? <span className="text-primary ml-0.5">*</span> : <span className="text-muted-foreground font-normal ml-1">(optional)</span>}
-              </label>
-              {field.type === "select" ? (
-                <div className="relative">
-                  <select value={values[field.key] || ""} onChange={(e) => setValue(field.key, e.target.value)} className="w-full px-4 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none">
-                    <option value="">Select</option>
-                    {field.options.map((o) => <option key={o} value={o}>{o}</option>)}
-                  </select>
-                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+          {/* Academic Identity Fields */}
+          <div>
+            <p className="text-[12px] font-bold text-foreground mb-1">Academic Identity</p>
+            <p className="text-[11px] text-muted-foreground mb-3">Link your matriculation number and academic details for verification and discovery.</p>
+            <div className="space-y-4">
+              {ACADEMIC_FIELDS.map((field) => (
+                <div key={field.key} className="space-y-1.5">
+                  <label className="text-[12px] font-semibold text-foreground">
+                    {field.label}
+                    {field.required ? <span className="text-primary ml-0.5">*</span> : <span className="text-muted-foreground font-normal ml-1">(optional)</span>}
+                  </label>
+                  {field.type === "select" ? (
+                    <div className="relative">
+                      <select value={values[field.key] || ""} onChange={(e) => setValue(field.key, e.target.value)} className="w-full px-4 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none">
+                        <option value="">Select</option>
+                        {field.options.map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    </div>
+                  ) : (
+                    <input
+                      type={field.type || "text"}
+                      value={values[field.key] || ""}
+                      onChange={(e) => setValue(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      className={"w-full px-4 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 " + (field.mono ? "font-mono tracking-wide" : "")}
+                    />
+                  )}
+                  <p className="text-[11px] text-muted-foreground flex items-start gap-1">
+                    <Sparkles className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
+                    {field.hint}
+                  </p>
                 </div>
-              ) : (
-                <input
-                  type={field.type || "text"}
-                  value={values[field.key] || ""}
-                  onChange={(e) => setValue(field.key, e.target.value)}
-                  placeholder={field.placeholder}
-                  required={field.required}
-                  className="w-full px-4 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                />
-              )}
-              <p className="text-[11px] text-muted-foreground flex items-start gap-1">
-                <Sparkles className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
-                {field.hint}
-              </p>
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Personal Fields */}
+          <div>
+            <p className="text-[12px] font-bold text-foreground mb-3">Personal Details</p>
+            <div className="space-y-4">
+              {PERSONAL_FIELDS.map((field) => (
+                <div key={field.key} className="space-y-1.5">
+                  <label className="text-[12px] font-semibold text-foreground">
+                    {field.label}
+                    {field.required ? <span className="text-primary ml-0.5">*</span> : <span className="text-muted-foreground font-normal ml-1">(optional)</span>}
+                  </label>
+                  {field.type === "select" ? (
+                    <div className="relative">
+                      <select value={values[field.key] || ""} onChange={(e) => setValue(field.key, e.target.value)} className="w-full px-4 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none">
+                        <option value="">Select</option>
+                        {field.options.map((o) => <option key={o} value={o}>{o}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                    </div>
+                  ) : (
+                    <input
+                      type={field.type || "text"}
+                      value={values[field.key] || ""}
+                      onChange={(e) => setValue(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      className="w-full px-4 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                  )}
+                  <p className="text-[11px] text-muted-foreground flex items-start gap-1">
+                    <Sparkles className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
+                    {field.hint}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <button onClick={handleContinue} disabled={!canContinue || loading} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]">
             {loading ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <>Continue <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}

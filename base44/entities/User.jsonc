@@ -23,6 +23,52 @@
         "oracle"
       ],
       "default": "student"
+    },
+    "matriculation_number": {
+      "type": "string",
+      "description": "University-specific matriculation number. Unique within each university. Format is university-defined \u2014 no global format enforced."
+    },
+    "student_id": {
+      "type": "string",
+      "description": "University-issued student ID, where applicable and different from matriculation number"
+    },
+    "university": {
+      "type": "string",
+      "description": "University the student belongs to"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "description": "Academic level e.g. 100, 200, 300, 400"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Primary course or programme code"
+    },
+    "matriculation_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the matriculation number has been verified against university records"
+    },
+    "matric_privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "university_only",
+        "connections_only",
+        "private"
+      ],
+      "default": "university_only",
+      "description": "Controls who can view the full matriculation number for this student"
+    },
+    "enrollment_year": {
+      "type": "number",
+      "description": "Year of admission"
     }
   },
   "required": [
