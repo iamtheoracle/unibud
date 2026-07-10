@@ -32,14 +32,19 @@ export default function MessagesPreview() {
   });
 
   const { data: realConversations, isLoading } = useQuery({
-    queryKey: ["connectMessages"],
-    queryFn: () => base44.entities.Conversation.list("-last_message_at", 5),
-    enabled: !isDemoMode,
+    queryKey: ["connectMessages", user?.id],
+    queryFn: async () => {
+      const all = await base44.entities.Conversation.list("-last_message_at", 30);
+      return all.filter(
+        (c) => !c.is_archived && c.participants?.some((p) => p.user_id === user?.id)
+      );
+    },
+    enabled: !isDemoMode && !!user,
   });
 
   const conversations = isDemoMode
     ? DEMO_CONVERSATIONS
-    : (realConversations || []).map((c) => {
+    : (realConversations || []).slice(0, 5).map((c) => {
         const otherParticipant = (c.participants || []).find((p) => p.user_id !== user?.id) || (c.participants || [])[0];
         const lastMsg = c.last_message || {};
         const myParticipant = (c.participants || []).find((p) => p.user_id === user?.id);

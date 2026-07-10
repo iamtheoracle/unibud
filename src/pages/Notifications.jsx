@@ -43,9 +43,11 @@ export default function Notifications() {
   const markAllRead = async () => {
     if (isDemoMode) return;
     const unread = items.filter((n) => !n.is_read);
-    for (const n of unread) {
-      await base44.entities.Notification.update(n.id, { is_read: true });
-    }
+    if (unread.length === 0) return;
+    await base44.entities.Notification.bulkUpdate(
+      unread.map((n) => ({ id: n.id, is_read: true }))
+    );
+    qc.setQueryData(["notifications"], (old) => (old || []).map((n) => ({ ...n, is_read: true })));
     qc.invalidateQueries({ queryKey: ["notifications"] });
   };
 

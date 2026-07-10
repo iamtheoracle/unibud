@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Search, PenLine } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
 import QuadFeed from "@/components/quad/QuadFeed";
 import PostCard from "@/components/quad/PostCard";
 import PostComposer from "@/components/quad/PostComposer";
@@ -67,6 +68,7 @@ const feedTabs = ["For you", "Trending", "Latest", "Clubs", "Courses"];
 
 export default function Quad() {
   const { isDemoMode } = useDemoMode();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("For you");
   const [composerOpen, setComposerOpen] = useState(false);
 
@@ -92,7 +94,7 @@ export default function Quad() {
           <p className="text-[12px] text-muted-foreground font-medium">The heart of campus</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
+          <button onClick={() => navigate("/discover")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
             <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
           </button>
           <button

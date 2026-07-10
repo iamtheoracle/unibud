@@ -3,6 +3,7 @@ import { Search, Plus, UserPlus, Users, Calendar, Circle, Trophy, Heart, Shield 
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
 import StudyMatching from "@/components/connect/StudyMatching";
 import EventsSection from "@/components/connect/EventsSection";
 import MentorshipSection from "@/components/connect/MentorshipSection";
@@ -18,7 +19,7 @@ const quickActions = [
   { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info", path: "/study-groups" },
   { icon: Trophy, label: "Challenges", desc: "Compete & win", color: "bg-purple/10", iconColor: "text-purple", path: "/challenges" },
   { icon: Shield, label: "Government", desc: "Student leaders", color: "bg-success/10", iconColor: "text-success", path: "/student-government" },
-  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/campus-traditions" },
+  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/events" },
   { icon: Heart, label: "Support", desc: "We're here for you", color: "bg-error/10", iconColor: "text-error", path: "/student-support" },
 ];
 
@@ -38,6 +39,7 @@ const DEMO_GROUPS = [
 
 export default function Connect() {
   const { isDemoMode } = useDemoMode();
+  const navigate = useNavigate();
 
   const { data: connections, isLoading: connectionsLoading } = useQuery({
     queryKey: ["socialConnections"],
@@ -50,7 +52,14 @@ export default function Connect() {
     enabled: !isDemoMode,
   });
 
-  const students = isDemoMode ? DEMO_STUDENTS : (connections || []);
+  const students = isDemoMode
+    ? DEMO_STUDENTS
+    : (connections || []).map((c) => ({
+        id: c.id,
+        full_name: c.username || c.name || "Connection",
+        department: c.platform ? c.platform.charAt(0).toUpperCase() + c.platform.slice(1) : "",
+        avatar_url: "",
+      }));
   const groupList = isDemoMode ? DEMO_GROUPS : (groups || []);
 
   return (
@@ -67,10 +76,10 @@ export default function Connect() {
           <p className="text-[12px] text-muted-foreground font-medium">People. Groups. Opportunities.</p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
+          <button onClick={() => navigate("/discover")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
             <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
           </button>
-          <button className="w-10 h-10 rounded-full bg-primary soft-shadow flex items-center justify-center spring-tap">
+          <button onClick={() => navigate("/messages")} className="w-10 h-10 rounded-full bg-primary soft-shadow flex items-center justify-center spring-tap">
             <Plus className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
           </button>
         </div>
@@ -133,7 +142,7 @@ export default function Connect() {
                 )}
                 <p className="font-heading font-semibold text-[12px] text-foreground truncate">{student.full_name || student.name || "Student"}</p>
                 <p className="text-[10px] text-muted-foreground mb-2.5 truncate">{student.department || student.major || ""}</p>
-                <button className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Connect</button>
+                <button onClick={() => navigate("/messages")} className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Connect</button>
               </motion.div>
             ))}
           </div>

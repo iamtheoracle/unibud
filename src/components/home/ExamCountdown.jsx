@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Calendar, Clock, MapPin, BookOpen, TrendingUp, Sparkles, AlertCircle } from "lucide-react";
+import { Calendar, Clock, MapPin, BookOpen, Sparkles } from "lucide-react";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 function useCountdown(targetDate) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, passed: false });
@@ -32,21 +33,18 @@ function useCountdown(targetDate) {
 }
 
 export default function ExamCountdown() {
+  const { isDemoMode } = useDemoMode();
   const { data: exams, isLoading } = useQuery({
     queryKey: ["upcomingExams"],
     queryFn: () => base44.entities.Exam.filter({ status: "upcoming" }, "date", 5),
-  });
-
-  const { data: user } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
   });
 
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [budTasks, setBudTasks] = useState(null);
   const [budLoading, setBudLoading] = useState(false);
 
-  const upcoming = (exams || []).filter(e => new Date(e.date) > new Date());
+  const upcoming = isDemoMode ? [] : (exams || []).filter(e => new Date(e.date) > new Date());
   const selected = upcoming[selectedIdx] || upcoming[0];
 
   const timeLeft = useCountdown(selected ? `${selected.date}T${selected.start_time || "09:00"}:00` : null);

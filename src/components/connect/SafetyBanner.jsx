@@ -1,8 +1,11 @@
 import React from "react";
 import { Shield } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function SafetyBanner() {
+  const navigate = useNavigate();
+
   return (
     <div className="px-4 pb-6">
       <motion.div
@@ -18,7 +21,7 @@ export default function SafetyBanner() {
           <p className="font-heading font-semibold text-[13px] text-white">Stay Safe on Connect</p>
           <p className="text-[11px] text-white/70 mt-0.5">Report, block, or review community guidelines anytime.</p>
         </div>
-        <button className="px-3.5 py-2 rounded-full bg-white/15 text-white text-[11px] font-semibold flex-shrink-0 spring-tap">Learn</button>
+        <button onClick={() => navigate("/student-support")} className="px-3.5 py-2 rounded-full bg-white/15 text-white text-[11px] font-semibold flex-shrink-0 spring-tap">Learn</button>
       </motion.div>
     </div>
   );
