@@ -66,6 +66,8 @@ import StudySession from '@/pages/StudySession';
 import AcademicAnalytics from '@/pages/AcademicAnalytics';
 import Wellbeing from '@/pages/Wellbeing';
 import Calendar from '@/pages/Calendar';
+import Shorts from '@/pages/Shorts';
+import HighlightDetail from '@/pages/HighlightDetail';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -183,6 +185,8 @@ const AuthenticatedApp = () => {
           <Route path="/academic-analytics" element={<AcademicAnalytics />} />
           <Route path="/wellbeing" element={<Wellbeing />} />
           <Route path="/calendar" element={<Calendar />} />
+          <Route path="/shorts" element={<Shorts />} />
+          <Route path="/highlight/:highlightId" element={<HighlightDetail />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />

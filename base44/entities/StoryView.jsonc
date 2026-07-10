@@ -1,0 +1,27 @@
+{
+  "name": "StoryView",
+  "type": "object",
+  "properties": {
+    "story_id": {
+      "type": "string",
+      "description": "ID of the Story that was viewed"
+    },
+    "viewer_name": {
+      "type": "string"
+    },
+    "viewer_image": {
+      "type": "string"
+    },
+    "viewer_handle": {
+      "type": "string"
+    },
+    "viewed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "story_id",
+    "viewer_name"
+  ]
+}

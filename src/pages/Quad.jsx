@@ -10,6 +10,7 @@ import TrendingSection from "@/components/quad/TrendingSection";
 import CommunitiesPreview from "@/components/quad/CommunitiesPreview";
 import CampusTraditionsGallery from "@/components/quad/CampusTraditionsGallery";
 import CelebrationsCarousel from "@/components/quad/CelebrationsCarousel";
+import StoryBar from "@/components/stories/StoryBar";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const DEMO_POSTS = [
@@ -102,6 +103,9 @@ export default function Quad() {
           </button>
         </div>
       </motion.div>
+
+      {/* Stories */}
+      <StoryBar user={user} isDemoMode={isDemoMode} />
 
       {/* Feed Tabs */}
       <div className="px-4 py-3 overflow-x-auto no-scrollbar sticky top-[68px] z-10 glass border-b border-border/20">

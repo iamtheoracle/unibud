@@ -3,18 +3,19 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
-  Settings, ChevronRight, Award, BookOpen, Flame, Target,
+  ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
   PartyPopper, Rocket, Calendar, Users,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AcademicProgressSection from "@/components/me/AcademicProgressSection";
 import CampusLifeSection from "@/components/me/CampusLifeSection";
 import BadgesSection from "@/components/me/BadgesSection";
 import StudyStatsSection from "@/components/me/StudyStatsSection";
 import MilestonesSection from "@/components/milestones/MilestonesSection";
+import HighlightShelf from "@/components/stories/HighlightShelf";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const menuSections = [
@@ -62,7 +63,6 @@ const menuSections = [
 
 export default function Me() {
   const { isDemoMode } = useDemoMode();
-  const navigate = useNavigate();
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
@@ -174,6 +174,11 @@ export default function Me() {
       {/* Campus Journey */}
       <div className="px-4 mb-5">
         <CampusLifeSection />
+      </div>
+
+      {/* Story Highlights */}
+      <div className="mb-5">
+        <HighlightShelf />
       </div>
 
       {/* Study Stats */}

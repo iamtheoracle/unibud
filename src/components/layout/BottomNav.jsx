@@ -1,13 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Compass, Users, User, Video, Library } from "lucide-react";
+import { Home, Compass, Users, User, Video, Library, Clapperboard } from "lucide-react";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
 import UnibudMark from "@/components/brand/UnibudMark";
 
 const allNavItems = [
   { path: "/", icon: Home, label: "Campus", flag: "campus" },
   { path: "/quad", icon: Compass, label: "Quad", flag: "quad" },
+  { path: "/shorts", icon: Clapperboard, label: "Shorts", flag: null },
   { path: "/connect", icon: Users, label: "Connect", flag: "connect" },
   { path: "/bud", icon: null, label: "Bud", flag: "bud", isCenter: true },
   { path: "/live", icon: Video, label: "Live", flag: "live" },
