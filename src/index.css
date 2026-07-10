@@ -62,16 +62,16 @@
     --unibud-purple-foreground: 0 0% 100%;
 
     /* Glass — light mode */
-    --glass-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(124, 58, 237, 0.06);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
-    --glass-blur: 16px;
+    --glass-bg: rgba(255, 255, 255, 0.66);
+    --glass-border: rgba(124, 58, 237, 0.08);
+    --glass-shadow: 0 10px 38px rgba(0, 0, 0, 0.05);
+    --glass-blur: 20px;
     --surface-grouped: 220 14% 96%;
 
-    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.025), 0 1px 2px rgba(0, 0, 0, 0.015);
-    --shadow-premium: 0 4px 16px rgba(0, 0, 0, 0.035), 0 1px 4px rgba(0, 0, 0, 0.02);
-    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
-    --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.025);
+    --shadow-soft: 0 3px 10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.018);
+    --shadow-premium: 0 6px 20px rgba(0, 0, 0, 0.045), 0 2px 5px rgba(0, 0, 0, 0.025);
+    --shadow-elevated: 0 10px 38px rgba(0, 0, 0, 0.05), 0 3px 10px rgba(0, 0, 0, 0.025);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.065), 0 5px 15px rgba(0, 0, 0, 0.03);
 
     --chart-1: 262 83% 58%;
     --chart-2: 142 71% 45%;
@@ -141,16 +141,16 @@
     --foreground-tertiary: 220 9% 65%;  /* Medium Grey */
 
     /* Glass — dark mode: deep charcoal with premium blur */
-    --glass-bg: rgba(17, 17, 17, 0.78);
-    --glass-border: rgba(167, 139, 250, 0.12);
-    --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-    --glass-blur: 24px;
+    --glass-bg: rgba(17, 17, 17, 0.72);
+    --glass-border: rgba(167, 139, 250, 0.15);
+    --glass-shadow: 0 14px 48px rgba(0, 0, 0, 0.55);
+    --glass-blur: 28px;
     --surface-grouped: 220 10% 8%;
 
-    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.12);
-    --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
-    --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
-    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.25);
+    --shadow-soft: 0 3px 15px rgba(0, 0, 0, 0.24), 0 1px 4px rgba(0, 0, 0, 0.14);
+    --shadow-premium: 0 8px 30px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.18);
+    --shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.46), 0 5px 14px rgba(0, 0, 0, 0.23);
+    --shadow-hover: 0 20px 56px rgba(0, 0, 0, 0.52), 0 8px 20px rgba(0, 0, 0, 0.3);
 
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 220 9% 65%;
@@ -190,9 +190,9 @@
     box-shadow: var(--glass-shadow);
   }
   .glass-strong {
-    background: hsl(var(--card) / 0.82);
-    backdrop-filter: blur(32px) saturate(1.2);
-    -webkit-backdrop-filter: blur(32px) saturate(1.2);
+    background: hsl(var(--card) / 0.76);
+    backdrop-filter: blur(38px) saturate(1.25);
+    -webkit-backdrop-filter: blur(38px) saturate(1.25);
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow-elevated);
   }
@@ -218,7 +218,7 @@
     box-shadow: var(--shadow-elevated);
   }
   .gold-glow {
-    box-shadow: 0 0 30px hsl(262 83% 58% / 0.22), var(--shadow-premium);
+    box-shadow: 0 0 36px hsl(262 83% 58% / 0.28), var(--shadow-premium);
   }
   .card-hover {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
