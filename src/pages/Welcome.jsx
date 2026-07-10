@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mountain, ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, Shield, User, MessageCircle } from "lucide-react";
+import { Mountain, ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, User, MessageCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const cards = [
@@ -158,14 +158,6 @@ export default function Welcome() {
                 >
                   <Building2 className="w-[16px] h-[16px]" strokeWidth={2} />
                   University Staff
-                </motion.button>
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => navigate("/platform-staff-login")}
-                  className="w-full h-[48px] rounded-2xl bg-n7 text-white font-heading font-semibold text-[14px] border border-n6 flex items-center justify-center gap-2 hover:bg-n6 transition-colors"
-                >
-                  <Shield className="w-[16px] h-[16px]" strokeWidth={2} />
-                  Platform Staff
                 </motion.button>
               </div>
             </motion.div>
