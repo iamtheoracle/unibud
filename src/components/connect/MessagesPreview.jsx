@@ -1,8 +1,11 @@
 import React from "react";
 import { MessageCircle, Inbox } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import { Link } from "react-router-dom";
 
 const DEMO_CONVERSATIONS = [
   { id: "d1", name: "Chioma Eze", last_message: "Are you joining the study group tomorrow?", unread_count: 2, avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", created_date: new Date(Date.now() - 2 * 60000).toISOString() },
@@ -21,7 +24,35 @@ function timeAgo(dateStr) {
 
 export default function MessagesPreview() {
   const { isDemoMode } = useDemoMode();
-  const conversations = isDemoMode ? DEMO_CONVERSATIONS : [];
+
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
+  });
+
+  const { data: realConversations, isLoading } = useQuery({
+    queryKey: ["connectMessages"],
+    queryFn: () => base44.entities.Conversation.list("-last_message_at", 5),
+    enabled: !isDemoMode,
+  });
+
+  const conversations = isDemoMode
+    ? DEMO_CONVERSATIONS
+    : (realConversations || []).map((c) => {
+        const otherParticipant = (c.participants || []).find((p) => p.user_id !== user?.id) || (c.participants || [])[0];
+        const lastMsg = c.last_message || {};
+        const myParticipant = (c.participants || []).find((p) => p.user_id === user?.id);
+        const isUnread = c.last_message_at && (!myParticipant?.last_read_at || new Date(c.last_message_at) > new Date(myParticipant.last_read_at));
+        return {
+          id: c.id,
+          name: c.type === "direct" ? (otherParticipant?.name || c.title || "Conversation") : (c.title || "Group"),
+          last_message: lastMsg.content || "",
+          unread_count: isUnread ? 1 : 0,
+          avatar_url: otherParticipant?.image || c.avatar_url || "",
+          created_date: c.last_message_at || c.created_date,
+        };
+      });
 
   return (
     <div className="px-4 pb-8">
@@ -31,9 +62,13 @@ export default function MessagesPreview() {
           <h3 className="font-heading font-bold text-[16px] text-foreground">Messages</h3>
         </div>
       </div>
-      {conversations.length === 0 ? (
+      {isLoading && !isDemoMode ? (
+        <div className="space-y-2.5">
+          {[1, 2, 3].map((i) => <div key={i} className="h-[68px] rounded-[20px] shimmer" />)}
+        </div>
+      ) : conversations.length === 0 ? (
         <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
-          <EmptyState icon={Inbox} title="No messages yet" description="Your conversations will appear here" />
+          <EmptyState icon={Inbox} title="No messages yet" description="Your conversations will appear here" action={<Link to="/messages" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">Open Messages</Link>} />
         </div>
       ) : (
         <div className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden">
