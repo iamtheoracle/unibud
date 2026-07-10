@@ -55,6 +55,10 @@
     "is_completed": {
       "type": "boolean",
       "default": false
+    },
+    "google_event_id": {
+      "type": "string",
+      "description": "Google Calendar event ID when synced to the shared staff Google Calendar"
     }
   },
   "required": [
