@@ -1,0 +1,151 @@
+{
+  "name": "CampusEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "career_fair",
+        "sports",
+        "convocation",
+        "orientation",
+        "hackathon",
+        "research_conference",
+        "competition",
+        "club_meeting",
+        "guest_lecture",
+        "department_seminar",
+        "workshop",
+        "social",
+        "cultural",
+        "other"
+      ],
+      "default": "other"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "venue_details": {
+      "type": "string"
+    },
+    "organizer_name": {
+      "type": "string"
+    },
+    "organizer_type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "faculty",
+        "department",
+        "club",
+        "sug",
+        "external"
+      ],
+      "default": "university"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Associated community if applicable"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "capacity": {
+      "type": "number"
+    },
+    "attendees_count": {
+      "type": "number",
+      "default": 0
+    },
+    "rsvp_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "going",
+              "interested",
+              "maybe"
+            ],
+            "default": "going"
+          },
+          "rsvp_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "checked_in": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who have checked in via QR code"
+    },
+    "qr_checkin_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": true
+    },
+    "price": {
+      "type": "number",
+      "default": 0
+    },
+    "google_event_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "ongoing",
+        "completed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "date"
+  ]
+}

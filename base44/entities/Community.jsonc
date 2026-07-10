@@ -1,0 +1,123 @@
+{
+  "name": "Community",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "faculty",
+        "department",
+        "programme",
+        "level",
+        "course",
+        "class",
+        "club",
+        "research_group",
+        "project_team",
+        "sports_team",
+        "sug",
+        "hostel",
+        "interest_group",
+        "faculty_association",
+        "department_association",
+        "class_representative"
+      ],
+      "default": "department"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent community ID for hierarchy nesting"
+    },
+    "university": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name for this community type"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "members_count": {
+      "type": "number",
+      "default": 0
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "member",
+              "moderator",
+              "admin",
+              "leader"
+            ],
+            "default": "member"
+          },
+          "joined_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "is_official": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ]
+}

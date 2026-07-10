@@ -50,6 +50,11 @@ import PdfReader from '@/pages/PdfReader';
 import Assignments from '@/pages/Assignments';
 import Challenges from '@/pages/Challenges';
 import Discover from '@/pages/Discover';
+import Communities from '@/pages/Communities';
+import CommunityDetail from '@/pages/CommunityDetail';
+import CampusEvents from '@/pages/CampusEvents';
+import LostFound from '@/pages/LostFound';
+import Clubs from '@/pages/Clubs';
 import StudentSupport from '@/pages/StudentSupport';
 import StudentGovernment from '@/pages/StudentGovernment';
 import Mentorship from '@/pages/Mentorship';
@@ -173,6 +178,11 @@ const AuthenticatedApp = () => {
           <Route path="/connected-accounts" element={<ConnectedAccounts />} />
           <Route path="/challenges" element={<Challenges />} />
           <Route path="/discover" element={<Discover />} />
+          <Route path="/communities" element={<Communities />} />
+          <Route path="/communities/:communityId" element={<CommunityDetail />} />
+          <Route path="/events" element={<CampusEvents />} />
+          <Route path="/lost-found" element={<LostFound />} />
+          <Route path="/clubs" element={<Clubs />} />
           <Route path="/student-support" element={<StudentSupport />} />
           <Route path="/student-government" element={<StudentGovernment />} />
           <Route path="/mentorship" element={<Mentorship />} />
