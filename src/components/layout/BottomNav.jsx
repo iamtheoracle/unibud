@@ -25,85 +25,105 @@ export default function BottomNav() {
 
   const navItems = allNavItems.filter((item) => !item.flag || isModuleEnabled(item.flag));
 
-  return (
-    <div className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
-      <div className="max-w-lg mx-auto px-4 pb-3">
-        <motion.nav
-          initial={{ y: 60, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="pointer-events-auto glass rounded-[32px] px-2.5 py-2.5 flex items-center justify-around"
+  // Split items around the center Bud button
+  const centerIndex = navItems.findIndex((item) => item.isCenter);
+  const leftItems = centerIndex >= 0 ? navItems.slice(0, centerIndex) : navItems.slice(0, Math.ceil(navItems.length / 2));
+  const rightItems = centerIndex >= 0 ? navItems.slice(centerIndex + 1) : navItems.slice(Math.ceil(navItems.length / 2));
+  const centerItem = centerIndex >= 0 ? navItems[centerIndex] : null;
+
+  const isItemActive = (item) =>
+    item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
+
+  const renderNavTab = (item) => {
+    const isActive = isItemActive(item);
+    const Icon = item.icon;
+
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        onClick={() => hapticTap()}
+        className="relative flex items-center justify-center w-12 h-12 spring-tap"
+        aria-label={item.label}
+      >
+        {isActive && (
+          <motion.div
+            layoutId="navActivePill"
+            className="absolute inset-0 rounded-full bg-primary/12"
+            transition={{ type: "spring", stiffness: 420, damping: 30 }}
+          />
+        )}
+        <motion.div
+          animate={{
+            scale: isActive ? 1.08 : 1,
+          }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="relative flex flex-col items-center"
         >
-          {navItems.map((item) => {
-            const isActive = item.path === "/"
-              ? location.pathname === "/"
-              : location.pathname.startsWith(item.path);
+          <Icon
+            className={`w-[21px] h-[21px] transition-colors duration-200 ${
+              isActive ? "text-primary" : "text-muted-foreground/70"
+            }`}
+            strokeWidth={isActive ? 2.4 : 1.9}
+          />
+          <span
+            className={`text-[8.5px] font-semibold mt-0.5 transition-colors duration-200 ${
+              isActive ? "text-primary" : "text-muted-foreground/60"
+            }`}
+          >
+            {item.label}
+          </span>
+        </motion.div>
+      </Link>
+    );
+  };
 
-            // Bud — official center purple button
-            if (item.isCenter) {
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => { hapticTap(); openBud(); }}
-                  className="relative flex flex-col items-center gap-0.5 -mt-5"
-                >
-                  <motion.div
-                    animate={{ scale: isActive ? 1.1 : 1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center spring-tap ${
-                      isActive ? "bg-primary gold-glow" : "bg-primary"
-                    }`}
-                  >
-                    <UnibudMark className="w-6 h-6 text-primary-foreground" />
-                  </motion.div>
-                  <span className={`text-[10px] font-semibold transition-colors ${
-                    isActive ? "text-primary" : "text-muted-foreground"
-                  }`}>
-                    {item.label}
-                  </span>
-                </button>
-              );
-            }
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 pointer-events-none">
+      <motion.div
+        initial={{ y: 80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+        className="max-w-lg mx-auto px-4 pb-[max(0.6rem,env(safe-area-inset-bottom))]"
+      >
+        <nav
+          className="pointer-events-auto relative flex items-center justify-between gap-0.5 rounded-[28px] px-3 py-2"
+          style={{
+            background: "var(--glass-bg)",
+            backdropFilter: "blur(var(--glass-blur)) saturate(1.4)",
+            WebkitBackdropFilter: "blur(var(--glass-blur)) saturate(1.4)",
+            border: "1px solid var(--glass-border)",
+            boxShadow: "var(--shadow-elevated), 0 24px 60px rgba(0,0,0,0.07)",
+          }}
+        >
+          {/* Left tabs */}
+          {leftItems.map(renderNavTab)}
 
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="relative flex flex-col items-center gap-0.5 py-1.5 px-2.5 rounded-2xl transition-all duration-200 spring-tap"
+          {/* Center — Bud floating button */}
+          {centerItem && (
+            <button
+              onClick={() => { hapticTap(); openBud(); }}
+              className="relative flex items-center justify-center w-14 h-14 spring-tap"
+              aria-label={centerItem.label}
+            >
+              <motion.div
+                animate={{ scale: isItemActive(centerItem) ? 1.05 : 1 }}
+                transition={{ type: "spring", stiffness: 380, damping: 20 }}
+                className="w-12 h-12 rounded-full flex items-center justify-center"
+                style={{
+                  background: "hsl(var(--primary))",
+                  boxShadow: "0 4px 18px hsl(var(--primary) / 0.32), 0 2px 6px rgba(0,0,0,0.08)",
+                }}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="navIndicator"
-                    className="absolute inset-0 rounded-2xl bg-primary/10"
-                    transition={{ type: "spring", stiffness: 400, damping: 32 }}
-                  />
-                )}
-                <motion.div
-                  animate={{
-                    scale: isActive ? 1.1 : 1,
-                    y: isActive ? -1 : 0,
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="relative"
-                >
-                  <Icon
-                    className={`w-[22px] h-[22px] transition-colors duration-200 ${
-                      isActive ? "text-primary" : "text-muted-foreground"
-                    }`}
-                    strokeWidth={isActive ? 2.4 : 2}
-                  />
-                </motion.div>
-                <span className={`relative text-[10px] font-semibold transition-colors duration-200 ${
-                  isActive ? "text-foreground" : "text-muted-foreground"
-                }`}>
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-        </motion.nav>
-      </div>
+                <UnibudMark className="w-6 h-6 text-primary-foreground" />
+              </motion.div>
+            </button>
+          )}
+
+          {/* Right tabs */}
+          {rightItems.map(renderNavTab)}
+        </nav>
+      </motion.div>
     </div>
   );
 }
