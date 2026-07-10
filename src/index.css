@@ -169,12 +169,49 @@
   }
   html {
     color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    overscroll-behavior: none;
   }
   html.dark {
     color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    overscroll-behavior-y: none;
+    overflow-x: hidden;
+  }
+
+  /* Allow text selection & drag only where it matters for accessibility */
+  input, textarea, [contenteditable="true"], [contenteditable=""] {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-user-select: auto;
+  }
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+  a, button {
+    touch-action: manipulation;
+  }
+
+  /* Responsive scrollbar — subtle & premium */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.2); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.35); }
+
+  /* Prevent layout shift on focus ring */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring) / 0.5);
+    outline-offset: 2px;
   }
 }
 
@@ -223,9 +260,11 @@
   .card-hover {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .card-hover:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+  @media (hover: hover) and (pointer: fine) {
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
   }
   .card-hover:active {
     transform: translateY(-1px) scale(0.99);
@@ -256,6 +295,29 @@
 
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Responsive grid helpers — auto-adapt cards to screen width */
+  .responsive-cards {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .responsive-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .responsive-cards { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Touch-optimized tap targets on mobile, hover states on desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-3px); }
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .hover-lift { transition: transform 0.15s ease; }
+    .hover-lift:active { transform: scale(0.97); }
+  }
 
   .spring-tap {
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);

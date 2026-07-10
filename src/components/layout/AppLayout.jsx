@@ -51,7 +51,7 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
       <DemoModeBanner />
-      <div className="max-w-lg mx-auto relative pb-28">
+      <div className="mx-auto relative pb-28 px-4 sm:px-5 max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl lg:pb-32">
         <Outlet />
       </div>
       {!hideDock && (

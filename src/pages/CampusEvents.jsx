@@ -205,7 +205,7 @@ export default function CampusEvents() {
       </div>
 
       {/* Events Grid */}
-      <div className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="px-4 responsive-cards">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden">

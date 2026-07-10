@@ -43,7 +43,7 @@ export default function BottomNav() {
         key={item.path}
         to={item.path}
         onClick={() => hapticTap()}
-        className="relative flex items-center justify-center w-12 h-12 spring-tap"
+        className="relative flex items-center justify-center w-12 h-12 spring-tap hover:bg-muted/40 rounded-full transition-colors duration-200 lg:w-14 lg:h-14"
         aria-label={item.label}
       >
         {isActive && (
@@ -84,7 +84,7 @@ export default function BottomNav() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-        className="max-w-lg mx-auto px-4 pb-[max(0.6rem,env(safe-area-inset-bottom))]"
+        className="max-w-lg mx-auto px-4 sm:px-5 pb-[max(0.6rem,env(safe-area-inset-bottom))] lg:max-w-2xl"
       >
         <nav
           className="pointer-events-auto relative flex items-center justify-between gap-0.5 rounded-[28px] px-3 py-2"

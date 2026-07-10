@@ -151,7 +151,7 @@ export default function QuadFeed({ user, university }) {
       />
 
       {/* Feed */}
-      <div className="px-4 space-y-3 pb-8">
+      <div className="px-4 space-y-3 pb-8 max-w-2xl mx-auto">
         {isLoading && displayPosts.length === 0 ? (
           [0, 1, 2].map((i) => <PostSkeleton key={i} />)
         ) : displayPosts.length === 0 ? (

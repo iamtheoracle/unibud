@@ -75,18 +75,22 @@ export default function Home() {
         </div>
       </motion.div>
 
-      <div className="px-5 space-y-6 pb-10">
-        <MorningBriefing user={user} />
+      <div className="px-5 sm:px-0 space-y-6 pb-10 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
+        <div className="lg:col-span-2">
+          <MorningBriefing user={user} />
+        </div>
         <WeatherCard />
         <AcademicSnapshot />
         <ExamCountdown />
-        <div className="surface-grouped rounded-[24px] p-5 space-y-5">
+        <div className="surface-grouped rounded-[24px] p-5 space-y-5 lg:col-span-2">
           <TodaySchedule />
           <SmartRecommendations />
         </div>
         <QuickActions />
         <CampusPulse />
-        <CampusLife />
+        <div className="lg:col-span-2">
+          <CampusLife />
+        </div>
       </div>
     </div>
   );

@@ -100,7 +100,7 @@ export default function Companies() {
       </div>
 
       {isLoading && !isDemoMode ? (
-        <div className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="px-4 responsive-cards">
           {[1, 2, 3, 4].map((i) => <div key={i} className="h-[240px] rounded-[20px] shimmer" />)}
         </div>
       ) : filtered.length === 0 ? (
@@ -110,7 +110,7 @@ export default function Companies() {
           </div>
         </div>
       ) : (
-        <div className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="px-4 responsive-cards">
           {filtered.map((comp, i) => (
             <CompanyCard key={comp.id || i} company={comp} index={i} />
           ))}

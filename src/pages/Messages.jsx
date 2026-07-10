@@ -135,9 +135,9 @@ export default function Messages() {
   const displayConversations = isDemoMode ? demoConversations : conversations;
 
   return (
-    <div className="flex flex-col h-[calc(100dvh-112px)] overflow-hidden">
+    <div className="flex flex-col h-[calc(100dvh-112px)] overflow-hidden lg:flex-row lg:h-[calc(100dvh-128px)] lg:gap-0 lg:rounded-[24px] lg:overflow-hidden lg:border lg:border-border/20 lg:soft-shadow lg:bg-card">
       {/* Conversation List */}
-      <div className={conversationId ? "hidden" : "flex-1 min-h-0"}>
+      <div className={conversationId ? "hidden lg:block lg:w-[340px] lg:flex-shrink-0 lg:border-r lg:border-border/30" : "flex-1 min-h-0 lg:w-[340px] lg:flex-shrink-0 lg:border-r lg:border-border/30"}>
         <ConversationList
           conversations={displayConversations}
           isLoading={!isDemoMode && isLoading}
@@ -154,7 +154,7 @@ export default function Messages() {
       </div>
 
       {/* Chat View */}
-      <div className={conversationId ? "flex-1 min-h-0" : "hidden"}>
+      <div className={conversationId ? "flex-1 min-h-0" : "hidden lg:block lg:flex-1"}>
         {conversationId && activeUser ? (
           isDemoMode ? (
             <DemoChatView
@@ -170,7 +170,9 @@ export default function Messages() {
             />
           )
         ) : !conversationId ? (
-          <EmptyChatState onNewConversation={() => setNewConvOpen(true)} />
+          <div className="hidden lg:flex h-full">
+            <EmptyChatState onNewConversation={() => setNewConvOpen(true)} />
+          </div>
         ) : null}
       </div>
 

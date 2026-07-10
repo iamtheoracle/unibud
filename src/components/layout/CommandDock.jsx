@@ -46,9 +46,9 @@ export default function CommandDock() {
   return (
     <div
       ref={dockRef}
-      className="fixed bottom-[88px] left-0 right-0 z-50 pointer-events-none"
+      className="fixed bottom-[88px] left-0 right-0 z-50 pointer-events-none lg:bottom-[96px]"
     >
-      <div className="max-w-lg mx-auto px-4 flex justify-end">
+      <div className="max-w-lg mx-auto px-4 sm:px-5 flex justify-end lg:max-w-2xl lg:justify-end">
         <div className="pointer-events-auto relative">
           {/* Proactive Bud card (when collapsed) */}
           {!expanded && <ProactiveBud onAction={(prompt) => openBud(prompt)} />}

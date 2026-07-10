@@ -178,7 +178,7 @@ export default function Clubs() {
       </div>
 
       {/* Clubs Grid */}
-      <div className="px-4 grid grid-cols-2 gap-3">
+      <div className="px-4 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] soft-shadow overflow-hidden">

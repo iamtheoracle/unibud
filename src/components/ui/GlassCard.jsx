@@ -2,13 +2,13 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const variants = {
-  default: "bg-card rounded-[20px] border border-border/25 soft-shadow",
-  elevated: "bg-card rounded-[24px] border border-border/20 elevated-shadow",
-  glass: "glass rounded-[24px]",
-  glassStrong: "glass-strong rounded-[28px]",
+  default: "bg-card rounded-[20px] border border-border/25 soft-shadow hover-lift",
+  elevated: "bg-card rounded-[24px] border border-border/20 elevated-shadow hover-lift",
+  glass: "glass rounded-[24px] hover-lift",
+  glassStrong: "glass-strong rounded-[28px] hover-lift",
   flat: "bg-muted/40 rounded-[20px]",
-  solid: "bg-card rounded-[20px] border border-border/25 soft-shadow",
-  primary: "bg-card rounded-[24px] border border-border/15 primary-card-gradient elevated-shadow",
+  solid: "bg-card rounded-[20px] border border-border/25 soft-shadow hover-lift",
+  primary: "bg-card rounded-[24px] border border-border/15 primary-card-gradient elevated-shadow hover-lift",
 };
 
 export default function GlassCard({ children, className = "", variant = "default", delay = 0, onClick, animate = true }) {
