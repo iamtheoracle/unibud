@@ -80,6 +80,7 @@ import ResearchHub from '@/pages/ResearchHub';
 import Portfolio from '@/pages/Portfolio';
 import Companies from '@/pages/Companies';
 import CVBuilder from '@/pages/CVBuilder';
+import Agents from '@/pages/Agents';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -212,6 +213,7 @@ const AuthenticatedApp = () => {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/companies" element={<Companies />} />
           <Route path="/cv-builder" element={<CVBuilder />} />
+          <Route path="/agents" element={<Agents />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />
