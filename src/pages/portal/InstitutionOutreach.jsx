@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import {
   Mail, Send, Loader2, Plus, Building2, Globe, Users, Clock,
-  CheckCircle2, XCircle, MailOpen, X, Sparkles, MapPin,
+  CheckCircle2, XCircle, MailOpen, X,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import {
@@ -157,7 +157,6 @@ export default function InstitutionOutreach() {
 }
 
 function OutreachCard({ item, delay, onStatusUpdate }) {
-  const [showActions, setShowActions] = useState(false);
   const status = getOutreachStatus(item.outreach_status);
   const StatusIcon = STATUS_ICONS[item.outreach_status] || Clock;
 
