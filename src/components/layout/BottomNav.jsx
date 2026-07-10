@@ -39,7 +39,7 @@ export default function BottomNav() {
               ? location.pathname === "/"
               : location.pathname.startsWith(item.path);
 
-            // Bud — official center gold button
+            // Bud — official center purple button
             if (item.isCenter) {
               return (
                 <button

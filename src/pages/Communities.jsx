@@ -9,15 +9,15 @@ import CommunityCard from "@/components/campus/CommunityCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
 
 const DEMO_COMMUNITIES = [
-  { id: "dc1", name: "University of Benin", type: "university", description: "The official UNIBUD community for all students.", members_count: 12450, is_verified: true, is_official: true, accent_color: "263 71% 50%" },
-  { id: "dc2", name: "Faculty of Engineering", type: "faculty", description: "All engineering departments and students.", members_count: 3200, is_verified: true, is_official: true, accent_color: "263 71% 50%" },
+  { id: "dc1", name: "University of Benin", type: "university", description: "The official UNIBUD community for all students.", members_count: 12450, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
+  { id: "dc2", name: "Faculty of Engineering", type: "faculty", description: "All engineering departments and students.", members_count: 3200, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
   { id: "dc3", name: "Department of Computer Science", type: "department", description: "CSC students, lecturers, and resources.", members_count: 850, is_verified: true, is_official: true, accent_color: "142 71% 45%" },
   { id: "dc4", name: "200 Level Computer Science", type: "level", description: "200L CSC students — your class community.", members_count: 210, is_verified: true, is_official: true, accent_color: "0 72% 51%" },
   { id: "dc5", name: "CSC 301 — Data Structures", type: "course", course_code: "CSC 301", description: "Course space for lectures, notes, and discussions.", members_count: 180, is_verified: true, is_official: true, accent_color: "217 91% 60%" },
   { id: "dc6", name: "UNIBUD Programming Club", type: "club", description: "Weekly coding sessions, hackathons, and tech talks.", members_count: 340, is_verified: true, accent_color: "38 92% 50%" },
   { id: "dc7", name: "AI Research Group", type: "research_group", description: "Exploring machine learning and AI applications.", members_count: 45, accent_color: "142 71% 45%" },
-  { id: "dc8", name: "Student Union Government", type: "sug", description: "The official student government body.", members_count: 120, is_verified: true, is_official: true, accent_color: "263 71% 50%" },
-  { id: "dc9", name: "Hall 3 Hostel", type: "hostel", description: "Residents of Hall 3 — announcements and updates.", members_count: 280, accent_color: "263 71% 50%" },
+  { id: "dc8", name: "Student Union Government", type: "sug", description: "The official student government body.", members_count: 120, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
+  { id: "dc9", name: "Hall 3 Hostel", type: "hostel", description: "Residents of Hall 3 — announcements and updates.", members_count: 280, accent_color: "262 83% 58%" },
   { id: "dc10", name: "Photography Enthusiasts", type: "interest_group", description: "Capturing moments on and off campus.", members_count: 95, accent_color: "142 71% 45%" },
 ];
 

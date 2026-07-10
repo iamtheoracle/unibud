@@ -29,7 +29,7 @@ const DEMO_GROUPS = [
       },
       {
         id: "ds2", type: "text", content: "Exam in 3 days! Who's ready? 💪",
-        background_color: "linear-gradient(135deg, #6D28D9, #3B82F6)",
+        background_color: "linear-gradient(135deg, #7C3AED, #3B82F6)",
         duration_seconds: 5, views_count: 28, replies_count: 7, created_date: new Date(Date.now() - 3000000).toISOString(),
       },
     ],

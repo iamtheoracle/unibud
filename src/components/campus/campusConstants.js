@@ -19,7 +19,7 @@ export function getIcon(name) {
 }
 
 /* Official UNIBUD Color Palette (HSL strings for dynamic hsl() usage) */
-const PURPLE = "263 71% 50%";   /* Royal Purple — primary */
+const PURPLE = "262 83% 58%";   /* Royal Purple — primary */
 const BLUE = "217 91% 60%";     /* Professional Blue — info */
 const GREEN = "142 71% 45%";    /* Emerald Green — success */
 const AMBER = "38 92% 50%";     /* Soft Amber — warning */

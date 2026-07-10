@@ -97,10 +97,10 @@ export default function WeatherCard() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="relative overflow-hidden rounded-[28px] p-6 elevated-shadow bg-gradient-to-br from-info to-info/80"
+      className="relative overflow-hidden rounded-[28px] p-6 elevated-shadow bg-gradient-to-br from-info via-info/85 to-info/55"
     >
-      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
-      <div className="absolute -bottom-12 -left-4 w-24 h-24 rounded-full bg-white/5" />
+      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/15 backdrop-blur-sm" />
+      <div className="absolute -bottom-12 -left-4 w-24 h-24 rounded-full bg-white/10 backdrop-blur-sm" />
 
       <div className="relative">
         <div className="flex items-start justify-between mb-3">

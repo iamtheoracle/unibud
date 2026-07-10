@@ -6,77 +6,77 @@
 
 @layer base {
   :root {
-    /* === LIGHT MODE — UNIBUD Design System v2.0 (Royal Purple) === */
-    --background: 240 20% 97%;        /* Soft White — #F7F7F9 */
-    --foreground: 240 10% 8%;         /* Near Black — #131316 */
-    --card: 0 0% 100%;                /* Pure White */
-    --card-foreground: 240 10% 8%;
+    /* === LIGHT MODE — UNIBUD Design System v3.0 (Premium) === */
+    --background: 220 14% 97%;        /* Very Light Gray — #F7F8FA */
+    --foreground: 0 0% 7%;            /* Near Black — #111111 */
+    --card: 0 0% 100%;                /* Pure White — #FFFFFF */
+    --card-foreground: 0 0% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 8%;
-    --primary: 263 71% 50%;           /* Royal Purple — #6D28D9 */
-    --primary-foreground: 0 0% 100%;  /* White on purple */
-    --secondary: 240 5% 96%;          /* Very Light Grey */
-    --secondary-foreground: 240 10% 8%;
-    --muted: 240 5% 94%;             /* Light Grey */
-    --muted-foreground: 240 4% 46%;  /* Medium Grey */
-    --accent: 263 30% 95%;            /* Very light purple tint for hover */
-    --accent-foreground: 263 71% 40%; /* Purple text on light hover */
-    --destructive: 0 72% 51%;        /* Modern Red — #DC2626 */
+    --popover-foreground: 0 0% 7%;
+    --primary: 262 83% 58%;           /* Royal Purple — #7C3AED */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;         /* Very Light Gray */
+    --secondary-foreground: 0 0% 7%;
+    --muted: 220 14% 94%;             /* Light Gray */
+    --muted-foreground: 220 9% 46%;   /* Medium Gray — #6B7280 */
+    --accent: 262 83% 96%;            /* Very light purple tint */
+    --accent-foreground: 262 83% 40%;
+    --destructive: 0 72% 51%;         /* Red — #DC2626 */
     --destructive-foreground: 0 0% 100%;
-    --border: 240 6% 90%;            /* Light border */
-    --input: 240 6% 90%;
-    --ring: 263 71% 50%;             /* Royal Purple */
-    --radius: 1.25rem;                 /* 20px — premium, spacious */
+    --border: 0 0% 91%;               /* Soft Border — #E8E8E8 */
+    --input: 0 0% 91%;
+    --ring: 262 83% 58%;              /* Royal Purple */
+    --radius: 1.5rem;                  /* 24px — premium, spacious */
 
     /* Surface tones */
-    --surface: 0 0% 100%;            /* Pure White */
-    --surface-secondary: 240 5% 96%; /* Very Light Grey */
-    --surface-elevated: 0 0% 100%;   /* Pure White */
-    --foreground-secondary: 240 6% 21%; /* Dark Grey */
-    --foreground-tertiary: 240 4% 46%;  /* Medium Grey */
+    --surface: 0 0% 100%;             /* Pure White */
+    --surface-secondary: 220 14% 97%; /* Very Light Gray — #F7F8FA */
+    --surface-elevated: 0 0% 100%;    /* Pure White */
+    --foreground-secondary: 220 9% 24%; /* Dark Gray */
+    --foreground-tertiary: 220 9% 46%;  /* Medium Gray — #6B7280 */
 
     /* Semantic — identical in both themes */
-    --unibud-gold: 263 71% 50%;       /* Royal Purple (primary alias) */
-    --unibud-blue: 217 91% 60%;       /* Professional Blue — #3B82F6 */
-    --unibud-purple: 263 71% 50%;     /* Royal Purple */
-    --unibud-green: 142 71% 45%;      /* Emerald Green — #10B981 */
-    --unibud-orange: 38 92% 50%;      /* Soft Amber — #F59E0B */
-    --unibud-red: 0 72% 51%;         /* Modern Red — #DC2626 */
+    --unibud-gold: 262 83% 58%;        /* Royal Purple (primary alias) */
+    --unibud-blue: 217 91% 60%;        /* Professional Blue — #3B82F6 */
+    --unibud-purple: 262 83% 58%;      /* Royal Purple — #7C3AED */
+    --unibud-green: 142 71% 45%;       /* Emerald Green — #10B981 */
+    --unibud-orange: 38 92% 50%;       /* Amber — events & reminders only */
+    --unibud-red: 0 72% 51%;          /* Modern Red — #DC2626 */
 
     /* Neutral palette — N1 (lightest) → N7 (darkest), absolute in both themes */
-    --unibud-black: 240 10% 8%;       /* Near Black */
-    --unibud-white: 0 0% 100%;       /* Pure White */
-    --unibud-n1: 240 5% 96%;
-    --unibud-n2: 240 6% 88%;
-    --unibud-n3: 240 5% 65%;
-    --unibud-n4: 240 4% 46%;
-    --unibud-n5: 240 6% 21%;
-    --unibud-n6: 240 8% 14%;
-    --unibud-n7: 240 8% 12%;
+    --unibud-black: 0 0% 7%;           /* Near Black — #111111 */
+    --unibud-white: 0 0% 100%;        /* Pure White */
+    --unibud-n1: 220 14% 96%;
+    --unibud-n2: 0 0% 91%;
+    --unibud-n3: 220 9% 65%;
+    --unibud-n4: 220 9% 46%;
+    --unibud-n5: 220 9% 24%;
+    --unibud-n6: 220 10% 14%;
+    --unibud-n7: 0 0% 10%;
 
     /* Semantic foregrounds — absolute, same in light & dark */
-    --unibud-green-foreground: 0 0% 100%;  /* white on green */
-    --unibud-orange-foreground: 0 0% 0%;   /* black on amber */
-    --unibud-red-foreground: 0 0% 100%;    /* white on red */
-    --unibud-blue-foreground: 0 0% 100%;   /* white on blue */
-    --unibud-purple-foreground: 0 0% 100%; /* white on purple */
+    --unibud-green-foreground: 0 0% 100%;
+    --unibud-orange-foreground: 0 0% 0%;
+    --unibud-red-foreground: 0 0% 100%;
+    --unibud-blue-foreground: 0 0% 100%;
+    --unibud-purple-foreground: 0 0% 100%;
 
     /* Glass — light mode */
     --glass-bg: rgba(255, 255, 255, 0.72);
-    --glass-border: rgba(109, 40, 217, 0.06);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+    --glass-border: rgba(124, 58, 237, 0.06);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
     --glass-blur: 16px;
-    --surface-grouped: 240 8% 98%;
+    --surface-grouped: 220 14% 96%;
 
-    --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.025), 0 1px 3px rgba(0, 0, 0, 0.012);
-    --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.045), 0 2px 6px rgba(0, 0, 0, 0.02);
-    --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.025);
-    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.07), 0 6px 16px rgba(0, 0, 0, 0.03);
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.025), 0 1px 2px rgba(0, 0, 0, 0.015);
+    --shadow-premium: 0 4px 16px rgba(0, 0, 0, 0.035), 0 1px 4px rgba(0, 0, 0, 0.02);
+    --shadow-elevated: 0 8px 32px rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.02);
+    --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.025);
 
-    --chart-1: 263 71% 50%;
+    --chart-1: 262 83% 58%;
     --chart-2: 142 71% 45%;
     --chart-3: 217 91% 60%;
-    --chart-4: 263 71% 60%;
+    --chart-4: 262 83% 68%;
     --chart-5: 38 92% 50%;
 
     --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
@@ -102,64 +102,64 @@
     --space-48: 12rem;    /* 192px */
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 6% 21%;
-    --sidebar-primary: 263 71% 50%;
+    --sidebar-foreground: 220 9% 24%;
+    --sidebar-primary: 262 83% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 263 30% 95%;
-    --sidebar-accent-foreground: 263 71% 40%;
-    --sidebar-border: 240 6% 90%;
-    --sidebar-ring: 263 71% 50%;
+    --sidebar-accent: 262 83% 96%;
+    --sidebar-accent-foreground: 262 83% 40%;
+    --sidebar-border: 0 0% 91%;
+    --sidebar-ring: 262 83% 58%;
   }
 
   .dark {
-    /* === DARK MODE — UNIBUD Design System v2.0 (Deep Charcoal) === */
-    --background: 240 10% 8%;          /* Deep Charcoal — #131316 */
-    --foreground: 0 0% 98%;          /* Near White */
-    --card: 240 8% 12%;              /* Charcoal Surface — #1C1C20 */
+    /* === DARK MODE — UNIBUD Design System v3.0 (Deep Charcoal) === */
+    --background: 0 0% 7%;            /* Near Black — #111111 */
+    --foreground: 0 0% 98%;           /* Near White */
+    --card: 220 10% 10%;              /* Deep Charcoal */
     --card-foreground: 0 0% 98%;
-    --popover: 240 8% 12%;
+    --popover: 220 10% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 265 75% 60%;           /* Brighter Royal Purple for dark — #A78BFA */
+    --primary: 262 83% 68%;           /* Brighter Royal Purple for dark */
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 8% 14%;         /* Dark Charcoal */
+    --secondary: 220 10% 14%;         /* Dark Charcoal */
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 8% 16%;             /* Dark Grey */
-    --muted-foreground: 240 5% 65%;  /* Medium Grey */
-    --accent: 263 30% 18%;           /* Dark purple tint for hover */
-    --accent-foreground: 265 75% 72%; /* Light purple text on dark hover */
-    --destructive: 0 72% 51%;        /* Modern Red */
+    --muted: 220 10% 16%;             /* Dark Grey */
+    --muted-foreground: 220 9% 65%;   /* Medium Grey */
+    --accent: 262 83% 18%;            /* Dark purple tint */
+    --accent-foreground: 262 83% 72%; /* Light purple text */
+    --destructive: 0 72% 51%;         /* Modern Red */
     --destructive-foreground: 0 0% 100%;
-    --border: 240 8% 20%;            /* Dark border */
-    --input: 240 8% 20%;
-    --ring: 265 75% 60%;
+    --border: 220 10% 20%;            /* Dark border */
+    --input: 220 10% 20%;
+    --ring: 262 83% 68%;
 
     /* Surface tones */
-    --surface: 240 8% 12%;            /* Charcoal Surface */
-    --surface-secondary: 240 10% 8%;  /* Deep Charcoal */
-    --surface-elevated: 240 6% 16%;   /* Elevated Charcoal */
-    --foreground-secondary: 240 5% 84%; /* Light Grey */
-    --foreground-tertiary: 240 5% 65%;  /* Medium Grey */
+    --surface: 220 10% 10%;            /* Charcoal Surface */
+    --surface-secondary: 0 0% 7%;      /* Near Black */
+    --surface-elevated: 220 10% 14%;   /* Elevated Charcoal */
+    --foreground-secondary: 220 9% 84%; /* Light Grey */
+    --foreground-tertiary: 220 9% 65%;  /* Medium Grey */
 
     /* Glass — dark mode: deep charcoal with premium blur */
-    --glass-bg: rgba(18, 18, 22, 0.78);
+    --glass-bg: rgba(17, 17, 17, 0.78);
     --glass-border: rgba(167, 139, 250, 0.12);
     --glass-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     --glass-blur: 24px;
-    --surface-grouped: 240 8% 10%;
+    --surface-grouped: 220 10% 8%;
 
     --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.2), 0 1px 3px rgba(0, 0, 0, 0.12);
     --shadow-premium: 0 6px 24px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
     --shadow-elevated: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
     --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.45), 0 6px 16px rgba(0, 0, 0, 0.25);
 
-    --sidebar-background: 240 10% 8%;
-    --sidebar-foreground: 240 5% 65%;
-    --sidebar-primary: 265 75% 60%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 220 9% 65%;
+    --sidebar-primary: 262 83% 68%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 263 30% 18%;
-    --sidebar-accent-foreground: 265 75% 72%;
-    --sidebar-border: 240 8% 20%;
-    --sidebar-ring: 265 75% 60%;
+    --sidebar-accent: 262 83% 18%;
+    --sidebar-accent-foreground: 262 83% 72%;
+    --sidebar-border: 220 10% 20%;
+    --sidebar-ring: 262 83% 68%;
   }
 }
 
@@ -197,7 +197,7 @@
     box-shadow: var(--shadow-elevated);
   }
   .text-gold-gradient {
-    background: linear-gradient(135deg, hsl(263 71% 55%), hsl(265 75% 65%));
+    background: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -218,7 +218,7 @@
     box-shadow: var(--shadow-elevated);
   }
   .gold-glow {
-    box-shadow: 0 0 30px hsl(263 71% 50% / 0.25), var(--shadow-premium);
+    box-shadow: 0 0 30px hsl(262 83% 58% / 0.22), var(--shadow-premium);
   }
   .card-hover {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
