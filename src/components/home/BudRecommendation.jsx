@@ -11,15 +11,15 @@ export default function BudRecommendation() {
           <Sparkles className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1">
-          <p className="font-heading font-semibold text-[13px] text-foreground mb-1">Bud's Daily Tip</p>
+          <p className="font-heading font-semibold text-[13px] text-foreground mb-1">Meet Bud</p>
           <p className="text-[12px] text-muted-foreground leading-relaxed mb-2.5">
-            You've been consistent with Data Structures this week! Try reviewing Binary Trees before tomorrow's class for a head start. 🌟
+            Your trusted study companion. Ask Bud to explain topics, build study plans, quiz you, or help with assignments.
           </p>
           <Link
             to="/bud"
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-info to-purple text-white text-[11px] font-semibold shadow-sm hover:shadow-md transition-all"
           >
-            Study with Bud
+            Start a conversation
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>

@@ -221,7 +221,7 @@ export default function CampusTraditionsGallery() {
                 {/* Attendance */}
                 <div className="flex items-center gap-1 mt-2">
                   <Users className="w-3 h-3 text-muted-foreground" />
-                  <span className="text-[10px] text-muted-foreground">{120 + i * 47} attending</span>
+                  <span className="text-[10px] text-muted-foreground">Join to see who's going</span>
                 </div>
 
                 {/* Actions */}

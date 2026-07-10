@@ -1,38 +1,58 @@
 import React from "react";
-import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle, Trophy, Heart, Shield } from "lucide-react";
+import { Search, Plus, UserPlus, Users, Calendar, Briefcase, Circle, Trophy, Heart, Shield, Inbox } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import StudyMatching from "@/components/connect/StudyMatching";
 import EventsSection from "@/components/connect/EventsSection";
 import MentorshipSection from "@/components/connect/MentorshipSection";
 import CareerNetwork from "@/components/connect/CareerNetwork";
 import MessagesPreview from "@/components/connect/MessagesPreview";
 import SafetyBanner from "@/components/connect/SafetyBanner";
+import EmptyState from "@/components/ui/EmptyState";
 import { Link } from "react-router-dom";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 const quickActions = [
   { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-primary/10", iconColor: "text-primary", path: "/connect" },
-  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info", path: "/connect" },
+  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info", path: "/study-groups" },
   { icon: Trophy, label: "Challenges", desc: "Compete & win", color: "bg-purple/10", iconColor: "text-purple", path: "/challenges" },
   { icon: Shield, label: "Government", desc: "Student leaders", color: "bg-success/10", iconColor: "text-success", path: "/student-government" },
-  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/connect" },
+  { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/campus-traditions" },
   { icon: Heart, label: "Support", desc: "We're here for you", color: "bg-error/10", iconColor: "text-error", path: "/student-support" },
 ];
 
-const students = [
-  { name: "Chioma Eze", major: "Computer Science · 300L", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80" },
-  { name: "Femi Adeyinka", major: "Mathematics · 200L", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" },
-  { name: "Aisha Bello", major: "Physics · 300L", avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80" },
-  { name: "David Okonkwo", major: "Engineering · 400L", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80" },
+const DEMO_STUDENTS = [
+  { id: "d1", full_name: "Chioma Eze", department: "Computer Science · 300L", avatar_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80" },
+  { id: "d2", full_name: "Femi Adeyanka", department: "Mathematics · 200L", avatar_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" },
+  { id: "d3", full_name: "Aisha Bello", department: "Physics · 300L", avatar_url: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80" },
+  { id: "d4", full_name: "David Okonkwo", department: "Engineering · 400L", avatar_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80" },
 ];
 
-const groups = [
-  { name: "Computer Science Hub", members: "1,234 members", icon: "💻", active: true },
-  { name: "UNIBUD Developers", members: "234 members", icon: "🚀", active: true },
-  { name: "Chess Club", members: "89 members", icon: "♟️", active: false },
-  { name: "Entrepreneurship Hub", members: "312 members", icon: "💼", active: true },
+const DEMO_GROUPS = [
+  { id: "d1", name: "Computer Science Hub", members_count: 1234, subject: "CS", status: "active" },
+  { id: "d2", name: "UNIBUD Developers", members_count: 234, subject: "Dev", status: "active" },
+  { id: "d3", name: "Chess Club", members_count: 89, subject: "Chess", status: "active" },
+  { id: "d4", name: "Entrepreneurship Hub", members_count: 312, subject: "Business", status: "active" },
 ];
 
 export default function Connect() {
+  const { isDemoMode } = useDemoMode();
+
+  const { data: connections, isLoading: connectionsLoading } = useQuery({
+    queryKey: ["socialConnections"],
+    queryFn: () => base44.entities.SocialConnection.list("-created_date", 10),
+    enabled: !isDemoMode,
+  });
+  const { data: groups, isLoading: groupsLoading } = useQuery({
+    queryKey: ["connectGroups"],
+    queryFn: () => base44.entities.StudyGroup.filter({ status: "active" }, "-members_count", 10),
+    enabled: !isDemoMode,
+  });
+
+  const students = isDemoMode ? DEMO_STUDENTS : (connections || []);
+  const groupList = isDemoMode ? DEMO_GROUPS : (groups || []);
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -67,8 +87,8 @@ export default function Connect() {
               transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 24 }}
             >
               <Link to={action.path} className="block bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 text-left card-hover spring-tap">
-                <div className={`w-10 h-10 rounded-[14px] ${action.color} flex items-center justify-center mb-2.5`}>
-                  <action.icon className={`w-[18px] h-[18px] ${action.iconColor}`} strokeWidth={2.2} />
+                <div className={"w-10 h-10 rounded-[14px] " + action.color + " flex items-center justify-center mb-2.5"}>
+                  <action.icon className={"w-[18px] h-[18px] " + action.iconColor} strokeWidth={2.2} />
                 </div>
                 <p className="font-heading font-semibold text-[13px] text-foreground">{action.label}</p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">{action.desc}</p>
@@ -84,22 +104,40 @@ export default function Connect() {
       {/* Students You May Know */}
       <div className="mb-5">
         <h3 className="font-heading font-bold text-[16px] text-foreground px-5 mb-3">Students You May Know</h3>
-        <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
-          {students.map((student, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex-shrink-0 w-[145px] card-hover"
-            >
-              <img src={student.avatar} alt={student.name} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
-              <p className="font-heading font-semibold text-[12px] text-foreground truncate">{student.name}</p>
-              <p className="text-[10px] text-muted-foreground mb-2.5 truncate">{student.major}</p>
-              <button className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Connect</button>
-            </motion.div>
-          ))}
-        </div>
+        {connectionsLoading && !isDemoMode ? (
+          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
+            {[1, 2, 3].map((i) => <div key={i} className="w-[145px] h-[180px] rounded-[20px] shimmer flex-shrink-0" />)}
+          </div>
+        ) : students.length === 0 ? (
+          <div className="px-4">
+            <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+              <EmptyState icon={UserPlus} title="No connections yet" description="Connect with classmates to build your network" action={<Link to="/connect" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">Find Friends</Link>} />
+            </div>
+          </div>
+        ) : (
+          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
+            {students.map((student, i) => (
+              <motion.div
+                key={student.id || i}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex-shrink-0 w-[145px] card-hover"
+              >
+                {student.avatar_url ? (
+                  <img src={student.avatar_url} alt={student.full_name || student.name || "Student"} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
+                ) : (
+                  <div className="w-full h-20 rounded-[14px] bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mb-2.5">
+                    <Users className="w-8 h-8 text-primary/50" />
+                  </div>
+                )}
+                <p className="font-heading font-semibold text-[12px] text-foreground truncate">{student.full_name || student.name || "Student"}</p>
+                <p className="text-[10px] text-muted-foreground mb-2.5 truncate">{student.department || student.major || ""}</p>
+                <button className="w-full py-2 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap">Connect</button>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Study Matching */}
@@ -108,32 +146,47 @@ export default function Connect() {
       {/* Active Groups */}
       <div className="px-4 pb-8">
         <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Active Groups</h3>
-        <div className="space-y-2.5">
-          {groups.map((group, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3.5 card-hover"
-            >
-              <div className="w-12 h-12 rounded-[16px] bg-muted flex items-center justify-center text-xl flex-shrink-0">{group.icon}</div>
-              <div className="flex-1">
-                <p className="font-heading font-semibold text-[13px] text-foreground">{group.name}</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[10px] text-muted-foreground">{group.members}</span>
-                  {group.active && (
-                    <span className="flex items-center gap-1 text-[10px] text-success font-medium">
-                      <Circle className="w-2 h-2 fill-success text-success" />
-                      Active
-                    </span>
-                  )}
-                </div>
-              </div>
-              <button className="px-3.5 py-2 rounded-full bg-primary/10 text-primary text-[11px] font-semibold spring-tap">Join</button>
-            </motion.div>
-          ))}
-        </div>
+        {groupsLoading && !isDemoMode ? (
+          <div className="space-y-2.5">
+            {[1, 2, 3].map((i) => <div key={i} className="h-[68px] rounded-[20px] shimmer" />)}
+          </div>
+        ) : groupList.length === 0 ? (
+          <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+            <EmptyState icon={Users} title="No groups yet" description="Join or create study groups to connect with classmates" action={<Link to="/study-groups" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">Browse Groups</Link>} />
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {groupList.map((group, i) => (
+              <motion.div
+                key={group.id || i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <Link to={"/study-groups/" + (group.id || "")} className="block">
+                  <div className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3.5 card-hover">
+                    <div className="w-12 h-12 rounded-[16px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
+                      <Users className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-heading font-semibold text-[13px] text-foreground">{group.name}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground">{group.members_count || 0} members</span>
+                        {group.status === "active" && (
+                          <span className="flex items-center gap-1 text-[10px] text-success font-medium">
+                            <Circle className="w-2 h-2 fill-success text-success" />
+                            Active
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button className="px-3.5 py-2 rounded-full bg-primary/10 text-primary text-[11px] font-semibold spring-tap">Join</button>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Mentorship */}

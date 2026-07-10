@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { FeatureFlagProvider } from '@/lib/FeatureFlagContext';
+import { DemoModeProvider } from '@/lib/DemoModeContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -235,12 +236,14 @@ function App() {
       <ThemeProvider>
         <QueryClientProvider client={queryClientInstance}>
           <FeatureFlagProvider>
+            <DemoModeProvider>
             <Router>
               <ScrollToTop />
               <AuthenticatedApp />
               <SplashScreen />
             </Router>
             <Toaster />
+        </DemoModeProvider>
           </FeatureFlagProvider>
         </QueryClientProvider>
       </ThemeProvider>

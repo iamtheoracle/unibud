@@ -6,9 +6,11 @@ import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, TrendingUp, Globe, Flame, Trophy, Sparkles,
   ChevronRight, MapPin, Users, Award, Briefcase, ShoppingBag,
-  Lightbulb, Rocket, Music, Dumbbell, Cpu, ChevronDown,
+  Lightbulb, Rocket, Music, Dumbbell, Cpu,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import EmptyState from "@/components/ui/EmptyState";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 const SCOPES = [
   { key: "campus", label: "Campus", icon: Users, desc: "Trending at your university" },
@@ -27,25 +29,34 @@ const CATEGORIES = [
   { icon: Cpu, label: "Tech", path: "/challenges", color: "text-info", bg: "bg-info/10" },
 ];
 
-const CAMPUS_TRENDS = [
-  { text: "Students from Engineering built a solar vehicle", tag: "Engineering", count: 342, emoji: "🚗" },
-  { text: "Photography Club started a Sunset Challenge", tag: "Photography", count: 128, emoji: "📸" },
-  { text: "30 students from your faculty joined today's Coding Challenge", tag: "Coding", count: 30, emoji: "💻" },
-  { text: "Business students are hosting a Pitch Competition", tag: "Startup", count: 89, emoji: "💡" },
-  { text: "Dance Challenge trending in Main Campus", tag: "Dance", count: 215, emoji: "💃" },
-  { text: "Debate Challenge finals this Friday", tag: "Debate", count: 67, emoji: "🗣️" },
+const DEMO_TRENDS = [
+  { title: "Students from Engineering built a solar vehicle", tag: "Engineering", count: 342, type: "challenge" },
+  { title: "Photography Club started a Sunset Challenge", tag: "Photography", count: 128, type: "challenge" },
+  { title: "30 students from your faculty joined today's Coding Challenge", tag: "Coding", count: 30, type: "challenge" },
+  { title: "Business students are hosting a Pitch Competition", tag: "Startup", count: 89, type: "challenge" },
 ];
 
 export default function Discover() {
+  const { isDemoMode } = useDemoMode();
   const [scope, setScope] = useState("campus");
   const navigate = useNavigate();
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
-  const { data: challenges } = useQuery({ queryKey: ["challenges"], queryFn: () => base44.entities.Challenge.list("-created_date", 5) });
-  const { data: opportunities } = useQuery({ queryKey: ["opportunities"], queryFn: () => base44.entities.Opportunity.list("-created_date", 5) });
-  const { data: listings } = useQuery({ queryKey: ["marketplace"], queryFn: () => base44.entities.MarketplaceListing.filter({ status: "active" }) });
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me(), enabled: !isDemoMode });
+  const { data: challenges } = useQuery({ queryKey: ["challenges"], queryFn: () => base44.entities.Challenge.list("-created_date", 5), enabled: !isDemoMode });
+  const { data: opportunities } = useQuery({ queryKey: ["opportunities"], queryFn: () => base44.entities.Opportunity.list("-created_date", 5), enabled: !isDemoMode });
+  const { data: listings } = useQuery({ queryKey: ["marketplace"], queryFn: () => base44.entities.MarketplaceListing.filter({ status: "active" }), enabled: !isDemoMode });
 
-  const trendingListings = listings?.slice(0, 4) || [];
+  const trendingListings = (listings || []).slice(0, 4);
+  const activeChallenges = (challenges || []).filter((c) => c.status === "active").slice(0, 5);
+
+  const campusTrends = isDemoMode
+    ? DEMO_TRENDS
+    : activeChallenges.map((c) => ({
+        title: c.title,
+        tag: c.type || "Challenge",
+        count: c.participants_count || 0,
+        type: "challenge",
+      }));
 
   return (
     <div className="min-h-screen pb-8">
@@ -56,7 +67,7 @@ export default function Discover() {
         </button>
         <div className="flex-1">
           <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Discover</h1>
-          <p className="text-[12px] text-muted-foreground">{user?.university || "Your Campus"} · What's happening</p>
+          <p className="text-[12px] text-muted-foreground">{isDemoMode ? "Your Campus" : (user?.university || "Your Campus")} · What's happening</p>
         </div>
         <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
           <Sparkles className="w-5 h-5 text-primary-foreground" />
@@ -66,9 +77,9 @@ export default function Discover() {
       {/* Scope selector */}
       <div className="px-4 mb-4">
         <div className="bg-card rounded-[20px] p-1.5 soft-shadow border border-border/40 flex">
-          {SCOPES.map(s => (
+          {SCOPES.map((s) => (
             <button key={s.key} onClick={() => setScope(s.key)}
-              className={`flex-1 py-2.5 rounded-[16px] text-[11px] font-semibold transition-all flex flex-col items-center gap-0.5 ${scope === s.key ? "bg-primary text-primary-foreground soft-shadow" : "text-muted-foreground"}`}>
+              className={"flex-1 py-2.5 rounded-[16px] text-[11px] font-semibold transition-all flex flex-col items-center gap-0.5 " + (scope === s.key ? "bg-primary text-primary-foreground soft-shadow" : "text-muted-foreground")}>
               <s.icon className="w-4 h-4" />
               {s.label}
             </button>
@@ -82,8 +93,8 @@ export default function Discover() {
           {CATEGORIES.map((cat, i) => (
             <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}>
               <Link to={cat.path} className="flex flex-col items-center gap-2 spring-tap">
-                <div className={`w-12 h-12 rounded-[18px] ${cat.bg} soft-shadow border border-border/30 flex items-center justify-center`}>
-                  <cat.icon className={`w-5 h-5 ${cat.color}`} strokeWidth={2.2} />
+                <div className={"w-12 h-12 rounded-[18px] " + cat.bg + " soft-shadow border border-border/30 flex items-center justify-center"}>
+                  <cat.icon className={"w-5 h-5 " + cat.color} strokeWidth={2.2} />
                 </div>
                 <span className="text-[10px] font-medium text-foreground">{cat.label}</span>
               </Link>
@@ -93,35 +104,39 @@ export default function Discover() {
       </div>
 
       {/* Campus Trends */}
-      <div className="px-4 mb-5">
-        <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
-          <Flame className="w-4 h-4 text-primary" /> Campus Trends
-        </h3>
-        <div className="space-y-2.5">
-          {CAMPUS_TRENDS.map((trend, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover"
-            >
-              <div className="w-10 h-10 rounded-[14px] bg-muted flex items-center justify-center text-xl flex-shrink-0">{trend.emoji}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[12px] text-foreground leading-snug">{trend.text}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[9px] font-semibold">{trend.tag}</span>
-                  <span className="text-[10px] text-muted-foreground">{trend.count} students</span>
+      {campusTrends.length > 0 && (
+        <div className="px-4 mb-5">
+          <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
+            <Flame className="w-4 h-4 text-primary" /> Campus Trends
+          </h3>
+          <div className="space-y-2.5">
+            {campusTrends.map((trend, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover"
+              >
+                <div className="w-10 h-10 rounded-[14px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
+                  {trend.type === "challenge" ? "🏆" : "🔥"}
                 </div>
-              </div>
-              <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-            </motion.div>
-          ))}
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] text-foreground leading-snug">{trend.title}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[9px] font-semibold">{trend.tag}</span>
+                    <span className="text-[10px] text-muted-foreground">{trend.count} students</span>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Active Challenges */}
-      {challenges && challenges.length > 0 && (
+      {!isDemoMode && activeChallenges.length > 0 && (
         <div className="mb-5">
           <div className="flex items-center justify-between px-5 mb-3">
             <h3 className="font-heading font-bold text-[16px] text-foreground flex items-center gap-1.5">
@@ -130,7 +145,7 @@ export default function Discover() {
             <Link to="/challenges" className="text-[11px] font-semibold text-primary flex items-center gap-0.5">See all <ChevronRight className="w-3 h-3" /></Link>
           </div>
           <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
-            {challenges.filter(c => c.status === "active").slice(0, 5).map((c, i) => (
+            {activeChallenges.map((c, i) => (
               <motion.div
                 key={c.id}
                 initial={{ opacity: 0, x: 10 }}
@@ -151,7 +166,7 @@ export default function Discover() {
       )}
 
       {/* Trending Opportunities */}
-      {opportunities && opportunities.length > 0 && (
+      {!isDemoMode && opportunities && opportunities.length > 0 && (
         <div className="px-4 mb-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-heading font-bold text-[16px] text-foreground px-1 flex items-center gap-1.5">
@@ -183,7 +198,7 @@ export default function Discover() {
       )}
 
       {/* Student Businesses */}
-      {trendingListings.length > 0 && (
+      {!isDemoMode && trendingListings.length > 0 && (
         <div className="mb-5">
           <div className="flex items-center justify-between px-5 mb-3">
             <h3 className="font-heading font-bold text-[16px] text-foreground flex items-center gap-1.5">
@@ -208,7 +223,7 @@ export default function Discover() {
                   </div>
                 )}
                 <p className="font-heading font-semibold text-[12px] text-foreground truncate">{item.title}</p>
-                <p className="text-[11px] font-bold text-primary mt-0.5">₦{item.price?.toLocaleString()}</p>
+                <p className="text-[11px] font-bold text-primary mt-0.5">₦{(item.price || 0).toLocaleString()}</p>
               </motion.div>
             ))}
           </div>

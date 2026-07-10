@@ -15,13 +15,7 @@ import CampusLifeSection from "@/components/me/CampusLifeSection";
 import BadgesSection from "@/components/me/BadgesSection";
 import StudyStatsSection from "@/components/me/StudyStatsSection";
 import MilestonesSection from "@/components/milestones/MilestonesSection";
-
-const quickStats = [
-  { label: "GPA", value: "4.20", icon: Award, color: "text-primary" },
-  { label: "Streak", value: "12d", icon: Flame, color: "text-warning" },
-  { label: "Courses", value: "6", icon: BookOpen, color: "text-success" },
-  { label: "Rank", value: "Top 15%", icon: Trophy, color: "text-primary" },
-];
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 const menuSections = [
   {
@@ -67,15 +61,67 @@ const menuSections = [
 ];
 
 export default function Me() {
+  const { isDemoMode } = useDemoMode();
   const navigate = useNavigate();
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
+  });
+
+  const { data: courses } = useQuery({
+    queryKey: ["meCourses"],
+    queryFn: () => base44.entities.Course.list(),
+    enabled: !isDemoMode,
+  });
+  const { data: sessions } = useQuery({
+    queryKey: ["meSessions"],
+    queryFn: () => base44.entities.StudySession.list("-session_date", 50),
+    enabled: !isDemoMode,
+  });
+  const { data: badges } = useQuery({
+    queryKey: ["meBadges"],
+    queryFn: () => base44.entities.DigitalBadge.list(),
+    enabled: !isDemoMode,
   });
 
   const handleLogout = () => {
     base44.auth.logout("/login");
   };
+
+  const sessionDates = (sessions || []).filter((s) => s.session_date).map((s) => s.session_date);
+  const uniqueDates = [...new Set(sessionDates)].sort().reverse();
+  let streak = 0;
+  const today = new Date().toISOString().split("T")[0];
+  let checkDate = today;
+  for (let i = 0; i < uniqueDates.length; i++) {
+    if (uniqueDates[i] === checkDate) {
+      streak++;
+      const d = new Date(checkDate);
+      d.setDate(d.getDate() - 1);
+      checkDate = d.toISOString().split("T")[0];
+    } else if (uniqueDates[i] < checkDate) {
+      break;
+    }
+  }
+
+  const quickStats = isDemoMode
+    ? [
+        { label: "GPA", value: "4.20", icon: Award, color: "text-primary" },
+        { label: "Streak", value: "12d", icon: Flame, color: "text-warning" },
+        { label: "Courses", value: "6", icon: BookOpen, color: "text-success" },
+        { label: "Badges", value: "8", icon: Trophy, color: "text-primary" },
+      ]
+    : [
+        { label: "Courses", value: String(courses?.length || 0), icon: BookOpen, color: "text-success" },
+        { label: "Streak", value: streak + "d", icon: Flame, color: "text-warning" },
+        { label: "Sessions", value: String(sessions?.length || 0), icon: BarChart3, color: "text-info" },
+        { label: "Badges", value: String(badges?.length || 0), icon: Trophy, color: "text-primary" },
+      ];
+
+  const displayName = isDemoMode ? "Alex Johnson" : (user?.full_name || "Student");
+  const displayEmail = isDemoMode ? "alex.demo@unibud.app" : (user?.email || "");
+  const displayProgram = isDemoMode ? "Computer Science · 300 Level" : (user?.department ? user.department + " · " + (user?.level || "") : "Add your program");
 
   return (
     <div className="min-h-screen pb-8">
@@ -93,13 +139,13 @@ export default function Me() {
           className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-3 gold-glow"
         >
           <span className="text-primary-foreground font-heading font-bold text-2xl">
-            {user?.full_name?.charAt(0) || "U"}
+            {displayName.charAt(0)}
           </span>
         </motion.div>
-        <h1 className="font-heading font-bold text-[20px] text-foreground">{user?.full_name || "Student"}</h1>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{user?.email}</p>
+        <h1 className="font-heading font-bold text-[20px] text-foreground">{displayName}</h1>
+        <p className="text-[11px] text-muted-foreground mt-0.5">{displayEmail}</p>
         <span className="inline-block mt-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
-          Computer Science · 300 Level
+          {displayProgram}
         </span>
       </motion.div>
 
@@ -108,7 +154,7 @@ export default function Me() {
         <div className="grid grid-cols-4 gap-2">
           {quickStats.map((stat, i) => (
             <GlassCard key={i} variant="solid" className="p-2.5 text-center" delay={i * 0.04}>
-              <stat.icon className={`w-4 h-4 mx-auto mb-1 ${stat.color}`} strokeWidth={2.2} />
+              <stat.icon className={"w-4 h-4 mx-auto mb-1 " + stat.color} strokeWidth={2.2} />
               <p className="font-heading font-bold text-[13px] text-foreground">{stat.value}</p>
               <p className="text-[8px] text-muted-foreground mt-0.5">{stat.label}</p>
             </GlassCard>
@@ -165,9 +211,7 @@ export default function Me() {
                 <Link
                   key={ii}
                   to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3.5 hover:bg-muted/30 transition-colors ${
-                    ii < section.items.length - 1 ? "border-b border-border/30" : ""
-                  }`}
+                  className={"flex items-center gap-3 px-4 py-3.5 hover:bg-muted/30 transition-colors " + (ii < section.items.length - 1 ? "border-b border-border/30" : "")}
                 >
                   <div className="w-8 h-8 rounded-[12px] bg-primary/8 flex items-center justify-center">
                     <item.icon className="w-4 h-4 text-primary" />
@@ -181,17 +225,19 @@ export default function Me() {
         ))}
 
         {/* Logout */}
-        <GlassCard variant="solid" className="overflow-hidden" delay={0.3}>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3.5 w-full hover:bg-destructive/10 transition-colors"
-          >
-            <div className="w-8 h-8 rounded-[12px] bg-destructive/10 flex items-center justify-center">
-              <LogOut className="w-4 h-4 text-destructive" />
-            </div>
-            <span className="text-[13px] font-medium text-destructive">Sign Out</span>
-          </button>
-        </GlassCard>
+        {!isDemoMode && (
+          <GlassCard variant="solid" className="overflow-hidden" delay={0.3}>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-4 py-3.5 w-full hover:bg-destructive/10 transition-colors"
+            >
+              <div className="w-8 h-8 rounded-[12px] bg-destructive/10 flex items-center justify-center">
+                <LogOut className="w-4 h-4 text-destructive" />
+              </div>
+              <span className="text-[13px] font-medium text-destructive">Sign Out</span>
+            </button>
+          </GlassCard>
+        )}
 
         {/* Branding */}
         <div className="text-center pt-4 pb-2">

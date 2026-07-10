@@ -3,23 +3,30 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function MorningBriefing({ user }) {
+  const { isDemoMode } = useDemoMode();
   const { data: budTip } = useQuery({
     queryKey: ["budMorningTip"],
     queryFn: async () => {
       const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are Bud, a warm university companion. Generate a short (1-2 sentence) motivational morning message for a student. Be encouraging, specific, and natural. No emojis except maybe one. Vary your tone daily. Today is ${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}.`,
+        prompt: "You are Bud, a warm university companion. Generate a short (1-2 sentence) motivational morning message for a student. Be encouraging, specific, and natural. No emojis except maybe one. Vary your tone daily. Today is " + new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) + ".",
       });
       return res;
     },
     staleTime: 1000 * 60 * 60 * 6,
+    enabled: !isDemoMode,
   });
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = user?.preferred_name || user?.full_name?.split(" ")[0] || "Student";
   const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+
+  const fallback = isDemoMode
+    ? "You've got 3 classes today and 2 assignments due this week. Let's make it count!"
+    : "Welcome to UNIBUD. Add your courses and assignments to get personalized guidance from Bud.";
 
   return (
     <motion.div
@@ -39,9 +46,7 @@ export default function MorningBriefing({ user }) {
             <p className="text-foreground font-heading font-bold text-[15px]">{greeting}, {firstName}</p>
           </div>
         </div>
-        <p className="text-muted-foreground text-[12px] leading-relaxed">
-          {budTip || "You've got 3 classes today and 2 assignments due this week. Let's make it count! 🌟"}
-        </p>
+        <p className="text-muted-foreground text-[12px] leading-relaxed">{budTip || fallback}</p>
       </div>
     </motion.div>
   );

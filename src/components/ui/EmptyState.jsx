@@ -7,7 +7,7 @@ export default function EmptyState({ icon: Icon, title, description, action, cla
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-      className={`flex flex-col items-center justify-center py-12 px-6 text-center ${className}`}
+      className={"flex flex-col items-center justify-center py-12 px-6 text-center " + className}
     >
       {Icon && (
         <motion.div

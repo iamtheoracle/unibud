@@ -1,11 +1,32 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import GlassCard from "@/components/ui/GlassCard";
 import { Award } from "lucide-react";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function GPASummaryCard() {
-  const gpa = 4.2;
+  const { isDemoMode } = useDemoMode();
+
+  const { data: grades } = useQuery({
+    queryKey: ["gpaGrades"],
+    queryFn: () => base44.entities.Grade.list("-created_date", 50),
+    enabled: !isDemoMode,
+  });
+  const { data: courses } = useQuery({
+    queryKey: ["gpaCourses"],
+    queryFn: () => base44.entities.Course.list(),
+    enabled: !isDemoMode,
+  });
+
+  const validGrades = (grades || []).filter((g) => g.grade_value != null && g.max_grade != null && g.max_grade > 0);
+  const gpa = isDemoMode ? 4.2 : validGrades.length > 0
+    ? (validGrades.reduce((sum, g) => sum + (g.grade_value / g.max_grade) * 5, 0) / validGrades.length)
+    : 0;
   const maxGpa = 5.0;
   const progress = (gpa / maxGpa) * 100;
+  const totalCredits = isDemoMode ? 24 : validGrades.reduce((sum, g) => sum + (g.credit_hours || 0), 0);
+  const courseCount = isDemoMode ? 6 : (courses?.length || 0);
 
   return (
     <GlassCard variant="solid" className="p-4" delay={0.15}>
@@ -19,7 +40,7 @@ export default function GPASummaryCard() {
               stroke="url(#gpaGrad)"
               strokeWidth="4"
               strokeLinecap="round"
-              strokeDasharray={`${progress * 1.508} 150.8`}
+              strokeDasharray={progress * 1.508 + " 150.8"}
             />
             <defs>
               <linearGradient id="gpaGrad" x1="0" y1="0" x2="1" y2="1">
@@ -29,7 +50,7 @@ export default function GPASummaryCard() {
             </defs>
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="font-heading font-bold text-sm">{gpa}</span>
+            <span className="font-heading font-bold text-sm">{isDemoMode ? gpa.toFixed(1) : gpa.toFixed(2)}</span>
           </div>
         </div>
         <div className="flex-1">
@@ -37,18 +58,16 @@ export default function GPASummaryCard() {
             <Award className="w-3.5 h-3.5 text-primary" />
             <p className="font-heading font-semibold text-[13px]">Current GPA</p>
           </div>
-          <p className="text-[11px] text-muted-foreground">Out of {maxGpa} · 2nd Class Upper</p>
+          <p className="text-[11px] text-muted-foreground">
+            {gpa > 0 ? "Out of " + maxGpa : "No grades logged yet"}
+          </p>
           <div className="flex gap-3 mt-2">
             <div className="text-center">
-              <p className="font-heading font-bold text-[13px] text-success">A</p>
-              <p className="text-[9px] text-muted-foreground">Best</p>
-            </div>
-            <div className="text-center">
-              <p className="font-heading font-bold text-[13px]">24</p>
+              <p className="font-heading font-bold text-[13px] text-success">{totalCredits}</p>
               <p className="text-[9px] text-muted-foreground">Credits</p>
             </div>
             <div className="text-center">
-              <p className="font-heading font-bold text-[13px]">6</p>
+              <p className="font-heading font-bold text-[13px]">{courseCount}</p>
               <p className="text-[9px] text-muted-foreground">Courses</p>
             </div>
           </div>

@@ -184,11 +184,6 @@ function RevisionPlanner({ exams }) {
 }
 
 function PracticeTests() {
-  const tests = [
-    { title: "Data Structures Quiz", course: "CSC 301", questions: 20, time: "15 min" },
-    { title: "Linear Algebra Test", course: "MTH 201", questions: 15, time: "20 min" },
-    { title: "Physics Mock Exam", course: "PHY 203", questions: 40, time: "60 min" },
-  ];
   return (
     <>
       <SectionTitle title="Practice Tests" />
@@ -196,13 +191,13 @@ function PracticeTests() {
         <div className="flex items-center gap-2.5 mb-1"><Sparkles className="w-4 h-4 text-primary" /><p className="font-heading font-semibold text-[13px] text-foreground">Bud Practice Mode</p></div>
         <p className="text-[11px] text-muted-foreground">Take AI-generated practice tests tailored to your courses</p>
       </div>
-      {tests.map((t, i) => (
-        <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 flex items-center gap-3 card-hover">
-          <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center"><Award className="w-5 h-5 text-primary" /></div>
-          <div className="flex-1"><p className="font-heading font-semibold text-[13px] text-foreground">{t.title}</p><p className="text-[11px] text-muted-foreground">{t.course} · {t.questions} questions · {t.time}</p></div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-        </motion.div>
-      ))}
+      <div className="text-center py-10">
+        <div className="w-14 h-14 rounded-[20px] bg-muted flex items-center justify-center mx-auto mb-3">
+          <Award className="w-6 h-6 text-muted-foreground" strokeWidth={1.8} />
+        </div>
+        <p className="text-[13px] font-semibold text-foreground">No practice tests yet</p>
+        <p className="text-[11px] text-muted-foreground mt-0.5">Add courses to generate AI-powered practice tests</p>
+      </div>
     </>
   );
 }

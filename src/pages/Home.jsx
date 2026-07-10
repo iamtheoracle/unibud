@@ -13,16 +13,28 @@ import CampusLife from "@/components/home/CampusLife";
 import WeatherCard from "@/components/home/WeatherCard";
 import CampusPulse from "@/components/home/CampusPulse";
 import TodaySchedule from "@/components/home/TodaySchedule";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function Home() {
+  const { isDemoMode } = useDemoMode();
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
+  });
+  const { data: notifications } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => base44.entities.Notification.list("-created_date", 50),
+    enabled: !isDemoMode,
   });
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
-  const firstName = user?.preferred_name || user?.full_name?.split(" ")[0] || "Student";
+  const firstName = isDemoMode
+    ? "Alex"
+    : user?.preferred_name || user?.full_name?.split(" ")[0] || "Student";
+  const university = isDemoMode ? "University of Benin" : user?.university || "UNIBUD";
+  const unreadCount = isDemoMode ? 3 : (notifications || []).filter((n) => !n.is_read).length;
 
   return (
     <div className="min-h-screen">
@@ -39,7 +51,9 @@ export default function Home() {
         <div className="flex items-center gap-2.5">
           <Link to="/notifications" className="relative w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
             <Bell className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
-            <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-primary rounded-full border-2 border-card text-[9px] font-bold text-primary-foreground flex items-center justify-center">3</span>
+            {unreadCount > 0 && (
+              <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-primary rounded-full border-2 border-card text-[9px] font-bold text-primary-foreground flex items-center justify-center">{unreadCount}</span>
+            )}
           </Link>
           <Link to="/me" className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 soft-shadow flex items-center justify-center text-primary-foreground font-bold text-sm spring-tap">
             {firstName.charAt(0)}
@@ -54,10 +68,10 @@ export default function Home() {
         transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
         className="px-5 pb-5"
       >
-        <h2 className="font-heading font-bold text-[20px] tracking-tight text-foreground">{greeting}, {firstName} 👋</h2>
+        <h2 className="font-heading font-bold text-[20px] tracking-tight text-foreground">{greeting}, {firstName}</h2>
         <div className="flex items-center gap-1 mt-0.5">
           <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-[12px] text-muted-foreground font-medium">{user?.university || "University of Benin"}</span>
+          <span className="text-[12px] text-muted-foreground font-medium">{university}</span>
         </div>
       </motion.div>
 

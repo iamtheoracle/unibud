@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mountain, ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, User, MessageCircle } from "lucide-react";
+import { Mountain, ArrowRight, Lock, KeyRound, Sparkles, ChevronDown, Building2, User, MessageCircle, PlayCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 const cards = [
   {
@@ -24,6 +25,7 @@ const cards = [
 
 export default function Welcome() {
   const navigate = useNavigate();
+  const { enterDemoMode } = useDemoMode();
   const [showStaffOptions, setShowStaffOptions] = useState(false);
 
   useEffect(() => {
@@ -31,6 +33,11 @@ export default function Welcome() {
       if (authed) navigate("/");
     });
   }, [navigate]);
+
+  const handleDemoMode = () => {
+    enterDemoMode();
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
@@ -163,6 +170,16 @@ export default function Welcome() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Demo Mode */}
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          onClick={handleDemoMode}
+          className="w-full h-[48px] rounded-2xl bg-transparent text-primary font-heading font-semibold text-[14px] border border-primary/30 flex items-center justify-center gap-2 hover:bg-primary/5 transition-colors mb-2"
+        >
+          <PlayCircle className="w-[18px] h-[18px]" strokeWidth={2} />
+          Try Demo Mode
+        </motion.button>
 
         <div className="text-center mt-3">
           <Link

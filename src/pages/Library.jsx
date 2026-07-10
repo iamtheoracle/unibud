@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Sparkles, BookOpen, FileQuestion, NotebookPen, Clock, ChevronRight, Bookmark, FolderOpen, Plus, History, Quote } from "lucide-react";
+import { Search, Sparkles, BookOpen, FileQuestion, NotebookPen, Clock, ChevronRight, Bookmark, FolderOpen, Plus, Quote } from "lucide-react";
 import ResourceCard from "@/components/library/ResourceCard";
 
 const CATEGORIES = [
@@ -135,9 +135,11 @@ export default function Library() {
           </Section>
         )}
 
-        <Section title="Recommended for You">
-          <div className="flex gap-3 overflow-x-auto no-scrollbar">{recent.map(r => <ResourceCard key={r.id} resource={r} onClick={() => openResource(r)} />)}</div>
-        </Section>
+        {recent.length > 0 && (
+          <Section title="Recommended for You">
+            <div className="flex gap-3 overflow-x-auto no-scrollbar">{recent.map(r => <ResourceCard key={r.id} resource={r} onClick={() => openResource(r)} />)}</div>
+          </Section>
+        )}
 
         {downloaded.length > 0 && (
           <Section title="Downloaded for Offline">
@@ -145,17 +147,17 @@ export default function Library() {
           </Section>
         )}
 
-        <Section title="Reading History">
-          <div className="space-y-2">
-            {recent.slice(0, 4).map(r => (
-              <div key={r.id} onClick={() => openResource(r)} className="flex items-center gap-3.5 bg-card rounded-[20px] p-3 soft-shadow border border-border/40 cursor-pointer card-hover">
-                <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center"><History className="w-[18px] h-[18px] text-primary" /></div>
-                <div className="flex-1 min-w-0"><p className="font-semibold text-[12px] text-foreground truncate">{r.title}</p><p className="text-[10px] text-muted-foreground">{r.author}</p></div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        {continueReading.length === 0 && (!collections || collections.length === 0) && recent.length === 0 && downloaded.length === 0 && (
+          <Section title="">
+            <div className="text-center py-12">
+              <div className="w-16 h-16 rounded-[20px] bg-muted flex items-center justify-center mx-auto mb-4">
+                <BookOpen className="w-7 h-7 text-muted-foreground" strokeWidth={1.8} />
               </div>
-            ))}
-          </div>
-        </Section>
+              <p className="text-[14px] font-semibold text-foreground">No books yet</p>
+              <p className="text-[12px] text-muted-foreground mt-1 max-w-xs mx-auto">Your library will grow as you add books, past questions, and lecture notes</p>
+            </div>
+          </Section>
+        )}
 
         <Section title="Citation Generator">
           <motion.div whileTap={{ scale: 0.98 }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 flex items-center gap-3.5 cursor-pointer card-hover">
