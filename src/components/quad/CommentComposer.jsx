@@ -104,23 +104,7 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
         is_pinned: false,
       });
 
-      // Update post's comments_count
-      try {
-        const post = await base44.entities.QuadPost.get(postId);
-        await base44.entities.QuadPost.update(postId, {
-          comments_count: (post.comments_count || 0) + 1,
-        });
-      } catch {}
-
-      // Update parent comment's replies_count if replying
-      if (parentComment) {
-        try {
-          await base44.entities.QuadComment.update(parentComment.id, {
-            replies_count: (parentComment.replies_count || 0) + 1,
-          });
-        } catch {}
-      }
-
+      // Clear input immediately — don't wait for secondary updates
       setText("");
       setMediaUrls([]);
       setAudioBlob(null);
@@ -129,6 +113,21 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
       qc.invalidateQueries({ queryKey: ["quadComments", postId] });
       qc.invalidateQueries({ queryKey: ["quadFeed"] });
       if (onSubmitted) onSubmitted();
+
+      // Secondary updates in background (non-blocking)
+      base44.entities.QuadPost.get(postId).then((post) => {
+        if (post) {
+          base44.entities.QuadPost.update(postId, {
+            comments_count: (post.comments_count || 0) + 1,
+          });
+        }
+      }).catch(() => {});
+
+      if (parentComment) {
+        base44.entities.QuadComment.update(parentComment.id, {
+          replies_count: (parentComment.replies_count || 0) + 1,
+        }).catch(() => {});
+      }
     } catch {}
     setSubmitting(false);
   };

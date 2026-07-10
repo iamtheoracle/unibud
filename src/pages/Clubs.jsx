@@ -181,12 +181,12 @@ export default function Clubs() {
       <div className="px-4 grid grid-cols-2 gap-3">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden">
-              <div className="h-16 bg-muted animate-pulse" />
+            <div key={i} className="bg-card rounded-[20px] soft-shadow overflow-hidden">
+              <div className="h-16 shimmer" />
               <div className="p-3 space-y-2">
-                <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
-                <div className="h-2 w-1/2 bg-muted rounded animate-pulse" />
-                <div className="h-7 bg-muted rounded-full animate-pulse" />
+                <div className="h-3 w-2/3 shimmer rounded-full" />
+                <div className="h-2 w-1/2 shimmer rounded-full" />
+                <div className="h-7 shimmer rounded-full" />
               </div>
             </div>
           ))

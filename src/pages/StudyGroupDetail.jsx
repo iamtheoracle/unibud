@@ -63,6 +63,10 @@ export default function StudyGroupDetail() {
     const msg = message.trim();
     setMessage("");
     setSending(true);
+    // Optimistic: append immediately
+    const tempId = "temp_" + Date.now();
+    const optimisticMsg = { id: tempId, group_id: groupId, sender_name: user?.preferred_name || user?.full_name || "Student", message: msg, type: "text" };
+    qc.setQueryData(["groupMessages", groupId], (old) => [...(old || []), optimisticMsg]);
     try {
       await base44.entities.StudyGroupMessage.create({
         group_id: groupId,
@@ -70,7 +74,12 @@ export default function StudyGroupDetail() {
         message: msg,
         type: "text",
       });
-    } catch (err) {}
+      qc.invalidateQueries({ queryKey: ["groupMessages", groupId] });
+    } catch (err) {
+      // Rollback on failure
+      qc.setQueryData(["groupMessages", groupId], (old) => (old || []).filter((m) => m.id !== tempId));
+      setMessage(msg);
+    }
     setSending(false);
   };
 
@@ -91,29 +100,43 @@ export default function StudyGroupDetail() {
   };
 
   const toggleTask = async (task) => {
+    const newStatus = task.status === "done" ? "todo" : "done";
+    // Optimistic: update immediately
+    qc.setQueryData(["groupTasks", groupId], (old) => (old || []).map((t) => t.id === task.id ? { ...t, status: newStatus } : t));
     try {
-      await base44.entities.StudyGroupTask.update(task.id, {
-        status: task.status === "done" ? "todo" : "done",
-      });
+      await base44.entities.StudyGroupTask.update(task.id, { status: newStatus });
       qc.invalidateQueries({ queryKey: ["groupTasks", groupId] });
-    } catch (err) {}
+    } catch (err) {
+      // Rollback
+      qc.setQueryData(["groupTasks", groupId], (old) => (old || []).map((t) => t.id === task.id ? { ...t, status: task.status } : t));
+    }
   };
 
+  const [joining, setJoining] = useState(false);
   const handleJoin = async () => {
+    if (joining) return;
+    setJoining(true);
+    // Optimistic: update immediately
+    qc.setQueryData(["studyGroup", groupId], (old) => old ? { ...old, is_joined: true, members_count: (old.members_count || 0) + 1 } : old);
+    qc.invalidateQueries({ queryKey: ["studyGroups"] });
     try {
       await base44.entities.StudyGroup.update(groupId, {
         is_joined: true,
         members_count: (group?.members_count || 0) + 1,
       });
-      qc.invalidateQueries({ queryKey: ["studyGroup", groupId] });
-      qc.invalidateQueries({ queryKey: ["studyGroups"] });
       await base44.entities.StudyGroupMessage.create({
         group_id: groupId,
         sender_name: "System",
         message: `${user?.preferred_name || user?.full_name || "A student"} joined the group`,
         type: "system",
       });
-    } catch (err) {}
+      qc.invalidateQueries({ queryKey: ["studyGroup", groupId] });
+      qc.invalidateQueries({ queryKey: ["groupMessages", groupId] });
+    } catch (err) {
+      // Rollback
+      qc.setQueryData(["studyGroup", groupId], (old) => old ? { ...old, is_joined: false, members_count: (old.members_count || 1) - 1 } : old);
+    }
+    setJoining(false);
   };
 
   const handleShare = () => {

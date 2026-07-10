@@ -176,11 +176,11 @@ export default function LostFound() {
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex gap-3">
-              <div className="w-16 h-16 rounded-[14px] bg-muted animate-pulse" />
+              <div className="w-16 h-16 rounded-[14px] shimmer" />
               <div className="flex-1 space-y-2">
-                <div className="h-3 w-1/3 bg-muted rounded animate-pulse" />
-                <div className="h-2 w-2/3 bg-muted rounded animate-pulse" />
-                <div className="h-2 w-1/2 bg-muted rounded animate-pulse" />
+                <div className="h-3 w-1/3 shimmer rounded-full" />
+                <div className="h-2 w-2/3 shimmer rounded-full" />
+                <div className="h-2 w-1/2 shimmer rounded-full" />
               </div>
             </div>
           ))

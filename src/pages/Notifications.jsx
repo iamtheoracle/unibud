@@ -44,11 +44,16 @@ export default function Notifications() {
     if (isDemoMode) return;
     const unread = items.filter((n) => !n.is_read);
     if (unread.length === 0) return;
-    await base44.entities.Notification.bulkUpdate(
-      unread.map((n) => ({ id: n.id, is_read: true }))
-    );
+    const snapshot = items;
     qc.setQueryData(["notifications"], (old) => (old || []).map((n) => ({ ...n, is_read: true })));
-    qc.invalidateQueries({ queryKey: ["notifications"] });
+    try {
+      await base44.entities.Notification.bulkUpdate(
+        unread.map((n) => ({ id: n.id, is_read: true }))
+      );
+      qc.invalidateQueries({ queryKey: ["notifications"] });
+    } catch {
+      qc.setQueryData(["notifications"], snapshot);
+    }
   };
 
   return (

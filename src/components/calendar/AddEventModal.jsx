@@ -22,16 +22,20 @@ export default function AddEventModal({ date, onClose }) {
   const save = async () => {
     if (!title.trim()) return;
     setSaving(true);
-    await base44.entities.CalendarEvent.create({
-      title,
-      type,
-      date,
-      start_time: startTime || undefined,
-      location: location || undefined,
-    });
-    qc.invalidateQueries({ queryKey: ["calendarEvents"] });
+    try {
+      await base44.entities.CalendarEvent.create({
+        title,
+        type,
+        date,
+        start_time: startTime || undefined,
+        location: location || undefined,
+      });
+      qc.invalidateQueries({ queryKey: ["calendarEvents"] });
+      onClose();
+    } catch {
+      // Stay open so user can retry
+    }
     setSaving(false);
-    onClose();
   };
 
   return (

@@ -203,11 +203,11 @@ export default function CampusEvents() {
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden">
-              <div className="h-24 bg-muted animate-pulse" />
+              <div className="h-24 shimmer" />
               <div className="p-3.5 space-y-2">
-                <div className="h-3 w-2/3 bg-muted rounded animate-pulse" />
-                <div className="h-2 w-1/2 bg-muted rounded animate-pulse" />
-                <div className="h-8 bg-muted rounded-full animate-pulse" />
+                <div className="h-3 w-2/3 shimmer rounded-full" />
+                <div className="h-2 w-1/2 shimmer rounded-full" />
+                <div className="h-8 shimmer rounded-full" />
               </div>
             </div>
           ))

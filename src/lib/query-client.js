@@ -6,13 +6,13 @@ export const queryClientInstance = new QueryClient({
       refetchOnWindowFocus: true,
       refetchOnReconnect: true,
       refetchOnMount: true,
-      staleTime: 30 * 1000,
+      staleTime: 60 * 1000,
       gcTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
         if (error?.status >= 400 && error?.status < 500) return false;
-        return failureCount < 2;
+        return failureCount < 3;
       },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 8000),
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
     },
     mutations: {
       retry: false,
@@ -25,11 +25,6 @@ export const ENTITY_QUERY_PREFIX = ['currentUser'];
 export function invalidateEntity(entityName) {
   queryClientInstance.invalidateQueries({
     queryKey: [entityName],
-    refetchType: 'active',
-  });
-  queryClientInstance.invalidateQueries({
-    queryKey: [entityName],
-    refetchType: 'inactive',
   });
 }
 

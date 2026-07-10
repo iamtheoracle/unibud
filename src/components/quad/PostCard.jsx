@@ -74,10 +74,13 @@ export default function PostCard({ post, user, index = 0 }) {
   };
 
   const handleShareComplete = () => {
-    setLocalShares((s) => s + 1);
-    try {
-      base44.entities.QuadPost.update(post.id, { shares_count: (post.shares_count || 0) + 1 });
-    } catch {}
+    setLocalShares((s) => {
+      const newCount = s + 1;
+      try {
+        base44.entities.QuadPost.update(post.id, { shares_count: newCount });
+      } catch {}
+      return newCount;
+    });
   };
 
   const handleMenuAction = (action) => {
@@ -167,8 +170,7 @@ export default function PostCard({ post, user, index = 0 }) {
               {post.is_verified && <BadgeCheck className="w-4 h-4 text-primary fill-primary/20 flex-shrink-0" />}
               {postType && (
                 <span
-                  className="px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wide"
-                  style={{ background: postType.color + "15", color: postType.color }}
+                  className="px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wide bg-primary/10 text-primary"
                 >
                   {postType.label}
                 </span>
