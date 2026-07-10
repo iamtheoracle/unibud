@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Search, ChevronDown, Globe, ArrowRight, Loader2, Check, Building, MapPin, Rocket, GraduationCap, Sparkles } from "lucide-react";
+import { Search, ChevronDown, Globe, ArrowRight, Loader2, Check, Building, MapPin, Rocket, GraduationCap, Sparkles, Award, FlaskConical } from "lucide-react";
 import AuthLogo from "@/components/auth/AuthLogo";
 import { COUNTRIES, UNIVERSITIES, LEVELS } from "@/data/universities";
 
@@ -76,7 +76,7 @@ export default function UniversitySelection() {
             >
               <div className="mb-6">
                 <h2 className="font-heading font-bold text-[22px] tracking-tight text-foreground mb-1">Welcome to UNIBUD</h2>
-                <p className="text-[14px] text-muted-foreground">Are you already a university student, or preparing for admission?</p>
+                <p className="text-[14px] text-muted-foreground">Your lifelong companion — from pre-university through graduation and beyond. Where are you on your journey?</p>
               </div>
 
               <div className="space-y-3">
@@ -108,11 +108,11 @@ export default function UniversitySelection() {
                   className="w-full text-left p-5 rounded-[24px] border border-border/40 bg-card hover:border-border/70 transition-all spring-tap"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-[18px] bg-success/10 flex items-center justify-center flex-shrink-0">
-                      <GraduationCap className="w-7 h-7 text-success" strokeWidth={2} />
+                    <div className="w-14 h-14 rounded-[18px] bg-info/10 flex items-center justify-center flex-shrink-0">
+                      <GraduationCap className="w-7 h-7 text-info" strokeWidth={2} />
                     </div>
                     <div className="flex-1">
-                      <p className="font-heading font-bold text-[15px] text-foreground">Current University Student</p>
+                      <p className="font-heading font-bold text-[15px] text-foreground">Undergraduate Student</p>
                       <p className="text-[12px] text-muted-foreground mt-1 leading-relaxed">
                         Already enrolled? Select your university and connect your student account to unlock everything.
                       </p>
@@ -122,9 +122,23 @@ export default function UniversitySelection() {
                 </button>
               </div>
 
-              <p className="text-center text-[11px] text-muted-foreground mt-4 flex items-center justify-center gap-1">
+              {/* Journey stages preview */}
+              <div className="mt-4 p-3.5 rounded-[18px] bg-muted/30 border border-border/20">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Your lifelong journey</p>
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                  <span className="flex items-center gap-1"><Rocket className="w-3 h-3 text-primary" /> Future</span>
+                  <span className="text-muted-foreground/40">→</span>
+                  <span className="flex items-center gap-1"><GraduationCap className="w-3 h-3 text-info" /> Undergrad</span>
+                  <span className="text-muted-foreground/40">→</span>
+                  <span className="flex items-center gap-1"><FlaskConical className="w-3 h-3 text-purple" /> Postgrad</span>
+                  <span className="text-muted-foreground/40">→</span>
+                  <span className="flex items-center gap-1"><Award className="w-3 h-3 text-success" /> Alumni</span>
+                </div>
+              </div>
+
+              <p className="text-center text-[11px] text-muted-foreground mt-3 flex items-center justify-center gap-1">
                 <Sparkles className="w-3 h-3 text-primary" />
-                Don't worry — you can transition seamlessly when you're admitted
+                Bud transitions with you at every stage — your history is always preserved
               </p>
             </motion.div>
           ) : null}

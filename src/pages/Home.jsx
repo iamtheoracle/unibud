@@ -14,6 +14,9 @@ import WeatherCard from "@/components/home/WeatherCard";
 import CampusPulse from "@/components/home/CampusPulse";
 import TodaySchedule from "@/components/home/TodaySchedule";
 import FutureStudentDashboard from "@/components/future-student/FutureStudentDashboard";
+import AlumniDashboard from "@/components/journey/AlumniDashboard";
+import PostgraduateDashboard from "@/components/journey/PostgraduateDashboard";
+import JourneyStageBanner from "@/components/journey/JourneyStageBanner";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function Home() {
@@ -32,6 +35,16 @@ export default function Home() {
   // Future Students get a dedicated pre-university experience
   if (!isDemoMode && user?.user_type === "future_student") {
     return <FutureStudentDashboard user={user} />;
+  }
+
+  // Postgraduate students get a research-focused experience
+  if (!isDemoMode && user?.user_type === "postgraduate") {
+    return <PostgraduateDashboard user={user} />;
+  }
+
+  // Alumni get a dedicated alumni experience
+  if (!isDemoMode && user?.user_type === "alumni") {
+    return <AlumniDashboard user={user} />;
   }
 
   const hour = new Date().getHours();
@@ -80,6 +93,11 @@ export default function Home() {
           <span className="text-[12px] text-muted-foreground font-medium">{university}</span>
         </div>
       </motion.div>
+
+      {/* Journey Stage Banner — Bud always knows where you are */}
+      {!isDemoMode && (user?.user_type === "student" || user?.user_type === "postgraduate") && (
+        <JourneyStageBanner user={user} />
+      )}
 
       <div className="px-5 sm:px-0 space-y-6 pb-10 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
         <div className="lg:col-span-2">

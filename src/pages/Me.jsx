@@ -6,7 +6,7 @@ import {
   ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
-  PartyPopper, Rocket, Calendar, Users, GraduationCap,
+  PartyPopper, Rocket, Calendar, Users, GraduationCap, FlaskConical, Briefcase,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link } from "react-router-dom";
@@ -18,8 +18,10 @@ import MilestonesSection from "@/components/milestones/MilestonesSection";
 import HighlightShelf from "@/components/stories/HighlightShelf";
 import MatriculationCard from "@/components/me/MatriculationCard";
 import TransitionToStudent from "@/components/future-student/TransitionToStudent";
+import GraduationTransition from "@/components/journey/GraduationTransition";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { getEducationLevel, getExamStatus } from "@/lib/futureStudentConfig";
+import { getJourneyStageForUser } from "@/lib/universityJourney";
 
 const menuSections = [
   {
@@ -67,6 +69,7 @@ const menuSections = [
 export default function Me() {
   const { isDemoMode } = useDemoMode();
   const [showTransition, setShowTransition] = useState(false);
+  const [showGraduation, setShowGraduation] = useState(false);
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
@@ -148,9 +151,36 @@ export default function Me() {
         </motion.div>
         <h1 className="font-heading font-bold text-[20px] text-foreground">{displayName}</h1>
         <p className="text-[11px] text-muted-foreground mt-0.5">{displayEmail}</p>
-        <span className="inline-block mt-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
-          {displayProgram}
-        </span>
+        {!isDemoMode && (() => {
+          const stage = getJourneyStageForUser(user);
+          const StageIcon = stage.icon;
+          return (
+            <span className={`inline-flex items-center gap-1 mt-1.5 px-3 py-1 rounded-full ${stage.badge} text-[10px] font-semibold`}>
+              <StageIcon className="w-3 h-3" /> {stage.label}
+            </span>
+          );
+        })()}
+        {isDemoMode && (
+          <span className="inline-block mt-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
+            {displayProgram}
+          </span>
+        )}
+        {!isDemoMode && user?.user_type === "student" && user?.department && (
+          <span className="block mt-1 text-[10px] text-muted-foreground">
+            {user.department}{user.level ? ` · ${user.level} Level` : ""}{user.university ? ` · ${user.university}` : ""}
+          </span>
+        )}
+        {!isDemoMode && user?.user_type === "alumni" && user?.graduation_year && (
+          <span className="block mt-1 text-[10px] text-muted-foreground">
+            {user.university ? `${user.university} · ` : ""}Class of {user.graduation_year}
+            {user.current_occupation ? ` · ${user.current_occupation}` : ""}
+          </span>
+        )}
+        {!isDemoMode && user?.user_type === "postgraduate" && (
+          <span className="block mt-1 text-[10px] text-muted-foreground">
+            {user.postgraduate_field || user.department || ""}{user.university ? ` · ${user.university}` : ""}
+          </span>
+        )}
       </motion.div>
 
       {/* Future Student Banner + Transition */}
@@ -187,6 +217,33 @@ export default function Me() {
         </div>
       )}
 
+      {/* Graduation Transition — for undergraduate & postgraduate students */}
+      {!isDemoMode && (user?.user_type === "student" || user?.user_type === "postgraduate") && (
+        <div className="px-5 mb-6">
+          <div className="rounded-[24px] bg-gradient-to-br from-success/10 to-success/5 border border-success/20 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Award className="w-5 h-5 text-success" />
+              <p className="font-heading font-bold text-[15px] text-foreground">
+                {user?.user_type === "postgraduate" ? "Completed Your Programme?" : "Graduating Soon?"}
+              </p>
+            </div>
+            <p className="text-[12px] text-muted-foreground leading-relaxed mb-3">
+              {user?.user_type === "postgraduate"
+                ? "Transition to an Alumni profile or continue your journey. All your research, conversations, and achievements will be preserved."
+                : "Transition to an Alumni profile or continue to postgraduate studies. All your history, conversations, and achievements will be preserved."}
+            </p>
+            <button
+              onClick={() => setShowGraduation(true)}
+              className="w-full h-[46px] rounded-2xl bg-success text-white font-heading font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap"
+            >
+              {user?.user_type === "postgraduate" ? <Award className="w-[18px] h-[18px]" /> : <GraduationCap className="w-[18px] h-[18px]" />}
+              {user?.user_type === "postgraduate" ? "Complete Your Journey" : "Graduate & Transition"}
+            </button>
+          </div>
+          <GraduationTransition open={showGraduation} onClose={() => setShowGraduation(false)} user={user} />
+        </div>
+      )}
+
       {/* Quick Stats */}
       <div className="px-5 mb-6">
         <div className="grid grid-cols-4 gap-2.5">
@@ -200,8 +257,8 @@ export default function Me() {
         </div>
       </div>
 
-      {/* Matriculation Number */}
-      {!isDemoMode && user?.user_type !== "future_student" && (
+      {/* Matriculation Number — visible for enrolled students (undergrad + postgrad) */}
+      {!isDemoMode && (user?.user_type === "student" || user?.user_type === "postgraduate") && (
         <div className="px-5 mb-6">
           <MatriculationCard user={user} />
         </div>

@@ -26,10 +26,11 @@
     },
     "user_type": {
       "type": "string",
-      "description": "Whether the user is an enrolled student, a future (pre-university) student, or an alumni",
+      "description": "University Journey stage: future_student (pre-university) \u2192 student (undergraduate) \u2192 postgraduate \u2192 alumni. Bud adapts the entire experience based on this.",
       "enum": [
-        "student",
         "future_student",
+        "student",
+        "postgraduate",
         "alumni"
       ],
       "default": "student"
@@ -85,6 +86,40 @@
       "type": "string",
       "format": "date-time",
       "description": "Timestamp when a future student transitioned to a full student account"
+    },
+    "postgraduate_type": {
+      "type": "string",
+      "description": "For postgraduate students: type of programme",
+      "enum": [
+        "pgd",
+        "masters",
+        "phd",
+        "mba",
+        "mphil",
+        ""
+      ],
+      "default": ""
+    },
+    "postgraduate_field": {
+      "type": "string",
+      "description": "For postgraduate students: field of study"
+    },
+    "graduation_year": {
+      "type": "number",
+      "description": "Year of graduation (undergraduate or postgraduate)"
+    },
+    "alumni_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the user transitioned to alumni status"
+    },
+    "current_occupation": {
+      "type": "string",
+      "description": "For alumni: current job title or role"
+    },
+    "current_company": {
+      "type": "string",
+      "description": "For alumni: current employer or organization"
     },
     "matriculation_number": {
       "type": "string",
