@@ -25,6 +25,7 @@ import Home from '@/pages/Home';
 import Academics from '@/pages/Academics';
 import Quad from '@/pages/Quad';
 import Connect from '@/pages/Connect';
+import Messages from '@/pages/Messages';
 import Bud from '@/pages/Bud';
 import Marketplace from '@/pages/Marketplace';
 import Opportunities from '@/pages/Opportunities';
@@ -158,6 +159,8 @@ const AuthenticatedApp = () => {
           <Route path="/academics" element={<Academics />} />
           <Route path="/quad" element={<Quad />} />
           <Route path="/connect" element={<Connect />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/messages/:conversationId" element={<Messages />} />
           <Route path="/bud" element={<Bud />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/library" element={<Library />} />

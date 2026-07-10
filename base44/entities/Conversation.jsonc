@@ -1,0 +1,131 @@
+{
+  "name": "Conversation",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "group",
+        "study_group",
+        "course",
+        "department",
+        "faculty",
+        "club",
+        "project_team",
+        "event_team",
+        "competition_team",
+        "mentor",
+        "lecturer",
+        "alumni"
+      ],
+      "default": "direct"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display title for group conversations; for direct chats, derived from the other participant"
+    },
+    "description": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "student",
+              "lecturer",
+              "admin",
+              "mentor",
+              "alumni",
+              "club"
+            ],
+            "default": "student"
+          },
+          "handle": {
+            "type": "string"
+          },
+          "is_admin": {
+            "type": "boolean",
+            "default": false
+          },
+          "last_read_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "joined_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "last_message": {
+      "type": "object",
+      "description": "Denormalized { content, author_name, author_id, type, created_at }"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_muted": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "university": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "pinned_message_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "shared_files_count": {
+      "type": "number",
+      "default": 0
+    },
+    "typing": {
+      "type": "object",
+      "description": "{ user_id, name, timestamp } when a participant is typing"
+    }
+  },
+  "required": [
+    "type"
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "conversation_id": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text content for text messages, or caption for media"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "image",
+        "video",
+        "document",
+        "audio",
+        "voice_note",
+        "file",
+        "link",
+        "location",
+        "contact",
+        "system",
+        "poll"
+      ],
+      "default": "text"
+    },
+    "media_url": {
+      "type": "string"
+    },
+    "media_type": {
+      "type": "string",
+      "description": "MIME type of the attached media"
+    },
+    "file_name": {
+      "type": "string"
+    },
+    "file_size": {
+      "type": "number"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Duration for voice notes and audio"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "link_preview": {
+      "type": "object",
+      "description": "{ url, title, description, image_url }"
+    },
+    "location_data": {
+      "type": "object",
+      "description": "{ lat, lng, label }"
+    },
+    "contact_data": {
+      "type": "object",
+      "description": "{ name, phone, email }"
+    },
+    "poll_data": {
+      "type": "object",
+      "description": "{ question, options: [{ id, text, voters: [user_ids] }] }"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "admin",
+        "mentor",
+        "alumni",
+        "club",
+        "system"
+      ],
+      "default": "student"
+    },
+    "author_handle": {
+      "type": "string"
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "reply_to_id": {
+      "type": "string",
+      "description": "ID of the message this is replying to"
+    },
+    "reply_to_content": {
+      "type": "string"
+    },
+    "reply_to_author": {
+      "type": "string"
+    },
+    "reactions": {
+      "type": "object",
+      "description": "Aggregate reactions keyed by emoji: { '\ud83d\udc4d': [user_ids], '\u2764\ufe0f': [...] }"
+    },
+    "read_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who have read this message"
+    },
+    "is_edited": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_deleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_forwarded": {
+      "type": "boolean",
+      "default": false
+    },
+    "forwarded_from": {
+      "type": "string"
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "edited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "delivered",
+        "read",
+        "failed",
+        "pending"
+      ],
+      "default": "sent"
+    }
+  },
+  "required": [
+    "conversation_id",
+    "content",
+    "author_name",
+    "author_id"
+  ]
+}
