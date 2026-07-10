@@ -227,12 +227,16 @@
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
   }
+  .card-hover:active {
+    transform: translateY(-1px) scale(0.99);
+  }
 
   .press-scale {
-    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .press-scale:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
+    box-shadow: var(--shadow-soft);
   }
 
   .shimmer {
@@ -254,10 +258,10 @@
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
   .spring-tap {
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
   .spring-tap:active {
-    transform: scale(0.95);
+    transform: scale(0.94);
   }
 
   .fade-in-up {

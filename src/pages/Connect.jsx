@@ -86,8 +86,8 @@ export default function Connect() {
       </motion.div>
 
       {/* Quick Actions */}
-      <div className="px-4 mb-5">
-        <div className="grid grid-cols-2 gap-2.5">
+      <div className="px-5 mb-6">
+        <div className="grid grid-cols-2 gap-3">
           {quickActions.map((action, i) => (
             <motion.div
               key={i}
@@ -95,8 +95,8 @@ export default function Connect() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: i * 0.05, type: "spring", stiffness: 300, damping: 24 }}
             >
-              <Link to={action.path} className="block bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 text-left card-hover spring-tap">
-                <div className={"w-10 h-10 rounded-[14px] " + action.color + " flex items-center justify-center mb-2.5"}>
+              <Link to={action.path} className="block bg-card rounded-[20px] soft-shadow border border-border/20 p-4 text-left card-hover spring-tap">
+                <div className={"w-10 h-10 rounded-[14px] " + action.color + " flex items-center justify-center mb-3"}>
                   <action.icon className={"w-[18px] h-[18px] " + action.iconColor} strokeWidth={2.2} />
                 </div>
                 <p className="font-heading font-semibold text-[13px] text-foreground">{action.label}</p>
@@ -111,27 +111,27 @@ export default function Connect() {
       <MessagesPreview />
 
       {/* Students You May Know */}
-      <div className="mb-5">
+      <div className="mb-6">
         <h3 className="font-heading font-bold text-[16px] text-foreground px-5 mb-3">Students You May Know</h3>
         {connectionsLoading && !isDemoMode ? (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar px-5">
             {[1, 2, 3].map((i) => <div key={i} className="w-[145px] h-[180px] rounded-[20px] shimmer flex-shrink-0" />)}
           </div>
         ) : students.length === 0 ? (
-          <div className="px-4">
-            <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+          <div className="px-5">
+            <div className="bg-card rounded-[20px] soft-shadow border border-border/20">
               <EmptyState icon={UserPlus} title="No connections yet" description="Connect with classmates to build your network" action={<Link to="/connect" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">Find Friends</Link>} />
             </div>
           </div>
         ) : (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar px-5">
             {students.map((student, i) => (
               <motion.div
                 key={student.id || i}
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex-shrink-0 w-[145px] card-hover"
+                className="bg-card rounded-[20px] soft-shadow border border-border/20 p-3.5 flex-shrink-0 w-[145px] card-hover"
               >
                 {student.avatar_url ? (
                   <img src={student.avatar_url} alt={student.full_name || student.name || "Student"} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
@@ -153,18 +153,18 @@ export default function Connect() {
       <StudyMatching />
 
       {/* Active Groups */}
-      <div className="px-4 pb-8">
+      <div className="px-5 pb-10">
         <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Active Groups</h3>
         {groupsLoading && !isDemoMode ? (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {[1, 2, 3].map((i) => <div key={i} className="h-[68px] rounded-[20px] shimmer" />)}
           </div>
         ) : groupList.length === 0 ? (
-          <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+          <div className="bg-card rounded-[20px] soft-shadow border border-border/20">
             <EmptyState icon={Users} title="No groups yet" description="Join or create study groups to connect with classmates" action={<Link to="/study-groups" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap">Browse Groups</Link>} />
           </div>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {groupList.map((group, i) => (
               <motion.div
                 key={group.id || i}
@@ -173,7 +173,7 @@ export default function Connect() {
                 transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
                 <Link to={"/study-groups/" + (group.id || "")} className="block">
-                  <div className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex items-center gap-3.5 card-hover">
+                  <div className="bg-card rounded-[20px] soft-shadow border border-border/20 p-4 flex items-center gap-3.5 card-hover">
                     <div className="w-12 h-12 rounded-[16px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
                       <Users className="w-6 h-6 text-muted-foreground" />
                     </div>

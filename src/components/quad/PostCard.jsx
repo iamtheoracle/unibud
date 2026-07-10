@@ -107,7 +107,7 @@ export default function PostCard({ post, user, index = 0 }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.2), duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden card-hover"
+      className="bg-card rounded-[20px] soft-shadow border border-border/20 overflow-hidden card-hover"
     >
       {/* Pinned indicator */}
       {isPinned && (
@@ -117,7 +117,7 @@ export default function PostCard({ post, user, index = 0 }) {
       )}
 
       {/* Header */}
-      <div className="p-4 pb-3">
+      <div className="p-4 pb-3 pt-4">
         <div className="flex items-center gap-3">
           {avatar ? (
             <img src={avatar} alt={authorName} className="w-10 h-10 rounded-full object-cover" />
@@ -192,7 +192,7 @@ export default function PostCard({ post, user, index = 0 }) {
       )}
 
       {/* Action bar */}
-      <div className="flex items-center gap-1 px-4 py-2.5 border-t border-border/30">
+      <div className="flex items-center gap-1 px-4 py-2.5 border-t border-border/20">
         <ReactionBar
           postId={post.id}
           reactions={localReactions}

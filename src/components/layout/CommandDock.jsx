@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { Sparkles, ChevronUp } from "lucide-react";
 import { useBudPanel } from "@/lib/BudPanelContext";
 import { getScreenContext } from "@/lib/budScreenContext";
+import { hapticTap } from "@/lib/haptics";
 import ProactiveBud from "@/components/bud/ProactiveBud";
 
 export default function CommandDock() {
@@ -37,6 +38,7 @@ export default function CommandDock() {
   }, [expanded]);
 
   const handleAction = (action) => {
+    hapticTap();
     setExpanded(false);
     openBud(action.prompt);
   };
@@ -67,7 +69,7 @@ export default function CommandDock() {
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: 24, scale: 0.8 }}
                   transition={{ delay: 0, type: "spring", stiffness: 400, damping: 24 }}
-                  onClick={() => { setExpanded(false); openBud(); }}
+                  onClick={() => { hapticTap(); setExpanded(false); openBud(); }}
                   className="flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full glass spring-tap self-end"
                 >
                   <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
@@ -110,7 +112,7 @@ export default function CommandDock() {
           <div className="flex items-end gap-2">
             {/* Expand toggle */}
             <motion.button
-              onClick={() => setExpanded(!expanded)}
+              onClick={() => { hapticTap(); setExpanded(!expanded); }}
               whileTap={{ scale: 0.88 }}
               className="w-9 h-9 rounded-full flex items-center justify-center glass spring-tap"
               aria-label={expanded ? "Close quick actions" : "Open quick actions"}
@@ -125,7 +127,7 @@ export default function CommandDock() {
 
             {/* Bud FAB - opens panel */}
             <motion.button
-              onClick={() => openBud()}
+              onClick={() => { hapticTap(); openBud(); }}
               whileTap={{ scale: 0.88 }}
               whileHover={{ scale: 1.05 }}
               className="w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_rgba(212,175,55,0.35)] relative"

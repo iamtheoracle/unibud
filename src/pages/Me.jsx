@@ -130,13 +130,13 @@ export default function Me() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="pt-12 pb-5 px-5 text-center"
+        className="pt-12 pb-6 px-5 text-center"
       >
         <motion.div
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
-          className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-3 gold-glow"
+          className="w-20 h-20 rounded-[26px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-3.5 gold-glow"
         >
           <span className="text-primary-foreground font-heading font-bold text-2xl">
             {displayName.charAt(0)}
@@ -150,8 +150,8 @@ export default function Me() {
       </motion.div>
 
       {/* Quick Stats */}
-      <div className="px-4 mb-5">
-        <div className="grid grid-cols-4 gap-2">
+      <div className="px-5 mb-6">
+        <div className="grid grid-cols-4 gap-2.5">
           {quickStats.map((stat, i) => (
             <GlassCard key={i} variant="solid" className="p-2.5 text-center" delay={i * 0.04}>
               <stat.icon className={"w-4 h-4 mx-auto mb-1 " + stat.color} strokeWidth={2.2} />
@@ -163,7 +163,7 @@ export default function Me() {
       </div>
 
       {/* Academic Progress Dashboard */}
-      <div className="px-4 mb-5">
+      <div className="px-5 mb-6">
         <div className="flex items-center gap-2 mb-3 px-1">
           <BarChart3 className="w-4 h-4 text-primary" />
           <h2 className="font-heading font-bold text-[15px] text-foreground">Academic Progress</h2>
@@ -172,17 +172,17 @@ export default function Me() {
       </div>
 
       {/* Campus Journey */}
-      <div className="px-4 mb-5">
+      <div className="px-5 mb-6">
         <CampusLifeSection />
       </div>
 
       {/* Story Highlights */}
-      <div className="mb-5">
+      <div className="mb-6">
         <HighlightShelf />
       </div>
 
       {/* Study Stats */}
-      <div className="px-4 mb-5">
+      <div className="px-5 mb-6">
         <div className="flex items-center gap-2 mb-3 px-1">
           <BarChart3 className="w-4 h-4 text-primary" />
           <h2 className="font-heading font-bold text-[15px] text-foreground">Weekly Progress</h2>
@@ -191,12 +191,12 @@ export default function Me() {
       </div>
 
       {/* Digital Badges */}
-      <div className="px-4 mb-5">
+      <div className="px-5 mb-6">
         <BadgesSection />
       </div>
 
       {/* Recent Milestones */}
-      <div className="px-4 mb-5">
+      <div className="px-5 mb-6">
         <div className="flex items-center gap-2 mb-3 px-1">
           <PartyPopper className="w-4 h-4 text-primary" />
           <h2 className="font-heading font-bold text-[15px] text-foreground">Recent Milestones</h2>
@@ -205,7 +205,7 @@ export default function Me() {
       </div>
 
       {/* Menu Sections */}
-      <div className="px-4 space-y-5">
+      <div className="px-5 space-y-6">
         {menuSections.map((section, si) => (
           <div key={si}>
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
@@ -216,7 +216,7 @@ export default function Me() {
                 <Link
                   key={ii}
                   to={item.path}
-                  className={"flex items-center gap-3 px-4 py-3.5 hover:bg-muted/30 transition-colors " + (ii < section.items.length - 1 ? "border-b border-border/30" : "")}
+                  className={"flex items-center gap-3 px-4 py-3.5 hover:bg-muted/40 transition-colors " + (ii < section.items.length - 1 ? "border-b border-border/20" : "")}
                 >
                   <div className="w-8 h-8 rounded-[12px] bg-primary/8 flex items-center justify-center">
                     <item.icon className="w-4 h-4 text-primary" />

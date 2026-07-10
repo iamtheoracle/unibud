@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Home, Compass, MessageCircle, User, Video, Library, Clapperboard } from "lucide-react";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
 import { useBudPanel } from "@/lib/BudPanelContext";
+import { hapticTap } from "@/lib/haptics";
 import UnibudMark from "@/components/brand/UnibudMark";
 
 const allNavItems = [
@@ -43,7 +44,7 @@ export default function BottomNav() {
               return (
                 <button
                   key={item.path}
-                  onClick={() => openBud()}
+                  onClick={() => { hapticTap(); openBud(); }}
                   className="relative flex flex-col items-center gap-0.5 -mt-5"
                 >
                   <motion.div
