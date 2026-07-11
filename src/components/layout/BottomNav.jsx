@@ -79,12 +79,12 @@ export default function BottomNav() {
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 pointer-events-none">
+    <div className="fixed inset-x-0 bottom-0 z-40 pointer-events-none safe-area-px">
       <motion.div
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
-        className="max-w-lg mx-auto px-4 sm:px-5 pb-[max(0.6rem,env(safe-area-inset-bottom))] lg:max-w-2xl"
+        className="max-w-lg mx-auto px-4 sm:px-5 safe-area-pb lg:max-w-2xl"
       >
         <nav
           className="pointer-events-auto relative flex items-center justify-between gap-0.5 rounded-[28px] px-3 py-2"

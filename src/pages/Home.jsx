@@ -18,21 +18,22 @@ import AlumniDashboard from "@/components/journey/AlumniDashboard";
 import PostgraduateDashboard from "@/components/journey/PostgraduateDashboard";
 import JourneyStageBanner from "@/components/journey/JourneyStageBanner";
 import InstitutionStatusBadge from "@/components/institution/InstitutionStatusBadge";
+import PullToRefresh from "@/components/ui/PullToRefresh";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function Home() {
   const { isDemoMode } = useDemoMode();
-  const { data: user } = useQuery({
+  const { data: user, refetch: refetchUser } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
     enabled: !isDemoMode,
   });
-  const { data: notifications } = useQuery({
+  const { data: notifications, refetch: refetchNotifications } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => base44.entities.Notification.list("-created_date", 50),
     enabled: !isDemoMode,
   });
-  const { data: institution } = useQuery({
+  const { data: institution, refetch: refetchInstitution } = useQuery({
     queryKey: ["institutionByUser", user?.university],
     queryFn: async () => {
       const results = await base44.entities.Institution.filter({ name: user.university });
@@ -40,6 +41,10 @@ export default function Home() {
     },
     enabled: !isDemoMode && !!user?.university,
   });
+
+  const handleRefresh = async () => {
+    await Promise.allSettled([refetchUser(), refetchNotifications(), refetchInstitution()]);
+  };
 
   // Future Students get a dedicated pre-university experience
   if (!isDemoMode && user?.user_type === "future_student") {
@@ -65,6 +70,7 @@ export default function Home() {
   const unreadCount = isDemoMode ? 3 : (notifications || []).filter((n) => !n.is_read).length;
 
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div className="min-h-screen">
       {/* Header */}
       <motion.div
@@ -160,5 +166,6 @@ export default function Home() {
         </div>
       </div>
     </div>
+    </PullToRefresh>
   );
 }

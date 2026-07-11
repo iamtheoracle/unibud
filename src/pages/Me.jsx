@@ -6,10 +6,17 @@ import {
   ChevronRight, Award, BookOpen, Flame, Target,
   Bell, Shield, Palette, HelpCircle, LogOut, Download,
   BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
-  PartyPopper, Rocket, Calendar, Users, GraduationCap, FlaskConical, Briefcase,
+  PartyPopper, Rocket, Calendar, Users, GraduationCap,
+  Trash2,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import { Link } from "react-router-dom";
+import {
+  AlertDialog, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/components/ui/use-toast";
 import AcademicProgressSection from "@/components/me/AcademicProgressSection";
 import CampusLifeSection from "@/components/me/CampusLifeSection";
 import BadgesSection from "@/components/me/BadgesSection";
@@ -94,6 +101,42 @@ export default function Me() {
 
   const handleLogout = () => {
     base44.auth.logout("/login");
+  };
+
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await base44.entities.SupportTicket.create({
+        subject: "Account Deletion Request",
+        category: "general",
+        priority: "urgent",
+        status: "open",
+        student_name: user?.full_name || user?.email || "Unknown",
+        student_id: user?.id || "",
+        messages: [{
+          content: "User requested permanent account deletion.",
+          author: user?.email || "user",
+          created_at: new Date().toISOString(),
+        }],
+      });
+      toast({
+        title: "Deletion request submitted",
+        description: "Our support team will contact you within 48 hours to complete this.",
+      });
+      setShowDeleteDialog(false);
+      setTimeout(() => base44.auth.logout("/login"), 2000);
+    } catch {
+      toast({
+        title: "Something went wrong",
+        description: "Could not submit your request. Please try again or contact support.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const sessionDates = (sessions || []).filter((s) => s.session_date).map((s) => s.session_date);
@@ -344,6 +387,46 @@ export default function Me() {
               <span className="text-[13px] font-medium text-destructive">Sign Out</span>
             </button>
           </GlassCard>
+        )}
+
+        {/* Delete Account */}
+        {!isDemoMode && (
+          <>
+            <GlassCard variant="solid" className="overflow-hidden" delay={0.35}>
+              <button
+                onClick={() => setShowDeleteDialog(true)}
+                className="flex items-center gap-3 px-4 py-3.5 w-full hover:bg-destructive/10 transition-colors"
+              >
+                <div className="w-8 h-8 rounded-[12px] bg-destructive/10 flex items-center justify-center">
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </div>
+                <span className="text-[13px] font-medium text-destructive">Delete Account</span>
+              </button>
+            </GlassCard>
+
+            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+              <AlertDialogContent className="max-w-sm rounded-3xl">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-[16px] font-heading font-bold">Delete your account?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-[13px] leading-relaxed">
+                    This will permanently remove your profile, conversations, and all associated data. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex-row gap-2">
+                  <AlertDialogCancel className="flex-1 h-[42px] rounded-2xl text-[13px] mt-0">
+                    Cancel
+                  </AlertDialogCancel>
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={isDeleting}
+                    className="flex-1 h-[42px] rounded-2xl bg-destructive text-destructive-foreground text-[13px] font-semibold hover:bg-destructive/90 disabled:opacity-50 transition-colors"
+                  >
+                    {isDeleting ? "Processing..." : "Delete Account"}
+                  </button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </>
         )}
 
         {/* Branding */}

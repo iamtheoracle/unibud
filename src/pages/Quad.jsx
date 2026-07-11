@@ -12,6 +12,7 @@ import CommunitiesPreview from "@/components/quad/CommunitiesPreview";
 import CampusTraditionsGallery from "@/components/quad/CampusTraditionsGallery";
 import CelebrationsCarousel from "@/components/quad/CelebrationsCarousel";
 import StoryBar from "@/components/stories/StoryBar";
+import PullToRefresh from "@/components/ui/PullToRefresh";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const DEMO_POSTS = [
@@ -72,7 +73,7 @@ export default function Quad() {
   const [activeTab, setActiveTab] = useState("For you");
   const [composerOpen, setComposerOpen] = useState(false);
 
-  const { data: user } = useQuery({
+  const { data: user, refetch: refetchUser } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
     enabled: !isDemoMode,
@@ -80,7 +81,12 @@ export default function Quad() {
 
   const university = isDemoMode ? "University of Benin" : user?.university || "";
 
+  const handleRefresh = async () => {
+    await refetchUser();
+  };
+
   return (
+    <PullToRefresh onRefresh={handleRefresh}>
     <div className="min-h-screen">
       {/* Header */}
       <motion.div
@@ -171,5 +177,6 @@ export default function Quad() {
         user={user}
       />
     </div>
+    </PullToRefresh>
   );
 }

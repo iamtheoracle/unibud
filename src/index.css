@@ -188,18 +188,23 @@
     overflow-x: hidden;
   }
 
-  /* Allow text selection & drag only where it matters for accessibility */
-  input, textarea, [contenteditable="true"], [contenteditable=""] {
+  /* Allow text selection on actual content — inputs, editable areas, and rich text */
+  input, textarea, [contenteditable="true"], [contenteditable=""],
+  p, li, blockquote, pre, code, article, .selectable {
     -webkit-user-select: text;
     user-select: text;
     -webkit-user-select: auto;
+    -webkit-touch-callout: default;
   }
   img {
     -webkit-user-drag: none;
     user-drag: none;
   }
-  a, button {
+  a, button, nav, [role="tab"], [role="button"] {
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   /* Responsive scrollbar — subtle & premium */
@@ -377,4 +382,17 @@
     background-position: right 0.75rem center;
     padding-right: 2rem;
   }
+
+  /* Safe-area utilities for notches, home indicators, and rounded displays */
+  .safe-area-pt { padding-top: env(safe-area-inset-top); }
+  .safe-area-pb { padding-bottom: max(0.6rem, env(safe-area-inset-bottom)); }
+  .safe-area-px {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .safe-area-top { top: env(safe-area-inset-top); }
+  .safe-area-bottom { bottom: env(safe-area-inset-bottom); }
+
+  /* Prevent iOS rubber-banding on scrollable views */
+  .no-overscroll { overscroll-behavior-y: none; }
 }
