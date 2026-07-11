@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Lock, ChevronDown, Building2, PlayCircle, KeyRound } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
-import UnibudLogo from "@/components/brand/UnibudLogo";
 import WelcomeBackground from "@/components/welcome/WelcomeBackground";
 import WelcomeLoader from "@/components/welcome/WelcomeLoader";
 
@@ -56,7 +55,12 @@ export default function Welcome() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1, duration: 0.8, ease }}
                 >
-                  <UnibudLogo variant="gold" size="xl" />
+                  <img
+                    src="https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/2942a37eb_generated_image.png"
+                    alt="UNIBUD — The Future Starts Together"
+                    className="w-[200px] md:w-[230px] h-auto select-none"
+                    draggable={false}
+                  />
                 </motion.div>
 
                 {/* Headline */}
