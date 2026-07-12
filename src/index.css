@@ -13,19 +13,19 @@
     --card-foreground: 0 0% 7%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 7%;
-    --primary: 172 72% 22%;           /* Royal Purple — #7C3AED */
+    --primary: 46 65% 42%;           /* Royal Purple — #7C3AED */
     --primary-foreground: 0 0% 100%;
     --secondary: 220 14% 96%;         /* Very Light Gray */
     --secondary-foreground: 0 0% 7%;
     --muted: 220 14% 94%;             /* Light Gray */
     --muted-foreground: 220 9% 46%;   /* Medium Gray — #6B7280 */
-    --accent: 172 35% 95%;            /* Very light purple tint */
-    --accent-foreground: 172 55% 26%;
+    --accent: 46 50% 95%;            /* Very light purple tint */
+    --accent-foreground: 46 60% 30%;
     --destructive: 0 72% 51%;         /* Red — #DC2626 */
     --destructive-foreground: 0 0% 100%;
     --border: 0 0% 91%;               /* Soft Border — #E8E8E8 */
     --input: 0 0% 91%;
-    --ring: 172 72% 22%;              /* Royal Purple */
+    --ring: 46 65% 42%;              /* Royal Purple */
     --radius: 1.5rem;                  /* 24px — premium, spacious */
 
     /* Surface tones */
@@ -36,9 +36,9 @@
     --foreground-tertiary: 220 9% 46%;  /* Medium Gray — #6B7280 */
 
     /* Semantic — identical in both themes */
-    --unibud-gold: 172 72% 22%;        /* Royal Purple (primary alias) */
+    --unibud-gold: 46 65% 42%;        /* Royal Purple (primary alias) */
     --unibud-blue: 217 91% 60%;        /* Professional Blue — #3B82F6 */
-    --unibud-purple: 172 72% 22%;      /* Royal Purple — #7C3AED */
+    --unibud-purple: 46 65% 42%;      /* Royal Purple — #7C3AED */
     --unibud-green: 142 71% 45%;       /* Emerald Green — #10B981 */
     --unibud-orange: 38 92% 50%;       /* Amber — events & reminders only */
     --unibud-red: 0 72% 51%;          /* Modern Red — #DC2626 */
@@ -63,7 +63,7 @@
 
     /* Glass — light mode */
     --glass-bg: rgba(255, 255, 255, 0.66);
-    --glass-border: rgba(16, 97, 86, 0.08);
+    --glass-border: rgba(212, 175, 55, 0.10);
     --glass-shadow: 0 10px 38px rgba(0, 0, 0, 0.05);
     --glass-blur: 16px;
     --surface-grouped: 220 14% 96%;
@@ -73,10 +73,10 @@
     --shadow-elevated: 0 10px 38px rgba(0, 0, 0, 0.05), 0 3px 10px rgba(0, 0, 0, 0.025);
     --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.065), 0 5px 15px rgba(0, 0, 0, 0.03);
 
-    --chart-1: 172 72% 22%;
+    --chart-1: 46 65% 42%;
     --chart-2: 142 71% 45%;
     --chart-3: 217 91% 60%;
-    --chart-4: 172 58% 38%;
+    --chart-4: 46 70% 55%;
     --chart-5: 38 92% 50%;
 
     --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
@@ -103,12 +103,12 @@
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 9% 24%;
-    --sidebar-primary: 172 72% 22%;
+    --sidebar-primary: 46 65% 42%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 172 35% 95%;
-    --sidebar-accent-foreground: 172 55% 26%;
+    --sidebar-accent: 46 50% 95%;
+    --sidebar-accent-foreground: 46 60% 30%;
     --sidebar-border: 0 0% 91%;
-    --sidebar-ring: 172 72% 22%;
+    --sidebar-ring: 46 65% 42%;
   }
 
   .dark {
@@ -119,19 +119,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 220 10% 10%;
     --popover-foreground: 0 0% 98%;
-    --primary: 172 58% 38%;           /* Brighter Royal Purple for dark */
+    --primary: 46 70% 55%;           /* Brighter Royal Purple for dark */
     --primary-foreground: 0 0% 100%;
     --secondary: 220 10% 14%;         /* Dark Charcoal */
     --secondary-foreground: 0 0% 98%;
     --muted: 220 10% 16%;             /* Dark Grey */
     --muted-foreground: 220 9% 65%;   /* Medium Grey */
-    --accent: 172 30% 14%;            /* Dark purple tint */
-    --accent-foreground: 172 50% 50%; /* Light purple text */
+    --accent: 46 25% 14%;            /* Dark purple tint */
+    --accent-foreground: 46 55% 60%; /* Light purple text */
     --destructive: 0 72% 51%;         /* Modern Red */
     --destructive-foreground: 0 0% 100%;
     --border: 220 10% 20%;            /* Dark border */
     --input: 220 10% 20%;
-    --ring: 172 58% 38%;
+    --ring: 46 70% 55%;
 
     /* Surface tones */
     --surface: 220 10% 10%;            /* Charcoal Surface */
@@ -142,7 +142,7 @@
 
     /* Glass — dark mode: deep charcoal with premium blur */
     --glass-bg: rgba(17, 17, 17, 0.72);
-    --glass-border: rgba(41, 153, 138, 0.15);
+    --glass-border: rgba(212, 175, 55, 0.15);
     --glass-shadow: 0 14px 48px rgba(0, 0, 0, 0.55);
     --glass-blur: 24px;
     --surface-grouped: 220 10% 8%;
@@ -154,12 +154,12 @@
 
     --sidebar-background: 0 0% 7%;
     --sidebar-foreground: 220 9% 65%;
-    --sidebar-primary: 172 58% 38%;
+    --sidebar-primary: 46 70% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 172 30% 14%;
-    --sidebar-accent-foreground: 172 50% 50%;
+    --sidebar-accent: 46 25% 14%;
+    --sidebar-accent-foreground: 46 55% 60%;
     --sidebar-border: 220 10% 20%;
-    --sidebar-ring: 172 58% 38%;
+    --sidebar-ring: 46 70% 55%;
   }
 }
 
@@ -239,7 +239,7 @@
     box-shadow: var(--shadow-elevated);
   }
   .text-gold-gradient {
-    background: linear-gradient(135deg, hsl(172 72% 22%), hsl(172 58% 38%));
+    background: linear-gradient(135deg, hsl(46 65% 42%), hsl(46 70% 55%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -260,7 +260,7 @@
     box-shadow: var(--shadow-elevated);
   }
   .gold-glow {
-    box-shadow: 0 0 36px hsl(172 72% 22% / 0.28), var(--shadow-premium);
+    box-shadow: 0 0 36px hsl(46 65% 42% / 0.28), var(--shadow-premium);
   }
   .card-hover {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
