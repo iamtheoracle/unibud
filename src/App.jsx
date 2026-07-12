@@ -91,6 +91,7 @@ import Agents from '@/pages/Agents';
 import PosterArchitecture from '@/pages/posters/PosterArchitecture';
 import PosterExperience from '@/pages/posters/PosterExperience';
 import PosterEcosystem from '@/pages/posters/PosterEcosystem';
+import PosterScreenFlow from '@/pages/posters/PosterScreenFlow';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -240,6 +241,7 @@ const AuthenticatedApp = () => {
           <Route path="/posters/architecture" element={<PosterArchitecture />} />
           <Route path="/posters/experience" element={<PosterExperience />} />
           <Route path="/posters/ecosystem" element={<PosterEcosystem />} />
+          <Route path="/posters/screen-flow" element={<PosterScreenFlow />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />
