@@ -120,6 +120,11 @@ import Materials from '@/pages/portal/Materials';
 import Recordings from '@/pages/portal/Recordings';
 import PortalStudyGroups from '@/pages/portal/PortalStudyGroups';
 import OracleDashboard from '@/pages/portal/oracle/OracleDashboard';
+import OracleIntelligence from '@/pages/portal/oracle/OracleIntelligence';
+import AgentNetwork from '@/pages/portal/oracle/AgentNetwork';
+import ArchitectCenter from '@/pages/portal/oracle/ArchitectCenter';
+import ManagementCenter from '@/pages/portal/oracle/ManagementCenter';
+import OperatorCenter from '@/pages/portal/oracle/OperatorCenter';
 import Approvals from '@/pages/portal/Approvals';
 import FeatureFlags from '@/pages/portal/FeatureFlags';
 import PortalNotifications from '@/pages/portal/PortalNotifications';
@@ -260,6 +265,11 @@ const AuthenticatedApp = () => {
           <Route path="recordings" element={<Recordings />} />
           <Route path="study-groups" element={<PortalStudyGroups />} />
           <Route path="oracle" element={<OracleDashboard />} />
+          <Route path="oracle-intelligence" element={<OracleIntelligence />} />
+          <Route path="agent-network" element={<AgentNetwork />} />
+          <Route path="architect" element={<ArchitectCenter />} />
+          <Route path="management" element={<ManagementCenter />} />
+          <Route path="operator" element={<OperatorCenter />} />
           <Route path="approvals" element={<Approvals />} />
           <Route path="feature-flags" element={<FeatureFlags />} />
           <Route path="notifications" element={<PortalNotifications />} />

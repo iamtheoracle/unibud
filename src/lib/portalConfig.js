@@ -143,7 +143,9 @@ export function getPortalNavigation(role) {
           section: "Overview",
           items: [
             { label: "Dashboard", icon: "LayoutDashboard", path: "/portal" },
-            { label: "Oracle", icon: "Crown", path: "/portal/oracle" },
+            { label: "Oracle Mission Control", icon: "Crown", path: "/portal/oracle" },
+            { label: "Intelligence Core", icon: "Brain", path: "/portal/oracle-intelligence" },
+            { label: "Agent Network", icon: "Network", path: "/portal/agent-network" },
           ],
         },
         {
@@ -191,6 +193,14 @@ export function getPortalNavigation(role) {
           items: [
             { label: "Analytics", icon: "LineChart", path: "/portal/analytics" },
             { label: "Reports", icon: "BarChart3", path: "/portal/reports" },
+          ],
+        },
+        {
+          section: "Operations Centers",
+          items: [
+            { label: "Architect Center", icon: "Layers", path: "/portal/architect" },
+            { label: "Management Center", icon: "ClipboardCheck", path: "/portal/management" },
+            { label: "Operator Center", icon: "Settings", path: "/portal/operator" },
           ],
         },
         {
@@ -451,6 +461,19 @@ function getPlatformNavigation(role) {
     ],
   });
 
+  // Operations Centers — available to all portal roles with access
+  if (isPlatformAdmin || isDeveloper || isSupport || isOpsStaff || isCompliance || isFinance) {
+    sections.push({
+      section: "Operations Centers",
+      items: [
+        { label: "Architect Center", icon: "Layers", path: "/portal/architect" },
+        { label: "Management Center", icon: "ClipboardCheck", path: "/portal/management" },
+        { label: "Operator Center", icon: "Settings", path: "/portal/operator" },
+        { label: "Agent Network", icon: "Network", path: "/portal/agent-network" },
+      ],
+    });
+  }
+
   if (isFinance || isPlatformAdmin) {
     sections.push({
       section: "Intelligence",
@@ -515,6 +538,11 @@ const PATH_ACCESS = {
   "/portal/recordings": ["lecturer"],
   "/portal/study-groups": ["lecturer"],
   "/portal/oracle": ["oracle"],
+  "/portal/oracle-intelligence": ["oracle"],
+  "/portal/agent-network": ["oracle", "super_admin", "platform_admin", "developer", "executive"],
+  "/portal/architect": ["oracle", "super_admin", "developer", "executive"],
+  "/portal/management": ["oracle", "super_admin", "platform_admin", "support_manager", "finance_manager", "compliance_officer"],
+  "/portal/operator": ["oracle", "super_admin", "platform_admin", "operator", "senior_operator", "moderator", "operations_staff"],
   "/portal/approvals": ["oracle", "super_admin", "platform_admin", "support_manager"],
   "/portal/feature-flags": ["oracle", "super_admin", "platform_admin", "developer"],
   "/portal/notifications": ["oracle", "super_admin", "platform_admin", "support_manager"],

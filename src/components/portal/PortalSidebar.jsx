@@ -7,6 +7,7 @@ import {
   LogOut, X, ChevronLeft, Building, Layers, GraduationCap,
   BookOpen, CalendarDays, Megaphone, CheckSquare, PlayCircle, UsersRound,
   Video, ClipboardList, FolderOpen, IdCard, Mail, Flag, Building2,
+  Crown, Brain, Network, ClipboardCheck, UserPlus, ShoppingBag,
 } from "lucide-react";
 import UnibudMark from "@/components/brand/UnibudMark";
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
@@ -18,6 +19,7 @@ const ICON_MAP = {
   Building, Layers, GraduationCap, BookOpen, CalendarDays, Megaphone,
   CheckSquare, PlayCircle, UsersRound, Video, ClipboardList, FolderOpen,
   IdCard, Mail, Flag, Building2,
+  Crown, Brain, Network, ClipboardCheck, UserPlus, ShoppingBag,
 };
 
 export default function PortalSidebar({ user, onNavigate }) {
@@ -35,7 +37,7 @@ export default function PortalSidebar({ user, onNavigate }) {
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-n7">
         <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center gold-glow flex-shrink-0">
-          <UnibudMark className="w-5 h-5 text-primary" />
+          <UnibudMark className="w-5 h-5 text-white" />
         </div>
         <div className="min-w-0">
           <p className="font-heading font-extrabold text-[15px] tracking-tight leading-none">UNIBUD</p>
