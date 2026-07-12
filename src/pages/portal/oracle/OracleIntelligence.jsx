@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Crown, Sparkles, ChevronRight, Database, Search, BarChart3,
   Brain, Globe, ShieldCheck, Layers, Settings, Zap, ArrowDown,
-  Network, Activity, BookOpen, Lock,
+  Network, Activity, BookOpen, Lock, Server,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { SectionCard, StatusPill, PortalPageHeader } from "@/components/portal/PortalUI";
@@ -14,6 +14,8 @@ import {
   OPERATIONS_HIERARCHY, ORCHESTRATION_PROTOCOL, INTELLIGENCE_STACK,
 } from "@/lib/oracleEcosystem";
 import { ORACLE_SYSTEMS } from "@/lib/oracleSystems";
+import { PLATFORM_ENGINES, ENGINE_FLOW_EXAMPLE } from "@/lib/platformEngines";
+import { PLATFORM_SERVICES } from "@/lib/platformServices";
 import { REGISTRIES, REGISTRY_PRINCIPLES } from "@/lib/globalRegistries";
 import { KNOWLEDGE_NODES, SEARCH_CATEGORIES } from "@/lib/knowledgeNetwork";
 import { COUNTRY_DOMAINS, COUNTRY_ENGINE_PRINCIPLES } from "@/lib/countryEngine";
@@ -225,8 +227,132 @@ export default function OracleIntelligence() {
         )}
       </SectionCard>
 
-      {/* Oracle Systems — The 7 Coordinated Platform Services */}
-      <SectionCard title="Oracle Systems" description="Seven coordinated systems — all communication flows through Oracle Core" delay={0.22}>
+      {/* Full Architecture Diagram */}
+      <SectionCard title="Platform Architecture" description="Oracle Core → Bud → Oracle Systems → Platform Engines → Platform Services" delay={0.05}>
+        <div className="p-6 space-y-4">
+          {/* Layer 1: Oracle Core */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, ease: EASE }}
+            className="flex items-center justify-center"
+          >
+            <div className="flex items-center gap-3 px-6 py-4 rounded-[24px] bg-primary/10 border border-primary/20 elevated-shadow">
+              <div className="w-10 h-10 rounded-[14px] bg-primary/20 flex items-center justify-center">
+                <Brain className="w-5 h-5 text-primary" strokeWidth={2.2} />
+              </div>
+              <div>
+                <h4 className="font-heading font-bold text-[15px] text-foreground">Oracle Core</h4>
+                <p className="text-[10px] text-muted-foreground">Intelligence & Orchestration</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-muted-foreground/40" /></div>
+
+          {/* Layer 2: Bud */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, ease: EASE }}
+            className="flex items-center justify-center"
+          >
+            <div className="flex items-center gap-3 px-5 py-3 rounded-[20px] bg-primary/8 border border-primary/15">
+              <div className="w-8 h-8 rounded-[12px] bg-primary/15 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-primary" strokeWidth={2.2} />
+              </div>
+              <div>
+                <h4 className="font-heading font-bold text-[14px] text-foreground">Bud</h4>
+                <p className="text-[10px] text-muted-foreground">The Only User-Facing Assistant</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-muted-foreground/40" /></div>
+
+          {/* Layer 3: Oracle Systems */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.16, ease: EASE }}
+            className="p-4 rounded-[20px] bg-muted/20 border border-border/20"
+          >
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide text-center mb-3">Oracle Systems — Business Domains</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              {ORACLE_SYSTEMS.map((sys) => (
+                <div key={sys.id} className="flex flex-col items-center gap-1.5 p-2.5 rounded-[14px] bg-card border border-border/15">
+                  <div className={`w-8 h-8 rounded-[12px] ${sys.bg} flex items-center justify-center`}>
+                    <sys.icon className={`w-4 h-4 ${sys.color}`} strokeWidth={2.2} />
+                  </div>
+                  <span className="text-[10px] font-semibold text-foreground text-center leading-tight">{sys.name}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-muted-foreground/40" /></div>
+
+          {/* Layer 4: Platform Engines */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, ease: EASE }}
+            className="p-4 rounded-[20px] bg-muted/20 border border-border/20"
+          >
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide text-center mb-3">Platform Engines — How It Works</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+              {PLATFORM_ENGINES.map((eng) => (
+                <div key={eng.id} className="flex flex-col items-center gap-1.5 p-2.5 rounded-[14px] bg-card border border-border/15">
+                  <div className={`w-8 h-8 rounded-[12px] ${eng.bg} flex items-center justify-center`}>
+                    <eng.icon className={`w-4 h-4 ${eng.color}`} strokeWidth={2.2} />
+                  </div>
+                  <span className="text-[10px] font-semibold text-foreground text-center leading-tight">{eng.name}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-muted-foreground/40" /></div>
+
+          {/* Layer 5: Platform Services */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.24, ease: EASE }}
+            className="p-4 rounded-[20px] bg-muted/20 border border-border/20"
+          >
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide text-center mb-3">Platform Services — Shared Infrastructure</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {PLATFORM_SERVICES.map((svc) => (
+                <div key={svc.id} className="flex flex-col items-center gap-1.5 p-2.5 rounded-[14px] bg-card border border-border/15">
+                  <div className={`w-8 h-8 rounded-[12px] ${svc.bg} flex items-center justify-center`}>
+                    <svc.icon className={`w-4 h-4 ${svc.color}`} strokeWidth={2.2} />
+                  </div>
+                  <span className="text-[10px] font-semibold text-foreground text-center leading-tight">{svc.name}</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-muted-foreground/40" /></div>
+
+          {/* Layer 6: Infrastructure */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.28, ease: EASE }}
+            className="flex items-center justify-center"
+          >
+            <div className="flex items-center gap-3 px-5 py-3 rounded-[16px] bg-muted/30 border border-border/20">
+              <Server className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+              <span className="text-[12px] font-semibold text-muted-foreground">Infrastructure</span>
+            </div>
+          </motion.div>
+        </div>
+      </SectionCard>
+
+      {/* Oracle Systems — The 5 Business Domain Systems */}
+      <SectionCard title="Oracle Systems" description="Five business domain systems — all communication flows through Oracle Core" delay={0.22}>
         <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {ORACLE_SYSTEMS.map((system, i) => (
             <motion.div
@@ -274,8 +400,135 @@ export default function OracleIntelligence() {
         </div>
       </SectionCard>
 
+      {/* Platform Engines */}
+      <SectionCard title="Platform Engines" description="Cross-cutting capabilities shared by all Oracle Systems — they define how the platform works" delay={0.26}>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PLATFORM_ENGINES.map((engine, i) => (
+            <motion.div
+              key={engine.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.28 + i * 0.04, ease: EASE }}
+              className="p-5 rounded-[24px] border border-border/20 bg-muted/20 hover:bg-muted/40 transition-colors"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-10 h-10 rounded-[14px] ${engine.bg} flex items-center justify-center`}>
+                  <engine.icon className={`w-5 h-5 ${engine.color}`} strokeWidth={2.2} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-heading font-bold text-[13px] text-foreground">{engine.name}</h4>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{engine.purpose}</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-snug mb-3 line-clamp-2">{engine.description}</p>
+              <div className="flex flex-wrap gap-1">
+                {engine.capabilities.slice(0, 4).map((cap) => (
+                  <span key={cap} className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-card border border-border/30 text-muted-foreground">
+                    {cap}
+                  </span>
+                ))}
+                {engine.capabilities.length > 4 && (
+                  <span className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-card border border-border/30 text-muted-foreground">
+                    +{engine.capabilities.length - 4}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="px-5 pb-5">
+          <div className="p-4 rounded-[16px] bg-info/5 border border-info/15">
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-info">Design Principle:</span> Oracle Systems answer "What part of the business does this belong to?" Platform Engines answer "How does the platform make it work?" No engine belongs to a single system — all systems use all engines.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Example Flow */}
+      <SectionCard title="Example: Student Taps 'Enroll'" description="How a single action flows through engines and systems" delay={0.3}>
+        <div className="p-5">
+          <div className="flex flex-col gap-2">
+            {ENGINE_FLOW_EXAMPLE.steps.map((step, i) => {
+              const isEngine = !!step.engine;
+              const item = isEngine
+                ? PLATFORM_ENGINES.find((e) => e.id === step.engine)
+                : ORACLE_SYSTEMS.find((s) => s.id === step.system);
+              if (!item) return null;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.32 + i * 0.05 }}
+                  className="flex items-center gap-3"
+                >
+                  <span className="text-[10px] font-bold text-muted-foreground w-5 text-right">{i + 1}</span>
+                  <div className={`w-8 h-8 rounded-[12px] ${item.bg} flex items-center justify-center flex-shrink-0`}>
+                    <item.icon className={`w-4 h-4 ${item.color}`} strokeWidth={2.2} />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-[12px] font-bold text-foreground">{item.name}</span>
+                    <span className="text-[10px] text-muted-foreground ml-2">({isEngine ? "Engine" : "System"})</span>
+                  </div>
+                  <span className="text-[12px] text-muted-foreground">{step.action}</span>
+                  {i < ENGINE_FLOW_EXAMPLE.steps.length - 1 && (
+                    <ArrowDown className="w-3 h-3 text-muted-foreground/30" />
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Platform Services */}
+      <SectionCard title="Platform Services" description="Shared infrastructure that powers all Oracle Systems — they connect, they don't decide" delay={0.32}>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PLATFORM_SERVICES.map((service, i) => (
+            <motion.div
+              key={service.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.34 + i * 0.04, ease: EASE }}
+              className="p-5 rounded-[24px] border border-border/20 bg-muted/20 hover:bg-muted/40 transition-colors"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-10 h-10 rounded-[14px] ${service.bg} flex items-center justify-center`}>
+                  <service.icon className={`w-5 h-5 ${service.color}`} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h4 className="font-heading font-bold text-[13px] text-foreground">{service.name}</h4>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{service.purpose}</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-snug mb-3 line-clamp-2">{service.description}</p>
+              <div className="flex flex-wrap gap-1">
+                {(service.providers || service.capabilities || []).slice(0, 4).map((item) => (
+                  <span key={item} className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-card border border-border/30 text-muted-foreground">
+                    {item}
+                  </span>
+                ))}
+                {(service.providers || service.capabilities || []).length > 4 && (
+                  <span className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-card border border-border/30 text-muted-foreground">
+                    +{(service.providers || service.capabilities || []).length - 4}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="px-5 pb-5">
+          <div className="p-4 rounded-[16px] bg-warning/5 border border-warning/15">
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-warning">Key Distinction:</span> Integration Bridge is a Platform Service, not an Oracle System, because it doesn't make decisions — it simply connects UNIBUD to external services. Platform Services provide capabilities; Oracle Systems make business decisions.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
+
       {/* Global Registries */}
-      <SectionCard title="Global Registries" description="Registry-driven architecture — nothing is hardcoded" delay={0.27}>
+      <SectionCard title="Global Registries" description="Registry-driven architecture — nothing is hardcoded" delay={0.35}>
         <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {REGISTRIES.map((reg, i) => (
             <motion.div

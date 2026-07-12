@@ -1,10 +1,33 @@
 /**
- * UNIBUD Oracle Systems — The 7 Coordinated Platform Services
+ * UNIBUD Oracle Systems — The 7 Coordinated Platform Systems
  *
  * Architecture:
- *   Oracle Core (orchestration)
- *     → Bud (only user-facing assistant)
- *       → 7 Oracle Systems (coordinated services)
+ *
+ *                     ORACLE CORE
+ *                           │
+ *                          BUD
+ *                           │
+ *         ┌──────────────────────────────────────┐
+ *         │          ORACLE SYSTEMS              │
+ *         │                                      │
+ *         │  Learning Studio                     │
+ *         │  Campus Central                      │
+ *         │  Community Circle                    │
+ *         │  Trust Shield                        │
+ *         │  Architect                           │
+ *         └──────────────────────────────────────┘
+ *                           │
+ *         ┌──────────────────────────────────────┐
+ *         │          PLATFORM ENGINES            │
+ *         └──────────────────────────────────────┘
+ *                           │
+ *         ┌──────────────────────────────────────┐
+ *         │          PLATFORM SERVICES           │
+ *         └──────────────────────────────────────┘
+ *
+ * Oracle Systems answer: "What part of the business does this belong to?"
+ * Platform Engines answer: "How does the platform make it work?"
+ * Platform Services answer: "What shared infrastructure powers it?"
  *
  * Systems never communicate directly with one another.
  * All inter-system communication flows through Oracle Core.
@@ -12,10 +35,51 @@
  */
 
 import {
-  GraduationCap, Building2, Compass, Users, ShieldCheck,
-  Wrench, Plug,
+  Brain, Sparkles, GraduationCap, Building2, Users, ShieldCheck,
+  Wrench,
 } from "lucide-react";
 
+// ─── Core Meta-Systems ───────────────────────────────────────────────────────
+export const ORACLE_CORE = {
+  id: "oracle_core",
+  name: "Oracle Core",
+  codename: "Core",
+  icon: Brain,
+  color: "text-primary",
+  bg: "bg-primary/10",
+  purpose: "Intelligence and orchestration",
+  capabilities: [
+    "Memory", "Knowledge Graph", "Search", "Routing", "Automation",
+    "Recommendations", "Planning", "Analytics", "Context", "AI coordination",
+  ],
+  description:
+    "The supreme intelligence layer. Orchestrates all Oracle Systems, manages knowledge, coordinates agents, and resolves conflicts. Oracle Core is the only system that communicates with other systems directly — every inter-system flow passes through it.",
+  managedAgents: ["oracle"],
+  managedServices: ["intelligence_service", "orchestration_service", "memory_service", "knowledge_service"],
+  accessRoles: ["oracle"],
+};
+
+export const BUD_INTERFACE = {
+  id: "bud",
+  name: "Bud",
+  codename: "Bud",
+  icon: Sparkles,
+  color: "text-primary",
+  bg: "bg-primary/10",
+  purpose: "The only user-facing assistant",
+  capabilities: [
+    "Chat", "Voice", "Vision", "OCR", "PDF", "Whiteboard",
+    "Study Planner", "Flashcards", "Coding", "Research",
+    "Translation", "Accessibility", "Personal assistance",
+  ],
+  description:
+    "Bud is the sole conversational companion. Behind every Bud interaction, the Oracle Platform orchestrates specialist systems and engines — but the user only ever sees Bud. Bud is a trusted mentor, tutor, and friend — never an AI or chatbot.",
+  managedAgents: ["bud"],
+  managedServices: ["conversation_service", "voice_service", "vision_service"],
+  accessRoles: ["all"],
+};
+
+// ─── 5 Business Domain Systems ──────────────────────────────────────────────
 export const ORACLE_SYSTEMS = [
   {
     id: "learning_studio",
@@ -24,17 +88,27 @@ export const ORACLE_SYSTEMS = [
     icon: GraduationCap,
     color: "text-primary",
     bg: "bg-primary/10",
-    tagline: "Academic lifecycle — from future student to graduation",
+    purpose: "Everything academic",
+    tagline: "Academic lifecycle — from pre-university to graduation and research",
+    capabilities: [
+      "Student OS", "Lecturer OS", "Pre-University OS", "Courses",
+      "Exams", "GPA", "Assignments", "Library", "Research",
+      "Scholarships", "Learning analytics",
+    ],
     description:
-      "Manages the entire academic journey: future students, enrolled students, lecturers, courses, programmes, assignments, timetables, academic progress, research, scholarships, careers, internships, competitions, and the graduation journey.",
+      "Manages the entire academic journey: future students, enrolled students, lecturers, courses, programmes, assignments, timetables, exams, academic progress, research, scholarships, careers, internships, competitions, and the graduation journey.",
     domains: [
-      "Future Students — pre-university guidance, exam prep, admission support",
-      "Students — courses, assignments, exams, timetables, academic progress",
-      "Lecturers — teaching workflows, class management, grading, attendance",
+      "Student OS — courses, assignments, exams, timetables, academic progress",
+      "Lecturer OS — teaching workflows, class management, grading, attendance",
+      "Pre-University OS — exam prep, admission guidance, readiness",
+      "Courses — course catalog, enrollment, materials",
+      "Exams — schedules, revision tracking, results",
+      "GPA — grade tracking, CGPA projection, analytics",
+      "Assignments — deadlines, submissions, feedback",
+      "Library — books, journals, past questions, notes",
       "Research — publications, collaborations, labs, funding",
-      "Scholarships — discovery, eligibility matching, application tracking",
-      "Careers — CV building, interview prep, job matching, internships",
-      "Graduation — journey tracking, milestones, transition to alumni",
+      "Scholarships — discovery, eligibility matching, applications",
+      "Learning Analytics — progress insights, weak-topic analysis",
     ],
     managedAgents: ["atlas", "sage"],
     managedServices: [
@@ -52,53 +126,33 @@ export const ORACLE_SYSTEMS = [
     icon: Building2,
     color: "text-warning",
     bg: "bg-warning/10",
-    tagline: "Institutions, campuses, faculties, directories & services",
+    purpose: "Everything institutional and campus-related",
+    capabilities: [
+      "Institution OS", "Admissions", "Faculties", "Departments",
+      "Housing", "Transport", "Campus directory", "Health",
+      "Student services", "Alumni",
+    ],
     description:
-      "Manages institution infrastructure: universities, colleges, polytechnics, research institutes, faculties, departments, campus directories, student housing, cafés, printing centres, campus businesses, campus transport, institution verification, and lecturer verification.",
+      "Manages institution infrastructure: universities, colleges, polytechnics, faculties, departments, campus directories, student housing, campus transport, health services, student services, alumni relations, and institution/lecturer verification.",
     domains: [
-      "Institutions — universities, polytechnics, colleges of education, technical institutes",
-      "Campus Structure — faculties, departments, programmes, levels",
+      "Institution OS — universities, polytechnics, colleges of education, technical institutes",
+      "Admissions — application processing, admission workflow",
+      "Faculties — faculty management and structure",
+      "Departments — department management and programmes",
+      "Housing — accommodation listings, hostel management",
+      "Transport — shuttle schedules, commute assistance",
       "Campus Directory — buildings, offices, libraries, facilities",
-      "Student Housing — accommodation listings, hostel management",
-      "Campus Services — cafés, printing, businesses, dining",
-      "Campus Transport — shuttle schedules, commute assistance",
-      "Verification — institution verification, lecturer identity verification",
+      "Health — campus health services and wellness resources",
+      "Student Services — support services, student affairs",
+      "Alumni — alumni network, career tracking, mentorship",
     ],
     managedAgents: ["nova"],
     managedServices: [
       "institution_service", "housing_service", "transport_service",
-      "marketplace_service",
+      "health_service", "alumni_service",
     ],
-    modules: ["institution_config", "faculties", "departments", "courses", "accommodation", "transport", "marketplace", "lost_found"],
+    modules: ["institution_config", "faculties", "departments", "courses", "accommodation", "transport", "campus_navigation", "alumni"],
     accessRoles: ["oracle", "university_admin", "operations_staff"],
-  },
-  {
-    id: "discovery_hub",
-    name: "Discovery Hub",
-    codename: "Explore",
-    icon: Compass,
-    color: "text-success",
-    bg: "bg-success/10",
-    tagline: "Discover valuable information, opportunities & recommendations",
-    description:
-      "Powers discovery across the platform: My Day, opportunities, scholarships, events, competitions, campus news, public university announcements, educational trends, research highlights, student creators, and personalized recommendations.",
-    domains: [
-      "My Day — daily briefing, schedule, priorities, recommendations",
-      "Opportunities — scholarships, internships, competitions, grants",
-      "Events — campus events, workshops, guest lectures, career fairs",
-      "Campus News — university announcements, faculty updates, SUG news",
-      "Educational Trends — emerging fields, industry insights",
-      "Research Highlights — publications, breakthroughs, student research",
-      "Student Creators — portfolios, projects, showcases",
-      "Recommendations — personalized content based on profile and activity",
-    ],
-    managedAgents: ["nexus", "pulse"],
-    managedServices: [
-      "scholarship_service", "career_service", "events_service",
-      "notification_service", "personalization_service",
-    ],
-    modules: ["opportunities", "scholarships", "events", "campus_traditions", "celebrations", "marketplace"],
-    accessRoles: ["oracle", "operations_staff", "student", "future_student"],
   },
   {
     id: "community_circle",
@@ -107,25 +161,33 @@ export const ORACLE_SYSTEMS = [
     icon: Users,
     color: "text-info",
     bg: "bg-info/10",
-    tagline: "Social capabilities — education always takes priority",
+    purpose: "Social and community",
+    capabilities: [
+      "Quad", "Connect", "Study Circle", "Messaging", "Voice",
+      "Video", "Stories", "Live", "Clubs", "Events", "Marketplace feed",
+    ],
     description:
-      "Manages social capabilities: Quad feed, posts, messaging, groups, clubs, communities, stories, live discussions, comments, reactions, friend suggestions, and study groups. UNIBUD is an education platform with social capabilities — education always takes priority over entertainment.",
+      "Manages social capabilities: Quad feed, messaging, study circles, voice and video rooms, stories, live sessions, clubs, events, and the marketplace social feed. UNIBUD is an education platform with social capabilities — education always takes priority over entertainment.",
     domains: [
       "Quad — campus social feed, posts, discussions, polls",
+      "Connect — friend suggestions, networking, mentorship",
+      "Study Circle — study partners, accountability, project teams",
       "Messaging — direct messages, group chats, study group messages",
-      "Groups — study groups, project teams, interest groups",
-      "Clubs — student organizations, societies, associations",
-      "Communities — faculty, department, course, level communities",
+      "Voice — voice rooms, audio calls",
+      "Video — video rooms, virtual study sessions",
       "Stories — ephemeral campus moments and highlights",
-      "Live Discussions — real-time conversations and discussions",
-      "Connections — friend suggestions, mentorship connections, alumni network",
+      "Live — live classes, live discussions, broadcasts",
+      "Clubs — student organizations, societies, associations",
+      "Events — campus events, workshops, career fairs",
+      "Marketplace Feed — social marketplace browsing and engagement",
     ],
     managedAgents: ["pulse"],
     managedServices: [
       "community_service", "notification_service", "communication_service",
+      "events_service",
     ],
-    modules: ["quad", "connect", "messages", "communities", "clubs", "study_groups", "shorts", "stories"],
-    accessRoles: ["oracle", "operations_staff", "student", "future_student", "lecturer"],
+    modules: ["quad", "connect", "messages", "communities", "clubs", "study_groups", "shorts", "stories", "events", "marketplace"],
+    accessRoles: ["oracle", "operations_staff", "student", "future_student", "lecturer", "alumni"],
   },
   {
     id: "trust_shield",
@@ -134,25 +196,29 @@ export const ORACLE_SYSTEMS = [
     icon: ShieldCheck,
     color: "text-error",
     bg: "bg-error/10",
-    tagline: "Verification, security, fraud detection & platform trust",
+    purpose: "Security, trust, compliance",
+    capabilities: [
+      "Verification", "Permissions", "Identity", "Fraud detection",
+      "Moderation", "Audit logs", "Privacy", "Compliance",
+    ],
     description:
-      "Guards platform integrity: verification (institution and lecturer identity), security, fraud detection, duplicate account detection, content moderation, permissions, audit logs, and platform trust. Every action is auditable and compliant.",
+      "Guards platform integrity: verification (institution and lecturer identity), permissions, identity management, fraud detection, content moderation, audit logs, privacy, and compliance. Every action is auditable and compliant.",
     domains: [
       "Verification — institution verification, lecturer identity verification",
-      "Security — access control, threat prevention, incident response",
+      "Permissions — role-based access control, permission matrix",
+      "Identity — identity management, authentication, sessions",
       "Fraud Detection — suspicious activity monitoring, duplicate account detection",
       "Moderation — content moderation, policy enforcement, community standards",
-      "Permissions — role-based access control, permission matrix",
       "Audit Logs — immutable audit trail for every platform action",
-      "Compliance — regulatory alignment, data protection, privacy",
-      "Platform Trust — trust scores, reputation, community safety",
+      "Privacy — data protection, consent management, data rights",
+      "Compliance — regulatory alignment, policy enforcement",
     ],
     managedAgents: ["sentinel"],
     managedServices: [
-      "moderation_service", "security_service", "analytics_service",
-      "payment_service",
+      "moderation_service", "security_service", "verification_service",
+      "audit_service", "compliance_service",
     ],
-    modules: ["security", "audit_logs", "support", "reports"],
+    modules: ["security", "audit_logs", "support", "reports", "verification"],
     accessRoles: ["oracle", "compliance_officer", "moderator", "senior_operator", "super_admin"],
   },
   {
@@ -162,51 +228,27 @@ export const ORACLE_SYSTEMS = [
     icon: Wrench,
     color: "text-purple",
     bg: "bg-purple/10",
-    tagline: "System design, diagnostics, performance & continuous improvement",
+    purpose: "Platform engineering",
+    capabilities: [
+      "Diagnostics", "Bug detection", "Configuration", "Performance",
+      "Feature flags", "Deployment", "Monitoring", "Testing",
+    ],
     description:
-      "The platform configuration and system design environment: bug detection, diagnostics, performance monitoring, UI/UX review, configuration validation, workflow optimization, automated testing, and continuous improvements. Responsible for institution templates, workflows, permissions, automation, feature flags, modules, APIs, integrations, databases, infrastructure, and deployment settings.",
+      "The platform engineering environment: bug detection, diagnostics, configuration, performance monitoring, feature flags, deployment management, monitoring, and automated testing. Responsible for institution templates, workflows, permissions, and system architecture.",
     domains: [
-      "Bug Detection — automated error detection and diagnostics",
-      "Performance Monitoring — real-time system health and metrics",
-      "UI/UX Review — interface quality and usability auditing",
-      "Configuration Validation — schema and config integrity checks",
-      "Workflow Optimization — process analysis and improvement",
-      "Automated Testing — regression, integration, and end-to-end testing",
-      "Platform Architecture — modules, APIs, databases, infrastructure",
+      "Diagnostics — system diagnostics and health checks",
+      "Bug Detection — automated error detection and reporting",
+      "Configuration — schema and config management",
+      "Performance — real-time metrics and optimization",
       "Feature Flags — controlled rollout and A/B testing",
       "Deployment — release management and deployment settings",
+      "Monitoring — system health and uptime monitoring",
+      "Testing — regression, integration, and end-to-end testing",
     ],
     managedAgents: [],
-    managedServices: ["integration_service", "analytics_service"],
+    managedServices: ["architecture_service", "deployment_service", "testing_service"],
     modules: ["modules", "feature_flags", "system_health", "maintenance", "settings"],
     accessRoles: ["oracle", "super_admin", "developer", "executive"],
-  },
-  {
-    id: "integration_bridge",
-    name: "Integration Bridge",
-    codename: "Sync",
-    icon: Plug,
-    color: "text-info",
-    bg: "bg-info/10",
-    tagline: "Connect UNIBUD with approved external services",
-    description:
-      "Connects UNIBUD with approved external services: email, SMS, WhatsApp, push notifications, Google, Apple, Microsoft, maps, weather, payment providers, calendar providers, university integrations, government integrations, and future official APIs. All integrations are modular and configurable.",
-    domains: [
-      "Communication — email, SMS, WhatsApp, push notifications",
-      "Identity Providers — Google, Apple, Microsoft",
-      "Maps & Location — campus navigation, directions, geolocation",
-      "Weather — campus weather data and forecasts",
-      "Payments — payment providers, billing, subscriptions",
-      "Calendar — Google Calendar, Apple Calendar, Microsoft Calendar",
-      "University Systems — LMS integration, SIS integration, portal sync",
-      "Government — education ministry APIs, accreditation databases",
-      "Cloud Storage — file storage, document management",
-      "Future APIs — extensible connector framework for new services",
-    ],
-    managedAgents: [],
-    managedServices: ["integration_service", "notification_service", "communication_service", "payment_service"],
-    modules: ["integrations", "connected_accounts", "calendar"],
-    accessRoles: ["oracle", "super_admin", "developer"],
   },
 ];
 
@@ -235,8 +277,17 @@ export const SYSTEM_COMMUNICATION_RULES = {
     "All inter-system data flows through Oracle Core's orchestration layer",
     "Each system exposes its capabilities to Oracle via a secure service interface",
     "Oracle resolves conflicts when systems provide conflicting guidance",
-    "System priority: Trust Shield > Campus Central > Learning Studio > Discovery Hub > Community Circle",
+    "System priority: Trust Shield > Campus Central > Learning Studio > Community Circle > Architect",
     "Failed system operations trigger Oracle fallback to general knowledge",
     "All system-to-system transactions are logged to Audit Intelligence",
   ],
 };
+
+// ─── System Priority (for conflict resolution) ───────────────────────────────
+export const SYSTEM_PRIORITY = [
+  "trust_shield",
+  "campus_central",
+  "learning_studio",
+  "community_circle",
+  "the_architect",
+];
