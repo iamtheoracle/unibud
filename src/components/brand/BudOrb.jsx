@@ -2,41 +2,37 @@ import React from "react";
 
 /**
  * Bud Orb — the official UNIBUD AI companion mark.
- * A glowing orb representing "My Realm Orbit".
+ * "My Realm Orbit" — a living, animated orb with pulsing glow and orbiting ring.
+ * Not a robot. Not a human. A luminous intelligence.
  * Uses currentColor — set text color on parent to control orb color.
  */
 export default function BudOrb({ className = "" }) {
   return (
-    <svg
-      viewBox="0 0 48 48"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <defs>
-        <radialGradient id="bud-orb-grad" cx="38%" cy="32%" r="70%">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
-          <stop offset="55%" stopColor="currentColor" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0.45" />
-        </radialGradient>
-        <radialGradient id="bud-orb-halo" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      {/* Halo glow */}
-      <circle cx="24" cy="24" r="24" fill="url(#bud-orb-halo)" />
-      {/* Orbit ring */}
-      <ellipse
-        cx="24" cy="24" rx="22" ry="7"
-        fill="none" stroke="currentColor" strokeWidth="0.6"
-        opacity="0.25" transform="rotate(-25 24 24)"
+    <div className={`relative ${className}`}>
+      {/* Pulsing outer glow */}
+      <div
+        className="absolute inset-0 rounded-full bud-glow pointer-events-none"
+        style={{ background: "radial-gradient(circle, currentColor 0%, transparent 65%)", opacity: 0.22 }}
       />
+      {/* Orbiting ring with particle */}
+      <div className="absolute inset-0 bud-orbit-spin pointer-events-none">
+        <svg viewBox="0 0 48 48" className="w-full h-full" fill="none">
+          <ellipse cx="24" cy="24" rx="22" ry="7" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.25" transform="rotate(-25 24 24)" />
+          <circle cx="46" cy="24" r="1.5" fill="currentColor" opacity="0.6" />
+        </svg>
+      </div>
       {/* Main orb */}
-      <circle cx="24" cy="24" r="15" fill="url(#bud-orb-grad)" />
-      {/* Inner highlight */}
-      <ellipse cx="20" cy="18" rx="5" ry="3.5" fill="white" opacity="0.3" />
-    </svg>
+      <svg viewBox="0 0 48 48" className="relative w-full h-full" fill="none">
+        <defs>
+          <radialGradient id="bud-orb-grad" cx="38%" cy="32%" r="70%">
+            <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
+            <stop offset="55%" stopColor="currentColor" stopOpacity="0.82" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0.4" />
+          </radialGradient>
+        </defs>
+        <circle cx="24" cy="24" r="15" fill="url(#bud-orb-grad)" />
+        <ellipse cx="20" cy="18" rx="5" ry="3.5" fill="white" opacity="0.3" />
+      </svg>
+    </div>
   );
 }

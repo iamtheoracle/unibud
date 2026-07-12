@@ -53,6 +53,8 @@ module.exports = {
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
         gold: 'hsl(var(--unibud-gold))',
+        emerald: 'hsl(var(--unibud-emerald))',
+        teal: 'hsl(var(--unibud-teal))',
         black: 'hsl(var(--unibud-black))',
         white: 'hsl(var(--unibud-white))',
         n1: 'hsl(var(--unibud-n1))',
