@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 import {
   Layers, Boxes, Flag, Activity, Plug, Database, Settings,
   ChevronRight, Server, HardDrive, Cpu, Zap, GitBranch, Shield,
+  Building2, Cloud, Lock, Workflow, GitCommit,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { SectionCard, StatusPill, PortalPageHeader, SmartList } from "@/components/portal/PortalUI";
 import { PLATFORM_MODULES, MODULE_CATEGORIES } from "@/lib/portalConfig";
-import { OPERATIONS_CENTERS } from "@/lib/oracleEcosystem";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -17,9 +17,12 @@ const ARCHITECT_SECTIONS = [
   { label: "Module Architecture", icon: Boxes, path: "/portal/modules", description: "Platform module registry and health monitoring", color: "text-primary", bg: "bg-primary/10" },
   { label: "Feature Flags", icon: Flag, path: "/portal/feature-flags", description: "Live feature toggle management and rollout control", color: "text-success", bg: "bg-success/10" },
   { label: "System Health", icon: Activity, path: "/portal/system-health", description: "Real-time platform monitoring and diagnostics", color: "text-info", bg: "bg-info/10" },
-  { label: "Integrations", icon: Plug, path: "/portal/architect", description: "External API management and connector oversight", color: "text-purple", bg: "bg-purple/10" },
-  { label: "Entity Schema", icon: Database, path: "/portal/architect", description: "Data model and entity registry management", color: "text-warning", bg: "bg-warning/10" },
-  { label: "Maintenance", icon: Settings, path: "/portal/maintenance", description: "Maintenance mode and deployment controls", color: "text-error", bg: "bg-error/10" },
+  { label: "APIs & Integrations", icon: Plug, path: "/portal/architect", description: "External API management, connector oversight, and data pipelines", color: "text-purple", bg: "bg-purple/10" },
+  { label: "Entity Schema", icon: Database, path: "/portal/architect", description: "Data model, entity registry, and database relationships", color: "text-warning", bg: "bg-warning/10" },
+  { label: "Workflows & Automation", icon: GitBranch, path: "/portal/architect", description: "Workflow engine, automation rules, and event-driven processes", color: "text-info", bg: "bg-info/10" },
+  { label: "Permissions & RBAC", icon: Shield, path: "/portal/security", description: "Role-based access control matrix and permission management", color: "text-error", bg: "bg-error/10" },
+  { label: "Institution Templates", icon: Building2, path: "/portal/institution-config", description: "Configurable institution templates and academic structures", color: "text-primary", bg: "bg-primary/10" },
+  { label: "Deployment Settings", icon: Settings, path: "/portal/maintenance", description: "Release management, deployment controls, and maintenance mode", color: "text-warning", bg: "bg-warning/10" },
 ];
 
 const SYSTEM_METRICS = [
@@ -117,8 +120,8 @@ export default function ArchitectCenter() {
 
       {/* Architect Sections */}
       <SectionCard title="Architecture Modules" description="System architecture management tools" delay={0.15}>
-        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {ARCHITECT_SECTIONS.map((section, i) => (
+      <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {ARCHITECT_SECTIONS.map((section, i) => (
             <motion.button
               key={section.label}
               initial={{ opacity: 0, y: 12 }}
@@ -202,8 +205,67 @@ export default function ArchitectCenter() {
         </SectionCard>
       </div>
 
+      {/* Infrastructure & Deployment */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <SectionCard title="Infrastructure" description="Platform infrastructure and cloud resources" delay={0.35}>
+          <div className="p-5 space-y-3">
+            {[
+              { label: "Cloud Provider", value: "Base44 Cloud", icon: Cloud, color: "text-info", status: "operational" },
+              { label: "Database Engine", value: "PostgreSQL", icon: Database, color: "text-success", status: "operational" },
+              { label: "Storage", value: "38.2 GB / 500 GB", icon: HardDrive, color: "text-info", status: "operational" },
+              { label: "Caching Layer", value: "Redis · Active", icon: Zap, color: "text-warning", status: "operational" },
+              { label: "Background Jobs", value: "4 workers", icon: Cpu, color: "text-primary", status: "operational" },
+              { label: "Encryption", value: "AES-256", icon: Lock, color: "text-error", status: "operational" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.05 }}
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-muted/20 border border-border/15"
+              >
+                <div className="w-9 h-9 rounded-[12px] bg-muted/40 flex items-center justify-center flex-shrink-0">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                </div>
+                <span className="flex-1 text-[12px] font-medium text-foreground">{item.label}</span>
+                <span className="text-[13px] font-heading font-bold text-foreground">{item.value}</span>
+                <StatusPill status={item.status} />
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Deployment & Automation" description="Release management and automated workflows" delay={0.4}>
+          <div className="p-5 space-y-3">
+            {[
+              { label: "Current Version", value: "v3.2.1", icon: GitCommit, color: "text-primary" },
+              { label: "Deployment Status", value: "Stable", icon: GitBranch, color: "text-success", status: "operational" },
+              { label: "CI/CD Pipeline", value: "Active", icon: Workflow, color: "text-info", status: "operational" },
+              { label: "Automated Tests", value: "847 passing", icon: Shield, color: "text-success", status: "operational" },
+              { label: "Search Indexing", value: "Real-time", icon: Zap, color: "text-warning", status: "operational" },
+              { label: "Audit Logging", value: "Immutable", icon: Lock, color: "text-error", status: "operational" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45 + i * 0.05 }}
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-muted/20 border border-border/15"
+              >
+                <div className="w-9 h-9 rounded-[12px] bg-muted/40 flex items-center justify-center flex-shrink-0">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                </div>
+                <span className="flex-1 text-[12px] font-medium text-foreground">{item.label}</span>
+                <span className="text-[13px] font-heading font-bold text-foreground">{item.value}</span>
+                {item.status && <StatusPill status={item.status} />}
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+      </div>
+
       {/* Recent Architecture Changes */}
-      <SectionCard title="Recent Architecture Changes" description="Latest system modifications and deployments" delay={0.35}
+      <SectionCard title="Recent Architecture Changes" description="Latest system modifications and deployments" delay={0.45}
         action={<button onClick={() => navigate("/portal/audit-logs")} className="text-[12px] font-semibold text-primary hover:underline">View all</button>}
       >
         <SmartList

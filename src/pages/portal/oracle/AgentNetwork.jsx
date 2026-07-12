@@ -8,6 +8,7 @@ import { SectionCard, StatusPill, PortalPageHeader } from "@/components/portal/P
 import {
   ORACLE_CORE, BUD_INTERFACE, INTELLIGENCE_AGENTS, INTERNAL_SERVICES,
 } from "@/lib/oracleEcosystem";
+import { ORACLE_SYSTEMS } from "@/lib/oracleSystems";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -86,8 +87,45 @@ export default function AgentNetwork() {
         </div>
       </SectionCard>
 
+      {/* Oracle Systems — The 7 Coordinated Services */}
+      <SectionCard title="Oracle Systems" description="Seven coordinated systems — all communication flows through Oracle Core" delay={0.1}>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {ORACLE_SYSTEMS.map((system, i) => (
+            <motion.div
+              key={system.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 + i * 0.04, ease: EASE }}
+              className="p-5 rounded-[24px] border border-border/20 bg-muted/20 hover:bg-muted/40 transition-colors"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-11 h-11 rounded-[16px] ${system.bg} flex items-center justify-center`}>
+                  <system.icon className={`w-5 h-5 ${system.color}`} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h4 className="font-heading font-bold text-[14px] text-foreground">{system.name}</h4>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{system.codename}</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-snug mb-3 line-clamp-2">{system.description}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-muted-foreground">{system.managedServices.length} services</span>
+                <span className="text-[10px] font-semibold text-muted-foreground">{system.managedAgents.length} agents</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="px-5 pb-5">
+          <div className="p-4 rounded-[16px] bg-primary/5 border border-primary/15">
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-primary">Architecture Rule:</span> Oracle Systems never communicate directly with one another. All inter-system data flows through Oracle Core's orchestration layer.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
+
       {/* Internal Specialist Services */}
-      <SectionCard title="Internal Specialist Services" description="All specialist capabilities managed through Oracle and delivered via Bud" delay={0.15}>
+      <SectionCard title="Internal Specialist Services" description="All specialist capabilities managed through Oracle and delivered via Bud" delay={0.2}>
         <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {INTERNAL_SERVICES.map((service, i) => {
             const parentAgent = INTELLIGENCE_AGENTS.find((a) => a.id === service.parentAgent);

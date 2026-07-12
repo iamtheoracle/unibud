@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ClipboardCheck, Building2, Users, Bell, ScrollText, ShieldCheck,
   Settings, ChevronRight, DollarSign, CheckCircle2, Clock, AlertCircle,
+  Handshake, CreditCard, TrendingUp, FileBarChart,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { SectionCard, StatusPill, PortalPageHeader, SmartList } from "@/components/portal/PortalUI";
@@ -16,6 +17,9 @@ const MANAGEMENT_SECTIONS = [
   { label: "Institution Config", icon: Building2, path: "/portal/institution-config", description: "Institution configuration center", color: "text-purple", bg: "bg-purple/10" },
   { label: "Approvals", icon: ClipboardCheck, path: "/portal/approvals", description: "Approval queues and workflow management", color: "text-info", bg: "bg-info/10" },
   { label: "User Management", icon: Users, path: "/portal/users", description: "Platform user and staff management", color: "text-success", bg: "bg-success/10" },
+  { label: "Finance & Billing", icon: DollarSign, path: "/portal/analytics", description: "Revenue, billing, and financial oversight", color: "text-success", bg: "bg-success/10" },
+  { label: "Subscriptions", icon: CreditCard, path: "/portal/settings", description: "Institution subscription plans and billing cycles", color: "text-info", bg: "bg-info/10" },
+  { label: "Partnerships", icon: Handshake, path: "/portal/institution-outreach", description: "Strategic partnerships and sponsorships", color: "text-warning", bg: "bg-warning/10" },
   { label: "Notifications", icon: Bell, path: "/portal/notifications", description: "Broadcast notification management", color: "text-warning", bg: "bg-warning/10" },
   { label: "Audit Logs", icon: ScrollText, path: "/portal/audit-logs", description: "Compliance and audit trail", color: "text-error", bg: "bg-error/10" },
   { label: "Security", icon: ShieldCheck, path: "/portal/security", description: "Security and compliance center", color: "text-error", bg: "bg-error/10" },
@@ -166,9 +170,38 @@ export default function ManagementCenter() {
         </SectionCard>
       </div>
 
-      {/* Compliance & Audit */}
+      {/* Finance & Partnerships */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <SectionCard title="Compliance Overview" description="Platform compliance and security posture" delay={0.3}>
+        <SectionCard title="Finance Overview" description="Revenue, billing, and subscription metrics" delay={0.3}>
+          <div className="p-5 space-y-3">
+            {[
+              { label: "Monthly Revenue", value: "₦2.4M", icon: DollarSign, color: "text-success", trend: "+12%" },
+              { label: "Active Subscriptions", value: "14", icon: CreditCard, color: "text-info" },
+              { label: "Marketplace Revenue", value: "₦340K", icon: TrendingUp, color: "text-primary", trend: "+8%" },
+              { label: "Pending Invoices", value: "3", icon: FileBarChart, color: "text-warning" },
+              { label: "Partnership Deals", value: "6", icon: Handshake, color: "text-purple" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.35 + i * 0.05 }}
+                className="flex items-center gap-3"
+              >
+                <div className="w-9 h-9 rounded-[12px] bg-muted/40 flex items-center justify-center flex-shrink-0">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                </div>
+                <span className="flex-1 text-[12px] font-medium text-foreground">{item.label}</span>
+                <span className="text-[14px] font-heading font-bold text-foreground">{item.value}</span>
+                {item.trend && (
+                  <span className="text-[10px] font-bold text-success px-1.5 py-0.5 rounded-full bg-success/10">{item.trend}</span>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Compliance Overview" description="Platform compliance and security posture" delay={0.35}>
           <div className="p-5 space-y-3">
             {[
               { label: "2FA Adoption", value: "87%", icon: ShieldCheck, color: "text-success", status: "operational" },
@@ -195,7 +228,7 @@ export default function ManagementCenter() {
           </div>
         </SectionCard>
 
-        <SectionCard title="Recent Audit Events" description="Latest platform actions" delay={0.35}
+        <SectionCard title="Recent Audit Events" description="Latest platform actions" delay={0.4}
           action={<button onClick={() => navigate("/portal/audit-logs")} className="text-[12px] font-semibold text-primary hover:underline">View all</button>}
         >
           <SmartList

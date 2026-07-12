@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import {
   Settings, LifeBuoy, FileEdit, ShoppingBag, CalendarDays, Landmark,
   UserPlus, ChevronRight, AlertCircle, CheckCircle2, Clock, Eye,
+  ShieldAlert, Siren, FileCheck, Server, Database, HardDrive,
+  BellRing, Activity, ScanSearch,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { SectionCard, StatusPill, PortalPageHeader, SmartList } from "@/components/portal/PortalUI";
@@ -13,7 +15,10 @@ const EASE = [0.16, 1, 0.3, 1];
 
 const OPERATOR_SECTIONS = [
   { label: "Support Tickets", icon: LifeBuoy, path: "/portal/support", description: "Support ticket management and resolution", color: "text-warning", bg: "bg-warning/10" },
-  { label: "Content Management", icon: FileEdit, path: "/portal/content", description: "Content moderation and publishing", color: "text-info", bg: "bg-info/10" },
+  { label: "Content Review", icon: FileEdit, path: "/portal/content", description: "Content moderation and publishing", color: "text-info", bg: "bg-info/10" },
+  { label: "Verification Queue", icon: FileCheck, path: "/portal/support", description: "Institution and lecturer verification queue", color: "text-primary", bg: "bg-primary/10" },
+  { label: "Fraud Prevention", icon: ShieldAlert, path: "/portal/security", description: "Fraud detection and suspicious activity monitoring", color: "text-error", bg: "bg-error/10" },
+  { label: "Incident Management", icon: Siren, path: "/portal/system-health", description: "Incident response and resolution tracking", color: "text-warning", bg: "bg-warning/10" },
   { label: "Marketplace", icon: ShoppingBag, path: "/portal/marketplace", description: "Marketplace oversight and listings", color: "text-success", bg: "bg-success/10" },
   { label: "Events", icon: CalendarDays, path: "/portal/events", description: "Event management and oversight", color: "text-primary", bg: "bg-primary/10" },
   { label: "Universities", icon: Landmark, path: "/portal/universities", description: "University management and status", color: "text-purple", bg: "bg-purple/10" },
@@ -189,7 +194,7 @@ export default function OperatorCenter() {
               { label: "Posts pending review", count: 0, icon: FileEdit, color: "text-info" },
               { label: "Reported content", count: 0, icon: AlertCircle, color: "text-warning" },
               { label: "User reports", count: 0, icon: Eye, color: "text-error" },
-              { label: "Auto-flagged items", count: 0, icon: Eye, color: "text-purple" },
+              { label: "Auto-flagged items", count: 0, icon: ScanSearch, color: "text-purple" },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -209,6 +214,104 @@ export default function OperatorCenter() {
               <p className="text-[11px] text-success font-medium flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 All clear — no items awaiting moderation
+              </p>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* System Monitoring, Security & Backups */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <SectionCard title="System Monitoring" description="Real-time platform health" delay={0.4}
+          action={<button onClick={() => navigate("/portal/system-health")} className="text-[12px] font-semibold text-primary hover:underline">Details</button>}
+        >
+          <div className="p-5 space-y-3">
+            {[
+              { label: "API Gateway", value: "42ms", icon: Server, color: "text-success", status: "operational" },
+              { label: "Database", value: "99.98%", icon: Database, color: "text-success", status: "operational" },
+              { label: "Realtime", value: "1,247", icon: Activity, color: "text-info", status: "operational" },
+              { label: "Storage", value: "7.6%", icon: HardDrive, color: "text-success", status: "operational" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.45 + i * 0.05 }}
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-muted/20 border border-border/15"
+              >
+                <div className="w-8 h-8 rounded-[12px] bg-muted/40 flex items-center justify-center flex-shrink-0">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                </div>
+                <span className="flex-1 text-[12px] font-medium text-foreground">{item.label}</span>
+                <span className="text-[13px] font-heading font-bold text-foreground">{item.value}</span>
+                <StatusPill status={item.status} />
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Security & Fraud" description="Threat monitoring and fraud prevention" delay={0.45}
+          action={<button onClick={() => navigate("/portal/security")} className="text-[12px] font-semibold text-primary hover:underline">Open</button>}
+        >
+          <div className="p-5 space-y-3">
+            {[
+              { label: "Blocked Threats", value: "12", icon: ShieldAlert, color: "text-warning" },
+              { label: "Active Incidents", value: "0", icon: Siren, color: "text-success" },
+              { label: "Fraud Alerts", value: "0", icon: ScanSearch, color: "text-success" },
+              { label: "Security Score", value: "A+", icon: CheckCircle2, color: "text-success" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.05 }}
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-muted/20 border border-border/15"
+              >
+                <div className="w-8 h-8 rounded-[12px] bg-muted/40 flex items-center justify-center flex-shrink-0">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                </div>
+                <span className="flex-1 text-[12px] font-medium text-foreground">{item.label}</span>
+                <span className="text-[14px] font-heading font-bold text-foreground">{item.value}</span>
+              </motion.div>
+            ))}
+            <div className="p-3 rounded-[16px] bg-success/5 border border-success/15">
+              <p className="text-[11px] text-success font-medium flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                No active security incidents
+              </p>
+            </div>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Backups & Alerts" description="Backup status and system alerts" delay={0.5}
+          action={<button onClick={() => navigate("/portal/audit-logs")} className="text-[12px] font-semibold text-primary hover:underline">View logs</button>}
+        >
+          <div className="p-5 space-y-3">
+            {[
+              { label: "Last Backup", value: "2h ago", icon: HardDrive, color: "text-success", status: "operational" },
+              { label: "Backup Status", value: "Healthy", icon: CheckCircle2, color: "text-success", status: "operational" },
+              { label: "Active Alerts", value: "0", icon: BellRing, color: "text-success" },
+              { label: "Maintenance", value: "None scheduled", icon: Settings, color: "text-info" },
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.55 + i * 0.05 }}
+                className="flex items-center gap-3 p-3.5 rounded-[18px] bg-muted/20 border border-border/15"
+              >
+                <div className="w-8 h-8 rounded-[12px] bg-muted/40 flex items-center justify-center flex-shrink-0">
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                </div>
+                <span className="flex-1 text-[12px] font-medium text-foreground">{item.label}</span>
+                <span className="text-[13px] font-heading font-bold text-foreground">{item.value}</span>
+                {item.status && <StatusPill status={item.status} />}
+              </motion.div>
+            ))}
+            <div className="p-3 rounded-[16px] bg-success/5 border border-success/15">
+              <p className="text-[11px] text-success font-medium flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                All systems operational — no alerts
               </p>
             </div>
           </div>
