@@ -88,6 +88,9 @@ import Portfolio from '@/pages/Portfolio';
 import Companies from '@/pages/Companies';
 import CVBuilder from '@/pages/CVBuilder';
 import Agents from '@/pages/Agents';
+import PosterArchitecture from '@/pages/posters/PosterArchitecture';
+import PosterExperience from '@/pages/posters/PosterExperience';
+import PosterEcosystem from '@/pages/posters/PosterEcosystem';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -234,6 +237,9 @@ const AuthenticatedApp = () => {
           <Route path="/companies" element={<Companies />} />
           <Route path="/cv-builder" element={<CVBuilder />} />
           <Route path="/agents" element={<Agents />} />
+          <Route path="/posters/architecture" element={<PosterArchitecture />} />
+          <Route path="/posters/experience" element={<PosterExperience />} />
+          <Route path="/posters/ecosystem" element={<PosterEcosystem />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />
