@@ -130,7 +130,7 @@ export default function CommandDock() {
               onClick={() => { hapticTap(); openBud(); }}
               whileTap={{ scale: 0.88 }}
               whileHover={{ scale: 1.05 }}
-              className="w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_rgba(109,40,217,0.35)] relative"
+              className="w-14 h-14 rounded-full flex items-center justify-center bg-primary text-primary-foreground shadow-[0_4px_24px_hsl(var(--primary)/0.35)] relative"
               aria-label="Open Bud"
             >
               <Sparkles className="w-6 h-6" strokeWidth={2} />

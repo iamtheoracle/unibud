@@ -42,7 +42,7 @@ export default function PreparingCampus() {
       const timer = setTimeout(async () => {
         try { await base44.auth.updateMe({ onboarding_completed: true }); } catch {}
         sessionStorage.setItem("showCampusTutorial", "true");
-        navigate("/");
+        navigate("/onboarding/secure-pin");
       }, 1200);
       return () => clearTimeout(timer);
     }
@@ -57,7 +57,7 @@ export default function PreparingCampus() {
       {/* Logo */}
       <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }} className="flex items-center gap-2 mb-8 relative z-10">
         <div className="w-9 h-9 rounded-xl bg-black flex items-center justify-center gold-glow">
-          <UnibudMark className="w-5 h-5 text-primary" />
+          <UnibudMark className="w-5 h-5 text-white" />
         </div>
         <span className="font-heading font-extrabold text-[17px] text-foreground">UNIBUD</span>
       </motion.div>

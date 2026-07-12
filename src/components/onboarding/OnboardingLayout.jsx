@@ -14,7 +14,7 @@ export default function OnboardingLayout({ step, totalSteps, stepLabel, children
       <div className="flex-shrink-0 px-6 pt-8 pb-2 relative z-10">
         <div className="flex items-center justify-center gap-2 mb-3">
           <div className="w-7 h-7 rounded-lg bg-black flex items-center justify-center">
-            <UnibudMark className="w-4 h-4 text-primary" />
+            <UnibudMark className="w-4 h-4 text-white" />
           </div>
           <span className="font-heading font-extrabold text-[15px] text-foreground">UNIBUD</span>
         </div>

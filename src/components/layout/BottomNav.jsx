@@ -1,35 +1,22 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Compass, MessageCircle, User, Video, Library, Clapperboard } from "lucide-react";
+import { Home, Compass, MessageCircle, User } from "lucide-react";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
-import { useBudPanel } from "@/lib/BudPanelContext";
 import { hapticTap } from "@/lib/haptics";
-import UnibudMark from "@/components/brand/UnibudMark";
 
 const allNavItems = [
   { path: "/", icon: Home, label: "Campus", flag: "campus" },
   { path: "/quad", icon: Compass, label: "Quad", flag: "quad" },
-  { path: "/shorts", icon: Clapperboard, label: "Shorts", flag: null },
-  { path: "/messages", icon: MessageCircle, label: "Messages", flag: null },
-  { path: "/bud", icon: null, label: "Bud", flag: "bud", isCenter: true },
-  { path: "/live", icon: Video, label: "Live", flag: "live" },
-  { path: "/library", icon: Library, label: "Library", flag: "library" },
+  { path: "/connect", icon: MessageCircle, label: "Connect", flag: null },
   { path: "/me", icon: User, label: "Me", flag: null },
 ];
 
 export default function BottomNav() {
   const location = useLocation();
   const { isModuleEnabled } = useFeatureFlags();
-  const { openBud } = useBudPanel();
 
   const navItems = allNavItems.filter((item) => !item.flag || isModuleEnabled(item.flag));
-
-  // Split items around the center Bud button
-  const centerIndex = navItems.findIndex((item) => item.isCenter);
-  const leftItems = centerIndex >= 0 ? navItems.slice(0, centerIndex) : navItems.slice(0, Math.ceil(navItems.length / 2));
-  const rightItems = centerIndex >= 0 ? navItems.slice(centerIndex + 1) : navItems.slice(Math.ceil(navItems.length / 2));
-  const centerItem = centerIndex >= 0 ? navItems[centerIndex] : null;
 
   const isItemActive = (item) =>
     item.path === "/" ? location.pathname === "/" : location.pathname.startsWith(item.path);
@@ -43,7 +30,7 @@ export default function BottomNav() {
         key={item.path}
         to={item.path}
         onClick={() => hapticTap()}
-        className="relative flex items-center justify-center w-12 h-12 spring-tap hover:bg-muted/40 rounded-full transition-colors duration-200 lg:w-14 lg:h-14"
+        className="relative flex items-center justify-center w-14 h-12 spring-tap hover:bg-muted/40 rounded-full transition-colors duration-200 lg:w-16 lg:h-14"
         aria-label={item.label}
       >
         {isActive && (
@@ -67,7 +54,7 @@ export default function BottomNav() {
             strokeWidth={isActive ? 2.4 : 1.9}
           />
           <span
-            className={`text-[8.5px] font-semibold mt-0.5 transition-colors duration-200 ${
+            className={`text-[9px] font-semibold mt-0.5 transition-colors duration-200 ${
               isActive ? "text-primary" : "text-muted-foreground/60"
             }`}
           >
@@ -87,7 +74,7 @@ export default function BottomNav() {
         className="max-w-lg mx-auto px-4 sm:px-5 safe-area-pb lg:max-w-2xl"
       >
         <nav
-          className="pointer-events-auto relative flex items-center justify-between gap-0.5 rounded-[28px] px-3 py-2"
+          className="pointer-events-auto relative flex items-center justify-between gap-1 rounded-[28px] px-4 py-2"
           style={{
             background: "var(--glass-bg)",
             backdropFilter: "blur(var(--glass-blur)) saturate(1.4)",
@@ -96,32 +83,7 @@ export default function BottomNav() {
             boxShadow: "var(--shadow-elevated), 0 24px 60px rgba(0,0,0,0.07)",
           }}
         >
-          {/* Left tabs */}
-          {leftItems.map(renderNavTab)}
-
-          {/* Center — Bud floating button */}
-          {centerItem && (
-            <button
-              onClick={() => { hapticTap(); openBud(); }}
-              className="relative flex items-center justify-center w-14 h-14 spring-tap"
-              aria-label={centerItem.label}
-            >
-              <motion.div
-                animate={{ scale: isItemActive(centerItem) ? 1.05 : 1 }}
-                transition={{ type: "spring", stiffness: 380, damping: 20 }}
-                className="w-12 h-12 rounded-full flex items-center justify-center"
-                style={{
-                  background: "hsl(var(--primary))",
-                  boxShadow: "0 4px 18px hsl(var(--primary) / 0.32), 0 2px 6px rgba(0,0,0,0.08)",
-                }}
-              >
-                <UnibudMark className="w-6 h-6 text-primary-foreground" />
-              </motion.div>
-            </button>
-          )}
-
-          {/* Right tabs */}
-          {rightItems.map(renderNavTab)}
+          {navItems.map(renderNavTab)}
         </nav>
       </motion.div>
     </div>

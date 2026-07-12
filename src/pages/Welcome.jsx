@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, Lock, ChevronDown, Building2, UserRound, ShieldCheck } from "lucide-react";
+import { ArrowRight, Lock, ChevronDown, Building2, UserRound, ShieldCheck, Globe } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import WelcomeBackground from "@/components/welcome/WelcomeBackground";
 import WelcomeLogo from "@/components/welcome/WelcomeLogo";
 import WelcomeLoader from "@/components/welcome/WelcomeLoader";
+import IntroCarousel from "@/components/onboarding/IntroCarousel";
 import { useWelcomeBackground } from "@/hooks/useWelcomeBackground";
 import { hapticTap, hapticImpact } from "@/lib/haptics";
 import { ACCREDITED_INSTITUTIONS } from "@/data/welcomeBackgrounds";
@@ -21,6 +22,7 @@ export default function Welcome() {
   const { enterDemoMode } = useDemoMode();
   const reduceMotion = useReducedMotion();
   const [isLoading, setIsLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem("introSeen"));
   const [showStaffOptions, setShowStaffOptions] = useState(false);
 
   const { background, loaded, tone } = useWelcomeBackground();
@@ -56,6 +58,23 @@ export default function Welcome() {
       <AnimatePresence mode="wait">
         {isLoading ? (
           <WelcomeLoader key="loader" />
+        ) : showIntro ? (
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease }}
+            className="flex-1 flex flex-col relative z-10 min-h-[100dvh]"
+            style={{ background: "hsl(var(--background))" }}
+          >
+            <IntroCarousel
+              onComplete={() => {
+                sessionStorage.setItem("introSeen", "true");
+                navigate("/onboarding/language-region");
+              }}
+            />
+          </motion.div>
         ) : (
           <motion.div
             key="content"
@@ -162,6 +181,17 @@ export default function Welcome() {
                     <UserRound className="w-3.5 h-3.5" strokeWidth={2} />
                     Continue as Guest
                   </motion.button>
+
+                  {/* Language & Region */}
+                  <Link
+                    to="/onboarding/language-region"
+                    onClick={() => hapticTap()}
+                    className="w-full mt-1.5 h-9 flex items-center justify-center gap-1.5 text-[12px] font-medium spring-tap"
+                    style={{ color: subColor }}
+                  >
+                    <Globe className="w-3.5 h-3.5" strokeWidth={2} />
+                    Language & Region
+                  </Link>
 
                   {/* Divider */}
                   <div className="flex items-center gap-3 my-3">

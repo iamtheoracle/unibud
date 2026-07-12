@@ -111,7 +111,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]"
+              className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_hsl(var(--primary)/0.3)]"
             >
               {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Signing in...</> : <>Sign In <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
             </button>

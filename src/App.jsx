@@ -45,6 +45,11 @@ import StudySchedule from '@/pages/onboarding/StudySchedule';
 import Interests from '@/pages/onboarding/Interests';
 import MeetBud from '@/pages/onboarding/MeetBud';
 import PreparingCampus from '@/pages/onboarding/PreparingCampus';
+import LanguageRegion from '@/pages/onboarding/LanguageRegion';
+import SecurePin from '@/pages/onboarding/SecurePin';
+import BiometricSetupPage from '@/pages/onboarding/BiometricSetup';
+import PermissionsSetup from '@/pages/onboarding/Permissions';
+import PersonalizedLoading from '@/pages/onboarding/PersonalizedLoading';
 import LiveHome from '@/pages/LiveHome';
 import LiveClass from '@/pages/LiveClass';
 import Library from '@/pages/Library';
@@ -132,7 +137,7 @@ const AuthenticatedApp = () => {
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center premium-shadow animate-pulse">
-            <UnibudMark className="w-6 h-6 text-primary" />
+            <UnibudMark className="w-6 h-6 text-white" />
           </div>
           <p className="text-[13px] font-medium text-muted-foreground">Loading UNIBUD...</p>
         </div>
@@ -156,6 +161,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/welcome" element={<Welcome />} />
+      <Route path="/onboarding/language-region" element={<LanguageRegion />} />
       <Route path="/university-staff-login" element={<UniversityStaffLogin />} />
       <Route path="/platform-staff-login" element={<PlatformStaffLogin />} />
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/welcome" replace />} />}>
@@ -169,6 +175,10 @@ const AuthenticatedApp = () => {
         <Route path="/onboarding/interests" element={<Interests />} />
         <Route path="/onboarding/meet-bud" element={<MeetBud />} />
         <Route path="/onboarding/preparing-campus" element={<PreparingCampus />} />
+        <Route path="/onboarding/secure-pin" element={<SecurePin />} />
+        <Route path="/onboarding/biometric-setup" element={<BiometricSetupPage />} />
+        <Route path="/onboarding/permissions" element={<PermissionsSetup />} />
+        <Route path="/onboarding/personalized-loading" element={<PersonalizedLoading />} />
         <Route path="/live/class/:classId" element={<LiveClass />} />
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />

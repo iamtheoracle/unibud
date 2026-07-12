@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import UnibudLogo from "@/components/brand/UnibudLogo";
+import UnibudMark from "@/components/brand/UnibudMark";
+
+const ease = [0.16, 1, 0.3, 1];
+const GOLD = "#C9A24B";
 
 export default function SplashScreen() {
   const [phase, setPhase] = useState(() =>
@@ -33,24 +36,30 @@ export default function SplashScreen() {
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Official Logo */}
+      {/* Official B&W Logo Lockup */}
       <motion.div
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10"
+        transition={{ duration: 0.9, ease }}
+        className="relative z-10 flex flex-col items-center"
       >
-        <UnibudLogo variant="gold" size="xl" showLine />
+        <span className="text-foreground inline-flex">
+          <UnibudMark className="w-14 h-14" />
+        </span>
+        <span
+          className="font-heading font-extrabold tracking-[0.14em] leading-none mt-3 text-[34px] text-foreground"
+        >
+          UNIBUD
+        </span>
+        <span className="font-heading font-medium tracking-[0.22em] uppercase mt-2 text-[10px] text-muted-foreground">
+          The Future Starts Together
+        </span>
+        {/* Premium gold accent line — only place gold is used */}
+        <span
+          className="mt-3 h-[2px] w-10 rounded-full"
+          style={{ background: GOLD, boxShadow: `0 0 14px ${GOLD}66` }}
+        />
       </motion.div>
-
-      <motion.p
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7, duration: 0.6 }}
-        className="relative z-10 text-[13px] text-primary font-heading font-semibold mt-4"
-      >
-        The Future Starts Together.
-      </motion.p>
 
       <motion.p
         initial={{ opacity: 0 }}
