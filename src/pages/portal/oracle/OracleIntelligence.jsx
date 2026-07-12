@@ -13,6 +13,10 @@ import {
   ORACLE_CORE, BUD_INTERFACE, INTELLIGENCE_AGENTS, INTERNAL_SERVICES,
   OPERATIONS_HIERARCHY, ORCHESTRATION_PROTOCOL, INTELLIGENCE_STACK,
 } from "@/lib/oracleEcosystem";
+import { ORACLE_SYSTEMS } from "@/lib/oracleSystems";
+import { REGISTRIES, REGISTRY_PRINCIPLES } from "@/lib/globalRegistries";
+import { KNOWLEDGE_NODES, SEARCH_CATEGORIES } from "@/lib/knowledgeNetwork";
+import { COUNTRY_DOMAINS, COUNTRY_ENGINE_PRINCIPLES } from "@/lib/countryEngine";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -220,6 +224,146 @@ export default function OracleIntelligence() {
           </motion.div>
         )}
       </SectionCard>
+
+      {/* Oracle Systems — The 7 Coordinated Platform Services */}
+      <SectionCard title="Oracle Systems" description="Seven coordinated systems — all communication flows through Oracle Core" delay={0.22}>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {ORACLE_SYSTEMS.map((system, i) => (
+            <motion.div
+              key={system.id}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 + i * 0.04, ease: EASE }}
+              className="p-5 rounded-[24px] border border-border/20 bg-muted/20 hover:bg-muted/40 transition-colors"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className={`w-11 h-11 rounded-[16px] ${system.bg} flex items-center justify-center`}>
+                  <system.icon className={`w-5 h-5 ${system.color}`} strokeWidth={2.2} />
+                </div>
+                <div>
+                  <h4 className="font-heading font-bold text-[14px] text-foreground">{system.name}</h4>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{system.codename}</p>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-snug mb-3 line-clamp-2">{system.description}</p>
+              <div className="flex flex-wrap gap-1">
+                {system.managedServices.slice(0, 4).map((sid) => {
+                  const svc = INTERNAL_SERVICES.find((s) => s.id === sid);
+                  if (!svc) return null;
+                  return (
+                    <span key={sid} className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-card border border-border/30 text-muted-foreground">
+                      {svc.name}
+                    </span>
+                  );
+                })}
+                {system.managedServices.length > 4 && (
+                  <span className="text-[9px] font-medium px-2 py-0.5 rounded-full bg-card border border-border/30 text-muted-foreground">
+                    +{system.managedServices.length - 4}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        <div className="px-5 pb-5">
+          <div className="p-4 rounded-[16px] bg-primary/5 border border-primary/15">
+            <p className="text-[12px] text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-primary">Architecture Rule:</span> Oracle Systems never communicate directly with one another. All inter-system data flows through Oracle Core's orchestration layer. Users interact only with Bud.
+            </p>
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Global Registries */}
+      <SectionCard title="Global Registries" description="Registry-driven architecture — nothing is hardcoded" delay={0.27}>
+        <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {REGISTRIES.map((reg, i) => (
+            <motion.div
+              key={reg.id}
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 + i * 0.03 }}
+              className="p-4 rounded-[20px] bg-muted/30 border border-border/20"
+            >
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className={`w-9 h-9 rounded-[14px] ${reg.bg} flex items-center justify-center`}>
+                  <reg.icon className={`w-4 h-4 ${reg.color}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-heading font-bold text-[13px] text-foreground leading-tight">{reg.name}</h4>
+                  <p className="text-[10px] text-muted-foreground">{reg.recordCount > 0 ? `${reg.recordCount} records` : "Configurable"}</p>
+                </div>
+                {reg.configurable && <span className="text-[9px] font-semibold text-success px-1.5 py-0.5 rounded-full bg-success/10">CFG</span>}
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">{reg.description}</p>
+            </motion.div>
+          ))}
+        </div>
+        <div className="px-5 pb-5">
+          <div className="flex flex-wrap gap-2">
+            {REGISTRY_PRINCIPLES.map((p, i) => (
+              <span key={i} className="text-[10px] font-medium px-3 py-1.5 rounded-full bg-primary/5 border border-primary/15 text-muted-foreground">
+                {p}
+              </span>
+            ))}
+          </div>
+        </div>
+      </SectionCard>
+
+      {/* Knowledge Network + Country Engine */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        <SectionCard title="Oracle Knowledge Network" description="Global education intelligence graph" delay={0.32}>
+          <div className="p-5">
+            <p className="text-[12px] text-muted-foreground leading-relaxed mb-4">
+              A structured registry of trusted knowledge sources connecting countries, institutions, faculties, departments, courses, lecturers, researchers, students, alumni, scholarships, research, publications, and more into one searchable intelligence network.
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {KNOWLEDGE_NODES.map((node) => (
+                <span key={node.id} className="inline-flex items-center gap-1 text-[10px] font-medium px-2.5 py-1 rounded-full bg-muted/30 border border-border/20 text-foreground">
+                  <node.icon className={`w-3 h-3 ${node.color}`} />
+                  {node.label}
+                  {node.permissionScoped && <Lock className="w-2.5 h-2.5 text-muted-foreground/50" />}
+                </span>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-border/20">
+              <h5 className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide mb-2">Search Categories</h5>
+              <div className="flex flex-wrap gap-1.5">
+                {SEARCH_CATEGORIES.map((cat) => (
+                  <span key={cat} className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-primary/5 border border-primary/15 text-primary">
+                    {cat}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Global Country Engine" description="One architecture for every country" delay={0.35}>
+          <div className="p-5">
+            <p className="text-[12px] text-muted-foreground leading-relaxed mb-4">
+              Every country follows the same architecture. 17 domains are supported for every country — only the data changes, the architecture never changes.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {COUNTRY_DOMAINS.map((domain) => (
+                <div key={domain.id} className="flex items-center gap-2 p-2.5 rounded-[12px] bg-muted/30 border border-border/20">
+                  <domain.icon className={`w-3.5 h-3.5 ${domain.color} flex-shrink-0`} />
+                  <span className="text-[11px] font-medium text-foreground truncate">{domain.label}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 pt-4 border-t border-border/20">
+              <div className="flex flex-wrap gap-1.5">
+                {COUNTRY_ENGINE_PRINCIPLES.map((p, i) => (
+                  <span key={i} className="text-[10px] font-medium px-2.5 py-1 rounded-full bg-success/5 border border-success/15 text-success">
+                    {p}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
 
       {/* Orchestration Protocol */}
       <SectionCard title="Orchestration Protocol" description="How requests flow through the intelligence stack" delay={0.3}>

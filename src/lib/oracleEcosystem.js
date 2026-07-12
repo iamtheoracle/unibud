@@ -18,6 +18,7 @@ import {
   ShieldCheck, BookOpen, FlaskConical, Briefcase, Award, ShoppingBag,
   Home, Bus, Users, CalendarHeart, Eye, BarChart3, Plug, Bell,
   Layers, ClipboardCheck, Settings, Server, Database, Brain,
+  CreditCard, Mail,
 } from "lucide-react";
 
 // ─── Oracle Intelligence Core ───────────────────────────────────────────────
@@ -483,6 +484,28 @@ export const INTERNAL_SERVICES = [
     domain: "Global",
     description: "Institution outreach, onboarding pipeline, and partnership management.",
     modules: ["institution_outreach"],
+    accessRoles: ["oracle", "operations_staff"],
+  },
+  {
+    id: "payment_service",
+    name: "Payment Service",
+    icon: CreditCard,
+    color: "text-success",
+    parentAgent: "sentinel",
+    domain: "Security",
+    description: "Payment processing, billing, subscriptions, and financial transaction oversight.",
+    modules: ["marketplace", "subscriptions"],
+    accessRoles: ["oracle", "finance_manager", "super_admin"],
+  },
+  {
+    id: "communication_service",
+    name: "Communication Service",
+    icon: Mail,
+    color: "text-info",
+    parentAgent: "pulse",
+    domain: "Student",
+    description: "Email, SMS, WhatsApp, push notifications, and in-app messaging orchestration.",
+    modules: ["notifications", "messages", "connected_accounts"],
     accessRoles: ["oracle", "operations_staff"],
   },
 ];
