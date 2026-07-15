@@ -9,7 +9,10 @@
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test src/oracle/kernel/__tests__/*.test.ts",
+    "test:coverage": "node --test --experimental-test-coverage src/oracle/kernel/__tests__/*.test.ts",
+    "typecheck:oracle": "tsc -p ./src/oracle/kernel/tsconfig.json --noEmit"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.39",
