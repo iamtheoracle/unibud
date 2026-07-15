@@ -3,10 +3,11 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
+import { getAgentById, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
 import { getScreenContext } from "@/lib/budScreenContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
+import { initOracle } from "@/lib/oracle";
 
 const BudPanelContext = createContext(null);
 
@@ -100,44 +101,59 @@ export function BudPanelProvider({ children }) {
     const trimmed = text.trim();
     isSendingRef.current = true;
 
-    const agents = routeAgents(trimmed);
-    const agentIds = agents.map((a) => a.id);
-    recordAgentActivity(agentIds);
-
-    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: agentIds };
     const fileUrls = attachments.map((a) => a.url).filter(Boolean);
+    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: [] };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
     setAttachments([]);
-    setActiveAgents(agents);
     setIsTyping(true);
 
     try {
-      const contextPrefix = `The student is currently on the ${screenContext.name} page — ${screenContext.description}.\n\n`;
-      const prompt = contextPrefix + buildBudPrompt(trimmed, agents, user);
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        ...(fileUrls.length > 0 ? { file_urls: fileUrls } : {}),
-      });
+      // ── TASK-005: All Bud requests flow through Oracle ───────────────────
+      const oracle = initOracle(base44.integrations.Core);
 
-      const budMsg = { role: "bud", content: response, time: new Date(), agents: agentIds };
-      const finalMessages = [...newMessages, budMsg];
+      const oracleResponse = await oracle.process(
+        {
+          text:      trimmed,
+          user,
+          screen:    screenContext,
+          fileUrls,
+          sessionId: activeConversationId || undefined,
+        },
+        (command, requestUser) => {
+          const contextPrefix = `The student is currently on the ${screenContext.name} page — ${screenContext.description}.\n\n`;
+          const agents = (command.agentIds || [])
+            .map((id) => getAgentById(id))
+            .filter(Boolean);
+          return contextPrefix + buildBudPrompt(command.text, agents, requestUser);
+        }
+      );
+
+      const { content, agentIds } = oracleResponse;
+
+      recordAgentActivity(agentIds);
+
+      // Update user message with resolved agent IDs
+      const updatedUserMsg = { ...userMsg, agents: agentIds };
+      const budMsg = { role: "bud", content, time: new Date(), agents: agentIds };
+      const finalMessages = [...messages, updatedUserMsg, budMsg];
       setMessages(finalMessages);
+      setActiveAgents(agentIds.map((id) => getAgentById(id)).filter(Boolean));
       await saveConversation(finalMessages, agentIds);
     } catch {
       const errorMsg = {
         role: "bud",
         content: "I'm having trouble connecting right now. Let's try again in a moment!",
         time: new Date(),
-        agents: agentIds,
+        agents: [],
       };
       setMessages([...newMessages, errorMsg]);
     }
     setIsTyping(false);
     setActiveAgents([]);
     isSendingRef.current = false;
-  }, [isTyping, attachments, messages, screenContext, user, saveConversation]);
+  }, [isTyping, attachments, messages, screenContext, user, saveConversation, activeConversationId]);
 
   // Auto-send pending prompt when panel opens
   useEffect(() => {
