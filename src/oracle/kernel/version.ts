@@ -3,7 +3,7 @@ import type { VersionInfo } from './types.ts';
 export const ORACLE_KERNEL_VERSION = '1.0.0';
 
 export function parseVersion(version: string): [number, number, number] {
-  const cleaned = version.replace(/^[^\d]*/, '').replace(/\.x$/, '.0');
+  const cleaned = version.replace(/^v/i, '').replace(/\.x$/, '.0');
   const [major = '0', minor = '0', patch = '0'] = cleaned.split('.');
   return [Number.parseInt(major, 10) || 0, Number.parseInt(minor, 10) || 0, Number.parseInt(patch, 10) || 0];
 }

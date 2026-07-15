@@ -95,15 +95,17 @@ export class LifecycleManager {
 
     for (const moduleName of [...this.initializedModules].reverse()) {
       const module = moduleMap.get(moduleName);
-      if (module?.shutdown) {
-        await this.errorBoundary.execute(() => module.shutdown?.(), { phase: 'module-shutdown', module: module.name });
+      const shutdownModule = module?.shutdown;
+      if (module && shutdownModule) {
+        await this.errorBoundary.execute(() => shutdownModule.call(module), { phase: 'module-shutdown', module: module.name });
       }
     }
 
     for (const serviceName of [...this.initializedServices].reverse()) {
       const service = serviceMap.get(serviceName);
-      if (service?.shutdown) {
-        await this.errorBoundary.execute(() => service.shutdown?.(), { phase: 'service-shutdown', service: service.name });
+      const shutdownService = service?.shutdown;
+      if (service && shutdownService) {
+        await this.errorBoundary.execute(() => shutdownService.call(service), { phase: 'service-shutdown', service: service.name });
       }
     }
 

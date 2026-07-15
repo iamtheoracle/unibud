@@ -12,6 +12,11 @@ function parseBoolean(value: string): boolean {
   throw new Error(`Invalid boolean value: ${value}`);
 }
 
+function getRuntimeEnvironment(): Record<string, string | undefined> {
+  const runtime = globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } };
+  return runtime.process?.env ?? {};
+}
+
 function coerceValue(rawValue: string, schemaEntry?: ConfigSchemaEntry): ConfigValue {
   switch (schemaEntry?.type) {
     case 'number': {
@@ -52,7 +57,7 @@ export class EnvironmentLoader {
 
   load(options: EnvironmentLoadOptions = {}): Record<string, ConfigValue> {
     const fileValues = this.parseEnvFile(options.envFileContents);
-    const runtimeEnv = options.env ?? ((globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {});
+    const runtimeEnv = options.env ?? getRuntimeEnvironment();
     const schema = options.schema ?? {};
     const merged = {
       ...(options.defaults ?? {}),
