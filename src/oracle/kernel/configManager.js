@@ -183,19 +183,18 @@ class ConfigManager {
     }
 
     const parts = key.split('.');
-    // Guard every path segment against prototype-pollution vectors
+    // Validate every path segment before any property access
     for (const part of parts) {
       assertSafeKey(part);
     }
 
-    let cursor = this._config;
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (cursor[parts[i]] === undefined || typeof cursor[parts[i]] !== 'object') {
-        cursor[parts[i]] = {};
-      }
-      cursor = cursor[parts[i]];
+    // Build a nested patch object from the path, then deep-merge it in.
+    // This avoids cursor-chain traversal so prototype-pollution is impossible.
+    let patch = value;
+    for (let i = parts.length - 1; i >= 0; i--) {
+      patch = { [parts[i]]: patch };
     }
-    cursor[parts[parts.length - 1]] = value;
+    this._config = deepMerge(this._config, patch);
     return this;
   }
 
