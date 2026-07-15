@@ -49,8 +49,30 @@ const DEFAULTS = Object.freeze({
 });
 
 /**
+ * Keys that must never appear in a dot-path or be written via traversal
+ * to prevent prototype-pollution attacks.
+ *
+ * @type {Set<string>}
+ */
+const FORBIDDEN_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+/**
+ * Throws when `key` is a prototype-pollution vector.
+ *
+ * @param {string} key
+ */
+function assertSafeKey(key) {
+  if (FORBIDDEN_KEYS.has(key)) {
+    throw new Error(
+      `[OracleKernel:ConfigManager] Forbidden key "${key}" — potential prototype pollution.`
+    );
+  }
+}
+
+/**
  * Recursively deep-merges `source` into `target`.
  * Arrays in `source` replace (not concat) arrays in `target`.
+ * Prototype-pollution vectors (__proto__, constructor, prototype) are skipped.
  *
  * @param {object} target
  * @param {object} source
@@ -59,6 +81,7 @@ const DEFAULTS = Object.freeze({
 function deepMerge(target, source) {
   const output = { ...target };
   for (const [key, value] of Object.entries(source)) {
+    if (FORBIDDEN_KEYS.has(key)) continue;
     if (
       value !== null &&
       typeof value === 'object' &&
@@ -77,13 +100,17 @@ function deepMerge(target, source) {
 
 /**
  * Resolves a dot-separated key path against a nested object.
+ * Forbidden keys (__proto__, constructor, prototype) short-circuit to undefined.
  *
  * @param {object} obj
  * @param {string} path  e.g. `'oracle.kernel.logLevel'`
  * @returns {*}
  */
 function resolvePath(obj, path) {
-  return path.split('.').reduce((acc, part) => acc?.[part], obj);
+  return path.split('.').reduce((acc, part) => {
+    if (FORBIDDEN_KEYS.has(part)) return undefined;
+    return acc?.[part];
+  }, obj);
 }
 
 class ConfigManager {
@@ -156,6 +183,11 @@ class ConfigManager {
     }
 
     const parts = key.split('.');
+    // Guard every path segment against prototype-pollution vectors
+    for (const part of parts) {
+      assertSafeKey(part);
+    }
+
     let cursor = this._config;
     for (let i = 0; i < parts.length - 1; i++) {
       if (cursor[parts[i]] === undefined || typeof cursor[parts[i]] !== 'object') {
