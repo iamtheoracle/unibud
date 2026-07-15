@@ -96,6 +96,11 @@ export function BudPanelProvider({ children }) {
     } catch {}
   }, [isDemoMode, activeConversationId, queryClient]);
 
+  const resolveAgents = useCallback(
+    (agentIds) => (agentIds || []).map((id) => getAgentById(id)).filter(Boolean),
+    []
+  );
+
   const sendMessage = useCallback(async (text) => {
     if (!text || !text.trim() || isTyping || isSendingRef.current) return;
     const trimmed = text.trim();
@@ -123,9 +128,7 @@ export function BudPanelProvider({ children }) {
         },
         (command, requestUser) => {
           const contextPrefix = `The student is currently on the ${screenContext.name} page — ${screenContext.description}.\n\n`;
-          const agents = (command.agentIds || [])
-            .map((id) => getAgentById(id))
-            .filter(Boolean);
+          const agents = resolveAgents(command.agentIds);
           return contextPrefix + buildBudPrompt(command.text, agents, requestUser);
         }
       );
@@ -139,7 +142,7 @@ export function BudPanelProvider({ children }) {
       const budMsg = { role: "bud", content, time: new Date(), agents: agentIds };
       const finalMessages = [...messages, updatedUserMsg, budMsg];
       setMessages(finalMessages);
-      setActiveAgents(agentIds.map((id) => getAgentById(id)).filter(Boolean));
+      setActiveAgents(resolveAgents(agentIds));
       await saveConversation(finalMessages, agentIds);
     } catch {
       const errorMsg = {
@@ -153,7 +156,7 @@ export function BudPanelProvider({ children }) {
     setIsTyping(false);
     setActiveAgents([]);
     isSendingRef.current = false;
-  }, [isTyping, attachments, messages, screenContext, user, saveConversation, activeConversationId]);
+  }, [isTyping, attachments, messages, screenContext, user, saveConversation, activeConversationId, resolveAgents]);
 
   // Auto-send pending prompt when panel opens
   useEffect(() => {

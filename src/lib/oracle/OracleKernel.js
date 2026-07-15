@@ -158,7 +158,12 @@ export class OracleKernel {
       });
 
       // ── 4. Build the LLM prompt via the injected prompt builder ─────────
-      const prompt = promptBuilder(command, request.user);
+      let prompt;
+      try {
+        prompt = promptBuilder(command, request.user);
+      } catch (promptErr) {
+        throw new Error(`Prompt construction failed: ${promptErr?.message}`);
+      }
 
       // ── 5. Execute via Command Router → Service Layer ───────────────────
       const serviceCtx = {
@@ -258,9 +263,10 @@ export class OracleKernel {
   registerService(service, opts) {
     this._registry.register(service, opts);
     // Re-wire the router so new registrations take effect immediately
+    const llmService = this._registry.get("llm_service");
     for (const type of service.commandTypes) {
       this._router.registerHandler(type, (command, ctx) => {
-        const resolved = this._registry.resolve(command.type);
+        const resolved = this._registry.resolve(command.type) || llmService;
         return resolved.handle(command, ctx).then((result) => {
           return result.success
             ? result.content
