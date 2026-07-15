@@ -49,8 +49,9 @@ export function createEnvironmentManager(options: EnvironmentOptions = {}): IEnv
   const inheritedEnv = options.env ?? (typeof process !== 'undefined' ? process.env : {});
   const env: Record<string, string | undefined> = { ...inheritedEnv };
 
-  const dotenvPath = options.dotenvPath ? resolve(options.dotenvPath) : resolve(process.cwd(), '.env');
-  if (existsSync(dotenvPath)) {
+  const cwd = typeof process !== 'undefined' && typeof process.cwd === 'function' ? process.cwd() : undefined;
+  const dotenvPath = options.dotenvPath ? resolve(options.dotenvPath) : cwd ? resolve(cwd, '.env') : undefined;
+  if (dotenvPath && existsSync(dotenvPath)) {
     const fromFile = parseDotEnv(readFileSync(dotenvPath, 'utf-8'));
     for (const [key, value] of Object.entries(fromFile)) {
       if (env[key] === undefined) {

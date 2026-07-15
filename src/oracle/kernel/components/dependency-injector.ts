@@ -10,7 +10,7 @@ interface Registration {
 function normalizeOptions(options?: RegistrationOptions): Required<RegistrationOptions> {
   return {
     singleton: options?.singleton ?? true,
-    factory: options?.factory ?? (() => options?.dependencies),
+    factory: options?.factory ?? (() => undefined),
     dependencies: options?.dependencies ?? [],
   };
 }

@@ -36,6 +36,8 @@ function registerComponentVersions(oracle: IOracle): void {
 export function createBootstrap(): IBootstrapped {
   const logger = createLogger();
   setLogger(logger);
+  const version = createVersionManager();
+  const plugins = createPluginRegistrar(version);
 
   const oracle: IOracle = {
     config: createConfigManager(),
@@ -47,8 +49,8 @@ export function createBootstrap(): IBootstrapped {
     health: createHealthManager(),
     logger,
     errors: createErrorBoundary(),
-    version: createVersionManager(),
-    plugins: undefined as never,
+    version,
+    plugins,
 
     async initialize(): Promise<void> {
       await this.lifecycle.initialize();
@@ -62,8 +64,6 @@ export function createBootstrap(): IBootstrapped {
       return this.lifecycle.isReady();
     },
   };
-
-  oracle.plugins = createPluginRegistrar(oracle.version);
 
   oracle.lifecycle.onInitialize(async () => {
     for (const module of oracle.modules.getAll()) {

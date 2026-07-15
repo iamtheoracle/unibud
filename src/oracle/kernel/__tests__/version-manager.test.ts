@@ -11,6 +11,6 @@ test('version manager tracks versions and compatibility', () => {
 
   assert.equal(version.getModuleVersion('alpha'), '1.0.1');
   assert.equal(version.getComponentVersion('bootstrap'), '1.0.0');
-  assert.equal(version.isCompatible('1.0.0', '1.2.0'), true);
+  assert.equal(version.isCompatible('1.2.0', '1.0.0'), true);
   assert.equal(version.isCompatible('1.0.0', '2.0.0'), false);
 });

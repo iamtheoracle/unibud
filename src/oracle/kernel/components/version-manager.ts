@@ -58,7 +58,7 @@ export function createVersionManager(
     isCompatible(version1: string, version2: string): boolean {
       const [majorA] = parseVersion(version1);
       const [majorB] = parseVersion(version2);
-      return majorA === majorB && compareVersions(version1, version2) >= -1;
+      return majorA === majorB && compareVersions(version1, version2) >= 0;
     },
 
     registerModuleVersion(name: string, version: string): void {
