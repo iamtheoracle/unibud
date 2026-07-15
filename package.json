@@ -8,7 +8,10 @@
     "build": "vite build",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
+    "test": "node --test ./src/oracle/kernel/__tests__/*.test.js",
+    "test:coverage": "node --test --experimental-test-coverage ./src/oracle/kernel/__tests__/*.test.js",
     "typecheck": "tsc -p ./jsconfig.json",
+    "typecheck:oracle": "tsc -p ./src/oracle/kernel/tsconfig.json",
     "preview": "vite preview"
   },
   "dependencies": {

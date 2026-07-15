@@ -1,0 +1,12 @@
+{
+  "extends": "../../../jsconfig.json",
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "noEmit": true,
+    "maxNodeModuleJsDepth": 0,
+    "types": ["node"]
+  },
+  "include": ["./**/*.js"],
+  "exclude": ["./**/*.test.js", "./__tests__/**", "../../../node_modules/**"]
+}
