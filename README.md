@@ -68,6 +68,16 @@ After pushing your changes to git, open the Base44 dashboard and publish the app
 base44 dashboard open
 ```
 
+## Oracle Kernel Checks
+
+For Oracle Kernel-only validation:
+
+```bash
+npm run typecheck:oracle
+npm run test
+npm run test:coverage
+```
+
 ## Docs & Support
 
 Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
