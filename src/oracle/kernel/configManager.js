@@ -190,11 +190,11 @@ class ConfigManager {
 
     // Build a nested patch object from the path, then deep-merge it in.
     // This avoids cursor-chain traversal so prototype-pollution is impossible.
-    let patch = value;
+    let nestedPatch = value;
     for (let i = parts.length - 1; i >= 0; i--) {
-      patch = { [parts[i]]: patch };
+      nestedPatch = { [parts[i]]: nestedPatch };
     }
-    this._config = deepMerge(this._config, patch);
+    this._config = deepMerge(this._config, nestedPatch);
     return this;
   }
 
