@@ -22,5 +22,5 @@ test('EnvironmentLoader parses env files and coerces typed values', () => {
 test('EnvironmentLoader enforces required values', () => {
   const loader = new EnvironmentLoader();
 
-  assert.throws(() => loader.load({ required: ['ORACLE_KEY'] }), /Missing required environment variable: ORACLE_KEY/);
+  assert.throws(() => loader.load({ required: ['ORACLE_KEY'] }), /Missing required configuration: ORACLE_KEY/);
 });

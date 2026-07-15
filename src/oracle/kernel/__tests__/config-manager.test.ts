@@ -41,5 +41,5 @@ test('ConfigManager fails validation for missing required values', () => {
         API_KEY: { required: true },
       },
     });
-  }, /Missing required environment variable: API_KEY/);
+  }, /Missing required configuration: API_KEY/);
 });

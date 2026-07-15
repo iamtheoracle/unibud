@@ -91,7 +91,7 @@ export class EnvironmentLoader {
 
     for (const key of requiredKeys) {
       if (merged[key] === undefined || merged[key] === null || merged[key] === '') {
-        throw new Error(`Missing required environment variable: ${key}`);
+        throw new Error(`Missing required configuration: ${key}`);
       }
     }
 

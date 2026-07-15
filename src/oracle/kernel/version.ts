@@ -40,7 +40,9 @@ export function isCompatibleVersion(required: string | undefined, current = ORAC
   }
 
   if (required.endsWith('.x')) {
-    return parseVersion(required)[0] === parseVersion(current)[0];
+    const requiredParts = required.replace(/^v/i, '').split('.').filter((part) => part !== 'x').map((part) => Number.parseInt(part, 10) || 0);
+    const currentParts = parseVersion(current);
+    return requiredParts.every((part, index) => currentParts[index] === part);
   }
 
   return compareVersions(current, required) === 0;

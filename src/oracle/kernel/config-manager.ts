@@ -90,7 +90,7 @@ export class ConfigManager {
     for (const [key, schemaEntry] of Object.entries(schema)) {
       const value = this.get(key);
       if (schemaEntry.required && value === undefined) {
-        throw new Error(`Missing required configuration value: ${key}`);
+        throw new Error(`Missing required configuration: ${key}`);
       }
 
       if (value !== undefined && schemaEntry.validate && !schemaEntry.validate(value)) {
