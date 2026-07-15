@@ -33,6 +33,13 @@ test("EnvironmentManager loads and coerces values", () => {
   assert.equal(values.PORT, 3000);
   assert.equal(values.ENABLED, true);
   assert.equal(values.NAME, "oracle");
+
+  const invalidNumericEnv = new EnvironmentManager({
+    source: { RETRIES: "NaN-value" },
+    schema: [{ key: "RETRIES", type: "number" }],
+  });
+
+  assert.throws(() => invalidNumericEnv.load(), /Invalid numeric environment value/);
 });
 
 test("ConfigurationManager supports merge/get/set", () => {
@@ -43,6 +50,10 @@ test("ConfigurationManager supports merge/get/set", () => {
   assert.equal(manager.get("server.host"), "localhost");
   assert.equal(manager.get("server.port"), 8080);
   assert.equal(manager.get("features.plugins"), true);
+  assert.throws(() => manager.set("__proto__.polluted", true), /Unsafe configuration key/);
+  const malicious = Object.create(null);
+  Object.defineProperty(malicious, "__proto__", { value: { polluted: true }, enumerable: true });
+  assert.throws(() => manager.merge(malicious), /Unsafe configuration key/);
 });
 
 test("DependencyInjector resolves singleton and detects missing token", () => {
@@ -54,6 +65,10 @@ test("DependencyInjector resolves singleton and detects missing token", () => {
 
   assert.equal(one, two);
   assert.throws(() => di.resolve("missing"), /not registered/);
+  assert.throws(
+    () => di.register("invalid", { useFactory: () => ({}), useValue: {} }),
+    /either useFactory or useValue/
+  );
 });
 
 test("ModuleRegistry and ServiceRegistry enforce unique IDs", () => {

@@ -48,7 +48,12 @@ export class EnvironmentManager {
     }
 
     if (type === "number") {
-      return Number(value);
+      const numeric = Number(value);
+      if (Number.isNaN(numeric)) {
+        throw new Error(`Invalid numeric environment value: ${value}`);
+      }
+
+      return numeric;
     }
 
     if (type === "boolean") {

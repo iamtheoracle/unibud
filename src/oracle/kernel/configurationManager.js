@@ -53,6 +53,9 @@ export class ConfigurationManager {
 
     for (let index = 0; index < keys.length - 1; index += 1) {
       const key = keys[index];
+      if (isUnsafeKey(key)) {
+        throw new Error(unsafeKeyMessage(key));
+      }
       const current = cursor[key];
 
       if (!isObject(current)) {
@@ -62,7 +65,12 @@ export class ConfigurationManager {
       cursor = /** @type {Record<string, unknown>} */ (cursor[key]);
     }
 
-    cursor[keys[keys.length - 1]] = value;
+    const finalKey = keys[keys.length - 1];
+    if (isUnsafeKey(finalKey)) {
+      throw new Error(unsafeKeyMessage(finalKey));
+    }
+
+    cursor[finalKey] = value;
   }
 }
 
@@ -76,6 +84,10 @@ function mergeObjects(target, source) {
   const merged = { ...target };
 
   for (const [key, value] of Object.entries(source)) {
+    if (isUnsafeKey(key)) {
+      throw new Error(unsafeKeyMessage(key));
+    }
+
     const current = merged[key];
 
     if (isObject(current) && isObject(value)) {
@@ -96,4 +108,14 @@ function isObject(value) {
 /** @param {unknown} value @returns {Record<string, unknown>} */
 function asRecord(value) {
   return /** @type {Record<string, unknown>} */ (value);
+}
+
+/** @param {string} key */
+function isUnsafeKey(key) {
+  return key === "__proto__" || key === "prototype" || key === "constructor";
+}
+
+/** @param {string} key */
+function unsafeKeyMessage(key) {
+  return `Unsafe configuration key "${key}" blocked to prevent prototype pollution. Use a different key name.`;
 }

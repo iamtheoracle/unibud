@@ -14,6 +14,10 @@ export class DependencyInjector {
       throw new Error(`Dependency already registered: ${token}`);
     }
 
+    if (registration.useFactory && registration.useValue !== undefined) {
+      throw new Error(`Invalid dependency registration for ${token}: provide either useFactory or useValue, not both`);
+    }
+
     const normalized = registration.useFactory
       ? { type: "factory", value: registration.useFactory, singleton: registration.singleton ?? true }
       : { type: "value", value: registration.useValue, singleton: true };
