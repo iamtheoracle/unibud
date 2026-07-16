@@ -2,6 +2,15 @@ import type { IPermission, IUserPermission } from '../../types/shared';
 import { PermissionModel } from '../../models/shared/permission.model';
 import { generateId } from '../../utils';
 
+function normalizeContext(context?: Record<string, unknown>): string {
+  if (!context) return '';
+  const sorted = Object.keys(context).sort().reduce<Record<string, unknown>>((acc, k) => {
+    acc[k] = context[k];
+    return acc;
+  }, {});
+  return JSON.stringify(sorted);
+}
+
 export class PermissionService {
   private permissionStore = new Map<string, PermissionModel>();
   private userPermissions: IUserPermission[] = [];
@@ -26,17 +35,18 @@ export class PermissionService {
   }
 
   revokePermission(userId: string, permissionName: string, context?: Record<string, unknown>): void {
-    const contextKey = context ? JSON.stringify(context) : undefined;
+    const contextKey = normalizeContext(context);
     this.userPermissions = this.userPermissions.filter(
       up => !(up.userId === userId && up.permissionName === permissionName &&
-        JSON.stringify(up.context) === contextKey)
+        normalizeContext(up.context) === contextKey)
     );
   }
 
   hasPermission(userId: string, permissionName: string, context?: Record<string, unknown>): boolean {
+    const contextKey = normalizeContext(context);
     return this.userPermissions.some(
       up => up.userId === userId && up.permissionName === permissionName &&
-        JSON.stringify(up.context) === JSON.stringify(context)
+        normalizeContext(up.context) === contextKey
     );
   }
 
