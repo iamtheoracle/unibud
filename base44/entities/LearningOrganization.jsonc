@@ -1,0 +1,89 @@
+{
+  "name": "LearningOrganization",
+  "type": "object",
+  "description": "A learning organization such as an exam centre, tutorial centre, academy, or training centre. Part of the Learning Organization domain.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Organization name"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "exam_centre",
+        "tutorial_centre",
+        "academy",
+        "training_centre",
+        "coaching_centre",
+        "e_learning_platform",
+        "other"
+      ],
+      "default": "tutorial_centre",
+      "description": "Type of learning organization"
+    },
+    "description": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "address": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "director_name": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "verification_status": {
+      "type": "string",
+      "enum": ["verified", "pending", "unverified"],
+      "default": "unverified"
+    },
+    "student_count": {
+      "type": "number",
+      "default": 0
+    },
+    "educator_count": {
+      "type": "number",
+      "default": 0
+    },
+    "programs_offered": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AcademicProgram IDs offered by this organization"
+    },
+    "exam_bodies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Exam bodies affiliated with (e.g. WAEC, NECO, NABTEB)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "inactive", "suspended"],
+      "default": "active"
+    }
+  },
+  "required": ["name", "type"]
+}

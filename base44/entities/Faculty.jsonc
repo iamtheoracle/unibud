@@ -1,0 +1,56 @@
+{
+  "name": "Faculty",
+  "type": "object",
+  "description": "University faculty or school. Contains multiple departments. Part of the University domain.",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution entity"
+    },
+    "institution_name": {
+      "type": "string",
+      "description": "Denormalised institution name"
+    },
+    "name": {
+      "type": "string",
+      "description": "Faculty name (e.g. Faculty of Science, School of Engineering)"
+    },
+    "code": {
+      "type": "string",
+      "description": "Faculty code (e.g. FSC, ENG)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "dean_name": {
+      "type": "string",
+      "description": "Current dean of the faculty"
+    },
+    "dean_educator_id": {
+      "type": "string",
+      "description": "Reference to Educator entity for the dean"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string",
+      "description": "Physical location on campus"
+    },
+    "website": {
+      "type": "string"
+    },
+    "department_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": ["name", "institution_id"]
+}

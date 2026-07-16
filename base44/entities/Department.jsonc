@@ -1,0 +1,63 @@
+{
+  "name": "Department",
+  "type": "object",
+  "description": "Academic department within a faculty. Manages courses, lecturers, and students. Part of the University domain.",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution entity"
+    },
+    "institution_name": {
+      "type": "string"
+    },
+    "faculty_id": {
+      "type": "string",
+      "description": "Reference to Faculty entity"
+    },
+    "faculty_name": {
+      "type": "string",
+      "description": "Denormalised faculty name"
+    },
+    "name": {
+      "type": "string",
+      "description": "Department name (e.g. Department of Computer Science)"
+    },
+    "code": {
+      "type": "string",
+      "description": "Department code (e.g. CSC, MTH)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "hod_name": {
+      "type": "string",
+      "description": "Head of department name"
+    },
+    "hod_educator_id": {
+      "type": "string",
+      "description": "Reference to Educator entity for the HoD"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "student_count": {
+      "type": "number",
+      "default": 0
+    },
+    "lecturer_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": ["name", "institution_id"]
+}

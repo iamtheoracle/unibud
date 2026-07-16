@@ -1,0 +1,75 @@
+{
+  "name": "LearningProgram",
+  "type": "object",
+  "description": "A program instance offered by a learning organization. Links a learning organization to an academic program with specific scheduling and pricing.",
+  "properties": {
+    "learning_organization_id": {
+      "type": "string",
+      "description": "Reference to LearningOrganization entity"
+    },
+    "learning_organization_name": {
+      "type": "string",
+      "description": "Denormalised organization name"
+    },
+    "academic_program_id": {
+      "type": "string",
+      "description": "Reference to AcademicProgram entity"
+    },
+    "academic_program_name": {
+      "type": "string",
+      "description": "Denormalised program name"
+    },
+    "name": {
+      "type": "string",
+      "description": "Program instance name (e.g. WAEC Intensive 2024, A-Level Sciences Batch 3)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "schedule": {
+      "type": "string",
+      "description": "Program schedule description"
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["in_person", "online", "hybrid"],
+      "default": "in_person"
+    },
+    "max_students": {
+      "type": "number"
+    },
+    "enrolled_count": {
+      "type": "number",
+      "default": 0
+    },
+    "fee": {
+      "type": "number",
+      "description": "Program fee amount"
+    },
+    "currency": {
+      "type": "string",
+      "default": "NGN"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["upcoming", "active", "completed", "cancelled"],
+      "default": "upcoming"
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Subject IDs covered in this program instance"
+    }
+  },
+  "required": ["learning_organization_id", "name"]
+}
