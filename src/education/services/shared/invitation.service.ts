@@ -4,7 +4,14 @@ import { StudentModel } from '../../models/shared/student.model';
 import type { IEducator, IInvitation, IStudent } from '../../types/shared';
 
 function createToken(): string {
-  return globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return globalThis.crypto.randomUUID();
+  }
+  // Node.js < 19 fallback: use crypto.randomBytes via dynamic import is async,
+  // so we fall back to a hex string built from crypto.getRandomValues if available.
+  const bytes = new Uint8Array(16);
+  globalThis.crypto?.getRandomValues?.(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 function deriveNames(email: string): { firstName: string; lastName: string } {
@@ -39,7 +46,9 @@ export class InvitationService {
   }
 
   async acceptInvitation(token: string, password: string): Promise<IStudent | IEducator> {
-    void password;
+    // password is accepted for forward-compatibility with auth integrations
+    // (e.g. setting a password during account creation via an auth provider)
+    const _password = password;
     const invitation = await InvitationModel.findByToken(token);
     if (!invitation) {
       throw new Error('Invitation not found');
@@ -57,22 +66,30 @@ export class InvitationService {
 
     if (invitation.type === 'student') {
       const existing = await StudentModel.findByEmail(invitation.email);
-      user = existing ?? await StudentModel.create({
-        userId: '',
-        email: invitation.email,
-        firstName: names.firstName,
-        lastName: names.lastName,
-        status: 'active',
-      });
+      if (existing) {
+        user = existing;
+      } else {
+        user = await StudentModel.create({
+          userId: '',
+          email: invitation.email,
+          firstName: names.firstName,
+          lastName: names.lastName,
+          status: 'active',
+        });
+      }
     } else {
       const existing = await EducatorModel.findByEmail(invitation.email);
-      user = existing ?? await EducatorModel.create({
-        userId: '',
-        email: invitation.email,
-        firstName: names.firstName,
-        lastName: names.lastName,
-        status: 'active',
-      });
+      if (existing) {
+        user = existing;
+      } else {
+        user = await EducatorModel.create({
+          userId: '',
+          email: invitation.email,
+          firstName: names.firstName,
+          lastName: names.lastName,
+          status: 'active',
+        });
+      }
     }
 
     await InvitationModel.update(invitation.id, { status: 'accepted' });

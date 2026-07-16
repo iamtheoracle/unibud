@@ -17,7 +17,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/education/**/*.ts"],
-      exclude: ["src/education/__tests__/**/*.ts", "src/education/docs/**", "src/education/database/**"],
+      exclude: ["src/education/__tests__/**/*.ts", "src/education/docs/**/*", "src/education/database/**/*"],
     },
   },
 });

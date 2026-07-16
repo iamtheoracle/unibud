@@ -1,6 +1,15 @@
 import { base44 } from '@/api/base44Client';
 import type { IClass } from '../../types/shared';
 
+function parseCapacity(value: unknown): number | undefined {
+  if (typeof value === 'number') return value;
+  if (value !== undefined && value !== null && value !== '') {
+    const n = Number(value);
+    return isNaN(n) ? undefined : n;
+  }
+  return undefined;
+}
+
 function mapToClass(raw: Record<string, unknown>): IClass {
   return {
     id: String(raw.id || ''),
@@ -11,7 +20,7 @@ function mapToClass(raw: Record<string, unknown>): IClass {
     name: String(raw.name || ''),
     code: raw.code ? String(raw.code) : undefined,
     schedule: (raw.schedule as Record<string, unknown>) || undefined,
-    capacity: typeof raw.capacity === 'number' ? raw.capacity : raw.capacity ? Number(raw.capacity) : undefined,
+    capacity: parseCapacity(raw.capacity),
     students: Array.isArray(raw.students) ? raw.students.map((value) => String(value)) : [],
     metadata: (raw.metadata as Record<string, unknown>) || undefined,
     createdAt: new Date(String(raw.created_date || Date.now())),
