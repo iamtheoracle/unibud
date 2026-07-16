@@ -97,6 +97,6 @@ export class PermissionService implements IPermissionService {
   }
 
   private grantKey(userId: string, permissionName: string, orgId?: string, classId?: string): string {
-    return `${userId}::${permissionName}::${orgId ?? ''}::${classId ?? ''}`;
+    return `${userId}::${permissionName}::${orgId ?? '__NULL__'}::${classId ?? '__NULL__'}`;
   }
 }

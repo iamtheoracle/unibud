@@ -8,7 +8,11 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'lcov'],
       include: ['src/education/**/*.ts', 'src/oracle/kernel/**/*.ts'],
-      exclude: ['src/education/__tests__/**', 'src/education/index.ts'],
+      exclude: [
+        'src/education/__tests__/**',
+        'src/oracle/**/__tests__/**',
+        'src/education/index.ts',
+      ],
     },
   },
 });

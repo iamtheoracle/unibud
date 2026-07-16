@@ -5,7 +5,7 @@
  * Oracle remains domain-agnostic — this module owns all education logic.
  */
 
-import type { IOracle } from '../oracle/kernel/types.js';
+import type { IOracle, ILogger } from '../oracle/kernel/types.js';
 import type { IEducationModule } from './types/index.js';
 import { DEFAULT_PERMISSIONS } from './types/index.js';
 
@@ -26,6 +26,8 @@ export class EducationModule implements IEducationModule {
   readonly version = EDUCATION_VERSION;
   readonly description = 'Education Module — Programs, Organizations, Classes, Students, Educators';
 
+  private moduleLogger?: ILogger;
+
   // Services are created lazily on initialize() to ensure the logger is available.
   programs!: ProgramService;
   organizations!: OrganizationService;
@@ -38,7 +40,8 @@ export class EducationModule implements IEducationModule {
   invitations!: InvitationService;
 
   async initialize(oracle: IOracle): Promise<void> {
-    const logger = oracle.logger.child('EducationModule');
+    this.moduleLogger = oracle.logger.child('EducationModule');
+    const logger = this.moduleLogger;
     logger.info('Education Module initializing…');
 
     // 1. Create service instances
@@ -108,6 +111,7 @@ export class EducationModule implements IEducationModule {
   async shutdown(): Promise<void> {
     // In-memory stores are cleared automatically on process exit.
     // Persistent stores would flush/disconnect here.
+    this.moduleLogger?.info('Education Module shut down.');
   }
 }
 
