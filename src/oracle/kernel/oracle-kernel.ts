@@ -50,8 +50,9 @@ export class OracleKernel implements IOracle {
     handlers.forEach((handler) => {
       try {
         handler(payload);
-      } catch {
-        // Swallow handler errors to maintain kernel stability
+      } catch (err) {
+        // Swallow handler errors to maintain kernel stability; log for diagnostics
+        console.warn(`[OracleKernel] Error in handler for event "${event}":`, err);
       }
     });
   }

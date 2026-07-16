@@ -69,8 +69,9 @@ export const PermissionService = {
       try {
         const record = await PermissionModel.get(permId);
         permissions.push(mapPermission(record));
-      } catch {
-        // Skip missing permissions
+      } catch (err) {
+        // Log missing permissions to aid data integrity investigation
+        console.warn(`[PermissionService] Permission "${permId}" not found in store:`, err);
       }
     }
     return permissions;
@@ -90,7 +91,7 @@ function mapPermission(r: Record<string, unknown>): IPermission {
   };
 }
 
-export function mapPermissionGrant(r: Record<string, unknown>): IPermissionGrant {
+function mapPermissionGrant(r: Record<string, unknown>): IPermissionGrant {
   return {
     userId: r.user_id as string,
     permissionId: r.permission_id as string,
