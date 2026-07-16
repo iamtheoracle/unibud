@@ -46,9 +46,9 @@ export class InvitationService {
   }
 
   async acceptInvitation(token: string, password: string): Promise<IStudent | IEducator> {
-    // password is accepted for forward-compatibility with auth integrations
-    // (e.g. setting a password during account creation via an auth provider)
-    const _password = password;
+    // password is accepted for forward-compatibility: callers may provide it
+    // so that auth integrations can set it during account creation. It is not
+    // consumed here because identity management belongs to the Oracle layer.
     const invitation = await InvitationModel.findByToken(token);
     if (!invitation) {
       throw new Error('Invitation not found');

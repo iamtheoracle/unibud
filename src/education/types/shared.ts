@@ -48,6 +48,7 @@ export interface IAcademicProgram {
   code: string;
   type: string;
   description?: string;
+  /** Subject IDs – resolved from the program_subjects junction table */
   subjects: string[];
   metadata?: Record<string, unknown>;
   createdAt: Date;
@@ -74,6 +75,7 @@ export interface IClass {
   code?: string;
   schedule?: Record<string, unknown>;
   capacity?: number;
+  /** Student IDs – resolved from the class_students junction table */
   students: string[];
   metadata?: Record<string, unknown>;
   createdAt: Date;
