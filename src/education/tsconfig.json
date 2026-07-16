@@ -1,0 +1,15 @@
+{
+  "extends": "../../jsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": false,
+    "checkJs": false,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "esnext",
+    "lib": ["esnext", "dom"],
+    "types": ["vitest/globals", "node"]
+  },
+  "include": ["./**/*.ts", "../../vitest.config.ts"],
+  "exclude": ["../../node_modules", "../../dist"]
+}
