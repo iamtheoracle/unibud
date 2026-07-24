@@ -97,7 +97,7 @@ export default function Welcome() {
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.35, duration: 0.7, ease }}
-                  className="font-heading font-extrabold text-[27px] md:text-[31px] text-center mt-8 tracking-tight leading-tight"
+                  className="font-heading font-extrabold text-[28px] md:text-[33px] text-center mt-10 tracking-tight leading-[1.1]"
                   style={{ color: textColor }}
                 >
                   Your University Companion
@@ -108,7 +108,7 @@ export default function Welcome() {
                   initial={{ opacity: 0, y: 18 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.7, ease }}
-                  className="text-[14px] md:text-[15px] text-center mt-3 max-w-[320px] leading-relaxed"
+                  className="text-[14px] md:text-[15px] text-center mt-4 max-w-[340px] leading-[1.6]"
                   style={{ color: subColor }}
                 >
                   Everything you need for university life in one place. Learn, connect, collaborate and succeed.
@@ -122,18 +122,20 @@ export default function Welcome() {
               style={{ paddingBottom: "max(env(safe-area-inset-bottom), 1rem)" }}
             >
               <div className="max-w-md mx-auto w-full">
-                {/* Glass action panel */}
+                {/* Glass action panel — premium Liquid Glass */}
                 <motion.div
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.65, duration: 0.7, ease }}
-                  className="rounded-[28px] p-5"
+                  className="rounded-[32px] p-6"
                   style={{
-                    background: onDark ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.72)",
-                    backdropFilter: "blur(28px) saturate(1.2)",
-                    WebkitBackdropFilter: "blur(28px) saturate(1.2)",
-                    border: `1px solid ${onDark ? "rgba(255,255,255,0.18)" : "rgba(14,17,17,0.10)"}`,
-                    boxShadow: "0 16px 48px rgba(0,0,0,0.35)",
+                    background: onDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.74)",
+                    backdropFilter: "blur(36px) saturate(1.6)",
+                    WebkitBackdropFilter: "blur(36px) saturate(1.6)",
+                    border: `1px solid ${onDark ? "rgba(255,255,255,0.20)" : "rgba(14,17,17,0.08)"}`,
+                    boxShadow: onDark
+                      ? "0 24px 64px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.14)"
+                      : "0 24px 64px rgba(14,17,17,0.10), inset 0 1px 0 rgba(255,255,255,0.55)",
                   }}
                 >
                   {/* Primary: Create Account — black pill */}
