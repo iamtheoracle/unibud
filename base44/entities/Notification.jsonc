@@ -16,7 +16,8 @@
         "opportunity",
         "system",
         "emergency",
-        "reminder"
+        "reminder",
+        "achievement"
       ],
       "default": "system"
     },
@@ -29,6 +30,10 @@
     },
     "icon": {
       "type": "string"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "When set, this notification is targeted to a specific user. When null, it is a broadcast notification visible to all users."
     }
   },
   "required": [

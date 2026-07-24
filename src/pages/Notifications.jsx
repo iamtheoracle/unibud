@@ -31,13 +31,22 @@ export default function Notifications() {
   const { isDemoMode } = useDemoMode();
   const qc = useQueryClient();
 
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
+  });
+
   const { data: notifications, isLoading } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => base44.entities.Notification.list("-created_date", 50),
     enabled: !isDemoMode,
   });
 
-  const items = isDemoMode ? DEMO_NOTIFICATIONS : (notifications || []);
+  // Show broadcast notifications (no user_id) plus notifications targeted to this user
+  const items = isDemoMode
+    ? DEMO_NOTIFICATIONS
+    : (notifications || []).filter((n) => !n.user_id || n.user_id === user?.id);
   const unreadCount = items.filter((n) => !n.is_read).length;
 
   const markAllRead = async () => {

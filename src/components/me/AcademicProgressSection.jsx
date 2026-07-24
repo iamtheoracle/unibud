@@ -11,6 +11,7 @@ import { ResponsiveContainer, BarChart, Bar } from "recharts";
 import GlassCard from "@/components/ui/GlassCard";
 import CircularProgressRing from "@/components/academics/CircularProgressRing";
 import EmptyState from "@/components/ui/EmptyState";
+import StreakShowcase from "@/components/me/StreakShowcase";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const DEMO_GPA_TREND = [
@@ -119,30 +120,27 @@ export default function AcademicProgressSection() {
   return (
     <div className="space-y-4">
       {/* Study hours + Streak */}
-      <div className="grid grid-cols-2 gap-3">
-        <GlassCard variant="solid" className="p-4" delay={0.05}>
-          <div className="flex items-center gap-2 mb-1.5">
-            <Clock className="w-3.5 h-3.5 text-info" />
-            <span className="text-[11px] font-semibold text-foreground">Study Hours</span>
-          </div>
-          <p className="font-heading font-bold text-[20px] text-foreground">{isDemoMode ? "29h" : totalHours.toFixed(1) + "h"}</p>
-          <p className="text-[9px] text-muted-foreground mb-1.5">{isDemoMode ? "this week" : "total"}</p>
-          {weeklyData.some((d) => d.hours > 0) && (
-            <ResponsiveContainer width="100%" height={50}>
-              <BarChart data={weeklyData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                <Bar dataKey="hours" fill="hsl(var(--unibud-blue))" radius={[3, 3, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </GlassCard>
-        <GlassCard variant="solid" className="p-4 flex flex-col items-center justify-center text-center" delay={0.1}>
-          <div className="w-12 h-12 rounded-[18px] bg-warning/10 flex items-center justify-center mb-1.5">
-            <Flame className="w-6 h-6 text-warning" />
-          </div>
-          <p className="font-heading font-bold text-[20px] text-foreground">{isDemoMode ? 12 : streak}</p>
-          <p className="text-[9px] text-muted-foreground">day streak</p>
-        </GlassCard>
-      </div>
+      <GlassCard variant="solid" className="p-4" delay={0.05}>
+        <div className="flex items-center gap-2 mb-1.5">
+          <Clock className="w-3.5 h-3.5 text-info" />
+          <span className="text-[11px] font-semibold text-foreground">Study Hours</span>
+        </div>
+        <p className="font-heading font-bold text-[20px] text-foreground">{isDemoMode ? "29h" : totalHours.toFixed(1) + "h"}</p>
+        <p className="text-[9px] text-muted-foreground mb-1.5">{isDemoMode ? "this week" : "total"}</p>
+        {weeklyData.some((d) => d.hours > 0) && (
+          <ResponsiveContainer width="100%" height={50}>
+            <BarChart data={weeklyData} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+              <Bar dataKey="hours" fill="hsl(var(--unibud-blue))" radius={[3, 3, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </GlassCard>
+
+      <StreakShowcase
+        streak={isDemoMode ? 12 : streak}
+        sessionDates={isDemoMode ? [] : sessionDates}
+        delay={0.1}
+      />
 
       {/* Sessions count */}
       <div className="grid grid-cols-2 gap-3">
