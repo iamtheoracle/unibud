@@ -1,0 +1,45 @@
+{
+  "description": "Daily at 7am, scans upcoming exams within 7 days and posts academic reminder notifications with the days-until label.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 7 * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Exam Countdown",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "exam_countdown",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "scan_exams": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "examReminders",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Scan upcoming exams",
+            "description": "Next 7 days"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Outreach Follow-up",
+  "description": "When an InstitutionOutreach record moves to 'sent', wait 7 days, then nudge the admin with a follow-up reminder if there's still no response.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "InstitutionOutreach",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.outreach_status == \"sent\" and (.trigger.old_data.outreach_status // \"\") != \"sent\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "outreach_followup",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "wait_window": {
+          "wait": "P7D",
+          "then": "nudge",
+          "x-base44": {
+            "title": "Wait 7 days",
+            "description": "Give the institution time to reply"
+          }
+        }
+      },
+      {
+        "nudge": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "outreachFollowup",
+            "args": {
+              "outreach_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send follow-up nudge",
+            "description": "If still no response"
+          }
+        }
+      }
+    ]
+  }
+}
