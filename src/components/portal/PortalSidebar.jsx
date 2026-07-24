@@ -9,8 +9,8 @@ import {
   Video, ClipboardList, FolderOpen, IdCard, Mail, Flag, Building2,
   Crown, Brain, Network, ClipboardCheck, UserPlus, ShoppingBag,
 } from "lucide-react";
-import UnibudMark from "@/components/brand/UnibudMark";
 import { getPortalNavigation, getRoleName, normalizeRole } from "@/lib/portalConfig";
+import { OFFICIAL_FAVICON_URL } from "@/lib/brandAssets";
 import { base44 } from "@/api/base44Client";
 
 const ICON_MAP = {
@@ -36,9 +36,11 @@ export default function PortalSidebar({ user, onNavigate }) {
     <div className="flex flex-col h-full bg-black text-white">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-5 border-b border-n7">
-        <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center gold-glow flex-shrink-0">
-          <UnibudMark className="w-5 h-5 text-white" />
-        </div>
+        <img
+          src={OFFICIAL_FAVICON_URL}
+          alt="UNIBUD"
+          className="w-10 h-10 rounded-xl object-cover gold-glow flex-shrink-0"
+        />
         <div className="min-w-0">
           <p className="font-heading font-extrabold text-[15px] tracking-tight leading-none">UNIBUD</p>
           <p className="text-[10px] text-n3 font-medium mt-1">Operations Portal</p>
