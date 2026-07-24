@@ -1,28 +1,36 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowLeft, Cpu, History } from "lucide-react";
+import { motion } from "framer-motion";
+import { Sparkles, ArrowLeft, History, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
+import { buildBudPrompt, routeAgents, recordAgentActivity } from "@/lib/agentRegistry";
 import { detectMatricNumber } from "@/lib/matriculationPrivacy";
 import { useDemoMode } from "@/lib/DemoModeContext";
-import BudWelcome from "@/components/bud/BudWelcome";
 import ChatMessage from "@/components/bud/ChatMessage";
-import AgentActivityIndicator from "@/components/bud/AgentActivityIndicator";
-import ChatInput from "@/components/bud/ChatInput";
-import BudCategories from "@/components/bud/BudCategories";
+import BudThinking from "@/components/bud/BudThinking";
+import BudComposer from "@/components/bud/BudComposer";
 import ConversationHistory from "@/components/bud/ConversationHistory";
+
+const STREAM_STEP = 3; // chars per tick
+const STREAM_INTERVAL = 14; // ms per tick
+
+function timeGreeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good Morning";
+  if (h < 17) return "Good Afternoon";
+  return "Good Evening";
+}
 
 export default function Bud() {
   const { isDemoMode } = useDemoMode();
   const queryClient = useQueryClient();
   const scrollRef = useRef(null);
+  const streamTimer = useRef(null);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [activeAgents, setActiveAgents] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [activeConversationId, setActiveConversationId] = useState(null);
@@ -40,12 +48,12 @@ export default function Bud() {
   });
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages, isTyping]);
 
-  const saveConversation = async (allMessages, agentsUsed) => {
+  useEffect(() => () => clearInterval(streamTimer.current), []);
+
+  const saveConversation = async (allMessages, agentIds) => {
     if (isDemoMode) return;
     try {
       const title = (allMessages[0]?.content || "Conversation").slice(0, 50);
@@ -55,7 +63,6 @@ export default function Bud() {
         time: m.time?.toISOString?.() || new Date().toISOString(),
         agents: m.agents || [],
       }));
-      const agentIds = [...new Set(agentsUsed)];
       const lastBudMsg = [...allMessages].reverse().find((m) => m.role === "bud");
       const summary = lastBudMsg?.content?.slice(0, 100) || title;
 
@@ -63,19 +70,16 @@ export default function Bud() {
         await base44.entities.BudConversation.update(activeConversationId, {
           messages: messagesData,
           last_message_at: new Date().toISOString(),
-          agents_used: agentIds,
+          agents_used: [...new Set(agentIds)],
           message_count: allMessages.length,
           summary,
         });
       } else {
         const conv = await base44.entities.BudConversation.create({
-          title,
-          messages: messagesData,
-          type: "general",
+          title, messages: messagesData, type: "general",
           last_message_at: new Date().toISOString(),
-          agents_used: agentIds,
-          message_count: allMessages.length,
-          summary,
+          agents_used: [...new Set(agentIds)],
+          message_count: allMessages.length, summary,
         });
         setActiveConversationId(conv.id);
       }
@@ -83,44 +87,62 @@ export default function Bud() {
     } catch {}
   };
 
+  const streamResponse = (fullText, agentIds, baseMessages) =>
+    new Promise((resolve) => {
+      let i = 0;
+      const budMsg = { role: "bud", content: "", time: new Date(), agents: agentIds };
+      setMessages([...baseMessages, budMsg]);
+      streamTimer.current = setInterval(() => {
+        i += STREAM_STEP;
+        const partial = fullText.slice(0, i);
+        setMessages((prev) => {
+          const next = [...prev];
+          next[next.length - 1] = { ...budMsg, content: partial };
+          return next;
+        });
+        if (i >= fullText.length) {
+          clearInterval(streamTimer.current);
+          resolve([...baseMessages, { ...budMsg, content: fullText }]);
+        }
+      }, STREAM_INTERVAL);
+    });
+
   const handleSend = async (text) => {
-    if (!text.trim() || isTyping) return;
+    if (!text?.trim() || isTyping) return;
     const trimmed = text.trim();
 
     const agents = routeAgents(trimmed);
     const agentIds = agents.map((a) => a.id);
     recordAgentActivity(agentIds);
 
-    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: agentIds };
     const fileUrls = attachments.map((a) => a.url).filter(Boolean);
+    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: agentIds };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
     setAttachments([]);
-    setActiveAgents(agents);
     setIsTyping(true);
 
     try {
       let matricSearchContext = "";
-      // Detect matriculation number patterns for pre-search (authorized staff only)
       const { isMatric, extracted } = detectMatricNumber(trimmed);
       if (isMatric && extracted) {
         try {
-          const searchResponse = await base44.functions.invoke("studentSearch", {
+          const res = await base44.functions.invoke("studentSearch", {
             action: "find_by_matric",
             matriculation_number: extracted,
             university: user?.university,
           });
-          const searchData = searchResponse.data || searchResponse;
-          if (searchData.results && searchData.results.length > 0) {
-            const students = searchData.results.map((r) =>
+          const data = res.data || res;
+          if (data.results?.length) {
+            const students = data.results.map((r) =>
               `${r.full_name} — ${r.matriculation_number || "(masked)"} — ${r.department || "N/A"} · ${r.faculty || "N/A"} · ${r.level || "N/A"}L — ${r.university}${r.is_verified ? " [Verified]" : ""}`
             ).join("\n");
-            matricSearchContext = `\n\n[Matriculation Search Results for "${extracted}"]:\n${students}\n\nUse this data to answer the user's question about the student.`;
-          } else if (searchData.permissionDenied) {
-            matricSearchContext = `\n\n[Matriculation Search]: You do not have permission to search by exact matriculation number. Only authorized staff can perform this action.`;
+            matricSearchContext = `\n\n[Search Results for "${extracted}"]:\n${students}`;
+          } else if (data.permissionDenied) {
+            matricSearchContext = `\n\n[Search]: You do not have permission to search by exact matriculation number.`;
           } else {
-            matricSearchContext = `\n\n[Matriculation Search]: No student found with matriculation number "${extracted}".`;
+            matricSearchContext = `\n\n[Search]: No student found with matriculation number "${extracted}".`;
           }
         } catch {}
       }
@@ -130,22 +152,21 @@ export default function Bud() {
         prompt,
         ...(fileUrls.length > 0 ? { file_urls: fileUrls } : {}),
       });
+      const full = typeof response === "string" ? response : response?.response || "";
 
-      const budMsg = { role: "bud", content: response, time: new Date(), agents: agentIds };
-      const finalMessages = [...newMessages, budMsg];
-      setMessages(finalMessages);
+      setIsTyping(false);
+      const finalMessages = await streamResponse(full, agentIds, newMessages);
       await saveConversation(finalMessages, agentIds);
     } catch {
+      setIsTyping(false);
       const errorMsg = {
         role: "bud",
-        content: "I'm having a bit of trouble connecting right now. Let's try again in a moment!",
-        time: new Date(),
-        agents: agentIds,
+        content: "I'm having a little trouble thinking that through. Could you try again?",
+        time: new Date(), agents: agentIds,
       };
       setMessages([...newMessages, errorMsg]);
     }
     setIsTyping(false);
-    setActiveAgents([]);
   };
 
   const handleFileUpload = async (file) => {
@@ -157,25 +178,27 @@ export default function Bud() {
 
   const handleOpenConversation = (conv) => {
     setActiveConversationId(conv.id);
-    const loaded = (conv.messages || []).map((m) => ({
+    setMessages((conv.messages || []).map((m) => ({
       role: m.role || "user",
       content: m.content || "",
       time: m.time ? new Date(m.time) : new Date(),
       agents: m.agents || [],
-    }));
-    setMessages(loaded);
+    })));
+    setShowHistory(false);
   };
 
   const handleNewConversation = () => {
     setMessages([]);
     setActiveConversationId(null);
-    setActiveAgents([]);
+    setShowHistory(false);
   };
 
   const hasMessages = messages.length > 0;
+  const firstName = user?.preferred_name || user?.full_name?.split(" ")[0] || "there";
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* Minimal header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -187,16 +210,14 @@ export default function Bud() {
         </Link>
         <div className="flex items-center gap-2.5 flex-1">
           <div className="relative">
-            <div className="w-10 h-10 rounded-[14px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-sm">
-              <Sparkles className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-[14px] bg-foreground flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-background" />
             </div>
-            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-success border-2 border-card" />
+            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-success border-2 border-background" />
           </div>
           <div>
-            <h1 className="font-heading font-bold text-[15px] text-foreground">Bud</h1>
-            <p className="text-[10px] text-success font-medium flex items-center gap-1">
-              Online · Always here for you
-            </p>
+            <h1 className="font-heading font-bold text-[15px] text-foreground leading-tight">Bud</h1>
+            <p className="text-[10px] text-muted-foreground">Always here for you</p>
           </div>
         </div>
         <button
@@ -205,9 +226,6 @@ export default function Bud() {
         >
           <History className="w-[18px] h-[18px] text-muted-foreground" />
         </button>
-        <Link to="/agents" className="w-9 h-9 rounded-[12px] hover:bg-muted/60 flex items-center justify-center spring-tap">
-          <Cpu className="w-[18px] h-[18px] text-muted-foreground" />
-        </Link>
       </motion.div>
 
       <ConversationHistory
@@ -218,33 +236,65 @@ export default function Bud() {
         onNew={handleNewConversation}
       />
 
-      {!hasMessages ? (
-        <BudWelcome
-          user={user}
-          onPrompt={handleSend}
-          conversations={conversations}
-          onOpenConversation={handleOpenConversation}
-        />
-      ) : (
+      {/* Messages or empty state */}
+      {hasMessages ? (
         <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 space-y-3 pb-4 no-scrollbar">
           {messages.map((msg, i) => (
-            <ChatMessage key={i} message={msg} index={i} />
+            <ChatMessage key={i} message={msg} />
           ))}
-          <AnimatePresence>
-            {isTyping && <AgentActivityIndicator agents={activeAgents} />}
-          </AnimatePresence>
-          <BudCategories onPrompt={handleSend} />
+          {isTyping && <BudThinking />}
+        </div>
+      ) : (
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 22 }}
+            className="w-20 h-20 rounded-[24px] bg-foreground flex items-center justify-center mb-6"
+          >
+            <Sparkles className="w-10 h-10 text-background" />
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="font-heading font-bold text-[22px] text-foreground"
+          >
+            {timeGreeting()}, {firstName}.
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-[14px] text-muted-foreground mt-2 max-w-[280px] leading-relaxed"
+          >
+            What would you like to learn today?
+          </motion.p>
         </div>
       )}
 
-      <ChatInput
+      {/* Attachments preview */}
+      {attachments.length > 0 && (
+        <div className="px-4 pb-1 flex gap-2 flex-wrap">
+          {attachments.map((att, i) => (
+            <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-[12px] bg-card border border-border/40 soft-shadow">
+              <span className="text-[11px] text-foreground max-w-[100px] truncate">{att.name || "File"}</span>
+              <button onClick={() => setAttachments((p) => p.filter((_, idx) => idx !== i))} className="spring-tap">
+                <X className="w-3 h-3 text-muted-foreground" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <BudComposer
         value={input}
         onChange={setInput}
         onSend={handleSend}
-        attachments={attachments}
         onFileUpload={handleFileUpload}
-        onRemoveAttachment={(i) => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
         disabled={isTyping}
+        showSuggestions={!hasMessages}
+        onSuggestion={(p) => handleSend(p)}
       />
     </div>
   );
