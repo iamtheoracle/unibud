@@ -5,58 +5,58 @@
 
 // ─── Platform Modules ───────────────────────────────────────────────────────
 export const PLATFORM_MODULES = [
-  // Student Experience
-  { key: "campus", display_name: "Campus", category: "student_experience", icon: "Home", description: "Student home dashboard with morning briefing, schedule, and campus life.", enabled: true, sort_order: 1 },
-  { key: "quad", display_name: "Quad", category: "student_experience", icon: "Compass", description: "Campus social feed with posts, discussions, polls, and communities.", enabled: true, sort_order: 2 },
-  { key: "connect", display_name: "Connect", category: "student_experience", icon: "Users", description: "Study matching, mentorship, events, and career networking.", enabled: true, sort_order: 3 },
-  { key: "bud", display_name: "Bud", category: "student_experience", icon: "Sparkles", description: "Trusted university companion for study help and guidance.", enabled: true, sort_order: 4 },
-  { key: "library", display_name: "Library", category: "student_experience", icon: "Library", description: "Digital library with books, journals, past questions, and notes.", enabled: true, sort_order: 5 },
-  { key: "notifications", display_name: "Notifications", category: "student_experience", icon: "Bell", description: "Centralised notification center for all platform alerts.", enabled: true, sort_order: 6 },
-  { key: "search", display_name: "Search", category: "student_experience", icon: "Search", description: "Universal search across modules, resources, and people.", enabled: true, sort_order: 7 },
-  { key: "profile", display_name: "Profile", category: "student_experience", icon: "User", description: "Student profile with academic progress and achievements.", enabled: true, sort_order: 8 },
-  { key: "settings", display_name: "Settings", category: "student_experience", icon: "Settings", description: "Student account and app preferences.", enabled: true, sort_order: 9 },
+  // ── Phase 1 (visible) — Student Experience ──
+  { key: "campus", display_name: "Home", category: "student_experience", icon: "Home", description: "Student home dashboard with morning briefing, schedule, and campus life.", enabled: true, sort_order: 1 },
+  { key: "bud", display_name: "Bud", category: "student_experience", icon: "Sparkles", description: "Trusted university companion for study help and guidance.", enabled: true, sort_order: 2 },
+  { key: "search", display_name: "Search", category: "student_experience", icon: "Search", description: "Universal search across modules, resources, and people.", enabled: true, sort_order: 3 },
+  { key: "profile", display_name: "Profile", category: "student_experience", icon: "User", description: "Student profile with academic progress and achievements.", enabled: true, sort_order: 4 },
+  { key: "settings", display_name: "Settings", category: "student_experience", icon: "Settings", description: "Student account and app preferences.", enabled: true, sort_order: 5 },
 
-  // Academic
+  // ── Phase 1 (visible) — Academic ──
   { key: "assignments", display_name: "Assignments", category: "academic", icon: "ClipboardList", description: "Assignment tracking with deadlines, submission, and grading.", enabled: true, sort_order: 10 },
   { key: "examinations", display_name: "Examinations", category: "academic", icon: "FileText", description: "Exam schedules, revision tracking, and results.", enabled: true, sort_order: 11 },
-  { key: "timetable", display_name: "Timetable", category: "academic", icon: "CalendarDays", description: "Weekly class timetable and schedule management.", enabled: true, sort_order: 12 },
-  { key: "live", display_name: "UNIBUD Live", category: "academic", icon: "Video", description: "Virtual classroom with live lectures, recordings, and study groups.", enabled: true, sort_order: 13 },
-  { key: "research", display_name: "Research", category: "academic", icon: "FlaskConical", description: "Research projects, publications, and collaboration tools.", enabled: true, sort_order: 14 },
+  { key: "timetable", display_name: "Calendar", category: "academic", icon: "CalendarDays", description: "Weekly class timetable and schedule management.", enabled: true, sort_order: 12 },
 
-  // Social
-  { key: "study_groups", display_name: "Study Groups", category: "social", icon: "UsersRound", description: "Course, department, revision, and project study groups with voice and video rooms.", enabled: true, sort_order: 15 },
-  { key: "communities", display_name: "Communities", category: "social", icon: "Heart", description: "Student communities, clubs, and interest-based groups.", enabled: true, sort_order: 16 },
-  { key: "events", display_name: "Events", category: "social", icon: "CalendarHeart", description: "Campus events, workshops, and activity calendar.", enabled: true, sort_order: 17 },
+  // ── Phase 2 (hidden behind feature flags) — Social ──
+  { key: "quad", display_name: "Quad", category: "student_experience", icon: "Compass", description: "Campus social feed with posts, discussions, polls, and communities.", enabled: false, sort_order: 6 },
+  { key: "connect", display_name: "Connect", category: "student_experience", icon: "Users", description: "Study matching, mentorship, events, and career networking.", enabled: false, sort_order: 7 },
+  { key: "library", display_name: "Library", category: "student_experience", icon: "Library", description: "Digital library with books, journals, past questions, and notes.", enabled: false, sort_order: 8 },
+  { key: "notifications", display_name: "Notifications", category: "student_experience", icon: "Bell", description: "Centralised notification center for all platform alerts.", enabled: false, sort_order: 9 },
+  { key: "live", display_name: "UNIBUD Live", category: "academic", icon: "Video", description: "Virtual classroom with live lectures, recordings, and study groups.", enabled: false, sort_order: 13 },
+  { key: "research", display_name: "Research", category: "academic", icon: "FlaskConical", description: "Research projects, publications, and collaboration tools.", enabled: false, sort_order: 14 },
+  { key: "study_groups", display_name: "Study Groups", category: "social", icon: "UsersRound", description: "Course, department, revision, and project study groups with voice and video rooms.", enabled: false, sort_order: 15 },
+  { key: "communities", display_name: "Communities", category: "social", icon: "Heart", description: "Student communities, clubs, and interest-based groups.", enabled: false, sort_order: 16 },
+  { key: "events", display_name: "Events", category: "social", icon: "CalendarHeart", description: "Campus events, workshops, and activity calendar.", enabled: false, sort_order: 17 },
 
-  // Opportunities
-  { key: "scholarships", display_name: "Scholarships", category: "opportunities", icon: "Award", description: "Scholarship discovery, tracking, and applications.", enabled: true, sort_order: 18 },
-  { key: "internships", display_name: "Internships", category: "opportunities", icon: "Briefcase", description: "Internship opportunities and application tracking.", enabled: true, sort_order: 19 },
-  { key: "marketplace", display_name: "Marketplace", category: "opportunities", icon: "ShoppingBag", description: "Campus marketplace for textbooks, electronics, and services.", enabled: true, sort_order: 20 },
-  { key: "career_hub", display_name: "Career Hub", category: "opportunities", icon: "TrendingUp", description: "Career guidance, job postings, and professional development.", enabled: true, sort_order: 21 },
+  // ── Phase 2 (hidden) — Opportunities ──
+  { key: "scholarships", display_name: "Scholarships", category: "opportunities", icon: "Award", description: "Scholarship discovery, tracking, and applications.", enabled: false, sort_order: 18 },
+  { key: "internships", display_name: "Internships", category: "opportunities", icon: "Briefcase", description: "Internship opportunities and application tracking.", enabled: false, sort_order: 19 },
+  { key: "marketplace", display_name: "Marketplace", category: "opportunities", icon: "ShoppingBag", description: "Campus marketplace for textbooks, electronics, and services.", enabled: false, sort_order: 20 },
+  { key: "career_hub", display_name: "Career Hub", category: "opportunities", icon: "TrendingUp", description: "Career guidance, job postings, and professional development.", enabled: false, sort_order: 21 },
 
-  // Campus Services
-  { key: "campus_navigation", display_name: "Campus Navigation", category: "campus_services", icon: "MapPin", description: "Interactive campus maps and navigation.", enabled: true, sort_order: 22 },
-  { key: "accommodation", display_name: "Accommodation", category: "campus_services", icon: "Building2", description: "Student housing listings and accommodation services.", enabled: true, sort_order: 23 },
-  { key: "transport", display_name: "Transport", category: "campus_services", icon: "Bus", description: "Campus transport schedules and shuttle tracking.", enabled: true, sort_order: 24 },
-  { key: "dining", display_name: "Dining", category: "campus_services", icon: "UtensilsCrossed", description: "Campus dining halls, menus, and meal plans.", enabled: true, sort_order: 25 },
+  // ── Phase 2 (hidden) — Campus Services ──
+  { key: "campus_navigation", display_name: "Campus Navigation", category: "campus_services", icon: "MapPin", description: "Interactive campus maps and navigation.", enabled: false, sort_order: 22 },
+  { key: "accommodation", display_name: "Accommodation", category: "campus_services", icon: "Building2", description: "Student housing listings and accommodation services.", enabled: false, sort_order: 23 },
+  { key: "transport", display_name: "Transport", category: "campus_services", icon: "Bus", description: "Campus transport schedules and shuttle tracking.", enabled: false, sort_order: 24 },
+  { key: "dining", display_name: "Dining", category: "campus_services", icon: "UtensilsCrossed", description: "Campus dining halls, menus, and meal plans.", enabled: false, sort_order: 25 },
 
-  // Wellbeing
-  { key: "student_support", display_name: "Student Support", category: "wellbeing", icon: "HeartHandshake", description: "Dedicated wellbeing space for stress, anxiety, and student life support.", enabled: true, sort_order: 26 },
+  // ── Phase 2 (hidden) — Wellbeing ──
+  { key: "student_support", display_name: "Student Support", category: "wellbeing", icon: "HeartHandshake", description: "Dedicated wellbeing space for stress, anxiety, and student life support.", enabled: false, sort_order: 26 },
 
-  // Portals
-  { key: "lecturer_portal", display_name: "Lecturer Portal", category: "portals", icon: "GraduationCap", description: "Lecturer dashboard for classes, assignments, attendance, and analytics.", enabled: true, sort_order: 27 },
-  { key: "department_portal", display_name: "Department Portal", category: "portals", icon: "Layers", description: "Department administrator dashboard for courses, lecturers, and students.", enabled: true, sort_order: 28 },
-  { key: "faculty_portal", display_name: "Faculty Portal", category: "portals", icon: "Building", description: "Faculty administrator dashboard for departments, programs, and reports.", enabled: true, sort_order: 29 },
-  { key: "university_portal", display_name: "University Portal", category: "portals", icon: "Landmark", description: "University administrator dashboard for faculties, students, and settings.", enabled: true, sort_order: 30 },
+  // ── Phase 2 (hidden) — Portals ──
+  { key: "lecturer_portal", display_name: "Lecturer Portal", category: "portals", icon: "GraduationCap", description: "Lecturer dashboard for classes, assignments, attendance, and analytics.", enabled: false, sort_order: 27 },
+  { key: "department_portal", display_name: "Department Portal", category: "portals", icon: "Layers", description: "Department administrator dashboard for courses, lecturers, and students.", enabled: false, sort_order: 28 },
+  { key: "faculty_portal", display_name: "Faculty Portal", category: "portals", icon: "Building", description: "Faculty administrator dashboard for departments, programs, and reports.", enabled: false, sort_order: 29 },
+  { key: "university_portal", display_name: "University Portal", category: "portals", icon: "Landmark", description: "University administrator dashboard for faculties, students, and settings.", enabled: false, sort_order: 30 },
 
-  // Platform
-  { key: "reports", display_name: "Reports", category: "platform", icon: "BarChart3", description: "Platform-wide reports and data exports.", enabled: true, sort_order: 31 },
-  { key: "analytics", display_name: "Analytics", category: "platform", icon: "LineChart", description: "Platform analytics, growth metrics, and business intelligence.", enabled: true, sort_order: 32 },
-  { key: "bud_management", display_name: "Bud Management", category: "platform", icon: "Bot", description: "Bud configuration, knowledge base, and behavior tuning.", enabled: true, sort_order: 33 },
-  { key: "media", display_name: "Media", category: "platform", icon: "Image", description: "Media library and asset management.", enabled: true, sort_order: 34 },
-  { key: "content", display_name: "Content", category: "platform", icon: "FileEdit", description: "Content management for announcements, articles, and resources.", enabled: true, sort_order: 35 },
-  { key: "support", display_name: "Support", category: "platform", icon: "LifeBuoy", description: "Support ticket management and customer success.", enabled: true, sort_order: 36 },
-  { key: "administration", display_name: "Administration", category: "platform", icon: "Shield", description: "Platform administration, security, and system configuration.", enabled: true, sort_order: 37 },
+  // ── Phase 2 (hidden) — Platform ──
+  { key: "reports", display_name: "Reports", category: "platform", icon: "BarChart3", description: "Platform-wide reports and data exports.", enabled: false, sort_order: 31 },
+  { key: "analytics", display_name: "Analytics", category: "platform", icon: "LineChart", description: "Platform analytics, growth metrics, and business intelligence.", enabled: false, sort_order: 32 },
+  { key: "bud_management", display_name: "Bud Management", category: "platform", icon: "Bot", description: "Bud configuration, knowledge base, and behavior tuning.", enabled: false, sort_order: 33 },
+  { key: "media", display_name: "Media", category: "platform", icon: "Image", description: "Media library and asset management.", enabled: false, sort_order: 34 },
+  { key: "content", display_name: "Content", category: "platform", icon: "FileEdit", description: "Content management for announcements, articles, and resources.", enabled: false, sort_order: 35 },
+  { key: "support", display_name: "Support", category: "platform", icon: "LifeBuoy", description: "Support ticket management and customer success.", enabled: false, sort_order: 36 },
+  { key: "administration", display_name: "Administration", category: "platform", icon: "Shield", description: "Platform administration, security, and system configuration.", enabled: false, sort_order: 37 },
 ];
 
 // ─── Role Hierarchy ──────────────────────────────────────────────────────────

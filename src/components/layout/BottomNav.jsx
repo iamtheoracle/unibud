@@ -1,14 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Compass, MessageCircle, User } from "lucide-react";
+import { Home, Sparkles, BookOpen, User } from "lucide-react";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
 import { hapticTap } from "@/lib/haptics";
 
 const allNavItems = [
-  { path: "/", icon: Home, label: "Campus", flag: "campus" },
-  { path: "/quad", icon: Compass, label: "Quad", flag: "quad" },
-  { path: "/connect", icon: MessageCircle, label: "Connect", flag: null },
+  { path: "/", icon: Home, label: "Home", flag: "campus" },
+  { path: "/bud", icon: Sparkles, label: "Bud", flag: "bud" },
+  { path: "/academics", icon: BookOpen, label: "Courses", flag: null },
   { path: "/me", icon: User, label: "Me", flag: null },
 ];
 
