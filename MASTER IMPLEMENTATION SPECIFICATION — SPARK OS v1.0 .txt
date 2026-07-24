@@ -1,0 +1,2095 @@
+MASTER IMPLEMENTATION SPECIFICATION — SPARK OS v1.0
+
+Mission
+
+Build Spark as a complete AI Operating System, not as a simple SDK or library.
+
+Spark must become the invisible intelligence layer powering every product in the ecosystem, while Bud remains the only personality users interact with.
+
+Spark is responsible for orchestrating intelligence, memory, workflows, services, automation, security, communication, storage, and real-time synchronization across the platform.
+
+⸻
+
+Core Architecture
+
+Everything inside the application communicates through Spark.
+
+No module should bypass Spark.
+
+Flow:
+
+UI
+
+↓
+
+Bud
+
+↓
+
+Spark OS
+
+↓
+
+Internal Services
+
+↓
+
+Database / Storage / Runtime
+
+↓
+
+Optional External Integrations
+
+External APIs are enhancements, never dependencies.
+
+⸻
+
+Spark Core Modules
+
+Implement production-ready modules for:
+
+	•	Identity Engine
+	•	Reasoning Engine
+	•	Planning Engine
+	•	Knowledge Engine
+	•	Memory Engine
+	•	Search Engine
+	•	Organization Engine
+	•	Recommendation Engine
+	•	Writing Engine
+	•	Translation Engine
+	•	Automation Engine
+	•	Workflow Engine
+	•	Notification Engine
+	•	Analytics Engine
+	•	Security Engine
+	•	Permission Engine
+	•	File Engine
+	•	OCR Engine
+	•	Media Engine
+	•	Voice Engine
+	•	Vision Engine
+	•	Streaming Engine
+	•	Calendar Engine
+	•	Event Engine
+	•	Background Worker Engine
+	•	Device Sync Engine
+	•	Offline Engine
+	•	AI Provider Engine
+
+Each module must be independently testable, replaceable, and reusable.
+
+⸻
+
+Internal First Principle
+
+The platform must work completely without external APIs.
+
+Build native internal implementations for:
+
+	•	Authentication
+	•	Storage
+	•	Calendar
+	•	Search
+	•	Notifications
+	•	OCR
+	•	Voice recording
+	•	Camera
+	•	Streaming
+	•	Messaging
+	•	Calls
+	•	Meetings
+	•	Communities
+	•	File management
+	•	PDF rendering
+	•	Image rendering
+	•	Analytics
+
+If no API keys exist, the application must still function smoothly.
+
+⸻
+
+AI Provider Layer
+
+Create a Provider Manager.
+
+Support:
+
+	•	Local Provider
+	•	OpenAI
+	•	Anthropic
+	•	Gemini
+	•	Grok
+	•	DeepSeek
+	•	Llama
+	•	Mistral
+	•	Future providers
+
+Provider selection should be automatic based on:
+
+	•	Task type
+	•	Cost
+	•	Speed
+	•	Availability
+	•	Privacy
+	•	Performance
+
+Never hardcode provider logic into Bud.
+
+⸻
+
+Event-Driven System
+
+Everything becomes an event.
+
+Examples:
+
+Upload PDF
+
+↓
+
+Extract text
+
+↓
+
+OCR
+
+↓
+
+Knowledge indexing
+
+↓
+
+Memory update
+
+↓
+
+Summary
+
+↓
+
+Quiz generation
+
+↓
+
+Flashcards
+
+↓
+
+Calendar reminder
+
+↓
+
+Notification
+
+↓
+
+Archive
+
+Every workflow should be automatic.
+
+⸻
+
+Background Workers
+
+Long-running jobs should never block the interface.
+
+Workers handle:
+
+	•	OCR
+	•	AI indexing
+	•	Search indexing
+	•	Video encoding
+	•	Audio processing
+	•	File conversion
+	•	Notifications
+	•	Analytics
+	•	Recommendations
+	•	Synchronization
+	•	Backups
+
+⸻
+
+Knowledge Graph
+
+Build a living graph connecting:
+
+Students
+
+Courses
+
+Assignments
+
+Projects
+
+Communities
+
+Lecturers
+
+Notes
+
+Files
+
+Videos
+
+Research
+
+Chats
+
+Memory
+
+Bud should understand relationships automatically.
+
+⸻
+
+Memory System
+
+Implement:
+
+Short-term memory
+
+Long-term memory
+
+Semantic memory
+
+Episodic memory
+
+Conversation memory
+
+Preference memory
+
+Learning memory
+
+Goal memory
+
+Memory should support:
+
+Search
+
+Compression
+
+Summarization
+
+Export
+
+Deletion
+
+Privacy controls
+
+⸻
+
+Universal Search
+
+Search should find:
+
+Chats
+
+Assignments
+
+Courses
+
+Files
+
+Images
+
+Videos
+
+PDFs
+
+Notes
+
+Messages
+
+People
+
+Communities
+
+Meetings
+
+Calendar events
+
+Bud memories
+
+Everything.
+
+⸻
+
+Internal Storage
+
+Create a native storage service supporting:
+
+Images
+
+Videos
+
+Audio
+
+PDF
+
+DOCX
+
+PPTX
+
+XLSX
+
+CSV
+
+ZIP
+
+Camera captures
+
+Voice notes
+
+Screen recordings
+
+Whiteboard exports
+
+Version history
+
+Recycle bin
+
+⸻
+
+Real-Time Engine
+
+Provide:
+
+Presence
+
+Typing indicators
+
+Live cursor
+
+Live reactions
+
+Live editing
+
+Whiteboard sync
+
+Meeting sync
+
+Classroom sync
+
+Community sync
+
+Push updates
+
+⸻
+
+Automation Engine
+
+Support rules like:
+
+IF
+
+THEN
+
+Examples:
+
+IF assignment uploaded
+
+THEN summarize
+
+Generate flashcards
+
+Create quiz
+
+Schedule revision
+
+Notify student
+
+Everything configurable.
+
+⸻
+
+Bud Integration
+
+Bud should use Spark exclusively.
+
+Bud never calls databases directly.
+
+Bud never accesses providers directly.
+
+Bud asks Spark.
+
+Spark decides.
+
+⸻
+
+Security
+
+Implement:
+
+Role-based permissions
+
+Encryption
+
+Rate limiting
+
+Audit logging
+
+Device management
+
+Session management
+
+Secrets manager
+
+Zero Trust architecture
+
+⸻
+
+Scalability
+
+Design for:
+
+Millions of users
+
+Thousands of institutions
+
+Multiple regions
+
+Horizontal scaling
+
+Microservice-ready architecture
+
+Cloud-native deployment
+
+⸻
+
+API Philosophy
+
+Every internal service exposes a clean API.
+
+External APIs plug into Spark through adapters.
+
+The absence of an external API must never prevent the application from functioning.
+
+⸻
+
+Quality Gates
+
+No feature is complete until it passes:
+
+	•	Functional testing
+	•	Accessibility testing
+	•	Performance testing
+	•	Security testing
+	•	Responsive testing
+	•	AI evaluation
+	•	Error recovery
+	•	Offline behaviour
+	•	Cross-device synchronization
+
+⸻
+
+Final Objective
+
+Spark must become a production-grade AI Operating System capable of powering not only UNIBUD but every future product in the ecosystem. Bud remains the intelligent companion users see, while Spark invisibly orchestrates every workflow, every service, every memory, every automation, and every interaction. The platform must remain fully functional without third-party APIs, seamlessly upgrading when integrations are added, and maintain enterprise-level scalability, security, modularity, and performance.
+
+
+
+MASTER IMPLEMENTATION SPECIFICATION — BACKEND ARCHITECTURE v1.0
+
+Mission
+
+Design a production-grade backend capable of supporting millions of users while remaining modular, secure, offline-first, AI-native, and easy to extend. Every service must integrate through Spark OS and expose clean interfaces without tightly coupling business logic.
+
+⸻
+
+Core Backend Principles
+
+	•	API-first architecture.
+	•	Offline-first behavior where possible.
+	•	Event-driven communication.
+	•	Service-oriented design.
+	•	Stateless APIs.
+	•	Strong typing throughout.
+	•	Modular components.
+	•	Horizontal scalability.
+	•	Zero-trust security.
+	•	Automatic recovery from failures.
+
+⸻
+
+Backend Services
+
+Build separate services for:
+
+	•	Authentication Service
+	•	User Service
+	•	Institution Service
+	•	Course Service
+	•	Assignment Service
+	•	Project Service
+	•	Notes Service
+	•	Community Service
+	•	Messaging Service
+	•	Notification Service
+	•	Calendar Service
+	•	Meeting Service
+	•	Livestream Service
+	•	File Service
+	•	Media Service
+	•	Search Service
+	•	Knowledge Service
+	•	Memory Service
+	•	Analytics Service
+	•	Billing Service
+	•	Marketplace Service
+	•	AI Service (Spark)
+	•	Logging Service
+	•	Monitoring Service
+	•	Audit Service
+
+Each service should expose versioned APIs and remain independently maintainable.
+
+⸻
+
+API Standards
+
+Every endpoint must:
+
+	•	Validate inputs.
+	•	Return structured JSON.
+	•	Use consistent status codes.
+	•	Return meaningful error objects.
+	•	Support pagination.
+	•	Support filtering.
+	•	Support sorting.
+	•	Support rate limiting.
+	•	Support API versioning.
+	•	Be fully documented.
+
+⸻
+
+Database Layer
+
+Separate concerns using logical databases or schemas where appropriate.
+
+Primary entities include:
+
+	•	Users
+	•	Roles
+	•	Institutions
+	•	Courses
+	•	Classes
+	•	Assignments
+	•	Projects
+	•	Notes
+	•	Flashcards
+	•	Quizzes
+	•	Chats
+	•	Messages
+	•	Files
+	•	Uploads
+	•	Media
+	•	Calendar Events
+	•	Meetings
+	•	Livestreams
+	•	Communities
+	•	Notifications
+	•	Bud Memory
+	•	Spark Knowledge Graph
+	•	AI Tasks
+	•	Background Jobs
+	•	Audit Logs
+
+Relationships should be normalized while allowing efficient indexing for search and AI retrieval.
+
+⸻
+
+Storage
+
+Implement internal storage for:
+
+	•	Images
+	•	Videos
+	•	PDFs
+	•	Office documents
+	•	Audio
+	•	Whiteboards
+	•	Screenshots
+	•	Voice recordings
+	•	Generated AI content
+
+Support:
+
+	•	Version history
+	•	Soft delete
+	•	Restore
+	•	Metadata extraction
+	•	Thumbnail generation
+	•	Virus scanning
+	•	Permission management
+
+⸻
+
+Queue & Background Processing
+
+Implement a job queue capable of handling:
+
+	•	OCR
+	•	AI summarization
+	•	Flashcard generation
+	•	Quiz generation
+	•	File indexing
+	•	Search indexing
+	•	Recommendation updates
+	•	Notification delivery
+	•	Video transcoding
+	•	Audio processing
+	•	Backup tasks
+	•	Analytics aggregation
+
+Jobs must support retries, priorities, scheduling, cancellation, and progress tracking.
+
+⸻
+
+Caching
+
+Introduce intelligent caching for:
+
+	•	Frequently accessed data
+	•	User sessions
+	•	Search results
+	•	AI embeddings
+	•	Static assets
+	•	Dashboard summaries
+
+Automatically invalidate stale cache entries.
+
+⸻
+
+Real-Time Communication
+
+Support:
+
+	•	WebSockets
+	•	Server-Sent Events
+	•	Push notifications
+
+Features:
+
+	•	Live chats
+	•	Live classes
+	•	Typing indicators
+	•	Presence
+	•	Collaborative editing
+	•	Whiteboards
+	•	Reactions
+	•	Polls
+
+⸻
+
+Spark Integration
+
+No backend service should communicate directly with AI providers.
+
+Every AI request must flow:
+
+Service
+
+↓
+
+Spark OS
+
+↓
+
+Provider Manager
+
+↓
+
+Selected Model
+
+↓
+
+Response
+
+Spark remains the orchestration layer.
+
+⸻
+
+Security
+
+Implement:
+
+	•	JWT/session management
+	•	Role-Based Access Control (RBAC)
+	•	Attribute-Based Access Control (ABAC)
+	•	Encrypted secrets
+	•	Password hashing
+	•	API key vault
+	•	Request signing
+	•	CSRF protection
+	•	XSS protection
+	•	SQL injection prevention
+	•	File validation
+	•	Content moderation hooks
+
+⸻
+
+Monitoring & Observability
+
+Track:
+
+	•	API latency
+	•	Error rates
+	•	Queue health
+	•	AI response times
+	•	Storage usage
+	•	Active users
+	•	Background workers
+	•	System health
+
+Provide dashboards for administrators.
+
+⸻
+
+Scalability
+
+Design the backend so it can scale independently:
+
+	•	API layer
+	•	AI layer
+	•	Storage layer
+	•	Queue workers
+	•	Search engine
+	•	Analytics
+	•	Media processing
+
+No single component should become a bottleneck.
+
+⸻
+
+Disaster Recovery
+
+Support:
+
+	•	Automated backups
+	•	Point-in-time recovery
+	•	Rollback
+	•	Redundancy
+	•	Health checks
+	•	Graceful degradation
+
+The platform should continue operating even when individual services fail.
+
+⸻
+
+Final Objective
+
+Build a resilient, enterprise-grade backend that powers the entire UNIBUD ecosystem. Every service should communicate cleanly through Spark OS, support future expansion, remain secure by default, and provide the foundation for Bud, institutions, creators, students, and future products without requiring architectural rewrites.
+
+
+
+MASTER IMPLEMENTATION SPECIFICATION — BUD OS v1.0
+
+Mission
+
+Build Bud OS as the world’s first AI Learning Operating System. Bud is not a chatbot, assistant, or feature—it is the primary interface through which users experience UNIBUD. Every interaction should feel like learning with an intelligent, trusted companion rather than using software.
+
+⸻
+
+Bud Identity
+
+Bud is:
+
+	•	A lifelong learning companion.
+	•	An adaptive teacher.
+	•	A mentor.
+	•	A coach.
+	•	A researcher.
+	•	A planner.
+	•	A productivity partner.
+	•	A creative collaborator.
+	•	An emotional support companion (without replacing professional care).
+
+Bud is never presented as a chatbot.
+
+Spark remains completely invisible.
+
+⸻
+
+Bud Core Architecture
+
+Every request follows this pipeline:
+
+User
+
+↓
+
+Bud OS
+
+↓
+
+Spark OS
+
+↓
+
+Reasoning Engine
+
+↓
+
+Memory Engine
+
+↓
+
+Knowledge Engine
+
+↓
+
+Task Router
+
+↓
+
+Internal Services
+
+↓
+
+Optional AI Provider
+
+↓
+
+Bud Response
+
+Bud never exposes Spark or provider names.
+
+⸻
+
+Bud Interface
+
+Bud should exist everywhere in UNIBUD.
+
+Accessible from:
+
+	•	Floating Bud button.
+	•	Dashboard.
+	•	Assignments.
+	•	Projects.
+	•	Smart Notes.
+	•	Courses.
+	•	Communities.
+	•	Marketplace.
+	•	Calendar.
+	•	Livestreams.
+	•	Calls.
+	•	Meetings.
+	•	Search.
+	•	Notifications.
+	•	Files.
+
+Users should never need to “open chat” to use Bud.
+
+⸻
+
+Bud Workspace
+
+Replace traditional chat with a dynamic learning canvas.
+
+Responses may include:
+
+	•	Natural conversation.
+	•	Rich Markdown.
+	•	Images.
+	•	Diagrams.
+	•	Charts.
+	•	Tables.
+	•	Code.
+	•	Equations.
+	•	Flashcards.
+	•	Quizzes.
+	•	Timelines.
+	•	Mind maps.
+	•	Videos.
+	•	Audio.
+	•	References.
+	•	Practice exercises.
+	•	Suggested next steps.
+
+Each section appears as floating cards rather than endless message bubbles.
+
+⸻
+
+Conversation Intelligence
+
+Bud should:
+
+	•	Remember previous conversations.
+	•	Continue unfinished discussions.
+	•	Ask meaningful follow-up questions.
+	•	Recognize user goals.
+	•	Detect context.
+	•	Adapt explanations.
+	•	Build long-term relationships with users.
+
+No repetitive greetings.
+
+No robotic phrasing.
+
+⸻
+
+Adaptive Teaching
+
+Bud automatically adapts to:
+
+	•	Age.
+	•	Reading level.
+	•	Academic level.
+	•	Learning style.
+	•	Personality.
+	•	Preferred language.
+	•	Interests.
+	•	Pace.
+	•	Weak subjects.
+	•	Strong subjects.
+	•	Career goals.
+
+Every explanation should evolve as Bud learns more about the user.
+
+⸻
+
+Voice System
+
+Implement complete voice support.
+
+Input:
+
+	•	Push-to-talk.
+	•	Hands-free mode.
+	•	Continuous conversation.
+	•	Dictation.
+	•	Accent recognition.
+	•	Noise suppression.
+
+Output:
+
+	•	Natural speech.
+	•	Multiple voices.
+	•	Adjustable speed.
+	•	Adjustable pitch.
+	•	Emotional tone.
+	•	Reading mode.
+	•	Story mode.
+	•	Lecture mode.
+
+Users should be able to interrupt Bud naturally.
+
+⸻
+
+Vision System
+
+Bud understands:
+
+	•	Camera photos.
+	•	Screenshots.
+	•	PDFs.
+	•	Whiteboards.
+	•	Homework.
+	•	Graphs.
+	•	Tables.
+	•	Handwriting.
+	•	Slides.
+	•	Forms.
+
+Users can point the camera at something and simply ask:
+
+“Explain this.”
+
+⸻
+
+File Intelligence
+
+Bud understands:
+
+	•	PDF
+	•	DOCX
+	•	PPTX
+	•	XLSX
+	•	CSV
+	•	TXT
+	•	Markdown
+	•	ZIP
+	•	Images
+	•	Audio
+	•	Video
+
+Multiple files can be uploaded simultaneously.
+
+Bud reasons across every uploaded file.
+
+⸻
+
+Emotional Intelligence
+
+Bud should:
+
+	•	Encourage.
+	•	Motivate.
+	•	Comfort.
+	•	Celebrate.
+	•	Challenge positively.
+	•	Stay calm.
+	•	Be patient.
+	•	Remain respectful.
+
+Never diagnose users.
+
+Never claim to replace professionals.
+
+Recognize possible crisis language and transition into safe support workflows when appropriate.
+
+⸻
+
+Learning Modes
+
+One tap switches Bud into:
+
+	•	Study Mode.
+	•	Assignment Mode.
+	•	Project Mode.
+	•	Coding Mode.
+	•	Research Mode.
+	•	Writing Mode.
+	•	Presentation Mode.
+	•	Revision Mode.
+	•	Exam Mode.
+	•	Language Learning Mode.
+	•	Career Mode.
+	•	Brainstorm Mode.
+
+Each mode adjusts Bud’s reasoning and interface automatically.
+
+⸻
+
+Quick Actions
+
+Support one-tap actions:
+
+	•	Explain.
+	•	Summarize.
+	•	Rewrite.
+	•	Translate.
+	•	Simplify.
+	•	Generate Flashcards.
+	•	Generate Quiz.
+	•	Continue Learning.
+	•	Save Notes.
+	•	Remember This.
+	•	Export.
+	•	Share.
+	•	Create Study Plan.
+
+⸻
+
+Automation
+
+Bud proactively helps.
+
+Examples:
+
+Assignment uploaded
+
+↓
+
+Analyze
+
+↓
+
+Summarize
+
+↓
+
+Generate flashcards
+
+↓
+
+Generate quiz
+
+↓
+
+Create revision schedule
+
+↓
+
+Add calendar reminder
+
+↓
+
+Notify user
+
+↓
+
+Track progress
+
+No manual workflow should be required.
+
+⸻
+
+Memory
+
+Bud remembers (with permission):
+
+	•	Goals.
+	•	Preferences.
+	•	Learning history.
+	•	Projects.
+	•	Assignments.
+	•	Study habits.
+	•	Interests.
+	•	Conversations.
+	•	Favourite explanations.
+	•	Weak areas.
+
+Users can:
+
+	•	Review memory.
+	•	Edit memory.
+	•	Delete memory.
+	•	Export memory.
+
+⸻
+
+Real-Time Collaboration
+
+Bud participates in:
+
+	•	Live classes.
+	•	Group study.
+	•	Meetings.
+	•	Communities.
+	•	Whiteboards.
+	•	Shared documents.
+
+Bud can answer questions during live sessions without interrupting the flow.
+
+⸻
+
+Offline Behaviour
+
+Bud should continue functioning offline where possible using Spark’s internal capabilities.
+
+Queue requests automatically for synchronization when connectivity returns.
+
+⸻
+
+Security
+
+Bud must:
+
+	•	Protect user privacy.
+	•	Never expose Spark.
+	•	Never expose provider names.
+	•	Never reveal internal architecture.
+	•	Never expose API keys.
+	•	Respect role permissions.
+
+⸻
+
+Performance
+
+Target:
+
+	•	Instant interface.
+	•	Streaming responses.
+	•	Smooth animations.
+	•	Minimal latency.
+	•	Progressive rendering.
+	•	Intelligent caching.
+
+Bud should always feel responsive.
+
+⸻
+
+Final Objective
+
+Create Bud OS as a complete AI operating layer for learning. Bud should feel less like software and more like an intelligent companion that understands each learner, adapts naturally, communicates through voice, vision, files, and conversation, remembers what matters, proactively assists with learning, and quietly relies on Spark OS to orchestrate every capability while keeping the entire experience simple, calm, premium, and human.
+
+
+
+
+MASTER IMPLEMENTATION SPECIFICATION — SPARK MEMORY & KNOWLEDGE OS v1.0
+
+Mission
+
+Build Spark Memory & Knowledge OS as a living intelligence system that continuously learns, organizes, connects, and retrieves information while respecting user privacy and permissions. Memory should not simply store conversations—it should build understanding over time and improve Bud’s ability to teach, reason, and assist.
+
+⸻
+
+Core Philosophy
+
+Memory is not chat history.
+
+Memory is understanding.
+
+Spark should remember relationships, patterns, preferences, goals, learning progress, and meaningful experiences instead of storing raw conversations indefinitely.
+
+⸻
+
+Memory Architecture
+
+Implement multiple independent memory systems:
+
+	•	Short-Term Memory
+	•	Long-Term Memory
+	•	Working Memory
+	•	Semantic Memory
+	•	Episodic Memory
+	•	Procedural Memory
+	•	Preference Memory
+	•	Learning Memory
+	•	Goal Memory
+	•	Context Memory
+	•	Institution Memory
+	•	Community Memory
+
+Each memory type has its own storage, indexing, retrieval, expiry rules, and permission model.
+
+⸻
+
+Short-Term Memory
+
+Stores:
+
+	•	Current conversation
+	•	Active tasks
+	•	Current assignment
+	•	Open files
+	•	Recent uploads
+	•	Temporary reasoning
+
+Automatically clears when no longer needed.
+
+⸻
+
+Long-Term Memory
+
+Stores:
+
+	•	User preferences
+	•	Long-term goals
+	•	Study habits
+	•	Career interests
+	•	Frequently used workflows
+	•	Important decisions
+	•	Saved knowledge
+
+Persists across sessions.
+
+⸻
+
+Semantic Memory
+
+Stores concepts instead of messages.
+
+Examples:
+
+Instead of remembering:
+
+“Explain Newton’s Laws.”
+
+Remember:
+
+User is studying mechanics.
+
+User prefers real-world analogies.
+
+User struggles with force diagrams.
+
+⸻
+
+Episodic Memory
+
+Stores meaningful moments.
+
+Examples:
+
+	•	Passed calculus exam.
+	•	Finished first project.
+	•	Started learning Python.
+	•	Missed study streak.
+	•	Joined university.
+	•	Graduated course.
+
+Bud should reference these naturally.
+
+⸻
+
+Learning Memory
+
+Track:
+
+	•	Strong subjects
+	•	Weak subjects
+	•	Quiz performance
+	•	Revision frequency
+	•	Learning speed
+	•	Preferred examples
+	•	Common mistakes
+
+Bud should continuously adapt teaching.
+
+⸻
+
+Goal Memory
+
+Remember:
+
+	•	GPA targets
+	•	Career plans
+	•	Certifications
+	•	Deadlines
+	•	Study goals
+	•	Daily objectives
+
+Bud proactively checks progress.
+
+⸻
+
+Preference Memory
+
+Remember:
+
+	•	Language
+	•	Voice
+	•	Theme
+	•	Font size
+	•	Reading speed
+	•	Teaching style
+	•	Preferred explanations
+	•	Accessibility settings
+
+Never ask repeatedly.
+
+⸻
+
+Knowledge Graph
+
+Build a living graph connecting:
+
+Users
+
+↓
+
+Courses
+
+↓
+
+Assignments
+
+↓
+
+Projects
+
+↓
+
+Notes
+
+↓
+
+Files
+
+↓
+
+Communities
+
+↓
+
+Teachers
+
+↓
+
+Calendar Events
+
+↓
+
+Bud Conversations
+
+↓
+
+Spark Knowledge
+
+Every entity becomes connected.
+
+Spark reasons across relationships instead of isolated records.
+
+⸻
+
+Knowledge Indexing
+
+Automatically index:
+
+	•	PDFs
+	•	Notes
+	•	Assignments
+	•	Projects
+	•	Videos
+	•	Images
+	•	Whiteboards
+	•	Flashcards
+	•	Quizzes
+	•	Chat summaries
+
+Everything becomes searchable.
+
+⸻
+
+Retrieval Engine
+
+When Bud answers:
+
+Do not search entire history.
+
+Instead:
+
+	1.	Search current context.
+	2.	Search working memory.
+	3.	Search semantic memory.
+	4.	Search episodic memory.
+	5.	Search knowledge graph.
+	6.	Search uploaded files.
+	7.	Search external providers if enabled.
+
+Always return the most relevant information.
+
+⸻
+
+Memory Compression
+
+Large conversations should automatically become:
+
+	•	Summaries
+	•	Concepts
+	•	Relationships
+	•	Learning insights
+
+Do not store unnecessary repetition.
+
+⸻
+
+Memory Controls
+
+Users can:
+
+	•	View memory
+	•	Search memory
+	•	Edit memory
+	•	Pin memories
+	•	Forget memories
+	•	Export memories
+	•	Reset memories
+	•	Pause learning
+
+Memory should always remain transparent and user-controlled.
+
+⸻
+
+Institutional Knowledge
+
+Universities may create shared knowledge:
+
+	•	Policies
+	•	Courses
+	•	Lecture materials
+	•	Research
+	•	FAQs
+	•	Academic calendars
+
+Bud reasons using institutional knowledge without exposing restricted information.
+
+⸻
+
+Community Knowledge
+
+Communities generate:
+
+	•	Shared notes
+	•	Discussions
+	•	Resources
+	•	Solutions
+	•	Recommendations
+
+Spark indexes community intelligence while respecting permissions.
+
+⸻
+
+Privacy
+
+Memory belongs to the user.
+
+Never share memory across users unless explicitly authorized.
+
+Support:
+
+	•	Encryption
+	•	Granular permissions
+	•	Right to delete
+	•	Data export
+	•	Data portability
+	•	Automatic retention policies
+
+⸻
+
+Background Processing
+
+Memory workers should:
+
+	•	Index files
+	•	Compress conversations
+	•	Build relationships
+	•	Generate embeddings
+	•	Detect duplicates
+	•	Update recommendations
+	•	Refresh knowledge graph
+
+Run asynchronously.
+
+⸻
+
+Performance
+
+Memory retrieval should remain fast even with millions of records.
+
+Use:
+
+	•	Vector indexes
+	•	Graph indexes
+	•	Metadata indexes
+	•	Full-text indexes
+	•	Incremental updates
+
+⸻
+
+Bud Integration
+
+Bud should naturally reference memories.
+
+Example:
+
+“Last month you said you wanted to improve organic chemistry. Since then you’ve completed three quizzes and your score has improved by 18%. Ready for the next challenge?”
+
+This should feel natural, never intrusive.
+
+⸻
+
+Final Objective
+
+Spark Memory & Knowledge OS should become the long-term intelligence foundation of the ecosystem, continuously transforming conversations, files, learning activities, and experiences into structured knowledge. Bud should feel increasingly personal, intelligent, and helpful over time while users remain in complete control of what Spark remembers, forgets, and connects.
+
+
+MASTER IMPLEMENTATION SPECIFICATION — SPARK AUTOMATION, WORKFLOW & EVENT OS v1.0
+
+Mission
+
+Build Spark Workflow OS as the invisible automation engine that coordinates every action across UNIBUD. Every feature should communicate through events, allowing Spark to intelligently orchestrate tasks, automate repetitive work, recover from failures, and create seamless user experiences without requiring constant manual interaction.
+
+⸻
+
+Core Philosophy
+
+Everything is an event.
+
+Nothing should happen in isolation.
+
+Every action performed by a user, administrator, institution, Bud, or Spark should generate structured events that other services can observe and respond to.
+
+⸻
+
+Event-Driven Architecture
+
+Every module must publish and subscribe to events.
+
+Examples:
+
+User Registered
+
+↓
+
+Initialize Profile
+
+↓
+
+Generate Workspace
+
+↓
+
+Create Calendar
+
+↓
+
+Initialize Bud Memory
+
+↓
+
+Welcome Sequence
+
+↓
+
+Learning Profile
+
+↓
+
+Dashboard Ready
+
+⸻
+
+Assignment Uploaded
+
+↓
+
+Virus Scan
+
+↓
+
+OCR
+
+↓
+
+Extract Text
+
+↓
+
+Knowledge Indexing
+
+↓
+
+Generate Summary
+
+↓
+
+Generate Flashcards
+
+↓
+
+Generate Quiz
+
+↓
+
+Save Notes
+
+↓
+
+Schedule Revision
+
+↓
+
+Notify Student
+
+↓
+
+Analytics Update
+
+⸻
+
+Live Class Started
+
+↓
+
+Notify Participants
+
+↓
+
+Open Whiteboard
+
+↓
+
+Enable Recording
+
+↓
+
+Enable Chat
+
+↓
+
+Enable Bud Classroom Assistant
+
+↓
+
+Attendance Tracking
+
+↓
+
+Archive Recording
+
+⸻
+
+Event Bus
+
+Implement a centralized Event Bus.
+
+Every service communicates only through Spark.
+
+No service should directly trigger another service.
+
+All interactions pass through:
+
+Spark Event Bus
+
+↓
+
+Subscribers
+
+↓
+
+Execution
+
+⸻
+
+Workflow Engine
+
+Build a visual workflow engine.
+
+Support:
+
+	•	Sequential flows
+	•	Parallel execution
+	•	Conditional branches
+	•	Delays
+	•	Scheduled jobs
+	•	User approval
+	•	Automatic retries
+	•	Rollbacks
+	•	Error recovery
+
+⸻
+
+Automation Builder
+
+Allow users and administrators to create automation rules.
+
+Examples:
+
+IF
+
+Assignment Uploaded
+
+THEN
+
+Summarize
+
+Generate Flashcards
+
+Generate Quiz
+
+Add Calendar Reminder
+
+Notify Student
+
+Archive File
+
+⸻
+
+IF
+
+Exam Tomorrow
+
+THEN
+
+Generate Revision Plan
+
+Notify Student
+
+Open Study Mode
+
+Prepare Flashcards
+
+⸻
+
+IF
+
+Meeting Starts
+
+THEN
+
+Launch Bud
+
+Enable Recording
+
+Open Notes
+
+Create Transcript
+
+⸻
+
+Background Job Manager
+
+Create a job orchestration layer.
+
+Support:
+
+	•	Priority queues
+	•	Delayed execution
+	•	Recurring jobs
+	•	Batch jobs
+	•	Parallel workers
+	•	Cancellation
+	•	Retry policies
+	•	Failure notifications
+
+Examples:
+
+	•	OCR
+	•	AI processing
+	•	Search indexing
+	•	Recommendation updates
+	•	Analytics aggregation
+	•	Backup generation
+	•	Video transcoding
+
+⸻
+
+Smart Scheduling
+
+Spark should intelligently schedule background work.
+
+Prioritize:
+
+	1.	User-facing tasks
+	2.	Active sessions
+	3.	Live classes
+	4.	Notifications
+	5.	Analytics
+	6.	Maintenance
+
+Heavy jobs should never interrupt the user experience.
+
+⸻
+
+Automation Templates
+
+Provide built-in templates.
+
+Examples:
+
+Student Productivity
+
+Teacher Workflow
+
+Institution Management
+
+Research Workflow
+
+Assignment Review
+
+Project Planning
+
+Community Management
+
+Marketplace Sales
+
+Meeting Preparation
+
+Exam Revision
+
+⸻
+
+Cross-Service Coordination
+
+Spark automatically coordinates:
+
+Calendar
+
+Notifications
+
+Memory
+
+Knowledge
+
+Assignments
+
+Projects
+
+Communities
+
+Marketplace
+
+Meetings
+
+Livestreams
+
+Files
+
+Analytics
+
+No duplicated logic.
+
+⸻
+
+Failure Recovery
+
+If any service fails:
+
+Retry automatically.
+
+Preserve workflow state.
+
+Continue remaining tasks when safe.
+
+Notify administrators only if intervention is required.
+
+Never expose technical errors to users.
+
+⸻
+
+Event History
+
+Maintain an internal event timeline.
+
+Administrators can inspect:
+
+	•	Event source
+	•	Event type
+	•	Timestamp
+	•	Status
+	•	Duration
+	•	Result
+	•	Related entities
+
+Users should never see internal event logs.
+
+⸻
+
+Workflow Permissions
+
+Support permissions for:
+
+Students
+
+Teachers
+
+Institutions
+
+Moderators
+
+Operators
+
+Architects
+
+Supremacy
+
+Only authorized roles may modify automation affecting other users.
+
+⸻
+
+Real-Time Events
+
+Support instant events:
+
+Typing
+
+Presence
+
+Messages
+
+Live reactions
+
+Attendance
+
+Whiteboard updates
+
+Meeting participants
+
+Community activity
+
+Dashboard refresh
+
+Bud suggestions
+
+⸻
+
+Intelligent Automation
+
+Spark should proactively automate repetitive tasks.
+
+Examples:
+
+Detect duplicate notes.
+
+Merge related files.
+
+Suggest study sessions.
+
+Recommend revision.
+
+Identify missed deadlines.
+
+Suggest calendar updates.
+
+Generate weekly summaries.
+
+Organize uploaded files automatically.
+
+⸻
+
+Analytics Integration
+
+Every workflow produces analytics.
+
+Track:
+
+Execution time
+
+Success rate
+
+Failure rate
+
+User engagement
+
+Automation usage
+
+Task completion
+
+Learning outcomes
+
+System performance
+
+⸻
+
+Developer APIs
+
+Expose clean APIs for:
+
+Create Workflow
+
+Update Workflow
+
+Delete Workflow
+
+Trigger Event
+
+Pause Workflow
+
+Resume Workflow
+
+Inspect Workflow
+
+Replay Workflow
+
+Export Workflow
+
+Import Workflow
+
+Everything should be versioned and documented.
+
+⸻
+
+Scalability
+
+Workflow execution must support:
+
+Millions of users
+
+Thousands of concurrent workflows
+
+Distributed workers
+
+Multi-region deployment
+
+Horizontal scaling
+
+No single workflow should block the platform.
+
+⸻
+
+Final Objective
+
+Spark Workflow & Event OS should become the orchestration heart of UNIBUD. Every action should flow through a resilient event-driven system, allowing Spark to intelligently coordinate services, automate repetitive work, recover gracefully from failures, and deliver seamless, production-grade experiences where users focus on learning while the platform quietly manages everything else behind the scenes.
