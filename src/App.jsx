@@ -93,6 +93,7 @@ import PosterExperience from '@/pages/posters/PosterExperience';
 import PosterEcosystem from '@/pages/posters/PosterEcosystem';
 import PosterScreenFlow from '@/pages/posters/PosterScreenFlow';
 import MasterEcosystem from '@/pages/posters/MasterEcosystem';
+import UnibudDashboard from '@/pages/UnibudDashboard';
 
 // Portal imports
 import PortalLayout from '@/components/portal/PortalLayout';
@@ -244,6 +245,7 @@ const AuthenticatedApp = () => {
           <Route path="/posters/ecosystem" element={<PosterEcosystem />} />
           <Route path="/posters/screen-flow" element={<PosterScreenFlow />} />
           <Route path="/posters/master-ecosystem" element={<MasterEcosystem />} />
+          <Route path="/unibud-dashboard" element={<UnibudDashboard />} />
         </Route>
         <Route path="/portal" element={<PortalLayout />}>
           <Route index element={<PortalDashboard />} />
