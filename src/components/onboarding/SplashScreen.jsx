@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import UnibudMark from "@/components/brand/UnibudMark";
+import { OFFICIAL_FULL_LOGO_URL } from "@/lib/brandAssets";
 
 const ease = [0.16, 1, 0.3, 1];
 const GOLD = "#C9A24B";
@@ -36,28 +36,18 @@ export default function SplashScreen() {
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      {/* Official B&W Logo Lockup */}
+      {/* Official Logo Lockup */}
       <motion.div
         initial={{ scale: 0.85, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.9, ease }}
         className="relative z-10 flex flex-col items-center"
       >
-        <span className="text-foreground inline-flex">
-          <UnibudMark className="w-14 h-14" />
-        </span>
-        <span
-          className="font-heading font-extrabold tracking-[0.14em] leading-none mt-3 text-[34px] text-foreground"
-        >
-          UNIBUD
-        </span>
-        <span className="font-heading font-medium tracking-[0.22em] uppercase mt-2 text-[10px] text-muted-foreground">
-          The Future Starts Together
-        </span>
-        {/* Premium gold accent line — only place gold is used */}
-        <span
-          className="mt-3 h-[2px] w-10 rounded-full"
-          style={{ background: GOLD, boxShadow: `0 0 14px ${GOLD}66` }}
+        <motion.img
+          src={OFFICIAL_FULL_LOGO_URL}
+          alt="UNIBUD — The Future Starts Together"
+          className="w-[200px] h-auto select-none"
+          draggable={false}
         />
       </motion.div>
 

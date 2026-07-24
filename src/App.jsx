@@ -74,7 +74,6 @@ import CampusTraditionsCalendar from '@/pages/CampusTraditionsCalendar';
 import Celebrations from '@/pages/Celebrations';
 import StudentAchievements from '@/pages/StudentAchievements';
 import SplashScreen from '@/components/onboarding/SplashScreen';
-import UnibudMark from '@/components/brand/UnibudMark';
 import StudySession from '@/pages/StudySession';
 import AcademicAnalytics from '@/pages/AcademicAnalytics';
 import Wellbeing from '@/pages/Wellbeing';
@@ -147,9 +146,11 @@ const AuthenticatedApp = () => {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-black flex items-center justify-center premium-shadow animate-pulse">
-            <UnibudMark className="w-6 h-6 text-white" />
-          </div>
+          <img
+            src="https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/edcd57c09_7DF2130C-74AC-4A87-A01D-54AED74C5B0E.jpeg"
+            alt="UNIBUD"
+            className="w-12 h-12 rounded-2xl object-cover premium-shadow animate-pulse"
+          />
           <p className="text-[13px] font-medium text-muted-foreground">Loading UNIBUD...</p>
         </div>
       </div>
