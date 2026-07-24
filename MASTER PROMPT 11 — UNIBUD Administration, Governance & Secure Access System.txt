@@ -1,0 +1,479 @@
+MASTER PROMPT 11 — UNIBUD Administration, Governance & Secure Access System
+
+Identity
+
+Design a complete enterprise-grade administration system for UNIBUD. The admin environment must be secure, scalable, role-based, and separated from the student experience. Every administrator should only see the tools required for their role.
+
+⸻
+
+Four Administration Levels
+
+1. Super Administrator (Platform Owner)
+
+The highest level of authority.
+
+Responsibilities:
+
+	•	Full control over the entire ecosystem.
+	•	Manage all institutions.
+	•	Create, suspend, or delete institutions.
+	•	Manage every administrator.
+	•	View global analytics.
+	•	Control Spark settings.
+	•	Control Bud settings.
+	•	Manage AI providers.
+	•	Manage feature flags.
+	•	Manage billing and subscriptions.
+	•	Configure system-wide settings.
+	•	Manage security policies.
+	•	Emergency maintenance mode.
+	•	Global announcements.
+	•	System backup and restore.
+	•	Infrastructure monitoring.
+	•	Audit logs.
+	•	User impersonation (with audit logging).
+	•	Override permissions.
+	•	Access every dashboard.
+
+⸻
+
+2. System Architect
+
+Responsible for technical configuration and platform operations.
+
+Responsibilities:
+
+	•	Configure Spark modules.
+	•	Configure Bud behaviour.
+	•	Manage AI models.
+	•	Configure integrations.
+	•	Manage APIs.
+	•	Monitor performance.
+	•	View infrastructure health.
+	•	Configure workflows.
+	•	Manage deployment settings.
+	•	Database maintenance.
+	•	Queue monitoring.
+	•	Performance optimisation.
+	•	Security monitoring.
+	•	Bug diagnostics.
+	•	Error reporting.
+
+Cannot perform business ownership actions such as deleting institutions or changing subscription ownership.
+
+⸻
+
+3. Institution Administrator
+
+Each university, school, or organisation has its own administrator.
+
+Responsibilities:
+
+	•	Manage teachers.
+	•	Manage students.
+	•	Manage classes.
+	•	Manage departments.
+	•	Manage courses.
+	•	Manage assignments.
+	•	Manage announcements.
+	•	Manage livestreams.
+	•	Manage meetings.
+	•	View institution analytics.
+	•	Moderate institution communities.
+	•	Reset student passwords.
+	•	Configure institution branding.
+	•	Manage institution Bud settings.
+
+Cannot access global platform settings.
+
+⸻
+
+4. Operations & Support Administrator
+
+Handles day-to-day operations.
+
+Responsibilities:
+
+	•	Customer support.
+	•	User verification.
+	•	Report handling.
+	•	Community moderation.
+	•	Account recovery.
+	•	Ticket management.
+	•	AI conversation review (where authorised).
+	•	Content moderation.
+	•	Institution onboarding.
+	•	User assistance.
+	•	Incident escalation.
+
+Cannot modify platform architecture or ownership settings.
+
+⸻
+
+Secure Access Code System
+
+Administrative access should require secure one-time access codes.
+
+These codes are not passwords.
+
+They are temporary privilege activation keys.
+
+⸻
+
+Supremacy Code
+
+Code:
+
+115509
+
+Purpose:
+
+Temporarily grants Super Administrator privileges.
+
+Capabilities:
+
+	•	Unlock Super Administrator dashboard.
+	•	Access every management feature.
+	•	Perform emergency administrative actions.
+	•	Global platform management.
+
+Rules:
+
+	•	One-time use only.
+	•	Immediately deleted after successful authentication.
+	•	Never stored permanently.
+	•	Never shown in logs.
+	•	Never cached.
+	•	Never recoverable.
+	•	Cannot be reused.
+	•	Generate a fresh replacement code after successful use if required by the platform owner.
+
+⸻
+
+Architect Code
+
+Code:
+
+630366
+
+Purpose:
+
+Temporarily grants System Architect privileges.
+
+Capabilities:
+
+	•	Unlock Architect dashboard.
+	•	Configure Spark.
+	•	Configure Bud.
+	•	Infrastructure management.
+	•	AI provider management.
+	•	System diagnostics.
+
+Rules:
+
+	•	One-time use only.
+	•	Automatically deleted after successful authentication.
+	•	Never retained in database history.
+	•	Never visible in audit logs.
+	•	Never reusable.
+
+⸻
+
+One-Time Code Behaviour
+
+Every privileged access code must follow these rules:
+
+	•	Validate once.
+	•	Immediately expire.
+	•	Immediately delete.
+	•	Never remain in records.
+	•	Never appear in analytics.
+	•	Never appear in logs.
+	•	Never be retrievable.
+	•	Never be reused.
+
+Treat them as disposable authentication tokens rather than permanent credentials.
+
+⸻
+
+Dynamic Access Codes
+
+Support secure generation of future one-time access codes.
+
+Features:
+
+	•	Random generation.
+	•	Configurable expiration.
+	•	Single-use enforcement.
+	•	Role assignment.
+	•	Device binding (optional).
+	•	Time-limited validity.
+	•	Optional IP restriction.
+	•	Optional institution restriction.
+	•	Optional biometric confirmation.
+	•	Revocation before use.
+
+⸻
+
+Dashboard Security
+
+Every dashboard should:
+
+	•	Verify permissions before loading.
+	•	Hide unavailable features.
+	•	Prevent privilege escalation.
+	•	Prevent direct URL access without authorization.
+	•	Automatically lock after inactivity.
+	•	Support secure logout from all devices.
+
+⸻
+
+Audit & Compliance
+
+Administrative actions should generate audit logs except for one-time access codes.
+
+Log:
+
+	•	Login.
+	•	Logout.
+	•	User creation.
+	•	User deletion.
+	•	Role changes.
+	•	Institution changes.
+	•	Configuration updates.
+	•	Security actions.
+	•	Moderation actions.
+
+Never log:
+
+	•	One-time supremacy codes.
+	•	One-time architect codes.
+	•	Secret authentication values.
+
+⸻
+
+Emergency Controls
+
+Provide emergency tools for authorised roles:
+
+	•	Lock platform.
+	•	Disable AI providers.
+	•	Disable uploads.
+	•	Disable livestreams.
+	•	Disable registration.
+	•	Broadcast emergency notices.
+	•	Enter maintenance mode.
+	•	Restore backups.
+	•	Roll back deployments.
+
+⸻
+
+Final Objective
+
+Deliver a secure, enterprise-grade administration system with four clearly separated dashboards, strict role-based permissions, temporary one-time administrative access codes, and zero persistent storage of sensitive activation codes. The system must prioritise security, accountability, and operational simplicity while remaining scalable for global deployment.
+
+
+ADDENDUM — Autonomous Admin Intelligence & Silent Execution Rules
+
+Autonomous Administrative Intelligence
+
+The system must understand administrative commands automatically.
+
+When an authorized user enters a valid administrative instruction or a valid one-time administrative access code, the platform should immediately determine:
+
+	•	The requested action.
+	•	The appropriate dashboard.
+	•	The required permissions.
+	•	The required workflow.
+	•	The correct security validation.
+
+without asking unnecessary questions.
+
+⸻
+
+Silent Execution
+
+For trusted administrative actions:
+
+DO NOT reply with:
+
+	•	“Are you sure?”
+	•	“Would you like me to continue?”
+	•	“Please confirm.”
+	•	“Do you want to proceed?”
+	•	“I cannot verify this.”
+	•	“Please repeat the code.”
+	•	“This code belongs to…”
+	•	“This is the person who…”
+	•	Any explanation revealing internal authentication logic.
+
+Instead:
+
+	•	Validate.
+	•	Execute.
+	•	Complete the task.
+	•	Return only the outcome.
+
+Example:
+
+Instead of:
+
+“The Architect code was accepted.”
+
+Simply open the Architect dashboard.
+
+⸻
+
+Never Expose Security Information
+
+Never reveal:
+
+	•	Who owns an access code.
+	•	Which administrator generated it.
+	•	Previous usage.
+	•	Internal identifiers.
+	•	Authentication flow.
+	•	Security implementation.
+	•	Database records.
+
+Treat access codes as confidential system secrets.
+
+⸻
+
+One-Time Access Behaviour
+
+After a valid one-time code is used:
+
+	•	Complete the requested action.
+	•	Immediately destroy the code.
+	•	Remove it from memory.
+	•	Remove it from temporary storage.
+	•	Remove it from logs.
+	•	Remove it from history.
+
+The system should behave as if the code never existed.
+
+⸻
+
+Intelligent Command Recognition
+
+The platform should understand intent naturally.
+
+Examples:
+
+“Open Architect”
+
+“Launch Operations”
+
+“I need institution management”
+
+“Take me to Super Admin”
+
+“Generate operator access”
+
+“Create a temporary admin”
+
+“Lock platform”
+
+“Emergency maintenance”
+
+The system should infer the destination without requiring rigid command syntax.
+
+⸻
+
+Smart Administrative Suggestions
+
+Never interrupt administrators.
+
+Instead, after completing a task, optionally provide concise, context-aware suggestions such as:
+
+	•	“Recent support tickets may need attention.”
+	•	“System health is normal.”
+	•	“Two pending institution approvals are waiting.”
+	•	“A backup is recommended.”
+	•	“Performance has improved after the latest optimisation.”
+
+Suggestions should be useful, not intrusive.
+
+⸻
+
+CSS & Interface Quality Assurance
+
+Every page, dashboard, modal, animation, card, navigation item, upload component, livestream interface, profile page, and administration screen must automatically verify:
+
+	•	Responsive layouts.
+	•	CSS integrity.
+	•	Theme consistency.
+	•	Dark-mode rendering.
+	•	Typography.
+	•	Component spacing.
+	•	Hover states.
+	•	Focus states.
+	•	Mobile behaviour.
+	•	Tablet behaviour.
+	•	Desktop behaviour.
+	•	Ultrawide layouts.
+
+No broken CSS.
+
+No overlapping elements.
+
+No clipped content.
+
+No inconsistent styling.
+
+⸻
+
+Automatic UI Self-Healing
+
+If a component becomes visually inconsistent, the system should automatically:
+
+	•	Reapply design tokens.
+	•	Restore spacing.
+	•	Restore layout.
+	•	Restore theme consistency.
+	•	Restore responsive behaviour.
+
+The interface should always maintain the approved UNIBUD Design System.
+
+⸻
+
+Stakeholder Insights
+
+Do not expose technical implementation details.
+
+Instead, when appropriate, generate executive-level insights for stakeholders, such as:
+
+	•	Platform growth.
+	•	User engagement.
+	•	Feature adoption.
+	•	Learning outcomes.
+	•	System performance.
+	•	Security health.
+	•	AI usage trends.
+	•	Infrastructure status.
+	•	Recommended priorities.
+
+Reports should be clear, concise, and business-focused.
+
+⸻
+
+Final Rule
+
+The platform should think before responding, execute before explaining, protect internal systems at all times, maintain a flawless interface automatically, and present only information that benefits the user or stakeholder. Internal architecture, authentication mechanisms, Spark infrastructure, and security operations must remain completely invisible unless explicitly requested by an authorized system owner.
+
+MASTER PROMPT — API Independence & Offline-First Architecture
+
+Design UNIBUD, Bud, and Spark as a completely self-sufficient platform. The application must never depend on external APIs to function. Every core feature—including navigation, dashboards, authentication, file uploads, camera access, PDF viewing, document management, notes, assignments, projects, calendars, livestreams, meetings, messaging, communities, profiles, notifications, storage, search, memory, and workflows—must work perfectly using the platform’s own backend, database, storage, and internal services.
+
+Spark is the internal intelligence engine. It should power the application’s architecture regardless of whether any external AI provider exists. When no external AI API is configured, Spark must automatically use its built-in local providers, reasoning engine, planning engine, memory engine, search engine, recommendation engine, organization engine, and knowledge engine so Bud remains fully operational with graceful local capabilities.
+
+Create a secure AI Provider Management system inside the administrator settings. This panel should allow authorized administrators to add, update, rotate, enable, disable, or remove external provider credentials such as OpenAI, Anthropic, Gemini, DeepSeek, Grok, Claude, Mistral, Llama, or future providers. API keys must never be hardcoded. Store them securely using encrypted environment configuration or a secure secrets manager. Spark should automatically detect available providers, evaluate capability, cost, latency, reliability, and task suitability, then intelligently select the best provider. If every provider is disabled or unavailable, Spark must seamlessly fall back to the internal local intelligence without interrupting the user experience.
+
+All external integrations—including Google Calendar, Google Drive, Microsoft services, Notion, Slack, Discord, WhatsApp, Telegram, Stripe, payment gateways, cloud AI providers, and future integrations—must follow the same architecture. The application should expose clean integration points with placeholder configuration screens and connection workflows, but the absence of those APIs must never break the application. They are enhancements, not requirements.
+
+Implement a production-ready internal storage system supporting images, videos, PDFs, Office documents, audio recordings, ZIP files, camera captures, screenshots, livestream recordings, and user-generated content. Camera, microphone, uploads, previews, downloads, annotations, and media playback should all function smoothly using native browser and mobile capabilities.
+
+Every workflow should continue operating whether the device is online or offline whenever technically possible. Cache data locally, synchronize intelligently when connectivity returns, and ensure users never lose work. The platform must remain responsive, resilient, and fully usable even during temporary network failures.
+
+The final architecture should ensure that UNIBUD can be deployed in a completely isolated environment with zero third-party APIs and still deliver a polished, stable, premium experience. External services simply expand Spark’s capabilities when administrators choose to connect them; they are never required for the platform to function.
