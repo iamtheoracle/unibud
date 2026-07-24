@@ -63,7 +63,7 @@ export default function SplashScreen() {
           transition={{ delay: 0.9, duration: 0.6, ease }}
           className="mt-4 text-[11px] text-white/70 font-medium tracking-[0.22em] uppercase"
         >
-          Learn Better. Grow Smarter.
+          Learn Better. Grow Together.
         </motion.p>
       </motion.div>
     </motion.div>

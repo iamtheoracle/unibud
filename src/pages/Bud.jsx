@@ -197,7 +197,7 @@ export default function Bud() {
   const firstName = user?.preferred_name || user?.full_name?.split(" ")[0] || "there";
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="dark min-h-screen flex flex-col bg-background">
       {/* Minimal header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
@@ -268,7 +268,7 @@ export default function Bud() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-[14px] text-muted-foreground mt-2 max-w-[280px] leading-relaxed"
           >
-            What would you like to learn today?
+            What would you like to work on today?
           </motion.p>
         </div>
       )}

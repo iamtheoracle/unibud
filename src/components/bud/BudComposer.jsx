@@ -4,11 +4,11 @@ import { Camera, Image as ImageIcon, FileText, Mic, Send, X } from "lucide-react
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 const QUICK_SUGGESTIONS = [
-  { label: "Explain", prompt: "Explain this concept simply so I can really understand it." },
-  { label: "Summarize", prompt: "Summarize the key points for me." },
-  { label: "Quiz Me", prompt: "Quiz me on this topic to check my understanding." },
-  { label: "Study Plan", prompt: "Help me build a realistic study plan for this." },
-  { label: "Assignment Help", prompt: "Help me with my assignment — guide me step by step." },
+  { label: "Explain a topic", prompt: "Explain a topic for me in a clear, simple way so I really understand it." },
+  { label: "Help with homework", prompt: "Help me with my homework — walk me through it step by step." },
+  { label: "Create study plan", prompt: "Help me create a realistic study plan I can actually follow." },
+  { label: "Quiz me", prompt: "Quiz me on this topic to test my understanding." },
+  { label: "Summarize notes", prompt: "Summarize my notes into the key points I need to remember." },
 ];
 
 /**

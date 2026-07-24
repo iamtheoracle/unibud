@@ -24,6 +24,7 @@ import PlatformStaffLogin from '@/pages/PlatformStaffLogin';
 import AppLayout from '@/components/layout/AppLayout';
 import Home from '@/pages/Home';
 import Academics from '@/pages/Academics';
+import Study from '@/pages/Study';
 import Quad from '@/pages/Quad';
 import Connect from '@/pages/Connect';
 import Messages from '@/pages/Messages';
@@ -196,6 +197,7 @@ const AuthenticatedApp = () => {
           <Route path="/" element={<Home />} />
           <Route path="/live" element={<LiveHome />} />
           <Route path="/academics" element={<Academics />} />
+          <Route path="/study" element={<Study />} />
           <Route path="/quad" element={<Quad />} />
           <Route path="/connect" element={<Connect />} />
           <Route path="/messages" element={<Messages />} />

@@ -1,15 +1,16 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Sparkles, BookOpen, User } from "lucide-react";
+import { Home, Sparkles, BookOpen, Calendar, User } from "lucide-react";
 import { useFeatureFlags } from "@/lib/FeatureFlagContext";
 import { hapticTap } from "@/lib/haptics";
 
 const allNavItems = [
   { path: "/", icon: Home, label: "Home", flag: "campus" },
   { path: "/bud", icon: Sparkles, label: "Bud", flag: "bud" },
-  { path: "/academics", icon: BookOpen, label: "Courses", flag: null },
-  { path: "/me", icon: User, label: "Me", flag: null },
+  { path: "/study", icon: BookOpen, label: "Study", flag: null },
+  { path: "/calendar", icon: Calendar, label: "Calendar", flag: null },
+  { path: "/me", icon: User, label: "Profile", flag: null },
 ];
 
 export default function BottomNav() {
