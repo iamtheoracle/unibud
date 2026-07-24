@@ -24,3 +24,11 @@ export const OFFICIAL_APP_ICON_URL =
 // Use as favicon (reads clearly at small sizes).
 export const OFFICIAL_FAVICON_URL =
   "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/edcd57c09_7DF2130C-74AC-4A87-A01D-54AED74C5B0E.jpeg";
+
+// === BUD CHARACTER ===
+// Official Bud character reference sheet — the permanent UNIBUD mascot.
+// Young black male, premium black/white streetwear, anime-realism style.
+// This is the exclusive, canonical Bud likeness. Do not reinterpret or replace.
+// Use the BudCharacter / BudAvatar components (src/components/brand/) to render it.
+export const BUD_CHARACTER_URL =
+  "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/f1bf387e7_A1A63D1B-280F-46CE-BC05-721E96BBDF29.png";

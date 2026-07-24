@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import BudAvatar from "@/components/brand/BudAvatar";
 
 export default function ChatMessage({ message }) {
   const isUser = message.role === "user";
@@ -10,8 +11,11 @@ export default function ChatMessage({ message }) {
       initial={{ opacity: 0, y: 8, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 24 }}
-      className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+      className={`flex items-end gap-2 ${isUser ? "justify-end" : "justify-start"}`}
     >
+      {!isUser && (
+        <BudAvatar size={28} className="border border-border/30 soft-shadow" />
+      )}
       <div className={`max-w-[85%] ${
         isUser
           ? "bg-primary text-primary-foreground rounded-[20px] rounded-br-md px-4 py-2.5 soft-shadow"

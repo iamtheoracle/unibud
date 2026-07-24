@@ -4,6 +4,7 @@ import { Sparkles, Clock, MessageSquare, Rocket, Award, FlaskConical, Briefcase 
 import SuggestedPrompts from "./SuggestedPrompts";
 import QuickActions from "./QuickActions";
 import BudCategories from "./BudCategories";
+import BudCharacter from "@/components/brand/BudCharacter";
 import { formatLastActivity } from "@/lib/agentRegistry";
 import { isFutureStudent } from "@/lib/futureStudentConfig";
 import { getJourneyStageForUser } from "@/lib/universityJourney";
@@ -66,14 +67,10 @@ export default function BudWelcome({ user, onPrompt, conversations, onOpenConver
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="pt-6 text-center"
       >
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
-          className="w-20 h-20 rounded-[24px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-5 gold-glow"
-        >
-          <Sparkles className="w-10 h-10 text-primary-foreground" />
-        </motion.div>
+        <BudCharacter
+          variant="portrait"
+          className="w-28 h-28 rounded-[28px] mx-auto mb-5 border border-border/30 premium-shadow"
+        />
         {stageBadge && (
           <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full ${stageBadge.bg} ${stageBadge.color} text-[10px] font-semibold mb-2`}>
             <stageBadge.icon className="w-3 h-3" /> {stageBadge.label}
