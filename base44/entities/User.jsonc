@@ -20,7 +20,16 @@
         "super_admin",
         "operations_staff",
         "executive",
-        "oracle"
+        "oracle",
+        "institution_owner",
+        "registrar",
+        "dean",
+        "head_of_department",
+        "teaching_assistant",
+        "staff",
+        "guardian",
+        "alumni",
+        "guest"
       ],
       "default": "student"
     },
@@ -166,6 +175,14 @@
     "enrollment_year": {
       "type": "number",
       "description": "Year of admission"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to the Institution entity this user belongs to \u2014 tenant scope for multi-tenancy"
+    },
+    "campus": {
+      "type": "string",
+      "description": "Specific campus within the institution, if applicable"
     }
   },
   "required": [

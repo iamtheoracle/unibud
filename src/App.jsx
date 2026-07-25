@@ -45,6 +45,10 @@ import PracticeTests from '@/pages/study/PracticeTests';
 import CitationManager from '@/pages/study/CitationManager';
 import DocumentLibrary from '@/pages/study/DocumentLibrary';
 
+// Milestone 8 — Multi-tenancy
+import InstitutionOnboarding from '@/pages/institution/InstitutionOnboarding';
+import InstitutionConsole from '@/pages/institution/InstitutionConsole';
+
 function App() {
   return (
     <AuthProvider>
@@ -85,6 +89,8 @@ function App() {
                   <Route path="/study/practice" element={<PracticeTests />} />
                   <Route path="/study/citations" element={<CitationManager />} />
                   <Route path="/study/library" element={<DocumentLibrary />} />
+                  <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
+                  <Route path="/institution/console" element={<InstitutionConsole />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

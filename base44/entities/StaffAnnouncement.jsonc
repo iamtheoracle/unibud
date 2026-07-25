@@ -2,6 +2,10 @@
   "name": "StaffAnnouncement",
   "type": "object",
   "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
     "title": {
       "type": "string"
     },
@@ -61,5 +65,19 @@
     "title",
     "message",
     "audience"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "create": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "update": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "delete": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    }
+  }
 }
