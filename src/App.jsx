@@ -20,7 +20,36 @@ import ResetPassword from '@/pages/ResetPassword';
 import AppShell from '@/components/layout/AppShell';
 import Home from '@/pages/Home';
 import Me from '@/pages/Me';
-import Placeholder from '@/pages/Placeholder';
+
+// Social Ecosystem
+import Quad from '@/pages/Quad';
+import Connect from '@/pages/Connect';
+import Shorts from '@/pages/Shorts';
+import Messages from '@/pages/Messages';
+import Communities from '@/pages/Communities';
+import CommunityDetail from '@/pages/CommunityDetail';
+import Clubs from '@/pages/Clubs';
+import Marketplace from '@/pages/Marketplace';
+import LostFound from '@/pages/LostFound';
+import Discover from '@/pages/Discover';
+import Notifications from '@/pages/Notifications';
+import CampusEvents from '@/pages/CampusEvents';
+import StudyGroups from '@/pages/StudyGroups';
+import StudyGroupDetail from '@/pages/StudyGroupDetail';
+import Mentorship from '@/pages/Mentorship';
+import MentorProfile from '@/pages/MentorProfile';
+
+// Professional Hub
+import Opportunities from '@/pages/Opportunities';
+import Scholarships from '@/pages/Scholarships';
+import ResearchHub from '@/pages/ResearchHub';
+import CareerHub from '@/pages/CareerHub';
+import Companies from '@/pages/Companies';
+import Portfolio from '@/pages/Portfolio';
+import CVBuilder from '@/pages/CVBuilder';
+import Challenges from '@/pages/Challenges';
+import StudentGovernment from '@/pages/StudentGovernment';
+import StudentSupport from '@/pages/StudentSupport';
 
 // Milestone 5 — Academic Management
 import Courses from '@/pages/academics/Courses';
@@ -104,9 +133,34 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route element={<AppShell />}>
                   <Route path="/home" element={<Home />} />
-                  <Route path="/quad" element={<Placeholder title="Quad" description="Your campus social feed arrives in a future milestone." />} />
-                  <Route path="/connect" element={<Placeholder title="Connect" description="Study matching, mentorship, and events arrive in a future milestone." />} />
+                  <Route path="/quad" element={<Quad />} />
+                  <Route path="/connect" element={<Connect />} />
                   <Route path="/me" element={<Me />} />
+                  <Route path="/shorts" element={<Shorts />} />
+                  <Route path="/messages" element={<Messages />} />
+                  <Route path="/messages/:conversationId" element={<Messages />} />
+                  <Route path="/communities" element={<Communities />} />
+                  <Route path="/community/:communityId" element={<CommunityDetail />} />
+                  <Route path="/clubs" element={<Clubs />} />
+                  <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/lost-found" element={<LostFound />} />
+                  <Route path="/discover" element={<Discover />} />
+                  <Route path="/notifications" element={<Notifications />} />
+                  <Route path="/events" element={<CampusEvents />} />
+                  <Route path="/study-groups" element={<StudyGroups />} />
+                  <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
+                  <Route path="/mentorship" element={<Mentorship />} />
+                  <Route path="/mentor/:mentorId" element={<MentorProfile />} />
+                  <Route path="/opportunities" element={<Opportunities />} />
+                  <Route path="/scholarships" element={<Scholarships />} />
+                  <Route path="/research" element={<ResearchHub />} />
+                  <Route path="/career" element={<CareerHub />} />
+                  <Route path="/companies" element={<Companies />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/cv-builder" element={<CVBuilder />} />
+                  <Route path="/challenges" element={<Challenges />} />
+                  <Route path="/student-government" element={<StudentGovernment />} />
+                  <Route path="/student-support" element={<StudentSupport />} />
                   <Route path="/courses" element={<Courses />} />
                   <Route path="/timetable" element={<Timetable />} />
                   <Route path="/calendar" element={<Calendar />} />

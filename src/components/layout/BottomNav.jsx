@@ -2,12 +2,12 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 /**
- * BottomNav — four text tabs. Only Home is functional in Milestone 2;
- * Quad, Connect, and Me exist as placeholders.
+ * BottomNav — primary navigation: Home, Quad (feed), Shorts, Connect, Me.
  */
 const TABS = [
   { key: "home", label: "Home", path: "/home" },
   { key: "quad", label: "Quad", path: "/quad" },
+  { key: "shorts", label: "Shorts", path: "/shorts" },
   { key: "connect", label: "Connect", path: "/connect" },
   { key: "me", label: "Me", path: "/me" },
 ];
