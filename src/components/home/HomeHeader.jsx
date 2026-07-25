@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { resolveFirstName, resolveDisplayName } from "@/lib/userDisplayName";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -18,7 +19,8 @@ function todayLabel() {
  * HomeHeader — greeting, current date, and profile initial.
  */
 export default function HomeHeader({ user }) {
-  const name = user?.full_name?.split(" ")[0] || "there";
+  const name = resolveFirstName(user);
+  const display = resolveDisplayName(user);
 
   return (
     <motion.header
@@ -36,7 +38,7 @@ export default function HomeHeader({ user }) {
       </div>
       <button className="w-10 h-10 rounded-full glass-strong flex items-center justify-center ring-1 ring-primary/20 spring-tap flex-shrink-0">
         <span className="font-heading font-bold text-[15px] text-foreground">
-          {(user?.full_name || "U").charAt(0).toUpperCase()}
+          {(display || "U").charAt(0).toUpperCase()}
         </span>
       </button>
     </motion.header>
