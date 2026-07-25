@@ -41,6 +41,7 @@ import { LocalAutomationService } from "./automation/local";
 import { LocalLearningService } from "./learning/local";
 import { LocalNotificationEngineService } from "./notifications/local";
 import type { NotificationEngineService } from "./notifications/interface";
+import { registerDefaultRules } from "./notifications/rules";
 import type { IdentityService } from "./core/identity/interface";
 import type { ReasoningService } from "./core/reasoning/interface";
 import type { PlanningService } from "./core/planning/interface";
@@ -290,10 +291,12 @@ export class Spark {
     this.container.register(TOKENS.Security, () => new LocalSecurityService());
     this.container.register(TOKENS.Automation, () => new LocalAutomationService());
     this.container.register(TOKENS.Learning, () => new LocalLearningService());
-    this.container.register(
-      TOKENS.Notifications,
-      () => new LocalNotificationEngineService()
-    );
+    this.container.register(TOKENS.Notifications, () => {
+      const engine = new LocalNotificationEngineService();
+      engine.setEventBus(this.events);
+      registerDefaultRules(engine);
+      return engine;
+    });
   }
 }
 

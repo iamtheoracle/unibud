@@ -17,7 +17,18 @@
         "system",
         "emergency",
         "reminder",
-        "achievement"
+        "achievement",
+        "task",
+        "comment",
+        "mention",
+        "reply",
+        "message",
+        "bud",
+        "campus",
+        "marketplace",
+        "library",
+        "transport",
+        "timetable"
       ],
       "default": "system"
     },
@@ -33,7 +44,74 @@
     },
     "user_id": {
       "type": "string",
-      "description": "When set, this notification is targeted to a specific user. When null, it is a broadcast notification visible to all users."
+      "description": "Target user. Null = broadcast visible to all users."
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "critical",
+        "high",
+        "normal",
+        "low",
+        "silent"
+      ],
+      "default": "normal",
+      "description": "Spark priority. Silent never interrupts study."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "system",
+        "bud",
+        "study_group",
+        "assignment",
+        "campus",
+        "opportunity",
+        "achievement",
+        "social",
+        "emergency"
+      ],
+      "default": "system"
+    },
+    "pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "dismissed": {
+      "type": "boolean",
+      "default": false
+    },
+    "read_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "open_count": {
+      "type": "number",
+      "default": 0
+    },
+    "batch_key": {
+      "type": "string",
+      "description": "Stable key for merging repetitive notifications."
+    },
+    "batch_count": {
+      "type": "number",
+      "default": 1
+    },
+    "source": {
+      "type": "string",
+      "description": "Spark module that raised the event (StudyGroup, Bud, System\u2026)."
+    },
+    "action": {
+      "type": "string",
+      "description": "Canonical Spark event name that generated this notification."
     }
   },
   "required": [
