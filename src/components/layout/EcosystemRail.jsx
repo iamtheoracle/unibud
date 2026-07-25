@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import {
   Sparkles, CloudSun, Zap, Wallet, Calendar, Bell, Newspaper,
   MessageSquare, Search, Settings, Accessibility, BarChart3,
-  WifiOff, RefreshCw, Shield,
+  WifiOff, RefreshCw, Shield, Users,
 } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { hapticTap } from "@/lib/haptics";
@@ -25,6 +25,7 @@ const SERVICES = [
   { key: "calendar", label: "Calendar", icon: Calendar, to: "/calendar" },
   { key: "notifications", label: "Alerts", icon: Bell, to: "/notifications" },
   { key: "feed", label: "Feed", icon: Newspaper, to: "/quad" },
+  { key: "social", label: "Social", icon: Users, to: "/social" },
   { key: "messages", label: "Messages", icon: MessageSquare, to: "/messages" },
   { key: "search", label: "Search", icon: Search, to: "/discover" },
   { key: "settings", label: "Settings", icon: Settings, to: "/me" },

@@ -20,6 +20,7 @@ import ResetPassword from '@/pages/ResetPassword';
 import AppShell from '@/components/layout/AppShell';
 import Home from '@/pages/Home';
 import BudHome from '@/pages/bud/BudHome';
+import SocialHub from '@/pages/social/SocialHub';
 import Me from '@/pages/Me';
 
 // Social Ecosystem
@@ -135,6 +136,7 @@ function App() {
                 <Route element={<AppShell />}>
                   <Route path="/home" element={<Home />} />
                   <Route path="/bud" element={<BudHome />} />
+                  <Route path="/social" element={<SocialHub />} />
                   <Route path="/quad" element={<Quad />} />
                   <Route path="/connect" element={<Connect />} />
                   <Route path="/me" element={<Me />} />
