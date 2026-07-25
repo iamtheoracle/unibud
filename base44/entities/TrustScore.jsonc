@@ -1,0 +1,72 @@
+{
+  "name": "TrustScore",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "score": {
+      "type": "number",
+      "default": 0
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "new",
+        "unverified",
+        "verified",
+        "trusted",
+        "star"
+      ],
+      "default": "new"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "reviews_count": {
+      "type": "number",
+      "default": 0
+    },
+    "reviews_avg": {
+      "type": "number",
+      "default": 0
+    },
+    "reports_count": {
+      "type": "number",
+      "default": 0
+    },
+    "listings_count": {
+      "type": "number",
+      "default": 0
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

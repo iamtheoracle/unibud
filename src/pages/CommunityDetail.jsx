@@ -5,9 +5,10 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Users, UserPlus, Check, BadgeCheck, MessageSquare,
-  Calendar, Home, ChevronRight, Pin,
+  Calendar, Home, ChevronRight, Pin, Flag,
 } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import ReportModal from "@/components/ecosystem/ReportModal";
 import EmptyState from "@/components/ui/EmptyState";
 import PostCard from "@/components/quad/PostCard";
 import EventCard from "@/components/campus/EventCard";
@@ -27,6 +28,7 @@ export default function CommunityDetail() {
   const { isDemoMode } = useDemoMode();
   const [activeTab, setActiveTab] = useState("home");
   const [joined, setJoined] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -149,6 +151,9 @@ export default function CommunityDetail() {
               <BadgeCheck className="w-3 h-3" /> Verified
             </span>
           )}
+          <button onClick={() => setReportOpen(true)} className="w-9 h-9 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30" aria-label="Report community">
+            <Flag className="w-4 h-4 text-muted-foreground" />
+          </button>
         </div>
 
         <div className="px-5 -mt-8 relative z-10">
@@ -363,6 +368,7 @@ export default function CommunityDetail() {
           </motion.div>
         </AnimatePresence>
       </div>
+      <ReportModal open={reportOpen} onClose={() => setReportOpen(false)} contentType="community" contentId={communityId} reportedUserId={community?.created_by_id} reportedUserName={community?.name} />
     </div>
   );
 }

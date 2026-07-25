@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Package, Heart, X, MessageCircle, MapPin, Sparkles, ShieldCheck, Gift, Star } from "lucide-react";
+import { Search, Plus, Package, Heart, X, MessageCircle, MapPin, Sparkles, ShieldCheck, Gift, Star, Flag } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -10,10 +10,11 @@ import { useDemoMode } from "@/lib/DemoModeContext";
 import ListingComposer from "@/components/marketplace/ListingComposer";
 import SellerRatingBadge from "@/components/marketplace/SellerRatingBadge";
 import ReviewComposer from "@/components/marketplace/ReviewComposer";
+import ReportModal from "@/components/ecosystem/ReportModal";
 
-const CATEGORIES = ["All", "Textbooks", "Electronics", "Furniture", "Accommodation", "Tutoring", "Services", "Tickets", "Other"];
-const catIcons = { textbooks: "📚", electronics: "💻", furniture: "🪑", accommodation: "🏠", tutoring: "🎓", services: "⚡", tickets: "🎫", other: "📦" };
-const catColors = { textbooks: "from-info to-info/80", electronics: "from-purple to-purple/80", furniture: "from-warning to-warning/80", accommodation: "from-success to-success/80", tutoring: "from-success to-success/80", services: "from-destructive to-destructive/80", tickets: "from-primary to-primary/80", other: "from-muted to-muted-foreground/50" };
+const CATEGORIES = ["All", "Textbooks", "Past Questions", "Electronics", "Furniture", "Accommodation", "Tutoring", "Services", "Freelancers", "Jobs", "Tickets", "Other"];
+const catIcons = { textbooks: "📚", past_questions: "📋", electronics: "💻", furniture: "🪑", accommodation: "🏠", tutoring: "🎓", services: "⚡", freelancers: "🧑‍💻", jobs: "💼", tickets: "🎫", other: "📦" };
+const catColors = { textbooks: "from-info to-info/80", past_questions: "from-primary to-primary/80", electronics: "from-purple to-purple/80", furniture: "from-warning to-warning/80", accommodation: "from-success to-success/80", tutoring: "from-success to-success/80", services: "from-destructive to-destructive/80", freelancers: "from-info to-info/80", jobs: "from-purple to-purple/80", tickets: "from-primary to-primary/80", other: "from-muted to-muted-foreground/50" };
 const condLabel = { new: "New", like_new: "Like New", good: "Good", fair: "Fair" };
 
 const DEMO_LISTINGS = [
@@ -30,6 +31,7 @@ export default function Marketplace() {
   const [composerOpen, setComposerOpen] = useState(false);
   const [contactListing, setContactListing] = useState(null);
   const [reviewTarget, setReviewTarget] = useState(null);
+  const [reportTarget, setReportTarget] = useState(null);
   const [savedItems, setSavedItems] = useState(() => {
     try { return JSON.parse(localStorage.getItem("marketplace_saved") || "[]"); } catch { return []; }
   });
@@ -187,6 +189,15 @@ export default function Marketplace() {
         onClose={() => setReviewTarget(null)}
       />
 
+      <ReportModal
+        open={!!reportTarget}
+        onClose={() => setReportTarget(null)}
+        contentType="marketplace_listing"
+        contentId={reportTarget?.id}
+        reportedUserId={reportTarget?.created_by_id}
+        reportedUserName={reportTarget?.seller_name}
+      />
+
       {/* Contact sheet */}
       <AnimatePresence>
         {contactListing && (
@@ -227,6 +238,12 @@ export default function Marketplace() {
                     <Star className="w-3.5 h-3.5 text-warning" /> Rate this seller
                   </button>
                 )}
+                <button
+                  onClick={() => { setReportTarget(contactListing); setContactListing(null); }}
+                  className="mt-2 w-full py-2 rounded-[12px] text-[11px] font-semibold text-muted-foreground hover:text-destructive spring-tap flex items-center justify-center gap-1.5"
+                >
+                  <Flag className="w-3.5 h-3.5" /> Report listing
+                </button>
               </div>
               <div className="rounded-[16px] p-3.5 bg-muted/30 mb-3">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/70 mb-1">Reach {contactListing.seller_name}</p>
