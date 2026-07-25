@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
-import { PLATFORM_IDENTITY } from "@/lib/companyIdentity";
 import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -69,15 +68,6 @@ export default function Splash() {
         >
           <Image src={LOGO_URL} alt="UNIBUD — The Future Starts Together." fittingType="fit" className="w-full h-auto" />
         </motion.div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.65, duration: 0.5 }}
-          className="text-[11px] text-muted-foreground font-medium tracking-widest uppercase mt-2"
-        >
-          {PLATFORM_IDENTITY.product} · {PLATFORM_IDENTITY.core}
-        </motion.p>
 
         <motion.div
           initial={{ opacity: 0 }}
