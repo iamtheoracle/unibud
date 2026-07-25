@@ -13,25 +13,26 @@
 @layer base {
   :root {
     /* ── Light mode ── White shell, Midnight Blue signature ── */
-    --background: 0 0% 100%;                /* White */
+    --background: 220 28% 97.5%;            /* Soft Pearl White — never flat */
     --foreground: 222 30% 14%;              /* Graphite */
-    --card: 220 24% 98%;
+    --card: 220 34% 99.2%;                  /* Gloss White — elevated */
     --card-foreground: 222 30% 14%;
-    --popover: 0 0% 100%;
+    --popover: 220 34% 99.4%;
     --popover-foreground: 222 30% 14%;
     --primary: 222 75% 17%;                 /* Deep Midnight Blue #0B1F4D */
     --primary-foreground: 0 0% 100%;        /* White on midnight */
-    --secondary: 220 18% 96%;               /* Soft Silver tint */
+    --secondary: 220 20% 95%;               /* Soft Silver */
     --secondary-foreground: 222 30% 14%;
-    --muted: 220 16% 94%;
+    --muted: 220 18% 93%;                   /* Cloud Gray */
     --muted-foreground: 215 16% 42%;       /* Slate Gray */
     --accent: 221 83% 50%;                  /* Electric Blue */
     --accent-foreground: 0 0% 100%;
     --destructive: 0 78% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 18% 88%;
-    --input: 220 18% 90%;
+    --border: 220 22% 91%;                  /* Almost-invisible soft gray */
+    --input: 220 20% 89%;
     --ring: 222 75% 22%;
+    --bg-glow: hsl(220 50% 99%);            /* Natural daylight from above */
 
     /* UDS — Semantic status */
     --success: 173 75% 38%;                 /* Teal */
@@ -68,18 +69,18 @@
     --foreground-secondary: 222 22% 30%;
     --foreground-tertiary: 215 16% 45%;
 
-    --glass-bg: rgba(255, 255, 255, 0.66);
-    --glass-bg-strong: rgba(255, 255, 255, 0.82);
-    --glass-border: rgba(11, 31, 77, 0.08);
-    --glass-border-strong: rgba(11, 31, 77, 0.14);
-    --glass-shadow: 0 24px 70px rgba(11, 31, 77, 0.12), inset 0 1px 0 rgba(255,255,255,0.6);
+    --glass-bg: rgba(255, 255, 255, 0.70);
+    --glass-bg-strong: rgba(255, 255, 255, 0.86);
+    --glass-border: rgba(11, 31, 77, 0.06);
+    --glass-border-strong: rgba(11, 31, 77, 0.12);
+    --glass-shadow: 0 2px 6px rgba(11, 31, 77, 0.05), 0 18px 48px rgba(11, 31, 77, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.12);
     --glass-blur: 36px;
-    --surface-grouped: 220 18% 96%;
+    --surface-grouped: 220 20% 95%;
 
-    --shadow-soft: 0 8px 30px rgba(11, 31, 77, 0.08);
-    --shadow-premium: 0 18px 60px rgba(11, 31, 77, 0.14), 0 6px 18px rgba(11, 31, 77, 0.06);
-    --shadow-elevated: 0 32px 100px rgba(11, 31, 77, 0.18), 0 10px 30px rgba(11, 31, 77, 0.08);
-    --shadow-hover: 0 40px 120px rgba(11, 31, 77, 0.22), 0 16px 44px rgba(11, 31, 77, 0.10);
+    --shadow-soft: 0 1px 2px rgba(11, 31, 77, 0.04), 0 4px 12px rgba(11, 31, 77, 0.05), 0 8px 22px rgba(11, 31, 77, 0.04);
+    --shadow-premium: 0 1px 3px rgba(11, 31, 77, 0.05), 0 8px 24px rgba(11, 31, 77, 0.07), 0 24px 60px rgba(11, 31, 77, 0.10);
+    --shadow-elevated: 0 2px 5px rgba(11, 31, 77, 0.06), 0 12px 32px rgba(11, 31, 77, 0.08), 0 40px 100px rgba(11, 31, 77, 0.14);
+    --shadow-hover: 0 2px 6px rgba(11, 31, 77, 0.07), 0 18px 44px rgba(11, 31, 77, 0.10), 0 48px 120px rgba(11, 31, 77, 0.18);
     --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.22);  /* brand glow (electric blue) */
 
     --chart-1: 222 75% 17%;                  /* Midnight */
@@ -124,6 +125,7 @@
     --border: 222 35% 22%;
     --input: 222 35% 22%;
     --ring: 221 83% 58%;
+    --bg-glow: hsl(221 80% 22% / 0.5);
 
     /* UDS — Semantic status (dark) */
     --success: 173 78% 52%;                  /* Teal */
@@ -162,14 +164,14 @@
     --glass-bg-strong: rgba(255, 255, 255, 0.09);
     --glass-border: rgba(255, 255, 255, 0.12);
     --glass-border-strong: rgba(255, 255, 255, 0.18);
-    --glass-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+    --glass-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 18px 56px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(255, 255, 255, 0.03);
     --glass-blur: 36px;
     --surface-grouped: 222 50% 11%;
 
-    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.4);
-    --shadow-premium: 0 18px 60px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3);
-    --shadow-elevated: 0 32px 100px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.35);
-    --shadow-hover: 0 40px 120px rgba(0, 0, 0, 0.7), 0 16px 44px rgba(0, 0, 0, 0.4);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.35), 0 8px 22px rgba(0, 0, 0, 0.3);
+    --shadow-premium: 0 1px 3px rgba(0, 0, 0, 0.35), 0 8px 24px rgba(0, 0, 0, 0.4), 0 24px 60px rgba(0, 0, 0, 0.45);
+    --shadow-elevated: 0 2px 5px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.45), 0 40px 100px rgba(0, 0, 0, 0.55);
+    --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.45), 0 18px 44px rgba(0, 0, 0, 0.5), 0 48px 120px rgba(0, 0, 0, 0.6);
     --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.30);  /* brand glow (electric blue) */
 
     --chart-1: 221 83% 58%;                  /* Electric */
@@ -202,6 +204,8 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background-image: radial-gradient(120% 70% at 50% -12%, var(--bg-glow), transparent 55%);
+    background-attachment: fixed;
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
