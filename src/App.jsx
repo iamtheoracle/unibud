@@ -52,6 +52,9 @@ import InstitutionPortal from '@/pages/institution/InstitutionPortal';
 // Milestone 9 — Lecturer Portal
 import LecturerPortal from '@/pages/lecturer/LecturerPortal';
 
+// Milestone 9 — Parent Portal
+import ParentPortal from '@/pages/parent/ParentPortal';
+
 function App() {
   return (
     <AuthProvider>
@@ -95,6 +98,7 @@ function App() {
                   <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
                   <Route path="/institution/console" element={<InstitutionPortal />} />
                   <Route path="/lecturer/portal" element={<LecturerPortal />} />
+                  <Route path="/parent/portal" element={<ParentPortal />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

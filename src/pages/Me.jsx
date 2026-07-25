@@ -11,6 +11,7 @@ import DocumentLibrary from "@/components/me/DocumentLibrary";
 import DownloadsSection from "@/components/me/DownloadsSection";
 import SettingsSection from "@/components/me/SettingsSection";
 import BudMemorySection from "@/components/me/BudMemorySection";
+import GuardianAccessSection from "@/components/me/GuardianAccessSection";
 
 /**
  * Me — the student's personal command center.
@@ -34,6 +35,7 @@ export default function Me() {
       <DocumentLibrary />
       <DownloadsSection courses={courses} assignments={assignments} grades={grades} sessions={sessions} />
       <BudMemorySection />
+      <GuardianAccessSection />
       <SettingsSection user={user} />
     </div>
   );
