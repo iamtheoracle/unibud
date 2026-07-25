@@ -1,28 +1,30 @@
 import React from "react";
 import { Image } from "@/components/ui/image";
-import { OFFICIAL_APP_ICON_URL } from "@/lib/brandAssets";
+import { OFFICIAL_FAVICON_URL } from "@/lib/brandAssets";
 
 /**
- * BrandLogo — UNIBUD mountain mark in a Liquid Glass vessel,
- * with the "UNIBUD" wordmark in white. The single canonical brand
- * asset; never recolored. iPhone-first, scales gracefully.
+ * BrandLogo — the official UNIBUD mountain mark (gold on black, canonical)
+ * paired with the "UNIBUD" wordmark rendered as crisp text.
+ *
+ * Uses OFFICIAL_FAVICON_URL (mountain mark only — no embedded wordmark),
+ * so there is never a duplicated wordmark. The official asset is never
+ * recolored or reinterpreted.
  */
 export default function BrandLogo({ size = "md", showWord = true, className = "" }) {
   const dims = {
-    sm: { box: "w-12 h-12", radius: "rounded-[16px]", text: "text-[15px]", gap: "gap-2.5" },
-    md: { box: "w-16 h-16", radius: "rounded-[20px]", text: "text-[20px]", gap: "gap-3" },
-    lg: { box: "w-24 h-24", radius: "rounded-[28px]", text: "text-[30px]", gap: "gap-4" },
-  }[size] || { box: "w-16 h-16", radius: "rounded-[20px]", text: "text-[20px]", gap: "gap-3" };
+    sm: { mark: "w-9 h-9", radius: "rounded-[10px]", text: "text-[17px]", gap: "gap-2.5" },
+    md: { mark: "w-12 h-12", radius: "rounded-[14px]", text: "text-[22px]", gap: "gap-3" },
+    lg: { mark: "w-16 h-16", radius: "rounded-[18px]", text: "text-[28px]", gap: "gap-3.5" },
+  }[size] || { mark: "w-12 h-12", radius: "rounded-[14px]", text: "text-[22px]", gap: "gap-3" };
 
   return (
     <div className={`flex items-center justify-center ${dims.gap} ${className}`}>
-      <div className={`${dims.box} ${dims.radius} glass-strong overflow-hidden flex items-center justify-center relative`}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 60% at 50% 40%, rgba(127,216,255,0.10), transparent 70%)" }} />
+      <div className={`${dims.mark} ${dims.radius} overflow-hidden flex-shrink-0 soft-shadow`}>
         <Image
-          src={OFFICIAL_APP_ICON_URL}
+          src={OFFICIAL_FAVICON_URL}
           alt="UNIBUD"
           fittingType="fill"
-          className="relative z-10 w-full h-full object-cover"
+          className="w-full h-full object-cover"
         />
       </div>
       {showWord && (
@@ -30,6 +32,23 @@ export default function BrandLogo({ size = "md", showWord = true, className = ""
           UNIBUD
         </span>
       )}
+    </div>
+  );
+}
+
+/** Mark-only variant for inline / circular placements. */
+export function BrandMark({ size = 40, className = "" }) {
+  return (
+    <div
+      className={`overflow-hidden flex-shrink-0 soft-shadow ${className}`}
+      style={{ width: size, height: size, borderRadius: size * 0.22 }}
+    >
+      <Image
+        src={OFFICIAL_FAVICON_URL}
+        alt="UNIBUD"
+        fittingType="fill"
+        className="w-full h-full object-cover"
+      />
     </div>
   );
 }

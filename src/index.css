@@ -3,96 +3,86 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════
-   UNIBUD — Design System v4.0 "Foundation"
-   Matte Black · White Typography · Single Ice Blue Accent
+   UNIBUD — Design System v4.1 "Foundation"
+   Matte Black (dark) · Clean White (light)
+   White / Near-Black typography · Single Ice Blue accent
    Liquid Glass · Apple Human Interface Guidelines
    ════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
-    /* ── Core surfaces ── */
-    --background: 0 0% 4.6%;            /* Matte Black #0B0B0C */
-    --foreground: 0 0% 100%;            /* Pure White */
-    --card: 0 0% 7%;                    /* Glass black */
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 100%;
+    /* ── Light mode ── */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+    --card: 0 0% 99%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
     --primary: 196 100% 74%;            /* Ice Blue #7FD8FF */
-    --primary-foreground: 0 0% 7%;      /* Dark text on ice blue */
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 68%;       /* Soft white-gray */
+    --primary-foreground: 0 0% 9%;      /* Dark text on ice blue */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 42%;
     --accent: 196 100% 74%;
-    --accent-foreground: 0 0% 7%;
-    --destructive: 0 84% 60%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 196 100% 74%;
+    --border: 0 0% 90%;
+    --input: 0 0% 94%;
+    --ring: 196 100% 45%;
     --radius: 1.5rem;
 
-    /* ── Surface tones ── */
-    --surface: 0 0% 6%;
-    --surface-secondary: 0 0% 4.6%;
-    --surface-elevated: 0 0% 9%;
-    --foreground-secondary: 0 0% 82%;
-    --foreground-tertiary: 0 0% 60%;
+    --surface: 0 0% 99%;
+    --surface-secondary: 0 0% 97%;
+    --surface-elevated: 0 0% 100%;
+    --foreground-secondary: 0 0% 20%;
+    --foreground-tertiary: 0 0% 45%;
 
-    /* ── Glass ── Liquid frosted layers */
-    --glass-bg: rgba(255, 255, 255, 0.055);
-    --glass-bg-strong: rgba(255, 255, 255, 0.09);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-border-strong: rgba(255, 255, 255, 0.18);
-    --glass-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+    --glass-bg: rgba(255, 255, 255, 0.66);
+    --glass-bg-strong: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(0, 0, 0, 0.07);
+    --glass-border-strong: rgba(0, 0, 0, 0.12);
+    --glass-shadow: 0 24px 70px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255,255,255,0.6);
     --glass-blur: 36px;
-    --surface-grouped: 0 0% 5.5%;
+    --surface-grouped: 0 0% 97%;
 
-    /* ── Shadows ── */
-    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.4);
-    --shadow-premium: 0 18px 60px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3);
-    --shadow-elevated: 0 32px 100px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.35);
-    --shadow-hover: 0 40px 120px rgba(0, 0, 0, 0.7), 0 16px 44px rgba(0, 0, 0, 0.4);
-    --shadow-ice: 0 8px 40px rgba(127, 216, 255, 0.28);
+    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
+    --shadow-premium: 0 18px 60px rgba(0, 0, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.06);
+    --shadow-elevated: 0 32px 100px rgba(0, 0, 0, 0.16), 0 10px 30px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 40px 120px rgba(0, 0, 0, 0.20), 0 16px 44px rgba(0, 0, 0, 0.10);
+    --shadow-ice: 0 8px 40px rgba(127, 216, 255, 0.35);
 
-    /* ── Charts (monochrome + ice blue) ── */
     --chart-1: 196 100% 74%;
-    --chart-2: 0 0% 100%;
-    --chart-3: 0 0% 68%;
-    --chart-4: 0 0% 40%;
+    --chart-2: 0 0% 9%;
+    --chart-3: 0 0% 45%;
+    --chart-4: 0 0% 70%;
     --chart-5: 196 80% 55%;
 
-    /* ── Typography ── Native Apple system stack */
     --font-heading: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
     --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    /* ── BPT Spacing ── */
-    --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
-    --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem;
-    --space-8: 2rem; --space-10: 2.5rem; --space-12: 3rem;
-    --space-15: 3.75rem; --space-20: 5rem; --space-24: 6rem;
-
-    --sidebar-background: 0 0% 4.6%;
-    --sidebar-foreground: 0 0% 82%;
+    --sidebar-background: 0 0% 99%;
+    --sidebar-foreground: 0 0% 20%;
     --sidebar-primary: 196 100% 74%;
-    --sidebar-primary-foreground: 0 0% 7%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 196 100% 74%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 196 100% 74%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 196 100% 45%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 196 100% 45%;
   }
 
-  /* Dark mode identical — foundation is always matte black */
   .dark {
-    --background: 0 0% 4.6%;
+    /* ── Dark mode — Matte Black foundation ── */
+    --background: 0 0% 4.6%;            /* #0B0B0C */
     --foreground: 0 0% 100%;
     --card: 0 0% 7%;
     --card-foreground: 0 0% 100%;
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 100%;
-    --primary: 196 100% 74%;
+    --primary: 196 100% 74%;            /* Ice Blue #7FD8FF */
     --primary-foreground: 0 0% 7%;
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 100%;
@@ -105,12 +95,42 @@
     --border: 0 0% 18%;
     --input: 0 0% 18%;
     --ring: 196 100% 74%;
+    --radius: 1.5rem;
+
+    --surface: 0 0% 6%;
+    --surface-secondary: 0 0% 4.6%;
+    --surface-elevated: 0 0% 9%;
+    --foreground-secondary: 0 0% 82%;
+    --foreground-tertiary: 0 0% 60%;
+
     --glass-bg: rgba(255, 255, 255, 0.055);
     --glass-bg-strong: rgba(255, 255, 255, 0.09);
     --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-border-strong: rgba(255, 255, 255, 0.18);
     --glass-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.08);
     --glass-blur: 36px;
     --surface-grouped: 0 0% 5.5%;
+
+    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.4);
+    --shadow-premium: 0 18px 60px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3);
+    --shadow-elevated: 0 32px 100px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 40px 120px rgba(0, 0, 0, 0.7), 0 16px 44px rgba(0, 0, 0, 0.4);
+    --shadow-ice: 0 8px 40px rgba(127, 216, 255, 0.28);
+
+    --chart-1: 196 100% 74%;
+    --chart-2: 0 0% 100%;
+    --chart-3: 0 0% 68%;
+    --chart-4: 0 0% 40%;
+    --chart-5: 196 80% 55%;
+
+    --sidebar-background: 0 0% 4.6%;
+    --sidebar-foreground: 0 0% 82%;
+    --sidebar-primary: 196 100% 74%;
+    --sidebar-primary-foreground: 0 0% 7%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 196 100% 74%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 196 100% 74%;
   }
 }
 
@@ -119,7 +139,7 @@
     @apply border-border outline-ring/50;
   }
   html {
-    color-scheme: dark;
+    color-scheme: dark light;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
@@ -134,7 +154,6 @@
     -webkit-user-drag: none;
     overscroll-behavior-y: none;
     overflow-x: hidden;
-    background: #0B0B0C;
   }
 
   input, textarea, [contenteditable="true"], [contenteditable=""],
@@ -154,16 +173,20 @@
 
   ::-webkit-scrollbar { width: 0; height: 0; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.2); border-radius: 999px; }
 
   :focus-visible {
     outline: 2px solid hsl(var(--ring) / 0.5);
     outline-offset: 2px;
   }
+
+  .theme-transition, .theme-transition * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+  }
 }
 
 @layer utilities {
-  /* ── Liquid Glass ── */
+  /* ── Liquid Glass ── adapts to light/dark via vars */
   .glass {
     background: var(--glass-bg);
     backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
@@ -193,13 +216,13 @@
   .elevated-shadow { box-shadow: var(--shadow-elevated); }
 
   .text-ice-gradient {
-    background: linear-gradient(135deg, #FFFFFF 0%, #7FD8FF 100%);
+    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ── Motion ── GPU-accelerated, 60-120fps */
+  /* ── Motion ── GPU-accelerated */
   .spring-tap {
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -220,7 +243,7 @@
   }
 
   .shimmer {
-    background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.10) 50%, rgba(255,255,255,0.04) 100%);
+    background: linear-gradient(90deg, hsl(var(--muted)) 0%, hsl(var(--muted-foreground) / 0.15) 50%, hsl(var(--muted)) 100%);
     background-size: 200% 100%;
     animation: shimmer 1.6s ease-in-out infinite;
   }
@@ -253,6 +276,14 @@
     50% { opacity: 0.85; transform: scale(1.08); }
   }
   .bud-breathe { animation: bud-breathe 4s ease-in-out infinite; }
+
+  @keyframes bud-wave {
+    0%, 100% { transform: rotate(0deg) translateY(0); }
+    25% { transform: rotate(2.5deg) translateY(-3px); }
+    50% { transform: rotate(-1.5deg) translateY(0); }
+    75% { transform: rotate(1.5deg) translateY(-2px); }
+  }
+  .bud-wave { animation: bud-wave 3.2s ease-in-out infinite; transform-origin: bottom center; }
 
   /* ── Safe areas ── */
   .safe-area-pt { padding-top: env(safe-area-inset-top); }
