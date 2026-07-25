@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
         icon: "ClipboardList",
         link: "/assignments",
       });
-      await base44.asServiceRole.entities.Notification.create(notif).catch(() => {});
+      await base44.asServiceRole.entities.Notification.create({ ...notif, user_id: a.created_by_id }).catch(() => {});
       created++;
     }
 
