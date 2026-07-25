@@ -5,7 +5,8 @@ import { Loader2 } from "lucide-react";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import BottomNav from "@/components/layout/BottomNav";
 import EcosystemRail from "@/components/layout/EcosystemRail";
-import BudSheet from "@/components/bud/BudSheet";
+import BudCompanion from "@/components/bud/BudCompanion";
+import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
 
@@ -47,7 +48,8 @@ export default function AppShell() {
           <Outlet />
           <EcosystemRail />
           <BottomNav />
-          <BudSheet />
+          <BudLivingOrb />
+          <BudCompanion />
         </div>
       </UnibudContextProvider>
     </BudLauncherProvider>
