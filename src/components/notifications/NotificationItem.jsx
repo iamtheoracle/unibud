@@ -23,9 +23,9 @@ export default function NotificationItem({ item, onAction }) {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.97 }}
+      initial={{ opacity: 0, x: 28 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 24 }}
       transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
       className={`group relative rounded-[20px] p-3.5 glass ${unread ? "border-l-[3px] border-l-primary" : ""}`}
     >

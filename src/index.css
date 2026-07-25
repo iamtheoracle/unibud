@@ -361,6 +361,34 @@
   }
   .bud-wave { animation: bud-wave 3.2s ease-in-out infinite; transform-origin: bottom center; }
 
+  /* ── Alive micro-motion — nothing feels static ── */
+  @keyframes breathe { 0%, 100% { filter: brightness(1) saturate(1); } 50% { filter: brightness(1.035) saturate(1.06); } }
+  .breathe { animation: breathe 7s ease-in-out infinite; will-change: filter; }
+
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.0), 0 8px 40px hsl(var(--primary) / 0.22); }
+    50% { box-shadow: 0 0 22px 5px hsl(var(--primary) / 0.40), 0 8px 40px hsl(var(--primary) / 0.30); }
+  }
+  .glow-pulse { animation: glow-pulse 3.2s ease-in-out infinite; }
+
+  @keyframes like-pop { 0% { transform: scale(0.6); } 50% { transform: scale(1.4) rotate(-8deg); } 100% { transform: scale(1) rotate(0deg); } }
+  .like-pop { animation: like-pop 0.5s cubic-bezier(0.34, 1.8, 0.64, 1) both; }
+
+  @keyframes heart-burst { 0% { transform: scale(0); opacity: 0.7; } 100% { transform: scale(2.6); opacity: 0; } }
+  .heart-burst { animation: heart-burst 0.6s ease-out forwards; }
+
+  @keyframes msg-in { 0% { opacity: 0; transform: translateY(8px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+  .msg-in { animation: msg-in 0.34s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  @keyframes slide-in-right { 0% { opacity: 0; transform: translateX(28px); } 100% { opacity: 1; transform: translateX(0); } }
+  .slide-in-right { animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  @keyframes chart-rise { 0% { transform: scaleY(0); opacity: 0; } 100% { transform: scaleY(1); opacity: 1; } }
+  .chart-rise { transform-origin: bottom; animation: chart-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  @keyframes live-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.7); } }
+  .live-pulse { animation: live-pulse 1.6s ease-in-out infinite; }
+
   /* ── Safe areas ── */
   .safe-area-pt { padding-top: env(safe-area-inset-top); }
   .safe-area-pb { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }
@@ -420,6 +448,6 @@
   /* UDS — Accessibility */
   .uds-focus:focus-visible { outline: 3px solid hsl(var(--ring)); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle { animation: none !important; }
+    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle, .breathe, .glow-pulse, .like-pop, .heart-burst, .msg-in, .slide-in-right, .chart-rise, .live-pulse { animation: none !important; }
   }
 }

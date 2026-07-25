@@ -15,7 +15,7 @@ export default function GlassCard({ children, className = "", variant = "default
   const content = (
     <div
       onClick={onClick}
-      className={`${variants[variant] || variants.default} ${onClick ? "cursor-pointer card-hover" : ""} ${className}`}
+      className={`${variants[variant] || variants.default} breathe ${onClick ? "cursor-pointer card-hover" : ""} ${className}`}
     >
       {children}
     </div>

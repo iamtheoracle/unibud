@@ -31,9 +31,9 @@ export default function MessageBubble({
   return (
     <>
       <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 6, x: isOwn ? 14 : -14 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className={"flex items-end gap-2 px-3 " + (isOwn ? "flex-row-reverse" : "flex-row") + " " + (showAvatar ? "mt-3" : "mt-0.5")}
         onContextMenu={(e) => { e.preventDefault(); onLongPress(); }}
       >
