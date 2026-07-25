@@ -73,6 +73,9 @@ import Management from '@/pages/management/Management';
 // Operator — Execution Workspace
 import Operator from '@/pages/operator/Operator';
 
+// Financial Platform
+import Finance from '@/pages/finance/Finance';
+
 // Architect — No-code Platform Builder (via Oracle)
 import Architect from '@/pages/architect/Architect';
 
@@ -137,6 +140,7 @@ function App() {
                   <Route path="/oracle" element={<Oracle />} />
                   <Route path="/management" element={<Management />} />
                   <Route path="/operator" element={<Operator />} />
+                  <Route path="/finance" element={<Finance />} />
                   <Route path="/architect" element={<Architect />} />
                   <Route path="/automation" element={<AutomationCenter />} />
                   <Route path="/automation/builder" element={<WorkflowBuilder />} />
