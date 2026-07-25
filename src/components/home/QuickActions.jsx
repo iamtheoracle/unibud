@@ -7,6 +7,7 @@ const EASE = [0.16, 1, 0.3, 1];
 
 const ACTIONS = [
   { label: "Ask Bud", action: "bud" },
+  { label: "Study Suite", to: "/study" },
   { label: "Courses", to: "/courses" },
   { label: "Timetable", to: "/timetable" },
   { label: "Calendar", to: "/calendar" },

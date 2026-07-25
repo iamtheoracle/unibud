@@ -33,6 +33,18 @@ import Attendance from '@/pages/academics/Attendance';
 import Notes from '@/pages/academics/Notes';
 import StudySessions from '@/pages/academics/StudySessions';
 
+// Milestone 6 — Study Suite
+import StudySuite from '@/pages/study/StudySuite';
+import AssignmentAssistant from '@/pages/study/AssignmentAssistant';
+import ProjectAssistant from '@/pages/study/ProjectAssistant';
+import SmartNotes from '@/pages/study/SmartNotes';
+import ResearchAssistant from '@/pages/study/ResearchAssistant';
+import ExamPreparation from '@/pages/study/ExamPreparation';
+import Flashcards from '@/pages/study/Flashcards';
+import PracticeTests from '@/pages/study/PracticeTests';
+import CitationManager from '@/pages/study/CitationManager';
+import DocumentLibrary from '@/pages/study/DocumentLibrary';
+
 function App() {
   return (
     <AuthProvider>
@@ -63,6 +75,16 @@ function App() {
                   <Route path="/attendance" element={<Attendance />} />
                   <Route path="/notes" element={<Notes />} />
                   <Route path="/study-sessions" element={<StudySessions />} />
+                  <Route path="/study" element={<StudySuite />} />
+                  <Route path="/study/assignment" element={<AssignmentAssistant />} />
+                  <Route path="/study/project" element={<ProjectAssistant />} />
+                  <Route path="/study/notes" element={<SmartNotes />} />
+                  <Route path="/study/research" element={<ResearchAssistant />} />
+                  <Route path="/study/exams" element={<ExamPreparation />} />
+                  <Route path="/study/flashcards" element={<Flashcards />} />
+                  <Route path="/study/practice" element={<PracticeTests />} />
+                  <Route path="/study/citations" element={<CitationManager />} />
+                  <Route path="/study/library" element={<DocumentLibrary />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
