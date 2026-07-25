@@ -6,6 +6,8 @@ import { COMPANY_IDENTITY, PLATFORM_IDENTITY } from "@/lib/companyIdentity";
 import SectionHeader from "@/components/me/SectionHeader";
 import EditProfileModal from "@/components/me/EditProfileModal";
 import { toast } from "@/components/ui/use-toast";
+import ConfirmDialog from "@/components/notifications/ConfirmDialog";
+import { queryClientInstance } from "@/lib/query-client";
 
 const ROWS = [
   { key: "account", label: "Account" },
@@ -28,6 +30,8 @@ export default function SettingsSection({ user }) {
   const { theme, changeTheme } = useTheme();
   const [sheet, setSheet] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handle = (key) => {
     if (key === "account") setSheet("account");
@@ -38,6 +42,20 @@ export default function SettingsSection({ user }) {
       toast({ title: `Appearance: ${next}` });
     } else {
       toast({ title: "Coming soon", description: "This setting arrives in a future milestone." });
+    }
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await base44.functions.invoke("deleteAccount", {});
+      queryClientInstance.clear();
+      try { localStorage.clear(); } catch {}
+      try { await base44.auth.logout(); } catch {}
+      window.location.href = "/login";
+    } catch (e) {
+      toast({ title: "Could not delete account", description: "Please try again.", variant: "destructive" });
+      setDeleting(false);
     }
   };
 
@@ -58,6 +76,16 @@ export default function SettingsSection({ user }) {
       </div>
 
       <EditProfileModal open={editing} onClose={() => setEditing(false)} user={user} />
+
+      <ConfirmDialog
+        open={deleteOpen}
+        title="Delete your account?"
+        description="This action is permanent. Your account, academic records, preferences, memories, AI history, saved notes, uploads, and all associated data will be permanently deleted and cannot be recovered."
+        confirmLabel="Delete Account"
+        destructive
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteOpen(false)}
+      />
 
       <AnimatePresence>
         {sheet && (
@@ -90,6 +118,13 @@ export default function SettingsSection({ user }) {
                     className="w-full h-[52px] rounded-2xl bg-destructive/15 text-destructive font-heading font-semibold text-[15px] flex items-center justify-center spring-tap"
                   >
                     Sign Out
+                  </button>
+                  <button
+                    onClick={() => setDeleteOpen(true)}
+                    disabled={deleting}
+                    className="w-full h-[52px] rounded-2xl border-2 border-destructive/60 text-destructive font-heading font-semibold text-[15px] flex items-center justify-center spring-tap disabled:opacity-50"
+                  >
+                    {deleting ? "Deleting…" : "Delete Account"}
                   </button>
                 </div>
               ) : (

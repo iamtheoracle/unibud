@@ -2,120 +2,120 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { DemoModeProvider } from '@/lib/DemoModeContext';
 import ScrollToTop from './components/ScrollToTop';
+import AppShell from '@/components/layout/AppShell';
+import RouteLoading from '@/components/RouteLoading';
 
 // Milestone 1 — Foundation
-import Splash from '@/pages/Splash';
-import Welcome from '@/pages/Welcome';
-import Register from '@/pages/Register';
-import Login from '@/pages/Login';
-import MeetBud from '@/pages/MeetBud';
-import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword';
+const Splash = lazy(() => import("@/pages/Splash"));
+const Welcome = lazy(() => import("@/pages/Welcome"));
+const Register = lazy(() => import("@/pages/Register"));
+const Login = lazy(() => import("@/pages/Login"));
+const MeetBud = lazy(() => import("@/pages/MeetBud"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 
 // Milestone 2 — Student Home (Campus)
-import AppShell from '@/components/layout/AppShell';
-import Home from '@/pages/Home';
-import BudHome from '@/pages/bud/BudHome';
-import SocialHub from '@/pages/social/SocialHub';
-import Me from '@/pages/Me';
+const Home = lazy(() => import("@/pages/Home"));
+const BudHome = lazy(() => import("@/pages/bud/BudHome"));
+const SocialHub = lazy(() => import("@/pages/social/SocialHub"));
+const Me = lazy(() => import("@/pages/Me"));
 
 // Social Ecosystem
-import Quad from '@/pages/Quad';
-import Connect from '@/pages/Connect';
-import Shorts from '@/pages/Shorts';
-import Messages from '@/pages/Messages';
-import Communities from '@/pages/Communities';
-import CommunityDetail from '@/pages/CommunityDetail';
-import Clubs from '@/pages/Clubs';
-import Marketplace from '@/pages/Marketplace';
-import LostFound from '@/pages/LostFound';
-import Discover from '@/pages/Discover';
-import Notifications from '@/pages/Notifications';
-import CampusEvents from '@/pages/CampusEvents';
-import StudyGroups from '@/pages/StudyGroups';
-import StudyGroupDetail from '@/pages/StudyGroupDetail';
-import Mentorship from '@/pages/Mentorship';
-import MentorProfile from '@/pages/MentorProfile';
+const Quad = lazy(() => import("@/pages/Quad"));
+const Connect = lazy(() => import("@/pages/Connect"));
+const Shorts = lazy(() => import("@/pages/Shorts"));
+const Messages = lazy(() => import("@/pages/Messages"));
+const Communities = lazy(() => import("@/pages/Communities"));
+const CommunityDetail = lazy(() => import("@/pages/CommunityDetail"));
+const Clubs = lazy(() => import("@/pages/Clubs"));
+const Marketplace = lazy(() => import("@/pages/Marketplace"));
+const LostFound = lazy(() => import("@/pages/LostFound"));
+const Discover = lazy(() => import("@/pages/Discover"));
+const Notifications = lazy(() => import("@/pages/Notifications"));
+const CampusEvents = lazy(() => import("@/pages/CampusEvents"));
+const StudyGroups = lazy(() => import("@/pages/StudyGroups"));
+const StudyGroupDetail = lazy(() => import("@/pages/StudyGroupDetail"));
+const Mentorship = lazy(() => import("@/pages/Mentorship"));
+const MentorProfile = lazy(() => import("@/pages/MentorProfile"));
 
 // Professional Hub
-import Opportunities from '@/pages/Opportunities';
-import Scholarships from '@/pages/Scholarships';
-import ResearchHub from '@/pages/ResearchHub';
-import CareerHub from '@/pages/CareerHub';
-import Companies from '@/pages/Companies';
-import Portfolio from '@/pages/Portfolio';
-import CVBuilder from '@/pages/CVBuilder';
-import Challenges from '@/pages/Challenges';
-import StudentGovernment from '@/pages/StudentGovernment';
-import StudentSupport from '@/pages/StudentSupport';
+const Opportunities = lazy(() => import("@/pages/Opportunities"));
+const Scholarships = lazy(() => import("@/pages/Scholarships"));
+const ResearchHub = lazy(() => import("@/pages/ResearchHub"));
+const CareerHub = lazy(() => import("@/pages/CareerHub"));
+const Companies = lazy(() => import("@/pages/Companies"));
+const Portfolio = lazy(() => import("@/pages/Portfolio"));
+const CVBuilder = lazy(() => import("@/pages/CVBuilder"));
+const Challenges = lazy(() => import("@/pages/Challenges"));
+const StudentGovernment = lazy(() => import("@/pages/StudentGovernment"));
+const StudentSupport = lazy(() => import("@/pages/StudentSupport"));
 
 // Milestone 5 — Academic Management
-import Courses from '@/pages/academics/Courses';
-import Timetable from '@/pages/academics/Timetable';
-import Calendar from '@/pages/academics/Calendar';
-import Assignments from '@/pages/academics/Assignments';
-import Projects from '@/pages/academics/Projects';
-import Exams from '@/pages/academics/Exams';
-import Attendance from '@/pages/academics/Attendance';
-import Notes from '@/pages/academics/Notes';
-import StudySessions from '@/pages/academics/StudySessions';
+const Courses = lazy(() => import("@/pages/academics/Courses"));
+const Timetable = lazy(() => import("@/pages/academics/Timetable"));
+const Calendar = lazy(() => import("@/pages/academics/Calendar"));
+const Assignments = lazy(() => import("@/pages/academics/Assignments"));
+const Projects = lazy(() => import("@/pages/academics/Projects"));
+const Exams = lazy(() => import("@/pages/academics/Exams"));
+const Attendance = lazy(() => import("@/pages/academics/Attendance"));
+const Notes = lazy(() => import("@/pages/academics/Notes"));
+const StudySessions = lazy(() => import("@/pages/academics/StudySessions"));
 
 // Milestone 6 — Study Suite
-import StudySuite from '@/pages/study/StudySuite';
-import AssignmentAssistant from '@/pages/study/AssignmentAssistant';
-import ProjectAssistant from '@/pages/study/ProjectAssistant';
-import SmartNotes from '@/pages/study/SmartNotes';
-import ResearchAssistant from '@/pages/study/ResearchAssistant';
-import ExamPreparation from '@/pages/study/ExamPreparation';
-import Flashcards from '@/pages/study/Flashcards';
-import PracticeTests from '@/pages/study/PracticeTests';
-import CitationManager from '@/pages/study/CitationManager';
-import DocumentLibrary from '@/pages/study/DocumentLibrary';
+const StudySuite = lazy(() => import("@/pages/study/StudySuite"));
+const AssignmentAssistant = lazy(() => import("@/pages/study/AssignmentAssistant"));
+const ProjectAssistant = lazy(() => import("@/pages/study/ProjectAssistant"));
+const SmartNotes = lazy(() => import("@/pages/study/SmartNotes"));
+const ResearchAssistant = lazy(() => import("@/pages/study/ResearchAssistant"));
+const ExamPreparation = lazy(() => import("@/pages/study/ExamPreparation"));
+const Flashcards = lazy(() => import("@/pages/study/Flashcards"));
+const PracticeTests = lazy(() => import("@/pages/study/PracticeTests"));
+const CitationManager = lazy(() => import("@/pages/study/CitationManager"));
+const DocumentLibrary = lazy(() => import("@/pages/study/DocumentLibrary"));
 
 // Milestone 8 — Multi-tenancy
-import InstitutionOnboarding from '@/pages/institution/InstitutionOnboarding';
-import InstitutionPortal from '@/pages/institution/InstitutionPortal';
+const InstitutionOnboarding = lazy(() => import("@/pages/institution/InstitutionOnboarding"));
+const InstitutionPortal = lazy(() => import("@/pages/institution/InstitutionPortal"));
 
-// Milestone 9 — Lecturer Portal
-import LecturerPortal from '@/pages/lecturer/LecturerPortal';
-
-// Milestone 9 — Parent Portal
-import ParentPortal from '@/pages/parent/ParentPortal';
+// Milestone 9 — Lecturer & Parent Portals
+const LecturerPortal = lazy(() => import("@/pages/lecturer/LecturerPortal"));
+const ParentPortal = lazy(() => import("@/pages/parent/ParentPortal"));
 
 // Examination Platform
-import ExamHub from '@/pages/exam/ExamHub';
-import ExamStart from '@/pages/exam/ExamStart';
-import ExamTaker from '@/pages/exam/ExamTaker';
-import ExamResult from '@/pages/exam/ExamResult';
-import ExamAnalytics from '@/pages/exam/ExamAnalytics';
-import ExamCoach from '@/pages/exam/ExamCoach';
-import ExamAuthor from '@/pages/exam/ExamAuthor';
+const ExamHub = lazy(() => import("@/pages/exam/ExamHub"));
+const ExamStart = lazy(() => import("@/pages/exam/ExamStart"));
+const ExamTaker = lazy(() => import("@/pages/exam/ExamTaker"));
+const ExamResult = lazy(() => import("@/pages/exam/ExamResult"));
+const ExamAnalytics = lazy(() => import("@/pages/exam/ExamAnalytics"));
+const ExamCoach = lazy(() => import("@/pages/exam/ExamCoach"));
+const ExamAuthor = lazy(() => import("@/pages/exam/ExamAuthor"));
 
 // Oracle — Platform Operating Center
-import Oracle from '@/pages/oracle/Oracle';
+const Oracle = lazy(() => import("@/pages/oracle/Oracle"));
 
 // Management — Institution Operational Headquarters
-import Management from '@/pages/management/Management';
+const Management = lazy(() => import("@/pages/management/Management"));
 
 // Operator — Execution Workspace
-import Operator from '@/pages/operator/Operator';
+const Operator = lazy(() => import("@/pages/operator/Operator"));
 
 // Financial Platform
-import Finance from '@/pages/finance/Finance';
+const Finance = lazy(() => import("@/pages/finance/Finance"));
 
 // Architect — No-code Platform Builder (via Oracle)
-import Architect from '@/pages/architect/Architect';
+const Architect = lazy(() => import("@/pages/architect/Architect"));
 
 // Automation Engine
-import AutomationCenter from '@/pages/automation/AutomationCenter';
-import WorkflowBuilder from '@/pages/automation/WorkflowBuilder';
+const AutomationCenter = lazy(() => import("@/pages/automation/AutomationCenter"));
+const WorkflowBuilder = lazy(() => import("@/pages/automation/WorkflowBuilder"));
 
 // Identity & Security
-import SecurityCenter from '@/pages/SecurityCenter';
+const SecurityCenter = lazy(() => import("@/pages/SecurityCenter"));
 
 function App() {
   return (
@@ -125,88 +125,90 @@ function App() {
           <DemoModeProvider>
             <Router>
               <ScrollToTop />
-              <Routes>
-                <Route path="/" element={<Splash />} />
-                <Route path="/welcome" element={<Welcome />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/meet-bud" element={<MeetBud />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route element={<AppShell />}>
-                  <Route path="/home" element={<Home />} />
-                  <Route path="/bud" element={<BudHome />} />
-                  <Route path="/social" element={<SocialHub />} />
-                  <Route path="/quad" element={<Quad />} />
-                  <Route path="/connect" element={<Connect />} />
-                  <Route path="/me" element={<Me />} />
-                  <Route path="/shorts" element={<Shorts />} />
-                  <Route path="/messages" element={<Messages />} />
-                  <Route path="/messages/:conversationId" element={<Messages />} />
-                  <Route path="/communities" element={<Communities />} />
-                  <Route path="/community/:communityId" element={<CommunityDetail />} />
-                  <Route path="/clubs" element={<Clubs />} />
-                  <Route path="/marketplace" element={<Marketplace />} />
-                  <Route path="/lost-found" element={<LostFound />} />
-                  <Route path="/discover" element={<Discover />} />
-                  <Route path="/notifications" element={<Notifications />} />
-                  <Route path="/events" element={<CampusEvents />} />
-                  <Route path="/study-groups" element={<StudyGroups />} />
-                  <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
-                  <Route path="/mentorship" element={<Mentorship />} />
-                  <Route path="/mentor/:mentorId" element={<MentorProfile />} />
-                  <Route path="/opportunities" element={<Opportunities />} />
-                  <Route path="/scholarships" element={<Scholarships />} />
-                  <Route path="/research" element={<ResearchHub />} />
-                  <Route path="/career" element={<CareerHub />} />
-                  <Route path="/companies" element={<Companies />} />
-                  <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/cv-builder" element={<CVBuilder />} />
-                  <Route path="/challenges" element={<Challenges />} />
-                  <Route path="/student-government" element={<StudentGovernment />} />
-                  <Route path="/student-support" element={<StudentSupport />} />
-                  <Route path="/courses" element={<Courses />} />
-                  <Route path="/timetable" element={<Timetable />} />
-                  <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/assignments" element={<Assignments />} />
-                  <Route path="/projects" element={<Projects />} />
-                  <Route path="/exams" element={<Exams />} />
-                  <Route path="/attendance" element={<Attendance />} />
-                  <Route path="/notes" element={<Notes />} />
-                  <Route path="/study-sessions" element={<StudySessions />} />
-                  <Route path="/study" element={<StudySuite />} />
-                  <Route path="/study/assignment" element={<AssignmentAssistant />} />
-                  <Route path="/study/project" element={<ProjectAssistant />} />
-                  <Route path="/study/notes" element={<SmartNotes />} />
-                  <Route path="/study/research" element={<ResearchAssistant />} />
-                  <Route path="/study/exams" element={<ExamPreparation />} />
-                  <Route path="/study/flashcards" element={<Flashcards />} />
-                  <Route path="/study/practice" element={<PracticeTests />} />
-                  <Route path="/study/citations" element={<CitationManager />} />
-                  <Route path="/study/library" element={<DocumentLibrary />} />
-                  <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
-                  <Route path="/institution/console" element={<InstitutionPortal />} />
-                  <Route path="/lecturer/portal" element={<LecturerPortal />} />
-                  <Route path="/parent/portal" element={<ParentPortal />} />
-                  <Route path="/exam" element={<ExamHub />} />
-                  <Route path="/exam/start/:paperId" element={<ExamStart />} />
-                  <Route path="/exam/take/:attemptId" element={<ExamTaker />} />
-                  <Route path="/exam/result/:attemptId" element={<ExamResult />} />
-                  <Route path="/exam/analytics" element={<ExamAnalytics />} />
-                  <Route path="/exam/coach" element={<ExamCoach />} />
-                  <Route path="/exam/author" element={<ExamAuthor />} />
-                  <Route path="/oracle" element={<Oracle />} />
-                  <Route path="/management" element={<Management />} />
-                  <Route path="/operator" element={<Operator />} />
-                  <Route path="/finance" element={<Finance />} />
-                  <Route path="/architect" element={<Architect />} />
-                  <Route path="/automation" element={<AutomationCenter />} />
-                  <Route path="/automation/builder" element={<WorkflowBuilder />} />
-                  <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
-                  <Route path="/security" element={<SecurityCenter />} />
-                </Route>
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
+              <Suspense fallback={<RouteLoading />}>
+                <Routes>
+                  <Route path="/" element={<Splash />} />
+                  <Route path="/welcome" element={<Welcome />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/meet-bud" element={<MeetBud />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route element={<AppShell />}>
+                    <Route path="/home" element={<Home />} />
+                    <Route path="/bud" element={<BudHome />} />
+                    <Route path="/social" element={<SocialHub />} />
+                    <Route path="/quad" element={<Quad />} />
+                    <Route path="/connect" element={<Connect />} />
+                    <Route path="/me" element={<Me />} />
+                    <Route path="/shorts" element={<Shorts />} />
+                    <Route path="/messages" element={<Messages />} />
+                    <Route path="/messages/:conversationId" element={<Messages />} />
+                    <Route path="/communities" element={<Communities />} />
+                    <Route path="/community/:communityId" element={<CommunityDetail />} />
+                    <Route path="/clubs" element={<Clubs />} />
+                    <Route path="/marketplace" element={<Marketplace />} />
+                    <Route path="/lost-found" element={<LostFound />} />
+                    <Route path="/discover" element={<Discover />} />
+                    <Route path="/notifications" element={<Notifications />} />
+                    <Route path="/events" element={<CampusEvents />} />
+                    <Route path="/study-groups" element={<StudyGroups />} />
+                    <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
+                    <Route path="/mentorship" element={<Mentorship />} />
+                    <Route path="/mentor/:mentorId" element={<MentorProfile />} />
+                    <Route path="/opportunities" element={<Opportunities />} />
+                    <Route path="/scholarships" element={<Scholarships />} />
+                    <Route path="/research" element={<ResearchHub />} />
+                    <Route path="/career" element={<CareerHub />} />
+                    <Route path="/companies" element={<Companies />} />
+                    <Route path="/portfolio" element={<Portfolio />} />
+                    <Route path="/cv-builder" element={<CVBuilder />} />
+                    <Route path="/challenges" element={<Challenges />} />
+                    <Route path="/student-government" element={<StudentGovernment />} />
+                    <Route path="/student-support" element={<StudentSupport />} />
+                    <Route path="/courses" element={<Courses />} />
+                    <Route path="/timetable" element={<Timetable />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/assignments" element={<Assignments />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/exams" element={<Exams />} />
+                    <Route path="/attendance" element={<Attendance />} />
+                    <Route path="/notes" element={<Notes />} />
+                    <Route path="/study-sessions" element={<StudySessions />} />
+                    <Route path="/study" element={<StudySuite />} />
+                    <Route path="/study/assignment" element={<AssignmentAssistant />} />
+                    <Route path="/study/project" element={<ProjectAssistant />} />
+                    <Route path="/study/notes" element={<SmartNotes />} />
+                    <Route path="/study/research" element={<ResearchAssistant />} />
+                    <Route path="/study/exams" element={<ExamPreparation />} />
+                    <Route path="/study/flashcards" element={<Flashcards />} />
+                    <Route path="/study/practice" element={<PracticeTests />} />
+                    <Route path="/study/citations" element={<CitationManager />} />
+                    <Route path="/study/library" element={<DocumentLibrary />} />
+                    <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
+                    <Route path="/institution/console" element={<InstitutionPortal />} />
+                    <Route path="/lecturer/portal" element={<LecturerPortal />} />
+                    <Route path="/parent/portal" element={<ParentPortal />} />
+                    <Route path="/exam" element={<ExamHub />} />
+                    <Route path="/exam/start/:paperId" element={<ExamStart />} />
+                    <Route path="/exam/take/:attemptId" element={<ExamTaker />} />
+                    <Route path="/exam/result/:attemptId" element={<ExamResult />} />
+                    <Route path="/exam/analytics" element={<ExamAnalytics />} />
+                    <Route path="/exam/coach" element={<ExamCoach />} />
+                    <Route path="/exam/author" element={<ExamAuthor />} />
+                    <Route path="/oracle" element={<Oracle />} />
+                    <Route path="/management" element={<Management />} />
+                    <Route path="/operator" element={<Operator />} />
+                    <Route path="/finance" element={<Finance />} />
+                    <Route path="/architect" element={<Architect />} />
+                    <Route path="/automation" element={<AutomationCenter />} />
+                    <Route path="/automation/builder" element={<WorkflowBuilder />} />
+                    <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
+                    <Route path="/security" element={<SecurityCenter />} />
+                  </Route>
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
               <Toaster />
             </Router>
           </DemoModeProvider>

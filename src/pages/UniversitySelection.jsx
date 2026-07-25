@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Search, ChevronDown, Globe, ArrowRight, Loader2, Check, Building, MapPin, Rocket, GraduationCap, Sparkles, Award, FlaskConical } from "lucide-react";
+import { Search, Globe, ArrowRight, Loader2, Check, Building, MapPin, Rocket, GraduationCap, Sparkles, Award, FlaskConical } from "lucide-react";
 import AuthLogo from "@/components/auth/AuthLogo";
 import { COUNTRIES, UNIVERSITIES, LEVELS } from "@/data/universities";
 import { ensureCommunityInstitution } from "@/lib/institutionService";
+import MobileSelect from "@/components/ui/MobileSelect";
 
 export default function UniversitySelection() {
   const navigate = useNavigate();
@@ -172,14 +173,14 @@ export default function UniversitySelection() {
           {/* Country */}
           <div className="space-y-1.5">
             <label className="text-[12px] font-semibold text-foreground">Country</label>
-            <div className="relative">
-              <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <select value={country} onChange={(e) => setCountry(e.target.value)} className="w-full pl-10 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none">
-                <option value="">Select country</option>
-                {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-              <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-            </div>
+            <MobileSelect
+              value={country}
+              onChange={setCountry}
+              placeholder="Select country"
+              label="Country"
+              leftIcon={Globe}
+              options={COUNTRIES.map((c) => ({ value: c, label: c }))}
+            />
           </div>
 
           {/* University search */}
@@ -224,14 +225,14 @@ export default function UniversitySelection() {
           <div className="space-y-1.5">
             <label className="text-[12px] font-semibold text-foreground">Campus <span className="text-muted-foreground font-normal">(optional)</span></label>
             {campuses.length > 0 ? (
-              <div className="relative">
-                <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <select value={campus} onChange={(e) => setCampus(e.target.value)} className="w-full pl-10 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none">
-                  <option value="">Select campus</option>
-                  {campuses.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-              </div>
+              <MobileSelect
+                value={campus}
+                onChange={setCampus}
+                placeholder="Select campus"
+                label="Campus"
+                leftIcon={MapPin}
+                options={campuses.map((c) => ({ value: c, label: c }))}
+              />
             ) : (
               <input type="text" value={campus} onChange={(e) => setCampus(e.target.value)} placeholder="e.g., Main Campus" className="w-full px-4 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
             )}
@@ -257,13 +258,13 @@ export default function UniversitySelection() {
             </div>
             <div className="space-y-1.5">
               <label className="text-[12px] font-semibold text-foreground">Year / Level</label>
-              <div className="relative">
-                <select value={level} onChange={(e) => setLevel(e.target.value)} className="w-full px-4 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none">
-                  <option value="">Select</option>
-                  {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-                </select>
-                <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-              </div>
+              <MobileSelect
+                value={level}
+                onChange={setLevel}
+                placeholder="Select"
+                label="Year / Level"
+                options={LEVELS.map((l) => ({ value: l, label: l }))}
+              />
             </div>
           </div>
 

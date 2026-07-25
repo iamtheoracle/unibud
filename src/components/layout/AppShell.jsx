@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, Suspense } from "react";
+import { useNavigate, useLocation, useOutlet } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import BottomNav from "@/components/layout/BottomNav";
 import EcosystemRail from "@/components/layout/EcosystemRail";
@@ -16,7 +18,10 @@ import { UnibudContextProvider } from "@/lib/UnibudContext";
  */
 export default function AppShell() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const outlet = useOutlet();
   const [checking, setChecking] = useState(true);
+  const reduceMotion = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((ok) => {
@@ -45,7 +50,16 @@ export default function AppShell() {
       <UnibudContextProvider>
         <div className="min-h-screen w-full">
           <ContextPulse />
-          <Outlet />
+          <Suspense fallback={<RouteLoading />}>
+            <motion.div
+              key={location.pathname}
+              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            >
+              {outlet}
+            </motion.div>
+          </Suspense>
           <EcosystemRail />
           <BottomNav />
           <BudLivingOrb />

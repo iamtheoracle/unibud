@@ -14,6 +14,8 @@ import WeatherWidget from "@/components/weather/WeatherWidget";
 import HomeMessages from "@/components/home/HomeMessages";
 import HomePayments from "@/components/home/HomePayments";
 import HomeCommunity from "@/components/home/HomeCommunity";
+import PullToRefresh from "@/components/ui/PullToRefresh";
+import { queryClientInstance } from "@/lib/query-client";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -25,6 +27,10 @@ const EASE = [0.16, 1, 0.3, 1];
 export default function Home() {
   const ctx = useUnibudContext();
   const plan = orchestrateHome(ctx);
+
+  const refreshHome = async () => {
+    await queryClientInstance.invalidateQueries();
+  };
 
   const widgets = {
     weather: <WeatherWidget />,
@@ -39,6 +45,7 @@ export default function Home() {
   };
 
   return (
+    <PullToRefresh onRefresh={refreshHome}>
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
       <HomeHeader user={ctx.user} />
       <div className="mt-4">
@@ -63,5 +70,6 @@ export default function Home() {
         ))}
       </AnimatePresence>
     </div>
+    </PullToRefresh>
   );
 }

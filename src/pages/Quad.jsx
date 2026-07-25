@@ -14,6 +14,7 @@ import CelebrationsCarousel from "@/components/quad/CelebrationsCarousel";
 import StoryBar from "@/components/stories/StoryBar";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import { queryClientInstance } from "@/lib/query-client";
 
 const DEMO_POSTS = [
   {
@@ -82,7 +83,7 @@ export default function Quad() {
   const university = isDemoMode ? "University of Benin" : user?.university || "";
 
   const handleRefresh = async () => {
-    await refetchUser();
+    await Promise.all([refetchUser(), queryClientInstance.invalidateQueries()]);
   };
 
   return (
