@@ -31,7 +31,7 @@ export const PLATFORM_MODULES = [
   // ── Phase 2 (hidden) — Opportunities ──
   { key: "scholarships", display_name: "Scholarships", category: "opportunities", icon: "Award", description: "Scholarship discovery, tracking, and applications.", enabled: false, sort_order: 18 },
   { key: "internships", display_name: "Internships", category: "opportunities", icon: "Briefcase", description: "Internship opportunities and application tracking.", enabled: false, sort_order: 19 },
-  { key: "marketplace", display_name: "Marketplace", category: "opportunities", icon: "ShoppingBag", description: "Campus marketplace for textbooks, electronics, and services.", enabled: false, sort_order: 20 },
+  { key: "marketplace", display_name: "Marketplace", category: "student_experience", icon: "ShoppingBag", description: "Free campus marketplace — buy, sell & share with students directly. No fees.", enabled: true, sort_order: 9 },
   { key: "career_hub", display_name: "Career Hub", category: "opportunities", icon: "TrendingUp", description: "Career guidance, job postings, and professional development.", enabled: false, sort_order: 21 },
 
   // ── Phase 2 (hidden) — Campus Services ──
