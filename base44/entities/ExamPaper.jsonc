@@ -1,0 +1,127 @@
+{
+  "name": "ExamPaper",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "exam_type": {
+      "type": "string",
+      "enum": [
+        "institution",
+        "practice",
+        "certification",
+        "jamb",
+        "waec",
+        "neco",
+        "nabteb",
+        "ijmb",
+        "jupeb",
+        "ielts",
+        "toefl",
+        "sat",
+        "gre",
+        "gmat"
+      ],
+      "default": "practice"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Optional tenant scope for institution exams"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "total_marks": {
+      "type": "number",
+      "default": 0
+    },
+    "pass_mark": {
+      "type": "number",
+      "default": 50,
+      "description": "Pass threshold in percent"
+    },
+    "instructions": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_proctored": {
+      "type": "boolean",
+      "default": false
+    },
+    "randomize": {
+      "type": "boolean",
+      "default": true
+    },
+    "questions_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "title",
+    "exam_type"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
