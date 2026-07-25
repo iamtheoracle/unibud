@@ -43,7 +43,7 @@ export default function MeetBud() {
     return () => clearTimeout(t);
   }, [visible, authed]);
 
-  const begin = () => setPreparing(true);
+  const begin = () => navigate("/home", { replace: true });
 
   const signOut = () => {
     base44.auth.logout();

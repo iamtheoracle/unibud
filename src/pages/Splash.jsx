@@ -29,7 +29,7 @@ export default function Splash() {
         setLeaving(true);
         await wait(450);
         if (!active) return;
-        navigate(authed ? "/meet-bud" : "/welcome", { replace: true });
+        navigate(authed ? "/home" : "/welcome", { replace: true });
       } catch {
         await wait(2600);
         if (!active) return;

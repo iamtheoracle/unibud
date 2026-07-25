@@ -20,7 +20,7 @@ export default function Welcome() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
-      if (authed) navigate("/meet-bud", { replace: true });
+      if (authed) navigate("/home", { replace: true });
     });
   }, [navigate]);
 

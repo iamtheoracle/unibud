@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Compass, Users, User as UserIcon } from 'lucide-react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { DemoModeProvider } from '@/lib/DemoModeContext';
@@ -15,6 +16,11 @@ import Login from '@/pages/Login';
 import MeetBud from '@/pages/MeetBud';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
+
+// Milestone 2 — Student Home (Campus)
+import AppShell from '@/components/layout/AppShell';
+import Home from '@/pages/Home';
+import Placeholder from '@/pages/Placeholder';
 
 function App() {
   return (
@@ -32,6 +38,12 @@ function App() {
                 <Route path="/meet-bud" element={<MeetBud />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
+                <Route element={<AppShell />}>
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/quad" element={<Placeholder title="Quad" description="Your campus social feed arrives in a future milestone." icon={Compass} />} />
+                  <Route path="/connect" element={<Placeholder title="Connect" description="Study matching, mentorship, and events arrive in a future milestone." icon={Users} />} />
+                  <Route path="/me" element={<Placeholder title="Me" description="Your profile and achievements arrive in a future milestone." icon={UserIcon} />} />
+                </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
               <Toaster />
