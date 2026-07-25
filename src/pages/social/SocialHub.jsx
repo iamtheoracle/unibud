@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import SocialFeed, { SOCIAL_TABS } from "@/components/social/SocialFeed";
+import SocialForYou from "@/components/social/SocialForYou";
 import ShareSheet from "@/components/social/ShareSheet";
 import ConnectedAccounts from "@/components/social/ConnectedAccounts";
 import SocialAI from "@/components/social/SocialAI";
@@ -11,7 +12,7 @@ import SocialAI from "@/components/social/SocialAI";
  * scholarship signals, with opt-in connections and one-tap sharing.
  */
 export default function SocialHub() {
-  const [tab, setTab] = useState("campus");
+  const [tab, setTab] = useState("foryou");
   const [share, setShare] = useState(null);
 
   return (
@@ -27,7 +28,7 @@ export default function SocialHub() {
       </div>
 
       <div className="mt-5 flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
-        {SOCIAL_TABS.map((t) => (
+        {[{ key: "foryou", label: "For You" }, ...SOCIAL_TABS].map((t) => (
           <button
             key={t.key}
             onClick={() => setTab(t.key)}
@@ -39,7 +40,7 @@ export default function SocialHub() {
       </div>
 
       <div className="mt-4">
-        <SocialFeed tab={tab} onShare={setShare} />
+        {tab === "foryou" ? <SocialForYou onShare={setShare} /> : <SocialFeed tab={tab} onShare={setShare} />}
       </div>
 
       <div className="mt-6">
