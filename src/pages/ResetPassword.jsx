@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Lock, Loader2, AlertTriangle, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
@@ -41,8 +41,8 @@ export default function ResetPassword() {
     <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
       <SparkField count={12} />
       <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
-        <Link to="/login" className="flex items-center gap-1.5 text-muted-foreground mt-6 mb-7 spring-tap self-start">
-          <ArrowLeft className="w-[18px] h-[18px]" /> <span className="text-[13px] font-medium">Back</span>
+        <Link to="/login" className="text-muted-foreground mt-6 mb-7 spring-tap self-start">
+          <span className="text-[13px] font-medium">Back</span>
         </Link>
 
         <BrandLogo size="sm" />
@@ -50,9 +50,6 @@ export default function ResetPassword() {
         <div className="flex-1 flex flex-col justify-center py-6">
           {!resetToken ? (
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: EASE }} className="glass-card p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-destructive/12 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-7 h-7 text-destructive" />
-              </div>
               <h2 className="font-heading font-bold text-[20px] text-foreground mb-1.5">Invalid reset link</h2>
               <p className="text-[13px] text-muted-foreground leading-relaxed mb-5">
                 This password reset link is missing or invalid. Please request a new one.
@@ -75,7 +72,6 @@ export default function ResetPassword() {
                 <form onSubmit={handleSubmit} className="space-y-3.5">
                   <GlassInput
                     label="New Password"
-                    icon={Lock}
                     type="password"
                     autoComplete="new-password"
                     autoFocus
@@ -86,7 +82,6 @@ export default function ResetPassword() {
                   />
                   <GlassInput
                     label="Confirm Password"
-                    icon={Lock}
                     type="password"
                     autoComplete="new-password"
                     placeholder="••••••••"

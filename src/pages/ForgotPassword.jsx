@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Mail, ArrowLeft, Loader2, Check } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
@@ -32,8 +32,8 @@ export default function ForgotPassword() {
     <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
       <SparkField count={12} />
       <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
-        <Link to="/login" className="flex items-center gap-1.5 text-muted-foreground mt-6 mb-7 spring-tap self-start">
-          <ArrowLeft className="w-[18px] h-[18px]" /> <span className="text-[13px] font-medium">Back</span>
+        <Link to="/login" className="text-muted-foreground mt-6 mb-7 spring-tap self-start">
+          <span className="text-[13px] font-medium">Back</span>
         </Link>
 
         <BrandLogo size="sm" />
@@ -47,9 +47,6 @@ export default function ForgotPassword() {
           <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, ease: EASE }} className="glass-card p-5">
             {sent ? (
               <div className="flex flex-col items-center text-center py-4">
-                <div className="w-14 h-14 rounded-full bg-primary/12 flex items-center justify-center mb-4">
-                  <Check className="w-7 h-7 text-primary" strokeWidth={2.5} />
-                </div>
                 <p className="text-[14px] text-foreground leading-relaxed max-w-[300px]">
                   If an account exists with that email, you'll receive a password reset link shortly.
                 </p>
@@ -61,7 +58,6 @@ export default function ForgotPassword() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <GlassInput
                   label="Email address"
-                  icon={Mail}
                   type="email"
                   autoComplete="email"
                   autoFocus

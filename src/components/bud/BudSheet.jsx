@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Loader2 } from "lucide-react";
-import BudCharacter from "@/components/brand/BudCharacter";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { base44 } from "@/api/base44Client";
 
@@ -11,6 +9,9 @@ const BUD_PROMPT =
   "You are Bud, a warm, calm, and encouraging academic companion for a university student. " +
   "Keep replies short, friendly, and helpful — never robotic. Student message: ";
 
+/**
+ * BudSheet — the Bud conversation sheet. Opens Bud instantly.
+ */
 export default function BudSheet() {
   const { open, setOpen } = useBudLauncher();
   const [messages, setMessages] = useState([]);
@@ -52,23 +53,18 @@ export default function BudSheet() {
             className="relative w-full max-w-[520px] glass-strong rounded-t-[28px] p-5 pb-8 safe-area-pb max-h-[82vh] flex flex-col"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 rounded-full overflow-hidden glass ring-1 ring-primary/30 flex-shrink-0">
-                <BudCharacter animate={false} glow={false} className="w-full h-full" />
-              </div>
               <div className="flex-1 min-w-0">
                 <p className="font-heading font-bold text-[15px] text-foreground">Bud</p>
                 <p className="text-[11px] text-muted-foreground">Your academic companion</p>
               </div>
-              <button onClick={() => setOpen(false)} className="w-9 h-9 rounded-full glass flex items-center justify-center spring-tap flex-shrink-0">
-                <X className="w-[18px] h-[18px]" />
+              <button onClick={() => setOpen(false)} className="text-[13px] font-semibold text-muted-foreground hover:text-foreground spring-tap">
+                Close
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto no-scrollbar space-y-3 mb-4 min-h-[120px]">
               {messages.length === 0 && (
-                <p className="text-[13px] text-muted-foreground text-center py-8">
-                  Hi! I'm Bud. What would you like to work on?
-                </p>
+                <p className="text-[13px] text-muted-foreground text-center py-8">Hi! I'm Bud. What would you like to work on?</p>
               )}
               {messages.map((m, i) => (
                 <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -108,14 +104,14 @@ export default function BudSheet() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
                 placeholder="Ask Bud anything…"
-                className="flex-1 h-[48px] px-4 rounded-2xl bg-muted/50 border border-border text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/25"
+                className="flex-1 h-[48px] px-4 rounded-2xl bg-muted/50 border border-border text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/25 min-w-0"
               />
               <button
                 onClick={() => send()}
                 disabled={loading}
-                className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center spring-tap disabled:opacity-50 ice-glow flex-shrink-0"
+                className="px-4 h-12 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[14px] flex items-center justify-center spring-tap disabled:opacity-50 ice-glow flex-shrink-0"
               >
-                <Send className="w-[18px] h-[18px]" />
+                Send
               </button>
             </div>
           </motion.div>

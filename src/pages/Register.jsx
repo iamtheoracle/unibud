@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import {
-  Eye, EyeOff, Loader2, ArrowRight, Mail, Lock, User, Phone,
-  Check, ArrowLeft,
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
@@ -16,10 +13,10 @@ import { toast } from "@/components/ui/use-toast";
 const EASE = [0.16, 1, 0.3, 1];
 
 const STEPS = [
-  { key: "name", title: "What's your name?", hint: "We'll personalize your experience.", label: "Full Name", type: "text", icon: User, placeholder: "Your full name", autoComplete: "name" },
-  { key: "email", title: "Your email address", hint: "We'll send a verification code here.", label: "Email Address", type: "email", icon: Mail, placeholder: "you@example.com", autoComplete: "email" },
-  { key: "phone", title: "Your phone number", hint: "For account security and reminders.", label: "Phone Number", type: "tel", icon: Phone, placeholder: "+234 800 000 0000", autoComplete: "tel" },
-  { key: "password", title: "Create a password", hint: "At least 6 characters.", label: "Create Password", type: "password", icon: Lock, placeholder: "••••••••", autoComplete: "new-password" },
+  { key: "name", title: "What's your name?", hint: "We'll personalize your experience.", label: "Full Name", type: "text", placeholder: "Your full name", autoComplete: "name" },
+  { key: "email", title: "Your email address", hint: "We'll send a verification code here.", label: "Email Address", type: "email", placeholder: "you@example.com", autoComplete: "email" },
+  { key: "phone", title: "Your phone number", hint: "For account security and reminders.", label: "Phone Number", type: "tel", placeholder: "+234 800 000 0000", autoComplete: "tel" },
+  { key: "password", title: "Create a password", hint: "At least 6 characters.", label: "Create Password", type: "password", placeholder: "••••••••", autoComplete: "new-password" },
 ];
 
 export default function Register() {
@@ -29,7 +26,7 @@ export default function Register() {
   const [step, setStep] = useState(0);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [stage, setStage] = useState("form"); // form | otp | success
+  const [stage, setStage] = useState("form");
   const [otpCode, setOtpCode] = useState("");
   const [countdown, setCountdown] = useState(60);
 
@@ -59,7 +56,6 @@ export default function Register() {
     const err = validate(step);
     if (err) { setError(err); return; }
     if (step < STEPS.length - 1) { setStep(step + 1); return; }
-    // Final step → register
     setLoading(true);
     try {
       await base44.auth.register({ email: values.email.trim(), password: values.password });
@@ -106,7 +102,6 @@ export default function Register() {
     }
   };
 
-  /* ── SUCCESS ── */
   if (stage === "success") {
     return (
       <div className="min-h-screen w-full relative overflow-hidden flex flex-col items-center justify-center">
@@ -117,43 +112,24 @@ export default function Register() {
           animate={{ opacity: [0.5, 0.9, 0.5] }}
           transition={{ duration: 6, repeat: Infinity }}
         />
-        <motion.div
-          initial={{ scale: 0, rotate: -8 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 200, damping: 16 }}
-          className="w-24 h-24 rounded-full glass-strong flex items-center justify-center mb-6 ice-glow relative z-10"
-        >
-          <Check className="w-12 h-12 text-primary" strokeWidth={2.5} />
-        </motion.div>
-        <motion.h2
-          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="font-heading font-bold text-[22px] text-foreground mb-1 relative z-10"
-        >
+        <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="font-heading font-bold text-[22px] text-foreground mb-1 relative z-10">
           Welcome to UNIBUD
         </motion.h2>
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          className="text-[14px] text-muted-foreground relative z-10"
-        >
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-[14px] text-muted-foreground relative z-10">
           Introducing your companion…
         </motion.p>
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-          className="mt-6 w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin relative z-10"
-        />
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} className="mt-6 w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin relative z-10" />
       </div>
     );
   }
 
-  /* ── OTP ── */
   if (stage === "otp") {
     return (
       <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
         <SparkField count={12} />
         <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
-          <button onClick={() => setStage("form")} className="flex items-center gap-1.5 text-muted-foreground mt-6 mb-7 spring-tap self-start">
-            <ArrowLeft className="w-[18px] h-[18px]" /> <span className="text-[13px] font-medium">Back</span>
+          <button onClick={() => setStage("form")} className="text-muted-foreground mt-6 mb-7 spring-tap self-start">
+            <span className="text-[13px] font-medium">Back</span>
           </button>
           <BrandLogo size="sm" />
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, ease: EASE }} className="mt-8">
@@ -180,7 +156,7 @@ export default function Register() {
               disabled={loading || otpCode.length < 6}
               className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 spring-tap disabled:opacity-50 ice-glow"
             >
-              {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Verifying…</> : <><Check className="w-[18px] h-[18px]" /> Verify</>}
+              {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Verifying…</> : "Verify"}
             </button>
             <p className="text-center text-[13px] text-muted-foreground mt-4">
               {countdown > 0 ? (
@@ -195,30 +171,23 @@ export default function Register() {
     );
   }
 
-  /* ── STEP-BY-STEP FORM ── */
   const progress = step + 1;
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
       <SparkField count={12} />
       <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
         <div className="flex items-center justify-between mt-6 mb-7">
-          <button onClick={handleBack} className="flex items-center gap-1.5 text-muted-foreground spring-tap">
-            <ArrowLeft className="w-[18px] h-[18px]" /> <span className="text-[13px] font-medium">Back</span>
+          <button onClick={handleBack} className="text-muted-foreground spring-tap">
+            <span className="text-[13px] font-medium">Back</span>
           </button>
           <span className="text-[12px] font-semibold text-muted-foreground tracking-wide">
             Step {progress} of {STEPS.length}
           </span>
         </div>
 
-        {/* Progress dots */}
         <div className="flex items-center gap-1.5 mb-8">
           {STEPS.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                i <= step ? "bg-primary" : "bg-muted"
-              }`}
-            />
+            <div key={i} className={`h-1 flex-1 rounded-full transition-all duration-300 ${i <= step ? "bg-primary" : "bg-muted"}`} />
           ))}
         </div>
 
@@ -246,7 +215,6 @@ export default function Register() {
 
               <GlassInput
                 label={current.label}
-                icon={current.icon}
                 type={current.type === "password" && showPassword ? "text" : current.type}
                 value={values[current.key]}
                 onChange={(e) => setValues({ ...values, [current.key]: e.target.value })}
@@ -255,12 +223,8 @@ export default function Register() {
                 autoFocus
                 trailing={
                   current.type === "password" ? (
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-muted-foreground/70 hover:text-foreground p-1"
-                    >
-                      {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-[12px] font-semibold text-muted-foreground hover:text-foreground px-1">
+                      {showPassword ? "Hide" : "Show"}
                     </button>
                   ) : undefined
                 }
@@ -276,7 +240,7 @@ export default function Register() {
             {loading ? (
               <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Creating account…</>
             ) : (
-              <>Next <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>
+              "Next"
             )}
           </button>
 

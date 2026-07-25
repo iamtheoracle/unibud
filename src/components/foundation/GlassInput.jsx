@@ -1,18 +1,10 @@
 import React from "react";
 
 /**
- * GlassInput — the canonical frosted-glass input for UNIBUD auth flows.
- * Leading icon, optional trailing node (e.g. password toggle), label.
- * Adapts to light/dark via tokens.
+ * GlassInput — frosted-glass input with label and optional trailing node.
+ * (Leading icon removed — to be re-added with the real icon set.)
  */
-export default function GlassInput({
-  label,
-  icon: Icon,
-  trailing,
-  className = "",
-  inputClassName = "",
-  ...props
-}) {
+export default function GlassInput({ label, icon: Icon, trailing, className = "", inputClassName = "", ...props }) {
   return (
     <div className="space-y-1.5">
       {label && (
@@ -21,12 +13,9 @@ export default function GlassInput({
         </label>
       )}
       <div className="relative">
-        {Icon && (
-          <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-muted-foreground/70 pointer-events-none" />
-        )}
         <input
-          className={`w-full h-[52px] ${Icon ? "pl-11" : "pl-4"} ${
-            trailing ? "pr-12" : "pr-4"
+          className={`w-full h-[52px] pl-4 ${
+            trailing ? "pr-16" : "pr-4"
           } rounded-2xl bg-muted/50 border border-border text-[15px] text-foreground placeholder:text-muted-foreground/60 backdrop-blur-xl focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/25 transition-all ${inputClassName} ${className}`}
           {...props}
         />

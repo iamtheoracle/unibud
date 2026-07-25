@@ -2,7 +2,6 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { Compass, Users, User as UserIcon } from 'lucide-react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { DemoModeProvider } from '@/lib/DemoModeContext';
@@ -40,9 +39,9 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route element={<AppShell />}>
                   <Route path="/home" element={<Home />} />
-                  <Route path="/quad" element={<Placeholder title="Quad" description="Your campus social feed arrives in a future milestone." icon={Compass} />} />
-                  <Route path="/connect" element={<Placeholder title="Connect" description="Study matching, mentorship, and events arrive in a future milestone." icon={Users} />} />
-                  <Route path="/me" element={<Placeholder title="Me" description="Your profile and achievements arrive in a future milestone." icon={UserIcon} />} />
+                  <Route path="/quad" element={<Placeholder title="Quad" description="Your campus social feed arrives in a future milestone." />} />
+                  <Route path="/connect" element={<Placeholder title="Connect" description="Study matching, mentorship, and events arrive in a future milestone." />} />
+                  <Route path="/me" element={<Placeholder title="Me" description="Your profile and achievements arrive in a future milestone." />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>

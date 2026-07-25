@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Eye, EyeOff, Loader2, ArrowRight, Lock, Mail, ArrowLeft } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
@@ -10,10 +10,6 @@ import GlassInput from "@/components/foundation/GlassInput";
 
 const EASE = [0.16, 1, 0.3, 1];
 
-/**
- * Login — Screen 4.
- * Email or Phone + Password. Login + Forgot Password. Company footer.
- */
 export default function Login() {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
@@ -44,8 +40,8 @@ export default function Login() {
     <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
       <SparkField count={12} />
       <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
-        <button onClick={() => navigate("/welcome")} className="flex items-center gap-1.5 text-muted-foreground mt-6 mb-7 spring-tap self-start">
-          <ArrowLeft className="w-[18px] h-[18px]" /> <span className="text-[13px] font-medium">Back</span>
+        <button onClick={() => navigate("/welcome")} className="text-muted-foreground mt-6 mb-7 spring-tap self-start">
+          <span className="text-[13px] font-medium">Back</span>
         </button>
 
         <BrandLogo size="sm" />
@@ -63,7 +59,6 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-3.5">
               <GlassInput
                 label="Email or Phone"
-                icon={Mail}
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
@@ -74,7 +69,6 @@ export default function Login() {
               />
               <GlassInput
                 label="Password"
-                icon={Lock}
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -82,14 +76,14 @@ export default function Login() {
                 autoComplete="current-password"
                 required
                 trailing={
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-muted-foreground/70 hover:text-foreground p-1">
-                    {showPassword ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-[12px] font-semibold text-muted-foreground hover:text-foreground px-1">
+                    {showPassword ? "Hide" : "Show"}
                   </button>
                 }
               />
 
               <button type="submit" disabled={loading} className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2.5 spring-tap disabled:opacity-50 ice-glow mt-2">
-                {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Signing in…</> : <>Login <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
+                {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Signing in…</> : "Login"}
               </button>
             </form>
 
