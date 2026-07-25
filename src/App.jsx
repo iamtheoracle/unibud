@@ -71,6 +71,9 @@ import Oracle from '@/pages/oracle/Oracle';
 import AutomationCenter from '@/pages/automation/AutomationCenter';
 import WorkflowBuilder from '@/pages/automation/WorkflowBuilder';
 
+// Identity & Security
+import SecurityCenter from '@/pages/SecurityCenter';
+
 function App() {
   return (
     <AuthProvider>
@@ -126,6 +129,7 @@ function App() {
                   <Route path="/automation" element={<AutomationCenter />} />
                   <Route path="/automation/builder" element={<WorkflowBuilder />} />
                   <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
+                  <Route path="/security" element={<SecurityCenter />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
