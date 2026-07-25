@@ -5,8 +5,10 @@ import { base44 } from "@/api/base44Client";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
 import { PLATFORM_IDENTITY } from "@/lib/companyIdentity";
+import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];
+const LOGO_URL = "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/7de0fdf43_6C287179-9048-4978-AA9F-F2B45C76A69A.png";
 
 /**
  * Splash — Screen 1.
@@ -39,7 +41,7 @@ export default function Splash() {
   }, [navigate]);
 
   return (
-    <div className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center">
+    <div className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center" style={{ backgroundColor: "#000" }}>
       <motion.div
         className="absolute top-[-20%] left-[8%] w-[70%] h-[50%] rounded-full blur-[120px] pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(127,216,255,0.12), transparent 70%)" }}
@@ -59,23 +61,14 @@ export default function Splash() {
         transition={{ duration: 0.45, ease: EASE }}
         className="relative z-10 flex flex-col items-center px-8 text-center w-full max-w-[420px]"
       >
-        <motion.h1
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: EASE }}
-          className="font-heading font-bold text-[34px] tracking-tight text-foreground"
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: leaving ? 0 : 1, scale: leaving ? 0.96 : 1 }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="w-full"
         >
-          UNIBUD
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6, ease: EASE }}
-          className="font-heading text-[17px] font-medium text-foreground/90 mt-2.5 max-w-[300px]"
-        >
-          The Future Starts Together.
-        </motion.p>
+          <Image src={LOGO_URL} alt="UNIBUD — The Future Starts Together." fittingType="fit" className="w-full h-auto" />
+        </motion.div>
 
         <motion.p
           initial={{ opacity: 0 }}
