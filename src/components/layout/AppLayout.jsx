@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { isPortalRole, isPlatformRole, isOracleRole } from "@/lib/portalConfig";
+import { isPortalRole, isPlatformRole, isOracleRole, isOperatorRole } from "@/lib/portalConfig";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BottomNav from "@/components/layout/BottomNav";
 import CampusTutorial from "@/components/onboarding/CampusTutorial";
@@ -24,6 +24,10 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!user || isDemoMode) return;
+    if (isOperatorRole(user.role)) {
+      navigate("/operator", { replace: true });
+      return;
+    }
     if (isPortalRole(user.role)) {
       navigate("/portal", { replace: true });
       return;

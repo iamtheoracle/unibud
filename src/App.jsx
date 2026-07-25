@@ -139,6 +139,12 @@ import PortalEvents from '@/pages/portal/PortalEvents';
 import PlatformInvitations from '@/pages/portal/PlatformInvitations';
 import InstitutionConfig from '@/pages/portal/InstitutionConfig';
 import InstitutionOutreach from '@/pages/portal/InstitutionOutreach';
+import OperatorLayout from '@/components/operator/OperatorLayout';
+import OperatorHome from '@/pages/operator/OperatorHome';
+import OperatorTasks from '@/pages/operator/OperatorTasks';
+import OperatorTaskDetail from '@/pages/operator/OperatorTaskDetail';
+import OperatorCalendar from '@/pages/operator/OperatorCalendar';
+import OperatorProfile from '@/pages/operator/OperatorProfile';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -293,6 +299,13 @@ const AuthenticatedApp = () => {
           <Route path="invitations" element={<PlatformInvitations />} />
           <Route path="institution-config" element={<InstitutionConfig />} />
           <Route path="institution-outreach" element={<InstitutionOutreach />} />
+        </Route>
+        <Route path="/operator" element={<OperatorLayout />}>
+          <Route index element={<OperatorHome />} />
+          <Route path="tasks" element={<OperatorTasks />} />
+          <Route path="tasks/:id" element={<OperatorTaskDetail />} />
+          <Route path="calendar" element={<OperatorCalendar />} />
+          <Route path="profile" element={<OperatorProfile />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

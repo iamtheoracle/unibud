@@ -118,6 +118,13 @@ export function isOracleRole(role) {
   return normalized === "oracle";
 }
 
+const OPERATOR_ROLES = ["operator", "senior_operator"];
+
+export function isOperatorRole(role) {
+  const normalized = normalizeRole(role);
+  return OPERATOR_ROLES.includes(normalized);
+}
+
 export function isProtectedRole(role) {
   return isOracleRole(role);
 }
