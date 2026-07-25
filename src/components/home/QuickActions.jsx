@@ -11,6 +11,7 @@ const ACTIONS = [
   { label: "Institution", to: "/institution/console" },
   { label: "Lecturer", to: "/lecturer/portal" },
   { label: "Parent", to: "/parent/portal" },
+  { label: "Exams", to: "/exam" },
   { label: "Courses", to: "/courses" },
   { label: "Timetable", to: "/timetable" },
   { label: "Calendar", to: "/calendar" },

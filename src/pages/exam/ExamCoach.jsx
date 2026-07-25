@@ -40,7 +40,7 @@ export default function ExamCoach() {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-border bg-background/90 backdrop-blur-xl">
         <Link to="/exam"><ArrowLeft className="w-5 h-5" /></Link>
-        <div className="w-8 h-8"><BudFigure emotion="calm" /></div>
+        <BudFigure emotion="encouraging" size={32} />
         <div><h2 className="font-heading font-semibold text-[15px]">Bud Exam Coach</h2><p className="text-[11px] text-muted-foreground">Your supportive study mentor</p></div>
       </header>
 

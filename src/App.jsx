@@ -55,6 +55,15 @@ import LecturerPortal from '@/pages/lecturer/LecturerPortal';
 // Milestone 9 — Parent Portal
 import ParentPortal from '@/pages/parent/ParentPortal';
 
+// Examination Platform
+import ExamHub from '@/pages/exam/ExamHub';
+import ExamStart from '@/pages/exam/ExamStart';
+import ExamTaker from '@/pages/exam/ExamTaker';
+import ExamResult from '@/pages/exam/ExamResult';
+import ExamAnalytics from '@/pages/exam/ExamAnalytics';
+import ExamCoach from '@/pages/exam/ExamCoach';
+import ExamAuthor from '@/pages/exam/ExamAuthor';
+
 function App() {
   return (
     <AuthProvider>
@@ -99,6 +108,13 @@ function App() {
                   <Route path="/institution/console" element={<InstitutionPortal />} />
                   <Route path="/lecturer/portal" element={<LecturerPortal />} />
                   <Route path="/parent/portal" element={<ParentPortal />} />
+                  <Route path="/exam" element={<ExamHub />} />
+                  <Route path="/exam/start/:paperId" element={<ExamStart />} />
+                  <Route path="/exam/take/:attemptId" element={<ExamTaker />} />
+                  <Route path="/exam/result/:attemptId" element={<ExamResult />} />
+                  <Route path="/exam/analytics" element={<ExamAnalytics />} />
+                  <Route path="/exam/coach" element={<ExamCoach />} />
+                  <Route path="/exam/author" element={<ExamAuthor />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
