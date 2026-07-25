@@ -7,6 +7,11 @@ import { base44 } from "@/api/base44Client";
 import BudVoiceOrb from "@/components/bud/BudVoiceOrb";
 import BudVoiceMode, { speak, stopSpeak } from "@/components/bud/BudVoiceMode";
 import BudMemoryTimeline from "@/components/bud/BudMemoryTimeline";
+import BudContextCards from "@/components/bud/BudContextCards";
+import { useBudProactive } from "@/hooks/useBudProactive";
+import { useBudBehaviour } from "@/hooks/useBudBehaviour";
+import { useUnibudContext } from "@/lib/UnibudContext";
+import { useNavigate } from "react-router-dom";
 
 const SYSTEM =
   "You are Bud, a calm, warm, and encouraging university companion. You observe, remember, and support without asking unnecessary questions. " +
@@ -28,6 +33,10 @@ export default function BudCompanion() {
   const [tab, setTab] = useState(voiceMode ? "voice" : "chat");
   const [budState, setBudState] = useState("idle");
   const scrollRef = useRef(null);
+  const ctx = useUnibudContext();
+  const navigate = useNavigate();
+  const cards = useBudProactive(ctx);
+  useBudBehaviour(ctx, bud);
 
   useEffect(() => {
     if (open) setTab(voiceMode ? "voice" : "chat");
@@ -101,6 +110,8 @@ export default function BudCompanion() {
               {tab === "voice" ? (
                 <BudVoiceMode onTranscript={(t) => send(t)} budState={budState} reply={messages.filter((m) => m.role === "bud").slice(-1)[0]?.content || ""} />
               ) : (
+                <>
+                <BudContextCards cards={cards} onPrompt={(p) => send(p)} onNavigate={(to) => { setOpen(false); navigate(to); }} />
                 <div ref={scrollRef} className="px-4 py-3 space-y-2.5 min-h-[160px]">
                   {messages.length === 0 && (
                     <div className="text-center py-6">
@@ -124,10 +135,11 @@ export default function BudCompanion() {
                       </div>
                     </div>
                   )}
-                </div>
-              )}
+                  </div>
+                  </>
+                  )}
 
-              {/* memory timeline */}
+                  {/* memory timeline */}
               <div className="border-t border-border/30">
                 <BudMemoryTimeline
                   memories={bud.memories}
