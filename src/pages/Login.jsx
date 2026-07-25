@@ -6,6 +6,7 @@ import { Eye, EyeOff, Loader2, ArrowRight, Mail, Lock, Check } from "lucide-reac
 import AuthLogo from "@/components/auth/AuthLogo";
 import SocialButtons from "@/components/auth/SocialButtons";
 import VisitorBud from "@/components/auth/VisitorBud";
+import CompanyFooter from "@/components/brand/CompanyFooter";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -129,6 +130,10 @@ export default function Login() {
           Don't have an account?{" "}
           <Link to="/register" className="text-primary font-semibold hover:underline">Create Account</Link>
         </p>
+
+        <div className="mt-8">
+          <CompanyFooter />
+        </div>
       </div>
 
       <VisitorBud />

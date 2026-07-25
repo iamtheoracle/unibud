@@ -29,6 +29,7 @@ import GraduationTransition from "@/components/journey/GraduationTransition";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { getEducationLevel, getExamStatus } from "@/lib/futureStudentConfig";
 import { getJourneyStageForUser } from "@/lib/universityJourney";
+import { COMPANY_IDENTITY, PLATFORM_IDENTITY } from "@/lib/companyIdentity";
 
 const menuSections = [
   {
@@ -429,11 +430,15 @@ export default function Me() {
           </>
         )}
 
-        {/* Branding */}
-        <div className="text-center pt-4 pb-2">
-          <p className="text-[9px] text-muted-foreground/60">A My Realm Product</p>
-          <p className="text-[8px] text-muted-foreground/40 mt-0.5">My Realm Network Limited · RC: 9645700</p>
-          <p className="text-[8px] text-muted-foreground/40">© 2026 My Realm Network Limited. All Rights Reserved.</p>
+        {/* About UNIBUD */}
+        <div className="text-center pt-6 pb-2">
+          <p className="font-heading font-bold text-[14px] text-foreground">UNIBUD</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">Version {PLATFORM_IDENTITY.version}</p>
+          <p className="text-[10px] text-muted-foreground/70 mt-3">Built by</p>
+          <p className="text-[11px] font-semibold text-foreground mt-0.5">{COMPANY_IDENTITY.companyName}</p>
+          <p className="text-[9px] text-muted-foreground/60 mt-0.5">{COMPANY_IDENTITY.rcNumber}</p>
+          <p className="text-[11px] text-primary/80 font-medium mt-3">{COMPANY_IDENTITY.tagline}</p>
+          <p className="text-[8px] text-muted-foreground/40 mt-3">{COMPANY_IDENTITY.copyright}</p>
         </div>
       </div>
     </div>

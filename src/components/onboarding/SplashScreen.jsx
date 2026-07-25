@@ -65,6 +65,14 @@ export default function SplashScreen() {
         >
           Learn Better. Grow Together.
         </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.6 }}
+          transition={{ delay: 1.3, duration: 0.8, ease }}
+          className="mt-6 text-[9px] text-white/50 font-medium tracking-[0.18em] uppercase"
+        >
+          Powered by My Realm Network Limited
+        </motion.p>
       </motion.div>
     </motion.div>
   );

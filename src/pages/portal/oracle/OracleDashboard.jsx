@@ -9,6 +9,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { DashboardCard, SectionCard, StatusPill, PortalPageHeader, SmartList } from "@/components/portal/PortalUI";
 import { PLATFORM_MODULES, MODULE_CATEGORIES } from "@/lib/portalConfig";
+import { COMPANY_IDENTITY, PLATFORM_IDENTITY } from "@/lib/companyIdentity";
 import { useNavigate } from "react-router-dom";
 
 const SYSTEM_SERVICES = [
@@ -303,6 +304,33 @@ export default function OracleDashboard() {
           />
         </SectionCard>
       </div>
+
+      {/* System Information */}
+      <SectionCard title="System Information" description="Platform ownership & build identity" delay={0.55}>
+        <div className="p-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: "Company", value: COMPANY_IDENTITY.companyName },
+            { label: "RC Number", value: COMPANY_IDENTITY.rcNumber },
+            { label: "Platform", value: PLATFORM_IDENTITY.product },
+            { label: "Core", value: PLATFORM_IDENTITY.core },
+            { label: "AI", value: PLATFORM_IDENTITY.companion },
+            { label: "Build", value: PLATFORM_IDENTITY.build },
+            { label: "Version", value: PLATFORM_IDENTITY.version },
+            { label: "Country", value: COMPANY_IDENTITY.countryShort },
+          ].map((row, i) => (
+            <motion.div
+              key={row.label}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 + i * 0.04 }}
+              className="p-3.5 rounded-[16px] bg-muted/30 border border-border/20"
+            >
+              <p className="console-eyebrow mb-1.5">{row.label}</p>
+              <p className="text-[12px] font-semibold text-foreground truncate">{row.value}</p>
+            </motion.div>
+          ))}
+        </div>
+      </SectionCard>
     </div>
   );
 }
