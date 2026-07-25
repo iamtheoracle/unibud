@@ -10,7 +10,8 @@ module.exports = {
   			sm: '0.5rem',
         xl: '1.5rem',
         '2xl': '1.75rem',
-        '3xl': '2.25rem'
+        '3xl': '2.25rem',
+        pill: '9999px'
   		},
   		spacing: {
   			'15': '3.75rem',
@@ -28,6 +29,10 @@ module.exports = {
   			muted: { DEFAULT: 'hsl(var(--muted))', foreground: 'hsl(var(--muted-foreground))' },
   			accent: { DEFAULT: 'hsl(var(--accent))', foreground: 'hsl(var(--accent-foreground))' },
   			destructive: { DEFAULT: 'hsl(var(--destructive))', foreground: 'hsl(var(--destructive-foreground))' },
+  			success: { DEFAULT: 'hsl(var(--success))', foreground: 'hsl(var(--success-foreground))' },
+  			warning: { DEFAULT: 'hsl(var(--warning))', foreground: 'hsl(var(--warning-foreground))' },
+  			error: { DEFAULT: 'hsl(var(--error))', foreground: 'hsl(var(--error-foreground))' },
+  			information: { DEFAULT: 'hsl(var(--information))', foreground: 'hsl(var(--information-foreground))' },
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
@@ -55,6 +60,16 @@ module.exports = {
   			body: ['var(--font-body)'],
   			display: ['var(--font-display)'],
   			mono: ['var(--font-mono)']
+  		},
+  		fontSize: {
+  			display: ['var(--text-display)', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+  			heading: ['var(--text-heading)', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
+  			title: ['var(--text-title)', { lineHeight: '1.25' }],
+  			subtitle: ['var(--text-subtitle)', { lineHeight: '1.3' }],
+  			body: ['var(--text-body)', { lineHeight: '1.5' }],
+  			caption: ['var(--text-caption)', { lineHeight: '1.4' }],
+  			label: ['var(--text-label)', { lineHeight: '1.3', letterSpacing: '0.01em' }],
+  			micro: ['var(--text-micro)', { lineHeight: '1.3', letterSpacing: '0.04em' }],
   		},
   		keyframes: {
         'float-in': { '0%': { opacity: '0', transform: 'translateY(16px) scale(0.97)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
