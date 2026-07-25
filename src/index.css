@@ -389,6 +389,14 @@
   @keyframes live-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.7); } }
   .live-pulse { animation: live-pulse 1.6s ease-in-out infinite; }
 
+  /* ── Accessibility overrides (toggled from the Ecosystem Rail) ── */
+  .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .ux-large-text { zoom: 1.13; }
+
   /* ── Safe areas ── */
   .safe-area-pt { padding-top: env(safe-area-inset-top); }
   .safe-area-pb { padding-bottom: max(0.75rem, env(safe-area-inset-bottom)); }

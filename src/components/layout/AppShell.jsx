@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Loader2 } from "lucide-react";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import BottomNav from "@/components/layout/BottomNav";
-import BudOrb from "@/components/brand/BudOrb";
+import EcosystemRail from "@/components/layout/EcosystemRail";
 import BudSheet from "@/components/bud/BudSheet";
 
 /**
@@ -22,6 +22,13 @@ export default function AppShell() {
     });
   }, [navigate]);
 
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("ux_reduce_motion") === "1") document.documentElement.classList.add("reduce-motion");
+      if (localStorage.getItem("ux_large_text") === "1") document.documentElement.classList.add("ux-large-text");
+    } catch {}
+  }, []);
+
   if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -34,7 +41,7 @@ export default function AppShell() {
     <BudLauncherProvider>
       <div className="min-h-screen w-full">
         <Outlet />
-        <BudOrb />
+        <EcosystemRail />
         <BottomNav />
         <BudSheet />
       </div>
