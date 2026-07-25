@@ -15,8 +15,8 @@ export const PaymentService = {
     const reference = ref("TXN");
     const tx = await base44.entities.FinancialTransaction.create({ type, amount, currency, from_wallet_id: from_wallet_id || "", to_wallet_id: to_wallet_id || "", status: "pending", reference, fee_id: fee_id || "", receipt_no: "", description: description || "", institution_id });
     const prov = PaymentProvider.get();
-    const attempt = await base44.entities.PaymentAttempt.create({ transaction_id: tx.id, provider: prov.key, amount, status: "pending", provider_reference: "", institution_id });
-    audit("Payment created", reference, `${type} ${amount} ${currency} via ${prov.label}`);
+    const attempt = await base44.entities.PaymentAttempt.create({ transaction_id: tx.id, provider: prov.id, amount, status: "pending", provider_reference: "", institution_id });
+    audit("Payment created", reference, `${type} ${amount} ${currency} via ${prov.name}`);
     return { tx, attempt };
   },
   async verify(attempt_id) {
@@ -37,7 +37,7 @@ export const PaymentService = {
     await base44.entities.PaymentAttempt.update(attempt_id, { status: "captured" });
     const receipt_no = "RCP" + tx.reference.slice(-6);
     await base44.entities.FinancialTransaction.update(tx.id, { status: "completed", receipt_no });
-    audit("Payment captured", tx.reference, `${tx.amount} ${tx.currency} captured via ${prov.label} · receipt ${receipt_no}`);
+    audit("Payment captured", tx.reference, `${tx.amount} ${tx.currency} captured via ${prov.name} · receipt ${receipt_no}`);
     return { ...res, receipt_no };
   },
   async cancel(attempt_id) {

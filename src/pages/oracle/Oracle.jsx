@@ -11,6 +11,7 @@ import UserGovernance from "@/components/oracle/sections/UserGovernance";
 import AIGovernance from "@/components/oracle/sections/AIGovernance";
 import OracleSecurity from "@/components/oracle/sections/OracleSecurity";
 import IntegrationCenter from "@/components/oracle/sections/IntegrationCenter";
+import ProviderHub from "@/components/oracle/sections/ProviderHub";
 import Monitoring from "@/components/oracle/sections/Monitoring";
 import AuditCenter from "@/components/oracle/sections/AuditCenter";
 import GlobalSearch from "@/components/oracle/sections/GlobalSearch";
@@ -24,6 +25,7 @@ const SECTIONS = {
   ai: AIGovernance,
   security: OracleSecurity,
   integrations: IntegrationCenter,
+  providers: ProviderHub,
   monitoring: Monitoring,
   audit: AuditCenter,
 };
