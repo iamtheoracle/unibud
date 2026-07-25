@@ -332,6 +332,20 @@
     will-change: transform, opacity;
   }
 
+  /* ── Weather animations ── */
+  @keyframes wx-sun { 0%, 100% { transform: scale(1); opacity: 0.85; } 50% { transform: scale(1.08); opacity: 1; } }
+  @keyframes wx-cloud { from { transform: translateX(-40%); } to { transform: translateX(140%); } }
+  @keyframes wx-rain { 0% { transform: translateY(-12px); opacity: 0; } 12% { opacity: 0.8; } 100% { transform: translateY(64px); opacity: 0; } }
+  @keyframes wx-snow { 0% { transform: translateY(-8px) rotate(0deg); opacity: 0; } 20% { opacity: 0.9; } 100% { transform: translateY(64px) rotate(360deg); opacity: 0; } }
+  @keyframes wx-flash { 0%, 92%, 100% { opacity: 0; } 93%, 96% { opacity: 0.9; } 94% { opacity: 0.4; } }
+  @keyframes wx-twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .wx-sun { animation: wx-sun 4s ease-in-out infinite; }
+  .wx-cloud { animation: wx-cloud linear infinite; }
+  .wx-rain { animation: wx-rain linear infinite; }
+  .wx-snow { animation: wx-snow linear infinite; }
+  .wx-flash { animation: wx-flash 6s linear infinite; }
+  .wx-twinkle { animation: wx-twinkle 3s ease-in-out infinite; }
+
   /* ── Bud ambient glow ── */
   @keyframes bud-breathe {
     0%, 100% { opacity: 0.5; transform: scale(1); }
@@ -406,6 +420,6 @@
   /* UDS — Accessibility */
   .uds-focus:focus-visible { outline: 3px solid hsl(var(--ring)); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle { animation: none !important; }
+    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle { animation: none !important; }
   }
 }

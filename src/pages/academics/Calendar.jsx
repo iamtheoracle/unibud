@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/academics/PageHeader";
 import EmptyState from "@/components/academics/EmptyState";
+import WeatherStrip from "@/components/weather/WeatherStrip";
 
 const WD = ["S", "M", "T", "W", "T", "F", "S"];
 
@@ -60,6 +61,7 @@ export default function Calendar() {
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
       <PageHeader title="Calendar" />
+      <WeatherStrip className="mb-4" />
       <div className="flex gap-2 mb-4">
         {[["month", "Month"], ["agenda", "Agenda"]].map(([k, l]) => (
           <button key={k} onClick={() => setView(k)} className={`flex-1 py-2 rounded-2xl text-[12px] font-semibold spring-tap ${view === k ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{l}</button>

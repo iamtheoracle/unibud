@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
 import EmptyState from "@/components/ui/EmptyState";
 import EventCard from "@/components/campus/EventCard";
+import WeatherStrip from "@/components/weather/WeatherStrip";
 import { EVENT_TYPES, getIcon } from "@/components/campus/campusConstants";
 
 const DEMO_EVENTS = [
@@ -159,6 +160,11 @@ export default function CampusEvents() {
             className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow"
           />
         </div>
+      </div>
+
+      {/* Weather */}
+      <div className="px-4 mb-3">
+        <WeatherStrip />
       </div>
 
       {/* Upcoming / Past Toggle */}

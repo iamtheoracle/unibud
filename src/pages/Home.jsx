@@ -8,6 +8,7 @@ import QuickActions from "@/components/home/QuickActions";
 import AcademicSnapshot from "@/components/home/AcademicSnapshot";
 import UpcomingDeadlines from "@/components/home/UpcomingDeadlines";
 import BudCard from "@/components/home/BudCard";
+import WeatherWidget from "@/components/weather/WeatherWidget";
 
 /**
  * Home (Campus) — the central student workspace shown immediately after
@@ -25,6 +26,9 @@ export default function Home() {
       <HomeHeader user={user} />
       <div className="mt-4">
         <FloatingSearch />
+      </div>
+      <div className="mt-5">
+        <WeatherWidget />
       </div>
       <div className="mt-5">
         <TodayCard courses={courses} assignments={assignments} exams={exams} />
