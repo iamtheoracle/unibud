@@ -125,6 +125,8 @@ import Grades from '@/pages/portal/Grades';
 import Materials from '@/pages/portal/Materials';
 import Recordings from '@/pages/portal/Recordings';
 import PortalStudyGroups from '@/pages/portal/PortalStudyGroups';
+import LecturerQuizCenter from '@/pages/portal/LecturerQuizCenter';
+import LecturerAnalytics from '@/pages/portal/LecturerAnalytics';
 import OracleDashboard from '@/pages/portal/oracle/OracleDashboard';
 import OracleIntelligence from '@/pages/portal/oracle/OracleIntelligence';
 import AgentNetwork from '@/pages/portal/oracle/AgentNetwork';
@@ -286,6 +288,8 @@ const AuthenticatedApp = () => {
           <Route path="materials" element={<Materials />} />
           <Route path="recordings" element={<Recordings />} />
           <Route path="study-groups" element={<PortalStudyGroups />} />
+          <Route path="quiz-center" element={<LecturerQuizCenter />} />
+          <Route path="academic-analytics" element={<LecturerAnalytics />} />
           <Route path="oracle" element={<OracleDashboard />} />
           <Route path="oracle-intelligence" element={<OracleIntelligence />} />
           <Route path="agent-network" element={<AgentNetwork />} />

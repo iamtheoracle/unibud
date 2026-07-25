@@ -367,11 +367,19 @@ export function getPortalNavigation(role) {
         {
           section: "Teaching",
           items: [
+            { label: "Courses", icon: "BookOpen", path: "/portal/courses" },
             { label: "Today's Classes", icon: "CalendarDays", path: "/portal/classes" },
             { label: "UNIBUD Live", icon: "Video", path: "/portal/live" },
             { label: "Assignments", icon: "ClipboardList", path: "/portal/assignments" },
+            { label: "Quiz & Exam Center", icon: "FileText", path: "/portal/quiz-center" },
             { label: "Attendance", icon: "CheckSquare", path: "/portal/attendance" },
             { label: "Grades", icon: "GraduationCap", path: "/portal/grades" },
+          ],
+        },
+        {
+          section: "Insights",
+          items: [
+            { label: "Academic Analytics", icon: "LineChart", path: "/portal/academic-analytics" },
           ],
         },
         {
@@ -533,7 +541,7 @@ const PATH_ACCESS = {
   "/portal/faculties": ["university_admin"],
   "/portal/departments": ["university_admin", "faculty_admin"],
   "/portal/lecturers": ["university_admin", "faculty_admin", "department_admin"],
-  "/portal/courses": ["university_admin", "faculty_admin", "department_admin"],
+  "/portal/courses": ["university_admin", "faculty_admin", "department_admin", "lecturer"],
   "/portal/calendar": ["university_admin"],
   "/portal/announcements": ["university_admin", "lecturer"],
   "/portal/classes": ["lecturer"],
@@ -544,6 +552,8 @@ const PATH_ACCESS = {
   "/portal/materials": ["lecturer"],
   "/portal/recordings": ["lecturer"],
   "/portal/study-groups": ["lecturer"],
+  "/portal/quiz-center": ["lecturer", "university_admin"],
+  "/portal/academic-analytics": ["lecturer", "university_admin", "faculty_admin"],
   "/portal/oracle": ["oracle"],
   "/portal/oracle-intelligence": ["oracle"],
   "/portal/agent-network": ["oracle", "super_admin", "platform_admin", "developer", "executive"],
