@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, Package, Heart, X, MessageCircle, MapPin, Sparkles, ShieldCheck, Gift } from "lucide-react";
+import { Search, Plus, Package, Heart, X, MessageCircle, MapPin, Sparkles, ShieldCheck, Gift, Star } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -8,6 +8,8 @@ import GlassCard from "@/components/ui/GlassCard";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import ListingComposer from "@/components/marketplace/ListingComposer";
+import SellerRatingBadge from "@/components/marketplace/SellerRatingBadge";
+import ReviewComposer from "@/components/marketplace/ReviewComposer";
 
 const CATEGORIES = ["All", "Textbooks", "Electronics", "Furniture", "Accommodation", "Tutoring", "Services", "Tickets", "Other"];
 const catIcons = { textbooks: "📚", electronics: "💻", furniture: "🪑", accommodation: "🏠", tutoring: "🎓", services: "⚡", tickets: "🎫", other: "📦" };
@@ -27,6 +29,7 @@ export default function Marketplace() {
   const [search, setSearch] = useState("");
   const [composerOpen, setComposerOpen] = useState(false);
   const [contactListing, setContactListing] = useState(null);
+  const [reviewTarget, setReviewTarget] = useState(null);
   const [savedItems, setSavedItems] = useState(() => {
     try { return JSON.parse(localStorage.getItem("marketplace_saved") || "[]"); } catch { return []; }
   });
@@ -37,6 +40,18 @@ export default function Marketplace() {
     enabled: !isDemoMode,
   });
 
+  const { data: reviews } = useQuery({
+    queryKey: ["marketplaceReviews"],
+    queryFn: () => base44.entities.MarketplaceReview.list("-created_date", 200),
+    enabled: !isDemoMode,
+  });
+
+  const { data: currentUser } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+    enabled: !isDemoMode,
+  });
+
   const allListings = isDemoMode ? DEMO_LISTINGS : (listings || []);
   const byCat = activeCat === "All" ? allListings : allListings.filter((l) => l.category === activeCat.toLowerCase());
   const filtered = byCat.filter((l) => {
@@ -44,6 +59,17 @@ export default function Marketplace() {
     const q = search.toLowerCase();
     return l.title?.toLowerCase().includes(q) || (l.description || "").toLowerCase().includes(q) || (l.location || "").toLowerCase().includes(q);
   });
+
+  const ratingForSeller = (sellerId, fallbackKey) => {
+    if (isDemoMode) {
+      const demo = { d1: { avg: 4.8, count: 14 }, d2: { avg: 4.6, count: 9 }, d3: { avg: 5.0, count: 3 } };
+      return demo[fallbackKey] || { avg: 0, count: 0 };
+    }
+    const sellerReviews = (reviews || []).filter((r) => r.seller_id === sellerId);
+    if (sellerReviews.length === 0) return { avg: 0, count: 0 };
+    const avg = sellerReviews.reduce((s, r) => s + (r.rating || 0), 0) / sellerReviews.length;
+    return { avg: Math.round(avg * 10) / 10, count: sellerReviews.length };
+  };
 
   const toggleSave = (e, itemId) => {
     e.stopPropagation();
@@ -142,6 +168,9 @@ export default function Marketplace() {
                     {item.condition && <span className="px-2 py-0.5 rounded-full bg-muted text-[9px] font-semibold">{condLabel[item.condition] || item.condition}</span>}
                     {item.location && <span className="text-[10px] text-muted-foreground flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" /> {item.location}</span>}
                   </div>
+                  <div className="mt-1.5">
+                    <SellerRatingBadge rating={ratingForSeller(item.created_by_id, item.id).avg} count={ratingForSeller(item.created_by_id, item.id).count} compact />
+                  </div>
                 </div>
               </div>
             </GlassCard>
@@ -150,6 +179,13 @@ export default function Marketplace() {
       </div>
 
       <ListingComposer open={composerOpen} onClose={() => setComposerOpen(false)} />
+
+      <ReviewComposer
+        open={!!reviewTarget}
+        listing={reviewTarget}
+        sellerName={reviewTarget?.seller_name}
+        onClose={() => setReviewTarget(null)}
+      />
 
       {/* Contact sheet */}
       <AnimatePresence>
@@ -180,6 +216,18 @@ export default function Marketplace() {
                 </div>
               </div>
               {contactListing.description && <p className="text-[12px] text-muted-foreground mb-3 leading-relaxed">{contactListing.description}</p>}
+              <div className="rounded-[16px] p-3.5 bg-muted/30 mb-3">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/70 mb-1.5">Seller reputation</p>
+                <SellerRatingBadge rating={ratingForSeller(contactListing.created_by_id, contactListing.id).avg} count={ratingForSeller(contactListing.created_by_id, contactListing.id).count} />
+                {currentUser && contactListing.created_by_id && currentUser.id !== contactListing.created_by_id && (
+                  <button
+                    onClick={() => { setReviewTarget(contactListing); setContactListing(null); }}
+                    className="mt-2.5 w-full py-2.5 rounded-[14px] glass text-[12px] font-semibold text-foreground spring-tap flex items-center justify-center gap-1.5"
+                  >
+                    <Star className="w-3.5 h-3.5 text-warning" /> Rate this seller
+                  </button>
+                )}
+              </div>
               <div className="rounded-[16px] p-3.5 bg-muted/30 mb-3">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/70 mb-1">Reach {contactListing.seller_name}</p>
                 <p className="text-[13px] font-medium text-foreground break-words">{contactListing.contact || "No contact provided"}</p>
