@@ -36,7 +36,8 @@ module.exports = {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
-        ice: { DEFAULT: '#7FD8FF', foreground: '#0B0B0C' },
+        ice: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
+        gold: { DEFAULT: 'hsl(var(--gold))', foreground: '0 0% 100%' },
   			chart: {
   				'1': 'hsl(var(--chart-1))',
   				'2': 'hsl(var(--chart-2))',

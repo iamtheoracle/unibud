@@ -9,7 +9,7 @@ export default function BudCharacter({ variant = "portrait", className = "", ani
   return (
     <div
       className={`relative rounded-full glass-strong ${className}`}
-      style={{ background: "radial-gradient(circle at 50% 40%, hsl(196 100% 74% / 0.10), transparent 70%)" }}
+      style={{ background: "radial-gradient(circle at 50% 40%, hsl(221 83% 53% / 0.14), transparent 70%)" }}
       aria-label="Bud"
     />
   );

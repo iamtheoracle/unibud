@@ -5,7 +5,7 @@ import React, { useMemo } from "react";
  * Ice-blue particles rise softly, evoking the invisible Spark kernel.
  * Pure CSS animation for smooth 60-120fps with zero JS overhead.
  */
-export default function SparkField({ count = 18, className = "", color = "#7FD8FF" }) {
+export default function SparkField({ count = 18, className = "", color = "#2563EB" }) {
   const particles = useMemo(
     () =>
       Array.from({ length: count }).map((_, i) => ({

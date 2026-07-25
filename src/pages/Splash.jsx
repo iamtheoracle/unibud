@@ -40,16 +40,16 @@ export default function Splash() {
   }, [navigate]);
 
   return (
-    <div className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center" style={{ backgroundColor: "#000" }}>
+    <div className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center" style={{ backgroundColor: "#08122A" }}>
       <motion.div
         className="absolute top-[-20%] left-[8%] w-[70%] h-[50%] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(127,216,255,0.12), transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, rgba(37,99,235,0.16), transparent 70%)" }}
         animate={{ x: [0, 30, 0], opacity: [0.5, 0.8, 0.5] }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
         className="absolute bottom-[-15%] right-[-5%] w-[60%] h-[45%] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(127,216,255,0.06), transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08), transparent 70%)" }}
         animate={{ x: [0, -25, 0], opacity: [0.4, 0.7, 0.4] }}
         transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />

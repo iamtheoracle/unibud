@@ -3,44 +3,46 @@
 @tailwind utilities;
 
 /* ════════════════════════════════════════════════════════════
-   UNIBUD — Design System v4.1 "Foundation"
-   Matte Black (dark) · Clean White (light)
-   White / Near-Black typography · Single Ice Blue accent
+   UNIBUD — Design System v5.0 "Midnight"
+   Signature: Deep Midnight Blue (#0B1F4D)
+   Supporting: White · Graphite · Slate Gray · Soft Silver
+   Accents: Sky Blue · Electric Blue · Teal · Gold (achievements)
    Liquid Glass · Apple Human Interface Guidelines
    ════════════════════════════════════════════════════════════ */
 
 @layer base {
   :root {
-    /* ── Light mode ── */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 99%;
-    --card-foreground: 0 0% 9%;
+    /* ── Light mode ── White shell, Midnight Blue signature ── */
+    --background: 0 0% 100%;                /* White */
+    --foreground: 222 30% 14%;              /* Graphite */
+    --card: 220 24% 98%;
+    --card-foreground: 222 30% 14%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 196 100% 74%;            /* Ice Blue #7FD8FF */
-    --primary-foreground: 0 0% 9%;      /* Dark text on ice blue */
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 42%;
-    --accent: 196 100% 74%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84% 55%;
+    --popover-foreground: 222 30% 14%;
+    --primary: 222 75% 17%;                 /* Deep Midnight Blue #0B1F4D */
+    --primary-foreground: 0 0% 100%;        /* White on midnight */
+    --secondary: 220 18% 96%;               /* Soft Silver tint */
+    --secondary-foreground: 222 30% 14%;
+    --muted: 220 16% 94%;
+    --muted-foreground: 215 16% 42%;       /* Slate Gray */
+    --accent: 221 83% 50%;                  /* Electric Blue */
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 78% 52%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 94%;
-    --ring: 196 100% 45%;
+    --border: 220 18% 88%;
+    --input: 220 18% 90%;
+    --ring: 222 75% 22%;
 
     /* UDS — Semantic status */
-    --success: 142 71% 45%;
+    --success: 173 75% 38%;                 /* Teal */
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 9%;
-    --error: 0 84% 60%;
+    --warning: 32 92% 48%;                  /* Amber (not gold) */
+    --warning-foreground: 0 0% 100%;
+    --error: 0 78% 52%;
     --error-foreground: 0 0% 100%;
-    --information: 196 100% 50%;
+    --information: 198 88% 42%;             /* Sky Blue */
     --information-foreground: 0 0% 100%;
+    --gold: 46 70% 50%;                     /* Achievements only */
 
     /* UDS — Radius scale */
     --radius-sm: 12px;
@@ -60,78 +62,79 @@
     --text-micro: 10px;
     --radius: 1.5rem;
 
-    --surface: 0 0% 99%;
-    --surface-secondary: 0 0% 97%;
+    --surface: 220 24% 98%;
+    --surface-secondary: 220 18% 96%;
     --surface-elevated: 0 0% 100%;
-    --foreground-secondary: 0 0% 20%;
-    --foreground-tertiary: 0 0% 45%;
+    --foreground-secondary: 222 22% 30%;
+    --foreground-tertiary: 215 16% 45%;
 
     --glass-bg: rgba(255, 255, 255, 0.66);
     --glass-bg-strong: rgba(255, 255, 255, 0.82);
-    --glass-border: rgba(0, 0, 0, 0.07);
-    --glass-border-strong: rgba(0, 0, 0, 0.12);
-    --glass-shadow: 0 24px 70px rgba(0, 0, 0, 0.10), inset 0 1px 0 rgba(255,255,255,0.6);
+    --glass-border: rgba(11, 31, 77, 0.08);
+    --glass-border-strong: rgba(11, 31, 77, 0.14);
+    --glass-shadow: 0 24px 70px rgba(11, 31, 77, 0.12), inset 0 1px 0 rgba(255,255,255,0.6);
     --glass-blur: 36px;
-    --surface-grouped: 0 0% 97%;
+    --surface-grouped: 220 18% 96%;
 
-    --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.08);
-    --shadow-premium: 0 18px 60px rgba(0, 0, 0, 0.12), 0 6px 18px rgba(0, 0, 0, 0.06);
-    --shadow-elevated: 0 32px 100px rgba(0, 0, 0, 0.16), 0 10px 30px rgba(0, 0, 0, 0.08);
-    --shadow-hover: 0 40px 120px rgba(0, 0, 0, 0.20), 0 16px 44px rgba(0, 0, 0, 0.10);
-    --shadow-ice: 0 8px 40px rgba(127, 216, 255, 0.35);
+    --shadow-soft: 0 8px 30px rgba(11, 31, 77, 0.08);
+    --shadow-premium: 0 18px 60px rgba(11, 31, 77, 0.14), 0 6px 18px rgba(11, 31, 77, 0.06);
+    --shadow-elevated: 0 32px 100px rgba(11, 31, 77, 0.18), 0 10px 30px rgba(11, 31, 77, 0.08);
+    --shadow-hover: 0 40px 120px rgba(11, 31, 77, 0.22), 0 16px 44px rgba(11, 31, 77, 0.10);
+    --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.22);  /* brand glow (electric blue) */
 
-    --chart-1: 196 100% 74%;
-    --chart-2: 0 0% 9%;
-    --chart-3: 0 0% 45%;
-    --chart-4: 0 0% 70%;
-    --chart-5: 196 80% 55%;
+    --chart-1: 222 75% 17%;                  /* Midnight */
+    --chart-2: 221 83% 50%;                   /* Electric */
+    --chart-3: 198 88% 45%;                   /* Sky */
+    --chart-4: 173 75% 38%;                   /* Teal */
+    --chart-5: 215 16% 45%;                   /* Slate */
 
     --font-heading: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
     --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    --sidebar-background: 0 0% 99%;
-    --sidebar-foreground: 0 0% 20%;
-    --sidebar-primary: 196 100% 74%;
-    --sidebar-primary-foreground: 0 0% 9%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 196 100% 45%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 196 100% 45%;
+    --sidebar-background: 222 75% 17%;       /* Midnight Blue navigation */
+    --sidebar-foreground: 218 24% 88%;       /* Soft Silver on navy */
+    --sidebar-primary: 198 92% 62%;         /* Sky Blue active item */
+    --sidebar-primary-foreground: 222 70% 12%;
+    --sidebar-accent: 222 65% 24%;          /* Navy hover */
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 222 60% 24%;
+    --sidebar-ring: 198 92% 62%;
   }
 
   .dark {
-    /* ── Dark mode — Matte Black foundation ── */
-    --background: 0 0% 4.6%;            /* #0B0B0C */
-    --foreground: 0 0% 100%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 196 100% 74%;            /* Ice Blue #7FD8FF */
-    --primary-foreground: 0 0% 7%;
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 68%;
-    --accent: 196 100% 74%;
-    --accent-foreground: 0 0% 7%;
-    --destructive: 0 84% 60%;
+    /* ── Dark mode ── Deep Midnight Navy shell, Electric Blue interactive ── */
+    --background: 222 68% 8%;               /* Deep midnight navy #08122A */
+    --foreground: 218 24% 90%;               /* Soft Silver white */
+    --card: 222 55% 12%;
+    --card-foreground: 218 24% 90%;
+    --popover: 222 50% 14%;
+    --popover-foreground: 218 24% 90%;
+    --primary: 221 83% 58%;                 /* Electric Blue — brand on dark */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 40% 16%;
+    --secondary-foreground: 218 24% 90%;
+    --muted: 222 38% 15%;
+    --muted-foreground: 215 18% 62%;        /* Slate Gray */
+    --accent: 198 93% 56%;                  /* Sky Blue */
+    --accent-foreground: 222 68% 10%;
+    --destructive: 0 80% 62%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 196 100% 74%;
+    --border: 222 35% 22%;
+    --input: 222 35% 22%;
+    --ring: 221 83% 58%;
 
     /* UDS — Semantic status (dark) */
-    --success: 142 71% 50%;
+    --success: 173 78% 52%;                  /* Teal */
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 55%;
-    --warning-foreground: 0 0% 9%;
-    --error: 0 84% 62%;
+    --warning: 32 92% 55%;
+    --warning-foreground: 222 68% 10%;
+    --error: 0 80% 62%;
     --error-foreground: 0 0% 100%;
-    --information: 196 100% 60%;
-    --information-foreground: 0 0% 100%;
+    --information: 198 92% 58%;              /* Sky */
+    --information-foreground: 222 68% 10%;
+    --gold: 46 74% 55%;                      /* Achievements only */
 
     --radius-sm: 12px;
     --radius-md: 20px;
@@ -149,11 +152,11 @@
     --text-micro: 10px;
     --radius: 1.5rem;
 
-    --surface: 0 0% 6%;
-    --surface-secondary: 0 0% 4.6%;
-    --surface-elevated: 0 0% 9%;
-    --foreground-secondary: 0 0% 82%;
-    --foreground-tertiary: 0 0% 60%;
+    --surface: 222 55% 12%;
+    --surface-secondary: 222 68% 9%;
+    --surface-elevated: 222 50% 15%;
+    --foreground-secondary: 218 22% 78%;
+    --foreground-tertiary: 215 18% 58%;
 
     --glass-bg: rgba(255, 255, 255, 0.055);
     --glass-bg-strong: rgba(255, 255, 255, 0.09);
@@ -161,28 +164,28 @@
     --glass-border-strong: rgba(255, 255, 255, 0.18);
     --glass-shadow: 0 24px 80px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.08);
     --glass-blur: 36px;
-    --surface-grouped: 0 0% 5.5%;
+    --surface-grouped: 222 50% 11%;
 
     --shadow-soft: 0 8px 30px rgba(0, 0, 0, 0.4);
     --shadow-premium: 0 18px 60px rgba(0, 0, 0, 0.5), 0 6px 18px rgba(0, 0, 0, 0.3);
     --shadow-elevated: 0 32px 100px rgba(0, 0, 0, 0.6), 0 10px 30px rgba(0, 0, 0, 0.35);
     --shadow-hover: 0 40px 120px rgba(0, 0, 0, 0.7), 0 16px 44px rgba(0, 0, 0, 0.4);
-    --shadow-ice: 0 8px 40px rgba(127, 216, 255, 0.28);
+    --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.30);  /* brand glow (electric blue) */
 
-    --chart-1: 196 100% 74%;
-    --chart-2: 0 0% 100%;
-    --chart-3: 0 0% 68%;
-    --chart-4: 0 0% 40%;
-    --chart-5: 196 80% 55%;
+    --chart-1: 221 83% 58%;                  /* Electric */
+    --chart-2: 198 92% 60%;                  /* Sky */
+    --chart-3: 173 78% 52%;                  /* Teal */
+    --chart-4: 222 70% 35%;                  /* Midnight lighter */
+    --chart-5: 215 18% 65%;                  /* Slate */
 
-    --sidebar-background: 0 0% 4.6%;
-    --sidebar-foreground: 0 0% 82%;
-    --sidebar-primary: 196 100% 74%;
-    --sidebar-primary-foreground: 0 0% 7%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 196 100% 74%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 196 100% 74%;
+    --sidebar-background: 222 65% 9%;        /* Deep midnight navy nav */
+    --sidebar-foreground: 218 22% 70%;
+    --sidebar-primary: 198 92% 60%;          /* Sky active */
+    --sidebar-primary-foreground: 222 68% 10%;
+    --sidebar-accent: 222 40% 16%;
+    --sidebar-accent-foreground: 198 92% 65%;
+    --sidebar-border: 222 35% 20%;
+    --sidebar-ring: 221 83% 58%;
   }
 }
 
@@ -273,8 +276,15 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  /* Gold gradient — achievements only */
+  .text-gold-gradient {
+    background: linear-gradient(135deg, hsl(46 80% 62%) 0%, hsl(40 75% 46%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-  /* ── Motion ── GPU-accelerated */
+  /* ── Motion ──GPU-accelerated */
   .spring-tap {
     transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -304,7 +314,7 @@
     100% { background-position: -200% 0; }
   }
 
-  /* ── Spark particles ── */
+  /* ── Spark particles — brand electric blue ── */
   @keyframes spark-rise {
     0% { transform: translateY(0) scale(1); opacity: 0; }
     12% { opacity: 0.95; }
@@ -316,8 +326,8 @@
     bottom: 0;
     width: 3px; height: 3px;
     border-radius: 999px;
-    background: #7FD8FF;
-    box-shadow: 0 0 8px rgba(127,216,255,0.8);
+    background: #2563EB;
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.85);
     animation: spark-rise linear infinite;
     will-change: transform, opacity;
   }
