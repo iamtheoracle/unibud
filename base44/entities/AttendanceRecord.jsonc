@@ -1,76 +1,34 @@
 {
-  "name": "Exam",
+  "name": "AttendanceRecord",
   "type": "object",
   "properties": {
-    "title": {
-      "type": "string"
-    },
     "course_code": {
       "type": "string"
     },
     "course_title": {
       "type": "string"
     },
-    "type": {
-      "type": "string",
-      "enum": [
-        "midterm",
-        "final",
-        "quiz",
-        "practical",
-        "oral"
-      ],
-      "default": "final"
-    },
     "date": {
       "type": "string",
       "format": "date"
     },
-    "start_time": {
-      "type": "string"
-    },
-    "end_time": {
-      "type": "string"
-    },
-    "duration_minutes": {
-      "type": "number"
-    },
-    "location": {
-      "type": "string"
-    },
-    "seat_number": {
-      "type": "string"
-    },
     "status": {
       "type": "string",
       "enum": [
-        "upcoming",
-        "completed",
-        "missed"
+        "present",
+        "absent",
+        "excused"
       ],
-      "default": "upcoming"
+      "default": "present"
     },
-    "topics": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
-    "revision_progress": {
-      "type": "number",
-      "default": 0
-    },
-    "confidence": {
-      "type": "number",
-      "default": 3,
-      "minimum": 1,
-      "maximum": 5
+    "note": {
+      "type": "string"
     }
   },
   "required": [
-    "title",
     "course_code",
-    "date"
+    "date",
+    "status"
   ],
   "rls": {
     "read": {

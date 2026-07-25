@@ -1,76 +1,39 @@
 {
-  "name": "Exam",
+  "name": "Note",
   "type": "object",
   "properties": {
     "title": {
       "type": "string"
     },
+    "content": {
+      "type": "string"
+    },
+    "note_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "voice",
+        "image",
+        "handwritten",
+        "scanned"
+      ],
+      "default": "text"
+    },
     "course_code": {
       "type": "string"
     },
-    "course_title": {
+    "file_url": {
       "type": "string"
     },
-    "type": {
-      "type": "string",
-      "enum": [
-        "midterm",
-        "final",
-        "quiz",
-        "practical",
-        "oral"
-      ],
-      "default": "final"
-    },
-    "date": {
-      "type": "string",
-      "format": "date"
-    },
-    "start_time": {
-      "type": "string"
-    },
-    "end_time": {
-      "type": "string"
-    },
-    "duration_minutes": {
-      "type": "number"
-    },
-    "location": {
-      "type": "string"
-    },
-    "seat_number": {
-      "type": "string"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "upcoming",
-        "completed",
-        "missed"
-      ],
-      "default": "upcoming"
-    },
-    "topics": {
+    "tags": {
       "type": "array",
       "items": {
         "type": "string"
       }
-    },
-    "revision_progress": {
-      "type": "number",
-      "default": 0
-    },
-    "confidence": {
-      "type": "number",
-      "default": 3,
-      "minimum": 1,
-      "maximum": 5
     }
   },
   "required": [
-    "title",
-    "course_code",
-    "date"
+    "title"
   ],
   "rls": {
     "read": {

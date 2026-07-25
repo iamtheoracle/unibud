@@ -1,76 +1,69 @@
 {
-  "name": "Exam",
+  "name": "Project",
   "type": "object",
   "properties": {
     "title": {
       "type": "string"
     },
-    "course_code": {
+    "supervisor": {
       "type": "string"
     },
-    "course_title": {
-      "type": "string"
-    },
-    "type": {
-      "type": "string",
-      "enum": [
-        "midterm",
-        "final",
-        "quiz",
-        "practical",
-        "oral"
-      ],
-      "default": "final"
-    },
-    "date": {
+    "deadline": {
       "type": "string",
       "format": "date"
     },
-    "start_time": {
-      "type": "string"
-    },
-    "end_time": {
-      "type": "string"
-    },
-    "duration_minutes": {
-      "type": "number"
-    },
-    "location": {
-      "type": "string"
-    },
-    "seat_number": {
-      "type": "string"
-    },
-    "status": {
-      "type": "string",
-      "enum": [
-        "upcoming",
-        "completed",
-        "missed"
-      ],
-      "default": "upcoming"
-    },
-    "topics": {
+    "team_members": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-    "revision_progress": {
-      "type": "number",
-      "default": 0
+    "notes": {
+      "type": "string"
     },
-    "confidence": {
-      "type": "number",
-      "default": 3,
-      "minimum": 1,
-      "maximum": 5
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "in_progress",
+        "review",
+        "completed"
+      ],
+      "default": "planning"
+    },
+    "accent_color": {
+      "type": "string"
     }
   },
   "required": [
-    "title",
-    "course_code",
-    "date"
+    "title"
   ],
   "rls": {
     "read": {

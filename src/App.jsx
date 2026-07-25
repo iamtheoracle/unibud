@@ -22,6 +22,17 @@ import Home from '@/pages/Home';
 import Me from '@/pages/Me';
 import Placeholder from '@/pages/Placeholder';
 
+// Milestone 5 — Academic Management
+import Courses from '@/pages/academics/Courses';
+import Timetable from '@/pages/academics/Timetable';
+import Calendar from '@/pages/academics/Calendar';
+import Assignments from '@/pages/academics/Assignments';
+import Projects from '@/pages/academics/Projects';
+import Exams from '@/pages/academics/Exams';
+import Attendance from '@/pages/academics/Attendance';
+import Notes from '@/pages/academics/Notes';
+import StudySessions from '@/pages/academics/StudySessions';
+
 function App() {
   return (
     <AuthProvider>
@@ -43,6 +54,15 @@ function App() {
                   <Route path="/quad" element={<Placeholder title="Quad" description="Your campus social feed arrives in a future milestone." />} />
                   <Route path="/connect" element={<Placeholder title="Connect" description="Study matching, mentorship, and events arrive in a future milestone." />} />
                   <Route path="/me" element={<Me />} />
+                  <Route path="/courses" element={<Courses />} />
+                  <Route path="/timetable" element={<Timetable />} />
+                  <Route path="/calendar" element={<Calendar />} />
+                  <Route path="/assignments" element={<Assignments />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/exams" element={<Exams />} />
+                  <Route path="/attendance" element={<Attendance />} />
+                  <Route path="/notes" element={<Notes />} />
+                  <Route path="/study-sessions" element={<StudySessions />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
