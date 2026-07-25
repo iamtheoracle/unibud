@@ -67,6 +67,9 @@ import ExamAuthor from '@/pages/exam/ExamAuthor';
 // Oracle — Platform Operating Center
 import Oracle from '@/pages/oracle/Oracle';
 
+// Architect — No-code Platform Builder (via Oracle)
+import Architect from '@/pages/architect/Architect';
+
 // Automation Engine
 import AutomationCenter from '@/pages/automation/AutomationCenter';
 import WorkflowBuilder from '@/pages/automation/WorkflowBuilder';
@@ -126,6 +129,7 @@ function App() {
                   <Route path="/exam/coach" element={<ExamCoach />} />
                   <Route path="/exam/author" element={<ExamAuthor />} />
                   <Route path="/oracle" element={<Oracle />} />
+                  <Route path="/architect" element={<Architect />} />
                   <Route path="/automation" element={<AutomationCenter />} />
                   <Route path="/automation/builder" element={<WorkflowBuilder />} />
                   <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
