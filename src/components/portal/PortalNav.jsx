@@ -104,7 +104,7 @@ export default function PortalNav({ user, collapsed = false, onNavigate }) {
         {filteredNav.map((section, si) => (
           <div key={si} className="mb-3">
             {!collapsed && (
-              <p className="px-5 text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider mb-1.5">{section.section}</p>
+              <p className="px-5 console-eyebrow mb-1.5">{section.section}</p>
             )}
             {collapsed && si > 0 && (
               <div className="mx-4 my-2 border-t border-border/20" />
@@ -123,7 +123,7 @@ export default function PortalNav({ user, collapsed = false, onNavigate }) {
                   }}
                   title={collapsed ? item.label : undefined}
                   className={`relative w-full flex items-center gap-3 ${collapsed ? "justify-center px-0" : "px-5"} py-2.5 text-[13px] font-medium transition-colors group ${
-                    isActive ? "text-primary" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
+                    isActive ? "text-primary portal-active-tint" : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                   }`}
                 >
                   {isActive && (

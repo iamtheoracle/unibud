@@ -123,8 +123,8 @@ export default function PortalLayout() {
       {/* Main content */}
       <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${sidebarCollapsed ? "lg:ml-[76px]" : "lg:ml-[260px]"}`}>
         {/* Top bar */}
-        <header className="sticky top-0 z-20 glass border-b border-border/20">
-          <div className="flex items-center gap-2 px-4 lg:px-6 h-16">
+        <header className="sticky top-0 z-20 glass border-b border-border/30">
+          <div className="flex items-center gap-2 px-4 lg:px-6 h-14">
             {/* Mobile menu */}
             <button
               onClick={() => setSidebarOpen(true)}
@@ -147,9 +147,10 @@ export default function PortalLayout() {
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Search anything..."
-                  className="w-full h-10 pl-10 pr-4 rounded-[16px] bg-muted/50 border border-border/30 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-card transition-all"
+                  placeholder="Search operations..."
+                  className="w-full h-9 pl-10 pr-16 rounded-[12px] bg-muted/40 border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-card focus:border-primary/30 transition-all"
                 />
+                <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden sm:flex items-center px-1.5 py-0.5 rounded-md bg-card border border-border/50 text-[10px] font-mono text-muted-foreground">⌘K</kbd>
               </div>
             </div>
 
