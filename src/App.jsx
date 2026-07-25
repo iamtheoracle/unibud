@@ -135,6 +135,7 @@ import Approvals from '@/pages/portal/Approvals';
 import FeatureFlags from '@/pages/portal/FeatureFlags';
 import PortalNotifications from '@/pages/portal/PortalNotifications';
 import PortalMarketplace from '@/pages/portal/PortalMarketplace';
+import PortalMarketplaceAnalytics from '@/pages/portal/PortalMarketplaceAnalytics';
 import PortalEvents from '@/pages/portal/PortalEvents';
 import PlatformInvitations from '@/pages/portal/PlatformInvitations';
 import InstitutionConfig from '@/pages/portal/InstitutionConfig';
@@ -295,6 +296,7 @@ const AuthenticatedApp = () => {
           <Route path="feature-flags" element={<FeatureFlags />} />
           <Route path="notifications" element={<PortalNotifications />} />
           <Route path="marketplace" element={<PortalMarketplace />} />
+          <Route path="marketplace/analytics" element={<PortalMarketplaceAnalytics />} />
           <Route path="events" element={<PortalEvents />} />
           <Route path="invitations" element={<PlatformInvitations />} />
           <Route path="institution-config" element={<InstitutionConfig />} />

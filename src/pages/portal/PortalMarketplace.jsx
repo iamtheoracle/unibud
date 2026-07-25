@@ -1,11 +1,13 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ShoppingBag, TrendingUp, DollarSign, Package } from "lucide-react";
+import { ShoppingBag, TrendingUp, DollarSign, Package, BarChart3 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DashboardCard, SectionCard, PortalPageHeader, StatusPill, SmartList } from "@/components/portal/PortalUI";
+import { useNavigate } from "react-router-dom";
 
 export default function PortalMarketplace() {
+  const navigate = useNavigate();
   const { data: listings } = useQuery({
     queryKey: ["portalMarketplace"],
     queryFn: () => base44.entities.MarketplaceListing.list("-created_date", 20),
@@ -16,7 +18,15 @@ export default function PortalMarketplace() {
 
   return (
     <div className="space-y-6">
-      <PortalPageHeader title="Marketplace" subtitle="Campus marketplace oversight and revenue tracking." />
+      <PortalPageHeader
+        title="Marketplace"
+        subtitle="Campus marketplace oversight and revenue tracking."
+        action={
+          <button onClick={() => navigate("/portal/marketplace/analytics")} className="flex items-center gap-1.5 px-3 py-2 rounded-[12px] bg-primary/10 text-primary text-[12px] font-semibold hover:bg-primary/15 spring-tap">
+            <BarChart3 className="w-4 h-4" /> Analytics
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <DashboardCard icon={Package} value={listings?.length || 0} title="Total Listings" accent="primary" delay={0} />

@@ -554,6 +554,7 @@ const PATH_ACCESS = {
   "/portal/feature-flags": ["oracle", "super_admin", "platform_admin", "developer"],
   "/portal/notifications": ["oracle", "super_admin", "platform_admin", "support_manager"],
   "/portal/marketplace": ["oracle", "super_admin", "platform_admin", "finance_manager"],
+  "/portal/marketplace/analytics": ["oracle", "super_admin", "platform_admin", "finance_manager"],
   "/portal/events": ["oracle", "super_admin", "platform_admin", "support_manager"],
   "/portal/invitations": ["oracle", "super_admin"],
 };
