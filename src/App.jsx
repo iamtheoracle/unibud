@@ -19,6 +19,7 @@ import ResetPassword from '@/pages/ResetPassword';
 // Milestone 2 — Student Home (Campus)
 import AppShell from '@/components/layout/AppShell';
 import Home from '@/pages/Home';
+import Me from '@/pages/Me';
 import Placeholder from '@/pages/Placeholder';
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
                   <Route path="/home" element={<Home />} />
                   <Route path="/quad" element={<Placeholder title="Quad" description="Your campus social feed arrives in a future milestone." />} />
                   <Route path="/connect" element={<Placeholder title="Connect" description="Study matching, mentorship, and events arrive in a future milestone." />} />
-                  <Route path="/me" element={<Placeholder title="Me" description="Your profile and achievements arrive in a future milestone." />} />
+                  <Route path="/me" element={<Me />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
