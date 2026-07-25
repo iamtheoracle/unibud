@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useHomeContext } from "@/hooks/useHomeContext";
+import { useUnibudContext } from "@/lib/UnibudContext";
 import { orchestrateHome } from "@/lib/bud/homeOrchestrator";
 import HomeHeader from "@/components/home/HomeHeader";
 import FloatingSearch from "@/components/home/FloatingSearch";
@@ -23,7 +23,7 @@ const EASE = [0.16, 1, 0.3, 1];
  * the widget order. The layout is never static.
  */
 export default function Home() {
-  const ctx = useHomeContext();
+  const ctx = useUnibudContext();
   const plan = orchestrateHome(ctx);
 
   const widgets = {

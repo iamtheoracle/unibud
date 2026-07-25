@@ -6,6 +6,8 @@ import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import BottomNav from "@/components/layout/BottomNav";
 import EcosystemRail from "@/components/layout/EcosystemRail";
 import BudSheet from "@/components/bud/BudSheet";
+import ContextPulse from "@/components/layout/ContextPulse";
+import { UnibudContextProvider } from "@/lib/UnibudContext";
 
 /**
  * AppShell — the authenticated student shell: page content + floating
@@ -39,12 +41,15 @@ export default function AppShell() {
 
   return (
     <BudLauncherProvider>
-      <div className="min-h-screen w-full">
-        <Outlet />
-        <EcosystemRail />
-        <BottomNav />
-        <BudSheet />
-      </div>
+      <UnibudContextProvider>
+        <div className="min-h-screen w-full">
+          <ContextPulse />
+          <Outlet />
+          <EcosystemRail />
+          <BottomNav />
+          <BudSheet />
+        </div>
+      </UnibudContextProvider>
     </BudLauncherProvider>
   );
 }

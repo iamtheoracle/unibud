@@ -19,6 +19,7 @@ export function useHomeContext() {
   const conversations = useQuery({ queryKey: ["homeConversations"], queryFn: () => base44.entities.Conversation.list("-updated_date", 20) });
   const quad = useQuery({ queryKey: ["homeQuad"], queryFn: () => base44.entities.QuadPost.list("-created_date", 8) });
   const notifications = useQuery({ queryKey: ["homeNotifs"], queryFn: () => base44.entities.Notification.list("-created_date", 20) });
+  const timetable = useQuery({ queryKey: ["homeTimetable"], queryFn: () => base44.entities.TimetableEntry.list() });
   const weather = useWeather();
 
   const now = new Date();
@@ -39,6 +40,29 @@ export function useHomeContext() {
     return d >= 0 && d <= 7;
   });
   const nextExamDays = examSoon.length ? Math.ceil((new Date(examSoon[0].date) - now) / 86400000) : null;
+
+  // ── Next lecture today (for contextual "lecture in N min" pulse) ──
+  const tt = timetable.data || [];
+  const todayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][now.getDay()];
+  const parseHM = (s) => {
+    if (!s) return null;
+    const part = s.includes("T") ? s.split("T")[1] : s;
+    const [h, m] = part.split(":").map(Number);
+    return isNaN(h) || isNaN(m) ? null : { h, m };
+  };
+  let nextLecture = null;
+  let nextLectureIn = null;
+  tt.forEach((x) => {
+    if (!x || x.day !== todayName) return;
+    const hm = parseHM(x.start_time);
+    if (!hm) return;
+    const start = new Date(now); start.setHours(hm.h, hm.m, 0, 0);
+    const diff = (start - now) / 60000;
+    if (diff > 0 && (nextLectureIn === null || diff < nextLectureIn)) {
+      nextLectureIn = Math.round(diff);
+      nextLecture = x;
+    }
+  });
 
   const att = attendance.data || [];
   const present = att.filter((x) => (x.status || "").toLowerCase() === "present").length;
@@ -89,6 +113,8 @@ export function useHomeContext() {
     weatherScene,
     weatherAlerts,
     severeWeather,
+    nextLecture,
+    nextLectureIn,
     mood: "focused",
   };
 }
