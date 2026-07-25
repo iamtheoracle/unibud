@@ -19,7 +19,11 @@ export default function OperatorDashboard({ institutionId, user }) {
       const priority = tasks.filter((t) => ["high", "urgent"].includes(t.priority) && t.status !== "completed" && t.status !== "archived");
       const completedToday = tasks.filter((t) => t.status === "completed" && t.updated_date && t.updated_date.slice(0, 10) === todayStr());
       const upcoming = tasks.filter((t) => t.due_date && t.status !== "completed" && t.status !== "archived").sort((a, b) => new Date(a.due_date) - new Date(b.due_date)).slice(0, 6);
-      setData({ mine, dueToday, pendingApprovals, priority, completedToday, notifs: notifs.slice(0, 5), upcoming });
+      const completedAll = tasks.filter((t) => t.status === "completed");
+      const durations = completedAll.filter((t) => t.created_date && t.updated_date).map((t) => (new Date(t.updated_date) - new Date(t.created_date)) / 3600000);
+      const avgHours = durations.length ? Math.round((durations.reduce((a, b) => a + b, 0) / durations.length) * 10) / 10 : null;
+      const pending = mine.filter((t) => t.status === "pending" || t.status === "in_progress").length;
+      setData({ mine, dueToday, pendingApprovals, priority, completedToday, notifs: notifs.slice(0, 5), upcoming, perf: { completed: completedAll.length, avgHours, pending, today: completedToday.length } });
     })();
   }, [institutionId, user]);
 
@@ -64,6 +68,15 @@ export default function OperatorDashboard({ institutionId, user }) {
             <div key={t.id} className="flex items-center gap-2.5"><CheckSquare className="w-3.5 h-3.5 text-success shrink-0" /><p className="text-[13px] flex-1 truncate">{t.title}</p><span className="text-[11px] text-muted-foreground">{t.assignee || ""}</span></div>
           ))}</div>
         )}
+      </Panel>
+
+      <Panel title="Performance Summary" icon={TrendingUp}>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div><p className="text-[11px] text-muted-foreground">Tasks Completed</p><p className="text-[20px] font-heading font-bold text-foreground">{data.perf.completed}</p></div>
+          <div><p className="text-[11px] text-muted-foreground">Avg. Completion</p><p className="text-[20px] font-heading font-bold text-foreground">{data.perf.avgHours != null ? `${data.perf.avgHours}h` : "—"}</p></div>
+          <div><p className="text-[11px] text-muted-foreground">Pending Tasks</p><p className="text-[20px] font-heading font-bold text-foreground">{data.perf.pending}</p></div>
+          <div><p className="text-[11px] text-muted-foreground">Today's Productivity</p><p className="text-[20px] font-heading font-bold text-success">{data.perf.today}</p></div>
+        </div>
       </Panel>
     </div>
   );
