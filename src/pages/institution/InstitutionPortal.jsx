@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { LayoutDashboard, ClipboardList, GraduationCap, FileText, Megaphone, BarChart3, Palette, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, ClipboardList, GraduationCap, FileText, Megaphone, BarChart3, Palette, ShieldCheck, CalendarClock, ClipboardCheck, FolderOpen, LifeBuoy, Sparkles } from "lucide-react";
 import PortalShell from "@/components/institution/PortalShell";
 import PortalDashboard from "@/components/institution/sections/PortalDashboard";
 import PortalAdmissions from "@/components/institution/sections/PortalAdmissions";
@@ -10,6 +10,11 @@ import PortalCommunications from "@/components/institution/sections/PortalCommun
 import PortalAnalytics from "@/components/institution/sections/PortalAnalytics";
 import PortalBranding from "@/components/institution/sections/PortalBranding";
 import PortalPermissions from "@/components/institution/sections/PortalPermissions";
+import PortalTimetable from "@/components/institution/sections/PortalTimetable";
+import PortalResults from "@/components/institution/sections/PortalResults";
+import PortalDocuments from "@/components/institution/sections/PortalDocuments";
+import PortalHelpDesk from "@/components/institution/sections/PortalHelpDesk";
+import PortalBudAdmin from "@/components/institution/sections/PortalBudAdmin";
 import UDSEmptyState from "@/components/uds/UDSEmptyState";
 import UDSButton from "@/components/uds/UDSButton";
 import { useInstitution } from "@/lib/institution/useInstitution";
@@ -22,6 +27,11 @@ const SECTIONS = [
   { id: "records", label: "Student Records", icon: FileText },
   { id: "communications", label: "Communications", icon: Megaphone },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "timetabling", label: "Timetabling", icon: CalendarClock },
+  { id: "results", label: "Result Management", icon: ClipboardCheck },
+  { id: "documents", label: "Document Center", icon: FolderOpen },
+  { id: "helpdesk", label: "Help Desk", icon: LifeBuoy },
+  { id: "bud", label: "Bud Admin", icon: Sparkles },
   { id: "branding", label: "Branding", icon: Palette },
   { id: "permissions", label: "Permissions", icon: ShieldCheck },
 ];
@@ -63,6 +73,11 @@ export default function InstitutionPortal() {
       {active === "records" && <PortalRecords institution={institution} />}
       {active === "communications" && <PortalCommunications institution={institution} />}
       {active === "analytics" && <PortalAnalytics institution={institution} />}
+      {active === "timetabling" && <PortalTimetable institution={institution} />}
+      {active === "results" && <PortalResults institution={institution} />}
+      {active === "documents" && <PortalDocuments institution={institution} />}
+      {active === "helpdesk" && <PortalHelpDesk institution={institution} />}
+      {active === "bud" && <PortalBudAdmin institution={institution} />}
       {active === "branding" && <PortalBranding institution={institution} />}
       {active === "permissions" && <PortalPermissions institution={institution} user={user} />}
     </PortalShell>

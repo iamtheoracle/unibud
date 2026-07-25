@@ -13,6 +13,7 @@ const ACTIONS = [
   { label: "Parent", to: "/parent/portal" },
   { label: "Exams", to: "/exam" },
   { label: "Oracle", to: "/oracle" },
+  { label: "Automations", to: "/automation" },
   { label: "Courses", to: "/courses" },
   { label: "Timetable", to: "/timetable" },
   { label: "Calendar", to: "/calendar" },

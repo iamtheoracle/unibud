@@ -67,6 +67,10 @@ import ExamAuthor from '@/pages/exam/ExamAuthor';
 // Oracle — Platform Operating Center
 import Oracle from '@/pages/oracle/Oracle';
 
+// Automation Engine
+import AutomationCenter from '@/pages/automation/AutomationCenter';
+import WorkflowBuilder from '@/pages/automation/WorkflowBuilder';
+
 function App() {
   return (
     <AuthProvider>
@@ -119,6 +123,9 @@ function App() {
                   <Route path="/exam/coach" element={<ExamCoach />} />
                   <Route path="/exam/author" element={<ExamAuthor />} />
                   <Route path="/oracle" element={<Oracle />} />
+                  <Route path="/automation" element={<AutomationCenter />} />
+                  <Route path="/automation/builder" element={<WorkflowBuilder />} />
+                  <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
