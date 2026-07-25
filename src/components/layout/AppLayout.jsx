@@ -5,7 +5,6 @@ import { base44 } from "@/api/base44Client";
 import { isPortalRole, isPlatformRole, isOracleRole } from "@/lib/portalConfig";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BottomNav from "@/components/layout/BottomNav";
-import CommandDock from "@/components/layout/CommandDock";
 import CampusTutorial from "@/components/onboarding/CampusTutorial";
 import DemoModeBanner from "@/components/DemoModeBanner";
 
@@ -54,12 +53,7 @@ export default function AppLayout() {
       <div className="mx-auto relative pb-28 px-4 sm:px-5 max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl lg:pb-32">
         <Outlet />
       </div>
-      {!hideDock && (
-        <>
-          <BottomNav />
-          <CommandDock />
-        </>
-      )}
+      {!hideDock && <BottomNav />}
       <CampusTutorial user={user} />
     </div>
   );

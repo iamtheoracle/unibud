@@ -1,0 +1,43 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "study_group_task_notifications",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "bridge_task_event": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "studyGroupEventBridge",
+            "args": {
+              "entity_name": "StudyGroupTask",
+              "event_type": "${ .trigger.event_type }",
+              "entity_id": "${ .trigger.entity_id }",
+              "data": "${ .trigger.data }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Bridge task event to notifications",
+            "description": "Create targeted notification for the assignee"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Study Group Task Notifications",
+  "description": "Bridges StudyGroupTask create events into the Spark Notification Engine via the studyGroupEventBridge backend function.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "StudyGroupTask"
+    }
+  }
+}

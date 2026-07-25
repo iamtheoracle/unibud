@@ -39,6 +39,8 @@ import { LocalPrivacyService } from "./trust/privacy/local";
 import { LocalSecurityService } from "./trust/security/local";
 import { LocalAutomationService } from "./automation/local";
 import { LocalLearningService } from "./learning/local";
+import { LocalNotificationEngineService } from "./notifications/local";
+import type { NotificationEngineService } from "./notifications/interface";
 import type { IdentityService } from "./core/identity/interface";
 import type { ReasoningService } from "./core/reasoning/interface";
 import type { PlanningService } from "./core/planning/interface";
@@ -239,6 +241,9 @@ export class Spark {
   get learning(): LearningService {
     return this.container.resolve(TOKENS.Learning);
   }
+  get notifications(): NotificationEngineService {
+    return this.container.resolve(TOKENS.Notifications);
+  }
 
   // ---------------------------------------------------------------------
   // Internal wiring
@@ -285,6 +290,10 @@ export class Spark {
     this.container.register(TOKENS.Security, () => new LocalSecurityService());
     this.container.register(TOKENS.Automation, () => new LocalAutomationService());
     this.container.register(TOKENS.Learning, () => new LocalLearningService());
+    this.container.register(
+      TOKENS.Notifications,
+      () => new LocalNotificationEngineService()
+    );
   }
 }
 

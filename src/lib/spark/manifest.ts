@@ -19,6 +19,7 @@ export const SPARK_CAPABILITIES = [
   "security",
   "automation",
   "learning",
+  "notifications",
 ] as const;
 
 export type SparkCapability = (typeof SPARK_CAPABILITIES)[number];

@@ -27,6 +27,7 @@ export const TOKENS = {
   Security: Symbol("trust.security"),
   Automation: Symbol("automation"),
   Learning: Symbol("learning"),
+  Notifications: Symbol("core.notifications"),
 } as const;
 
 export type Token = symbol;
