@@ -70,6 +70,9 @@ import Oracle from '@/pages/oracle/Oracle';
 // Management — Institution Operational Headquarters
 import Management from '@/pages/management/Management';
 
+// Operator — Execution Workspace
+import Operator from '@/pages/operator/Operator';
+
 // Architect — No-code Platform Builder (via Oracle)
 import Architect from '@/pages/architect/Architect';
 
@@ -133,6 +136,7 @@ function App() {
                   <Route path="/exam/author" element={<ExamAuthor />} />
                   <Route path="/oracle" element={<Oracle />} />
                   <Route path="/management" element={<Management />} />
+                  <Route path="/operator" element={<Operator />} />
                   <Route path="/architect" element={<Architect />} />
                   <Route path="/automation" element={<AutomationCenter />} />
                   <Route path="/automation/builder" element={<WorkflowBuilder />} />

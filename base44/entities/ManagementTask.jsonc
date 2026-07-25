@@ -35,7 +35,8 @@
         "pending",
         "in_progress",
         "completed",
-        "overdue"
+        "overdue",
+        "archived"
       ],
       "default": "pending"
     },
@@ -45,6 +46,31 @@
     },
     "notes": {
       "type": "string"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Uploaded file URLs"
+    },
+    "activity": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string"
+          },
+          "by": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Activity timeline entries"
     },
     "institution_id": {
       "type": "string",

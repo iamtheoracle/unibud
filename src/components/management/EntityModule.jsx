@@ -34,7 +34,7 @@ function fmt(v, prop) {
   return String(v);
 }
 
-export default function EntityModule({ entityName, title, description, icon: Icon, institutionId, extraActions }) {
+export default function EntityModule({ entityName, title, description, icon: Icon, institutionId, extraActions, rowActions }) {
   const { toast } = useToast();
   const [schema, setSchema] = useState(null);
   const [rows, setRows] = useState([]);
@@ -62,21 +62,22 @@ export default function EntityModule({ entityName, title, description, icon: Ico
   const fieldKeys = useMemo(() => Object.keys(props).filter((k) => !BUILTINS.includes(k)), [schema]);
 
   const columns = useMemo(() => {
-    const visible = fieldKeys.slice(0, 6).map((k) => ({
+    const visible = fieldKeys.slice(0, rowActions ? 4 : 6).map((k) => ({
       key: k,
       label: humanize(k),
       render: (r) => fmt(r[k], props[k]),
     }));
     visible.push({
       key: "__a", label: "", render: (r) => (
-        <div className="flex gap-1 justify-end">
+        <div className="flex gap-1 justify-end flex-wrap">
+          {(rowActions || []).map((a) => { const AIcon = a.icon; return <Btn key={a.label} variant="ghost" size="icon" title={a.label} onClick={(e) => { e.stopPropagation(); runRow(a, r); }}><AIcon className="w-3.5 h-3.5" /></Btn>; })}
           <Btn variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setEditing(r); }}><Pencil className="w-3.5 h-3.5" /></Btn>
           <Btn variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); del(r); }}><Trash2 className="w-3.5 h-3.5" /></Btn>
         </div>
       ),
     });
     return visible;
-  }, [schema, fieldKeys]);
+  }, [schema, fieldKeys, rowActions]);
 
   const filtered = rows.filter((r) => !query || JSON.stringify(r).toLowerCase().includes(query.toLowerCase()));
 
@@ -98,6 +99,18 @@ export default function EntityModule({ entityName, title, description, icon: Ico
     if (!confirm("Delete this record?")) return;
     try { await base44.entities[entityName].delete(r.id); toast({ title: "Deleted" }); load(); }
     catch { toast({ title: "Delete failed", variant: "destructive" }); }
+  };
+
+  const runRow = async (a, r) => {
+    try {
+      if (a.run) { await a.run(r); }
+      else {
+        const patch = typeof a.patch === "function" ? a.patch(r) : a.patch;
+        await base44.entities[entityName].update(r.id, patch);
+        if (a.audit) { const info = typeof a.audit === "function" ? a.audit(r) : a.audit; try { await base44.entities.AuditLog.create({ action: info.action, target_name: info.target, target_type: info.target_type || "operator", severity: "info", description: info.description || info.action }); } catch {} }
+      }
+      toast({ title: `${a.label} ✓` }); load();
+    } catch { toast({ title: `${a.label} failed`, variant: "destructive" }); }
   };
 
   return (

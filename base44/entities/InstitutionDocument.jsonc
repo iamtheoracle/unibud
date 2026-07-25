@@ -33,6 +33,16 @@
     },
     "category": {
       "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "archived"
+      ],
+      "default": "draft"
     }
   },
   "required": [
