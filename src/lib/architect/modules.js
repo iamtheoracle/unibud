@@ -1,21 +1,22 @@
 import {
-  LayoutDashboard, Boxes, ClipboardList, Workflow, BarChart3, ShieldCheck,
-  Zap, BellRing, FileBarChart, Code2, Palette, Bot, FolderGit2,
+  Home, FilePlus2, ClipboardList, Workflow, BarChart3, FileBarChart, Menu,
+  Palette, BellRing, Bot, ShieldCheck, Boxes, History,
 } from "lucide-react";
 
 export const ARCHITECT_MODULES = [
-  { id: "workspace", label: "Workspace", group: "Workspace", icon: FolderGit2, desc: "Projects, recent changes, published & draft configurations, activity timeline." },
-  { id: "entities", label: "Entity Builder", group: "Builders", icon: Boxes, desc: "Visual builder for platform entities — fields, relationships, validation, enums." },
-  { id: "forms", label: "Form Builder", group: "Builders", icon: ClipboardList, desc: "Drag-and-drop form builder with conditional fields, sections and validation." },
-  { id: "workflows", label: "Workflow Builder", group: "Builders", icon: Workflow, desc: "Visual workflow canvas — approvals, reviews, escalations, automation, timers." },
-  { id: "dashboards", label: "Dashboard Builder", group: "Builders", icon: BarChart3, desc: "Build dashboards visually — charts, KPI cards, tables, calendars, AI summaries." },
-  { id: "automations", label: "Automation Builder", group: "Builders", icon: Zap, desc: "Visual automation — triggers, actions, delays, webhooks." },
-  { id: "roles", label: "Role Builder", group: "Governance", icon: ShieldCheck, desc: "Create custom roles — permissions, menus, routes, CRUD rights, feature access." },
-  { id: "notifications", label: "Notification Builder", group: "Governance", icon: BellRing, desc: "Notification templates — in-app, email, SMS, push with variables & localization." },
-  { id: "reports", label: "Report Builder", group: "Output", icon: FileBarChart, desc: "Generate reports — tables, charts, CSV, Excel, PDF, scheduled reports." },
-  { id: "api", label: "API Builder", group: "Output", icon: Code2, desc: "Manage integrations — REST endpoints, webhooks, API keys, rate limits, logs." },
-  { id: "themes", label: "Theme Builder", group: "Design", icon: Palette, desc: "Customize colors, typography, logos, icons, branding, institution themes." },
-  { id: "ai", label: "AI Builder", group: "Design", icon: Bot, desc: "Configure Bud & Spark — prompt templates, actions, permissions, routing, context." },
+  { id: "home", label: "Home", group: "Overview", icon: Home, desc: "Recent projects, drafts, published changes, pending reviews, platform components, activity timeline." },
+  { id: "versions", label: "Version Control", group: "Overview", icon: History, desc: "Draft, published, previous versions, rollback and change history." },
+  { id: "pages", label: "Page Builder", group: "Builders", icon: FilePlus2, desc: "Build pages visually with drag & drop — sections, cards, tabs, tables, charts. Desktop, tablet & mobile." },
+  { id: "forms", label: "Form Builder", group: "Builders", icon: ClipboardList, desc: "Create forms visually — validation, conditional fields, required fields, dynamic options." },
+  { id: "workflows", label: "Workflow Builder", group: "Builders", icon: Workflow, desc: "Visual workflow designer — start, decisions, approvals, rejections, loops, delays, API calls." },
+  { id: "dashboards", label: "Dashboard Builder", group: "Builders", icon: BarChart3, desc: "Build dashboards — KPI cards, tables, charts, timelines, heatmaps, leaderboards." },
+  { id: "reports", label: "Report Builder", group: "Builders", icon: FileBarChart, desc: "Create reports — filters, charts, tables, grouping, export, scheduling." },
+  { id: "menus", label: "Menu Builder", group: "Platform", icon: Menu, desc: "Sidebar, top & mobile navigation plus quick actions with role-based visibility." },
+  { id: "themes", label: "Theme Builder", group: "Platform", icon: Palette, desc: "Colors, typography, icons, logos, branding, radius, shadows, spacing — institution-specific." },
+  { id: "components", label: "Component Library", group: "Platform", icon: Boxes, desc: "Reusable components — buttons, inputs, cards, charts, tables, forms, modals, tabs." },
+  { id: "permissions", label: "Permission Builder", group: "Platform", icon: ShieldCheck, desc: "Visual RBAC editor — roles, permissions, access rules, feature access, institution policies." },
+  { id: "notifications", label: "Notification Builder", group: "Platform", icon: BellRing, desc: "Email, SMS, push & in-app templates with variables and localization." },
+  { id: "ai", label: "AI Builder", group: "Intelligence", icon: Bot, desc: "Configure Bud — personality, tone, prompt templates, policies, safety rules, response templates." },
 ];
 
 export const moduleById = (id) => ARCHITECT_MODULES.find((m) => m.id === id);

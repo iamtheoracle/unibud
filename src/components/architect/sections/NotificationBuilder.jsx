@@ -9,7 +9,7 @@ const SCHEMA = [
   { key: "push", label: "Push", type: "switch" },
   { key: "subject", label: "Subject", type: "text", full: true, placeholder: "Notification subject" },
   { key: "body", label: "Body", type: "textarea", full: true, hint: "Use {{variables}}" },
-  { key: "variables", label: "Variables", type: "list", hint: "Available template variables", full: true },
+  { key: "variables", label: "Variables", type: "list", hint: "e.g. {{StudentName}} {{Institution}} {{Amount}} {{Course}} {{Exam}}", full: true },
   { key: "condition", label: "Condition", type: "text", full: true, placeholder: "e.g. user.role === 'student'" },
   { key: "locale", label: "Locale", type: "text", placeholder: "e.g. en, fr" },
 ];

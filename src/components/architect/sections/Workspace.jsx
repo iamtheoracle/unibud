@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { SectionHeader, Panel, StatusPill, Btn, LoadingState, EmptyState, StatCard } from "@/components/architect/architect-ui";
 import { listAllConfigs, listProjects, createProject } from "@/lib/architect/configStore";
-import { FolderGit2, CheckCircle2, FileEdit, Clock, History, Plus, X } from "lucide-react";
+import { FolderGit2, CheckCircle2, FileEdit, Clock, History, Plus, X, Boxes } from "lucide-react";
 
 export default function Workspace({ onActive }) {
   const { toast } = useToast();
@@ -33,14 +33,15 @@ export default function Workspace({ onActive }) {
 
   return (
     <div className="space-y-5">
-      <SectionHeader title="Workspace" desc="Projects, recent changes, published & draft configurations, and the platform activity timeline."
+      <SectionHeader title="Home" desc="Recent projects, drafts, published changes, pending reviews, platform components and the activity timeline."
         actions={<Btn onClick={() => setShowProject(true)}><Plus className="w-3.5 h-3.5" />New Project</Btn>} />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard icon={FolderGit2} label="Projects" value={projects.length} tone="primary" />
-        <StatCard icon={CheckCircle2} label="Published" value={published.length} tone="success" />
-        <StatCard icon={FileEdit} label="Drafts" value={drafts.length} tone="warn" />
+        <StatCard icon={CheckCircle2} label="Published Changes" value={published.length} tone="success" />
+        <StatCard icon={FileEdit} label="Pending Reviews" value={drafts.length} tone="warn" />
         <StatCard icon={History} label="Recent Changes" value={recent.length} tone="info" />
+        <StatCard icon={Boxes} label="Platform Components" value={configs.filter((c) => c.type === "component").length} tone="info" />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4">
@@ -95,6 +96,16 @@ export default function Workspace({ onActive }) {
           )}
         </Panel>
       </div>
+
+      <Panel title="Platform Components" icon={Boxes}>
+        {configs.filter((c) => c.type === "component").length === 0 ? <EmptyState icon={Boxes} message="No reusable components registered yet." /> : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
+            {configs.filter((c) => c.type === "component").map((c) => (
+              <div key={c.id} className="rounded-lg bg-muted/30 p-2.5"><p className="text-[12px] font-medium truncate">{c.name}</p><p className="text-[10px] text-muted-foreground">{c.config?.category || "component"}</p></div>
+            ))}
+          </div>
+        )}
+      </Panel>
 
       {showProject && <NewProjectModal onClose={() => setShowProject(false)} onCreated={() => { setShowProject(false); load(); }} />}
     </div>

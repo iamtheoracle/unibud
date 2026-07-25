@@ -3,19 +3,21 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import ConfigManager from "@/components/architect/ConfigManager";
 import { useEditor } from "@/lib/architect/editorState";
 import { EditorToolbar, Palette, Btn } from "@/components/architect/architect-ui";
-import { Workflow, Plus, Trash2, GripVertical, GitBranch, Clock, Database, AlertTriangle, CheckCircle2, Eye, Bell, Webhook } from "lucide-react";
+import { Workflow, Trash2, GripVertical, Play, GitBranch, CheckCircle2, XCircle, UserPlus, Bell, Code2, Clock, Filter, Repeat, Flag } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 const STEPS = [
-  { key: "trigger", label: "Trigger", icon: GitBranch },
-  { key: "condition", label: "Condition", icon: GitBranch },
-  { key: "timer", label: "Timer", icon: Clock },
-  { key: "action", label: "Action", icon: Database },
-  { key: "escalation", label: "Escalation", icon: AlertTriangle },
+  { key: "start", label: "Start", icon: Play },
+  { key: "decision", label: "Decision", icon: GitBranch },
   { key: "approval", label: "Approval", icon: CheckCircle2 },
-  { key: "review", label: "Review", icon: Eye },
-  { key: "notification", label: "Notification", icon: Bell },
-  { key: "webhook", label: "Webhook", icon: Webhook },
+  { key: "rejection", label: "Rejection", icon: XCircle },
+  { key: "assignment", label: "Assignment", icon: UserPlus },
+  { key: "notification", label: "Notifications", icon: Bell },
+  { key: "api_call", label: "API Call", icon: Code2 },
+  { key: "delay", label: "Delay", icon: Clock },
+  { key: "condition", label: "Condition", icon: Filter },
+  { key: "loop", label: "Loop", icon: Repeat },
+  { key: "completion", label: "Completion", icon: Flag },
 ];
 const DEFAULT = { steps: [] };
 
@@ -34,7 +36,7 @@ function WorkflowEditor({ record, defaultConfig, onSave, onSaveName, onClose, on
   const del = (i) => set((s) => ({ ...s, steps: s.steps.filter((_, idx) => idx !== i) }));
   const onDragEnd = (r) => { if (!r.destination || r.destination.index === r.source.index) return; set((s) => { const arr = [...s.steps]; const [m] = arr.splice(r.source.index, 1); arr.splice(r.destination.index, 0, m); return { ...s, steps: arr }; }); };
 
-  const tone = (t) => t === "trigger" ? "border-l-primary" : t === "escalation" ? "border-l-destructive" : t === "approval" || t === "review" ? "border-l-success" : "border-l-muted-foreground";
+  const tone = (t) => t === "start" ? "border-l-primary" : t === "rejection" ? "border-l-destructive" : t === "approval" || t === "completion" ? "border-l-success" : t === "decision" || t === "condition" ? "border-l-information" : "border-l-muted-foreground";
 
   return (
     <div>
@@ -46,18 +48,18 @@ function WorkflowEditor({ record, defaultConfig, onSave, onSaveName, onClose, on
             <Droppable droppableId="wf-canvas">
               {(prov) => (
                 <div ref={prov.innerRef} {...prov.droppableProps} className="space-y-2 min-h-[200px]">
-                  {steps.length === 0 && <div className="border-2 border-dashed border-border rounded-xl py-16 text-center text-muted-foreground text-[13px]">Add steps to build your workflow</div>}
+                  {steps.length === 0 && <div className="border-2 border-dashed border-border rounded-xl py-16 text-center text-muted-foreground text-[13px]">Add steps to design your workflow</div>}
                   {steps.map((st, i) => (
                     <Draggable key={st.id} draggableId={st.id} index={i}>
                       {(p) => (
                         <div ref={p.innerRef} {...p.draggableProps} className={`glass-card radius-lg p-3 border-l-4 ${tone(st.type)}`}>
                           <div className="flex items-center gap-2" {...p.dragHandleProps}>
                             <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab shrink-0" />
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground w-[90px] shrink-0">{st.type}</span>
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground w-[100px] shrink-0">{st.type}</span>
                             <input value={st.name} onChange={(e) => upd(i, { name: e.target.value })} className="oracle-input flex-1" placeholder="Step name" />
                             <Btn variant="ghost" onClick={() => del(i)}><Trash2 className="w-3 h-3" /></Btn>
                           </div>
-                          <input value={st.config || ""} onChange={(e) => upd(i, { config: e.target.value })} className="oracle-input mt-2 ml-7" placeholder="Configuration / expression (e.g. field=value, recipient, url, duration)" />
+                          <input value={st.config || ""} onChange={(e) => upd(i, { config: e.target.value })} className="oracle-input mt-2 ml-7" placeholder="Configuration / expression (assignee, condition, url, duration)" />
                         </div>
                       )}
                     </Draggable>
@@ -67,7 +69,7 @@ function WorkflowEditor({ record, defaultConfig, onSave, onSaveName, onClose, on
               )}
             </Droppable>
           </DragDropContext>
-          {steps.length > 0 && <div className="flex justify-center pt-2"><div className="w-1 h-6 bg-muted-foreground/30 rounded-full" /></div>}
+          {steps.length > 0 && <div className="flex justify-center pt-2"><Flag className="w-4 h-4 text-muted-foreground/40" /></div>}
         </div>
       </div>
     </div>

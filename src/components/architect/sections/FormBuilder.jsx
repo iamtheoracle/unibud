@@ -3,31 +3,34 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import ConfigManager from "@/components/architect/ConfigManager";
 import { useEditor } from "@/lib/architect/editorState";
 import { EditorToolbar, Palette, Btn } from "@/components/architect/architect-ui";
-import { ClipboardList, Plus, Trash2, GripVertical, Monitor, Smartphone } from "lucide-react";
+import { ClipboardList, Trash2, GripVertical, Monitor, Smartphone } from "lucide-react";
 import {
-  Type, Hash, AtSign, Lock, Phone, Calendar, Clock, ChevronDown, ListChecks,
-  CheckSquare, Circle, ToggleRight, Upload, PenTool, FileText, LayoutPanelTop,
+  Type, AtSign, Phone, Hash, Lock, AlignLeft, FileText, Calendar, Clock, ChevronDown,
+  ListChecks, Circle, CheckSquare, ToggleRight, Upload, Image, PenTool, Star,
 } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 const PALETTE = [
-  { key: "section", label: "Section", icon: LayoutPanelTop },
   { key: "text", label: "Text", icon: Type },
-  { key: "number", label: "Number", icon: Hash },
   { key: "email", label: "Email", icon: AtSign },
-  { key: "password", label: "Password", icon: Lock },
   { key: "phone", label: "Phone", icon: Phone },
+  { key: "number", label: "Number", icon: Hash },
+  { key: "password", label: "Password", icon: Lock },
+  { key: "textarea", label: "Textarea", icon: AlignLeft },
+  { key: "richtext", label: "Rich Text", icon: FileText },
   { key: "date", label: "Date", icon: Calendar },
   { key: "time", label: "Time", icon: Clock },
   { key: "select", label: "Select", icon: ChevronDown },
-  { key: "multiselect", label: "Multi-select", icon: ListChecks },
-  { key: "checkbox", label: "Checkbox", icon: CheckSquare },
+  { key: "multiselect", label: "Multi Select", icon: ListChecks },
   { key: "radio", label: "Radio", icon: Circle },
+  { key: "checkbox", label: "Checkbox", icon: CheckSquare },
   { key: "switch", label: "Switch", icon: ToggleRight },
-  { key: "upload", label: "Upload", icon: Upload },
+  { key: "file_upload", label: "File Upload", icon: Upload },
+  { key: "image_upload", label: "Image Upload", icon: Image },
   { key: "signature", label: "Signature", icon: PenTool },
-  { key: "richtext", label: "Rich Text", icon: FileText },
+  { key: "rating", label: "Rating", icon: Star },
 ];
+const HAS_OPTIONS = ["select", "multiselect", "radio"];
 const DEFAULT = { components: [] };
 
 export default function FormBuilder() {
@@ -41,13 +44,10 @@ function FormEditor({ record, defaultConfig, onSave, onSaveName, onClose, onPubl
   const onName = (v) => { setName(v); onSaveName(record.id, v); };
 
   const items = state.components || [];
-  const add = (p) => set((s) => ({ ...s, components: [...(s.components || []), { id: uid(), type: p.key, label: p.label, key: p.key + "_" + (s.components?.length || 0), required: false, placeholder: "", default: "", showIf: "" }] }));
+  const add = (p) => set((s) => ({ ...s, components: [...(s.components || []), { id: uid(), type: p.key, label: p.label, key: p.key + "_" + (s.components?.length || 0), required: false, placeholder: "", default: "", showIf: "", options: [], options_source: "" }] }));
   const upd = (i, patch) => set((s) => ({ ...s, components: s.components.map((c, idx) => idx === i ? { ...c, ...patch } : c) }));
   const del = (i) => set((s) => ({ ...s, components: s.components.filter((_, idx) => idx !== i) }));
-  const onDragEnd = (r) => {
-    if (!r.destination || r.destination.index === r.source.index) return;
-    set((s) => { const arr = [...s.components]; const [m] = arr.splice(r.source.index, 1); arr.splice(r.destination.index, 0, m); return { ...s, components: arr }; });
-  };
+  const onDragEnd = (r) => { if (!r.destination || r.destination.index === r.source.index) return; set((s) => { const arr = [...s.components]; const [m] = arr.splice(r.source.index, 1); arr.splice(r.destination.index, 0, m); return { ...s, components: arr }; }); };
 
   return (
     <div>
@@ -63,14 +63,14 @@ function FormEditor({ record, defaultConfig, onSave, onSaveName, onClose, onPubl
             <Droppable droppableId="form-canvas">
               {(prov) => (
                 <div ref={prov.innerRef} {...prov.droppableProps} className={`mx-auto ${preview === "mobile" ? "max-w-[360px]" : "max-w-full"} space-y-2 min-h-[200px]`}>
-                  {items.length === 0 && <div className="border-2 border-dashed border-border rounded-xl py-16 text-center text-muted-foreground text-[13px]">Drag components here or click palette items to add</div>}
+                  {items.length === 0 && <div className="border-2 border-dashed border-border rounded-xl py-16 text-center text-muted-foreground text-[13px]">Click palette components to add, then drag to reorder</div>}
                   {items.map((c, i) => (
                     <Draggable key={c.id} draggableId={c.id} index={i}>
                       {(p) => (
-                        <div ref={p.innerRef} {...p.draggableProps} className={`glass-card radius-lg p-3 ${c.type === "section" ? "border-l-4 border-l-primary" : ""}`}>
+                        <div ref={p.innerRef} {...p.draggableProps} className="glass-card radius-lg p-3">
                           <div className="flex items-center gap-2" {...p.dragHandleProps}>
                             <GripVertical className="w-4 h-4 text-muted-foreground shrink-0 cursor-grab" />
-                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground w-[70px] shrink-0">{c.type}</span>
+                            <span className="text-[10px] uppercase tracking-wider text-muted-foreground w-[80px] shrink-0">{c.type}</span>
                             <input value={c.label} onChange={(e) => upd(i, { label: e.target.value })} className="oracle-input flex-1" placeholder="Label" />
                             <label className="flex items-center gap-1 text-[11px] whitespace-nowrap"><input type="checkbox" checked={!!c.required} onChange={(e) => upd(i, { required: e.target.checked })} />Req</label>
                             <Btn variant="ghost" onClick={() => del(i)}><Trash2 className="w-3 h-3" /></Btn>
@@ -81,6 +81,12 @@ function FormEditor({ record, defaultConfig, onSave, onSaveName, onClose, onPubl
                             <input value={c.default || ""} onChange={(e) => upd(i, { default: e.target.value })} className="oracle-input" placeholder="default value" />
                             <input value={c.showIf || ""} onChange={(e) => upd(i, { showIf: e.target.value })} className="oracle-input" placeholder="conditional: field=value" />
                           </div>
+                          {HAS_OPTIONS.includes(c.type) && (
+                            <div className="grid grid-cols-2 gap-2 mt-2 pl-6">
+                              <input value={(c.options || []).join(", ")} onChange={(e) => upd(i, { options: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} className="oracle-input" placeholder="static options, comma-separated" />
+                              <input value={c.options_source || ""} onChange={(e) => upd(i, { options_source: e.target.value })} className="oracle-input" placeholder="dynamic options source (entity/API)" />
+                            </div>
+                          )}
                         </div>
                       )}
                     </Draggable>

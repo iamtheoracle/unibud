@@ -12,19 +12,23 @@
     "type": {
       "type": "string",
       "enum": [
-        "entity",
+        "page",
         "form",
         "workflow",
         "dashboard",
+        "report",
+        "menu",
+        "theme",
+        "notification",
+        "ai",
+        "permission",
+        "component",
+        "entity",
         "role",
         "automation",
-        "notification",
-        "report",
-        "api",
-        "theme",
-        "ai"
+        "api"
       ],
-      "default": "entity",
+      "default": "form",
       "description": "Which Architect builder produced this config"
     },
     "status": {
@@ -38,7 +42,7 @@
     },
     "config": {
       "type": "object",
-      "description": "Full JSON definition of the builder artifact (fields, components, steps, widgets, permissions, templates, etc.)"
+      "description": "Full JSON definition of the builder artifact (blocks, components, steps, widgets, menus, templates, etc.)"
     },
     "version": {
       "type": "number",

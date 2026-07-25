@@ -3,18 +3,19 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import ConfigManager from "@/components/architect/ConfigManager";
 import { useEditor } from "@/lib/architect/editorState";
 import { EditorToolbar, Palette, Btn } from "@/components/architect/architect-ui";
-import { BarChart3, Plus, Trash2, GripVertical, BarChart, Hash, Table, Calendar, Activity, TrendingUp, Gauge, Sparkles } from "lucide-react";
+import { BarChart3, Trash2, GripVertical, Hash, Table, BarChart, GitCommit, Calendar, Activity, Gauge, Grid3x3, Trophy } from "lucide-react";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 const WIDGETS = [
-  { key: "chart", label: "Chart", icon: BarChart },
   { key: "kpi", label: "KPI Card", icon: Hash },
   { key: "table", label: "Table", icon: Table },
+  { key: "chart", label: "Chart", icon: BarChart },
+  { key: "timeline", label: "Timeline", icon: GitCommit },
   { key: "calendar", label: "Calendar", icon: Calendar },
   { key: "activity", label: "Activity Feed", icon: Activity },
-  { key: "progress", label: "Progress", icon: TrendingUp },
-  { key: "metrics", label: "Metrics", icon: Gauge },
-  { key: "ai_summary", label: "AI Summary", icon: Sparkles },
+  { key: "statistics", label: "Statistics", icon: Gauge },
+  { key: "heatmap", label: "Heatmap", icon: Grid3x3 },
+  { key: "leaderboard", label: "Leaderboard", icon: Trophy },
 ];
 const DEFAULT = { widgets: [] };
 

@@ -5,30 +5,32 @@ import { ShieldAlert, Loader2 } from "lucide-react";
 import ArchitectShell from "@/components/architect/ArchitectShell";
 import { ARCHITECT_MODULES, moduleById } from "@/lib/architect/modules";
 import Workspace from "@/components/architect/sections/Workspace";
-import EntityBuilder from "@/components/architect/sections/EntityBuilder";
+import PageBuilder from "@/components/architect/sections/PageBuilder";
 import FormBuilder from "@/components/architect/sections/FormBuilder";
 import WorkflowBuilder from "@/components/architect/sections/WorkflowBuilder";
 import DashboardBuilder from "@/components/architect/sections/DashboardBuilder";
-import AutomationBuilder from "@/components/architect/sections/AutomationBuilder";
-import RoleBuilder from "@/components/architect/sections/RoleBuilder";
-import NotificationBuilder from "@/components/architect/sections/NotificationBuilder";
 import ReportBuilder from "@/components/architect/sections/ReportBuilder";
-import APIBuilder from "@/components/architect/sections/APIBuilder";
+import MenuBuilder from "@/components/architect/sections/MenuBuilder";
 import ThemeBuilder from "@/components/architect/sections/ThemeBuilder";
+import ComponentLibrary from "@/components/architect/sections/ComponentLibrary";
+import PermissionBuilder from "@/components/architect/sections/PermissionBuilder";
+import NotificationBuilder from "@/components/architect/sections/NotificationBuilder";
 import AIBuilder from "@/components/architect/sections/AIBuilder";
+import VersionControl from "@/components/architect/sections/VersionControl";
 
 const SECTIONS = {
-  workspace: Workspace,
-  entities: EntityBuilder,
+  home: Workspace,
+  versions: VersionControl,
+  pages: PageBuilder,
   forms: FormBuilder,
   workflows: WorkflowBuilder,
   dashboards: DashboardBuilder,
-  automations: AutomationBuilder,
-  roles: RoleBuilder,
-  notifications: NotificationBuilder,
   reports: ReportBuilder,
-  api: APIBuilder,
+  menus: MenuBuilder,
   themes: ThemeBuilder,
+  components: ComponentLibrary,
+  permissions: PermissionBuilder,
+  notifications: NotificationBuilder,
   ai: AIBuilder,
 };
 
@@ -36,7 +38,7 @@ export default function Architect() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [params, setParams] = useSearchParams();
-  const active = params.get("m") || "workspace";
+  const active = params.get("m") || "home";
   const onActive = (id) => setParams({ m: id });
 
   useEffect(() => { (async () => { try { setUser(await base44.auth.me()); } catch {} finally { setLoading(false); } })(); }, []);
