@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mic, Brain, MessageSquare, Sparkles, Send } from "lucide-react";
+import { X, Mic, Brain, MessageSquare, Sparkles, Send, Maximize2 } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { useBudMemory } from "@/hooks/useBudMemory";
 import { base44 } from "@/api/base44Client";
@@ -101,6 +101,9 @@ export default function BudCompanion() {
                   <Mic className="w-3 h-3 inline -mt-0.5 mr-1" />Voice
                 </button>
               </div>
+              <button onClick={() => { setOpen(false); navigate("/bud"); }} className="w-8 h-8 rounded-full glass text-foreground flex items-center justify-center spring-tap" aria-label="Open Bud's home">
+                <Maximize2 className="w-4 h-4" strokeWidth={2} />
+              </button>
               <button onClick={() => setOpen(false)} className="w-8 h-8 rounded-full glass text-foreground flex items-center justify-center spring-tap" aria-label="Close Bud">
                 <X className="w-4 h-4" strokeWidth={2} />
               </button>
