@@ -28,7 +28,7 @@ export default function ContextAlert({ tone = "primary", icon: Icon, title, body
     >
       <div className="flex items-start gap-3">
         <div className={`w-9 h-9 rounded-2xl ${t.chip} flex items-center justify-center flex-shrink-0`}>
-          {Icon && <Icon className="w-4.5 h-4.5" strokeWidth={1.8} />}
+          {Icon && <Icon className="w-5 h-5" strokeWidth={1.8} />}
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-heading font-semibold text-[14px] text-foreground">{title}</p>
