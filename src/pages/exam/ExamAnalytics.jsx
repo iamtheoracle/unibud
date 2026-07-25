@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from "recharts";
 import { Award, TrendingUp, Clock, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { examTypeLabel, examTypeAccent } from "@/lib/exam/examTypes";
+
 
 export default function ExamAnalytics() {
   const [attempts, setAttempts] = useState([]);

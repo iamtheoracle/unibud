@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
-import { examTypeLabel, examTypeAccent } from "@/lib/exam/examTypes";
+import { examTypeLabel } from "@/lib/exam/examTypes";
 import { Award, Sparkles, Loader2, Printer, RefreshCw, Check, X } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 

@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Clock, ListChecks, Award, BookOpen, ChevronRight } from "lucide-react";
+import { Search, ListChecks, Award, BookOpen, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { EXAM_TYPES, examTypeLabel, examTypeAccent, CATEGORIES } from "@/lib/exam/examTypes";
+import { EXAM_TYPES, examTypeLabel, examTypeAccent } from "@/lib/exam/examTypes";
 
 export default function ExamHub() {
   const [q, setQ] = useState("");

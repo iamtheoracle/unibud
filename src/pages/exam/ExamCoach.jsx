@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Send, Loader2, ArrowLeft } from "lucide-react";
+import { Send, Loader2, ArrowLeft } from "lucide-react";
 import BudFigure from "@/components/bud/BudFigure";
 
 const SUGGESTIONS = [
