@@ -9,6 +9,7 @@ const ACTIONS = [
   { label: "Ask Bud", action: "bud" },
   { label: "Study Suite", to: "/study" },
   { label: "Institution", to: "/institution/console" },
+  { label: "Lecturer", to: "/lecturer/portal" },
   { label: "Courses", to: "/courses" },
   { label: "Timetable", to: "/timetable" },
   { label: "Calendar", to: "/calendar" },

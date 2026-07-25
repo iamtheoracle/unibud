@@ -47,7 +47,10 @@ import DocumentLibrary from '@/pages/study/DocumentLibrary';
 
 // Milestone 8 — Multi-tenancy
 import InstitutionOnboarding from '@/pages/institution/InstitutionOnboarding';
-import InstitutionConsole from '@/pages/institution/InstitutionConsole';
+import InstitutionPortal from '@/pages/institution/InstitutionPortal';
+
+// Milestone 9 — Lecturer Portal
+import LecturerPortal from '@/pages/lecturer/LecturerPortal';
 
 function App() {
   return (
@@ -90,7 +93,8 @@ function App() {
                   <Route path="/study/citations" element={<CitationManager />} />
                   <Route path="/study/library" element={<DocumentLibrary />} />
                   <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
-                  <Route path="/institution/console" element={<InstitutionConsole />} />
+                  <Route path="/institution/console" element={<InstitutionPortal />} />
+                  <Route path="/lecturer/portal" element={<LecturerPortal />} />
                 </Route>
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
