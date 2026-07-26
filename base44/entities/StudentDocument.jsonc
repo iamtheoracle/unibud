@@ -15,6 +15,9 @@
         "images",
         "voice_notes",
         "scanned_notes",
+        "audio",
+        "video",
+        "text",
         "other"
       ],
       "default": "pdf"
@@ -27,6 +30,71 @@
     },
     "file_size": {
       "type": "number"
+    },
+    "original_filename": {
+      "type": "string"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "content_type": {
+      "type": "string",
+      "description": "MIME type"
+    },
+    "source_module": {
+      "type": "string",
+      "enum": [
+        "academics",
+        "connect",
+        "marketplace",
+        "wallet",
+        "news",
+        "knowledge",
+        "other"
+      ],
+      "default": "knowledge",
+      "description": "Which UNIBUD surface this file was saved from"
+    },
+    "summary": {
+      "type": "string",
+      "description": "AI-generated summary (Spark)"
+    },
+    "key_concepts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI-extracted concepts"
+    },
+    "suggested_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "extracted_text": {
+      "type": "string",
+      "description": "Indexed full text for search (OCR / parsed)"
+    },
+    "ocr_text": {
+      "type": "string",
+      "description": "Text extracted from images/scans via OCR"
+    },
+    "ai_indexed": {
+      "type": "boolean",
+      "default": false
+    },
+    "indexed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_bookmarked": {
+      "type": "boolean",
+      "default": false
+    },
+    "folder_id": {
+      "type": "string",
+      "description": "Collection id this file belongs to"
     }
   },
   "required": [
@@ -46,6 +114,9 @@
           }
         }
       ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
     },
     "update": {
       "$or": [
