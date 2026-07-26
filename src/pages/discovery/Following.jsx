@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { User, Trophy, Building2, Landmark, Store, Sparkles, Hash, Bookmark, Loader2 } from "lucide-react";
+import { User, Trophy, Building2, Landmark, Store, Sparkles, Hash, Bookmark } from "lucide-react";
 import { useFollow } from "@/lib/discovery/useFollow";
 
 const TYPE_META = {
