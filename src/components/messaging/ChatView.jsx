@@ -114,6 +114,18 @@ export default function ChatView({ conversationId, user, onBack }) {
     }
   };
 
+  const handleTranslate = async (msg) => {
+    if (!msg?.content) return "No text to translate.";
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: `Translate this message into clear, natural English. If it is already in English, return it unchanged. Reply with ONLY the translation, no explanation.\n\n"""${msg.content}"""`,
+      });
+      return typeof res === "string" ? res.trim() : String(res || "");
+    } catch {
+      return "Translation unavailable right now.";
+    }
+  };
+
   const handleReport = async () => {
     if (!actionMessage || !user) return;
     try {
@@ -311,6 +323,7 @@ export default function ChatView({ conversationId, user, onBack }) {
         onCopy={handleCopy}
         onForward={handleForward}
         onReport={handleReport}
+        onTranslate={handleTranslate}
       />
 
       {/* Oracle Panel */}
