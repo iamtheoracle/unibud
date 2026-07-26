@@ -55,30 +55,9 @@ Deno.serve(async (req) => {
       const loggedToday = dates.includes(today);
       const streak = computeStreak(dates);
 
-      // === MORNING / EVENING REMINDER ===
-      // Only remind users who have been active recently (streak >= 1 or session in last 7 days)
-      const lastSessionDate = dates.sort().reverse()[0];
-      const daysSinceLast = lastSessionDate
-        ? Math.floor((Date.now() - new Date(lastSessionDate).getTime()) / 86400000)
-        : 999;
-
-      if (!loggedToday && daysSinceLast <= 7 && streak >= 1) {
-        const title = mode === "morning"
-          ? "Good morning! Time to study"
-          : "Don't break your streak!";
-        const message = streak >= 2
-          ? `You're on a ${streak}-day streak. Log your study session today to keep it alive.`
-          : `Log your study session today to start a new streak.`;
-        const notif = buildNotification({
-          title,
-          message,
-          type: "reminder",
-          icon: "Flame",
-          link: "/study-session",
-        });
-        await base44.asServiceRole.entities.Notification.create({ ...notif, user_id: userId }).catch(() => {});
-        reminders++;
-      }
+      // Streak nags ("Don't break your streak", "Time to study") are intentionally
+      // omitted — UNIBUD earns attention through campus life, not pressure.
+      // Only milestone *celebrations* are sent below.
 
       // === MILESTONE CELEBRATION ===
       // Only celebrate if they logged today (streak is fresh) and hit a milestone
@@ -94,10 +73,10 @@ Deno.serve(async (req) => {
           const notif = buildNotification({
             title: `${streak}-day streak!`,
             message: streak >= 30
-              ? `Incredible — ${streak} days of consistent studying. You're building a powerful habit.`
+              ? `Incredible — ${streak} days of consistent studying. That's a habit worth celebrating.`
               : streak >= 7
-                ? `A full week of consistent studying. Keep this momentum going!`
-                : `Three days in a row — your streak is building. Keep going!`,
+                ? `A full week of showing up. That consistency is something.`
+                : `Three days in a row — the streak is real now.`,
             type: "achievement",
             icon: "Trophy",
             link: "/me",
