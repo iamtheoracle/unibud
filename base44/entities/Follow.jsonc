@@ -40,6 +40,16 @@
           "created_by_id": "{{user.id}}"
         },
         {
+          "$and": [
+            {
+              "data.target_type": "person"
+            },
+            {
+              "data.target_id": "{{user.id}}"
+            }
+          ]
+        },
+        {
           "user_condition": {
             "role": "admin"
           }
