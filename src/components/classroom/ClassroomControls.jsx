@@ -100,15 +100,13 @@ export default function ClassroomControls({ liveClass, onUpdate, updatingControl
   );
 }
 
-function iconColor(accent, value) {
-  if (accent === "destructive") return value ? "text-destructive" : "text-muted-foreground";
-  return value ? "text-primary" : "text-muted-foreground";
-}
-
 function Toggle({ icon: Icon, label, desc, value, onChange, accent }) {
+  const iconColor = accent === "destructive"
+    ? (value ? "text-destructive" : "text-muted-foreground")
+    : (value ? "text-primary" : "text-muted-foreground");
   return (
     <button onClick={() => onChange(!value)} className="w-full flex items-center gap-3 rounded-[14px] bg-muted/30 px-3 py-2.5 text-left spring-tap">
-      <Icon className={`w-4 h-4 ${iconColor(accent, value)}`} />
+      <Icon className={`w-4 h-4 ${iconColor}`} />
       <div className="flex-1 min-w-0">
         <p className="text-[12px] font-semibold text-foreground">{label}</p>
         {desc && <p className="text-[10px] text-muted-foreground truncate">{desc}</p>}

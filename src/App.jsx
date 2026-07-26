@@ -230,6 +230,7 @@ function App() {
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                     <Route path="/security" element={<SecurityCenter />} />
                     <Route path="/classroom/:classId" element={<LiveClassroom />} />
+                    <Route path="/live/class/:classId" element={<LiveClassroom />} />
                     <Route path="/admin" element={<AdminHub />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
