@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import {
   Sparkles, CloudSun, Wallet, Calendar, Bell, Newspaper,
   MessageSquare, Search, Settings, Accessibility, BarChart3,
-  WifiOff, RefreshCw, Shield, Users,
+  WifiOff, RefreshCw, Shield, Users, Compass,
 } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { hapticTap } from "@/lib/haptics";
@@ -23,6 +23,7 @@ import EcosystemSheet from "./EcosystemSheet";
  */
 const SERVICES = [
   { key: "bud", label: "Bud", icon: Sparkles, kind: "bud", glow: true },
+  { key: "campus", label: "Campus", icon: Compass, to: "/campus" },
   { key: "weather", label: "Weather", icon: CloudSun, kind: "sheet:weather" },
   { key: "wallet", label: "Wallet", icon: Wallet, to: "/finance" },
   { key: "calendar", label: "Calendar", icon: Calendar, to: "/calendar" },
