@@ -1,0 +1,56 @@
+{
+  "name": "Presence",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User id this presence belongs to"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name snapshot"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "online",
+        "in_class",
+        "studying",
+        "busy",
+        "dnd",
+        "offline"
+      ],
+      "default": "online",
+      "description": "User-chosen availability broadcast to peers"
+    },
+    "custom_message": {
+      "type": "string",
+      "description": "Optional short status note"
+    },
+    "last_active": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time the user touched their presence"
+    }
+  },
+  "required": [
+    "user_id",
+    "status",
+    "last_active"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.user_id": "{{user.id}}"
+    },
+    "update": {
+      "data.user_id": "{{user.id}}"
+    },
+    "delete": {
+      "data.user_id": "{{user.id}}"
+    }
+  }
+}
