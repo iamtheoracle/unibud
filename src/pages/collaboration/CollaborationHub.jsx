@@ -7,6 +7,7 @@ import WorkspaceCard from "@/components/collaboration/WorkspaceCard";
 import WorkspaceComposer from "@/components/collaboration/WorkspaceComposer";
 import TemplateGallery from "@/components/collaboration/TemplateGallery";
 import CollaborationDashboard from "@/components/collaboration/CollaborationDashboard";
+import ToolRecommendationStrip from "@/components/spark/ToolRecommendationStrip";
 
 const TABS = [
   { k: "dashboard", l: "Dashboard", icon: LayoutDashboard },
@@ -42,6 +43,16 @@ export default function CollaborationHub() {
             <Icon className="w-3.5 h-3.5" /> {t.l}
           </button>
         ); })}
+      </div>
+
+      <div className="mb-4">
+        <ToolRecommendationStrip
+          surface="collaboration"
+          context={{
+            hasMultipleDeadlines: (workspaces || []).filter((w) => w.due_date).length >= 2,
+            teamSize: Math.max(0, ...(workspaces || []).map((w) => (w.members || []).length)),
+          }}
+        />
       </div>
 
       {tab === "dashboard" && <CollaborationDashboard />}

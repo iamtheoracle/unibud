@@ -15,6 +15,7 @@ import HomeMessages from "@/components/home/HomeMessages";
 import HomePayments from "@/components/home/HomePayments";
 import HomeCommunity from "@/components/home/HomeCommunity";
 import PullToRefresh from "@/components/ui/PullToRefresh";
+import ToolRecommendationStrip from "@/components/spark/ToolRecommendationStrip";
 import { queryClientInstance } from "@/lib/query-client";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -53,6 +54,17 @@ export default function Home() {
       </div>
       <div className="mt-5">
         <BudContextBar label={plan.label} message={plan.message} />
+      </div>
+      <div className="mt-4">
+        <ToolRecommendationStrip
+          surface="home"
+          context={{
+            deadline: ctx.assignments?.[0]?.due_date || ctx.exams?.[0]?.date,
+            assignmentType: ctx.assignments?.[0]?.type,
+            text: ctx.assignments?.[0]?.title,
+            recentItemTypes: ctx.sessions?.length ? ["note"] : [],
+          }}
+        />
       </div>
       <AnimatePresence mode="popLayout">
         {plan.order.map((k, i) => (
