@@ -47,7 +47,7 @@ export default function Home() {
   return (
     <PullToRefresh onRefresh={refreshHome}>
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <HomeHeader user={ctx.user} />
+      <HomeHeader user={ctx.user} greeting={plan.greeting} />
       <div className="mt-4">
         <FloatingSearch />
       </div>

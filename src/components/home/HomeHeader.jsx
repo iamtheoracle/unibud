@@ -4,7 +4,7 @@ import { resolveFirstName, resolveDisplayName } from "@/lib/userDisplayName";
 
 const EASE = [0.16, 1, 0.3, 1];
 
-function greeting() {
+function timeGreeting() {
   const h = new Date().getHours();
   if (h < 12) return "Good Morning";
   if (h < 17) return "Good Afternoon";
@@ -18,9 +18,10 @@ function todayLabel() {
 /**
  * HomeHeader — greeting, current date, and profile initial.
  */
-export default function HomeHeader({ user }) {
+export default function HomeHeader({ user, greeting }) {
   const name = resolveFirstName(user);
   const display = resolveDisplayName(user);
+  const greet = greeting || timeGreeting();
 
   return (
     <motion.header
@@ -32,7 +33,7 @@ export default function HomeHeader({ user }) {
       <div className="min-w-0">
         <span className="text-[11px] text-muted-foreground font-medium block mb-2">{todayLabel()}</span>
         <h1 className="font-heading font-bold text-[26px] tracking-tight text-foreground leading-[1.15]">
-          {greeting()},<br />
+          {greet},<br />
           {name}
         </h1>
       </div>
