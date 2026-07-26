@@ -463,3 +463,67 @@
     .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle, .breathe, .glow-pulse, .like-pop, .heart-burst, .msg-in, .slide-in-right, .chart-rise, .live-pulse { animation: none !important; }
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   Platform-Native Adaptation
+   Auto-applies OS accessibility & device settings to every workspace.
+   ════════════════════════════════════════════════════════════ */
+
+/* High contrast — solid surfaces, full-tone borders, no translucency */
+.high-contrast {
+  --glass-bg: hsl(var(--surface-elevated));
+  --glass-bg-strong: hsl(var(--surface-elevated));
+  --glass-border: hsl(var(--foreground) / 0.5);
+  --glass-border-strong: hsl(var(--foreground) / 0.7);
+  --border: var(--foreground);
+  --input: var(--foreground);
+}
+.high-contrast .glass,
+.high-contrast .glass-card,
+.high-contrast .glass-strong {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: hsl(var(--surface-elevated)) !important;
+}
+
+/* Reduced transparency — flatten glass to solid surfaces */
+.reduce-transparency {
+  --glass-bg: hsl(var(--surface-elevated));
+  --glass-bg-strong: hsl(var(--surface-elevated));
+  --glass-blur: 0px;
+}
+.reduce-transparency .glass,
+.reduce-transparency .glass-card,
+.reduce-transparency .glass-strong {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: hsl(var(--surface-elevated)) !important;
+}
+
+/* Prevent iOS zoom-on-focus for text inputs on touch devices (HIG ≥16px) */
+@media (pointer: coarse) {
+  input[type="text"], input[type="email"], input[type="password"], input[type="search"],
+  input[type="tel"], input[type="number"], input[type="date"], input[type="time"],
+  input[type="url"], input[type="datetime-local"], textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* Responsive content containers — widen page content on tablets/desktops.
+   Scoped to .app-content so the fixed nav dock keeps its compact width. */
+@media (min-width: 768px) {
+  .app-content .max-w-\[520px\],
+  .app-content .max-w-\[600px\],
+  .app-content .max-w-\[640px\] { max-width: 760px; }
+}
+@media (min-width: 1024px) {
+  .app-content .max-w-\[520px\],
+  .app-content .max-w-\[600px\],
+  .app-content .max-w-\[640px\] { max-width: 1080px; }
+}
+
+/* Desktop pointer affordances — snappier, less exaggerated taps */
+@media (hover: hover) and (pointer: fine) {
+  .spring-tap:active { transform: scale(0.985); }
+  .card-hover:hover { transform: translateY(-2px); }
+}

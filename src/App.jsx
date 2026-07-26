@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { lazy, Suspense } from 'react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
+import { PlatformProvider } from '@/lib/platform/PlatformProvider';
 import { DemoModeProvider } from '@/lib/DemoModeContext';
 import ScrollToTop from './components/ScrollToTop';
 import AppShell from '@/components/layout/AppShell';
@@ -147,6 +148,7 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
+        <PlatformProvider>
         <QueryClientProvider client={queryClientInstance}>
           <DemoModeProvider>
             <Router>
@@ -254,6 +256,7 @@ function App() {
             </Router>
           </DemoModeProvider>
         </QueryClientProvider>
+        </PlatformProvider>
       </ThemeProvider>
     </AuthProvider>
   )

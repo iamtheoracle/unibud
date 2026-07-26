@@ -32,13 +32,6 @@ export default function AppShell() {
     });
   }, [navigate]);
 
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("ux_reduce_motion") === "1") document.documentElement.classList.add("reduce-motion");
-      if (localStorage.getItem("ux_large_text") === "1") document.documentElement.classList.add("ux-large-text");
-    } catch {}
-  }, []);
-
   if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -57,6 +50,7 @@ export default function AppShell() {
           <Suspense fallback={<RouteLoading />}>
             <motion.div
               key={location.pathname}
+              className="app-content"
               initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
