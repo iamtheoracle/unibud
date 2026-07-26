@@ -23,6 +23,62 @@
     },
     "note": {
       "type": "string"
+    },
+    "live_class_id": {
+      "type": "string",
+      "description": "LiveClass this record belongs to (live attendance)"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "AttendanceSession id (code-based check-in)"
+    },
+    "participant_name": {
+      "type": "string"
+    },
+    "participant_role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "tutor"
+      ],
+      "default": "student"
+    },
+    "join_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "leave_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "late": {
+      "type": "boolean",
+      "default": false
+    },
+    "early_exit": {
+      "type": "boolean",
+      "default": false
+    },
+    "reconnections": {
+      "type": "number",
+      "default": 0
+    },
+    "attendance_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "lecturer_notified": {
+      "type": "boolean",
+      "default": false
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope"
     }
   },
   "required": [
@@ -37,12 +93,21 @@
           "created_by_id": "{{user.id}}"
         },
         {
+          "data.institution_id": {
+            "$exists": false
+          }
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
           "user_condition": {
             "role": "admin"
           }
         }
       ]
     },
+    "create": {},
     "update": {
       "$or": [
         {
