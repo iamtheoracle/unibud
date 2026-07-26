@@ -35,6 +35,14 @@ export default function WeatherWidget() {
 
   const fmtTime = (iso) => (iso ? new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "—");
 
+  // Always-visible impact line — the directive requires weather to explain
+  // its effect on the student's day, not merely display conditions.
+  const impact = w.alerts[0]
+    ? { text: w.alerts[0].suggestion || w.alerts[0].title, urgent: w.alerts[0].severity !== "info" }
+    : w.suggestions[0]
+    ? { text: w.suggestions[0].title, urgent: false }
+    : null;
+
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }} className="relative overflow-hidden rounded-[28px] elevated-shadow">
       <WeatherScene scene={w.scene} isDay={w.is_day} className="rounded-[28px]" />
@@ -49,6 +57,12 @@ export default function WeatherWidget() {
           </div>
           <span className="font-heading font-extrabold text-[42px] text-white leading-none">{w.current.temp}°</span>
         </div>
+
+        {impact && (
+          <div className={`mt-3 flex items-start gap-2 rounded-xl px-3 py-2 ${impact.urgent ? "bg-amber-500/20 border border-amber-300/30" : "bg-white/10"}`}>
+            <span className="text-[11px] font-medium text-white/90 leading-snug">{impact.text}</span>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-1.5 mt-4">
           <Chip icon={Thermometer} label="Feels" value={`${w.current.feels_like}°`} />
