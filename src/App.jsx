@@ -41,6 +41,7 @@ const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
 const CommunicationHub = lazy(() => import("@/pages/communication/CommunicationHub"));
 const Following = lazy(() => import("@/pages/discovery/Following"));
+const Friends = lazy(() => import("@/pages/social/Friends"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const CampusEvents = lazy(() => import("@/pages/CampusEvents"));
 const StudyGroups = lazy(() => import("@/pages/StudyGroups"));
@@ -166,6 +167,7 @@ function App() {
                     <Route path="/academics/results" element={<Results />} />
                     <Route path="/communication" element={<CommunicationHub />} />
                     <Route path="/following" element={<Following />} />
+                    <Route path="/friends" element={<Friends />} />
                     <Route path="/notifications" element={<Notifications />} />
                     <Route path="/events" element={<CampusEvents />} />
                     <Route path="/study-groups" element={<StudyGroups />} />
