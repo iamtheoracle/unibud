@@ -40,6 +40,7 @@ const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
 const CommunicationHub = lazy(() => import("@/pages/communication/CommunicationHub"));
+const SmartAttendance = lazy(() => import("@/pages/attendance/SmartAttendance"));
 const Following = lazy(() => import("@/pages/discovery/Following"));
 const Friends = lazy(() => import("@/pages/social/Friends"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
@@ -166,6 +167,7 @@ function App() {
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/results" element={<Results />} />
                     <Route path="/communication" element={<CommunicationHub />} />
+                    <Route path="/smart-attendance" element={<SmartAttendance />} />
                     <Route path="/following" element={<Following />} />
                     <Route path="/friends" element={<Friends />} />
                     <Route path="/notifications" element={<Notifications />} />

@@ -9,8 +9,16 @@
         "community",
         "club",
         "study_group",
-        "user"
-      ]
+        "user",
+        "student_id",
+        "student_leader",
+        "lecturer",
+        "department",
+        "faculty",
+        "university",
+        "business"
+      ],
+      "description": "What is being verified. Campus identity types drive the Identity hub."
     },
     "target_id": {
       "type": "string"
@@ -29,7 +37,9 @@
       "enum": [
         "pending",
         "approved",
-        "rejected"
+        "rejected",
+        "expired",
+        "renewal"
       ],
       "default": "pending"
     },
@@ -52,6 +62,11 @@
     },
     "reviewer_notes": {
       "type": "string"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Verification expiry \u2014 renewal required after this date"
     }
   },
   "required": [
