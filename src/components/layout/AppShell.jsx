@@ -7,6 +7,7 @@ import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import BottomNav from "@/components/layout/BottomNav";
 import EcosystemRail from "@/components/layout/EcosystemRail";
+import OfflineBanner from "@/components/layout/OfflineBanner";
 import BudCompanion from "@/components/bud/BudCompanion";
 import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import ContextPulse from "@/components/layout/ContextPulse";
@@ -50,6 +51,7 @@ export default function AppShell() {
       <UnibudContextProvider>
         <div className="min-h-screen w-full">
           <ContextPulse />
+          <OfflineBanner />
           <Suspense fallback={<RouteLoading />}>
             <motion.div
               key={location.pathname}
