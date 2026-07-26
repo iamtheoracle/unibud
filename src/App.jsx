@@ -105,6 +105,9 @@ const ExamAuthor = lazy(() => import("@/pages/exam/ExamAuthor"));
 // Milestone 39 — Smart Classroom
 const LiveClassroom = lazy(() => import("@/pages/classroom/LiveClassroom"));
 
+// Milestone 40 — Smart Notifications
+const SmartNotifications = lazy(() => import("@/pages/notifications/SmartNotifications"));
+
 // Oracle — Platform Operating Center
 const Oracle = lazy(() => import("@/pages/oracle/Oracle"));
 
@@ -171,6 +174,8 @@ function App() {
                     <Route path="/academics/results" element={<Results />} />
                     <Route path="/communication" element={<CommunicationHub />} />
                     <Route path="/smart-attendance" element={<SmartAttendance />} />
+                    <Route path="/classroom/:classId" element={<LiveClassroom />} />
+                    <Route path="/smart-notifications" element={<SmartNotifications />} />
                     <Route path="/following" element={<Following />} />
                     <Route path="/friends" element={<Friends />} />
                     <Route path="/notifications" element={<Notifications />} />
@@ -230,7 +235,6 @@ function App() {
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                     <Route path="/security" element={<SecurityCenter />} />
                     <Route path="/classroom/:classId" element={<LiveClassroom />} />
-                    <Route path="/live/class/:classId" element={<LiveClassroom />} />
                     <Route path="/admin" element={<AdminHub />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />

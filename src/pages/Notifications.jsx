@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Bell } from "lucide-react";
 import { useNotificationCenter } from "@/hooks/useNotificationCenter";
 import NotificationCenter from "@/components/notifications/NotificationCenter";
+import BudDailyDigest from "@/components/notifications/BudDailyDigest";
 
 export default function Notifications() {
   const hook = useNotificationCenter();
@@ -33,6 +34,12 @@ export default function Notifications() {
           )}
         </div>
       </motion.div>
+
+      <div className="px-5">
+        <Link to="/smart-notifications" className="block mb-3">
+          <BudDailyDigest />
+        </Link>
+      </div>
 
       <NotificationCenter hook={hook} />
     </div>

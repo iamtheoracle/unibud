@@ -32,7 +32,7 @@ const SERVICES = [
   { key: "weather", label: "Weather", icon: CloudSun, kind: "sheet:weather" },
   { key: "wallet", label: "Wallet", icon: Wallet, to: "/finance" },
   { key: "calendar", label: "Calendar", icon: Calendar, to: "/calendar" },
-  { key: "notifications", label: "Alerts", icon: Bell, to: "/notifications" },
+  { key: "notifications", label: "Alerts", icon: Bell, to: "/smart-notifications" },
   { key: "feed", label: "Feed", icon: Newspaper, to: "/quad" },
   { key: "social", label: "Social", icon: Users, to: "/social" },
   { key: "messages", label: "Messages", icon: MessageSquare, to: "/messages" },
