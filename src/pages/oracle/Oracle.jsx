@@ -13,6 +13,7 @@ import OracleSecurity from "@/components/oracle/sections/OracleSecurity";
 import IntegrationCenter from "@/components/oracle/sections/IntegrationCenter";
 import ProviderHub from "@/components/oracle/sections/ProviderHub";
 import Monitoring from "@/components/oracle/sections/Monitoring";
+import AIMonitoring from "@/components/oracle/sections/AIMonitoring";
 import AuditCenter from "@/components/oracle/sections/AuditCenter";
 import GlobalSearch from "@/components/oracle/sections/GlobalSearch";
 
@@ -23,6 +24,7 @@ const SECTIONS = {
   products: ProductRegistry,
   users: UserGovernance,
   ai: AIGovernance,
+  "ai-monitor": AIMonitoring,
   security: OracleSecurity,
   integrations: IntegrationCenter,
   providers: ProviderHub,

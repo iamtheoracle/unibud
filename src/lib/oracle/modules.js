@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Building2, Boxes, Users, Bot, ShieldCheck, Plug, Activity, ScrollText, Search, Network,
+  LayoutDashboard, Building2, Boxes, Users, Bot, ShieldCheck, Plug, Activity, ScrollText, Search, Network, Gauge,
 } from "lucide-react";
 
 export const ORACLE_MODULES = [
@@ -9,6 +9,7 @@ export const ORACLE_MODULES = [
   { id: "products", label: "Product Registry", group: "Platform", icon: Boxes, desc: "My Realm product registry — versions, environments, modules and release channels." },
   { id: "users", label: "User Governance", group: "Governance", icon: Users, desc: "Global administration of platform admins, staff, students, parents and developers." },
   { id: "ai", label: "AI Governance", group: "Governance", icon: Bot, desc: "Monitor Bud, Spark, AI usage, cost, models, prompt logs and rate limits." },
+  { id: "ai-monitor", label: "AI Monitoring", group: "Governance", icon: Gauge, desc: "AI architecture monitoring — health scores, resource utilization, bottlenecks and split recommendations for Bud, Spark and all internal AI services." },
   { id: "security", label: "Security Center", group: "Governance", icon: ShieldCheck, desc: "Global security monitoring — logins, threats, devices, API keys and audit." },
   { id: "integrations", label: "Integration Center", group: "Infrastructure", icon: Plug, desc: "External services — payments, banking, KYC, email, SMS, cloud, analytics, AI." },
   { id: "providers", label: "Provider Hub", group: "Infrastructure", icon: Network, desc: "Provider Integration Hub — registry, adapters, health, webhooks, secrets and API logs across every provider group." },

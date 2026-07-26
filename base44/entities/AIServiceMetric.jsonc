@@ -1,0 +1,92 @@
+{
+  "name": "AIServiceMetric",
+  "type": "object",
+  "properties": {
+    "service": {
+      "type": "string",
+      "description": "Internal AI service name (Bud, Spark, Architect AI, Oracle Intelligence, \u2026)"
+    },
+    "response_time_ms": {
+      "type": "number",
+      "default": 0
+    },
+    "memory_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "cpu_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "api_calls": {
+      "type": "number",
+      "default": 0
+    },
+    "queue_size": {
+      "type": "number",
+      "default": 0
+    },
+    "error_rate_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "task_complexity": {
+      "type": "number",
+      "default": 0
+    },
+    "request_volume": {
+      "type": "number",
+      "default": 0
+    },
+    "resource_utilization_pct": {
+      "type": "number",
+      "default": 0
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "bottlenecks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "health_score": {
+      "type": "number",
+      "default": 100
+    },
+    "snapshot_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "service",
+    "health_score"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
