@@ -1,9 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, Sparkles, ArrowRight } from "lucide-react";
+import { Search, Sparkles, ArrowRight, Wand2 } from "lucide-react";
 import { COMM_CATEGORIES, COMM_GROUPS } from "@/lib/communication/registry";
 import { useCommunicationRecommendations } from "@/hooks/useCommunicationRecommendations";
+import SmartInboxSummary from "@/components/communication/SmartInboxSummary";
+import UnifiedMessageSearch from "@/components/communication/UnifiedMessageSearch";
+import BudCommAssistant from "@/components/communication/BudCommAssistant";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -11,6 +14,8 @@ const EASE = [0.16, 1, 0.3, 1];
 export default function CommunicationHub() {
   const [q, setQ] = useState("");
   const [group, setGroup] = useState("all");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [budOpen, setBudOpen] = useState(false);
   const recs = useCommunicationRecommendations();
 
   const filtered = useMemo(() => {
@@ -30,7 +35,21 @@ export default function CommunicationHub() {
       <header className="mb-5">
         <h1 className="font-heading font-extrabold text-[28px] text-foreground tracking-tight">Communication</h1>
         <p className="text-[13px] text-muted-foreground mt-1">One platform — from one-to-one to whole universities.</p>
+        <div className="flex items-center gap-2 mt-3">
+          <button onClick={() => setSearchOpen(true)}
+            className="flex-1 flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-card border border-border/40 text-[13px] text-muted-foreground spring-tap">
+            <Search className="w-4 h-4" /> Search all conversations
+          </button>
+          <button onClick={() => setBudOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-accent/15 text-accent text-[12px] font-semibold spring-tap">
+            <Wand2 className="w-3.5 h-3.5" /> Bud
+          </button>
+        </div>
       </header>
+
+      <section className="mb-5">
+        <SmartInboxSummary />
+      </section>
 
       <div className="relative mb-4">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -99,6 +118,9 @@ export default function CommunicationHub() {
           ))}
         </div>
       )}
+
+      <UnifiedMessageSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
+      <BudCommAssistant open={budOpen} onClose={() => setBudOpen(false)} />
     </div>
   );
 }
