@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import {
-  Sparkles, CloudSun, Zap, Wallet, Calendar, Bell, Newspaper,
+  Sparkles, CloudSun, Wallet, Calendar, Bell, Newspaper,
   MessageSquare, Search, Settings, Accessibility, BarChart3,
   WifiOff, RefreshCw, Shield, Users,
 } from "lucide-react";
@@ -13,14 +13,16 @@ import EcosystemSheet from "./EcosystemSheet";
 /**
  * EcosystemRail — a globally-available quick-access rail rendered above the
  * bottom nav on every authenticated screen. Connects every screen to the
- * core OS services (Bud, Weather, Spark, Wallet, Calendar, Notifications,
- * Feed, Messages, Search, Settings, Accessibility, Analytics, Offline, Sync,
+ * core OS services (Bud, Weather, Wallet, Calendar, Notifications, Feed,
+ * Messages, Search, Settings, Accessibility, Analytics, Offline, Sync,
  * Security) so nothing exists in isolation.
+ *
+ * Bud is the only AI users interact with; Spark & Oracle are internal
+ * engines and are intentionally absent from this rail.
  */
 const SERVICES = [
   { key: "bud", label: "Bud", icon: Sparkles, kind: "bud", glow: true },
   { key: "weather", label: "Weather", icon: CloudSun, kind: "sheet:weather" },
-  { key: "spark", label: "Spark", icon: Zap, to: "/automation" },
   { key: "wallet", label: "Wallet", icon: Wallet, to: "/finance" },
   { key: "calendar", label: "Calendar", icon: Calendar, to: "/calendar" },
   { key: "notifications", label: "Alerts", icon: Bell, to: "/notifications" },
