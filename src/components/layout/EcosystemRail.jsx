@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { hapticTap } from "@/lib/haptics";
+import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
 import EcosystemSheet from "./EcosystemSheet";
 
 /**
@@ -42,7 +43,9 @@ export default function EcosystemRail() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { setOpen } = useBudLauncher();
+  const { hasWallet } = useWalletAccess();
   const [sheet, setSheet] = useState(null);
+  const services = hasWallet ? SERVICES : SERVICES.filter((s) => s.key !== "wallet");
 
   const onPick = (s) => {
     hapticTap();
@@ -59,7 +62,7 @@ export default function EcosystemRail() {
       >
         <div className="max-w-[520px] mx-auto px-4 pointer-events-auto">
           <div className="glass-strong rounded-[20px] px-2 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            {SERVICES.map((s) => {
+            {services.map((s) => {
               const Icon = s.icon;
               const active = s.to && pathname === s.to;
               return (

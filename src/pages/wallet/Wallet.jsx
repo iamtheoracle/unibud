@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
 import { WALLET_TABS } from "@/components/wallet/walletNav";
 import WalletHome from "@/components/wallet/sections/WalletHome";
 import WalletAccounts from "@/components/wallet/sections/WalletAccounts";
@@ -14,6 +14,8 @@ import WalletLoans from "@/components/wallet/sections/WalletLoans";
 import WalletBudget from "@/components/wallet/sections/WalletBudget";
 import WalletInsights from "@/components/wallet/sections/WalletInsights";
 import WalletSecurity from "@/components/wallet/sections/WalletSecurity";
+import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
+import WalletActivation from "@/components/wallet/WalletActivation";
 
 const SECTION = {
   home: WalletHome, accounts: WalletAccounts, cards: WalletCards,
@@ -29,9 +31,7 @@ export default function Wallet() {
   const navigate = useNavigate();
   const [tab, setTab] = useState("home");
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
-  const { data: walletsRaw } = useQuery({ queryKey: ["walletWallets"], queryFn: () => base44.entities.Wallet.list(), enabled: !!user });
-  const wallets = (walletsRaw || []).filter((w) => w.owner_id === user?.id || w.created_by_id === user?.id);
+  const { hasWallet, isLoading: accessLoading, user, wallets } = useWalletAccess();
   const walletIds = wallets.map((w) => w.id);
 
   const { data: txRaw } = useQuery({
@@ -55,6 +55,17 @@ export default function Wallet() {
     frequentTransfer: transactions.filter((t) => t.type === "transfer").length >= 3,
     savingsActive: wallets.some((w) => /saving/i.test(w.owner_name || "")),
   };
+
+  if (accessLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-7 h-7 text-primary animate-spin" />
+      </div>
+    );
+  }
+  if (!hasWallet) {
+    return <WalletActivation user={user} />;
+  }
 
   const Active = SECTION[tab] || WalletHome;
 
