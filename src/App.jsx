@@ -65,6 +65,7 @@ const StudentSupport = lazy(() => import("@/pages/StudentSupport"));
 
 // Milestone 5 — Academic Management
 const Courses = lazy(() => import("@/pages/academics/Courses"));
+const CourseSpace = lazy(() => import("@/pages/academics/CourseSpace"));
 const Timetable = lazy(() => import("@/pages/academics/Timetable"));
 const Calendar = lazy(() => import("@/pages/academics/Calendar"));
 const Assignments = lazy(() => import("@/pages/academics/Assignments"));
@@ -208,6 +209,7 @@ function App() {
                     <Route path="/student-government" element={<StudentGovernment />} />
                     <Route path="/student-support" element={<StudentSupport />} />
                     <Route path="/courses" element={<Courses />} />
+<Route path="/course/:courseId" element={<CourseSpace />} />
                     <Route path="/timetable" element={<Timetable />} />
                     <Route path="/calendar" element={<Calendar />} />
                     <Route path="/assignments" element={<Assignments />} />

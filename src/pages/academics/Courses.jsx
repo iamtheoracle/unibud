@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/academics/PageHeader";
@@ -12,6 +13,7 @@ const EASE = [0.16, 1, 0.3, 1];
 
 export default function Courses() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const { data: courses } = useQuery({ queryKey: ["courses"], queryFn: () => base44.entities.Course.list() });
   const { data: attendance } = useQuery({ queryKey: ["attForCourses"], queryFn: () => base44.entities.AttendanceRecord.list() });
   const [q, setQ] = useState("");
@@ -86,6 +88,7 @@ export default function Courses() {
                 </div>
                 <p className="text-[10px] text-muted-foreground mt-2">{[c.faculty, c.department, c.semester].filter(Boolean).join(" · ")}</p>
                 <div className="flex gap-3 mt-3">
+                  <button onClick={() => navigate(`/course/${c.id}`)} className="text-[12px] font-semibold text-primary spring-tap">Space</button>
                   <button onClick={() => openEdit(c)} className="text-[12px] font-semibold text-primary spring-tap">Edit</button>
                   {c.status !== "completed" && <button onClick={() => archive.mutate(c.id)} className="text-[12px] font-semibold text-muted-foreground spring-tap">Archive</button>}
                   <button onClick={() => del.mutate(c.id)} className="text-[12px] font-semibold text-destructive spring-tap ml-auto">Delete</button>
