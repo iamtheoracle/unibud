@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, Sparkles, ArrowRight, Wand2 } from "lucide-react";
 import { COMM_CATEGORIES, COMM_GROUPS } from "@/lib/communication/registry";
+
+/** Only live surfaces are ever shown — the directive forbids "Coming Soon" placeholders. */
+const LIVE_CATEGORIES = COMM_CATEGORIES.filter((c) => c.live);
 import { useCommunicationRecommendations } from "@/hooks/useCommunicationRecommendations";
 import SmartInboxSummary from "@/components/communication/SmartInboxSummary";
 import UnifiedMessageSearch from "@/components/communication/UnifiedMessageSearch";
@@ -19,7 +22,7 @@ export default function CommunicationHub() {
   const recs = useCommunicationRecommendations();
 
   const filtered = useMemo(() => {
-    let items = COMM_CATEGORIES;
+    let items = LIVE_CATEGORIES;
     if (group !== "all") items = items.filter((i) => COMM_GROUPS.find((g) => g.key === group)?.items.includes(i.key));
     if (q.trim()) {
       const s = q.toLowerCase();
@@ -28,7 +31,7 @@ export default function CommunicationHub() {
     return items;
   }, [q, group]);
 
-  const recommended = recs.slice(0, 3).map((k) => COMM_CATEGORIES.find((c) => c.key === k)).filter(Boolean);
+  const recommended = recs.slice(0, 3).map((k) => LIVE_CATEGORIES.find((c) => c.key === k)).filter(Boolean);
 
   return (
     <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
@@ -104,7 +107,7 @@ export default function CommunicationHub() {
             <h2 className="text-[13px] font-semibold text-foreground mb-3">{g.label}</h2>
             <div className="grid grid-cols-2 gap-3">
               {g.items.map((k) => {
-                const c = COMM_CATEGORIES.find((x) => x.key === k);
+                const c = LIVE_CATEGORIES.find((x) => x.key === k);
                 if (!c) return null;
                 return <CommCard key={k} c={c} />;
               })}
