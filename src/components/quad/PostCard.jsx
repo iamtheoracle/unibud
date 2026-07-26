@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Share2, Bookmark, BadgeCheck, MapPin, Pin, Loader2,
@@ -31,6 +31,15 @@ export default function PostCard({ post, user, index = 0 }) {
   const [localShares, setLocalShares] = useState(post.shares_count || 0);
   const [translatedContent, setTranslatedContent] = useState(null);
   const [translating, setTranslating] = useState(false);
+
+  // Sync local interaction counts from the live post prop so other users'
+  // likes/reactions/shares/pins appear instantly (routed via the feed subscription).
+  useEffect(() => {
+    setLocalLikes(post.likes_count || 0);
+    setLocalReactions(post.reactions || {});
+    setLocalShares(post.shares_count || 0);
+    setIsPinned(post.is_pinned || false);
+  }, [post.likes_count, post.reactions, post.shares_count, post.is_pinned]);
 
   const authorName = post.author_name || "Anonymous";
   const authorHandle = post.author_handle || post.university || "";
