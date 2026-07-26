@@ -107,6 +107,9 @@ const Operator = lazy(() => import("@/pages/operator/Operator"));
 // Financial Platform
 const Finance = lazy(() => import("@/pages/finance/Finance"));
 
+// Wallet — Premium Digital Banking
+const Wallet = lazy(() => import("@/pages/wallet/Wallet"));
+
 // Architect — No-code Platform Builder (via Oracle)
 const Architect = lazy(() => import("@/pages/architect/Architect"));
 
@@ -200,6 +203,7 @@ function App() {
                     <Route path="/management" element={<Management />} />
                     <Route path="/operator" element={<Operator />} />
                     <Route path="/finance" element={<Finance />} />
+                    <Route path="/wallet" element={<Wallet />} />
                     <Route path="/architect" element={<Architect />} />
                     <Route path="/automation" element={<AutomationCenter />} />
                     <Route path="/automation/builder" element={<WorkflowBuilder />} />
