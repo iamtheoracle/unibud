@@ -25,11 +25,48 @@
     "file_url": {
       "type": "string"
     },
+    "thumbnail_url": {
+      "type": "string"
+    },
     "tags": {
       "type": "array",
       "items": {
         "type": "string"
       }
+    },
+    "source_module": {
+      "type": "string",
+      "enum": [
+        "academics",
+        "connect",
+        "marketplace",
+        "wallet",
+        "news",
+        "knowledge",
+        "other"
+      ],
+      "default": "academics"
+    },
+    "summary": {
+      "type": "string",
+      "description": "AI-generated summary (Spark)"
+    },
+    "key_concepts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ai_indexed": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_bookmarked": {
+      "type": "boolean",
+      "default": false
+    },
+    "folder_id": {
+      "type": "string"
     }
   },
   "required": [
@@ -47,6 +84,9 @@
           }
         }
       ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
     },
     "update": {
       "$or": [
