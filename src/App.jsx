@@ -111,6 +111,10 @@ const SmartNotifications = lazy(() => import("@/pages/notifications/SmartNotific
 // Milestone 42 — Unified Knowledge & File Intelligence
 const KnowledgeHub = lazy(() => import("@/pages/knowledge/KnowledgeHub"));
 
+// Milestone 44 — Smart Collaboration & Productivity
+const CollaborationHub = lazy(() => import("@/pages/collaboration/CollaborationHub"));
+const WorkspaceDetail = lazy(() => import("@/pages/collaboration/WorkspaceDetail"));
+
 // Oracle — Platform Operating Center
 const Oracle = lazy(() => import("@/pages/oracle/Oracle"));
 
@@ -180,6 +184,8 @@ function App() {
                     <Route path="/classroom/:classId" element={<LiveClassroom />} />
                     <Route path="/smart-notifications" element={<SmartNotifications />} />
                     <Route path="/knowledge" element={<KnowledgeHub />} />
+                    <Route path="/collaboration" element={<CollaborationHub />} />
+                    <Route path="/collaboration/:workspaceId" element={<WorkspaceDetail />} />
                     <Route path="/following" element={<Following />} />
                     <Route path="/friends" element={<Friends />} />
                     <Route path="/notifications" element={<Notifications />} />

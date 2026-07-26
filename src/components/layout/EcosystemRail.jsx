@@ -4,7 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import {
   Sparkles, CloudSun, Wallet, Calendar, Bell, Newspaper, QrCode,
   MessageSquare, Search, Settings, Accessibility, BarChart3,
-  WifiOff, RefreshCw, Shield, Users, Compass, GraduationCap, MessagesSquare, UserPlus, UserCheck, Library,
+  WifiOff, RefreshCw, Shield, Users, Compass, GraduationCap, MessagesSquare, UserPlus, UserCheck, Library, FolderKanban,
 } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { hapticTap } from "@/lib/haptics";
@@ -37,6 +37,7 @@ const SERVICES = [
   { key: "social", label: "Social", icon: Users, to: "/social" },
   { key: "messages", label: "Messages", icon: MessageSquare, to: "/messages" },
   { key: "knowledge", label: "Knowledge", icon: Library, to: "/knowledge" },
+  { key: "collab", label: "Collab", icon: FolderKanban, to: "/collaboration" },
   { key: "search", label: "Search", icon: Search, to: "/discover" },
   { key: "settings", label: "Settings", icon: Settings, to: "/me" },
   { key: "a11y", label: "Access", icon: Accessibility, kind: "sheet:accessibility" },
