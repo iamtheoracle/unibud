@@ -68,6 +68,7 @@ const Courses = lazy(() => import("@/pages/academics/Courses"));
 const CourseSpace = lazy(() => import("@/pages/academics/CourseSpace"));
 const UnifiedAgenda = lazy(() => import("@/pages/academics/UnifiedAgenda"));
 const Weather = lazy(() => import("@/pages/Weather"));
+const AcademicTimeline = lazy(() => import("@/pages/identity/AcademicTimeline"));
 const Timetable = lazy(() => import("@/pages/academics/Timetable"));
 const Calendar = lazy(() => import("@/pages/academics/Calendar"));
 const Assignments = lazy(() => import("@/pages/academics/Assignments"));
@@ -214,6 +215,7 @@ function App() {
 <Route path="/course/:courseId" element={<CourseSpace />} />
 <Route path="/agenda" element={<UnifiedAgenda />} />
 <Route path="/weather" element={<Weather />} />
+                    <Route path="/academic-timeline" element={<AcademicTimeline />} />
                     <Route path="/timetable" element={<Timetable />} />
                     <Route path="/calendar" element={<Calendar />} />
                     <Route path="/assignments" element={<Assignments />} />

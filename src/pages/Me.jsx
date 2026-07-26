@@ -7,6 +7,7 @@ import LearningInsights from "@/components/me/LearningInsights";
 import GoalsSection from "@/components/me/GoalsSection";
 import AchievementsSection from "@/components/me/AchievementsSection";
 import AcademicHistory from "@/components/me/AcademicHistory";
+import AcademicTimelinePreview from "@/components/me/AcademicTimelinePreview";
 import DocumentLibrary from "@/components/me/DocumentLibrary";
 import DownloadsSection from "@/components/me/DownloadsSection";
 import SettingsSection from "@/components/me/SettingsSection";
@@ -32,6 +33,7 @@ export default function Me() {
       <GoalsSection />
       <AchievementsSection sessions={sessions} assignments={assignments} />
       <AcademicHistory courses={courses} grades={grades} assignments={assignments} exams={exams} />
+      <AcademicTimelinePreview user={user} />
       <DocumentLibrary />
       <DownloadsSection courses={courses} assignments={assignments} grades={grades} sessions={sessions} />
       <BudMemorySection />
