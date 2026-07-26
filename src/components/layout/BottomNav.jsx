@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import { GraduationCap, MessageSquareText, Users, User } from "lucide-react";
 
 /**
  * BottomNav — primary navigation. Per the UNIBUD Master Design Directive,
@@ -7,10 +8,10 @@ import { NavLink, useLocation } from "react-router-dom";
  * Every other workspace is reached from the Quick Workspace Dock (EcosystemRail).
  */
 const TABS = [
-  { key: "campus", label: "Campus", paths: ["/home", "/campus"] },
-  { key: "quad", label: "Quad", paths: ["/quad"] },
-  { key: "connect", label: "Connect", paths: ["/connect"] },
-  { key: "me", label: "Me", paths: ["/me"] },
+  { key: "campus", label: "Campus", paths: ["/home", "/campus"], icon: GraduationCap },
+  { key: "quad", label: "Quad", paths: ["/quad"], icon: MessageSquareText },
+  { key: "connect", label: "Connect", paths: ["/connect"], icon: Users },
+  { key: "me", label: "Me", paths: ["/me"], icon: User },
 ];
 
 export default function BottomNav() {
@@ -27,7 +28,8 @@ export default function BottomNav() {
                 to={t.paths[0]}
                 className="flex flex-col items-center justify-center flex-1 h-full spring-tap"
               >
-                <span className={`text-[12px] font-semibold transition-colors ${active ? "text-primary" : "text-muted-foreground"}`}>
+                <t.icon className={`w-[19px] h-[19px] mb-0.5 transition-colors ${active ? "text-primary" : "text-muted-foreground"}`} strokeWidth={active ? 2.3 : 1.9} />
+                <span className={`text-[11px] font-semibold transition-colors ${active ? "text-primary" : "text-muted-foreground"}`}>
                   {t.label}
                 </span>
               </NavLink>
