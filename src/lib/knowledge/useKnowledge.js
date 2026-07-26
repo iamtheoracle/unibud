@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { base44 } from "@/api/base44Client";
 import {
   aggregateAll, buildUnifiedIndex, localSearch, allTags,
   smartSearch, extractFromFile, extractFromText, persistExtraction,
@@ -69,9 +70,9 @@ export function useKnowledge() {
 
   const addBookmark = async (item) => {
     const payload = { is_bookmarked: !item.bookmarked };
-    if (item.kind === "file") await import("@/api/base44Client").then((m) => m.base44.entities.StudentDocument.update(item.id, payload));
-    else if (item.kind === "note") await import("@/api/base44Client").then((m) => m.base44.entities.Note.update(item.id, payload));
-    else if (item.kind === "library") await import("@/api/base44Client").then((m) => m.base44.entities.LibraryResource.update(item.id, payload));
+    if (item.kind === "file") await base44.entities.StudentDocument.update(item.id, payload);
+    else if (item.kind === "note") await base44.entities.Note.update(item.id, payload);
+    else if (item.kind === "library") await base44.entities.LibraryResource.update(item.id, payload);
     await qc.invalidateQueries(KEY);
   };
 
