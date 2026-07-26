@@ -183,6 +183,26 @@
     "campus": {
       "type": "string",
       "description": "Specific campus within the institution, if applicable"
+    },
+    "preferred_name": {
+      "type": "string",
+      "description": "Display Name \u2014 the name shown across UNIBUD. Freely editable, distinct from the legal full_name."
+    },
+    "username": {
+      "type": "string",
+      "description": "Unique handle (lowercase, 3\u201320 chars, [a-z0-9_]). Shown as @username. Uniqueness enforced by the updateProfile function."
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short profile bio"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Profile photo URL"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Optional phone number \u2014 never shown publicly"
     }
   },
   "required": [

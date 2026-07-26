@@ -66,7 +66,7 @@ export default function StudentProfile() {
     setLoading(true);
     try {
       const payload = { ...data };
-      if (photoUrl) payload.profile_photo = photoUrl;
+      if (photoUrl) payload.avatar_url = photoUrl;
       await base44.auth.updateMe({ ...payload, onboarding_step: "learning_preferences" });
 
       // Sync matriculation data to StudentRecord for directory search

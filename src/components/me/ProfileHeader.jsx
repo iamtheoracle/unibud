@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Image } from "@/components/ui/image";
+import { resolveDisplayName } from "@/lib/userDisplayName";
 import EditProfileModal from "@/components/me/EditProfileModal";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -11,7 +12,8 @@ const EASE = [0.16, 1, 0.3, 1];
  */
 export default function ProfileHeader({ user }) {
   const [editing, setEditing] = useState(false);
-  const name = user?.full_name || "Student";
+  const name = resolveDisplayName(user) || user?.full_name || "Student";
+  const handle = user?.username ? `@${user.username}` : null;
 
   const fields = [
     { label: "Matric Number", value: user?.matriculation_number || "—" },
@@ -35,7 +37,7 @@ export default function ProfileHeader({ user }) {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="font-heading font-bold text-[20px] text-foreground truncate">{name}</h1>
-            <p className="text-[12px] text-muted-foreground truncate">{user?.email}</p>
+            {handle && <p className="text-[12px] text-muted-foreground truncate">{handle}</p>}
             <button onClick={() => setEditing(true)} className="mt-2.5 px-3 py-1.5 rounded-full glass text-[12px] font-semibold text-foreground spring-tap">
               Edit Profile
             </button>

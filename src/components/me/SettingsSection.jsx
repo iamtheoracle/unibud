@@ -9,6 +9,15 @@ import { toast } from "@/components/ui/use-toast";
 import ConfirmDialog from "@/components/notifications/ConfirmDialog";
 import { queryClientInstance } from "@/lib/query-client";
 
+function AccountRow({ label, value }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <span className="text-[12px] text-muted-foreground">{label}</span>
+      <span className="text-[13px] font-semibold text-foreground truncate max-w-[60%] text-right">{value || "—"}</span>
+    </div>
+  );
+}
+
 const ROWS = [
   { key: "account", label: "Account" },
   { key: "notifications", label: "Notifications" },
@@ -104,6 +113,12 @@ export default function SettingsSection({ user }) {
               </div>
               {sheet === "account" ? (
                 <div className="space-y-3">
+                  <div className="glass rounded-2xl p-4 space-y-3">
+                    <AccountRow label="Full Name" value={user?.full_name} />
+                    <AccountRow label="Username" value={user?.username ? `@${user.username}` : "Not set"} />
+                    <AccountRow label="Email" value={user?.email} />
+                    <AccountRow label="Phone" value={user?.phone || "Not added"} />
+                  </div>
                   <button
                     onClick={() => {
                       setSheet(null);
