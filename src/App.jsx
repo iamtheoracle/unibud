@@ -102,6 +102,9 @@ const ExamAnalytics = lazy(() => import("@/pages/exam/ExamAnalytics"));
 const ExamCoach = lazy(() => import("@/pages/exam/ExamCoach"));
 const ExamAuthor = lazy(() => import("@/pages/exam/ExamAuthor"));
 
+// Milestone 39 — Smart Classroom
+const LiveClassroom = lazy(() => import("@/pages/classroom/LiveClassroom"));
+
 // Oracle — Platform Operating Center
 const Oracle = lazy(() => import("@/pages/oracle/Oracle"));
 
@@ -226,6 +229,7 @@ function App() {
                     <Route path="/automation/builder" element={<WorkflowBuilder />} />
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                     <Route path="/security" element={<SecurityCenter />} />
+                    <Route path="/classroom/:classId" element={<LiveClassroom />} />
                     <Route path="/admin" element={<AdminHub />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />

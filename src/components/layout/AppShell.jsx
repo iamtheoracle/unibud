@@ -12,6 +12,7 @@ import BudCompanion from "@/components/bud/BudCompanion";
 import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
+import { ClassroomModeProvider, ClassroomBudGate } from "@/lib/classroom/ClassroomModeContext";
 
 /**
  * AppShell — the authenticated student shell: page content + floating
@@ -49,6 +50,7 @@ export default function AppShell() {
   return (
     <BudLauncherProvider>
       <UnibudContextProvider>
+      <ClassroomModeProvider>
         <div className="min-h-screen w-full">
           <ContextPulse />
           <OfflineBanner />
@@ -64,9 +66,10 @@ export default function AppShell() {
           </Suspense>
           <EcosystemRail />
           <BottomNav />
-          <BudLivingOrb />
-          <BudCompanion />
+          <ClassroomBudGate><BudLivingOrb /></ClassroomBudGate>
+          <ClassroomBudGate><BudCompanion /></ClassroomBudGate>
         </div>
+      </ClassroomModeProvider>
       </UnibudContextProvider>
     </BudLauncherProvider>
   );
