@@ -88,6 +88,7 @@ const DocumentLibrary = lazy(() => import("@/pages/study/DocumentLibrary"));
 
 // Milestone 8 — Multi-tenancy
 const InstitutionOnboarding = lazy(() => import("@/pages/institution/InstitutionOnboarding"));
+const UniversityDirectory = lazy(() => import("@/pages/onboarding/UniversityDirectory"));
 const InstitutionPortal = lazy(() => import("@/pages/institution/InstitutionPortal"));
 
 // Milestone 9 — Lecturer & Parent Portals
@@ -226,6 +227,7 @@ function App() {
                     <Route path="/study/citations" element={<CitationManager />} />
                     <Route path="/study/library" element={<DocumentLibrary />} />
                     <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
+                  <Route path="/onboarding/university" element={<UniversityDirectory />} />
                     <Route path="/institution/console" element={<InstitutionPortal />} />
                     <Route path="/lecturer/portal" element={<LecturerPortal />} />
                     <Route path="/parent/portal" element={<ParentPortal />} />

@@ -140,7 +140,26 @@
     },
     "university": {
       "type": "string",
-      "description": "University the student belongs to"
+      "description": "Institution the student belongs to (selected from the Nigerian directory or entered)"
+    },
+    "institution_type": {
+      "type": "string",
+      "description": "Type of institution \u2014 federal_university, state_university, private_university, polytechnic, college_of_education, monotechnic, innovation_enterprise",
+      "enum": [
+        "federal_university",
+        "state_university",
+        "private_university",
+        "polytechnic",
+        "college_of_education",
+        "monotechnic",
+        "innovation_enterprise",
+        ""
+      ],
+      "default": ""
+    },
+    "institution_state": {
+      "type": "string",
+      "description": "Nigerian state where the student's institution is located"
     },
     "faculty": {
       "type": "string"
@@ -151,6 +170,14 @@
     "level": {
       "type": "string",
       "description": "Academic level e.g. 100, 200, 300, 400"
+    },
+    "course": {
+      "type": "string",
+      "description": "Primary programme of study \u2014 normalized canonical name where available"
+    },
+    "course_original_input": {
+      "type": "string",
+      "description": "The student's original typed course text, preserved for search and analytics while course holds the normalized name"
     },
     "course_code": {
       "type": "string",
