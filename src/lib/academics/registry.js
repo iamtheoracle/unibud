@@ -1,7 +1,7 @@
 import {
   CalendarDays, ClipboardList, FolderKanban, NotebookPen, TrendingUp,
   CalendarCheck, FileText, CalendarRange, FileSignature, ScrollText,
-  CalendarClock, Users, UserSquare, Building2,
+  CalendarClock, Users, UserSquare, Building2, ListTodo,
 } from "lucide-react";
 
 /**
@@ -10,6 +10,7 @@ import {
  * home is still being built (Course Registration, Lecturer Directory, Dept Hub).
  */
 export const ACADEMIC_CATEGORIES = [
+  { key: "agenda", title: "Unified Agenda", desc: "Every deadline in one timeline", icon: ListTodo, to: "/agenda", live: true, color: "217 91% 60%" },
   { key: "timetable", title: "Timetable", desc: "Your weekly academic rhythm", icon: CalendarDays, to: "/timetable", live: true, color: "217 91% 60%" },
   { key: "assignments", title: "Assignment Manager", desc: "Track & conquer every task", icon: ClipboardList, to: "/assignments", live: true, color: "262 83% 58%" },
   { key: "projects", title: "Project Manager", desc: "Collaborate & ship", icon: FolderKanban, to: "/projects", live: true, color: "142 71% 45%" },
@@ -26,7 +27,7 @@ export const ACADEMIC_CATEGORIES = [
 ];
 
 export const ACADEMIC_GROUPS = [
-  { key: "plan", label: "Plan", items: ["timetable", "calendar", "planner", "registration"] },
+  { key: "plan", label: "Plan", items: ["agenda", "timetable", "calendar", "planner", "registration"] },
   { key: "work", label: "Work", items: ["assignments", "projects", "notes"] },
   { key: "perform", label: "Perform", items: ["results", "attendance", "exams"] },
   { key: "community", label: "Community", items: ["studygroups", "lecturers", "department"] },
