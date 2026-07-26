@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import {
-  Sparkles, CloudSun, Wallet, Calendar, Bell, Newspaper,
+  Sparkles, CloudSun, Wallet, Calendar, Bell, Newspaper, QrCode,
   MessageSquare, Search, Settings, Accessibility, BarChart3,
   WifiOff, RefreshCw, Shield, Users, Compass, GraduationCap, MessagesSquare, UserPlus, UserCheck,
 } from "lucide-react";
@@ -26,6 +26,7 @@ const SERVICES = [
   { key: "campus", label: "Campus", icon: Compass, to: "/campus" },
   { key: "academics", label: "Academics", icon: GraduationCap, to: "/academics" },
   { key: "comms", label: "Comms", icon: MessagesSquare, to: "/communication" },
+  { key: "attendance", label: "Attendance", icon: QrCode, to: "/smart-attendance" },
   { key: "following", label: "Following", icon: UserPlus, to: "/following" },
   { key: "friends", label: "Friends", icon: UserCheck, to: "/friends" },
   { key: "weather", label: "Weather", icon: CloudSun, kind: "sheet:weather" },
