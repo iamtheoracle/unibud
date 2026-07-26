@@ -4,10 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, BookOpen, FileText, Users, LayoutDashboard, Calendar,
-  MapPin, GraduationCap, Clock, BadgeCheck, Plus,
+  MapPin, GraduationCap, Clock, BadgeCheck, Plus, Share2,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/academics/EmptyState";
+import QRShareSheet from "@/components/shared/QRShareSheet";
 import { timeAgo } from "@/components/quad/quadConstants";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -37,6 +38,7 @@ function statusColor(s) {
 export default function CourseSpace() {
   const { courseId } = useParams();
   const [tab, setTab] = useState("overview");
+  const [shareOpen, setShareOpen] = useState(false);
 
   const { data: course, isLoading } = useQuery({
     queryKey: ["course", courseId],
@@ -108,6 +110,9 @@ export default function CourseSpace() {
             <h1 className="font-heading font-extrabold text-[20px] text-foreground leading-tight">{course.title}</h1>
             <p className="text-[12px] text-muted-foreground mt-0.5">{course.code}{course.lecturer ? ` · ${course.lecturer}` : ""}</p>
           </div>
+          <button onClick={() => setShareOpen(true)} className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center spring-tap shrink-0" aria-label="Share course">
+            <Share2 className="w-4 h-4 text-foreground" />
+          </button>
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3 text-[11px] text-muted-foreground">
           {course.faculty && <span className="flex items-center gap-1"><GraduationCap className="w-3 h-3" /> {course.faculty}</span>}
@@ -142,6 +147,8 @@ export default function CourseSpace() {
       {tab === "materials" && <Materials notes={notes || []} code={code} />}
       {tab === "assignments" && <Assignments list={assignments || []} code={code} />}
       {tab === "classmates" && <Classmates list={classmates || []} loading={matesLoading} />}
+
+      <QRShareSheet open={shareOpen} onClose={() => setShareOpen(false)} to={`/course/${courseId}`} title={course.title} subtitle={course.code} />
     </div>
   );
 }
