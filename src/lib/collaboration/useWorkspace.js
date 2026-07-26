@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 
@@ -31,6 +32,14 @@ export function useWorkspace(workspaceId) {
   });
 
   const memberIds = workspace?.member_ids || [];
+
+  // Real-time: invalidate on any item/activity/presence event for instant sync.
+  useEffect(() => {
+    if (!workspaceId) return;
+    const unsubItems = base44.entities.CollaborationItem.subscribe?.(() => qc.invalidateQueries({ queryKey: itemsKey }));
+    const unsubAct = base44.entities.CollaborationActivity.subscribe?.(() => qc.invalidateQueries({ queryKey: activityKey }));
+    return () => { unsubItems?.(); unsubAct?.(); };
+  }, [workspaceId]);
 
   const logActivity = async (action, target_type, target_id, target_title, summary) => {
     if (!user) return;

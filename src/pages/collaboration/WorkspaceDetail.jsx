@@ -1,14 +1,17 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Users, Wand2, Loader2, CalendarDays } from "lucide-react";
+import { ArrowLeft, Wand2, Loader2, CalendarDays } from "lucide-react";
 import { useWorkspace } from "@/lib/collaboration/useWorkspace";
+import { usePresence } from "@/lib/collaboration/usePresence";
 import { computeProgress } from "@/lib/collaboration/collabEngine";
 import ItemCard from "@/components/collaboration/ItemCard";
 import ItemComposer from "@/components/collaboration/ItemComposer";
 import ItemDetailDrawer from "@/components/collaboration/ItemDetailDrawer";
 import ActivityTimeline from "@/components/collaboration/ActivityTimeline";
 import MemberRoster from "@/components/collaboration/MemberRoster";
-import CollabAnalytics from "@/components/collaboration/CollabAnalytics";
+import ProgressDashboard from "@/components/collaboration/ProgressDashboard";
+import UnifiedTimeline from "@/components/collaboration/UnifiedTimeline";
+import PresenceIndicator from "@/components/collaboration/PresenceIndicator";
 import BudCollabAssistant from "@/components/collaboration/BudCollabAssistant";
 
 const TYPE_FILTERS = [
@@ -17,11 +20,17 @@ const TYPE_FILTERS = [
   { v: "study_plan", l: "Study Plans" }, { v: "whiteboard", l: "Whiteboards" },
 ];
 
-const TABS = [{ k: "board", l: "Board" }, { k: "activity", l: "Activity" }, { k: "members", l: "Members" }, { k: "analytics", l: "Analytics" }];
+const TABS = [
+  { k: "board", l: "Board" }, { k: "progress", l: "Progress" },
+  { k: "timeline", l: "Timeline" }, { k: "activity", l: "Activity" },
+  { k: "members", l: "Members" },
+];
 
 export default function WorkspaceDetail() {
   const { workspaceId } = useParams();
   const { user, workspace, items, activity, memberIds, createItem, updateItem, deleteItem, saveVersion, addMember, updateMemberRole } = useWorkspace(workspaceId);
+  const { active, heartbeat } = usePresence(workspaceId, user, memberIds);
+
   const [tab, setTab] = useState("board");
   const [filter, setFilter] = useState("all");
   const [selected, setSelected] = useState(null);
@@ -29,6 +38,18 @@ export default function WorkspaceDetail() {
 
   const progress = useMemo(() => computeProgress(items), [items]);
   const filtered = useMemo(() => (filter === "all" ? items : items.filter((i) => i.type === filter)), [items, filter]);
+
+  // Heartbeat presence while viewing the workspace; mark editing when an item is open.
+  useEffect(() => {
+    if (!user || !workspaceId) return;
+    const id = setInterval(() => heartbeat("active"), 25000);
+    heartbeat("viewing");
+    const onVis = () => { if (document.visibilityState === "visible") heartbeat("active"); };
+    document.addEventListener("visibilitychange", onVis);
+    return () => { clearInterval(id); document.removeEventListener("visibilitychange", onVis); };
+  }, [user, workspaceId]);
+
+  useEffect(() => { if (selected) heartbeat("editing", selected.id, selected.title); else heartbeat("viewing"); }, [selected]);
 
   if (!workspace) {
     return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div>;
@@ -46,7 +67,11 @@ export default function WorkspaceDetail() {
         </div>
       </div>
 
-      {workspace.description && <p className="text-xs text-muted-foreground mb-3">{workspace.description}</p>}
+      {workspace.description && <p className="text-xs text-muted-foreground mb-2">{workspace.description}</p>}
+
+      {active.length > 0 && (
+        <div className="mb-3"><PresenceIndicator active={active} /></div>
+      )}
 
       <div className="glass-card p-3.5 mb-4 flex items-center gap-3">
         <div className="relative w-12 h-12">
@@ -80,9 +105,7 @@ export default function WorkspaceDetail() {
                   filter === f.v ? "bg-accent/15 text-accent" : "bg-muted/40 text-foreground/60"}`}>{f.l}</button>
             ))}
           </div>
-          <div className="mb-3">
-            <ItemComposer onCreated={createItem.mutateAsync} members={workspace.members || []} />
-          </div>
+          <div className="mb-3"><ItemComposer onCreated={createItem.mutateAsync} members={workspace.members || []} /></div>
           <div className="space-y-2.5">
             {filtered.length === 0 ? (
               <p className="text-center text-sm text-muted-foreground py-8">No {filter === "all" ? "items" : filter + "s"} yet.</p>
@@ -91,9 +114,10 @@ export default function WorkspaceDetail() {
         </>
       )}
 
+      {tab === "progress" && <ProgressDashboard workspace={workspace} items={items} activity={activity} members={workspace.members || []} />}
+      {tab === "timeline" && <UnifiedTimeline workspaceId={workspaceId} />}
       {tab === "activity" && <ActivityTimeline activity={activity} />}
       {tab === "members" && <MemberRoster workspace={workspace} members={workspace.members || []} user={user} onAddMember={addMember.mutateAsync} onUpdateRole={updateMemberRole.mutateAsync} />}
-      {tab === "analytics" && <CollabAnalytics items={items} activity={activity} members={workspace.members || []} />}
 
       <button onClick={() => setBudOpen(true)}
         className="fixed right-4 z-40 w-12 h-12 rounded-full bg-accent text-accent-foreground flex items-center justify-center spring-tap glow-pulse"
