@@ -125,6 +125,9 @@ const WorkflowBuilder = lazy(() => import("@/pages/automation/WorkflowBuilder"))
 // Identity & Security
 const SecurityCenter = lazy(() => import("@/pages/SecurityCenter"));
 
+// Milestone 34 — Intelligent Admin Platform
+const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
+
 function App() {
   return (
     <AuthProvider>
@@ -219,6 +222,7 @@ function App() {
                     <Route path="/automation/builder" element={<WorkflowBuilder />} />
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                     <Route path="/security" element={<SecurityCenter />} />
+                    <Route path="/admin" element={<AdminHub />} />
                   </Route>
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
