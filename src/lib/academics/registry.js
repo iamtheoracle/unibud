@@ -1,7 +1,7 @@
 import {
   CalendarDays, ClipboardList, FolderKanban, NotebookPen, TrendingUp,
   CalendarCheck, FileText, CalendarRange, FileSignature, ScrollText,
-  CalendarClock, Users, UserSquare, Building2, ListTodo,
+  CalendarClock, Users, UserSquare, Building2, ListTodo, FileBarChart,
 } from "lucide-react";
 
 /**
@@ -16,6 +16,7 @@ export const ACADEMIC_CATEGORIES = [
   { key: "projects", title: "Project Manager", desc: "Collaborate & ship", icon: FolderKanban, to: "/projects", live: true, color: "142 71% 45%" },
   { key: "notes", title: "Smart Notes", desc: "Capture knowledge that lasts", icon: NotebookPen, to: "/notes", live: true, color: "38 92% 50%" },
   { key: "results", title: "GPA / CGPA Tracker", desc: "Results & performance", icon: TrendingUp, to: "/academics/results", live: true, color: "262 83% 58%" },
+  { key: "report", title: "Summary Report", desc: "Your full semester at a glance", icon: FileBarChart, to: "/academics/report", live: true, color: "262 83% 58%" },
   { key: "attendance", title: "Attendance", desc: "Never miss your threshold", icon: CalendarCheck, to: "/attendance", live: true, color: "142 71% 45%" },
   { key: "exams", title: "Exams", desc: "Prepare & perform", icon: FileText, to: "/exams", live: true, color: "0 72% 51%" },
   { key: "calendar", title: "Academic Calendar", desc: "Term dates & deadlines", icon: CalendarRange, to: "/calendar", live: true, color: "217 91% 60%" },
@@ -29,6 +30,6 @@ export const ACADEMIC_CATEGORIES = [
 export const ACADEMIC_GROUPS = [
   { key: "plan", label: "Plan", items: ["agenda", "timetable", "calendar", "planner", "registration"] },
   { key: "work", label: "Work", items: ["assignments", "projects", "notes"] },
-  { key: "perform", label: "Perform", items: ["results", "attendance", "exams"] },
+  { key: "perform", label: "Perform", items: ["results", "report", "attendance", "exams"] },
   { key: "community", label: "Community", items: ["studygroups", "lecturers", "department"] },
 ];

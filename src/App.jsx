@@ -40,6 +40,7 @@ const Discover = lazy(() => import("@/pages/Discover"));
 const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
+const SummaryReport = lazy(() => import("@/pages/academics/SummaryReport"));
 const CommunicationHub = lazy(() => import("@/pages/communication/CommunicationHub"));
 const SmartAttendance = lazy(() => import("@/pages/attendance/SmartAttendance"));
 const Following = lazy(() => import("@/pages/discovery/Following"));
@@ -186,6 +187,7 @@ function App() {
                     <Route path="/campus" element={<CampusHub />} />
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/results" element={<Results />} />
+                    <Route path="/academics/report" element={<SummaryReport />} />
                     <Route path="/communication" element={<CommunicationHub />} />
                     <Route path="/smart-attendance" element={<SmartAttendance />} />
                     <Route path="/classroom/:classId" element={<LiveClassroom />} />

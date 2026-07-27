@@ -114,6 +114,22 @@ const SCREEN_CONTEXTS = [
     ],
   },
   {
+    match: "/academics/report",
+    name: "Academics Summary Report",
+    description: "the Academics Summary Report — a full semester report of GPA, study streaks, attendance, assignment completion, goals, deadlines, strengths and areas needing improvement, all computed from the student's real academic records",
+    actions: [
+      { label: "What improved my GPA?", prompt: "Based on my Academics Summary Report, what improved my GPA this semester?", icon: TrendingUp },
+      { label: "Why streak reset", prompt: "Based on my report, why did my study streak reset?", icon: Timer },
+      { label: "What to study next", prompt: "Based on my report, what should I study next?", icon: Brain },
+      { label: "Reach 4.5 GPA", prompt: "Based on my report, how can I reach a 4.5 GPA?", icon: Target },
+    ],
+    suggestedPrompts: [
+      "What improved my GPA?",
+      "What should I study next?",
+      "How can I reach a 4.5 GPA?",
+    ],
+  },
+  {
     match: "/academics",
     name: "Academics",
     description: "your academic dashboard with courses, assignments, grades, and study goals",
