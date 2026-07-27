@@ -94,6 +94,16 @@
     --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+    /* Founder dock — deep premium dark surface for contrast in light mode */
+    --dock-bg: hsl(222 70% 14%);
+    --dock-border: rgba(255, 255, 255, 0.10);
+    --dock-shadow: 0 10px 36px rgba(11, 31, 77, 0.26), 0 2px 8px rgba(11, 31, 77, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    --dock-icon: 218 22% 82%;
+    --dock-icon-active: 198 92% 64%;
+    --dock-label: 218 20% 78%;
+    --dock-label-active: 198 92% 68%;
+    --dock-pill: rgba(255, 255, 255, 0.10);
+
     --sidebar-background: 222 75% 17%;       /* Midnight Blue navigation */
     --sidebar-foreground: 218 24% 88%;       /* Soft Silver on navy */
     --sidebar-primary: 198 92% 62%;         /* Sky Blue active item */
@@ -179,6 +189,16 @@
     --chart-3: 173 78% 52%;                  /* Teal */
     --chart-4: 222 70% 35%;                  /* Midnight lighter */
     --chart-5: 215 18% 65%;                  /* Slate */
+
+    /* Founder dock — translucent, blends into the immersive dark interface */
+    --dock-bg: hsl(222 50% 14% / 0.55);
+    --dock-border: rgba(255, 255, 255, 0.14);
+    --dock-shadow: 0 10px 36px rgba(0, 0, 0, 0.42), 0 2px 8px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+    --dock-icon: 218 18% 68%;
+    --dock-icon-active: 221 83% 68%;
+    --dock-label: 218 18% 68%;
+    --dock-label-active: 221 83% 72%;
+    --dock-pill: hsl(221 83% 58% / 0.22);
 
     --sidebar-background: 222 65% 9%;        /* Deep midnight navy nav */
     --sidebar-foreground: 218 22% 70%;
@@ -298,6 +318,22 @@
     border: 1px solid var(--glass-border-strong);
     box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(255,255,255,0.05);
   }
+  /* Founder dock — mode-differentiated navigation surface.
+     Light mode: deep premium dark for contrast against the bright shell.
+     Dark mode: translucent, blending into the immersive interface. */
+  .founder-dock {
+    background: var(--dock-bg);
+    backdrop-filter: blur(28px) saturate(1.7);
+    -webkit-backdrop-filter: blur(28px) saturate(1.7);
+    border: 1px solid var(--dock-border);
+    box-shadow: var(--dock-shadow);
+  }
+  .dock-icon { color: hsl(var(--dock-icon)); }
+  .dock-icon-active { color: hsl(var(--dock-icon-active)); }
+  .dock-label { color: hsl(var(--dock-label)); }
+  .dock-label-active { color: hsl(var(--dock-label-active)); }
+  .dock-pill { background: var(--dock-pill); }
+  .dock-dot { background: hsl(var(--dock-icon-active)); }
 
   .ice-glow { box-shadow: var(--shadow-ice); }
   .premium-shadow { box-shadow: var(--shadow-premium); }

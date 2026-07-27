@@ -18,7 +18,7 @@ export default function ModeSwitcher() {
       <button
         onClick={toggle}
         aria-label={`Switch to ${isSocial ? "Academic" : "Social"} context`}
-        className="crystal-dock rounded-full h-9 px-3 flex items-center gap-2 spring-tap edge-light mx-auto"
+        className="founder-dock rounded-full h-9 px-3 flex items-center gap-2 spring-tap edge-light mx-auto"
       >
         <motion.span
           layout
@@ -32,11 +32,11 @@ export default function ModeSwitcher() {
             <GraduationCap className="w-3.5 h-3.5 text-primary-foreground" />
           )}
         </motion.span>
-        <span className="text-[12px] font-semibold text-foreground">
+        <span className="text-[12px] font-semibold dock-label">
           {isSocial ? "Social" : "Academic"}
         </span>
-        <ArrowLeftRight className="w-3 h-3 text-muted-foreground" />
-        <span className="text-[10px] text-muted-foreground hidden sm:inline">tap to switch</span>
+        <ArrowLeftRight className="w-3 h-3 dock-label" />
+        <span className="text-[10px] dock-label hidden sm:inline">tap to switch</span>
       </button>
     </div>
   );
