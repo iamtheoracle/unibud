@@ -10,19 +10,19 @@
   "theme_color": "#0B1F4D",
   "icons": [
     {
-      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/025da9f15_generated_image.png",
+      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/062c1c621_generated_image.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/025da9f15_generated_image.png",
+      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/062c1c621_generated_image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/025da9f15_generated_image.png",
+      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/062c1c621_generated_image.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
