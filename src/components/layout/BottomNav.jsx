@@ -1,6 +1,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { GraduationCap, MessageSquareText, Users, User } from "lucide-react";
+import { hapticSelect } from "@/lib/haptics";
 
 /**
  * BottomNav — primary navigation. Per the UNIBUD Master Design Directive,
@@ -26,6 +27,7 @@ export default function BottomNav() {
               <NavLink
                 key={t.key}
                 to={t.paths[0]}
+                onClick={() => hapticSelect()}
                 className="flex flex-col items-center justify-center flex-1 h-full spring-tap"
               >
                 <t.icon className={`w-[19px] h-[19px] mb-0.5 transition-colors ${active ? "text-primary" : "text-muted-foreground"}`} strokeWidth={active ? 2.3 : 1.9} />

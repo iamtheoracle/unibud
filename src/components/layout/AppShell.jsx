@@ -1,7 +1,6 @@
 import React, { useEffect, useState, Suspense } from "react";
 import { useNavigate, useLocation, useOutlet } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
@@ -33,11 +32,7 @@ export default function AppShell() {
   }, [navigate]);
 
   if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-7 h-7 text-primary animate-spin" />
-      </div>
-    );
+    return <RouteLoading />;
   }
 
   return (
