@@ -14,6 +14,7 @@ import { EventBus } from "./events";
 import { MiddlewarePipeline, type Middleware } from "./middleware";
 import { PluginManager, type SparkPlugin } from "./plugins";
 import { ProviderRegistry } from "./providers/registry";
+import { OpenAIProvider } from "./providers/openai";
 import type { AIProvider } from "./providers/types";
 import {
   SPARK_CAPABILITIES,
@@ -72,6 +73,7 @@ export class Spark {
 
   constructor() {
     this.registerCoreServices();
+    this.registerEnvProviders();
   }
 
   // ---------------------------------------------------------------------
@@ -298,6 +300,47 @@ export class Spark {
       return engine;
     });
   }
+
+  /**
+   * Registers any provider whose credentials are present in the
+   * environment. OpenAI is only made the default when a key is
+   * supplied; otherwise the MockProvider remains default and Spark
+   * runs fully offline. Keys are never hardcoded.
+   */
+  private registerEnvProviders(): void {
+    const apiKey = readEnv("VITE_OPENAI_API_KEY") ?? readEnv("OPENAI_API_KEY");
+    if (!apiKey) return;
+    this.providerRegistry.register(
+      new OpenAIProvider({
+        apiKey,
+        model: readEnv("VITE_OPENAI_MODEL") ?? readEnv("OPENAI_MODEL"),
+        baseUrl: readEnv("VITE_OPENAI_BASE_URL") ?? readEnv("OPENAI_BASE_URL"),
+      }),
+      true
+    );
+  }
+}
+
+/**
+ * Reads an env value from either Vite's `import.meta.env` (browser/dev) or
+ * `process.env` (Node/test), whichever is defined. Returns undefined when
+ * the key is absent in both.
+ */
+function readEnv(key: string): string | undefined {
+  try {
+    const meta = (import.meta as any)?.env;
+    if (meta && typeof meta[key] === "string" && meta[key]) return meta[key];
+  } catch {
+    /* import.meta.env not available */
+  }
+  try {
+    if (typeof process !== "undefined" && process.env && process.env[key]) {
+      return process.env[key];
+    }
+  } catch {
+    /* process not available */
+  }
+  return undefined;
 }
 
 /**
