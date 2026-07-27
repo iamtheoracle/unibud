@@ -51,7 +51,35 @@
     },
     "publish_date": {
       "type": "string",
-      "format": "date-time"
+      "format": "date-time",
+      "description": "When to publish (for scheduled announcements)"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional expiration \u2014 announcement hidden from students after this time"
+    },
+    "link_url": {
+      "type": "string",
+      "description": "Optional call-to-action link (registration, form, resource)"
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Attached files (PDFs, images, documents)"
     },
     "author_name": {
       "type": "string"
@@ -68,16 +96,216 @@
   ],
   "rls": {
     "read": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
     },
     "create": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "$or": [
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "dean"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "head_of_department"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "lecturer"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "teaching_assistant"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "staff"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "update": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "$or": [
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "dean"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "head_of_department"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "lecturer"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "teaching_assistant"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "staff"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     "delete": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "$or": [
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "dean"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "head_of_department"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "lecturer"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "teaching_assistant"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "staff"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   }
 }
