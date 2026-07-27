@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import GlassCard from "@/components/ui/GlassCard";
@@ -39,6 +39,22 @@ export default function AnnouncementsCard() {
   });
 
   const items = isDemoMode ? DEMO_ANNOUNCEMENTS : (announcements || []);
+
+  // Silently mark visible published announcements as read so institutions get accurate read counts.
+  useEffect(() => {
+    if (isDemoMode || !announcements?.length) return;
+    (async () => {
+      try {
+        const mine = await base44.entities.AnnouncementRead.filter({});
+        const seen = new Set((mine || []).map((r) => r.announcement_id));
+        await Promise.all(
+          announcements.filter((a) => a.status === "published" && !seen.has(a.id)).map((a) =>
+            base44.entities.AnnouncementRead.create({ announcement_id: a.id, read_at: new Date().toISOString() }).catch(() => {})
+          )
+        );
+      } catch {}
+    })();
+  }, [announcements, isDemoMode]);
 
   if (isLoading && !isDemoMode) {
     return (
