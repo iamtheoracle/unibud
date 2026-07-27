@@ -11,6 +11,9 @@ import AcademicSnapshot from "@/components/home/AcademicSnapshot";
 import UpcomingDeadlines from "@/components/home/UpcomingDeadlines";
 import BudCard from "@/components/home/BudCard";
 import WeatherWidget from "@/components/weather/WeatherWidget";
+import HeroAcademicCard from "@/components/unibud/HeroAcademicCard";
+import LivingBudCard from "@/components/unibud/LivingBudCard";
+import AcademicPulseWidget from "@/components/unibud/AcademicPulseWidget";
 import HomeMessages from "@/components/home/HomeMessages";
 import HomePayments from "@/components/home/HomePayments";
 import HomeCommunity from "@/components/home/HomeCommunity";
@@ -35,11 +38,16 @@ export default function Home() {
 
   const widgets = {
     weather: <WeatherWidget />,
-    today: <TodayCard courses={ctx.courses} assignments={ctx.assignments} exams={ctx.exams} />,
+    today: <HeroAcademicCard courses={ctx.courses} assignments={ctx.assignments} exams={ctx.exams} sessions={ctx.sessions} />,
     quickActions: <QuickActions />,
-    academics: <AcademicSnapshot user={ctx.user} sessions={ctx.sessions} />,
+    academics: (
+      <div className="space-y-4">
+        <AcademicSnapshot user={ctx.user} sessions={ctx.sessions} />
+        <AcademicPulseWidget sessions={ctx.sessions} />
+      </div>
+    ),
     deadlines: <UpcomingDeadlines assignments={ctx.assignments} exams={ctx.exams} />,
-    bud: <BudCard />,
+    bud: <LivingBudCard message={plan.message} label={plan.label} />,
     messages: <HomeMessages count={ctx.unreadMessages} total={ctx.conversations?.length || 0} />,
     payments: <HomePayments count={ctx.upcomingPayments} overdue={ctx.overdueFees} fees={ctx.pendingFees} />,
     community: <HomeCommunity count={ctx.communityActivity} posts={ctx.quadPosts} />,
