@@ -19,7 +19,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/meet-bud", { replace: true }); });
+    base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/mode-select", { replace: true }); });
   }, [navigate]);
 
   const handleSubmit = async (e) => {
@@ -28,7 +28,7 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(identifier, password);
-      navigate("/meet-bud", { replace: true });
+      navigate("/mode-select", { replace: true });
     } catch (err) {
       setError(err.message || "Invalid credentials");
     } finally {

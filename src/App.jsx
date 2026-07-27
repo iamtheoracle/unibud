@@ -7,6 +7,7 @@ import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { PlatformProvider } from '@/lib/platform/PlatformProvider';
 import { DemoModeProvider } from '@/lib/DemoModeContext';
+import { ExperienceProvider } from '@/lib/ExperienceContext';
 import ScrollToTop from './components/ScrollToTop';
 import AppShell from '@/components/layout/AppShell';
 import RouteLoading from '@/components/RouteLoading';
@@ -17,6 +18,7 @@ const Welcome = lazy(() => import("@/pages/Welcome"));
 const Register = lazy(() => import("@/pages/Register"));
 const Login = lazy(() => import("@/pages/Login"));
 const MeetBud = lazy(() => import("@/pages/MeetBud"));
+const ModeSelector = lazy(() => import("@/pages/ModeSelector"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 
@@ -157,6 +159,7 @@ function App() {
         <PlatformProvider>
         <QueryClientProvider client={queryClientInstance}>
           <DemoModeProvider>
+          <ExperienceProvider>
             <Router>
               <ScrollToTop />
               <Suspense fallback={<RouteLoading />}>
@@ -166,6 +169,7 @@ function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/meet-bud" element={<MeetBud />} />
+                  <Route path="/mode-select" element={<ModeSelector />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route element={<AppShell />}>
@@ -266,6 +270,7 @@ function App() {
               </Suspense>
               <Toaster />
             </Router>
+          </ExperienceProvider>
           </DemoModeProvider>
         </QueryClientProvider>
         </PlatformProvider>

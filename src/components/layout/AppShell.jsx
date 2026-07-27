@@ -12,6 +12,7 @@ import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
+import ModeSwitcher from "@/components/layout/ModeSwitcher";
 import { ClassroomModeProvider, ClassroomBudGate } from "@/lib/classroom/ClassroomModeContext";
 
 /**
@@ -44,6 +45,7 @@ export default function AppShell() {
           <AmbientBackground />
           <ContextPulse />
           <OfflineBanner />
+          <ModeSwitcher />
           <Suspense fallback={<RouteLoading />}>
             <motion.div
               key={location.pathname}

@@ -74,6 +74,16 @@ export function orchestrateHome(ctx) {
 
   const tod = ctx.timeOfDay || "morning";
 
+  // ── Experience mode (Academic | Social) ── content emphasis only.
+  //    Navigation never moves; only what deserves attention shifts.
+  const expMode = ctx.experienceMode || "academic";
+  if (expMode === "social") {
+    scores.community += 30; scores.messages += 22; scores.weather += 10; scores.today += 8; scores.bud += 4;
+    scores.academics -= 30; scores.deadlines -= 26;
+  } else {
+    scores.academics += 10; scores.deadlines += 8; scores.today += 6;
+  }
+
   // ── Exam period ──
   if (ctx.examWeek) { scores.deadlines += 30; scores.bud += 20; scores.academics += 10; }
 
@@ -153,6 +163,14 @@ export function orchestrateHome(ctx) {
     message = `Evening — I've lined up your deadlines and a few things to unwind with.`;
   } else {
     message = `Here's your dashboard, arranged for this afternoon.`;
+  }
+
+  // ── Mode-specific framing (additive) ──
+  if (expMode === "social") {
+    label = "Campus Life mode";
+    if (!ctx.examWeek && !ctx.severeWeather && !ctx.overdueFees) {
+      message = "Here's your campus life — friends, communities and what's happening, front and center.";
+    }
   }
 
   const g = buildAdaptiveGreeting(ctx);

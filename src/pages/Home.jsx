@@ -1,6 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUnibudContext } from "@/lib/UnibudContext";
+import { useExperience } from "@/lib/ExperienceContext";
 import { orchestrateHome } from "@/lib/bud/homeOrchestrator";
 import HomeHeader from "@/components/home/HomeHeader";
 import FloatingSearch from "@/components/home/FloatingSearch";
@@ -30,27 +31,36 @@ const EASE = [0.16, 1, 0.3, 1];
  */
 export default function Home() {
   const ctx = useUnibudContext();
-  const plan = orchestrateHome(ctx);
+  const { mode } = useExperience();
+  const plan = orchestrateHome({ ...ctx, experienceMode: mode });
+  const isSocial = mode === "social";
 
   const refreshHome = async () => {
     await queryClientInstance.invalidateQueries();
   };
 
   const widgets = {
-    weather: <WeatherWidget />,
-    today: <HeroAcademicCard courses={ctx.courses} assignments={ctx.assignments} exams={ctx.exams} sessions={ctx.sessions} />,
+    weather: isSocial ? null : <WeatherWidget />,
+    today: isSocial ? (
+      <div className="space-y-4">
+        <WeatherWidget />
+        <HomeCommunity count={ctx.communityActivity} posts={ctx.quadPosts} />
+      </div>
+    ) : (
+      <HeroAcademicCard courses={ctx.courses} assignments={ctx.assignments} exams={ctx.exams} sessions={ctx.sessions} />
+    ),
     quickActions: <QuickActions />,
-    academics: (
+    academics: isSocial ? null : (
       <div className="space-y-4">
         <AcademicSnapshot user={ctx.user} sessions={ctx.sessions} />
         <AcademicPulseWidget sessions={ctx.sessions} />
       </div>
     ),
-    deadlines: <UpcomingDeadlines assignments={ctx.assignments} exams={ctx.exams} />,
+    deadlines: isSocial ? null : <UpcomingDeadlines assignments={ctx.assignments} exams={ctx.exams} />,
     bud: <LivingBudCard message={plan.message} label={plan.label} />,
     messages: <HomeMessages count={ctx.unreadMessages} total={ctx.conversations?.length || 0} />,
     payments: <HomePayments count={ctx.upcomingPayments} overdue={ctx.overdueFees} fees={ctx.pendingFees} />,
-    community: <HomeCommunity count={ctx.communityActivity} posts={ctx.quadPosts} />,
+    community: isSocial ? null : <HomeCommunity count={ctx.communityActivity} posts={ctx.quadPosts} />,
   };
 
   return (
@@ -75,7 +85,7 @@ export default function Home() {
         />
       </div>
       <AnimatePresence mode="popLayout">
-        {plan.order.map((k, i) => (
+        {plan.order.map((k, i) => widgets[k] ? (
           <motion.div
             key={k}
             layout
@@ -87,7 +97,7 @@ export default function Home() {
           >
             {widgets[k]}
           </motion.div>
-        ))}
+        ) : null)}
       </AnimatePresence>
     </div>
     </PullToRefresh>
