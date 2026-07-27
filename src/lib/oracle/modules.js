@@ -1,9 +1,10 @@
 import {
-  LayoutDashboard, Building2, Boxes, Users, Bot, ShieldCheck, Plug, Activity, ScrollText, Search, Network, Gauge,
+  LayoutDashboard, Building2, Boxes, Users, Bot, ShieldCheck, Plug, Activity, ScrollText, Search, Network, Gauge, Radar,
 } from "lucide-react";
 
 export const ORACLE_MODULES = [
   { id: "dashboard", label: "Dashboard", group: "Overview", icon: LayoutDashboard, desc: "Platform-wide command center — real-time health, activity and revenue." },
+  { id: "registry", label: "Live Registry", group: "Overview", icon: Radar, desc: "Mission-control live metrics across students, academics, AI, platform, community, institutions and system — every value flows from the registry." },
   { id: "search", label: "Global Search", group: "Overview", icon: Search, desc: "Universal search across users, institutions, payments, logs and settings." },
   { id: "institutions", label: "Institution Registry", group: "Platform", icon: Building2, desc: "Onboard, verify, suspend and manage every institution." },
   { id: "products", label: "Product Registry", group: "Platform", icon: Boxes, desc: "My Realm product registry — versions, environments, modules and release channels." },

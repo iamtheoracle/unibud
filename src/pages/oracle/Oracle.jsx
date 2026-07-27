@@ -5,6 +5,7 @@ import { ShieldAlert, Loader2 } from "lucide-react";
 import OracleShell from "@/components/oracle/OracleShell";
 import { ORACLE_MODULES, moduleById } from "@/lib/oracle/modules";
 import OracleDashboard from "@/components/oracle/sections/OracleDashboard";
+import RegistryDashboard from "@/components/oracle/sections/RegistryDashboard";
 import InstitutionRegistry from "@/components/oracle/sections/InstitutionRegistry";
 import ProductRegistry from "@/components/oracle/sections/ProductRegistry";
 import UserGovernance from "@/components/oracle/sections/UserGovernance";
@@ -19,6 +20,7 @@ import GlobalSearch from "@/components/oracle/sections/GlobalSearch";
 
 const SECTIONS = {
   dashboard: OracleDashboard,
+  registry: RegistryDashboard,
   search: GlobalSearch,
   institutions: InstitutionRegistry,
   products: ProductRegistry,
