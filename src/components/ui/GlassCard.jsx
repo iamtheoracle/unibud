@@ -6,10 +6,12 @@ const variants = {
   elevated: "crystal-card rounded-[24px] hover-lift",
   glass: "glass rounded-[24px] hover-lift",
   glassStrong: "glass-strong rounded-[28px] hover-lift",
-  crystal: "crystal-card rounded-[28px] hover-lift",
+  crystal: "crystal-card rounded-[28px] hover-lift glass-shine",
+  hero: "crystal-card rounded-[32px] hover-lift crystal-bloom edge-light depth-float",
+  compact: "glass rounded-[20px] hover-lift",
   flat: "bg-muted/40 rounded-[20px]",
   solid: "bg-card rounded-[20px] border border-border/25 soft-shadow hover-lift",
-  primary: "crystal-card rounded-[24px] primary-card-gradient elevated-shadow hover-lift",
+  primary: "crystal-card rounded-[24px] primary-card-gradient elevated-shadow hover-lift glass-shine",
 };
 
 export default function GlassCard({ children, className = "", variant = "default", delay = 0, onClick, animate = true }) {

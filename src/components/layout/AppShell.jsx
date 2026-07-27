@@ -9,6 +9,7 @@ import EcosystemRail from "@/components/layout/EcosystemRail";
 import OfflineBanner from "@/components/layout/OfflineBanner";
 import BudCompanion from "@/components/bud/BudCompanion";
 import BudLivingOrb from "@/components/bud/BudLivingOrb";
+import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
 import { ClassroomModeProvider, ClassroomBudGate } from "@/lib/classroom/ClassroomModeContext";
@@ -39,7 +40,8 @@ export default function AppShell() {
     <BudLauncherProvider>
       <UnibudContextProvider>
       <ClassroomModeProvider>
-        <div className="min-h-screen w-full">
+        <div className="min-h-screen w-full relative z-10">
+          <AmbientBackground />
           <ContextPulse />
           <OfflineBanner />
           <Suspense fallback={<RouteLoading />}>

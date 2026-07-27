@@ -351,6 +351,116 @@
     background: linear-gradient(160deg, hsl(var(--card) / 0.6) 0%, hsl(var(--surface-secondary) / 0.5) 100%);
   }
 
+  /* ════════════════════════════════════════════════════════════
+     v3.0 — Signature Lighting Engine & AI States
+     ════════════════════════════════════════════════════════════ */
+
+  /* Glass shine — animated diagonal specular sweep for premium cards */
+  .glass-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .glass-shine::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 55%;
+    height: 200%;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.07) 50%, transparent 70%);
+    pointer-events: none;
+    animation: glass-shine-sweep 7s ease-in-out infinite;
+  }
+  @keyframes glass-shine-sweep {
+    0%, 100% { left: -60%; opacity: 0; }
+    35% { opacity: 0.7; }
+    65% { opacity: 0.7; }
+    100% { left: 130%; opacity: 0; }
+  }
+
+  /* Crystal bloom — soft ambient glow pooling behind hero elements */
+  .crystal-bloom {
+    position: relative;
+  }
+  .crystal-bloom::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    border-radius: inherit;
+    background: radial-gradient(50% 40% at 50% 0%, hsl(var(--primary) / 0.12), transparent 65%);
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(24px);
+  }
+
+  /* Ambient orb — floating background gradient blob */
+  .ambient-orb {
+    border-radius: 9999px;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  /* Depth float — gentle floating for hero panels */
+  @keyframes depth-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .depth-float { animation: depth-float 7s ease-in-out infinite; }
+
+  /* Liquid press — tactile button feedback with spring */
+  .liquid-press {
+    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .liquid-press:active { transform: scale(0.96) translateY(1px); }
+
+  /* Premium display number — tabular, tight, display weight */
+  .display-number {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  /* ── AI State Animations — Bud intelligence states ── */
+
+  /* Thinking — slow contemplative pulse */
+  @keyframes ai-thinking {
+    0%, 100% { opacity: 0.4; transform: scale(0.96); }
+    50% { opacity: 0.9; transform: scale(1.04); }
+  }
+  .ai-thinking { animation: ai-thinking 2.6s ease-in-out infinite; }
+
+  /* Searching — rotating scan ring */
+  @keyframes ai-searching {
+    0% { transform: rotate(0deg); opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { transform: rotate(360deg); opacity: 0.6; }
+  }
+  .ai-searching { animation: ai-searching 2s linear infinite; }
+
+  /* Generating — shimmer sweep across a surface */
+  @keyframes ai-generating {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .ai-generating {
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.22), transparent);
+    background-size: 200% 100%;
+    animation: ai-generating 1.8s linear infinite;
+  }
+
+  /* Planning — orbiting contemplation */
+  @keyframes ai-planning-orbit {
+    0% { transform: rotate(0deg) translateX(var(--orbit-r, 8px)) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(var(--orbit-r, 8px)) rotate(-360deg); }
+  }
+  .ai-planning { animation: ai-planning-orbit 3s linear infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass-shine::after, .depth-float, .ai-thinking, .ai-searching, .ai-generating, .ai-planning { animation: none !important; }
+  }
+
   .text-ice-gradient {
     background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
     -webkit-background-clip: text;
