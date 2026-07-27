@@ -23,14 +23,14 @@ export default function Splash() {
     const resolve = async () => {
       try {
         const authed = await base44.auth.isAuthenticated();
-        await wait(2600);
+        await wait(1600);
         if (!active) return;
         setLeaving(true);
         await wait(450);
         if (!active) return;
         navigate(authed ? "/home" : "/welcome", { replace: true });
       } catch {
-        await wait(2600);
+        await wait(1600);
         if (!active) return;
         navigate("/welcome", { replace: true });
       }
