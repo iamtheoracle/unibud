@@ -115,9 +115,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = (shouldRedirect = true) => {
+    // Clear all local auth state so a post-logout return never shows a
+    // ghosted error or stale user before the SDK redirect/reload completes.
     setUser(null);
     setIsAuthenticated(false);
-    
+    setAuthError(null);
+    setAuthChecked(false);
+    setIsLoadingAuth(false);
+
     if (shouldRedirect) {
       // Use the SDK's logout method which handles token cleanup and redirect
       base44.auth.logout(window.location.href);
