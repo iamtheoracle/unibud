@@ -38,7 +38,7 @@ export default function AnnouncementsCard() {
     enabled: !isDemoMode,
   });
 
-  const items = isDemoMode ? DEMO_ANNOUNCEMENTS : (announcements || []);
+  const items = isDemoMode ? DEMO_ANNOUNCEMENTS : (announcements || []).filter((a) => !a.expires_at || new Date(a.expires_at) > new Date());
 
   // Silently mark visible published announcements as read so institutions get accurate read counts.
   useEffect(() => {
