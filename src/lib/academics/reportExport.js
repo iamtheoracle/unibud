@@ -1,7 +1,11 @@
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
+// Heavy libs (html2canvas ~190KB + jsPDF ~290KB) are dynamically imported only when
+// an export is actually requested, keeping the report's initial chunk tiny.
+let _hc, _pdf;
+const loadHtml2Canvas = async () => (_hc ??= (await import("html2canvas")).default);
+const loadJsPdf = async () => (_pdf ??= (await import("jspdf")).jsPDF);
 
 async function render(node) {
+  const [html2canvas] = await Promise.all([loadHtml2Canvas()]);
   const bg = getComputedStyle(document.body).backgroundColor || "#ffffff";
   return html2canvas(node, { scale: 2, backgroundColor: bg, useCORS: true, logging: false });
 }
@@ -9,7 +13,7 @@ async function render(node) {
 /** Exports the report node to a multi-page A4 PDF. */
 export async function exportReportPdf(node) {
   if (!node) return;
-  const canvas = await render(node);
+  const [canvas, jsPDF] = await Promise.all([render(node), loadJsPdf()]);
   const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
   const pageW = pdf.internal.pageSize.getWidth();
   const pageH = pdf.internal.pageSize.getHeight();

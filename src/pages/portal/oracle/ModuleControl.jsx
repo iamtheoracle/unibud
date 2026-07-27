@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, AlertTriangle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { KpiCard, SectionCard, StatusPill } from "@/components/portal/PortalUI";
+import { KpiCard, StatusPill } from "@/components/portal/PortalUI";
 import { PLATFORM_MODULES, MODULE_CATEGORIES } from "@/lib/portalConfig";
 import {
   Home, Compass, Users, Sparkles, Library, Bell, Search as SearchIcon, User, Settings,

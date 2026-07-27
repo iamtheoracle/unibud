@@ -7,8 +7,7 @@ import {
   ORACLE_SYSTEMS, PLATFORM_ENGINES, PLATFORM_SERVICES, INFRASTRUCTURE,
 } from "@/lib/posterData";
 import { PosterHero, PosterSection, ModuleCard } from "@/components/posters/PosterShared";
-import { SPRING, scaleEntranceDelay, slideInRight } from "@/lib/glassPresets";
-import { GlassSheen } from "@/components/portal/Glass";
+import { SPRING } from "@/lib/glassPresets";
 
 export default function PosterArchitecture() {
   return (

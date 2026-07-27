@@ -8,7 +8,6 @@ import {
 } from "@/lib/posterData";
 import { PosterHero, PosterSection, ModuleCard } from "@/components/posters/PosterShared";
 import { SPRING } from "@/lib/glassPresets";
-import { GlassSheen } from "@/components/portal/Glass";
 
 export default function PosterEcosystem() {
   return (

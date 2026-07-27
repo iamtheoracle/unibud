@@ -5,7 +5,7 @@ import {
   ArrowLeft, Sun, Sunrise, Sunset, Droplets, Wind, Thermometer, Gauge,
   Cloud, CloudSun, Cloudy, CloudFog, CloudRain, CloudDrizzle, CloudSnow,
   CloudLightning, Umbrella, GlassWater, ShieldAlert, CalendarClock, Footprints,
-  Sparkles, AlertTriangle, Eye,
+  Sparkles, AlertTriangle,
 } from "lucide-react";
 import { useWeather } from "@/hooks/useWeather";
 

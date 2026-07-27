@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, Plus, TrendingUp, TrendingDown, ChevronDown, ChevronUp, Inbox } from "lucide-react";
+import { Search, X, Plus, TrendingUp, TrendingDown, Inbox } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 

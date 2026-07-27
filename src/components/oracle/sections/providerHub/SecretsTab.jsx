@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { SectionHeader, Panel, Btn, LoadingState, StatusPill, EmptyState } from "@/components/oracle/oracle-ui";
-import { KeyRound, ShieldCheck, RefreshCw, FlaskConical, Lock } from "lucide-react";
+import { KeyRound, RefreshCw, FlaskConical, Lock } from "lucide-react";
 
 export default function SecretsTab() {
   const { toast } = useToast();

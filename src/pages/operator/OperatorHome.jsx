@@ -2,10 +2,9 @@ import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { ListChecks, Flame, TrendingUp, Clock, ChevronRight, Megaphone, Sparkles } from "lucide-react";
+import { ListChecks, Flame, TrendingUp, ChevronRight, Megaphone } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import OperatorTaskCard from "@/components/operator/OperatorTaskCard";
-import { TASK_STATUS, timeUntil } from "@/components/operator/operatorConstants";
 
 export default function OperatorHome() {
   const navigate = useNavigate();

@@ -25,19 +25,19 @@ export default function LiveClassroom() {
       aiEnabled: liveClass.ai_assistance_enabled,
     });
     return () => classroomMode.exit();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [liveClass?.id, liveClass?.strict_exam_mode, liveClass?.bud_enabled, liveClass?.ai_assistance_enabled]);
 
   // student auto check-in when class is live
   useEffect(() => {
     if (liveClass?.status === "live" && !isLecturer && !joined) join();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [liveClass?.status, isLecturer, joined]);
 
   // finalize student attendance when class ends
   useEffect(() => {
     if (liveClass?.status === "ended" && joined) leave();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [liveClass?.status, joined]);
 
   // leave on unmount
@@ -45,7 +45,7 @@ export default function LiveClassroom() {
     return () => {
       if (c.joined) c.leave();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   if (loading || !liveClass) {

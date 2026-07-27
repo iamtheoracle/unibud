@@ -4,11 +4,9 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Search, Star, MessageCircle, Video, Phone, Calendar,
-  BookOpen, Users, GraduationCap, Briefcase, BadgeCheck, Sparkles,
-  ChevronRight, Clock, Globe, Heart, Send, Loader2, Brain,
+  ArrowLeft, Search, Star, MessageCircle, Video,
+  BookOpen, Users, GraduationCap, Briefcase, BadgeCheck, Send, Loader2, Brain,
 } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
 
 const roleLabels = {
   senior_student: "Senior Student", alumni: "Alumni", lecturer: "Lecturer",

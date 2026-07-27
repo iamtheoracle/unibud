@@ -6,7 +6,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
-import { hapticTap, hapticImpact } from "@/lib/haptics";
+import { hapticTap } from "@/lib/haptics";
 import ReactionBar from "./ReactionBar";
 import PostMediaGallery from "./PostMediaGallery";
 import PostMenu from "./PostMenu";

@@ -13,7 +13,7 @@ function record(level, msg, ctx) {
   buffer.push(entry);
   if (buffer.length > 200) buffer.shift();
   const fn = level === "error" ? "error" : level === "warn" ? "warn" : "log";
-  // eslint-disable-next-line no-console
+   
   console[fn](`[${level}]`, msg, ctx || "");
 }
 

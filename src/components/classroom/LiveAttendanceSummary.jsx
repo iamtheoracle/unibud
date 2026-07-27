@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, Clock, LogOut, AlertTriangle, Sparkles, Bell } from "lucide-react";
+import { CheckCircle2, Sparkles, Bell } from "lucide-react";
 
 /**
  * LiveAttendanceSummary — shown after a class ends. Displays the post-class

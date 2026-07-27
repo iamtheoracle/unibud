@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { X, Loader2, Check, Trash2, History, MessageSquare, Plus, Send, Crown } from "lucide-react";
+import { X, Check, Trash2, History, MessageSquare, Plus, Send, Crown } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { formatDistanceToNow } from "date-fns";
 import { parseMentions } from "@/lib/collaboration/collabEngine";

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { User, Camera, ArrowRight, Loader2, Check, ChevronDown, SkipForward, Sparkles, Rocket, GraduationCap } from "lucide-react";
+import { User, Camera, ArrowRight, Loader2, ChevronDown, SkipForward, Sparkles } from "lucide-react";
 import AuthLogo from "@/components/auth/AuthLogo";
 
 const currentYear = new Date().getFullYear();

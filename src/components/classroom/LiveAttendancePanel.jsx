@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, CheckCircle2, Clock, LogOut, AlertTriangle, Wifi, ShieldAlert } from "lucide-react";
+import { Users, CheckCircle2, LogOut, ShieldAlert } from "lucide-react";
 
 function fmtTime(s) {
   const m = Math.floor(s / 60);

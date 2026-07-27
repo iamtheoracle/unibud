@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { Activity, TrendingUp, Users, LifeBuoy } from "lucide-react";
+import { Activity, Users, LifeBuoy } from "lucide-react";
 
 export default function OracleContextSidebar({ module }) {
   const [stats, setStats] = useState({ users: 0, tickets: 0 });

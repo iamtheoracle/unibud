@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Award, Trophy, PartyPopper, Rocket, Star, Users, Heart,
-  BookOpen, Brain, Shield, GraduationCap, Flame, CheckCircle2,
+  Award, Rocket, Users, Heart, Shield, GraduationCap, Flame, CheckCircle2,
   ChevronRight, Share2, Lock, Globe, Sparkles, X, Target, TrendingUp,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";

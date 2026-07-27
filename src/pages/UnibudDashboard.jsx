@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pin, Sparkles, ChevronRight } from "lucide-react";
+import { Pin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { rankTools, buildGreeting, setGoals, getGoals, TOOL_DEFINITIONS } from "@/lib/unibud";

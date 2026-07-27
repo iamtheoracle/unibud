@@ -1,13 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   Users, Boxes, LifeBuoy, Activity, Shield, Zap, Server, Database,
-  Cpu, HardDrive, ScrollText, Crown, AlertTriangle, Power, Flag,
-  Bot, BarChart3, Lock, Cpu as Automation, TrendingUp,
+  Cpu, HardDrive, ScrollText, Crown, AlertTriangle, Power,
+  Bot, Lock,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { DashboardCard, SectionCard, StatusPill, PortalPageHeader, SmartList } from "@/components/portal/PortalUI";
+import { DashboardCard, SectionCard, StatusPill, SmartList } from "@/components/portal/PortalUI";
 import { PLATFORM_MODULES, MODULE_CATEGORIES } from "@/lib/portalConfig";
 import { COMPANY_IDENTITY, PLATFORM_IDENTITY } from "@/lib/companyIdentity";
 import { useNavigate } from "react-router-dom";

@@ -44,7 +44,7 @@ export default function ExamTaker() {
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => { if (attempt && left === 0 && !submitting) submit(true); /* eslint-disable-next-line */ }, [left]);
+  useEffect(() => { if (attempt && left === 0 && !submitting) submit(true);   }, [left]);
 
   useEffect(() => {
     if (!paper?.is_proctored) return;

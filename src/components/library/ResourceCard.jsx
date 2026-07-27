@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Book, FileText, FileQuestion, NotebookPen, FlaskConical, Bookmark, Download, Clock } from "lucide-react";
+import { Book, FileText, FileQuestion, NotebookPen, FlaskConical, Download, Clock } from "lucide-react";
 
 const TYPE_ICONS = {
   book: Book, journal: FileText, paper: FileText,

@@ -5,10 +5,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Search, Plus, Users, BookOpen, Lock, Globe,
-  ChevronRight, Hash, GraduationCap, Video, Mic,
-  Sparkles, X, Calendar, Check,
+  ChevronRight, Hash, GraduationCap,
+  Sparkles, X, Check,
 } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap, hapticImpact } from "@/lib/haptics";
 

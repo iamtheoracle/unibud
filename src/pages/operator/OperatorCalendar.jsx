@@ -4,7 +4,6 @@ import { CalendarDays, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import OperatorTaskCard from "@/components/operator/OperatorTaskCard";
-import { timeUntil } from "@/components/operator/operatorConstants";
 
 export default function OperatorCalendar() {
   const navigate = useNavigate();

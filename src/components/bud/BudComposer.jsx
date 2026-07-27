@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, Image as ImageIcon, FileText, Mic, Send, X } from "lucide-react";
+import { Camera, Image as ImageIcon, FileText, Mic, Send } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 const QUICK_SUGGESTIONS = [

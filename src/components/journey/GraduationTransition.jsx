@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  Award, Check, Loader2, PartyPopper, X, ChevronDown,
-  GraduationCap, Briefcase, ArrowRight,
+  Award, Check, Loader2, X, ChevronDown,
+  GraduationCap, ArrowRight,
 } from "lucide-react";
 
 // Transition modal for graduating students → alumni, or alumni → postgraduate.

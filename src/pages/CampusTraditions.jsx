@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Calendar, MapPin, Sparkles, Trophy, Music, Palette,
+  ArrowLeft, Calendar, MapPin, Trophy, Music, Palette,
   Users, Heart, Lightbulb, Rocket, BookOpen, PartyPopper,
   Briefcase, Globe, MessageCircle, Code, Star, GraduationCap,
   Award, Flag, Dumbbell, Flame,

@@ -81,6 +81,9 @@ module.exports = {
         'float-in': 'float-in 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         'slide-up': 'slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
         'pulse-soft': 'pulse-soft 2s ease-in-out infinite'
+  		},
+  		transitionTimingFunction: {
+        'unibud': 'cubic-bezier(0.16, 1, 0.3, 1)'
   		}
   	}
   },

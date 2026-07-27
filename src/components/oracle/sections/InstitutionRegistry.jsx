@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
-import { SectionHeader, Panel, StatusPill, DataTable, SearchInput, Btn, LoadingState, EmptyState } from "@/components/oracle/oracle-ui";
+import { SectionHeader, Panel, StatusPill, DataTable, SearchInput, Btn, LoadingState } from "@/components/oracle/oracle-ui";
 import { Building2, Plus, Power, Archive, Pencil, X } from "lucide-react";
 
 const TYPES = ["university", "private_university", "polytechnic", "college_of_education", "technical_college", "online_academy", "other"];

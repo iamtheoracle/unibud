@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Activity, CheckCircle2, AlertTriangle, Server, Database, HardDrive, Cpu, Zap } from "lucide-react";
 
 const SERVICES = [

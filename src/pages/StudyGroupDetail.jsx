@@ -5,8 +5,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Users, MessageCircle, ListTodo, Video, Mic, Share2,
-  Send, Plus, CheckCircle2, Circle, Loader2, Hash, BookOpen,
-  Calendar, Lock, Globe, GraduationCap, Link2, MoreVertical, Trash2,
+  Send, Plus, CheckCircle2, Circle, Loader2,
+  Calendar, Link2,
 } from "lucide-react";
 
 const TABS = [

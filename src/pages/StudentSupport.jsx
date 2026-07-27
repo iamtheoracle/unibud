@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Heart, Brain, Home, Clock, Users, BookOpen,
-  AlertCircle, MessageCircle, Send, Lock, CheckCircle2,
+  AlertCircle, Send, Lock, CheckCircle2,
   Loader2, ChevronRight, Phone, LifeBuoy, Sparkles,
 } from "lucide-react";
 

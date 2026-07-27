@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mic, Brain, MessageSquare, Sparkles, Send, Maximize2 } from "lucide-react";
+import { X, Mic, MessageSquare, Send, Maximize2 } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { useBudMemory } from "@/hooks/useBudMemory";
 import { base44 } from "@/api/base44Client";

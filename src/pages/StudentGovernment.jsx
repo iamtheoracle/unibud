@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Crown, Users, Vote, ChevronRight, Building,
+  ArrowLeft, Crown, Users, Vote, ChevronRight,
   GraduationCap, Shield, CheckCircle2, Clock, Calendar,
 } from "lucide-react";
 

@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/use-toast";
 import { Plus, Check, ChevronDown, ChevronRight } from "lucide-react";
-import { EXAM_TYPES } from "@/lib/exam/examTypes";
 
 export default function QuestionEditor({ paperId, onSaved }) {
   const [open, setOpen] = useState(false);

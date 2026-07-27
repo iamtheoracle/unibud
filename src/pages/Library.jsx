@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Sparkles, BookOpen, FileQuestion, NotebookPen, Clock, ChevronRight, Bookmark, FolderOpen, Plus, Quote } from "lucide-react";
+import { Search, Sparkles, BookOpen, FileQuestion, NotebookPen, ChevronRight, FolderOpen, Plus, Quote } from "lucide-react";
 import ResourceCard from "@/components/library/ResourceCard";
 
 const CATEGORIES = [

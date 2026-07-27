@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  Crown, Sparkles, ChevronRight, Database, X,
+  Crown, Sparkles, X,
 } from "lucide-react";
 import { SectionCard, StatusPill, PortalPageHeader } from "@/components/portal/PortalUI";
 import {

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import PageHeader from "@/components/academics/PageHeader";
 import DashboardShell from "@/components/uds/DashboardShell";

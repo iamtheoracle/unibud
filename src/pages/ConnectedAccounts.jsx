@@ -5,11 +5,10 @@ import { base44 } from "@/api/base44Client";
 import {
   Building, ShieldCheck, Lock, RefreshCw, Unlink, CheckCircle2,
   AlertCircle, Loader2, ArrowLeft, Mail, Hash, Globe, Bell,
-  Smartphone, MessageCircle, Calendar, Plus, Trash2, Sparkles,
-  Brain, Clock,
+  Smartphone, MessageCircle, Calendar, Plus, Sparkles, Clock,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { UNIVERSITIES, getUniversityIntegrations } from "@/data/universities";
+import { UNIVERSITIES } from "@/data/universities";
 
 const METHOD_LABELS = {
   matriculation_number: "Matriculation Number",

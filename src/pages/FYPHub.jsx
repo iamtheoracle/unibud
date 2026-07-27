@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Search, Star, Github, FileText, Video,
-  Image, Users, Heart, MessageCircle, Award, Sparkles,
-  ChevronRight, Filter, Rocket, Lightbulb, Code, Cpu,
+  ArrowLeft, Search, Star, Github, FileText, Video, Heart, Sparkles, Rocket, Lightbulb, Code, Cpu,
 } from "lucide-react";
 
 const TYPE_FILTERS = ["All", "Featured", "Software", "Hardware", "Research", "Prototype"];

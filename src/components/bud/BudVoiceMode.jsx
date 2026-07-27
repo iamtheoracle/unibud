@@ -1,6 +1,5 @@
 import React, { useState, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mic, X, Sparkles } from "lucide-react";
+import { Mic } from "lucide-react";
 import BudVoiceOrb from "@/components/bud/BudVoiceOrb";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 

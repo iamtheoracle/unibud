@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, X, Loader2, ListChecks, MessageSquareText, PenLine, Languages, CalendarPlus } from "lucide-react";
+import { Sparkles, X, Loader2, ListChecks, MessageSquareText, PenLine, CalendarPlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useSmartInbox } from "@/lib/communication/useSmartInbox";
 import { summarizeConversation, suggestReplies, draftMessage } from "@/lib/communication/sparkComm";

@@ -5,7 +5,6 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import EmptyState from "@/components/ui/EmptyState";
 import { Megaphone, Inbox } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const DEMO_ANNOUNCEMENTS = [

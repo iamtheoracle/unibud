@@ -2,9 +2,8 @@ import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Clock, AlertTriangle, CalendarDays, TrendingUp, Sparkles, ChevronRight } from "lucide-react";
-import { base44 } from "@/api/base44Client";
 import { useCollaboration } from "@/lib/collaboration/useCollaboration";
-import { computeProgress, overdueCount, countdown, fetchAcademicProgress } from "@/lib/collaboration/progress";
+import { overdueCount, fetchAcademicProgress } from "@/lib/collaboration/progress";
 import { fetchUnifiedTimeline } from "@/lib/collaboration/unifiedTimeline";
 import { CircularProgress, Countdown } from "@/components/collaboration/VisualProgress";
 

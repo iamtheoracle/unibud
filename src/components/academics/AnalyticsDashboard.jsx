@@ -6,7 +6,7 @@ import {
   TrendingUp, Clock, GraduationCap, CheckCircle2, BookOpen, Award,
   Brain, Sparkles, Target, Flame, Zap, AlertCircle,
 } from "lucide-react";
-import { AreaChart, Area, LineChart, Line, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from "recharts";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, Radar } from "recharts";
 import GlassCard from "@/components/ui/GlassCard";
 import CircularProgressRing from "@/components/academics/CircularProgressRing";
 

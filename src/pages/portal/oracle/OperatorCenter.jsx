@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   Settings, LifeBuoy, FileEdit, ShoppingBag, CalendarDays, Landmark,
-  UserPlus, ChevronRight, AlertCircle, CheckCircle2, Clock, Eye,
+  UserPlus, ChevronRight, AlertCircle, CheckCircle2, Eye,
   ShieldAlert, Siren, FileCheck, Server, Database, HardDrive,
   BellRing, Activity, ScanSearch,
 } from "lucide-react";

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   ClipboardList, Megaphone, CalendarPlus, Upload, Video,
-  UsersRound, ListChecks, BarChart3, X, CheckCircle2, Zap, Keyboard,
+  UsersRound, ListChecks, BarChart3, X, Zap, Keyboard,
 } from "lucide-react";
 import NewAssignmentForm from "@/components/portal/quick-actions/NewAssignmentForm";
 import NewAnnouncementForm from "@/components/portal/quick-actions/NewAnnouncementForm";

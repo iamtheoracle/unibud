@@ -3,16 +3,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import {
-  Building2, BadgeCheck, Users, Clock, HelpCircle, Save, Loader2,
-  IdCard, CalendarDays, GraduationCap, BookOpen, Palette, Phone,
-  FlaskConical, MapPin, FileText, Sparkles, Plus, Trash2,
+  Building2, Users, Save, Loader2,
+  IdCard, CalendarDays, GraduationCap, BookOpen, Phone, MapPin, FileText, Plus, Trash2,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import InstitutionStatusBadge from "@/components/institution/InstitutionStatusBadge";
 import {
-  INSTITUTION_TYPES, IDENTIFIER_TYPES, VERIFICATION_STATUSES,
+  INSTITUTION_TYPES, IDENTIFIER_TYPES,
   MATRICULATION_TIMING, CREDIT_SYSTEMS, TERM_TYPES, ORG_UNIT_TYPES,
-  getInstitutionType,
 } from "@/lib/institutionConfig";
 import { useToast } from "@/components/ui/use-toast";
 

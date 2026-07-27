@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 /** PresenceIndicator — shows active collaborators with live status + the
  *  item they're currently viewing/editing. Driven by usePresence. */

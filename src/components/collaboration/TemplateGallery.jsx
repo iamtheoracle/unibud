@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Loader2, Check, ArrowRight } from "lucide-react";
+import { X, Loader2, Check } from "lucide-react";
 import { TEMPLATES } from "@/lib/collaboration/templates";
 
 /** TemplateGallery — pick a Smart Project Template to seed a workspace. */

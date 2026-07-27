@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { isPortalRole, isPlatformRole, isOracleRole, isOperatorRole } from "@/lib/portalConfig";
+import { isPortalRole, isOperatorRole } from "@/lib/portalConfig";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BottomNav from "@/components/layout/BottomNav";
 import CampusTutorial from "@/components/onboarding/CampusTutorial";

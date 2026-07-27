@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Play, Pause, Square, BookOpen, Brain, Clock,
-  Target, Sparkles, CheckCircle2, Loader2, Plus, X, Flame,
-  TrendingUp, Zap, Moon,
+  ArrowLeft, Play, Pause, Square, BookOpen, Brain, Clock, CheckCircle2, Loader2, Plus, Zap, Moon,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 

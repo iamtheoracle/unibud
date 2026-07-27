@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Star, BadgeCheck, MessageCircle, Video, Phone, Calendar,
+  ArrowLeft, Star, BadgeCheck, Video, Phone, Calendar,
   BookOpen, Users, GraduationCap, Briefcase, Brain, Globe, Clock,
-  Send, Loader2, Sparkles, CheckCircle2, AlertCircle, Heart, Award, Building,
+  Send, Loader2, CheckCircle2, AlertCircle, Heart, Award, Building,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 

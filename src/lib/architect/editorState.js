@@ -44,10 +44,10 @@ export function useEditor(record, { onSave, onPublish, defaultConfig }) {
     if (!record) return;
     const id = setTimeout(() => { saveNow(); }, 900);
     return () => clearTimeout(id);
-  }, [state]); // eslint-disable-line
+  }, [state]);  
 
   // re-sync when switching records
-  useEffect(() => { reset(record?.config || defaultConfig); }, [record?.id]); // eslint-disable-line
+  useEffect(() => { reset(record?.config || defaultConfig); }, [record?.id]);  
 
   const publishNow = useCallback(async () => { if (!record) return; await saveNow(); onPublish(record.id); }, [record, saveNow, onPublish]);
 

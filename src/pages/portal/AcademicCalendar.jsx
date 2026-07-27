@@ -6,7 +6,7 @@ import {
   ExternalLink, Loader2, Calendar as CalendarIcon, X, AlertCircle,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { PortalPageHeader, SectionCard, StatusPill } from "@/components/portal/PortalUI";
+import { PortalPageHeader, SectionCard } from "@/components/portal/PortalUI";
 
 const EVENT_TYPE_COLORS = {
   exam: "bg-error/10 text-error border-error/20",
