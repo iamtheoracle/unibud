@@ -245,34 +245,111 @@
 }
 
 @layer utilities {
-  /* ── Liquid Glass ── adapts to light/dark via vars */
+  /* ── Crystal Glass ── premium layered material with reflections & edge lighting ── */
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.65);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.65);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.06);
   }
   .glass-strong {
     background: var(--glass-bg-strong);
-    backdrop-filter: blur(48px) saturate(1.7);
-    -webkit-backdrop-filter: blur(48px) saturate(1.7);
+    backdrop-filter: blur(48px) saturate(1.8);
+    -webkit-backdrop-filter: blur(48px) saturate(1.8);
     border: 1px solid var(--glass-border-strong);
-    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.10);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.04);
   }
   .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.65);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.65);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.06);
     border-radius: 28px;
+    position: relative;
+  }
+  /* Premium crystal card — layered reflections + edge lighting + internal glow */
+  .crystal-card {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(44px) saturate(1.85);
+    -webkit-backdrop-filter: blur(44px) saturate(1.85);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--shadow-premium), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.04);
+    border-radius: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .crystal-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 38%, transparent 62%, rgba(255,255,255,0.035) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .crystal-card > * { position: relative; z-index: 1; }
+  /* Floating crystal dock — premium frosted navigation */
+  .crystal-dock {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(52px) saturate(1.9);
+    -webkit-backdrop-filter: blur(52px) saturate(1.9);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(255,255,255,0.05);
   }
 
   .ice-glow { box-shadow: var(--shadow-ice); }
   .premium-shadow { box-shadow: var(--shadow-premium); }
   .soft-shadow { box-shadow: var(--shadow-soft); }
   .elevated-shadow { box-shadow: var(--shadow-elevated); }
+
+  /* ── Premium card layers ── */
+  .hover-lift {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.08); }
+  }
+  .hover-lift:active { transform: translateY(-1px) scale(0.995); }
+
+  /* Light bloom — ambient light pooling behind hero elements */
+  .light-bloom {
+    position: relative;
+  }
+  .light-bloom::after {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    border-radius: inherit;
+    background: radial-gradient(60% 50% at 50% 0%, hsl(var(--primary) / 0.10), transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Edge lighting — top specular catch line */
+  .edge-light {
+    position: relative;
+  }
+  .edge-light::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 12%; right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    pointer-events: none;
+    border-radius: 999px;
+  }
+
+  /* Internal glow — soft inner luminance for premium surfaces */
+  .internal-glow {
+    box-shadow: var(--shadow-premium), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 0 24px rgba(37,99,235,0.04);
+  }
+
+  /* Premium gradient surface — subtle brand-tinted ambient */
+  .premium-surface {
+    background: linear-gradient(160deg, hsl(var(--card) / 0.6) 0%, hsl(var(--surface-secondary) / 0.5) 100%);
+  }
 
   .text-ice-gradient {
     background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 100%);
