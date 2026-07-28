@@ -4,6 +4,7 @@ import {
   isCategoryMuted, applyBudTone, leadsFor,
 } from "../../shared/notifications.ts";
 
+// Bud Notification Engine — hourly proactive reminder orchestrator (deployment refreshed)
 const WEEKDAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const STREAK_MILESTONES = [3, 7, 14, 21, 30, 50, 100];
 
