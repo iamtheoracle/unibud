@@ -10,12 +10,14 @@ import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/academics/EmptyState";
 import QRShareSheet from "@/components/shared/QRShareSheet";
 import { timeAgo } from "@/components/quad/quadConstants";
+import CourseContent from "@/components/academics/CourseContent";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 const TABS = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
-  { key: "materials", label: "Materials", icon: BookOpen },
+  { key: "content", label: "Content", icon: BookOpen },
+  { key: "materials", label: "My Notes", icon: FileText },
   { key: "assignments", label: "Assignments", icon: FileText },
   { key: "classmates", label: "Classmates", icon: Users },
 ];
@@ -39,6 +41,7 @@ export default function CourseSpace() {
   const { courseId } = useParams();
   const [tab, setTab] = useState("overview");
   const [shareOpen, setShareOpen] = useState(false);
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
   const { data: course, isLoading } = useQuery({
     queryKey: ["course", courseId],
@@ -144,6 +147,7 @@ export default function CourseSpace() {
       </div>
 
       {tab === "overview" && <Overview course={course} notes={notes || []} assignments={assignments || []} attPct={attPct} />}
+      {tab === "content" && <CourseContent course={course} user={user} />}
       {tab === "materials" && <Materials notes={notes || []} code={code} />}
       {tab === "assignments" && <Assignments list={assignments || []} code={code} />}
       {tab === "classmates" && <Classmates list={classmates || []} loading={matesLoading} />}
