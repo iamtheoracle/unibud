@@ -25,7 +25,7 @@ const SUGGESTIONS = ["What should I focus on today?", "Quiz me on my weakest top
  * transparent memory timeline with full privacy controls.
  */
 export default function BudCompanion() {
-  const { open, setOpen, voiceMode, setVoiceMode } = useBudLauncher();
+  const { open, setOpen, voiceMode, setVoiceMode, pendingPrompt, clearPrompt } = useBudLauncher();
   const bud = useBudMemory();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -73,6 +73,17 @@ export default function BudCompanion() {
       setLoading(false);
     }
   };
+
+  // Auto-send a prompt handed in from the launcher (BudHero quick prompts).
+  useEffect(() => {
+    if (open && pendingPrompt) {
+      const p = pendingPrompt;
+      clearPrompt();
+      setTab("chat");
+      const t = setTimeout(() => send(p), 280);
+      return () => clearTimeout(t);
+    }
+  }, [open, pendingPrompt]);
 
   return (
     <AnimatePresence>
