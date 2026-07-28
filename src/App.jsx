@@ -164,6 +164,11 @@ const SecurityCenter = lazy(() => import("@/pages/SecurityCenter"));
 // Milestone 34 — Intelligent Admin Platform
 const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 
+// Legal & Info — public standalone routes
+const Privacy = lazy(() => import("@/pages/legal/Privacy"));
+const Terms = lazy(() => import("@/pages/legal/Terms"));
+const About = lazy(() => import("@/pages/legal/About"));
+
 function App() {
   return (
     <AuthProvider>
@@ -184,6 +189,9 @@ function App() {
                   <Route path="/mode-select" element={<ModeSelector />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/about" element={<About />} />
                   <Route element={<AppShell />}>
                     <Route path="/home" element={<Home />} />
                     <Route path="/bud" element={<BudHome />} />

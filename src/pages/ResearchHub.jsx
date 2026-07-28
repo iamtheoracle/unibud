@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, FlaskConical } from "lucide-react";
+import { Search, FlaskConical } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import ResearchCard from "@/components/career/ResearchCard";
+import ScreenShell from "@/components/layout/ScreenShell";
 import { RESEARCH_TYPES } from "@/components/career/careerConstants";
 
 const DEMO_PROJECTS = [
@@ -21,7 +21,6 @@ const FILTER_KEYS = Object.keys(RESEARCH_TYPES);
 
 export default function ResearchHub() {
   const { isDemoMode } = useDemoMode();
-  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -44,34 +43,28 @@ export default function ResearchHub() {
   });
 
   return (
-    <div className="min-h-screen pb-8">
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Research Hub</h1>
-          <p className="text-[12px] text-muted-foreground">Groups · Publications · Labs</p>
+    <ScreenShell
+      title="Research Hub"
+      subtitle="Groups · Publications · Labs"
+      back
+      actions={
+        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center" aria-hidden>
+          <FlaskConical className="w-5 h-5 text-accent" strokeWidth={2} />
         </div>
-        <div className="w-10 h-10 rounded-full bg-purple/10 flex items-center justify-center">
-          <FlaskConical className="w-5 h-5 text-purple" strokeWidth={2} />
-        </div>
+      }
+    >
+      <div className="relative mt-4 mb-4">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search research..."
+          className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 soft-shadow"
+        />
       </div>
 
-      <div className="px-4 mb-4">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search research..."
-            className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 soft-shadow"
-          />
-        </div>
-      </div>
-
-      <div className="px-4 mb-5">
+      <div className="mb-5">
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
           <button
             onClick={() => setActiveFilter("all")}
@@ -95,22 +88,20 @@ export default function ResearchHub() {
       </div>
 
       {isLoading && !isDemoMode ? (
-        <div className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => <div key={i} className="h-[260px] rounded-[20px] shimmer" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="px-4">
-          <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
-            <EmptyState icon={FlaskConical} title="No research found" description="Start a research project or join an existing group to collaborate" />
-          </div>
+        <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+          <EmptyState icon={FlaskConical} title="No research found" description="Start a research project or join an existing group to collaborate" />
         </div>
       ) : (
-        <div className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {filtered.map((proj, i) => (
             <ResearchCard key={proj.id || i} project={proj} index={i} />
           ))}
         </div>
       )}
-    </div>
+    </ScreenShell>
   );
 }

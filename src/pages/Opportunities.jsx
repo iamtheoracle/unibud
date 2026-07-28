@@ -8,15 +8,15 @@ const TYPES = ["All", "Scholarship", "Internship", "Job", "Competition", "Fellow
 
 const typeIcons = { scholarship: GraduationCap, internship: Briefcase, competition: Trophy, research: Globe, job: Briefcase, fellowship: Award, grant: Award, exchange: Globe, volunteering: Briefcase, mentorship: Briefcase };
 const withAlpha = (hsl, a = 0.08) => hsl.replace("))", ") / " + a + ")");
-const typeColors = { scholarship: "hsl(var(--unibud-green))", internship: "hsl(var(--unibud-blue))", competition: "hsl(var(--unibud-gold))", research: "hsl(var(--unibud-purple))", job: "hsl(var(--unibud-red))", fellowship: "hsl(var(--unibud-orange))", grant: "hsl(var(--unibud-green))" };
+const typeColors = { scholarship: "hsl(var(--success))", internship: "hsl(var(--information))", competition: "hsl(var(--gold))", research: "hsl(var(--accent))", job: "hsl(var(--error))", fellowship: "hsl(var(--warning))", grant: "hsl(var(--success))" };
 
 const TRACKER_STATUSES = [
-  { key: "interested", label: "Interested", color: "hsl(var(--unibud-n3))" },
-  { key: "preparing", label: "Preparing", color: "hsl(var(--unibud-orange))" },
-  { key: "applied", label: "Applied", color: "hsl(var(--unibud-blue))" },
-  { key: "interview", label: "Interview", color: "hsl(var(--unibud-purple))" },
-  { key: "offered", label: "Offered", color: "hsl(var(--unibud-green))" },
-  { key: "rejected", label: "Rejected", color: "hsl(var(--unibud-red))" },
+  { key: "interested", label: "Interested", color: "hsl(var(--muted-foreground))" },
+  { key: "preparing", label: "Preparing", color: "hsl(var(--warning))" },
+  { key: "applied", label: "Applied", color: "hsl(var(--information))" },
+  { key: "interview", label: "Interview", color: "hsl(var(--accent))" },
+  { key: "offered", label: "Offered", color: "hsl(var(--success))" },
+  { key: "rejected", label: "Rejected", color: "hsl(var(--error))" },
 ];
 
 export default function Opportunities() {
@@ -77,7 +77,7 @@ export default function Opportunities() {
           <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Opportunities</h1>
           <p className="text-[12px] text-muted-foreground">Discover your next big step</p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow"><Trophy className="w-5 h-5 text-primary-foreground" /></div>
+        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow"><Trophy className="w-5 h-5 text-primary-foreground" /></div>
       </motion.div>
 
       <div className="px-4 mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
@@ -183,7 +183,7 @@ export default function Opportunities() {
             return (
               <motion.div key={t.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover">
                 <div className="flex items-start gap-3 mb-2.5">
-                  <div className="w-11 h-11 rounded-[16px] flex items-center justify-center" style={{ backgroundColor: withAlpha(typeColors[t.type] || "hsl(var(--unibud-gold))") }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "hsl(var(--unibud-gold))" }} /></div>
+                  <div className="w-11 h-11 rounded-[16px] flex items-center justify-center" style={{ backgroundColor: withAlpha(typeColors[t.type] || "hsl(var(--gold))") }}><FileCheck className="w-5 h-5" style={{ color: typeColors[t.type] || "hsl(var(--gold))" }} /></div>
                   <div className="flex-1 min-w-0"><p className="font-heading font-semibold text-[13px] text-foreground">{t.opportunity_title}</p><p className="text-[11px] text-muted-foreground">{t.organization}</p></div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -207,7 +207,7 @@ export default function Opportunities() {
 
 function OpportunityCard({ opp, onToggleSave, onTrack, delay = 0, compact }) {
   const Icon = typeIcons[opp.type] || Briefcase;
-  const color = typeColors[opp.type] || "hsl(var(--unibud-gold))";
+  const color = typeColors[opp.type] || "hsl(var(--gold))";
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 card-hover">
       <div className="flex items-start gap-3">
