@@ -1,49 +1,50 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { resolveContext } from "@/lib/navigation/contextMap";
+import { resolveWorkspace } from "@/lib/navigation/contextMap";
 
 /**
- * useAdaptiveContext — the intelligence behind the 4th dock slot.
+ * useAdaptiveContext — the intelligence behind the Context Navigator.
  *
- * On entering a workspace (route with a context destination), the slot
- * enters the "context" phase and shows the Context Navigator prominently.
- * The moment the user engages — scrolling, swiping, typing, or tapping into
- * content — it smoothly morphs back to the permanent "Me" tab. A fallback
- * timer also settles it after a few seconds of inactivity.
+ * On entering a workspace, the Context Navigator enters the "context" phase
+ * and shows prominently. The moment the user engages — scrolling, swiping,
+ * typing, or tapping into content — it smoothly settles to a compact movable
+ * chip. A fallback timer also settles it after a few seconds of inactivity.
+ * Tapping the chip re-expands the prominent navigator.
  */
 const PROMINENT_MS = 4500;
 
 export function useAdaptiveContext() {
   const { pathname } = useLocation();
-  const ctx = resolveContext(pathname);
-  const [phase, setPhase] = useState("me"); // "context" | "me"
+  const workspace = resolveWorkspace(pathname);
+  const [phase, setPhase] = useState("settled"); // "context" | "settled"
   const interactedRef = useRef(false);
 
   // Reveal the Context Navigator on workspace entry; reset on navigation.
   useEffect(() => {
     interactedRef.current = false;
-    if (ctx) {
+    if (workspace) {
       setPhase("context");
-      const t = setTimeout(() => setPhase("me"), PROMINENT_MS);
+      const t = setTimeout(() => setPhase("settled"), PROMINENT_MS);
       return () => clearTimeout(t);
     }
-    setPhase("me");
+    setPhase("settled");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
-  // Settle back to the permanent dock on first genuine interaction.
+  // Settle back to the compact chip on first genuine interaction.
   useEffect(() => {
     if (phase !== "context") return;
     const settle = () => {
       if (interactedRef.current) return;
       interactedRef.current = true;
-      setPhase("me");
+      setPhase("settled");
     };
     const onScroll = () => settle();
     const onKey = () => settle();
     const onClick = (e) => {
-      // Tapping the dock itself is navigation, not engagement with content.
-      if (e.target.closest && e.target.closest("nav")) return;
+      // Tapping the dock or the Context Navigator itself is navigation, not engagement.
+      const t = e.target;
+      if (t && t.closest && (t.closest("nav") || t.closest("[data-context-navigator]"))) return;
       settle();
     };
     const opts = { passive: true };
@@ -61,5 +62,11 @@ export function useAdaptiveContext() {
     };
   }, [phase]);
 
-  return { ctx, phase };
+  // Re-expand from the chip; reset the interaction guard so it can settle again.
+  const expand = () => {
+    interactedRef.current = false;
+    setPhase("context");
+  };
+
+  return { workspace, phase, expand };
 }
