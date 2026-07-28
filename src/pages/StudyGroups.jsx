@@ -10,20 +10,22 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap, hapticImpact } from "@/lib/haptics";
+import ScreenShell from "@/components/layout/ScreenShell";
+import IconAction from "@/components/layout/IconAction";
 
 const typeConfig = {
-  public: { icon: Globe, color: "text-info", label: "Public" },
+  public: { icon: Globe, color: "text-information", label: "Public" },
   private: { icon: Lock, color: "text-warning", label: "Private" },
   course: { icon: BookOpen, color: "text-primary", label: "Course" },
   exam_revision: { icon: GraduationCap, color: "text-error", label: "Exam Prep" },
-  department: { icon: Users, color: "text-purple", label: "Department" },
+  department: { icon: Users, color: "text-accent", label: "Department" },
   faculty: { icon: Users, color: "text-success", label: "Faculty" },
-  project_team: { icon: Hash, color: "text-info", label: "Project" },
+  project_team: { icon: Hash, color: "text-information", label: "Project" },
 };
 
 const accentColors = [
-  "hsl(var(--unibud-gold))", "hsl(var(--unibud-blue))", "hsl(var(--unibud-purple))",
-  "hsl(var(--unibud-green))", "hsl(var(--unibud-orange))", "hsl(var(--unibud-red))",
+  "hsl(var(--gold))", "hsl(var(--primary))", "hsl(var(--accent))",
+  "hsl(var(--success))", "hsl(var(--warning))", "hsl(var(--error))",
 ];
 
 export default function StudyGroups() {
@@ -136,23 +138,15 @@ export default function StudyGroups() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Study Groups</h1>
-          <p className="text-[12px] text-muted-foreground">Learn together, achieve more</p>
-        </div>
-        <button onClick={() => setShowCreate(true)} className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow spring-tap">
-          <Plus className="w-5 h-5 text-primary-foreground" />
-        </button>
-      </div>
+    <ScreenShell
+      back
+      title="Study Groups"
+      subtitle="Learn together, achieve more"
+      actions={<IconAction icon={Plus} variant="primary" onClick={() => setShowCreate(true)} label="Create group" />}
+    >
 
       {/* Search */}
-      <div className="px-4 pb-3">
+      <div className="pb-3">
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input type="text" value={search} onChange={e => setSearch(e.target.value)}
@@ -162,7 +156,7 @@ export default function StudyGroups() {
       </div>
 
       {/* Filters */}
-      <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="pb-3 flex gap-2 overflow-x-auto no-scrollbar">
         {["All", "Course", "Exam Revision", "Department", "Project Team"].map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className={`px-3.5 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap ${filter === f ? "bg-foreground text-background soft-shadow" : "bg-card border border-border/40 text-muted-foreground"}`}>
@@ -173,7 +167,7 @@ export default function StudyGroups() {
 
       {/* Bud Recommendations */}
       {!search && filter === "All" && recommended.length > 0 && (
-        <div className="px-4 mb-4">
+        <div className="mb-4">
           <div className="flex items-center gap-2 mb-2.5 px-1">
             <Sparkles className="w-4 h-4 text-primary" />
             <h3 className="font-heading font-bold text-[14px] text-foreground">Bud Recommends</h3>
@@ -187,7 +181,7 @@ export default function StudyGroups() {
       )}
 
       {/* Groups list */}
-      <div className="px-4 space-y-3">
+      <div className="space-y-3">
         {isLoading ? (
           [1,2,3,4].map(i => <div key={i} className="h-[100px] rounded-[20px] shimmer" />)
         ) : filtered.length === 0 ? (
@@ -209,13 +203,13 @@ export default function StudyGroups() {
       {showCreate && (
         <CreateGroupModal form={form} setForm={setForm} onClose={() => setShowCreate(false)} onCreate={handleCreate} user={user} />
       )}
-    </div>
+    </ScreenShell>
   );
 }
 
 function GroupMiniCard({ group, onJoin, delay }) {
   const config = typeConfig[group.type] || typeConfig.public;
-  const accent = group.accent_color || "hsl(var(--unibud-gold))";
+  const accent = group.accent_color || "hsl(var(--gold))";
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -240,7 +234,7 @@ function GroupMiniCard({ group, onJoin, delay }) {
 
 function GroupCard({ group, onJoin, delay }) {
   const config = typeConfig[group.type] || typeConfig.public;
-  const accent = group.accent_color || "hsl(var(--unibud-gold))";
+  const accent = group.accent_color || "hsl(var(--gold))";
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

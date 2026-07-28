@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Search, Sparkles, ArrowRight } from "lucide-react";
 import { ACADEMIC_CATEGORIES, ACADEMIC_GROUPS } from "@/lib/academics/registry";
 import { useAcademicRecommendations } from "@/hooks/useAcademicRecommendations";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -26,13 +27,9 @@ export default function AcademicHub() {
   const recommended = recs.slice(0, 3).map((k) => ACADEMIC_CATEGORIES.find((c) => c.key === k)).filter(Boolean);
 
   return (
-    <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
-      <header className="mb-5">
-        <h1 className="font-heading font-extrabold text-[28px] text-foreground tracking-tight">Academics</h1>
-        <p className="text-[13px] text-muted-foreground mt-1">Your academic operating system — adaptive & focused.</p>
-      </header>
+    <ScreenShell title="Academics" subtitle="Your academic operating system — adaptive & focused." sticky={false}>
 
-      <div className="relative mb-4">
+      <div className="relative mb-4 mt-5">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input
           value={q}
@@ -99,7 +96,7 @@ export default function AcademicHub() {
           ))}
         </div>
       )}
-    </div>
+    </ScreenShell>
   );
 }
 

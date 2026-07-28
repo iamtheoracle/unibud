@@ -53,18 +53,15 @@ export default function Welcome() {
           className="pt-7 flex flex-col items-center text-center"
         >
           <Mountain className="w-9 h-9 text-white/95 mb-3" strokeWidth={1.6} />
-          <h1 className="font-serif font-black tracking-[0.04em] text-[38px] leading-none text-white">
+          <h1 className="font-display font-bold tracking-[0.04em] text-[38px] leading-none text-white">
             UNIBUD
           </h1>
-          <p
-            className="mt-2 text-[11px] font-semibold tracking-[0.34em]"
-            style={{ color: "#d4af37" }}
-          >
+          <p className="mt-2 text-[11px] font-semibold tracking-[0.34em] text-white/55">
             — UNIVERSITY BUDDY —
           </p>
           <div className="mt-3 flex items-center gap-3">
             <span className="h-px w-8 bg-white/45" />
-            <p className="font-serif text-[15px] text-white/95 italic">The Future Starts Together.</p>
+            <p className="font-body text-[15px] text-white/95 italic">The Future Starts Together.</p>
             <span className="h-px w-8 bg-white/45" />
           </div>
         </motion.div>
@@ -77,7 +74,7 @@ export default function Welcome() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.7, ease: EASE }}
-            className="font-serif text-[30px] font-semibold text-white leading-tight"
+            className="font-display text-[30px] font-semibold text-white leading-tight"
           >
             Welcome to Unibud
           </motion.h2>
@@ -98,21 +95,13 @@ export default function Welcome() {
           >
             <button
               onClick={() => navigate("/register")}
-              className="w-full h-[54px] rounded-full flex items-center justify-center font-heading font-semibold text-[15px] tracking-wide text-white spring-tap"
-              style={{
-                background: "linear-gradient(180deg, #1a2a4a 0%, #0e1628 100%)",
-                border: "1px solid #304060",
-              }}
+              className="w-full h-[54px] rounded-full flex items-center justify-center font-heading font-semibold text-[15px] tracking-wide text-primary-foreground spring-tap bg-primary ice-glow"
             >
               Sign Up
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="w-full h-[54px] rounded-full flex items-center justify-center font-heading font-semibold text-[15px] tracking-wide text-white spring-tap"
-              style={{
-                background: "linear-gradient(180deg, #1a2a4a 0%, #0e1628 100%)",
-                border: "1px solid #304060",
-              }}
+              className="w-full h-[54px] rounded-full flex items-center justify-center font-heading font-semibold text-[15px] tracking-wide text-white spring-tap glass border border-white/20"
             >
               Log In
             </button>

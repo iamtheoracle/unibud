@@ -5,6 +5,7 @@ import { Search, Sparkles, ArrowRight } from "lucide-react";
 import { CAMPUS_CATEGORIES, CAMPUS_GROUPS } from "@/lib/campus/registry";
 import { useCampusRecommendations } from "@/hooks/useCampusRecommendations";
 import { useExperience } from "@/lib/ExperienceContext";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -40,15 +41,9 @@ export default function CampusHub() {
   React.useEffect(() => { setSub("all"); }, [mode]);
 
   return (
-    <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
-      <header className="mb-5">
-        <h1 className="font-heading font-extrabold text-[28px] text-foreground tracking-tight">Campus</h1>
-        <p className="text-[13px] text-muted-foreground mt-1">
-          {mode === "academic" ? "Classes, academics & learning tools." : "Campus life, community & activities."}
-        </p>
-      </header>
+    <ScreenShell title="Campus" subtitle={mode === "academic" ? "Classes, academics & learning tools." : "Campus life, community & activities."} sticky={false}>
 
-      <div className="relative mb-4">
+      <div className="relative mb-4 mt-5">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input
           value={q}
@@ -100,7 +95,7 @@ export default function CampusHub() {
           <CampusCard key={c.key} c={c} />
         ))}
       </div>
-    </div>
+    </ScreenShell>
   );
 }
 

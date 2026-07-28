@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-
+import { Home } from 'lucide-react';
 
 export default function PageNotFound({}) {
     const location = useLocation();
@@ -18,58 +18,35 @@ export default function PageNotFound({}) {
             }
         }
     });
-    
+
     return (
-        <div className="min-h-screen flex items-center justify-center p-6 bg-background">
-            <div className="max-w-md w-full">
-                <div className="text-center space-y-6">
-                    {/* 404 Error Code */}
-                    <div className="space-y-2">
-                        <h1 className="text-7xl font-light text-muted-foreground/40">404</h1>
-                        <div className="h-0.5 w-16 bg-border mx-auto"></div>
-                    </div>
-                    
-                    {/* Main Message */}
-                    <div className="space-y-3">
-                        <h2 className="text-2xl font-medium text-foreground">
-                            Page Not Found
-                        </h2>
-                        <p className="text-muted-foreground leading-relaxed">
-                            The page <span className="font-medium text-foreground">"{pageName}"</span> could not be found in this application.
-                        </p>
-                    </div>
-                    
-                    {/* Admin Note */}
+        <div className="min-h-screen flex items-center justify-center p-6 safe-area-pt">
+            <div className="w-full max-w-md text-center">
+                <div className="crystal-card p-8 fade-in-up">
+                    <p className="display-number text-[56px] text-muted-foreground/35">404</p>
+                    <div className="h-px w-12 bg-border mx-auto my-4" />
+                    <h2 className="font-heading font-bold text-[22px] text-foreground">Page not found</h2>
+                    <p className="text-[13px] text-muted-foreground leading-relaxed mt-2">
+                        The page <span className="font-semibold text-foreground">"{pageName}"</span> could not be found.
+                    </p>
+
                     {isFetched && authData.isAuthenticated && authData.user?.role === 'admin' && (
-                        <div className="mt-8 p-4 bg-muted rounded-lg border border-border">
-                            <div className="flex items-start space-x-3">
-                                <div className="flex-shrink-0 w-5 h-5 rounded-full bg-warning/10 flex items-center justify-center mt-0.5">
-                                    <div className="w-2 h-2 rounded-full bg-warning"></div>
-                                </div>
-                                <div className="text-left space-y-1">
-                                    <p className="text-sm font-medium text-foreground">Admin Note</p>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">
-                                        This could mean that the AI hasn't implemented this page yet. Ask it to implement it in the chat.
-                                    </p>
-                                </div>
-                            </div>
+                        <div className="mt-6 p-3.5 rounded-2xl bg-warning/8 border border-warning/20 text-left">
+                            <p className="text-[12px] font-semibold text-foreground">Admin note</p>
+                            <p className="text-[11px] text-muted-foreground leading-relaxed mt-1">
+                                This page may not be implemented yet — ask Bud to build it.
+                            </p>
                         </div>
                     )}
-                    
-                    {/* Action Button */}
-                    <div className="pt-6">
-                        <button
-                            onClick={() => window.location.href = authData?.isAuthenticated ? '/home' : '/'}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted/50 hover:border-border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
-                        >
-                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                            </svg>
-                            Go Home
-                        </button>
-                    </div>
+
+                    <button
+                        onClick={() => { window.location.href = authData?.isAuthenticated ? '/home' : '/'; }}
+                        className="mt-6 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-primary text-primary-foreground font-heading font-semibold text-[13px] spring-tap ice-glow"
+                    >
+                        <Home className="w-4 h-4" /> Go Home
+                    </button>
                 </div>
             </div>
         </div>
-    )
+    );
 }

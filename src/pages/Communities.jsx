@@ -7,6 +7,7 @@ import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import CommunityCard from "@/components/campus/CommunityCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const DEMO_COMMUNITIES = [
   { id: "dc1", name: "University of Benin", type: "university", description: "The official UNIBUD community for all students.", members_count: 12450, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
@@ -59,23 +60,10 @@ export default function Communities() {
   }, [displayCommunities, filter, search]);
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3 sticky top-0 z-20 glass border-b border-border/20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">Communities</h1>
-          <p className="text-[11px] text-muted-foreground">{isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Building2 className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <ScreenShell back title="Communities" subtitle={isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}>
 
       {/* Search */}
-      <div className="px-4 py-3">
+      <div className="py-3">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -88,7 +76,7 @@ export default function Communities() {
       </div>
 
       {/* Filter Chips */}
-      <div className="px-4 pb-3 overflow-x-auto no-scrollbar">
+      <div className="pb-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {FILTER_KEYS.map((key) => {
             const meta = key === "all" ? { label: "All" } : COMMUNITY_TYPES[key];
@@ -113,7 +101,7 @@ export default function Communities() {
       </div>
 
       {/* List */}
-      <div className="px-4 space-y-2.5">
+      <div className="space-y-2.5">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 flex items-center gap-3">
@@ -137,6 +125,6 @@ export default function Communities() {
           ))
         )}
       </div>
-    </div>
+    </ScreenShell>
   );
 }

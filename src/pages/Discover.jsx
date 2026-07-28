@@ -13,6 +13,7 @@ import TopicSection from "@/components/discover/sections/TopicSection";
 import CareersSection from "@/components/discover/sections/CareersSection";
 import SocialSection from "@/components/discover/sections/SocialSection";
 import TrendingSection from "@/components/discover/sections/TrendingSection";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const TOPIC_KEYS = ["sports", "entertainment", "technology"];
 
@@ -57,20 +58,10 @@ export default function Discover() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Discover</h1>
-          <p className="text-[12px] text-muted-foreground">What should I discover today?</p>
-        </div>
-      </div>
+    <ScreenShell back title="Discover" subtitle="What should I discover today?" sticky={false}>
 
       {/* Adaptive category rail */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl px-4 py-3 border-b border-border/30">
+      <div className="sticky top-0 z-20 -mx-5 px-5 py-3 glass border-b border-border/20">
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {rankedCats.map((c) => {
             const Icon = c.icon;
@@ -104,6 +95,6 @@ export default function Discover() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
+    </ScreenShell>
   );
 }
