@@ -18,6 +18,7 @@ import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
 import WalletActivation from "@/components/wallet/WalletActivation";
 import { useToast } from "@/components/ui/use-toast";
 import { pollTransactionStatus } from "@/lib/finance/stripeCheckout";
+import ScreenShell from "@/components/layout/ScreenShell";
 import { queryClientInstance } from "@/lib/query-client";
 
 const SECTION = {
@@ -99,23 +100,20 @@ export default function Wallet() {
   const Active = SECTION[tab] || WalletHome;
 
   return (
-    <div className="min-h-screen pb-12">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Wallet</h1>
-          <p className="text-[12px] text-muted-foreground">How can I manage my money today?</p>
-        </div>
+    <ScreenShell
+      back
+      title="Wallet"
+      subtitle="How can I manage my money today?"
+      sticky={false}
+      actions={
         <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium">
           <ShieldCheck className="w-3.5 h-3.5 text-success" /> Oracle
         </div>
-      </div>
+      }
+    >
 
       {/* Tab rail */}
-      <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-xl px-4 py-3 border-b border-border/30">
+      <div className="sticky top-0 z-20 -mx-5 px-5 py-3 glass border-b border-border/20">
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {WALLET_TABS.map((t) => {
             const Icon = t.icon;
@@ -136,7 +134,7 @@ export default function Wallet() {
       </div>
 
       {/* Active section */}
-      <div className="pt-4 max-w-[560px] mx-auto px-5">
+      <div className="pt-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={tab}
@@ -149,6 +147,6 @@ export default function Wallet() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </div>
+    </ScreenShell>
   );
 }

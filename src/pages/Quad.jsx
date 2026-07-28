@@ -16,6 +16,8 @@ import PullToRefresh from "@/components/ui/PullToRefresh";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useExperience } from "@/lib/ExperienceContext";
 import { queryClientInstance } from "@/lib/query-client";
+import ScreenShell from "@/components/layout/ScreenShell";
+import IconAction from "@/components/layout/IconAction";
 
 const DEMO_POSTS = [
   {
@@ -93,39 +95,22 @@ export default function Quad() {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-    <div className="min-h-screen">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="pt-12 pb-3 px-5 flex items-center justify-between sticky top-0 z-20 glass border-b border-border/20"
-      >
-        <div>
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Quad</h1>
-          <p className="text-[12px] text-muted-foreground font-medium">
-            {isAcademic ? "Course discussions & study collaboration" : "The heart of campus"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link to="/podcasts" className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30" aria-label="Podcasts">
-            <Headphones className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
-          </Link>
-          <button onClick={() => navigate("/discover")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-            <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
-          </button>
-          <button
-            onClick={() => setComposerOpen(true)}
-            className="w-10 h-10 rounded-full bg-primary soft-shadow flex items-center justify-center spring-tap gold-glow"
-          >
-            <PenLine className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
-          </button>
-        </div>
-      </motion.div>
+    <ScreenShell
+      title="Quad"
+      subtitle={isAcademic ? "Course discussions & study collaboration" : "The heart of campus"}
+      sticky={false}
+      actions={
+        <>
+          <IconAction icon={Headphones} to="/podcasts" label="Podcasts" />
+          <IconAction icon={Search} onClick={() => navigate("/discover")} label="Search" />
+          <IconAction icon={PenLine} variant="primary" onClick={() => setComposerOpen(true)} label="Compose" />
+        </>
+      }
+    >
 
       {/* Academic quick links — surface study groups, research, scholarships & internships */}
       {isAcademic && (
-        <div className="px-4 pt-4 grid grid-cols-2 gap-3">
+        <div className="pt-4 grid grid-cols-2 gap-3">
           <Link to="/study-groups" className="flex items-center gap-2.5 px-3.5 py-3 rounded-[18px] glass-card spring-tap">
             <div className="w-9 h-9 rounded-[12px] bg-primary/12 flex items-center justify-center">
               <Users className="w-[18px] h-[18px] text-primary" strokeWidth={2} />
@@ -169,7 +154,7 @@ export default function Quad() {
       {!isAcademic && <StoryBar user={user} isDemoMode={isDemoMode} />}
 
       {/* Feed Tabs */}
-      <div className="px-4 py-3 overflow-x-auto no-scrollbar sticky top-[68px] z-10 glass border-b border-border/20">
+      <div className="-mx-5 px-5 py-3 overflow-x-auto no-scrollbar sticky top-0 z-10 glass border-b border-border/20">
         <div className="flex gap-2">
           {feedTabs.map((tab) => (
             <button
@@ -189,7 +174,7 @@ export default function Quad() {
 
       {/* Quick compose trigger */}
       {!isDemoMode && (
-        <div className="px-4 mb-3">
+        <div className="mb-3">
           <button
             onClick={() => setComposerOpen(true)}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-[20px] bg-card soft-shadow border border-border/40 spring-tap text-left card-hover"
@@ -211,7 +196,7 @@ export default function Quad() {
 
       {/* Feed — always available */}
       {isDemoMode ? (
-        <div className="px-4 space-y-3 pb-8">
+        <div className="space-y-3 pb-8">
           {DEMO_POSTS.map((post) => (
             <PostCard key={post.id} post={post} user={user} index={0} />
           ))}
@@ -229,7 +214,7 @@ export default function Quad() {
         onClose={() => setComposerOpen(false)}
         user={user}
       />
-    </div>
+    </ScreenShell>
     </PullToRefresh>
   );
 }

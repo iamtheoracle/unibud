@@ -11,10 +11,11 @@ import ListingComposer from "@/components/marketplace/ListingComposer";
 import SellerRatingBadge from "@/components/marketplace/SellerRatingBadge";
 import ReviewComposer from "@/components/marketplace/ReviewComposer";
 import ReportModal from "@/components/ecosystem/ReportModal";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const CATEGORIES = ["All", "Textbooks", "Past Questions", "Electronics", "Furniture", "Accommodation", "Tutoring", "Services", "Freelancers", "Jobs", "Tickets", "Other"];
 const catIcons = { textbooks: "📚", past_questions: "📋", electronics: "💻", furniture: "🪑", accommodation: "🏠", tutoring: "🎓", services: "⚡", freelancers: "🧑‍💻", jobs: "💼", tickets: "🎫", other: "📦" };
-const catColors = { textbooks: "from-info to-info/80", past_questions: "from-primary to-primary/80", electronics: "from-purple to-purple/80", furniture: "from-warning to-warning/80", accommodation: "from-success to-success/80", tutoring: "from-success to-success/80", services: "from-destructive to-destructive/80", freelancers: "from-info to-info/80", jobs: "from-purple to-purple/80", tickets: "from-primary to-primary/80", other: "from-muted to-muted-foreground/50" };
+const catColors = { textbooks: "from-information to-information/80", past_questions: "from-primary to-primary/80", electronics: "from-accent to-accent/80", furniture: "from-warning to-warning/80", accommodation: "from-success to-success/80", tutoring: "from-success to-success/80", services: "from-destructive to-destructive/80", freelancers: "from-information to-information/80", jobs: "from-accent to-accent/80", tickets: "from-primary to-primary/80", other: "from-muted to-muted-foreground/50" };
 const condLabel = { new: "New", like_new: "Like New", good: "Good", fair: "Fair" };
 
 const DEMO_LISTINGS = [
@@ -86,17 +87,15 @@ export default function Marketplace() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      <div className="pt-12 pb-3 px-5">
-        <div className="flex items-center gap-1.5">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Marketplace</h1>
-          <span className="px-2 py-0.5 rounded-full bg-success/12 text-success text-[10px] font-bold flex items-center gap-1"><Gift className="w-3 h-3" /> Free</span>
-        </div>
-        <p className="text-[13px] text-muted-foreground mt-0.5">Buy, sell & share on campus — no fees, ever.</p>
-      </div>
+    <ScreenShell
+      title="Marketplace"
+      subtitle="Buy, sell & share on campus — no fees, ever."
+      sticky={false}
+      actions={<span className="px-2 py-0.5 rounded-full bg-success/12 text-success text-[10px] font-bold flex items-center gap-1"><Gift className="w-3 h-3" /> Free</span>}
+    >
 
       {/* Trust banner */}
-      <div className="px-4 mb-3">
+      <div className="mb-3">
         <div className="rounded-[16px] p-3 glass flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-[10px] bg-primary/12 text-primary flex items-center justify-center flex-shrink-0">
             <ShieldCheck className="w-4 h-4" />
@@ -108,18 +107,18 @@ export default function Marketplace() {
       </div>
 
       {/* Search */}
-      <div className="px-4 mb-3 flex gap-2.5">
+      <div className="mb-3 flex gap-2.5">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search marketplace..." className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] focus:outline-none focus:ring-2 focus:ring-primary/20 soft-shadow" />
         </div>
-        <button onClick={() => setComposerOpen(true)} className="w-12 h-12 rounded-[16px] bg-primary flex items-center justify-center soft-shadow spring-tap gold-glow" aria-label="List an item">
+        <button onClick={() => setComposerOpen(true)} className="w-12 h-12 rounded-[16px] bg-primary flex items-center justify-center soft-shadow spring-tap ice-glow" aria-label="List an item">
           <Plus className="w-[18px] h-[18px] text-primary-foreground" />
         </button>
       </div>
 
       {/* Categories */}
-      <div className="px-4 mb-4 overflow-x-auto no-scrollbar">
+      <div className="mb-4 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {CATEGORIES.map((cat) => (
             <button key={cat} onClick={() => setActiveCat(cat)}
@@ -131,7 +130,7 @@ export default function Marketplace() {
       </div>
 
       {/* Listings */}
-      <div className="px-4 space-y-3">
+      <div className="space-y-3">
         {isLoading && !isDemoMode ? (
           [1, 2, 3].map((i) => <div key={i} className="h-[100px] rounded-[20px] shimmer" />)
         ) : filtered.length === 0 ? (
@@ -264,6 +263,6 @@ export default function Marketplace() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </ScreenShell>
   );
 }

@@ -14,11 +14,13 @@ import SafetyBanner from "@/components/connect/SafetyBanner";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useExperience } from "@/lib/ExperienceContext";
+import ScreenShell from "@/components/layout/ScreenShell";
+import IconAction from "@/components/layout/IconAction";
 
 const quickActions = [
   { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-primary/10", iconColor: "text-primary", path: "/connect", context: "social" },
-  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-info/10", iconColor: "text-info", path: "/study-groups", context: "shared" },
-  { icon: Trophy, label: "Challenges", desc: "Compete & win", color: "bg-purple/10", iconColor: "text-purple", path: "/challenges", context: "social" },
+  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-information/10", iconColor: "text-information", path: "/study-groups", context: "shared" },
+  { icon: Trophy, label: "Challenges", desc: "Compete & win", color: "bg-accent/10", iconColor: "text-accent", path: "/challenges", context: "social" },
   { icon: Shield, label: "Government", desc: "Student leaders", color: "bg-success/10", iconColor: "text-success", path: "/student-government", context: "social" },
   { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/events", context: "shared" },
   { icon: Heart, label: "Support", desc: "We're here for you", color: "bg-error/10", iconColor: "text-error", path: "/student-support", context: "shared" },
@@ -74,7 +76,7 @@ export default function Connect() {
   const visibleActions = quickActions.filter((a) => a.context === mode || a.context === "shared");
 
   const activeGroupsSection = (
-    <div className="px-5 pb-10">
+    <div className="pb-10">
       <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Active Groups</h3>
       {groupsLoading && !isDemoMode ? (
         <div className="space-y-3">
@@ -136,32 +138,20 @@ export default function Connect() {
   const ordered = [...sections].sort((a, b) => rank(a.ctx) - rank(b.ctx));
 
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="pt-12 pb-3 px-5 flex items-center justify-between"
-      >
-        <div>
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Connect</h1>
-          <p className="text-[12px] text-muted-foreground font-medium">
-            {mode === "academic" ? "Classmates, tutors & study groups" : "Friends, communities & networking"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => navigate("/discover")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-            <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
-          </button>
-          <button onClick={() => navigate("/messages")} className="w-10 h-10 rounded-full bg-primary soft-shadow flex items-center justify-center spring-tap">
-            <Plus className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
-          </button>
-        </div>
-      </motion.div>
+    <ScreenShell
+      title="Connect"
+      subtitle={mode === "academic" ? "Classmates, tutors & study groups" : "Friends, communities & networking"}
+      sticky={false}
+      actions={
+        <>
+          <IconAction icon={Search} onClick={() => navigate("/discover")} label="Search" />
+          <IconAction icon={Plus} variant="primary" onClick={() => navigate("/messages")} label="New message" />
+        </>
+      }
+    >
 
       {/* Quick Actions — filtered by context */}
-      <div className="px-5 mb-6">
+      <div className="mb-6">
         <div className="grid grid-cols-2 gap-3">
           {visibleActions.map((action, i) => (
             <motion.div
@@ -184,6 +174,6 @@ export default function Connect() {
 
       {/* Sections — prioritized by active context */}
       {ordered.map((s, i) => s.node ? <React.Fragment key={i}>{s.node}</React.Fragment> : null)}
-    </div>
+    </ScreenShell>
   );
 }
