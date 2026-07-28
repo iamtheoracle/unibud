@@ -58,8 +58,8 @@ export default function PageNotFound({}) {
                     
                     {/* Action Button */}
                     <div className="pt-6">
-                        <button 
-                            onClick={() => window.location.href = '/'} 
+                        <button
+                            onClick={() => window.location.href = authData?.isAuthenticated ? '/home' : '/'}
                             className="inline-flex items-center px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted/50 hover:border-border transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                         >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
