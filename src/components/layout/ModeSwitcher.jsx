@@ -1,43 +1,49 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Sparkles, ArrowLeftRight } from "lucide-react";
+import { GraduationCap, Sparkles } from "lucide-react";
 import { useExperience } from "@/lib/ExperienceContext";
 
 /**
- * ModeSwitcher — compact inline context pill shown at the top of the
- * authenticated shell. Taps between Academic and Social. Additive only:
- * does not alter the bottom dock, any page header, or any business logic.
+ * ModeSwitcher — the single Academic | Social category selector for UNIBUD.
+ * Rendered at the top of the authenticated shell, inside every workspace.
+ * One product: the choice filters/prioritizes content only — never navigation.
  */
+const OPTIONS = [
+  { key: "academic", label: "Academic", icon: GraduationCap },
+  { key: "social", label: "Social", icon: Sparkles },
+];
+
 export default function ModeSwitcher() {
   const { mode, setMode } = useExperience();
-  const isSocial = mode === "social";
-  const toggle = () => setMode(isSocial ? "academic" : "social");
 
   return (
     <div className="max-w-[520px] mx-auto px-5 pt-3 safe-area-pt app-content">
-      <button
-        onClick={toggle}
-        aria-label={`Switch to ${isSocial ? "Academic" : "Social"} context`}
-        className="founder-dock rounded-full h-9 px-3 flex items-center gap-2 spring-tap edge-light mx-auto"
-      >
-        <motion.span
-          layout
-          className="w-6 h-6 rounded-full grid place-items-center"
-          style={{ background: isSocial ? "hsl(var(--accent))" : "hsl(var(--primary))" }}
-          transition={{ type: "spring", stiffness: 320, damping: 22 }}
-        >
-          {isSocial ? (
-            <Sparkles className="w-3.5 h-3.5 text-accent-foreground" />
-          ) : (
-            <GraduationCap className="w-3.5 h-3.5 text-primary-foreground" />
-          )}
-        </motion.span>
-        <span className="text-[12px] font-semibold dock-label">
-          {isSocial ? "Social" : "Academic"}
-        </span>
-        <ArrowLeftRight className="w-3 h-3 dock-label" />
-        <span className="text-[10px] dock-label hidden sm:inline">tap to switch</span>
-      </button>
+      <div className="founder-dock rounded-full h-9 p-1 flex items-center gap-1 w-fit mx-auto edge-light">
+        {OPTIONS.map((o) => {
+          const active = mode === o.key;
+          return (
+            <button
+              key={o.key}
+              onClick={() => setMode(o.key)}
+              aria-pressed={active}
+              className="relative flex items-center gap-1.5 px-3 h-7 rounded-full spring-tap"
+            >
+              {active && (
+                <motion.span
+                  layoutId="mode-switch-pill"
+                  className="absolute inset-0 rounded-full"
+                  style={{ background: o.key === "social" ? "hsl(var(--accent))" : "hsl(var(--primary))" }}
+                  transition={{ type: "spring", stiffness: 320, damping: 26 }}
+                />
+              )}
+              <o.icon className={`relative w-3.5 h-3.5 ${active ? "text-primary-foreground" : "dock-label"}`} />
+              <span className={`relative text-[12px] font-semibold ${active ? "text-primary-foreground" : "dock-label"}`}>
+                {o.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

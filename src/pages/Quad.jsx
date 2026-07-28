@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Search, PenLine } from "lucide-react";
+import { Search, PenLine, Users, FlaskConical } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import QuadFeed from "@/components/quad/QuadFeed";
 import PostCard from "@/components/quad/PostCard";
 import PostComposer from "@/components/quad/PostComposer";
@@ -14,6 +14,7 @@ import CelebrationsCarousel from "@/components/quad/CelebrationsCarousel";
 import StoryBar from "@/components/stories/StoryBar";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import { useExperience } from "@/lib/ExperienceContext";
 import { queryClientInstance } from "@/lib/query-client";
 
 const DEMO_POSTS = [
@@ -66,12 +67,16 @@ const DEMO_POSTS = [
   },
 ];
 
-const feedTabs = ["For you", "Trending", "Latest", "Clubs", "Courses"];
+const ACADEMIC_TABS = ["For you", "Courses", "Study Groups", "Research", "Latest"];
+const SOCIAL_TABS = ["For you", "Trending", "Latest", "Clubs", "Courses"];
 
 export default function Quad() {
   const { isDemoMode } = useDemoMode();
+  const { mode } = useExperience();
+  const isAcademic = mode === "academic";
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("For you");
+  const feedTabs = isAcademic ? ACADEMIC_TABS : SOCIAL_TABS;
+  const [activeTab, setActiveTab] = useState(feedTabs[0]);
   const [composerOpen, setComposerOpen] = useState(false);
 
   const { data: user, refetch: refetchUser } = useQuery({
@@ -98,7 +103,9 @@ export default function Quad() {
       >
         <div>
           <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Quad</h1>
-          <p className="text-[12px] text-muted-foreground font-medium">The heart of campus</p>
+          <p className="text-[12px] text-muted-foreground font-medium">
+            {isAcademic ? "Course discussions & study collaboration" : "The heart of campus"}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={() => navigate("/discover")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
@@ -113,8 +120,32 @@ export default function Quad() {
         </div>
       </motion.div>
 
-      {/* Stories */}
-      <StoryBar user={user} isDemoMode={isDemoMode} />
+      {/* Academic quick links — surface study groups & research */}
+      {isAcademic && (
+        <div className="px-4 pt-4 grid grid-cols-2 gap-3">
+          <Link to="/study-groups" className="flex items-center gap-2.5 px-3.5 py-3 rounded-[18px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-[12px] bg-primary/12 flex items-center justify-center">
+              <Users className="w-[18px] h-[18px] text-primary" strokeWidth={2} />
+            </div>
+            <div className="leading-tight">
+              <p className="text-[13px] font-semibold text-foreground">Study Groups</p>
+              <p className="text-[11px] text-muted-foreground">Collaborate & learn</p>
+            </div>
+          </Link>
+          <Link to="/research" className="flex items-center gap-2.5 px-3.5 py-3 rounded-[18px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-[12px] bg-success/12 flex items-center justify-center">
+              <FlaskConical className="w-[18px] h-[18px] text-success" strokeWidth={2} />
+            </div>
+            <div className="leading-tight">
+              <p className="text-[13px] font-semibold text-foreground">Research Feed</p>
+              <p className="text-[11px] text-muted-foreground">Projects & papers</p>
+            </div>
+          </Link>
+        </div>
+      )}
+
+      {/* Stories — social context only */}
+      {!isAcademic && <StoryBar user={user} isDemoMode={isDemoMode} />}
 
       {/* Feed Tabs */}
       <div className="px-4 py-3 overflow-x-auto no-scrollbar sticky top-[68px] z-10 glass border-b border-border/20">
@@ -131,11 +162,9 @@ export default function Quad() {
         </div>
       </div>
 
-      {/* Campus Traditions */}
-      <CampusTraditionsGallery />
-
-      {/* Celebrations */}
-      <CelebrationsCarousel />
+      {/* Campus Traditions & Celebrations — social context only */}
+      {!isAcademic && <CampusTraditionsGallery />}
+      {!isAcademic && <CelebrationsCarousel />}
 
       {/* Quick compose trigger */}
       {!isDemoMode && (
@@ -151,17 +180,19 @@ export default function Quad() {
                 {(user?.full_name || user?.email || "U").charAt(0)}
               </div>
             )}
-            <span className="flex-1 text-[13px] text-muted-foreground">Share something with campus...</span>
+            <span className="flex-1 text-[13px] text-muted-foreground">
+              {isAcademic ? "Share a study note or question..." : "Share something with campus..."}
+            </span>
             <PenLine className="w-4 h-4 text-primary" strokeWidth={1.8} />
           </button>
         </div>
       )}
 
-      {/* Feed */}
+      {/* Feed — always available */}
       {isDemoMode ? (
         <div className="px-4 space-y-3 pb-8">
-          {DEMO_POSTS.map((post, i) => (
-            <PostCard key={post.id} post={post} user={user} index={i} />
+          {DEMO_POSTS.map((post) => (
+            <PostCard key={post.id} post={post} user={user} index={0} />
           ))}
         </div>
       ) : (

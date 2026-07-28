@@ -4,36 +4,48 @@ import { motion } from "framer-motion";
 import { Search, Sparkles, ArrowRight } from "lucide-react";
 import { CAMPUS_CATEGORIES, CAMPUS_GROUPS } from "@/lib/campus/registry";
 import { useCampusRecommendations } from "@/hooks/useCampusRecommendations";
+import { useExperience } from "@/lib/ExperienceContext";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 /**
  * CampusHub — the front door to UNIBUD's complete digital campus.
- * Unifies every campus experience into one organized, searchable,
- * Spark-personalized ecosystem rather than a loose collection of pages.
+ * Organizes every campus experience by the student's active context
+ * (Academic | Social). One ecosystem — the selector only filters.
  */
 export default function CampusHub() {
+  const { mode } = useExperience();
   const [q, setQ] = useState("");
-  const [group, setGroup] = useState("all");
+  const [sub, setSub] = useState("all");
   const recs = useCampusRecommendations();
 
-  const filtered = useMemo(() => {
-    let items = CAMPUS_CATEGORIES;
-    if (group !== "all") items = items.filter((i) => CAMPUS_GROUPS.find((g) => g.key === group)?.items.includes(i.key));
+  const subGroups = useMemo(() => CAMPUS_GROUPS.filter((g) => g.context === mode), [mode]);
+
+  const items = useMemo(() => {
+    let list = CAMPUS_CATEGORIES.filter((i) => i.context === mode);
+    if (sub !== "all") list = list.filter((i) => i.group === sub);
     if (q.trim()) {
       const s = q.toLowerCase();
-      items = items.filter((i) => i.title.toLowerCase().includes(s) || i.desc.toLowerCase().includes(s));
+      list = list.filter((i) => i.title.toLowerCase().includes(s) || i.desc.toLowerCase().includes(s));
     }
-    return items;
-  }, [q, group]);
+    return list;
+  }, [mode, sub, q]);
 
-  const recommended = recs.slice(0, 3).map((k) => CAMPUS_CATEGORIES.find((c) => c.key === k)).filter(Boolean);
+  const recommended = recs
+    .map((k) => CAMPUS_CATEGORIES.find((c) => c.key === k))
+    .filter((c) => c && c.context === mode)
+    .slice(0, 3);
+
+  // reset sub-filter when context changes
+  React.useEffect(() => { setSub("all"); }, [mode]);
 
   return (
     <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
       <header className="mb-5">
         <h1 className="font-heading font-extrabold text-[28px] text-foreground tracking-tight">Campus</h1>
-        <p className="text-[13px] text-muted-foreground mt-1">Your complete digital campus — one ecosystem.</p>
+        <p className="text-[13px] text-muted-foreground mt-1">
+          {mode === "academic" ? "Classes, academics & learning tools." : "Campus life, community & activities."}
+        </p>
       </header>
 
       <div className="relative mb-4">
@@ -41,7 +53,7 @@ export default function CampusHub() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Search campus experiences"
+          placeholder={`Search ${mode} experiences`}
           className="w-full pl-10 pr-4 py-3 rounded-[18px] bg-card border border-border/40 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 spring-tap"
         />
       </div>
@@ -53,7 +65,7 @@ export default function CampusHub() {
             <span className="text-[12px] font-semibold text-foreground">Spark picks for you</span>
           </div>
           <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
-            {recommended.map((c, i) => {
+            {recommended.map((c) => {
               const Icon = c.icon;
               return (
                 <Link key={c.key} to={c.to} className="flex-shrink-0 w-[150px] rounded-[22px] p-4 glass-card spring-tap">
@@ -70,12 +82,12 @@ export default function CampusHub() {
       )}
 
       <div className="flex gap-2 overflow-x-auto no-scrollbar mb-5 -mx-1 px-1">
-        {[{ key: "all", label: "All" }, ...CAMPUS_GROUPS.map((g) => ({ key: g.key, label: g.label }))].map((g) => (
+        {[{ key: "all", label: "All" }, ...subGroups.map((g) => ({ key: g.key, label: g.label }))].map((g) => (
           <button
             key={g.key}
-            onClick={() => setGroup(g.key)}
+            onClick={() => setSub(g.key)}
             className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap ${
-              group === g.key ? "bg-primary text-primary-foreground" : "bg-card border border-border/40 text-foreground/70"
+              sub === g.key ? "bg-primary text-primary-foreground" : "bg-card border border-border/40 text-foreground/70"
             }`}
           >
             {g.label}
@@ -83,26 +95,11 @@ export default function CampusHub() {
         ))}
       </div>
 
-      {group === "all" && !q.trim() ? (
-        CAMPUS_GROUPS.map((g) => (
-          <section key={g.key} className="mb-6">
-            <h2 className="text-[13px] font-semibold text-foreground mb-3">{g.label}</h2>
-            <div className="grid grid-cols-2 gap-3">
-              {g.items.map((k) => {
-                const c = CAMPUS_CATEGORIES.find((x) => x.key === k);
-                if (!c) return null;
-                return <CampusCard key={k} c={c} />;
-              })}
-            </div>
-          </section>
-        ))
-      ) : (
-        <div className="grid grid-cols-2 gap-3">
-          {filtered.map((c) => (
-            <CampusCard key={c.key} c={c} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-3">
+        {items.map((c) => (
+          <CampusCard key={c.key} c={c} />
+        ))}
+      </div>
     </div>
   );
 }
