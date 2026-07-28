@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowLeft, TrendingUp, Award, BookOpen, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { STUDENTGRADE_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 
 /** Nigerian 5.0 GPA scale. */
 function pctToPoints(p) {
@@ -36,11 +38,13 @@ function gpaOf(list) {
 export default function Results() {
   const navigate = useNavigate();
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
-  const { data: grades, isLoading } = useQuery({
+  const gq = useQuery({
     queryKey: ["StudentGrade"],
     queryFn: () => base44.entities.StudentGrade.list(),
     enabled: !!user,
   });
+  const { data: grades } = useMockFallback(gq, STUDENTGRADE_MOCK_ENTRIES);
+  const isLoading = gq.isLoading;
 
   const list = grades || [];
 

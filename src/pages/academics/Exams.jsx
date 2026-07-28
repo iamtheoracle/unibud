@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { EXAM_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -20,7 +22,8 @@ function countdown(date) {
 
 export default function Exams() {
   const qc = useQueryClient();
-  const { data: exams } = useQuery({ queryKey: ["exams"], queryFn: () => base44.entities.Exam.list("date", 50) });
+  const eq = useQuery({ queryKey: ["exams"], queryFn: () => base44.entities.Exam.list("date", 50) });
+  const { data: exams } = useMockFallback(eq, EXAM_MOCK_ENTRIES);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [budText, setBudText] = useState({});
@@ -71,8 +74,10 @@ export default function Exams() {
                 <button onClick={() => budSchedule(ex)} disabled={budLoading[ex.id]} className="mt-3 text-[12px] font-semibold text-primary spring-tap">{budLoading[ex.id] ? "Bud is planning…" : "Ask Bud for a revision schedule"}</button>
                 {budText[ex.id] && <p className="text-[12px] text-foreground/90 leading-relaxed whitespace-pre-wrap mt-2 p-3 rounded-2xl bg-primary/8 border border-primary/15">{budText[ex.id]}</p>}
                 <div className="flex gap-3 mt-3">
+                  {!ex.__mock && (<>
                   <button onClick={() => openEdit(ex)} className="text-[12px] font-semibold text-primary spring-tap">Edit</button>
                   <button onClick={() => del.mutate(ex.id)} className="text-[12px] font-semibold text-destructive spring-tap ml-auto">Delete</button>
+                  </>)}
                 </div>
               </motion.div>
             );

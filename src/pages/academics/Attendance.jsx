@@ -2,6 +2,8 @@ import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { ATTENDANCE_RECORD_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -13,7 +15,8 @@ const REQUIRED = 75;
 export default function Attendance() {
   const qc = useQueryClient();
   const { data: courses } = useQuery({ queryKey: ["attCourses"], queryFn: () => base44.entities.Course.list() });
-  const { data: records } = useQuery({ queryKey: ["attRecords"], queryFn: () => base44.entities.AttendanceRecord.list() });
+  const rq = useQuery({ queryKey: ["attRecords"], queryFn: () => base44.entities.AttendanceRecord.list() });
+  const { data: records } = useMockFallback(rq, ATTENDANCE_RECORD_MOCK_ENTRIES);
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({});
 
