@@ -23,6 +23,7 @@ export const ACADEMIC_CATEGORIES = [
   { key: "registration", title: "Course Registration", desc: "Enroll for the semester", icon: FileSignature, to: null, live: false, color: "262 83% 58%" },
   { key: "planner", title: "Study Planner", desc: "Smart study sessions", icon: CalendarClock, to: "/study-sessions", live: true, color: "38 92% 50%" },
   { key: "studygroups", title: "Study Groups", desc: "Learn together", icon: Users, to: "/study-groups", live: true, color: "142 71% 45%" },
+  { key: "officehours", title: "Office Hours", desc: "Book time with your lecturers", icon: CalendarClock, to: "/office-hours", live: true, color: "217 91% 60%" },
   { key: "lecturers", title: "Lecturer Directory", desc: "Find your faculty", icon: UserSquare, to: null, live: false, color: "217 91% 60%" },
   { key: "department", title: "Department Hub", desc: "Your department, unified", icon: Building2, to: null, live: false, color: "262 83% 58%" },
 ];
@@ -31,5 +32,5 @@ export const ACADEMIC_GROUPS = [
   { key: "plan", label: "Plan", items: ["agenda", "timetable", "calendar", "planner", "registration"] },
   { key: "work", label: "Work", items: ["assignments", "projects", "notes"] },
   { key: "perform", label: "Perform", items: ["results", "report", "attendance", "exams"] },
-  { key: "community", label: "Community", items: ["studygroups", "lecturers", "department"] },
+  { key: "community", label: "Community", items: ["studygroups", "officehours", "lecturers", "department"] },
 ];
