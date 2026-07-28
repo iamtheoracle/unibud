@@ -9,6 +9,8 @@ import {
 const EASE = [0.16, 1, 0.3, 1];
 
 const MODULES = [
+  { to: "/study/planner", label: "Planner", desc: "AI weekly study plan", icon: CalendarClock },
+  { to: "/study/paths", label: "Learning Paths", desc: "Bud-designed study paths", icon: Layers },
   { to: "/study/assignment", label: "Assignment", desc: "Explain & break down briefs", icon: FileText },
   { to: "/study/project", label: "Project", desc: "Topics, outlines, timelines", icon: FolderKanban },
   { to: "/study/notes", label: "Smart Notes", desc: "AI summaries & flashcards", icon: BookOpen },
