@@ -24,7 +24,7 @@
         "offline"
       ],
       "default": "online",
-      "description": "User-chosen availability broadcast to peers"
+      "description": "User-chosen availability broadcast to peers. 'offline' hides the user from peer presence reads (privacy)."
     },
     "custom_message": {
       "type": "string",
@@ -42,7 +42,23 @@
     "last_active"
   ],
   "rls": {
-    "read": {},
+    "read": {
+      "$or": [
+        {
+          "data.status": {
+            "$ne": "offline"
+          }
+        },
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
     "create": {
       "data.user_id": "{{user.id}}"
     },
