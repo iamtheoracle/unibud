@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
 import { ArrowLeft, Search, Building2 } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
@@ -36,7 +37,7 @@ export default function Communities() {
     enabled: !isDemoMode,
   });
 
-  const { data: communities, isLoading } = useQuery({
+  const cq = useQuery({
     queryKey: ["communities", user?.university],
     queryFn: () => base44.entities.Community.filter(
       { university: user?.university || "" },
@@ -45,8 +46,9 @@ export default function Communities() {
     ),
     enabled: !isDemoMode && !!user,
   });
-
-  const displayCommunities = isDemoMode ? DEMO_COMMUNITIES : (communities || []);
+  const { data: mockCommunities } = useMockFallback(cq, DEMO_COMMUNITIES);
+  const isLoading = cq.isLoading;
+  const displayCommunities = isDemoMode ? DEMO_COMMUNITIES : mockCommunities;
   const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
 
   const filtered = useMemo(() => {

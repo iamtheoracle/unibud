@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
 import { ArrowLeft, Search, Users, BadgeCheck } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
@@ -84,7 +85,7 @@ export default function Clubs() {
     enabled: !isDemoMode,
   });
 
-  const { data: clubs, isLoading } = useQuery({
+  const cq = useQuery({
     queryKey: ["clubs", user?.university],
     queryFn: () => base44.entities.Club.filter(
       { university: user?.university || "" },
@@ -93,8 +94,9 @@ export default function Clubs() {
     ),
     enabled: !isDemoMode && !!user,
   });
-
-  const displayClubs = isDemoMode ? DEMO_CLUBS : (clubs || []);
+  const { data: mockClubs } = useMockFallback(cq, DEMO_CLUBS);
+  const isLoading = cq.isLoading;
+  const displayClubs = isDemoMode ? DEMO_CLUBS : mockClubs;
   const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
 
   const filtered = useMemo(() => {

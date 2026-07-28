@@ -5,8 +5,8 @@
  */
 import {
   Newspaper, Megaphone, Cpu, BrainCircuit, FlaskConical, Briefcase,
-  Trophy, Volleyball, Sparkles, Clapperboard, GraduationCap, Microscope,
-  MapPin, Globe,
+  Trophy, Volleyball, CircleDot, Car, Sparkles, Clapperboard, Film, Music,
+  Lightbulb, HeartPulse, GraduationCap, Microscope, MapPin, Globe,
 } from "lucide-react";
 
 const cover = (id) => `https://images.unsplash.com/photo-${id}?w=600&q=80`;
@@ -16,15 +16,21 @@ export const NEWS_CATEGORIES = [
   { key: "campus", label: "Campus News", icon: Newspaper, color: "221 83% 50%" },
   { key: "announcements", label: "University Announcements", icon: Megaphone, color: "0 70% 55%" },
   { key: "technology", label: "Technology", icon: Cpu, color: "280 60% 55%" },
-  { key: "ai", label: "AI", icon: BrainCircuit, color: "198 88% 42%" },
+  { key: "ai", label: "Artificial Intelligence", icon: BrainCircuit, color: "198 88% 42%" },
   { key: "science", label: "Science", icon: FlaskConical, color: "173 75% 38%" },
   { key: "business", label: "Business", icon: Briefcase, color: "215 16% 45%" },
   { key: "sports", label: "Sports", icon: Trophy, color: "46 70% 50%" },
   { key: "football", label: "Football", icon: Volleyball, color: "0 78% 52%" },
+  { key: "basketball", label: "Basketball", icon: CircleDot, color: "24 88% 52%" },
+  { key: "formula1", label: "Formula 1", icon: Car, color: "0 80% 48%" },
   { key: "anime", label: "Anime", icon: Sparkles, color: "320 70% 55%" },
   { key: "entertainment", label: "Entertainment", icon: Clapperboard, color: "280 65% 58%" },
+  { key: "music", label: "Music", icon: Music, color: "262 70% 60%" },
+  { key: "movies", label: "Movies", icon: Film, color: "210 60% 50%" },
   { key: "scholarships", label: "Scholarships", icon: GraduationCap, color: "198 92% 48%" },
   { key: "research", label: "Research", icon: Microscope, color: "173 75% 42%" },
+  { key: "innovation", label: "Innovation", icon: Lightbulb, color: "46 92% 52%" },
+  { key: "health", label: "Health", icon: HeartPulse, color: "142 71% 45%" },
   { key: "local", label: "Local News", icon: MapPin, color: "215 22% 55%" },
   { key: "global", label: "Global News", icon: Globe, color: "222 70% 40%" },
 ];
@@ -44,6 +50,12 @@ export const NEWS_ITEMS = [
   { id: "n12", category: "research", title: "OAU Researchers Map Groundwater Quality Across Southwest Nigeria", summary: "The two-year study identifies safe aquifers and recommends low-cost filtration for rural campuses.", source: "OAU Research Bulletin", cover_url: cover("1581091226825-a6a2a8a02a89"), created_date: minsAgo(1300) },
   { id: "n13", category: "local", title: "Benin City: Edo State Approves Free Bus Rides for Students During Exams", summary: "The 'Read & Ride' scheme runs for three weeks covering all 18 UNIBUD shuttle routes.", source: "Edo State Bulletin", cover_url: cover("1562774053-701939ab4e5a"), created_date: minsAgo(1500) },
   { id: "n14", category: "global", title: "Nigerian Students Among Winners at Global Huawei ICT Competition", summary: "A team from ABU and UNILAG placed in the top five across the network and cloud tracks in Shenzhen.", source: "Huawei ICT Academy", cover_url: cover("1518770660439-4636190af475"), created_date: minsAgo(1800) },
+  { id: "n15", category: "basketball", title: "UNIBUD Tigers Reach NUGA Basketball Final Four", summary: "A buzzer-beating three-pointer sent the Tigers past UNILAG Marines into the national semifinals.", source: "NUGA Sports", cover_url: cover("1527490087278-9c75be0b8052"), created_date: minsAgo(2000) },
+  { id: "n16", category: "formula1", title: "Campus F1 Watch Party: British Grand Prix Live This Sunday", summary: "Food, trivia and big-screen racing at the Student Centre — doors open 2PM, lights out 3PM.", source: "UNIBUD Social Desk", cover_url: cover("1518770660439-4636190af475"), created_date: minsAgo(2200) },
+  { id: "n17", category: "music", title: "Afrobeats Night Returns — Campus Concert Lineup Revealed", summary: "Six student acts and a headline DJ set for the biggest campus party of the semester.", source: "UNIBUD Arts Wire", cover_url: cover("1503095396549-807759245b35"), created_date: minsAgo(2400) },
+  { id: "n18", category: "movies", title: "Film Society Free Screening: 'The Black Book' + Director Q&A", summary: "Nollywood night in LT 1 — free popcorn, and the director joins live after the credits.", source: "UNIBUD Arts Wire", cover_url: cover("1523050854058-8df90110c9f1"), created_date: minsAgo(2600) },
+  { id: "n19", category: "innovation", title: "Innovation Lab Unveils Student-Built Solar-Powered Study Kiosk", summary: "The off-grid kiosk powers 12 devices and lights a 20-seat reading area — piloting behind the library.", source: "UNIBUD Tech Circle", cover_url: cover("1581091226825-a6a2a8a02a89"), created_date: minsAgo(2800) },
+  { id: "n20", category: "health", title: "Free Health Screening Day at the UNIBUD Medical Centre", summary: "BP, BMI, vision and mental-health check-ins — no cost, no appointment, all students welcome.", source: "UNIBUD Medical Centre", cover_url: cover("1532187863146-1710f1ce8a1c"), created_date: minsAgo(3000) },
 ];
 
 export function newsByCategory(key) {
