@@ -3,6 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { COURSE_MOCK_ENTRIES, ATTENDANCE_RECORD_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 import PageHeader from "@/components/academics/PageHeader";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -14,8 +16,14 @@ const EASE = [0.16, 1, 0.3, 1];
 export default function Courses() {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const { data: courses } = useQuery({ queryKey: ["courses"], queryFn: () => base44.entities.Course.list() });
-  const { data: attendance } = useQuery({ queryKey: ["attForCourses"], queryFn: () => base44.entities.AttendanceRecord.list() });
+  const { data: courses } = useMockFallback(
+    useQuery({ queryKey: ["courses"], queryFn: () => base44.entities.Course.list() }),
+    COURSE_MOCK_ENTRIES
+  );
+  const { data: attendance } = useMockFallback(
+    useQuery({ queryKey: ["attForCourses"], queryFn: () => base44.entities.AttendanceRecord.list() }),
+    ATTENDANCE_RECORD_MOCK_ENTRIES
+  );
   const [q, setQ] = useState("");
   const [sem, setSem] = useState("all");
   const [editing, setEditing] = useState(null);
@@ -42,7 +50,7 @@ export default function Courses() {
   const archive = useMutation({ mutationFn: (id) => base44.entities.Course.update(id, { status: "completed" }), onSuccess: () => { qc.invalidateQueries({ queryKey: ["courses"] }); toast({ title: "Course archived" }); } });
 
   const attFor = (code) => {
-    const recs = (attendance || []).filter((a) => a.course_code === code);
+    const recs = (attendance || []).filter((a) => (a.course_code || "").replace(/\s+/g, "") === (code || "").replace(/\s+/g, ""));
     if (!recs.length) return null;
     const present = recs.filter((a) => a.status === "present" || a.status === "excused").length;
     return Math.round((present / recs.length) * 100);

@@ -7,12 +7,17 @@ import {
   MapPin, GraduationCap, Clock, BadgeCheck, Plus, Share2,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
+import { getMockCourseById, ASSIGNMENT_MOCK_ENTRIES, ATTENDANCE_RECORD_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
+import { NOTE_MOCK_ENTRIES } from "@/lib/academic/mockShapes2";
+import { UNIBUD_STUDENTS } from "@/lib/mock/contentRegistry";
 import EmptyState from "@/components/academics/EmptyState";
 import QRShareSheet from "@/components/shared/QRShareSheet";
 import { timeAgo } from "@/components/quad/quadConstants";
 import CourseContent from "@/components/academics/CourseContent";
 
 const EASE = [0.16, 1, 0.3, 1];
+const normCode = (s) => (s || "").replace(/\s+/g, "").toUpperCase();
 
 const TABS = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
@@ -43,30 +48,40 @@ export default function CourseSpace() {
   const [shareOpen, setShareOpen] = useState(false);
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
 
-  const { data: course, isLoading } = useQuery({
+  const courseQuery = useQuery({
     queryKey: ["course", courseId],
     queryFn: () => base44.entities.Course.get(courseId),
     enabled: !!courseId,
+    retry: false,
+    staleTime: 60_000,
   });
+  const course = courseQuery.data || getMockCourseById(courseId);
+  const isLoading = courseQuery.isLoading && !course;
 
   const code = course?.code;
 
-  const { data: notes } = useQuery({
+  const notesQuery = useQuery({
     queryKey: ["courseNotes", code],
     queryFn: () => base44.entities.Note.filter({ course_code: code }, "-created_date", 50),
     enabled: !!code,
   });
-  const { data: assignments } = useQuery({
+  const notes = fallbackIfEmpty(notesQuery.data, NOTE_MOCK_ENTRIES.filter((n) => normCode(n.course_code) === normCode(code)));
+
+  const assignmentsQuery = useQuery({
     queryKey: ["courseAssignments", code],
     queryFn: () => base44.entities.Assignment.filter({ course_code: code }, "-created_date", 50),
     enabled: !!code,
   });
-  const { data: attendance } = useQuery({
+  const assignments = fallbackIfEmpty(assignmentsQuery.data, ASSIGNMENT_MOCK_ENTRIES.filter((a) => normCode(a.course_code) === normCode(code)));
+
+  const attendanceQuery = useQuery({
     queryKey: ["courseAttendance", code],
     queryFn: () => base44.entities.AttendanceRecord.filter({ course_code: code }, "-created_date", 100),
     enabled: !!code,
   });
-  const { data: classmates, isLoading: matesLoading } = useQuery({
+  const attendance = fallbackIfEmpty(attendanceQuery.data, ATTENDANCE_RECORD_MOCK_ENTRIES.filter((a) => normCode(a.course_code) === normCode(code)));
+
+  const classmatesQuery = useQuery({
     queryKey: ["courseClassmates", code],
     queryFn: async () => {
       const res = await base44.functions.invoke("studentSearch", { action: "search", query: code, pageSize: 30 });
@@ -75,6 +90,11 @@ export default function CourseSpace() {
     },
     enabled: !!code,
   });
+  const classmates = fallbackIfEmpty(
+    classmatesQuery.data,
+    UNIBUD_STUDENTS.slice(0, 6).map((s) => ({ id: s.id, full_name: s.full_name, avatar_url: s.avatar_url, department: s.department, level: s.level, is_verified: s.is_verified }))
+  );
+  const matesLoading = classmatesQuery.isLoading;
 
   const attPct = useMemo(() => {
     const recs = attendance || [];

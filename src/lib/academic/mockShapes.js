@@ -154,3 +154,42 @@ export const ATTENDANCE_RECORD_MOCK_ENTRIES = ATTENDANCE_COURSES.flatMap((c) => 
     status,
   }));
 });
+
+// ─── Course-shaped mock (entity-shaped for the Courses catalog + CourseSpace) ─
+const COURSE_META = {
+  csc301: { description: "Foundational data structures — arrays, linked lists, stacks, queues, trees, graphs and hashing — with algorithmic analysis and complexity.", schedule: "Mon & Wed · 08:00–10:00", location: "Hall A", grade: "A" },
+  csc303: { description: "Computer organisation, instruction sets, memory hierarchy, pipelining and input/output systems.", schedule: "Tue & Fri · 10:00–12:00", location: "Hall B", grade: "B" },
+  mth201: { description: "Linear algebra, vector spaces, matrices, eigenvalues and differential equations for engineering.", schedule: "Mon & Wed · 10:00–12:00", location: "Math Theatre", grade: "A" },
+  gst111: { description: "Academic writing, argumentation, oral communication and study skills for university success.", schedule: "Tue & Fri · 12:00–14:00", location: "Auditorium", grade: "B" },
+  csc305: { description: "Process management, scheduling, concurrency, memory, file systems and distributed systems.", schedule: "Mon & Thu · 14:00–16:00", location: "Lab 2", grade: "A" },
+  csc307: { description: "Relational model, SQL, normalisation, transactions, indexing and database application design.", schedule: "Wed & Thu · 10:00–12:00", location: "Lab 1", grade: "B" },
+};
+const COURSE_PROGRESS = { csc301: 62, csc303: 48, mth201: 71, gst111: 80, csc305: 55, csc307: 67 };
+const COURSE_DEPT = { mth201: "Mathematics", gst111: "General Studies" };
+
+export const COURSE_MOCK_ENTRIES = ACADEMIC_COURSES_MOCK.map((c, i) => {
+  const meta = COURSE_META[c.id] || {};
+  return {
+    id: `mock-course-${c.id}`,
+    __mock: true,
+    code: c.code,
+    title: c.title,
+    lecturer: c.lecturer,
+    credits: c.credits,
+    semester: "First Semester",
+    faculty: "Faculty of Science",
+    department: COURSE_DEPT[c.id] || "Computer Science",
+    grade: meta.grade || "",
+    color: c.color ? `hsl(${c.color})` : "#7FD8FF",
+    pinned: i < 2,
+    progress: COURSE_PROGRESS[c.id] || 0,
+    status: "active",
+    description: meta.description || "",
+    schedule: meta.schedule || "",
+    location: meta.location || "",
+  };
+});
+
+export function getMockCourseById(id) {
+  return COURSE_MOCK_ENTRIES.find((c) => c.id === id) || null;
+}
