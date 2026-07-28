@@ -2,6 +2,7 @@ import {
   LayoutDashboard, Building2, Boxes, Users, Bot, ShieldCheck, Plug, Activity, ScrollText, Search, Network, Gauge, Radar,
   BarChart3,
   Wallet,
+  Cpu,
 } from "lucide-react";
 
 export const ORACLE_MODULES = [
@@ -21,6 +22,8 @@ export const ORACLE_MODULES = [
   { id: "content", label: "Content Intelligence", group: "Intelligence", icon: BarChart3, desc: "Platform-wide content & engagement analytics across posts, shorts, podcasts and marketplace." },
   { id: "finance", label: "Financial Intelligence", group: "Intelligence", icon: Wallet, desc: "Revenue, collection health, refunds, wallet flow and marketplace performance across the platform." },
   { id: "collaboration", label: "Collaboration Intelligence", group: "Intelligence", icon: Users, desc: "Participation, task throughput, workspace health and community activity across Spark collaboration." },
+  { id: "spark-agents", label: "Spark Agent Registry", group: "Intelligence", icon: Cpu, desc: "Configuration-driven registry of all specialist agents — enable, disable and reorder without code changes." },
+  { id: "spark-observability", label: "Spark Observability", group: "Infrastructure", icon: Activity, desc: "Execution logs, success rates, agent usage and latency across the multi-agent orchestration engine." },
 ];
 
 export const moduleById = (id) => ORACLE_MODULES.find((m) => m.id === id);

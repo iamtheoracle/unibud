@@ -20,6 +20,8 @@ import GlobalSearch from "@/components/oracle/sections/GlobalSearch";
 import ContentIntelligence from "@/components/oracle/sections/ContentIntelligence";
 import FinancialIntelligence from "@/components/oracle/sections/FinancialIntelligence";
 import CollaborationIntelligence from "@/components/oracle/sections/CollaborationIntelligence";
+import SparkAgentRegistry from "@/components/oracle/sections/SparkAgentRegistry";
+import SparkAgentObservability from "@/components/oracle/sections/SparkAgentObservability";
 
 const SECTIONS = {
   dashboard: OracleDashboard,
@@ -38,6 +40,8 @@ const SECTIONS = {
   content: ContentIntelligence,
   finance: FinancialIntelligence,
   collaboration: CollaborationIntelligence,
+  "spark-agents": SparkAgentRegistry,
+  "spark-observability": SparkAgentObservability,
 };
 
 export default function Oracle() {

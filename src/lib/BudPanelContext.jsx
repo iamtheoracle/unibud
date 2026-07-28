@@ -3,11 +3,13 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
+import { routeAgents, recordAgentActivity } from "@/lib/agentRegistry";
 import { getScreenContext } from "@/lib/budScreenContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
 import { useToast } from "@/components/ui/use-toast";
+import { orchestrate } from "@/lib/spark/orchestrator";
+import { ensureSeeded } from "@/lib/spark/agents/registry";
 
 const BudPanelContext = createContext(null);
 
@@ -22,6 +24,9 @@ export function BudPanelProvider({ children }) {
   const { isDemoMode } = useDemoMode();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  // Seed the Spark agent registry once (admin-writable thereafter).
+  useEffect(() => { ensureSeeded().catch(() => {}); }, []);
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -123,14 +128,13 @@ export function BudPanelProvider({ children }) {
     setIsTyping(true);
 
     try {
-      const contextPrefix = `The student is currently on the ${screenContext.name} page — ${screenContext.description}.\n\n`;
-      const prompt = contextPrefix + buildBudPrompt(trimmed, agents, user);
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        ...(fileUrls.length > 0 ? { file_urls: fileUrls } : {}),
-      });
+      const { answer } = await orchestrate(
+        trimmed,
+        { screen: screenContext, user },
+        fileUrls
+      );
 
-      const budMsg = { role: "bud", content: response, time: new Date(), agents: agentIds };
+      const budMsg = { role: "bud", content: answer, time: new Date(), agents: agentIds };
       const finalMessages = [...newMessages, budMsg];
       setMessages(finalMessages);
       await saveConversation(finalMessages, agentIds);
