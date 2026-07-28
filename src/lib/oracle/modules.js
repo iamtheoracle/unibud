@@ -20,6 +20,7 @@ export const ORACLE_MODULES = [
   { id: "audit", label: "Audit Center", group: "Compliance", icon: ScrollText, desc: "Immutable system-wide audit log with filtering, searching and export." },
   { id: "content", label: "Content Intelligence", group: "Intelligence", icon: BarChart3, desc: "Platform-wide content & engagement analytics across posts, shorts, podcasts and marketplace." },
   { id: "finance", label: "Financial Intelligence", group: "Intelligence", icon: Wallet, desc: "Revenue, collection health, refunds, wallet flow and marketplace performance across the platform." },
+  { id: "collaboration", label: "Collaboration Intelligence", group: "Intelligence", icon: Users, desc: "Participation, task throughput, workspace health and community activity across Spark collaboration." },
 ];
 
 export const moduleById = (id) => ORACLE_MODULES.find((m) => m.id === id);
