@@ -293,8 +293,7 @@ function App() {
                     <Route path="/automation/builder" element={<WorkflowBuilder />} />
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                     <Route path="/security" element={<SecurityCenter />} />
-                    <Route path="/classroom/:classId" element={<LiveClassroom />} />
-                    <Route path="/admin" element={<AdminHub />} />
+                                      <Route path="/admin" element={<AdminHub />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>
