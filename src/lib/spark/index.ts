@@ -305,16 +305,23 @@ export class Spark {
    * Registers any provider whose credentials are present in the
    * environment. OpenAI is only made the default when a key is
    * supplied; otherwise the MockProvider remains default and Spark
-   * runs fully offline. Keys are never hardcoded.
+   * runs fully offline.
+   *
+   * SECURITY: provider API keys are ONLY read from `process.env`
+   * (Node/test runtime). They are never read from `import.meta.env`
+   * (Vite/browser), because any `VITE_*` value is baked into the
+   * client bundle and exposed to anyone inspecting it. Real
+   * client-side AI in the browser routes through Bud's server-side
+   * InvokeLLM integration, which never exposes keys.
    */
   private registerEnvProviders(): void {
-    const apiKey = readEnv("VITE_OPENAI_API_KEY") ?? readEnv("OPENAI_API_KEY");
+    const apiKey = readProcessEnv("OPENAI_API_KEY");
     if (!apiKey) return;
     this.providerRegistry.register(
       new OpenAIProvider({
         apiKey,
-        model: readEnv("VITE_OPENAI_MODEL") ?? readEnv("OPENAI_MODEL"),
-        baseUrl: readEnv("VITE_OPENAI_BASE_URL") ?? readEnv("OPENAI_BASE_URL"),
+        model: readProcessEnv("OPENAI_MODEL"),
+        baseUrl: readProcessEnv("OPENAI_BASE_URL"),
       }),
       true
     );
@@ -333,6 +340,23 @@ function readEnv(key: string): string | undefined {
   } catch {
     /* import.meta.env not available */
   }
+  try {
+    if (typeof process !== "undefined" && process.env && process.env[key]) {
+      return process.env[key];
+    }
+  } catch {
+    /* process not available */
+  }
+  return undefined;
+}
+
+/**
+ * Reads an env value ONLY from `process.env` (Node/test runtime), never
+ * from `import.meta.env`. Use this for secrets that must never be baked
+ * into the client bundle (e.g. provider API keys). Returns undefined in
+ * the browser, where provider registration is intentionally skipped.
+ */
+function readProcessEnv(key: string): string | undefined {
   try {
     if (typeof process !== "undefined" && process.env && process.env[key]) {
       return process.env[key];
