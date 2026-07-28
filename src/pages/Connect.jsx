@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Plus, UserPlus, Users, Calendar, Circle, Trophy, Heart, Shield } from "lucide-react";
+import { Search, Plus, UserPlus, Users, Calendar, Circle, Trophy, Heart, Shield, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -22,6 +22,7 @@ const quickActions = [
   { icon: Shield, label: "Government", desc: "Student leaders", color: "bg-success/10", iconColor: "text-success", path: "/student-government", context: "social" },
   { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/events", context: "shared" },
   { icon: Heart, label: "Support", desc: "We're here for you", color: "bg-error/10", iconColor: "text-error", path: "/student-support", context: "shared" },
+  { icon: BarChart3, label: "Creator Studio", desc: "Your content & analytics", color: "bg-primary/10", iconColor: "text-primary", path: "/creator-studio", context: "shared" },
 ];
 
 const DEMO_STUDENTS = [

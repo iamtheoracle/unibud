@@ -34,6 +34,7 @@ const Connect = lazy(() => import("@/pages/Connect"));
 const Shorts = lazy(() => import("@/pages/Shorts"));
 const Podcasts = lazy(() => import("@/pages/podcasts/Podcasts"));
 const PodcastShow = lazy(() => import("@/pages/podcasts/PodcastShow"));
+const CreatorStudio = lazy(() => import("@/pages/creator/CreatorStudio"));
 const Messages = lazy(() => import("@/pages/Messages"));
 const Communities = lazy(() => import("@/pages/Communities"));
 const CommunityDetail = lazy(() => import("@/pages/CommunityDetail"));
@@ -185,6 +186,7 @@ function App() {
                     <Route path="/shorts" element={<Shorts />} />
 <Route path="/podcasts" element={<Podcasts />} />
 <Route path="/podcasts/:showId" element={<PodcastShow />} />
+<Route path="/creator-studio" element={<CreatorStudio />} />
                     <Route path="/messages" element={<Messages />} />
                     <Route path="/messages/:conversationId" element={<Messages />} />
                     <Route path="/communities" element={<Communities />} />
