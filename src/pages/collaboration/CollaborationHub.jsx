@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, ArrowLeft, Sparkles, FolderKanban, LayoutDashboard, Users, LayoutTemplate, ChevronRight } from "lucide-react";
+import { Plus, ArrowLeft, Sparkles, FolderKanban, LayoutDashboard, Users, LayoutTemplate, ChevronRight, ListChecks } from "lucide-react";
 import { useCollaboration } from "@/lib/collaboration/useCollaboration";
 import { TEMPLATES } from "@/lib/collaboration/templates";
 import WorkspaceCard from "@/components/collaboration/WorkspaceCard";
@@ -33,6 +33,9 @@ export default function CollaborationHub() {
           </h1>
           <p className="text-[12px] text-muted-foreground">Shared workspaces, real-time teamwork & academic productivity.</p>
         </div>
+        <Link to="/tasks" className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-primary/12 text-primary text-[12px] font-semibold spring-tap">
+          <ListChecks className="w-4 h-4" /> Tasks
+        </Link>
       </div>
 
       <div className="flex gap-1.5 mt-4 mb-4 overflow-x-auto no-scrollbar">

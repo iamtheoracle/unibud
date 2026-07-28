@@ -129,6 +129,10 @@ const KnowledgeHub = lazy(() => import("@/pages/knowledge/KnowledgeHub"));
 const CollaborationHub = lazy(() => import("@/pages/collaboration/CollaborationHub"));
 const WorkspaceDetail = lazy(() => import("@/pages/collaboration/WorkspaceDetail"));
 
+// Milestone 45 — Spark Task Management
+const TaskHub = lazy(() => import("@/pages/tasks/TaskHub"));
+const TaskDetail = lazy(() => import("@/pages/tasks/TaskDetail"));
+
 // Oracle — Platform Operating Center
 const Oracle = lazy(() => import("@/pages/oracle/Oracle"));
 
@@ -207,6 +211,8 @@ function App() {
                     <Route path="/knowledge" element={<KnowledgeHub />} />
                     <Route path="/collaboration" element={<CollaborationHub />} />
                     <Route path="/collaboration/:workspaceId" element={<WorkspaceDetail />} />
+                    <Route path="/tasks" element={<TaskHub />} />
+                    <Route path="/tasks/:taskId" element={<TaskDetail />} />
                     <Route path="/following" element={<Following />} />
                     <Route path="/friends" element={<Friends />} />
                     <Route path="/notifications" element={<Notifications />} />

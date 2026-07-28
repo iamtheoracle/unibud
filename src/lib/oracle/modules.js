@@ -3,6 +3,7 @@ import {
   BarChart3,
   Wallet,
   Cpu,
+  ListChecks,
 } from "lucide-react";
 
 export const ORACLE_MODULES = [
@@ -24,6 +25,7 @@ export const ORACLE_MODULES = [
   { id: "collaboration", label: "Collaboration Intelligence", group: "Intelligence", icon: Users, desc: "Participation, task throughput, workspace health and community activity across Spark collaboration." },
   { id: "spark-agents", label: "Spark Agent Registry", group: "Intelligence", icon: Cpu, desc: "Configuration-driven registry of all specialist agents — enable, disable and reorder without code changes." },
   { id: "spark-observability", label: "Spark Observability", group: "Infrastructure", icon: Activity, desc: "Execution logs, success rates, agent usage and latency across the multi-agent orchestration engine." },
+  { id: "task-intelligence", label: "Task Intelligence", group: "Intelligence", icon: ListChecks, desc: "Team productivity, completion rates, workload distribution and project health across the Spark task system." },
 ];
 
 export const moduleById = (id) => ORACLE_MODULES.find((m) => m.id === id);

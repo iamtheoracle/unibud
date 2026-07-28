@@ -22,6 +22,7 @@ import FinancialIntelligence from "@/components/oracle/sections/FinancialIntelli
 import CollaborationIntelligence from "@/components/oracle/sections/CollaborationIntelligence";
 import SparkAgentRegistry from "@/components/oracle/sections/SparkAgentRegistry";
 import SparkAgentObservability from "@/components/oracle/sections/SparkAgentObservability";
+import TaskIntelligence from "@/components/oracle/sections/TaskIntelligence";
 
 const SECTIONS = {
   dashboard: OracleDashboard,
@@ -42,6 +43,7 @@ const SECTIONS = {
   collaboration: CollaborationIntelligence,
   "spark-agents": SparkAgentRegistry,
   "spark-observability": SparkAgentObservability,
+  "task-intelligence": TaskIntelligence,
 };
 
 export default function Oracle() {
