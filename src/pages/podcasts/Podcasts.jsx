@@ -6,6 +6,7 @@ import { Headphones, Plus, PlayCircle, Mic } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import PodcastComposer from "@/components/podcast/PodcastComposer";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -45,13 +46,10 @@ export default function Podcasts() {
   }, [listens, episodeById]);
 
   return (
-    <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
-      <header className="mb-4">
-        <h1 className="font-heading font-extrabold text-[24px] text-foreground tracking-tight flex items-center gap-2">
-          <Headphones className="w-6 h-6 text-primary" /> Podcasts
-        </h1>
-        <p className="text-[12px] text-muted-foreground mt-1">Campus voices, lectures, and stories — listen anywhere.</p>
-      </header>
+    <ScreenShell
+      title="Podcasts"
+      subtitle="Campus voices, lectures, and stories — listen anywhere."
+    >
 
       <div className="flex gap-2 mb-5 p-1 rounded-[16px] bg-muted/40">
         {[
@@ -139,6 +137,6 @@ export default function Podcasts() {
       )}
 
       <PodcastComposer open={composer} onClose={() => setComposer(false)} user={user} />
-    </div>
+    </ScreenShell>
   );
 }
