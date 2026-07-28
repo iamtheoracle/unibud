@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
+import MeetBudOrb from "@/components/bud/MeetBudOrb";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -73,10 +74,18 @@ export default function MeetBud() {
 
         <div className="flex-1 flex flex-col items-center justify-center">
           <motion.div
+            initial={{ opacity: 0, scale: 0.85, filter: "blur(8px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            transition={{ delay: 0.15, duration: 0.9, ease: EASE }}
+          >
+            <MeetBudOrb />
+          </motion.div>
+
+          <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6, ease: EASE }}
-            className="flex items-center gap-2 mt-2"
+            transition={{ delay: 0.55, duration: 0.6, ease: EASE }}
+            className="flex items-center gap-2 mt-6"
           >
             <span className="font-heading font-bold text-[24px] text-foreground">Bud</span>
             <span className="px-2.5 py-0.5 rounded-full bg-primary/12 text-primary text-[10px] font-semibold tracking-wide">
@@ -84,7 +93,7 @@ export default function MeetBud() {
             </span>
           </motion.div>
 
-          <div className="mt-6 space-y-2.5 max-w-[340px] min-h-[110px] flex flex-col items-center text-center">
+          <div className="mt-5 space-y-2.5 max-w-[340px] min-h-[110px] flex flex-col items-center text-center">
             <AnimatePresence>
               {LINES.slice(0, visible).map((line, i) => (
                 <motion.p
@@ -111,9 +120,9 @@ export default function MeetBud() {
             >
               <button
                 onClick={begin}
-                className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center spring-tap ice-glow"
+                className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 spring-tap ice-glow"
               >
-                Let's Begin
+                Let's Begin <ArrowRight className="w-[18px] h-[18px]" />
               </button>
               <button
                 onClick={begin}

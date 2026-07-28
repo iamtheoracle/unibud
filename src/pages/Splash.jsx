@@ -61,10 +61,10 @@ export default function Splash() {
         className="relative z-10 flex flex-col items-center px-8 text-center w-full max-w-[420px]"
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: leaving ? 0 : 1, scale: leaving ? 0.96 : 1 }}
-          transition={{ duration: 0.8, ease: EASE }}
-          className="w-full"
+          initial={{ opacity: 0, scale: 0.92, filter: "blur(10px)" }}
+          animate={{ opacity: leaving ? 0 : 1, scale: leaving ? 0.96 : 1, filter: "blur(0px)" }}
+          transition={{ duration: 1.1, ease: EASE }}
+          className="w-full crystal-bloom"
         >
           <Image src={LOGO_URL} alt="UNIBUD — The Future Starts Together." fittingType="fit" className="w-full h-auto" />
         </motion.div>
@@ -73,11 +73,11 @@ export default function Splash() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 0.5 }}
-          className="mt-9 flex items-center gap-2"
+          className="mt-9 flex items-center gap-1.5"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-          <span className="w-1.5 h-1.5 rounded-full bg-primary/60 animate-pulse" style={{ animationDelay: "0.2s" }} />
-          <span className="w-1.5 h-1.5 rounded-full bg-primary/30 animate-pulse" style={{ animationDelay: "0.4s" }} />
+          <span className="stream-dot w-1.5 h-1.5 rounded-full bg-primary" />
+          <span className="stream-dot w-1.5 h-1.5 rounded-full bg-primary" />
+          <span className="stream-dot w-1.5 h-1.5 rounded-full bg-primary" />
         </motion.div>
       </motion.div>
 
