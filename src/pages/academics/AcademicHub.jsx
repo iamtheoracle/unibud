@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Search, Sparkles, ArrowRight } from "lucide-react";
 import { ACADEMIC_CATEGORIES, ACADEMIC_GROUPS } from "@/lib/academics/registry";
 import { useAcademicRecommendations } from "@/hooks/useAcademicRecommendations";
+import AcademicPulse from "@/components/academic/AcademicPulse";
 import ScreenShell from "@/components/layout/ScreenShell";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -28,6 +29,10 @@ export default function AcademicHub() {
 
   return (
     <ScreenShell title="Academics" subtitle="Your academic operating system — adaptive & focused." sticky={false}>
+
+      <div className="mb-4">
+        <AcademicPulse />
+      </div>
 
       <div className="relative mb-4 mt-5">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
