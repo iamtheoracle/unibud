@@ -13,6 +13,7 @@ import CampusTraditionsGallery from "@/components/quad/CampusTraditionsGallery";
 import CelebrationsCarousel from "@/components/quad/CelebrationsCarousel";
 import StoryBar from "@/components/stories/StoryBar";
 import SocialLiveActivity from "@/components/social/SocialLiveActivity";
+import NewsStrip from "@/components/news/NewsStrip";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useExperience } from "@/lib/ExperienceContext";
@@ -173,6 +174,7 @@ export default function Quad() {
       {!isAcademic && <CampusTraditionsGallery />}
       {!isAcademic && <CelebrationsCarousel />}
       {!isAcademic && <SocialLiveActivity />}
+      {!isAcademic && <NewsStrip />}
 
       {/* Quick compose trigger */}
       {!isDemoMode && (
