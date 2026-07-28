@@ -28,7 +28,7 @@ export default function Splash() {
         setLeaving(true);
         await wait(450);
         if (!active) return;
-        navigate(authed ? "/home" : "/welcome", { replace: true });
+        navigate(authed ? "/academics" : "/welcome", { replace: true });
       } catch {
         await wait(1600);
         if (!active) return;
