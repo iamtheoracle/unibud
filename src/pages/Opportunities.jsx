@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Search, Sparkles, MapPin, Calendar, Award, Briefcase, GraduationCap, Globe, Trophy, Bookmark, BookmarkCheck, ChevronRight, Clock, FileCheck, Target, Bell } from "lucide-react";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const TYPES = ["All", "Scholarship", "Internship", "Job", "Competition", "Fellowship", "Grant"];
 
@@ -66,21 +67,17 @@ export default function Opportunities() {
   };
 
   return (
-    <div className="min-h-screen">
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="flex items-center justify-between pt-12 pb-3 px-5"
-      >
-        <div>
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Opportunities</h1>
-          <p className="text-[12px] text-muted-foreground">Discover your next big step</p>
+    <ScreenShell
+      title="Opportunities"
+      subtitle="Discover your next big step"
+      back
+      actions={
+        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden>
+          <Trophy className="w-5 h-5 text-primary-foreground" />
         </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow"><Trophy className="w-5 h-5 text-primary-foreground" /></div>
-      </motion.div>
-
-      <div className="px-4 mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
+      }
+    >
+      <div className="mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-[16px] mt-3">
         <button onClick={() => setTab("discover")} className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "discover" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>Discover</button>
         <button onClick={() => setTab("tracker")} className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "tracker" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>Tracker</button>
         <button onClick={() => setTab("saved")} className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "saved" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>Saved</button>
@@ -88,21 +85,21 @@ export default function Opportunities() {
 
       {tab === "discover" && (
         <>
-          <div className="px-4 pb-2">
+          <div className="pb-2">
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search opportunities..." className="w-full pl-10 pr-4 h-[44px] rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 soft-shadow" />
             </div>
           </div>
 
-          <div className="px-4 pb-3">
-            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(109, 40, 217,0.3)]" : "bg-card border border-primary/20 text-primary soft-shadow"}`}>
+          <div className="pb-3">
+            <button onClick={() => setShowAI(!showAI)} className={`w-full h-[44px] rounded-[16px] font-semibold text-[12px] flex items-center justify-center gap-1.5 transition-colors spring-tap ${showAI ? "bg-primary text-primary-foreground shadow-[0_4px_20px_rgba(109,40,217,0.3)]" : "bg-card border border-primary/20 text-primary soft-shadow"}`}>
               <Sparkles className="w-4 h-4" /> AI Match Finder
             </button>
           </div>
 
           {showAI && (
-            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="px-4 pb-3 overflow-hidden">
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="pb-3 overflow-hidden">
               <div className="bg-card rounded-[20px] p-3.5 soft-shadow border border-primary/20">
                 <div className="flex gap-2 mb-2">
                   <input type="text" value={aiQuery} onChange={e => setAiQuery(e.target.value)} onKeyDown={e => e.key === "Enter" && handleAIMatch()} placeholder="Tell Bud about yourself..." className="flex-1 px-3.5 h-[40px] rounded-[14px] bg-muted text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
@@ -126,7 +123,7 @@ export default function Opportunities() {
             </motion.div>
           )}
 
-          <div className="px-4 pb-3">
+          <div className="pb-3">
             <button onClick={() => setShowEligibility(!showEligibility)} className="w-full bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 spring-tap card-hover">
               <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center"><Target className="w-5 h-5 text-primary" /></div>
               <div className="flex-1 text-left"><p className="font-heading font-semibold text-[13px] text-foreground">Eligibility Checker</p><p className="text-[11px] text-muted-foreground">Find opportunities you qualify for</p></div>
@@ -135,7 +132,7 @@ export default function Opportunities() {
           </div>
 
           {showEligibility && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4 pb-3">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="pb-3">
               <div className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40">
                 <p className="text-[12px] font-semibold text-foreground mb-3">Quick Profile</p>
                 <div className="space-y-2">
@@ -148,20 +145,20 @@ export default function Opportunities() {
             </motion.div>
           )}
 
-          <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="pb-3 flex gap-2 overflow-x-auto no-scrollbar">
             {TYPES.map(t => (
               <button key={t} onClick={() => setActiveType(t)} className={`px-4 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap ${activeType === t ? "bg-foreground text-background soft-shadow" : "bg-card border border-border/40 text-muted-foreground"}`}>{t}</button>
             ))}
           </div>
 
-          <div className="px-4 space-y-3 pb-8">
+          <div className="space-y-3 pb-8">
             {filtered?.map((opp, i) => <OpportunityCard key={opp.id} opp={opp} onToggleSave={() => toggleSave(opp)} onTrack={() => trackOpportunity(opp)} delay={i * 0.04} />)}
           </div>
         </>
       )}
 
       {tab === "tracker" && (
-        <div className="px-4 pb-8 space-y-4">
+        <div className="pb-8 space-y-4">
           {upcomingDeadlines.length > 0 && (
             <>
               <p className="font-heading font-bold text-[14px] text-foreground flex items-center gap-1.5"><Bell className="w-4 h-4 text-primary" /> Upcoming Deadlines</p>
@@ -197,11 +194,11 @@ export default function Opportunities() {
       )}
 
       {tab === "saved" && (
-        <div className="px-4 pb-8 space-y-3">
+        <div className="pb-8 space-y-3">
           {savedOpps.length > 0 ? savedOpps.map((opp, i) => <OpportunityCard key={opp.id} opp={opp} onToggleSave={() => toggleSave(opp)} onTrack={() => trackOpportunity(opp)} delay={i * 0.04} />) : <EmptyState icon={Bookmark} title="No saved opportunities" subtitle="Bookmark opportunities to find them here" />}
         </div>
       )}
-    </div>
+    </ScreenShell>
   );
 }
 
