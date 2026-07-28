@@ -1,7 +1,7 @@
 import {
   ShoppingBag, CalendarDays, Users, Trophy, Store, UtensilsCrossed,
   Search, BookMarked, Briefcase, Award, GraduationCap, FlaskConical, Dumbbell,
-  BookOpen, CalendarClock, ClipboardList, FileText, CalendarCheck, TrendingUp, Megaphone, Video,
+  BookOpen, CalendarClock, ClipboardList, FileText, CalendarCheck, TrendingUp, Megaphone, Video, FolderKanban,
 } from "lucide-react";
 
 /**
@@ -19,6 +19,7 @@ export const CAMPUS_CATEGORIES = [
   { key: "timetable", title: "Timetable", desc: "Your weekly schedule", icon: CalendarClock, to: "/timetable", live: true, color: "217 91% 60%", context: "academic", group: "learn" },
   { key: "livestream", title: "Lecture Streaming", desc: "Live & recorded classes", icon: Video, to: "/academics", live: true, color: "262 83% 58%", context: "academic", group: "learn" },
   { key: "assignments", title: "Assignments", desc: "Tasks & submissions", icon: ClipboardList, to: "/assignments", live: true, color: "38 92% 50%", context: "academic", group: "learn" },
+  { key: "projects", title: "Projects", desc: "Course & group projects", icon: FolderKanban, to: "/projects", live: true, color: "262 83% 58%", context: "academic", group: "learn" },
   { key: "exams", title: "Exams", desc: "Schedule & preparation", icon: FileText, to: "/exams", live: true, color: "0 72% 51%", context: "academic", group: "learn" },
   { key: "attendance", title: "Attendance", desc: "Track your presence", icon: CalendarCheck, to: "/attendance", live: true, color: "142 71% 45%", context: "academic", group: "learn" },
   { key: "gpa", title: "GPA & Results", desc: "Grades & performance", icon: TrendingUp, to: "/academics/results", live: true, color: "142 71% 45%", context: "academic", group: "learn" },
@@ -47,7 +48,7 @@ export const CAMPUS_CATEGORIES = [
  * selected sub-group. Preserves discoverability without clutter.
  */
 export const CAMPUS_GROUPS = [
-  { key: "learn", label: "Learn", context: "academic", items: ["classes", "timetable", "livestream", "assignments", "exams", "attendance", "gpa"] },
+  { key: "learn", label: "Learn", context: "academic", items: ["classes", "timetable", "livestream", "assignments", "projects", "exams", "attendance", "gpa"] },
   { key: "resources", label: "Resources", context: "academic", items: ["library", "research", "academic-calendar", "academic-announcements"] },
   { key: "growth", label: "Growth", context: "academic", items: ["scholarships", "internships", "opportunities"] },
   { key: "community", label: "Community", context: "social", items: ["clubs", "organizations", "events"] },

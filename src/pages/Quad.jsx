@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Search, PenLine, Users, FlaskConical } from "lucide-react";
+import { Search, PenLine, Users, FlaskConical, Award, Briefcase } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, Link } from "react-router-dom";
 import QuadFeed from "@/components/quad/QuadFeed";
@@ -120,7 +120,7 @@ export default function Quad() {
         </div>
       </motion.div>
 
-      {/* Academic quick links — surface study groups & research */}
+      {/* Academic quick links — surface study groups, research, scholarships & internships */}
       {isAcademic && (
         <div className="px-4 pt-4 grid grid-cols-2 gap-3">
           <Link to="/study-groups" className="flex items-center gap-2.5 px-3.5 py-3 rounded-[18px] glass-card spring-tap">
@@ -139,6 +139,24 @@ export default function Quad() {
             <div className="leading-tight">
               <p className="text-[13px] font-semibold text-foreground">Research Feed</p>
               <p className="text-[11px] text-muted-foreground">Projects & papers</p>
+            </div>
+          </Link>
+          <Link to="/scholarships" className="flex items-center gap-2.5 px-3.5 py-3 rounded-[18px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-[12px] bg-gold/12 flex items-center justify-center">
+              <Award className="w-[18px] h-[18px] text-gold" strokeWidth={2} />
+            </div>
+            <div className="leading-tight">
+              <p className="text-[13px] font-semibold text-foreground">Scholarships</p>
+              <p className="text-[11px] text-muted-foreground">Funding updates</p>
+            </div>
+          </Link>
+          <Link to="/opportunities" className="flex items-center gap-2.5 px-3.5 py-3 rounded-[18px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-[12px] bg-accent/12 flex items-center justify-center">
+              <Briefcase className="w-[18px] h-[18px] text-accent" strokeWidth={2} />
+            </div>
+            <div className="leading-tight">
+              <p className="text-[13px] font-semibold text-foreground">Internships</p>
+              <p className="text-[11px] text-muted-foreground">Build experience</p>
             </div>
           </Link>
         </div>
