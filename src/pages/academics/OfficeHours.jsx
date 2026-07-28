@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { CalendarClock, Plus, Video, MapPin, Clock, Users, XCircle, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { OFFICE_HOURS_SLOT_MOCK, OFFICE_HOURS_BOOKING_MOCK } from "@/lib/academic/mockShapes2";
 import EmptyState from "@/components/academics/EmptyState";
 import OfficeHoursSlotComposer from "@/components/academics/OfficeHoursSlotComposer";
 import OfficeHoursBookingModal from "@/components/academics/OfficeHoursBookingModal";
@@ -25,14 +27,17 @@ export default function OfficeHours() {
   const [bookingSlot, setBookingSlot] = useState(null);
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
-  const { data: slots, isLoading: slotsLoading } = useQuery({
+  const slotsQ = useQuery({
     queryKey: ["officeHoursSlots"],
     queryFn: () => base44.entities.OfficeHoursSlot.list("date", 200),
   });
-  const { data: bookings } = useQuery({
+  const { data: slots } = useMockFallback(slotsQ, OFFICE_HOURS_SLOT_MOCK);
+  const slotsLoading = slotsQ.isLoading;
+  const bookingsQ = useQuery({
     queryKey: ["officeHoursBookings"],
     queryFn: () => base44.entities.OfficeHoursBooking.list("-created_date", 500),
   });
+  const { data: bookings } = useMockFallback(bookingsQ, OFFICE_HOURS_BOOKING_MOCK);
 
   const allSlots = slots || [];
   const allBookings = bookings || [];

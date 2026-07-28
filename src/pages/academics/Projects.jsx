@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { PROJECT_MOCK_ENTRIES } from "@/lib/academic/mockShapes2";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -12,7 +14,8 @@ const EASE = [0.16, 1, 0.3, 1];
 
 export default function Projects() {
   const qc = useQueryClient();
-  const { data: projects } = useQuery({ queryKey: ["projects"], queryFn: () => base44.entities.Project.list() });
+  const pq = useQuery({ queryKey: ["projects"], queryFn: () => base44.entities.Project.list() });
+  const { data: projects } = useMockFallback(pq, PROJECT_MOCK_ENTRIES);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [uploading, setUploading] = useState(false);
@@ -70,8 +73,10 @@ export default function Projects() {
                   </div>
                 )}
                 <div className="flex gap-3 mt-3">
+                  {!p.__mock && (<>
                   <button onClick={() => openEdit(p)} className="text-[12px] font-semibold text-primary spring-tap">Open</button>
                   <button onClick={() => del.mutate(p.id)} className="text-[12px] font-semibold text-destructive spring-tap ml-auto">Delete</button>
+                  </>)}
                 </div>
               </motion.div>
             );

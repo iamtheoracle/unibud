@@ -2,6 +2,9 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { EXAM_MOCK_ENTRIES, ASSIGNMENT_MOCK_ENTRIES, TIMETABLE_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
+import { PROJECT_MOCK_ENTRIES, CALENDAR_EVENT_MOCK_ENTRIES, CAMPUS_EVENT_MOCK_ENTRIES } from "@/lib/academic/mockShapes2";
 import ScreenShell from "@/components/layout/ScreenShell";
 import EmptyState from "@/components/academics/EmptyState";
 import WeatherStrip from "@/components/weather/WeatherStrip";
@@ -9,12 +12,12 @@ import WeatherStrip from "@/components/weather/WeatherStrip";
 const WD = ["S", "M", "T", "W", "T", "F", "S"];
 
 export default function Calendar() {
-  const { data: cal } = useQuery({ queryKey: ["calEvents"], queryFn: () => base44.entities.CalendarEvent.list() });
-  const { data: exams } = useQuery({ queryKey: ["calExams"], queryFn: () => base44.entities.Exam.list("date", 50) });
-  const { data: assignments } = useQuery({ queryKey: ["calAssign"], queryFn: () => base44.entities.Assignment.list("-due_date", 50) });
-  const { data: projects } = useQuery({ queryKey: ["calProjects"], queryFn: () => base44.entities.Project.list() });
-  const { data: timetable } = useQuery({ queryKey: ["calTimetable"], queryFn: () => base44.entities.TimetableEntry.list() });
-  const { data: campus } = useQuery({ queryKey: ["calCampus"], queryFn: () => base44.entities.CampusEvent.list() });
+  const { data: cal } = useMockFallback(useQuery({ queryKey: ["calEvents"], queryFn: () => base44.entities.CalendarEvent.list() }), CALENDAR_EVENT_MOCK_ENTRIES);
+  const { data: exams } = useMockFallback(useQuery({ queryKey: ["calExams"], queryFn: () => base44.entities.Exam.list("date", 50) }), EXAM_MOCK_ENTRIES);
+  const { data: assignments } = useMockFallback(useQuery({ queryKey: ["calAssign"], queryFn: () => base44.entities.Assignment.list("-due_date", 50) }), ASSIGNMENT_MOCK_ENTRIES);
+  const { data: projects } = useMockFallback(useQuery({ queryKey: ["calProjects"], queryFn: () => base44.entities.Project.list() }), PROJECT_MOCK_ENTRIES);
+  const { data: timetable } = useMockFallback(useQuery({ queryKey: ["calTimetable"], queryFn: () => base44.entities.TimetableEntry.list() }), TIMETABLE_MOCK_ENTRIES);
+  const { data: campus } = useMockFallback(useQuery({ queryKey: ["calCampus"], queryFn: () => base44.entities.CampusEvent.list() }), CAMPUS_EVENT_MOCK_ENTRIES);
 
   const [view, setView] = useState("month");
   const [cursor, setCursor] = useState(new Date());

@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { NOTE_MOCK_ENTRIES } from "@/lib/academic/mockShapes2";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -13,7 +15,8 @@ const TYPES = ["text", "voice", "image", "handwritten", "scanned"];
 
 export default function Notes() {
   const qc = useQueryClient();
-  const { data: notes } = useQuery({ queryKey: ["notes"], queryFn: () => base44.entities.Note.list("-created_date", 200) });
+  const nq = useQuery({ queryKey: ["notes"], queryFn: () => base44.entities.Note.list("-created_date", 200) });
+  const { data: notes } = useMockFallback(nq, NOTE_MOCK_ENTRIES);
   const { data: courses } = useQuery({ queryKey: ["noteCourses"], queryFn: () => base44.entities.Course.list() });
   const [q, setQ] = useState("");
   const [course, setCourse] = useState("all");
@@ -63,8 +66,10 @@ export default function Notes() {
               {n.content && <p className="text-[12px] text-muted-foreground mt-1.5 line-clamp-3 leading-relaxed">{n.content}</p>}
               {n.file_url && <a href={n.file_url} target="_blank" rel="noreferrer" className="text-[11px] text-primary mt-2 inline-block">Open attachment</a>}
               <div className="flex gap-3 mt-3">
+                {!n.__mock && (<>
                 <button onClick={() => openEdit(n)} className="text-[12px] font-semibold text-primary spring-tap">Edit</button>
                 <button onClick={() => del.mutate(n.id)} className="text-[12px] font-semibold text-destructive spring-tap ml-auto">Delete</button>
+                </>)}
               </div>
             </motion.div>
           ))}

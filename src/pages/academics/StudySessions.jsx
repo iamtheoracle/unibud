@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { STUDY_SESSION_MOCK_ENTRIES } from "@/lib/academic/mockShapes2";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -12,7 +14,8 @@ const EASE = [0.16, 1, 0.3, 1];
 
 export default function StudySessions() {
   const qc = useQueryClient();
-  const { data: sessions } = useQuery({ queryKey: ["studySessions"], queryFn: () => base44.entities.StudySession.list("-session_date", 100) });
+  const sq = useQuery({ queryKey: ["studySessions"], queryFn: () => base44.entities.StudySession.list("-session_date", 100) });
+  const { data: sessions } = useMockFallback(sq, STUDY_SESSION_MOCK_ENTRIES);
   const [running, setRunning] = useState(false);
   const [planned, setPlanned] = useState(25);
   const [remaining, setRemaining] = useState(25 * 60);
@@ -99,7 +102,7 @@ export default function StudySessions() {
               </div>
               <p className="text-[11px] text-muted-foreground mt-0.5">{s.duration_minutes || 0} min{s.goal ? ` · ${s.goal}` : ""}{s.productivity_score ? ` · Rating ${s.productivity_score}/5` : ""}</p>
               {s.bud_feedback && <p className="text-[12px] text-foreground/80 mt-1.5">{s.bud_feedback}</p>}
-              <button onClick={() => del.mutate(s.id)} className="text-[11px] font-semibold text-destructive spring-tap mt-2">Delete</button>
+              {!s.__mock && <button onClick={() => del.mutate(s.id)} className="text-[11px] font-semibold text-destructive spring-tap mt-2">Delete</button>}
             </motion.div>
           ))}
         </div>
