@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2 } from "lucide-react";
+import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import PodcastPlayer from "@/components/podcast/PodcastPlayer";
@@ -23,6 +23,8 @@ export default function PodcastShow() {
   const { toast } = useToast();
   const [composer, setComposer] = useState(false);
   const [activeEpisode, setActiveEpisode] = useState(null);
+  const [transcribing, setTranscribing] = useState({});
+  const [showTranscript, setShowTranscript] = useState({});
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: podcast, isLoading } = useQuery({ queryKey: ["podcast", showId], queryFn: () => base44.entities.Podcast.get(showId), enabled: !!showId });
@@ -52,6 +54,19 @@ export default function PodcastShow() {
       toast({ title: "Episode deleted" });
     } catch (err) {
       toast({ title: "Could not delete", description: err.message, variant: "destructive" });
+    }
+  }
+
+  async function transcribeEpisode(ep) {
+    setTranscribing((s) => ({ ...s, [ep.id]: true }));
+    try {
+      await base44.functions.invoke("transcribeEpisode", { episode_id: ep.id });
+      await queryClientInstance.invalidateQueries({ queryKey: ["episodes", showId] });
+      toast({ title: "Transcription ready", description: "Bud summarized your episode." });
+    } catch (err) {
+      toast({ title: "Transcription failed", description: err?.response?.data?.error || err.message, variant: "destructive" });
+    } finally {
+      setTranscribing((s) => ({ ...s, [ep.id]: false }));
     }
   }
 
@@ -123,8 +138,28 @@ export default function PodcastShow() {
                   </div>
                 </button>
                 {ep.description && <p className="text-[11px] text-muted-foreground mt-2 line-clamp-2">{ep.description}</p>}
+                {ep.summary && (
+                  <div className="mt-2 rounded-[12px] bg-primary/6 border border-primary/15 p-2.5">
+                    <p className="text-[10px] font-semibold text-primary flex items-center gap-1 mb-1"><Sparkles className="w-3 h-3" /> Bud summary</p>
+                    <p className="text-[11px] text-foreground/80 leading-relaxed">{ep.summary}</p>
+                    {Array.isArray(ep.takeaways) && ep.takeaways.length > 0 && (
+                      <ul className="mt-1.5 space-y-0.5">
+                        {ep.takeaways.map((t, ti) => <li key={ti} className="text-[11px] text-muted-foreground flex gap-1"><span className="text-primary">•</span>{t}</li>)}
+                      </ul>
+                    )}
+                  </div>
+                )}
+                {ep.transcript && (
+                  <button onClick={() => setShowTranscript((s) => ({ ...s, [ep.id]: !s[ep.id] }))} className="mt-1.5 text-[11px] font-semibold text-primary inline-flex items-center gap-1 spring-tap"><FileText className="w-3 h-3" /> {showTranscript[ep.id] ? "Hide" : "Show"} transcript</button>
+                )}
+                {showTranscript[ep.id] && ep.transcript && <p className="mt-1 text-[11px] text-muted-foreground leading-relaxed max-h-32 overflow-y-auto no-scrollbar whitespace-pre-wrap">{ep.transcript}</p>}
                 {owner && (
-                  <div className="flex justify-end mt-2">
+                  <div className="flex justify-end items-center gap-3 mt-2">
+                    {!ep.transcript && (
+                      <button onClick={() => transcribeEpisode(ep)} disabled={transcribing[ep.id]} className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary spring-tap disabled:opacity-50">
+                        {transcribing[ep.id] ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />} {transcribing[ep.id] ? "Working…" : "Transcribe & summarize"}
+                      </button>
+                    )}
                     <button onClick={() => deleteEpisode(ep)} className="inline-flex items-center gap-1 text-[11px] font-semibold text-error spring-tap"><Trash2 className="w-3 h-3" /> Delete</button>
                   </div>
                 )}

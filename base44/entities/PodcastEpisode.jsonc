@@ -47,7 +47,19 @@
       "format": "date-time"
     },
     "transcript": {
-      "type": "string"
+      "type": "string",
+      "description": "Bud-generated full transcript (audio \u2192 text)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Bud-generated concise summary shown to listeners"
+    },
+    "takeaways": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Bud-extracted key takeaways"
     },
     "tags": {
       "type": "array",
