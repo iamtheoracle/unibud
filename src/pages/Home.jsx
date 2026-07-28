@@ -1,105 +1,87 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useUnibudContext } from "@/lib/UnibudContext";
 import { useExperience } from "@/lib/ExperienceContext";
 import { orchestrateHome } from "@/lib/bud/homeOrchestrator";
 import HomeHeader from "@/components/home/HomeHeader";
 import FloatingSearch from "@/components/home/FloatingSearch";
-import BudContextBar from "@/components/home/BudContextBar";
-import TodayCard from "@/components/home/TodayCard";
+import BudHero from "@/components/home/BudHero";
+import HomeTodaySchedule from "@/components/home/HomeTodaySchedule";
+import HomeAssignmentsDue from "@/components/home/HomeAssignmentsDue";
+import HomeSparkActivity from "@/components/home/HomeSparkActivity";
+import HomeUniversityNotifs from "@/components/home/HomeUniversityNotifs";
+import HomeCampusPulse from "@/components/home/HomeCampusPulse";
 import QuickActions from "@/components/home/QuickActions";
-import AcademicSnapshot from "@/components/home/AcademicSnapshot";
-import UpcomingDeadlines from "@/components/home/UpcomingDeadlines";
-import BudCard from "@/components/home/BudCard";
-import WeatherWidget from "@/components/weather/WeatherWidget";
-import HeroAcademicCard from "@/components/unibud/HeroAcademicCard";
-import LivingBudCard from "@/components/unibud/LivingBudCard";
-import AcademicPulseWidget from "@/components/unibud/AcademicPulseWidget";
-import HomeMessages from "@/components/home/HomeMessages";
-import HomePayments from "@/components/home/HomePayments";
-import HomeCommunity from "@/components/home/HomeCommunity";
+import HomeWeatherCompact from "@/components/home/HomeWeatherCompact";
 import PullToRefresh from "@/components/ui/PullToRefresh";
-import ToolRecommendationStrip from "@/components/spark/ToolRecommendationStrip";
 import { queryClientInstance } from "@/lib/query-client";
 
-const EASE = [0.16, 1, 0.3, 1];
-
 /**
- * Home (Campus) — Bud's adaptive dashboard.
- * Bud observes context, predicts needs, and proactively rearranges
- * the widget order. The layout is never static.
+ * Home (Campus) — the AI-powered University Operating System entry point.
+ *
+ * Fixed priority reflects the UNIBUD ecosystem:
+ *   1. Bud AI            5. University Notifications
+ *   2. Today's Schedule   6. Campus Pulse
+ *   3. Assignments Due   7. Quick Actions
+ *   4. Spark Team Activity 8. Weather (compact)
  */
 export default function Home() {
   const ctx = useUnibudContext();
   const { mode } = useExperience();
   const plan = orchestrateHome({ ...ctx, experienceMode: mode });
-  const isSocial = mode === "social";
 
   const refreshHome = async () => {
     await queryClientInstance.invalidateQueries();
   };
 
-  const widgets = {
-    weather: isSocial ? null : <WeatherWidget />,
-    today: isSocial ? (
-      <div className="space-y-4">
-        <WeatherWidget />
-        <HomeCommunity count={ctx.communityActivity} posts={ctx.quadPosts} />
-      </div>
-    ) : (
-      <HeroAcademicCard courses={ctx.courses} assignments={ctx.assignments} exams={ctx.exams} sessions={ctx.sessions} />
-    ),
-    quickActions: <QuickActions />,
-    academics: isSocial ? null : (
-      <div className="space-y-4">
-        <AcademicSnapshot user={ctx.user} sessions={ctx.sessions} />
-        <AcademicPulseWidget sessions={ctx.sessions} />
-      </div>
-    ),
-    deadlines: isSocial ? null : <UpcomingDeadlines assignments={ctx.assignments} exams={ctx.exams} />,
-    bud: <LivingBudCard message={plan.message} label={plan.label} />,
-    messages: <HomeMessages count={ctx.unreadMessages} total={ctx.conversations?.length || 0} />,
-    payments: <HomePayments count={ctx.upcomingPayments} overdue={ctx.overdueFees} fees={ctx.pendingFees} />,
-    community: isSocial ? null : <HomeCommunity count={ctx.communityActivity} posts={ctx.quadPosts} />,
-  };
-
   return (
     <PullToRefresh onRefresh={refreshHome}>
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <HomeHeader user={ctx.user} greeting={plan.greeting} />
-      <div className="mt-4">
-        <FloatingSearch />
+      <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
+        <HomeHeader user={ctx.user} greeting={plan.greeting} />
+
+        <div className="mt-4">
+          <FloatingSearch />
+        </div>
+
+        {/* 1 — Bud AI */}
+        <div className="mt-5">
+          <BudHero message={plan.message} />
+        </div>
+
+        {/* 2 — Today's Schedule */}
+        <div className="mt-4">
+          <HomeTodaySchedule nextLecture={ctx.nextLecture} nextLectureIn={ctx.nextLectureIn} />
+        </div>
+
+        {/* 3 — Assignments Due */}
+        <div className="mt-4">
+          <HomeAssignmentsDue assignments={ctx.assignments} />
+        </div>
+
+        {/* 4 — Spark Team Activity */}
+        <div className="mt-4">
+          <HomeSparkActivity />
+        </div>
+
+        {/* 5 — University Notifications */}
+        <div className="mt-4">
+          <HomeUniversityNotifs />
+        </div>
+
+        {/* 6 — Campus Pulse */}
+        <div className="mt-4">
+          <HomeCampusPulse quadPosts={ctx.quadPosts} />
+        </div>
+
+        {/* 7 — Quick Actions */}
+        <div className="mt-4">
+          <QuickActions />
+        </div>
+
+        {/* 8 — Weather (compact) */}
+        <div className="mt-4">
+          <HomeWeatherCompact />
+        </div>
       </div>
-      <div className="mt-5">
-        <BudContextBar label={plan.label} message={plan.message} />
-      </div>
-      <div className="mt-4">
-        <ToolRecommendationStrip
-          surface="home"
-          context={{
-            deadline: ctx.assignments?.[0]?.due_date || ctx.exams?.[0]?.date,
-            assignmentType: ctx.assignments?.[0]?.type,
-            text: ctx.assignments?.[0]?.title,
-            recentItemTypes: ctx.sessions?.length ? ["note"] : [],
-          }}
-        />
-      </div>
-      <AnimatePresence mode="popLayout">
-        {plan.order.map((k, i) => widgets[k] ? (
-          <motion.div
-            key={k}
-            layout
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.45, ease: EASE, delay: i * 0.03 }}
-            className="mt-5"
-          >
-            {widgets[k]}
-          </motion.div>
-        ) : null)}
-      </AnimatePresence>
-    </div>
     </PullToRefresh>
   );
 }

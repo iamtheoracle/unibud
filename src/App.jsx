@@ -88,6 +88,7 @@ const StudySessions = lazy(() => import("@/pages/academics/StudySessions"));
 
 // Milestone 6 — Study Suite
 const StudySuite = lazy(() => import("@/pages/study/StudySuite"));
+const StudyHome = lazy(() => import("@/pages/study/StudyHome"));
 const AssignmentAssistant = lazy(() => import("@/pages/study/AssignmentAssistant"));
 const ProjectAssistant = lazy(() => import("@/pages/study/ProjectAssistant"));
 const SmartNotes = lazy(() => import("@/pages/study/SmartNotes"));
@@ -245,7 +246,8 @@ function App() {
 <Route path="/office-hours" element={<OfficeHours />} />
                     <Route path="/notes" element={<Notes />} />
                     <Route path="/study-sessions" element={<StudySessions />} />
-                    <Route path="/study" element={<StudySuite />} />
+                    <Route path="/study" element={<StudyHome />} />
+                    <Route path="/study/suite" element={<StudySuite />} />
                     <Route path="/study/assignment" element={<AssignmentAssistant />} />
                     <Route path="/study/project" element={<ProjectAssistant />} />
                     <Route path="/study/notes" element={<SmartNotes />} />
