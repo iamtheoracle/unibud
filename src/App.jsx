@@ -124,6 +124,7 @@ const LiveClassroom = lazy(() => import("@/pages/classroom/LiveClassroom"));
 
 // Milestone 40 — Smart Notifications
 const SmartNotifications = lazy(() => import("@/pages/notifications/SmartNotifications"));
+const BudNotificationPreferences = lazy(() => import("@/pages/notifications/BudNotificationPreferences"));
 
 // Milestone 42 — Unified Knowledge & File Intelligence
 const KnowledgeHub = lazy(() => import("@/pages/knowledge/KnowledgeHub"));
@@ -219,6 +220,7 @@ function App() {
                     <Route path="/smart-attendance" element={<SmartAttendance />} />
                     <Route path="/classroom/:classId" element={<LiveClassroom />} />
                     <Route path="/smart-notifications" element={<SmartNotifications />} />
+                    <Route path="/bud/notifications" element={<BudNotificationPreferences />} />
                     <Route path="/knowledge" element={<KnowledgeHub />} />
                     <Route path="/collaboration" element={<CollaborationHub />} />
                     <Route path="/collaboration/:workspaceId" element={<WorkspaceDetail />} />

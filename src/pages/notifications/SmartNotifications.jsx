@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Bell, Moon, Layers, Settings, CheckCheck, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Bell, Moon, Layers, Settings, CheckCheck, ChevronDown, SlidersHorizontal } from "lucide-react";
 import { useSmartNotifications } from "@/lib/notifications/useSmartNotifications";
 import BudDailyDigest from "@/components/notifications/BudDailyDigest";
 import SmartNotificationPreferences from "@/components/notifications/SmartNotificationPreferences";
@@ -33,6 +34,9 @@ export default function SmartNotifications() {
           <button onClick={() => setShowPrefs(!showPrefs)} className={`p-2 rounded-full spring-tap ${showPrefs ? "bg-primary text-primary-foreground" : "bg-card border border-border/40 text-muted-foreground"}`} title="Preferences" aria-label="Preferences">
             <Settings className="w-4 h-4" />
           </button>
+          <Link to="/bud/notifications" className="p-2 rounded-full bg-card border border-border/40 text-muted-foreground spring-tap" title="Bud notification preferences" aria-label="Bud notification preferences">
+            <SlidersHorizontal className="w-4 h-4" />
+          </Link>
         </div>
       }
     >

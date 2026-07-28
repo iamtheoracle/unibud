@@ -68,7 +68,13 @@
         "opportunity",
         "achievement",
         "social",
-        "emergency"
+        "emergency",
+        "exam",
+        "timetable",
+        "event",
+        "streak",
+        "community",
+        "career"
       ],
       "default": "system"
     },
@@ -83,6 +89,11 @@
     "dismissed": {
       "type": "boolean",
       "default": false
+    },
+    "snoozed_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When set to a future time, the notification is hidden from the user until this moment passes"
     },
     "read_at": {
       "type": "string",

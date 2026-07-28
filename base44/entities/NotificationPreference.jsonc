@@ -7,11 +7,11 @@
       "items": {
         "type": "string"
       },
-      "description": "Notification types/categories the user has muted"
+      "description": "Notification categories the user has muted (assignment, exam, timetable, event, streak, campus, community, career, bud)"
     },
     "quiet_hours_start": {
       "type": "string",
-      "description": "HH:MM \u2014 non-critical notifications are delayed from this time"
+      "description": "HH:MM \u2014 non-critical notifications are held from this time"
     },
     "quiet_hours_end": {
       "type": "string",
@@ -32,6 +32,39 @@
       ],
       "default": "normal",
       "description": "Minimum priority that triggers an immediate alert"
+    },
+    "reminder_frequency": {
+      "type": "string",
+      "enum": [
+        "minimal",
+        "balanced",
+        "frequent"
+      ],
+      "default": "balanced",
+      "description": "How many lead-time reminders Bud sends before a deadline"
+    },
+    "bud_tone": {
+      "type": "string",
+      "enum": [
+        "supportive",
+        "playful",
+        "formal",
+        "concise"
+      ],
+      "default": "supportive",
+      "description": "Bud's notification voice"
+    },
+    "snooze_default_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "Default snooze duration when the user snoozes a reminder"
+    },
+    "assignment_lead_hours": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Optional custom assignment lead times in hours (overrides reminder_frequency)"
     }
   },
   "required": [

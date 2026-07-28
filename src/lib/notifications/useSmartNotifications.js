@@ -12,6 +12,10 @@ const DEFAULT_PREFS = {
   quiet_hours_end: "",
   digest_mode: true,
   min_priority_to_alert: "normal",
+  reminder_frequency: "balanced",
+  bud_tone: "supportive",
+  snooze_default_minutes: 60,
+  assignment_lead_hours: [],
 };
 
 /**
@@ -34,16 +38,18 @@ export function useSmartNotifications() {
     enabled: !!user,
   });
 
-  const notifications = notifQ.data || [];
+  const rawNotifications = notifQ.data || [];
+  const now0 = new Date();
+  const notifications = rawNotifications.filter((n) => !(n.snoozed_until && new Date(n.snoozed_until) > now0));
   const prefs = { ...DEFAULT_PREFS, ...(prefQ.data || {}) };
   const prefId = prefQ.data?.id;
 
   const { show, digest, delayed, muted, digestCount } = useMemo(
-    () => prioritize(notifications, { now: new Date(), prefs }),
+    () => prioritize(notifications, { now: now0, prefs }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [notifications, prefs.quiet_hours_start, prefs.quiet_hours_end, prefs.digest_mode, JSON.stringify(prefs.muted_categories)]
   );
-  const quiet = inQuietHours(new Date(), prefs);
+  const quiet = inQuietHours(now0, prefs);
   const unread = notifications.filter((n) => !n.is_read).length;
 
   const savePrefs = useMutation({
@@ -74,13 +80,26 @@ export function useSmartNotifications() {
   };
   const unmuteCategory = (cat) => savePrefs.mutate({ muted_categories: prefs.muted_categories.filter((c) => c !== cat) });
 
+  const snoozeNotification = useMutation({
+    mutationFn: ({ id, minutes }) => base44.entities.Notification.update(id, {
+      snoozed_until: new Date(Date.now() + (minutes || prefs.snooze_default_minutes || 60) * 60000).toISOString(),
+    }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: NOTIF_KEY }),
+  });
+
+  const setBudTone = (tone) => savePrefs.mutate({ bud_tone: tone });
+  const setReminderFrequency = (frequency) => savePrefs.mutate({ reminder_frequency: frequency });
+  const setSnoozeDefault = (minutes) => savePrefs.mutate({ snooze_default_minutes: minutes });
+  const setLeadHours = (hours) => savePrefs.mutate({ assignment_lead_hours: hours });
+
   const digestSummary = useMemo(() => buildDigest(notifications, show), [notifications, show]);
 
   return {
     notifications, prefs, show, digest, delayed, muted, digestCount, quiet, unread,
     markRead: markRead.mutate, markAllRead: markAllRead.mutate,
     savePrefs: savePrefs.mutate, savingPrefs: savePrefs.isPending,
-    muteCategory, unmuteCategory,
+    muteCategory, unmuteCategory, snoozeNotification: snoozeNotification.mutate,
+    setBudTone, setReminderFrequency, setSnoozeDefault, setLeadHours,
     digestSummary,
   };
 }

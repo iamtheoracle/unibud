@@ -15,6 +15,7 @@ import { UnibudContextProvider } from "@/lib/UnibudContext";
 import ModeSwitcher from "@/components/layout/ModeSwitcher";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
+import { useBudPush } from "@/lib/notifications/useBudPush";
 import { ClassroomModeProvider, ClassroomBudGate } from "@/lib/classroom/ClassroomModeContext";
 
 /**
@@ -27,6 +28,7 @@ export default function AppShell() {
   const outlet = useOutlet();
   const [checking, setChecking] = useState(true);
   const reduceMotion = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  useBudPush();
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((ok) => {
