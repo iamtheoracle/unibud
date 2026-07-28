@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Crown, Users, Vote, ChevronRight,
+  Crown, Users, Vote, ChevronRight,
   GraduationCap, Shield, CheckCircle2, Clock, Calendar,
 } from "lucide-react";
+
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const BODIES = ["SUG", "SRC", "Guild Council", "Student Parliament", "Student Senate"];
 
 export default function StudentGovernment() {
   const [tab, setTab] = useState("sug");
-  const navigate = useNavigate();
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: govBodies } = useQuery({
@@ -32,23 +32,11 @@ export default function StudentGovernment() {
   ) || classLeaders?.[0];
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Student Government</h1>
-          <p className="text-[12px] text-muted-foreground">{user?.university || "Your University"}</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Shield className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <ScreenShell title="Student Government" subtitle={user?.university || "Your University"} back
+      actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Shield className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Tabs */}
-      <div className="px-4 mb-4 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
+      <div className="mb-4 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
         <button onClick={() => setTab("sug")}
           className={`flex-1 py-2.5 rounded-[12px] text-[11px] font-semibold transition-all ${tab === "sug" ? "bg-card text-foreground soft-shadow" : "text-muted-foreground"}`}>
           Student Government
@@ -62,7 +50,7 @@ export default function StudentGovernment() {
       {tab === "sug" && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           {govBody ? (
-            <div className="px-4 space-y-4">
+            <div className="space-y-4">
               {/* Body header */}
               <div className="bg-card rounded-[24px] p-5 soft-shadow border border-border/40">
                 <div className="flex items-center gap-3 mb-4">
@@ -91,8 +79,8 @@ export default function StudentGovernment() {
                 <h3 className="font-heading font-bold text-[15px] text-foreground mb-3 px-1">Executive Council</h3>
                 <div className="space-y-2.5">
                   {govBody.president_name && <LeaderRow name={govBody.president_name} position="President" icon={Crown} color="text-primary" bg="bg-primary/10" />}
-                  {govBody.vice_president_name && <LeaderRow name={govBody.vice_president_name} position="Vice President" icon={Users} color="text-info" bg="bg-info/10" />}
-                  {govBody.secretary_name && <LeaderRow name={govBody.secretary_name} position="Secretary" icon={Shield} color="text-purple" bg="bg-purple/10" />}
+                  {govBody.vice_president_name && <LeaderRow name={govBody.vice_president_name} position="Vice President" icon={Users} color="text-information" bg="bg-information/10" />}
+                  {govBody.secretary_name && <LeaderRow name={govBody.secretary_name} position="Secretary" icon={Shield} color="text-accent" bg="bg-accent/10" />}
                   {govBody.treasurer_name && <LeaderRow name={govBody.treasurer_name} position="Treasurer" icon={Users} color="text-success" bg="bg-success/10" />}
                   {govBody.pro_name && <LeaderRow name={govBody.pro_name} position="PRO" icon={Users} color="text-warning" bg="bg-warning/10" />}
                 </div>
@@ -119,12 +107,12 @@ export default function StudentGovernment() {
       {tab === "class" && (
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
           {myClass ? (
-            <div className="px-4 space-y-4">
+            <div className="space-y-4">
               {/* Class header */}
               <div className="bg-card rounded-[24px] p-5 soft-shadow border border-border/40">
                 <div className="flex items-center gap-3 mb-2">
-                  <div className="w-14 h-14 rounded-[18px] bg-info/10 flex items-center justify-center">
-                    <GraduationCap className="w-7 h-7 text-info" />
+                  <div className="w-14 h-14 rounded-[18px] bg-information/10 flex items-center justify-center">
+                    <GraduationCap className="w-7 h-7 text-information" />
                   </div>
                   <div>
                     <p className="font-heading font-bold text-[16px] text-foreground">{myClass.department}</p>
@@ -138,8 +126,8 @@ export default function StudentGovernment() {
                 <h3 className="font-heading font-bold text-[15px] text-foreground mb-3 px-1">Class Representatives</h3>
                 <div className="space-y-2.5">
                   {myClass.class_governor_name && <LeaderRow name={myClass.class_governor_name} position="Class Governor" icon={Crown} color="text-primary" bg="bg-primary/10" />}
-                  {myClass.assistant_governor_name && <LeaderRow name={myClass.assistant_governor_name} position="Assistant Governor" icon={Users} color="text-info" bg="bg-info/10" />}
-                  {myClass.course_rep_name && <LeaderRow name={myClass.course_rep_name} position="Course Representative" icon={Shield} color="text-purple" bg="bg-purple/10" />}
+                  {myClass.assistant_governor_name && <LeaderRow name={myClass.assistant_governor_name} position="Assistant Governor" icon={Users} color="text-information" bg="bg-information/10" />}
+                  {myClass.course_rep_name && <LeaderRow name={myClass.course_rep_name} position="Course Representative" icon={Shield} color="text-accent" bg="bg-accent/10" />}
                   {myClass.dept_rep_name && <LeaderRow name={myClass.dept_rep_name} position="Department Representative" icon={Users} color="text-success" bg="bg-success/10" />}
                   {myClass.faculty_rep_name && <LeaderRow name={myClass.faculty_rep_name} position="Faculty Representative" icon={Users} color="text-warning" bg="bg-warning/10" />}
                 </div>
@@ -175,7 +163,7 @@ export default function StudentGovernment() {
           )}
         </motion.div>
       )}
-    </div>
+    </ScreenShell>
   );
 }
 
@@ -200,7 +188,7 @@ function LeaderRow({ name, position, icon: Icon, color, bg }) {
 
 function EmptyState({ icon: Icon, title, subtitle }) {
   return (
-    <div className="text-center py-12 px-4">
+    <div className="text-center py-12">
       <div className="w-14 h-14 rounded-[20px] bg-muted flex items-center justify-center mx-auto mb-3">
         <Icon className="w-6 h-6 text-muted-foreground" strokeWidth={1.8} />
       </div>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/academics/PageHeader";
+import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
 import GlassInput from "@/components/foundation/GlassInput";
@@ -45,8 +45,7 @@ export default function Exams() {
   };
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <PageHeader title="Exams" action={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>} />
+    <ScreenShell title="Exams" back actions={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>}>
       {!exams?.length ? <EmptyState message="No exams scheduled. Add an exam to start planning your revision." /> : (
         <div className="space-y-3">
           {exams.map((ex, i) => {
@@ -112,6 +111,6 @@ export default function Exams() {
         </div>
         <button onClick={() => { if (!form.title || !form.course_code || !form.date) { toast({ title: "Title, course and date required" }); return; } save.mutate(form); }} disabled={save.isPending} className="w-full h-[52px] mt-5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center spring-tap disabled:opacity-50 ice-glow">{save.isPending ? "Saving…" : "Save Exam"}</button>
       </Sheet>
-    </div>
+    </ScreenShell>
   );
 }

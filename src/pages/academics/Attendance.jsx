@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/academics/PageHeader";
+import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
 import { toast } from "@/components/ui/use-toast";
@@ -43,8 +43,7 @@ export default function Attendance() {
   };
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <PageHeader title="Attendance" action={<button onClick={openAdd} className="text-[12px] font-semibold text-primary spring-tap">+ Record</button>} />
+    <ScreenShell title="Attendance" back actions={<button onClick={openAdd} className="text-[12px] font-semibold text-primary spring-tap">+ Record</button>}>
       {!stats.length ? <EmptyState message="No courses yet. Add courses to start tracking attendance." /> : (
         <div className="space-y-3">
           {stats.map((s, i) => {
@@ -88,7 +87,7 @@ export default function Attendance() {
         </div>
         <button onClick={submit} disabled={add.isPending} className="w-full h-[52px] mt-5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center spring-tap disabled:opacity-50 ice-glow">{add.isPending ? "Saving…" : "Save"}</button>
       </Sheet>
-    </div>
+    </ScreenShell>
   );
 }
 

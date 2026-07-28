@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/academics/PageHeader";
+import ScreenShell from "@/components/layout/ScreenShell";
 import EmptyState from "@/components/academics/EmptyState";
 import WeatherStrip from "@/components/weather/WeatherStrip";
 
@@ -59,8 +59,7 @@ export default function Calendar() {
   const selEvents = eventsFor(selected);
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <PageHeader title="Calendar" />
+    <ScreenShell title="Calendar" back>
       <WeatherStrip className="mb-4" />
       <div className="flex gap-2 mb-4">
         {[["month", "Month"], ["agenda", "Agenda"]].map(([k, l]) => (
@@ -120,6 +119,6 @@ export default function Calendar() {
         </div>
       )}
       <p className="text-[10px] text-muted-foreground/60 mt-4 text-center">Device calendar sync arrives in a future milestone.</p>
-    </div>
+    </ScreenShell>
   );
 }

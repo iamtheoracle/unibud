@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/academics/PageHeader";
+import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
 import GlassInput from "@/components/foundation/GlassInput";
@@ -69,8 +69,7 @@ export default function StudySessions() {
   const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <PageHeader title="Study Sessions" />
+    <ScreenShell title="Study Sessions" back>
       <div className="glass-card p-5 text-center mb-4">
         <p className="font-heading font-bold text-[40px] text-primary tabular-nums">{fmt(remaining)}</p>
         <p className="text-[11px] text-muted-foreground mt-1">{running ? "Focus session in progress" : "Set up a session to begin"}</p>
@@ -115,6 +114,6 @@ export default function StudySessions() {
         </div>
         <button onClick={finish} disabled={create.isPending} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] spring-tap disabled:opacity-50 ice-glow">{create.isPending ? "Saving…" : "Save Session"}</button>
       </Sheet>
-    </div>
+    </ScreenShell>
   );
 }

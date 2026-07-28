@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/academics/PageHeader";
+import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import GlassInput from "@/components/foundation/GlassInput";
 import { toast } from "@/components/ui/use-toast";
@@ -29,8 +29,7 @@ export default function Timetable() {
   const byDay = (d) => (entries || []).filter((e) => e.day === d).sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <PageHeader title="Timetable" action={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>} />
+    <ScreenShell title="Timetable" back actions={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>}>
       <div className="flex gap-2 mb-4">
         {[["daily", "Daily"], ["weekly", "Weekly"], ["monthly", "Monthly"]].map(([k, l]) => (
           <button key={k} onClick={() => setView(k)} className={`flex-1 py-2 rounded-2xl text-[12px] font-semibold spring-tap ${view === k ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{l}</button>
@@ -81,7 +80,7 @@ export default function Timetable() {
         </div>
         <button onClick={submit} disabled={save.isPending} className="w-full h-[52px] mt-5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center spring-tap disabled:opacity-50 ice-glow">{save.isPending ? "Saving…" : "Save Class"}</button>
       </Sheet>
-    </div>
+    </ScreenShell>
   );
 }
 

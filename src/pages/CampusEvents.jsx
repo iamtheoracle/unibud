@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, Calendar } from "lucide-react";
+import { Search, Calendar } from "lucide-react";
+import ScreenShell from "@/components/layout/ScreenShell";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
@@ -69,7 +69,6 @@ const DEMO_EVENTS = [
 const FILTER_KEYS = ["all", ...Object.keys(EVENT_TYPES)];
 
 export default function CampusEvents() {
-  const navigate = useNavigate();
   const qc = useQueryClient();
   const { toast } = useToast();
   const { isDemoMode } = useDemoMode();
@@ -134,23 +133,11 @@ export default function CampusEvents() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3 sticky top-0 z-20 glass border-b border-border/20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">Events</h1>
-          <p className="text-[11px] text-muted-foreground">{isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Calendar className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <ScreenShell title="Events" subtitle={isDemoMode ? "Your Campus" : (user?.university || "Your Campus")} back
+      actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Search */}
-      <div className="px-4 py-3">
+      <div className="py-3">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -163,12 +150,12 @@ export default function CampusEvents() {
       </div>
 
       {/* Weather */}
-      <div className="px-4 mb-3">
+      <div className="mb-3">
         <WeatherStrip />
       </div>
 
       {/* Upcoming / Past Toggle */}
-      <div className="px-4 mb-3">
+      <div className="mb-3">
         <div className="bg-muted/50 rounded-[14px] p-1 flex">
           <button
             onClick={() => setShowPast(false)}
@@ -186,7 +173,7 @@ export default function CampusEvents() {
       </div>
 
       {/* Filter Chips */}
-      <div className="px-4 pb-3 overflow-x-auto no-scrollbar">
+      <div className="pb-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {FILTER_KEYS.map((key) => {
             const meta = key === "all" ? { label: "All" } : EVENT_TYPES[key];
@@ -211,7 +198,7 @@ export default function CampusEvents() {
       </div>
 
       {/* Events Grid */}
-      <div className="px-4 responsive-cards">
+      <div className="responsive-cards">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden">
@@ -243,6 +230,6 @@ export default function CampusEvents() {
           ))
         )}
       </div>
-    </div>
+    </ScreenShell>
   );
 }

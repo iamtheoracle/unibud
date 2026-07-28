@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import PageHeader from "@/components/academics/PageHeader";
+import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
 import GlassInput from "@/components/foundation/GlassInput";
@@ -51,8 +51,7 @@ export default function Assignments() {
   const budHint = upcoming[0] ? `Bud suggests starting "${upcoming[0].title}"${upcoming[0].due_date ? ` — due ${upcoming[0].due_date.split("T")[0]}` : ""}.` : "You're on top of your assignments. Nice work.";
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <PageHeader title="Assignments" action={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>} />
+    <ScreenShell title="Assignments" back actions={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>}>
       <div className="glass-card p-3.5 mb-4 border border-primary/15 bg-primary/8"><p className="text-[13px] text-foreground/90">{budHint}</p></div>
       <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
         {STATUSES.map((s) => (
@@ -125,6 +124,6 @@ export default function Assignments() {
         </div>
         <button onClick={submit} disabled={save.isPending} className="w-full h-[52px] mt-5 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center spring-tap disabled:opacity-50 ice-glow">{save.isPending ? "Saving…" : "Save"}</button>
       </Sheet>
-    </div>
+    </ScreenShell>
   );
 }

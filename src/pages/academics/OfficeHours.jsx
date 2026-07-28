@@ -7,6 +7,7 @@ import EmptyState from "@/components/academics/EmptyState";
 import OfficeHoursSlotComposer from "@/components/academics/OfficeHoursSlotComposer";
 import OfficeHoursBookingModal from "@/components/academics/OfficeHoursBookingModal";
 import { useToast } from "@/components/ui/use-toast";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const EASE = [0.16, 1, 0.3, 1];
 const today = () => new Date().toISOString().slice(0, 10);
@@ -80,13 +81,8 @@ export default function OfficeHours() {
   const isLecturer = user && mySlots.length > 0;
 
   return (
-    <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
-      <header className="mb-4">
-        <h1 className="font-heading font-extrabold text-[24px] text-foreground tracking-tight flex items-center gap-2">
-          <CalendarClock className="w-6 h-6 text-primary" /> Office Hours
-        </h1>
-        <p className="text-[12px] text-muted-foreground mt-1">Book time with your lecturers, one-on-one or in a group.</p>
-      </header>
+    <ScreenShell title="Office Hours" subtitle="Book time with your lecturers, one-on-one or in a group." back
+      actions={<div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center" aria-hidden><CalendarClock className="w-5 h-5 text-primary" /></div>}>
 
       <div className="flex gap-2 mb-5 p-1 rounded-[16px] bg-muted/40">
         {[
@@ -220,6 +216,6 @@ export default function OfficeHours() {
       <OfficeHoursBookingModal open={!!bookingSlot} onClose={() => setBookingSlot(null)} slot={bookingSlot} user={user}
         alreadyBooked={bookingSlot ? myBookingFor(bookingSlot.id) : null}
         full={bookingSlot ? bookingSlot.capacity > 0 && (bookedBySlot[bookingSlot.id] || 0) >= bookingSlot.capacity : false} />
-    </div>
+    </ScreenShell>
   );
 }
