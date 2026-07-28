@@ -3,6 +3,7 @@ import { Bell, Moon, Layers, Settings, CheckCheck, ChevronDown } from "lucide-re
 import { useSmartNotifications } from "@/lib/notifications/useSmartNotifications";
 import BudDailyDigest from "@/components/notifications/BudDailyDigest";
 import SmartNotificationPreferences from "@/components/notifications/SmartNotificationPreferences";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const BUCKET_TONE = {
   critical: "text-destructive bg-destructive/10",
@@ -12,37 +13,29 @@ const BUCKET_TONE = {
   silent: "text-muted-foreground bg-muted",
 };
 
-/**
- * SmartNotifications — the unified, prioritized notification center.
- * Spark orders by urgency/relevance, groups non-critical items into a
- * digest, holds them during quiet hours, and mutes chosen categories.
- */
 export default function SmartNotifications() {
   const { show, digest, digestCount, delayed, muted, quiet, unread, markRead, markAllRead } = useSmartNotifications();
   const [showPrefs, setShowPrefs] = useState(false);
   const [openDigest, setOpenDigest] = useState({});
 
+  const subtitle = `${unread} unread${quiet ? " · quiet hours" : ""}${digestCount ? ` · ${digestCount} grouped` : ""}${muted.length ? ` · ${muted.length} muted` : ""}`;
+
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-heading font-bold text-[22px] text-foreground flex items-center gap-2">
-            <Bell className="w-5 h-5 text-primary" /> Smart Notifications
-          </h1>
-          <p className="text-[12px] text-muted-foreground mt-0.5">
-            {unread} unread{quiet ? " · quiet hours" : ""}{digestCount ? ` · ${digestCount} grouped` : ""}{muted.length ? ` · ${muted.length} muted` : ""}
-          </p>
-        </div>
+    <ScreenShell
+      title="Smart Notifications"
+      subtitle={subtitle}
+      back
+      actions={
         <div className="flex gap-2">
-          <button onClick={markAllRead} className="p-2 rounded-full bg-muted/50 text-muted-foreground spring-tap" title="Mark all read">
+          <button onClick={markAllRead} className="p-2 rounded-full bg-card border border-border/40 text-muted-foreground spring-tap" title="Mark all read" aria-label="Mark all read">
             <CheckCheck className="w-4 h-4" />
           </button>
-          <button onClick={() => setShowPrefs(!showPrefs)} className={`p-2 rounded-full spring-tap ${showPrefs ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`} title="Preferences">
+          <button onClick={() => setShowPrefs(!showPrefs)} className={`p-2 rounded-full spring-tap ${showPrefs ? "bg-primary text-primary-foreground" : "bg-card border border-border/40 text-muted-foreground"}`} title="Preferences" aria-label="Preferences">
             <Settings className="w-4 h-4" />
           </button>
         </div>
-      </div>
-
+      }
+    >
       <div className="mt-4">
         <BudDailyDigest />
       </div>
@@ -107,6 +100,6 @@ export default function SmartNotifications() {
           </div>
         )}
       </div>
-    </div>
+    </ScreenShell>
   );
 }

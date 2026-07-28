@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Shield, MonitorSmartphone, Lock, History, LogOut, Loader2, ChevronLeft } from "lucide-react";
+import { Shield, MonitorSmartphone, Lock, History, LogOut, Loader2 } from "lucide-react";
+import ScreenShell from "@/components/layout/ScreenShell";
 import SecurityOverview from "@/components/security/SecurityOverview";
 import SecurityDevices from "@/components/security/SecurityDevices";
 import SecurityPrivacy from "@/components/security/SecurityPrivacy";
@@ -17,7 +18,6 @@ const TABS = [
 ];
 
 export default function SecurityCenter() {
-  const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const active = params.get("tab") || "overview";
   const setTab = (id) => setParams({ tab: id });
@@ -30,26 +30,21 @@ export default function SecurityCenter() {
   if (!user) return <div className="min-h-screen grid place-items-center px-6 text-center text-muted-foreground">Sign in to manage your security.</div>;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-30 px-4 py-3 border-b border-border bg-background/80 backdrop-blur-xl flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-muted/60"><ChevronLeft className="w-5 h-5" /></button>
-        <Shield className="w-5 h-5 text-primary" />
-        <h1 className="text-[16px] font-heading font-semibold flex-1">Identity & Security</h1>
-        <span className="text-[12px] text-muted-foreground truncate max-w-[180px] hidden sm:block">{user.email}</span>
-      </header>
+    <ScreenShell title="Identity & Security" subtitle={user.email} back>
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 mt-3 mb-4">
+        {TABS.map((t) => {
+          const Icon = t.icon;
+          return <button key={t.id} onClick={() => setTab(t.id)} className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap spring-tap ${active === t.id ? "bg-primary text-primary-foreground" : "bg-card border border-border/40 text-foreground/80"}`}><Icon className="w-4 h-4" />{t.label}</button>;
+        })}
+      </div>
 
-      <div className="px-4 pt-4"><div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">{TABS.map((t) => {
-        const Icon = t.icon;
-        return <button key={t.id} onClick={() => setTab(t.id)} className={`flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap spring-tap ${active === t.id ? "bg-primary text-primary-foreground" : "glass text-foreground/80"}`}><Icon className="w-4 h-4" />{t.label}</button>;
-      })}</div></div>
-
-      <main className="p-4 md:p-6 max-w-3xl mx-auto">
+      <div>
         {active === "overview" && <SecurityOverview user={user} onTab={setTab} />}
         {active === "devices" && <SecurityDevices user={user} />}
         {active === "privacy" && <SecurityPrivacy user={user} />}
         {active === "activity" && <SecurityActivity user={user} />}
         {active === "sessions" && <SecuritySessions user={user} />}
-      </main>
-    </div>
+      </div>
+    </ScreenShell>
   );
 }

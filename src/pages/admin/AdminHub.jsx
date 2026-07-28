@@ -7,6 +7,7 @@ import { ShieldCheck, Sparkles, FileText, Search, Megaphone, ArrowRight } from "
 import { getAdminRole, ADMIN_ROLES } from "@/lib/admin/roles";
 import AdminInsights from "@/components/admin/AdminInsights";
 import AdminLaunchers from "@/components/admin/AdminLaunchers";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const BUD_ASSIST = [
   { key: "summarize", label: "Summarize Reports", icon: FileText, to: "/bud" },
@@ -28,18 +29,20 @@ export default function AdminHub() {
 
   if (!role) {
     return (
-      <div className="w-full max-w-[520px] mx-auto px-5 pt-20 text-center safe-area-pt">
-        <div className="w-16 h-16 rounded-[20px] bg-destructive/10 flex items-center justify-center mx-auto mb-4">
-          <ShieldCheck className="w-8 h-8 text-destructive" />
+      <ScreenShell title="Access required" back backTo="/home">
+        <div className="pt-10 text-center">
+          <div className="w-16 h-16 rounded-[20px] bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+            <ShieldCheck className="w-8 h-8 text-destructive" />
+          </div>
+          <h1 className="text-[20px] font-bold text-foreground">Administrator access required</h1>
+          <p className="text-[13px] text-muted-foreground mt-2 mb-6 max-w-[280px] mx-auto">
+            This platform hub is reserved for university, faculty, department and platform administrators.
+          </p>
+          <Link to="/home" className="inline-block px-5 py-2.5 rounded-[16px] bg-primary text-primary-foreground text-[13px] font-semibold spring-tap">
+            Back to Home
+          </Link>
         </div>
-        <h1 className="text-[20px] font-bold text-foreground">Administrator access required</h1>
-        <p className="text-[13px] text-muted-foreground mt-2 mb-6">
-          This platform hub is reserved for university, faculty, department and platform administrators.
-        </p>
-        <Link to="/home" className="inline-block px-5 py-2.5 rounded-[16px] bg-primary text-primary-foreground text-[13px] font-semibold spring-tap">
-          Back to Home
-        </Link>
-      </div>
+      </ScreenShell>
     );
   }
 
@@ -47,24 +50,18 @@ export default function AdminHub() {
   const RoleIcon = meta.icon;
 
   return (
-    <div className="w-full max-w-[600px] mx-auto px-5 pt-8 pb-32 safe-area-pt">
-      <motion.header
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-5"
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-9 h-9 rounded-[12px] flex items-center justify-center" style={{ background: `hsl(${meta.color} / 0.14)` }}>
-            <RoleIcon className="w-4 h-4" style={{ color: `hsl(${meta.color})` }} />
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">{meta.tier} tier</p>
-            <h1 className="text-[22px] font-extrabold text-foreground leading-tight">{meta.label} Hub</h1>
-          </div>
+    <ScreenShell
+      title={`${meta.label} Hub`}
+      subtitle="Your intelligent operating center — role-aware dashboards, insights and Bud assistance."
+      back
+      backTo="/home"
+      actions={
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: `hsl(${meta.color} / 0.14)` }} aria-hidden>
+          <RoleIcon className="w-5 h-5" style={{ color: `hsl(${meta.color})` }} />
         </div>
-        <p className="text-[13px] text-muted-foreground">Your intelligent operating center — role-aware dashboards, insights and Bud assistance.</p>
-      </motion.header>
+      }
+    >
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-4">{meta.tier} tier</p>
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -112,6 +109,6 @@ export default function AdminHub() {
       <Link to="/home" className="mt-8 inline-flex items-center gap-1.5 text-[12px] text-muted-foreground spring-tap">
         <ArrowRight className="w-3.5 h-3.5 rotate-180" /> Back to student home
       </Link>
-    </div>
+    </ScreenShell>
   );
 }

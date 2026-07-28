@@ -14,6 +14,7 @@ import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
 import ModeSwitcher from "@/components/layout/ModeSwitcher";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
+import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { ClassroomModeProvider, ClassroomBudGate } from "@/lib/classroom/ClassroomModeContext";
 
 /**
@@ -47,6 +48,7 @@ export default function AppShell() {
           <ContextPulse />
           <OfflineBanner />
           <ModeSwitcher />
+          <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
             <motion.div

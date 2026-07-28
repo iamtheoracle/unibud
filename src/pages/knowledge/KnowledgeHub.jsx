@@ -1,17 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Sparkles, Folder, NotebookPen, FileText, Library } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Sparkles, Folder, NotebookPen, FileText, Library } from "lucide-react";
 import { useKnowledge } from "@/lib/knowledge/useKnowledge";
 import KnowledgeSearchBar from "@/components/knowledge/KnowledgeSearchBar";
 import KnowledgeItemCard from "@/components/knowledge/KnowledgeItemCard";
 import UploadAndExtract from "@/components/knowledge/UploadAndExtract";
 import CollectionComposer from "@/components/knowledge/CollectionComposer";
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 export default function KnowledgeHub() {
-  const navigate = useNavigate();
   const kb = useKnowledge();
 
   const stats = [
@@ -22,19 +21,17 @@ export default function KnowledgeHub() {
   ];
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }}>
-        <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3 spring-tap">
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
-        <div className="flex items-center gap-2 mb-1">
+    <ScreenShell
+      title="Knowledge"
+      subtitle="Your single source of truth — files, notes & library, organized by Spark."
+      back
+      actions={
+        <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center" aria-hidden>
           <Sparkles className="w-5 h-5 text-accent" />
-          <h1 className="text-display text-foreground">Knowledge</h1>
         </div>
-        <p className="text-sm text-muted-foreground">Your single source of truth — files, notes & library, organized by Spark.</p>
-      </motion.div>
-
-      <motion.div className="grid grid-cols-4 gap-2 mt-5" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.4, ease: EASE }}>
+      }
+    >
+      <motion.div className="grid grid-cols-4 gap-2 mt-4" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.4, ease: EASE }}>
         {stats.map((s) => {
           const Icon = s.icon;
           return (
@@ -89,6 +86,6 @@ export default function KnowledgeHub() {
           </motion.div>
         )}
       </div>
-    </div>
+    </ScreenShell>
   );
 }
