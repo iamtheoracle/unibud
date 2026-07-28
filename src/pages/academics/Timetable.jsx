@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { TIMETABLE_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import GlassInput from "@/components/foundation/GlassInput";
@@ -11,7 +13,8 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 export default function Timetable() {
   const qc = useQueryClient();
-  const { data: entries } = useQuery({ queryKey: ["timetable"], queryFn: () => base44.entities.TimetableEntry.list() });
+  const tq = useQuery({ queryKey: ["timetable"], queryFn: () => base44.entities.TimetableEntry.list() });
+  const { data: entries } = useMockFallback(tq, TIMETABLE_MOCK_ENTRIES);
   const [view, setView] = useState("weekly");
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
@@ -100,8 +103,10 @@ function DayColumn({ title, items, onEdit, onDel, highlight, compact }) {
                 <p className="text-[13px] font-semibold text-foreground truncate">{e.course_code} · {e.course_title}</p>
                 <p className="text-[11px] text-muted-foreground">{e.start_time}–{e.end_time}{e.location ? ` · ${e.location}` : ""}{e.lecturer ? ` · ${e.lecturer}` : ""}</p>
               </div>
+              {!e.__mock && (<>
               <button onClick={() => onEdit(e)} className="text-[11px] font-semibold text-primary spring-tap">Edit</button>
               <button onClick={() => onDel(e.id)} className="text-[11px] font-semibold text-destructive spring-tap">Delete</button>
+              </>)}
             </motion.div>
           ))}
         </div>

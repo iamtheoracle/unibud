@@ -2,6 +2,8 @@ import React, { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
+import { useMockFallback } from "@/lib/mock/useMockFallback";
+import { ASSIGNMENT_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
@@ -14,7 +16,8 @@ const STATUS_LABEL = { pending: "Not Started", in_progress: "In Progress", submi
 
 export default function Assignments() {
   const qc = useQueryClient();
-  const { data: assignments } = useQuery({ queryKey: ["assignments"], queryFn: () => base44.entities.Assignment.list("-due_date", 100) });
+  const aq = useQuery({ queryKey: ["assignments"], queryFn: () => base44.entities.Assignment.list("-due_date", 100) });
+  const { data: assignments } = useMockFallback(aq, ASSIGNMENT_MOCK_ENTRIES);
   const [filter, setFilter] = useState("all");
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
@@ -79,8 +82,10 @@ export default function Assignments() {
               {a.description && <p className="text-[12px] text-muted-foreground mt-2 leading-relaxed">{a.description}</p>}
               {a.attachments?.length > 0 && <p className="text-[11px] text-primary mt-2">{a.attachments.length} attachment{a.attachments.length !== 1 ? "s" : ""}</p>}
               <div className="flex gap-3 mt-3">
+                {!a.__mock && (<>
                 <button onClick={() => openEdit(a)} className="text-[12px] font-semibold text-primary spring-tap">Edit</button>
                 <button onClick={() => del.mutate(a.id)} className="text-[12px] font-semibold text-destructive spring-tap ml-auto">Delete</button>
+                </>)}
               </div>
             </motion.div>
           ))}
