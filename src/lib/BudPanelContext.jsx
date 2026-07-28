@@ -7,6 +7,7 @@ import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentReg
 import { getScreenContext } from "@/lib/budScreenContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
+import { useToast } from "@/components/ui/use-toast";
 
 const BudPanelContext = createContext(null);
 
@@ -20,6 +21,7 @@ export function BudPanelProvider({ children }) {
   const location = useLocation();
   const { isDemoMode } = useDemoMode();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -92,8 +94,15 @@ export function BudPanelProvider({ children }) {
         setActiveConversationId(conv.id);
       }
       queryClient.invalidateQueries({ queryKey: ["budConversations"] });
-    } catch {}
-  }, [isDemoMode, activeConversationId, queryClient]);
+    } catch (err) {
+      console.error("BudPanel: failed to save conversation", err);
+      toast({
+        title: "Conversation not saved",
+        description: "We couldn't save this chat. Your messages are still visible, but won't persist across sessions.",
+        variant: "destructive",
+      });
+    }
+  }, [isDemoMode, activeConversationId, queryClient, toast]);
 
   const sendMessage = useCallback(async (text) => {
     if (!text || !text.trim() || isTyping || isSendingRef.current) return;
@@ -155,8 +164,15 @@ export function BudPanelProvider({ children }) {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setAttachments((prev) => [...prev, { url: file_url, name: file.name }]);
-    } catch {}
-  }, []);
+    } catch (err) {
+      console.error("BudPanel: file upload failed", err);
+      toast({
+        title: "Attachment failed",
+        description: `"${file.name}" couldn't be attached. Please try again.`,
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   const removeAttachment = useCallback((index) => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
