@@ -22,9 +22,13 @@ export default function ConversationList({
   const [menuConvId, setMenuConvId] = useState(null);
 
   const filtered = search
-    ? conversations.filter((c) =>
-        getConversationDisplayTitle(c, user?.id).toLowerCase().includes(search.toLowerCase())
-      )
+    ? conversations.filter((c) => {
+        const q = search.toLowerCase();
+        return (
+          getConversationDisplayTitle(c, user?.id).toLowerCase().includes(q) ||
+          (getLastMessagePreview(c) || "").toLowerCase().includes(q)
+        );
+      })
     : conversations;
 
   return (
