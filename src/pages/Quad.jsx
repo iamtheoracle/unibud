@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { Search, PenLine, Users, FlaskConical, Award, Briefcase } from "lucide-react";
+import { Search, PenLine, Users, FlaskConical, Award, Briefcase, Headphones } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useNavigate, Link } from "react-router-dom";
 import QuadFeed from "@/components/quad/QuadFeed";
@@ -108,6 +108,9 @@ export default function Quad() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link to="/podcasts" className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30" aria-label="Podcasts">
+            <Headphones className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
+          </Link>
           <button onClick={() => navigate("/discover")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
             <Search className="w-[18px] h-[18px] text-foreground" strokeWidth={1.8} />
           </button>

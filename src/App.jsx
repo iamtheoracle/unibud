@@ -32,6 +32,8 @@ const Me = lazy(() => import("@/pages/Me"));
 const Quad = lazy(() => import("@/pages/Quad"));
 const Connect = lazy(() => import("@/pages/Connect"));
 const Shorts = lazy(() => import("@/pages/Shorts"));
+const Podcasts = lazy(() => import("@/pages/podcasts/Podcasts"));
+const PodcastShow = lazy(() => import("@/pages/podcasts/PodcastShow"));
 const Messages = lazy(() => import("@/pages/Messages"));
 const Communities = lazy(() => import("@/pages/Communities"));
 const CommunityDetail = lazy(() => import("@/pages/CommunityDetail"));
@@ -181,6 +183,8 @@ function App() {
                     <Route path="/connect" element={<Connect />} />
                     <Route path="/me" element={<Me />} />
                     <Route path="/shorts" element={<Shorts />} />
+<Route path="/podcasts" element={<Podcasts />} />
+<Route path="/podcasts/:showId" element={<PodcastShow />} />
                     <Route path="/messages" element={<Messages />} />
                     <Route path="/messages/:conversationId" element={<Messages />} />
                     <Route path="/communities" element={<Communities />} />

@@ -1,0 +1,113 @@
+{
+  "name": "PodcastEpisode",
+  "type": "object",
+  "properties": {
+    "podcast_id": {
+      "type": "string"
+    },
+    "podcast_title": {
+      "type": "string",
+      "description": "Denormalized show title for fast rendering"
+    },
+    "cover_url": {
+      "type": "string",
+      "description": "Denormalized show cover"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "audio_url": {
+      "type": "string"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "default": 0
+    },
+    "episode_number": {
+      "type": "number",
+      "default": 1
+    },
+    "season_number": {
+      "type": "number",
+      "default": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "published"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "transcript": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "host_id": {
+      "type": "string",
+      "description": "Creator id (denormalized for RLS convenience)"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "podcast_id",
+    "title",
+    "audio_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
