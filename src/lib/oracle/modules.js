@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, Building2, Boxes, Users, Bot, ShieldCheck, Plug, Activity, ScrollText, Search, Network, Gauge, Radar,
   BarChart3,
+  Wallet,
 } from "lucide-react";
 
 export const ORACLE_MODULES = [
@@ -18,6 +19,7 @@ export const ORACLE_MODULES = [
   { id: "monitoring", label: "Monitoring", group: "Infrastructure", icon: Activity, desc: "Real-time API latency, database, queues, background jobs, errors and storage." },
   { id: "audit", label: "Audit Center", group: "Compliance", icon: ScrollText, desc: "Immutable system-wide audit log with filtering, searching and export." },
   { id: "content", label: "Content Intelligence", group: "Intelligence", icon: BarChart3, desc: "Platform-wide content & engagement analytics across posts, shorts, podcasts and marketplace." },
+  { id: "finance", label: "Financial Intelligence", group: "Intelligence", icon: Wallet, desc: "Revenue, collection health, refunds, wallet flow and marketplace performance across the platform." },
 ];
 
 export const moduleById = (id) => ORACLE_MODULES.find((m) => m.id === id);

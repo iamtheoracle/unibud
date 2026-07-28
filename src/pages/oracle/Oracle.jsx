@@ -18,6 +18,7 @@ import AIMonitoring from "@/components/oracle/sections/AIMonitoring";
 import AuditCenter from "@/components/oracle/sections/AuditCenter";
 import GlobalSearch from "@/components/oracle/sections/GlobalSearch";
 import ContentIntelligence from "@/components/oracle/sections/ContentIntelligence";
+import FinancialIntelligence from "@/components/oracle/sections/FinancialIntelligence";
 
 const SECTIONS = {
   dashboard: OracleDashboard,
@@ -34,6 +35,7 @@ const SECTIONS = {
   monitoring: Monitoring,
   audit: AuditCenter,
   content: ContentIntelligence,
+  finance: FinancialIntelligence,
 };
 
 export default function Oracle() {
