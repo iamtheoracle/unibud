@@ -4,8 +4,31 @@
 // until then adapters return deterministic mock data. Adding a real provider
 // = implement one adapter object and register it here — no business logic changes.
 
+import { base44 } from "@/api/base44Client";
+
 const lat = () => 20 + Math.floor(Math.random() * 90);
 const ref = (p) => `${p}_${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`;
+
+/** Stripe adapter — real card payments via the stripePayment backend function. */
+const stripeBanking = (id, name, version) => ({
+  id, name, group: "banking", version,
+  capabilities: ["card_payments", "checkout", "refunds"],
+  health: async () => ({ ok: true, latency: lat(), message: `${name} (test mode)` }),
+  pay: async ({ amount, currency, description, transaction_id, attempt_id, to_wallet_id, from_wallet_id, institution_id, success_url, cancel_url }) => {
+    const res = await base44.functions.invoke("stripePayment", {
+      action: "createSession",
+      amount, currency, description, transaction_id, attempt_id, to_wallet_id, from_wallet_id, institution_id, success_url, cancel_url,
+    });
+    return { status: "checkout_initiated", reference: res.data?.session_id || "", checkout_url: res.data?.checkout_url || "" };
+  },
+  verify: async (r) => ({ verified: true, status: "verified", reference: r }),
+  capture: async (r) => ({ status: "captured", reference: r }),
+  refund: async (r, a) => ({ status: "refunded", reference: ref("RFD") }),
+  transfer: async () => { throw new Error("Use internal wallet transfer"); },
+  createVirtualAccount: async () => { throw new Error("Not supported via Stripe"); },
+  verifyAccount: async () => { throw new Error("Not supported via Stripe"); },
+  balance: async () => ({ balance: 0, currency: "NGN" }),
+});
 
 const banking = (id, name, version, bankName = "Mock Bank") => ({
   id, name, group: "banking", version,
@@ -73,6 +96,7 @@ const ai = (id, name, version, models = []) => ({
 });
 
 export const ADAPTERS = [
+  stripeBanking("stripe", "Stripe", "1.0.0"),
   banking("mock_banking", "Mock Banking", "1.0.0"),
   banking("onepipe", "OnePipe", "1.0.0", "OnePipe"),
   banking("kora", "Kora", "1.0.0", "Kora"),
@@ -102,4 +126,4 @@ export const ADAPTERS = [
   ai("local", "Local Model", "1.0.0", [{ id: "local-llama", label: "Local Llama" }]),
 ];
 
-export const DEFAULTS = { banking: "mock_banking", kyc: "mock_kyc", wallet_card: "mock_wallet", notification: "mock_notification", storage: "mock_storage", ai: "mock_ai" };
+export const DEFAULTS = { banking: "stripe", kyc: "mock_kyc", wallet_card: "mock_wallet", notification: "mock_notification", storage: "mock_storage", ai: "mock_ai" };

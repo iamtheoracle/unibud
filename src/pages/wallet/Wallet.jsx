@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +16,9 @@ import WalletInsights from "@/components/wallet/sections/WalletInsights";
 import WalletSecurity from "@/components/wallet/sections/WalletSecurity";
 import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
 import WalletActivation from "@/components/wallet/WalletActivation";
+import { useToast } from "@/components/ui/use-toast";
+import { pollTransactionStatus } from "@/lib/finance/stripeCheckout";
+import { queryClientInstance } from "@/lib/query-client";
 
 const SECTION = {
   home: WalletHome, accounts: WalletAccounts, cards: WalletCards,
@@ -55,6 +58,32 @@ export default function Wallet() {
     frequentTransfer: transactions.filter((t) => t.type === "transfer").length >= 3,
     savingsActive: wallets.some((w) => /saving/i.test(w.owner_name || "")),
   };
+
+  const { toast } = useToast();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const pay = params.get("payment");
+    const txId = params.get("tx");
+    if (pay === "success" && txId) {
+      toast({ title: "Payment received", description: "Reconciling your balance…" });
+      pollTransactionStatus(txId).then((r) => {
+        if (r.status === "completed") {
+          toast({ title: "Payment complete", description: "Your wallet has been credited." });
+          queryClientInstance.invalidateQueries({ queryKey: ["walletWallets"] });
+          queryClientInstance.invalidateQueries({ queryKey: ["walletTx"] });
+        } else {
+          toast({ title: "Payment processing", description: "We'll update your balance shortly." });
+          queryClientInstance.invalidateQueries({ queryKey: ["walletTx"] });
+        }
+        window.history.replaceState({}, "", "/wallet");
+      });
+    } else if (pay === "cancelled" && txId) {
+      toast({ title: "Payment cancelled", description: "No money was taken.", variant: "destructive" });
+      base44.entities.FinancialTransaction.update(txId, { status: "cancelled" }).catch(() => {});
+      window.history.replaceState({}, "", "/wallet");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (accessLoading) {
     return (
