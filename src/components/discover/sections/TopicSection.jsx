@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Newspaper } from "lucide-react";
 import { SectionTitle, ChipRow, ItemCard, PromptCard } from "@/components/discover/DiscoverShared";
+import { newsForTopic } from "@/lib/social/discoverMock";
 
 /**
  * TopicSection — a dedicated experience for Sports, Entertainment and
@@ -27,10 +28,31 @@ export default function TopicSection({ category }) {
         { label: "Marketplace", to: "/marketplace" },
       ];
 
+  const news = newsForTopic(category.key, sub);
+
   return (
     <div className="space-y-4">
       <SectionTitle icon={Icon} title={category.label} action={<span className="text-[11px] text-muted-foreground">Spark is learning</span>} />
       {category.subs?.length > 0 && <ChipRow chips={category.subs} active={sub} onPick={setSub} />}
+
+      {news.length > 0 && (
+        <div>
+          <SectionTitle icon={Newspaper} title={`Latest in ${sub || category.label}`} />
+          <div className="px-5 space-y-2.5">
+            {news.slice(0, 6).map((n) => (
+              <ItemCard
+                key={n.id}
+                icon={Newspaper}
+                title={n.title}
+                subtitle={n.source}
+                color={category.color}
+                image={n.cover_url}
+                tag={sub || category.label}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="px-5 space-y-2.5">
         {links.map((l) => (

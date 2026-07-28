@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ArrowLeft } from "lucide-react";
+import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
+import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useDiscoveryRanking } from "@/hooks/useDiscoveryRanking";
 import { CATEGORIES } from "@/components/discover/discoverCategories";
@@ -33,17 +35,20 @@ export default function Discover() {
   useEffect(() => { recordView(active); }, [active, recordView]);
 
   const enabled = !isDemoMode;
-  const useData = (key, fn) => useQuery({ queryKey: [key], queryFn: fn, enabled }).data;
+  const useData = (key, fn, mock) => fallbackIfEmpty(
+    useQuery({ queryKey: [key], queryFn: fn, enabled }).data,
+    mock
+  );
   const data = {
-    quadPosts: useData("discoverQuad", () => base44.entities.QuadPost.list("-created_date", 12)),
-    events: useData("discoverEvents", () => base44.entities.CampusEvent.list("-created_date", 8)),
-    clubs: useData("discoverClubs", () => base44.entities.Club.list("-created_date", 8)),
-    communities: useData("discoverCommunities", () => base44.entities.Community.list("-created_date", 8)),
-    opportunities: useData("discoverOpps", () => base44.entities.Opportunity.list("-created_date", 8)),
-    scholarships: useData("discoverSchol", () => base44.entities.Scholarship.list("-created_date", 8)),
-    listings: useData("discoverListings", () => base44.entities.MarketplaceListing.filter({ status: "active" })),
-    lostFound: useData("discoverLost", () => base44.entities.LostFoundItem.list("-created_date", 6)),
-    challenges: useData("discoverChallenges", () => base44.entities.Challenge.list("-created_date", 6)),
+    quadPosts: useData("discoverQuad", () => base44.entities.QuadPost.list("-created_date", 12), DISCOVER_MOCK.quadPosts),
+    events: useData("discoverEvents", () => base44.entities.CampusEvent.list("-created_date", 8), DISCOVER_MOCK.events),
+    clubs: useData("discoverClubs", () => base44.entities.Club.list("-created_date", 8), DISCOVER_MOCK.clubs),
+    communities: useData("discoverCommunities", () => base44.entities.Community.list("-created_date", 8), DISCOVER_MOCK.communities),
+    opportunities: useData("discoverOpps", () => base44.entities.Opportunity.list("-created_date", 8), DISCOVER_MOCK.opportunities),
+    scholarships: useData("discoverSchol", () => base44.entities.Scholarship.list("-created_date", 8), DISCOVER_MOCK.scholarships),
+    listings: useData("discoverListings", () => base44.entities.MarketplaceListing.filter({ status: "active" }), DISCOVER_MOCK.listings),
+    lostFound: useData("discoverLost", () => base44.entities.LostFoundItem.list("-created_date", 6), DISCOVER_MOCK.lostFound),
+    challenges: useData("discoverChallenges", () => base44.entities.Challenge.list("-created_date", 6), DISCOVER_MOCK.challenges),
   };
 
   const activeCat = CATEGORIES.find((c) => c.key === active);
