@@ -4,6 +4,11 @@ import {
   CheckSquare, MessageSquareText, Wallet, Compass, BarChart3, Images,
   Search, ClipboardList, NotebookPen, GraduationCap,
 } from "lucide-react";
+import {
+  ACADEMIC_NAV_PATHS as ACADEMIC_PATHS,
+  SOCIAL_NAV_PATHS as SOCIAL_PATHS,
+  ME_PATHS,
+} from "@/lib/ecosystems/manifest";
 
 /**
  * UNIBUD Adaptive Navigation — domain + workspace resolver.
@@ -14,24 +19,7 @@ import {
  * See useAdaptiveContext for the prominent→settled transition logic.
  */
 
-const ACADEMIC_PATHS = [
-  "/academics", "/study", "/course", "/agenda", "/tasks", "/collaboration",
-  "/exam", "/notes", "/attendance", "/assignments", "/projects", "/exams",
-  "/timetable", "/calendar", "/office-hours", "/study-sessions", "/results",
-  "/report",
-];
-
-const SOCIAL_PATHS = [
-  "/quad", "/communities", "/community", "/clubs", "/social", "/connect",
-  "/messages", "/shorts", "/podcasts", "/creator-studio", "/discover",
-  "/following", "/friends", "/events", "/study-groups", "/mentorship",
-  "/mentor", "/challenges", "/student-government", "/student-support",
-];
-
-const ME_PATHS = [
-  "/security", "/notifications", "/smart-notifications",
-  "/notification-preferences", "/academic-timeline", "/bud/notifications",
-];
+// Route classification lives in @/lib/ecosystems/manifest (single source of truth).
 
 /** Which fixed tab represents the current route (academic | social | me | standalone). */
 export function getDomain(pathname) {
