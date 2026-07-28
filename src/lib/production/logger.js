@@ -6,6 +6,29 @@
 const LEVELS = { debug: 10, info: 20, warn: 30, error: 40 };
 let minLevel = LEVELS.info;
 const buffer = [];
+let lastSentKey = "";
+let lastSentAt = 0;
+
+/** Fire-and-forget remote crash sink — throttled, never throws. */
+function remoteCrashSink(level, msg, ctx) {
+  if (level !== "error" || typeof window === "undefined") return;
+  const key = String(msg) + "|" + (ctx?.message || ctx?.reason || "");
+  const now = Date.now();
+  if (key === lastSentKey && now - lastSentAt < 60000) return;
+  lastSentKey = key; lastSentAt = now;
+  try {
+    import("@/api/base44Client").then(({ base44 }) =>
+      base44.entities.CrashReport.create({
+        message: String(msg).slice(0, 500),
+        stack: typeof ctx?.stack === "string" ? ctx.stack.slice(0, 4000) : JSON.stringify(ctx || {}).slice(0, 4000),
+        url: location.href,
+        user_agent: navigator.userAgent,
+        severity: "error",
+        context: ctx || {},
+      }).catch(() => {})
+    ).catch(() => {});
+  } catch { /* no-op */ }
+}
 
 function record(level, msg, ctx) {
   if ((LEVELS[level] || 40) < minLevel) return;
@@ -15,6 +38,7 @@ function record(level, msg, ctx) {
   const fn = level === "error" ? "error" : level === "warn" ? "warn" : "log";
    
   console[fn](`[${level}]`, msg, ctx || "");
+  remoteCrashSink(level, msg, ctx);
 }
 
 export const logger = {
