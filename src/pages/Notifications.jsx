@@ -21,6 +21,7 @@ export default function Notifications() {
   const ctx = useUnibudContext();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("all");
+  const [unreadOnly, setUnreadOnly] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -88,14 +89,18 @@ export default function Notifications() {
       {/* Category tabs */}
       <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-3">
         {TABS.map((t) => {
-          const on = activeTab === t.id;
+          const on = !unreadOnly && activeTab === t.id;
           return (
-            <button key={t.id} onClick={() => { setActiveTab(t.id); hook.setFilter(t.filter); }} className={`px-3 py-1 rounded-full text-[10px] font-medium whitespace-nowrap spring-tap border flex items-center gap-1 ${on ? "text-foreground border-border/40 bg-muted/40" : "text-muted-foreground/60 border-border/20 bg-transparent"}`}>
+            <button key={t.id} onClick={() => { setActiveTab(t.id); setUnreadOnly(false); hook.setFilter(t.filter); }} className={`px-3 py-1 rounded-full text-[10px] font-medium whitespace-nowrap spring-tap border flex items-center gap-1 ${on ? "text-foreground border-border/40 bg-muted/40" : "text-muted-foreground/60 border-border/20 bg-transparent"}`}>
               <span className={`w-1.5 h-1.5 rounded-full ${on ? "bg-foreground" : "bg-muted-foreground/40"}`} />
               {t.label}
             </button>
           );
         })}
+        <button onClick={() => { const next = !unreadOnly; setUnreadOnly(next); setActiveTab(next ? "" : "all"); hook.setFilter(next ? "unread" : "all"); }} className={`px-3 py-1 rounded-full text-[10px] font-medium whitespace-nowrap spring-tap border flex items-center gap-1 ${unreadOnly ? "text-foreground border-border/40 bg-muted/40" : "text-muted-foreground/60 border-border/20 bg-transparent"}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${unreadOnly ? "bg-foreground" : "bg-muted-foreground/40"}`} />
+          Unread only
+        </button>
       </div>
 
       {/* Preferences */}
