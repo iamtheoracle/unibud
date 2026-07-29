@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, ShieldCheck, Loader2 } from "lucide-react";
+import { Bell, Wallet as WalletIcon, Loader2 } from "lucide-react";
 import { WALLET_TABS } from "@/components/wallet/walletNav";
 import WalletHome from "@/components/wallet/sections/WalletHome";
 import WalletAccounts from "@/components/wallet/sections/WalletAccounts";
@@ -18,7 +18,6 @@ import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
 import WalletActivation from "@/components/wallet/WalletActivation";
 import { useToast } from "@/components/ui/use-toast";
 import { pollTransactionStatus } from "@/lib/finance/stripeCheckout";
-import ScreenShell from "@/components/layout/ScreenShell";
 import { queryClientInstance } from "@/lib/query-client";
 
 const SECTION = {
@@ -63,6 +62,8 @@ export default function Wallet() {
   const { toast } = useToast();
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    if (tabParam && SECTION[tabParam]) setTab(tabParam);
     const pay = params.get("payment");
     const txId = params.get("tx");
     if (pay === "success" && txId) {
@@ -100,20 +101,28 @@ export default function Wallet() {
   const Active = SECTION[tab] || WalletHome;
 
   return (
-    <ScreenShell
-      back
-      title="Wallet"
-      subtitle="How can I manage my money today?"
-      sticky={false}
-      actions={
-        <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium">
-          <ShieldCheck className="w-3.5 h-3.5 text-success" /> Oracle
+    <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
+      {/* Top bar */}
+      <div className="flex justify-between items-center px-1 pt-2 pb-3">
+        <h1 className="font-heading font-bold text-[20px] text-foreground tracking-tight">
+          Wallet <span className="text-[12px] font-normal text-muted-foreground/60">Campus</span>
+        </h1>
+        <div className="flex items-center gap-2.5">
+          <button onClick={() => navigate("/notifications")} className="relative w-8 h-8 rounded-full glass grid place-items-center spring-tap">
+            <Bell className="w-4 h-4 text-muted-foreground" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background" />
+          </button>
+          <button onClick={() => setTab("cards")} className="w-8 h-8 rounded-full bg-primary grid place-items-center spring-tap ice-glow" aria-label="Cards">
+            <WalletIcon className="w-4 h-4 text-primary-foreground" />
+          </button>
+          <button onClick={() => navigate("/me")} className="w-8 h-8 rounded-full grid place-items-center font-semibold text-[12px] text-primary-foreground spring-tap" style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}>
+            {(user?.full_name?.[0] || "U").toUpperCase()}
+          </button>
         </div>
-      }
-    >
+      </div>
 
       {/* Tab rail */}
-      <div className="sticky top-0 z-20 -mx-5 px-5 py-3 glass border-b border-border/20">
+      <div className="sticky top-0 z-20 -mx-4 px-4 py-3 glass border-b border-border/20">
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {WALLET_TABS.map((t) => {
             const Icon = t.icon;
@@ -147,6 +156,6 @@ export default function Wallet() {
           </motion.div>
         </AnimatePresence>
       </div>
-    </ScreenShell>
+    </div>
   );
 }
