@@ -14,6 +14,7 @@ import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
 import QuickActionCapsule from "@/components/navigation/QuickActionCapsule";
 import FloatingNav from "@/components/layout/FloatingNav";
+import AICommandBar from "@/components/layout/AICommandBar";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
@@ -52,6 +53,7 @@ export default function AppShell() {
           <ContextPulse />
           <OfflineBanner />
           <QuickActionCapsule />
+          <AICommandBar />
           <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
