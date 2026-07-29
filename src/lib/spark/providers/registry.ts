@@ -1,5 +1,6 @@
 import type { AIProvider } from "./types";
 import { MockProvider } from "./mock";
+import { ProviderNotRegisteredError } from "../errors";
 
 /**
  * Holds all registered AI providers and resolves which one to use.
@@ -25,7 +26,7 @@ export class ProviderRegistry {
 
   setDefault(name: string): void {
     if (!this.providers.has(name)) {
-      throw new Error(`Cannot set default: provider "${name}" is not registered.`);
+      throw new ProviderNotRegisteredError(name);
     }
     this.defaultName = name;
   }
@@ -34,7 +35,7 @@ export class ProviderRegistry {
     const key = name ?? this.defaultName;
     const provider = this.providers.get(key);
     if (!provider) {
-      throw new Error(`Provider "${key}" is not registered.`);
+      throw new ProviderNotRegisteredError(key);
     }
     return provider;
   }

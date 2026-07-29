@@ -3,6 +3,7 @@ import type { Token } from "./tokens";
 import type { ProviderRegistry } from "./providers/registry";
 import type { MiddlewarePipeline } from "./middleware";
 import type { EventBus } from "./events";
+import { PluginAlreadyRegisteredError } from "./errors";
 
 export interface SparkPluginContext {
   container: Container;
@@ -23,7 +24,7 @@ export class PluginManager {
 
   register(plugin: SparkPlugin, ctx: SparkPluginContext): void {
     if (this.installed.has(plugin.name)) {
-      throw new Error(`Plugin "${plugin.name}" is already registered.`);
+      throw new PluginAlreadyRegisteredError(plugin.name);
     }
     plugin.install(ctx);
     this.installed.set(plugin.name, plugin);
