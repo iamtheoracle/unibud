@@ -5,6 +5,7 @@ import { ShieldAlert, Loader2 } from "lucide-react";
 import OracleShell from "@/components/oracle/OracleShell";
 import { ORACLE_MODULES, moduleById } from "@/lib/oracle/modules";
 import OracleDashboard from "@/components/oracle/sections/OracleDashboard";
+import OracleIntelligence from "@/components/oracle/sections/OracleIntelligence";
 import RegistryDashboard from "@/components/oracle/sections/RegistryDashboard";
 import InstitutionRegistry from "@/components/oracle/sections/InstitutionRegistry";
 import ProductRegistry from "@/components/oracle/sections/ProductRegistry";
@@ -26,6 +27,7 @@ import TaskIntelligence from "@/components/oracle/sections/TaskIntelligence";
 import ExecutiveAuthority from "@/components/oracle/sections/ExecutiveAuthority";
 
 const SECTIONS = {
+  intelligence: OracleIntelligence,
   dashboard: OracleDashboard,
   registry: RegistryDashboard,
   search: GlobalSearch,

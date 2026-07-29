@@ -5,9 +5,11 @@ import {
   Cpu,
   ListChecks,
   Crown,
+  Brain,
 } from "lucide-react";
 
 export const ORACLE_MODULES = [
+  { id: "intelligence", label: "Oracle Intelligence", group: "Overview", icon: Brain, desc: "Autonomous coordination network — platform health scanning, agent orchestration, and AI-generated recommendations with full execution standards." },
   { id: "dashboard", label: "Dashboard", group: "Overview", icon: LayoutDashboard, desc: "Platform-wide command center — real-time health, activity and revenue." },
   { id: "registry", label: "Live Registry", group: "Overview", icon: Radar, desc: "Mission-control live metrics across students, academics, AI, platform, community, institutions and system — every value flows from the registry." },
   { id: "search", label: "Global Search", group: "Overview", icon: Search, desc: "Universal search across users, institutions, payments, logs and settings." },

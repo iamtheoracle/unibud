@@ -13,6 +13,7 @@
 import {
   Crown, Shield, Settings, ShieldCheck, LayoutDashboard, Building2, GraduationCap,
   BookOpen, Users, Store, Headphones, Lock, Database, Newspaper, Wallet, Bot, Scroll,
+  AlertTriangle,
 } from "lucide-react";
 
 // ─── Authority Codes ──────────────────────────────────────────────────────
@@ -443,6 +444,42 @@ export const AUTHORITY_CODES = [
     supportingAgents: ["forge", "pulse"],
     managementCenter: "platform_operations",
   },
+  {
+    code: "ADM-180",
+    level: "A4",
+    title: "Emergency Operations",
+    icon: AlertTriangle,
+    scope: "Emergency response, disaster recovery, and critical infrastructure recovery",
+    responsibilities: [
+      "Emergency Shutdown",
+      "Disaster Recovery",
+      "Rollback",
+      "Incident Response",
+      "Critical Infrastructure Recovery",
+    ],
+    primaryAgent: "bud",
+    supportingAgents: ["sentinel", "forge", "pulse", "oracle"],
+    managementCenter: "platform_operations",
+  },
+  {
+    code: "ADM-185",
+    level: "A4",
+    title: "Compliance & Audit",
+    icon: Scroll,
+    scope: "Read-only governance, compliance, and audit inspection",
+    responsibilities: [
+      "Audit Logs",
+      "Compliance Reports",
+      "Governance",
+      "Security Audits",
+      "Read-only Inspection",
+      "Regulatory Review",
+    ],
+    primaryAgent: "bud",
+    supportingAgents: ["sentinel", "atlas", "pulse"],
+    managementCenter: "trust_operations",
+    readOnly: true,
+  },
 ];
 
 // ─── Authority Levels ────────────────────────────────────────────────────
@@ -478,7 +515,7 @@ export const AUTHORITY_LEVELS = [
   {
     level: "A4",
     label: "Operational Authority",
-    codes: ["ADM-160", "ADM-170", "ADM-175"],
+    codes: ["ADM-160", "ADM-170", "ADM-175", "ADM-180", "ADM-185"],
     description: "Specialized delegated roles",
     canOverride: false,
   },
@@ -613,6 +650,16 @@ export const AUTHORITY_AGENT_MAPPING = {
     oracleCoordinates: ["forge", "pulse"],
     note: "Maintenance is assisted by Bud, with Forge executing updates and Pulse monitoring system health during maintenance",
   },
+  "ADM-180": {
+    primaryInterface: "bud",
+    oracleCoordinates: ["sentinel", "forge", "pulse", "oracle"],
+    note: "Emergency Operations is assisted by Bud, with Sentinel leading incident response, Forge managing recovery, and Pulse monitoring critical systems",
+  },
+  "ADM-185": {
+    primaryInterface: "bud",
+    oracleCoordinates: ["sentinel", "atlas", "pulse"],
+    note: "Compliance & Audit is assisted by Bud, with Sentinel providing audit logs, Atlas documenting governance, and Pulse supplying operational metrics. Read-only authority.",
+  },
 };
 
 // ─── Management Center Mapping ────────────────────────────────────────────
@@ -642,6 +689,8 @@ export const AUTHORITY_MANAGEMENT_CENTER = {
   "ADM-165": "platform_operations",
   "ADM-170": "trust_operations",
   "ADM-175": "platform_operations",
+  "ADM-180": "platform_operations",
+  "ADM-185": "trust_operations",
 };
 
 // ─── Separation Principle ────────────────────────────────────────────────
