@@ -1,6 +1,6 @@
 import {
-  ShoppingBag, CalendarDays, Users, Trophy, Store, UtensilsCrossed,
-  Search, BookMarked, Briefcase, Award, GraduationCap, FlaskConical, Dumbbell,
+  ShoppingBag, CalendarDays, Users, Trophy, Store,
+  Search, BookMarked, Briefcase, Award, GraduationCap, FlaskConical,
   BookOpen, CalendarClock, ClipboardList, FileText, CalendarCheck, TrendingUp, Megaphone, Video, FolderKanban,
 } from "lucide-react";
 
@@ -37,8 +37,6 @@ export const CAMPUS_CATEGORIES = [
   { key: "events", title: "Campus Events", desc: "What's happening on campus", icon: CalendarDays, to: "/events", live: true, color: "217 91% 60%", context: "social", group: "community" },
   { key: "marketplace", title: "Marketplace", desc: "Buy, sell & trade on campus", icon: ShoppingBag, to: "/marketplace", live: true, color: "262 83% 58%", context: "social", group: "lifestyle" },
   { key: "businesses", title: "Campus Businesses", desc: "Verified campus vendors", icon: Store, to: "/companies", live: true, color: "38 92% 50%", context: "social", group: "lifestyle" },
-  { key: "food", title: "Food & Restaurants", desc: "Eat well around campus", icon: UtensilsCrossed, to: null, live: false, color: "0 72% 51%", context: "social", group: "lifestyle" },
-  { key: "sports", title: "Sports", desc: "Teams, fixtures & results", icon: Dumbbell, to: null, live: false, color: "0 72% 51%", context: "social", group: "lifestyle" },
   { key: "lostfound", title: "Lost & Found", desc: "Recover what's yours", icon: Search, to: "/lost-found", live: true, color: "217 91% 60%", context: "social", group: "help" },
 ];
 
@@ -52,7 +50,7 @@ export const CAMPUS_GROUPS = [
   { key: "resources", label: "Resources", context: "academic", items: ["library", "research", "academic-calendar", "academic-announcements"] },
   { key: "growth", label: "Growth", context: "academic", items: ["scholarships", "internships", "opportunities"] },
   { key: "community", label: "Community", context: "social", items: ["clubs", "organizations", "events"] },
-  { key: "lifestyle", label: "Lifestyle", context: "social", items: ["marketplace", "businesses", "food", "sports"] },
+  { key: "lifestyle", label: "Lifestyle", context: "social", items: ["marketplace", "businesses"] },
   { key: "help", label: "Help", context: "social", items: ["lostfound"] },
 ];
 
