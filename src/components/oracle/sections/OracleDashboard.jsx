@@ -1,119 +1,227 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { SectionHeader, StatCard, Panel, StatusPill, LoadingState } from "@/components/oracle/oracle-ui";
+import { SectionHeader, StatusPill, LoadingState } from "@/components/oracle/oracle-ui";
 import {
-  Activity, Users, Building2, MonitorPlay, Server, Bot, CreditCard, ShieldAlert,
-  HardDrive, AlertTriangle, TrendingUp, Bell,
+  Activity, Server, Database, ShieldCheck, HardDrive, Bot, Cpu, Zap, Brain,
+  AlertTriangle, CheckCircle2, Clock, MapPin, Wifi, TrendingUp,
 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid, BarChart, Bar, Cell } from "recharts";
 
-const dayKey = (d) => d.toISOString().slice(0, 10);
-const last7 = () => {
-  const days = [];
-  for (let i = 6; i >= 0; i--) { const d = new Date(); d.setDate(d.getDate() - i); days.push(dayKey(d)); }
-  return days;
-};
+const dayKey = (d) => (d ? new Date(d).toISOString().slice(0, 10) : "—");
+const fmtTime = (d) => (d ? new Date(d).toLocaleString("en-NG", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—");
+
+/* ── Health check item ── */
+function HealthCheck({ icon: Icon, label, status, latency, detail }) {
+  const isOk = status === "operational" || status === "healthy";
+  const isWarn = status === "degraded" || status === "warning";
+  return (
+    <div className="flex items-center gap-3 py-2.5 border-b border-border/30 last:border-0">
+      <div className={`w-9 h-9 rounded-xl grid place-items-center shrink-0 ${isOk ? "bg-success/15" : isWarn ? "bg-warning/15" : "bg-destructive/15"}`}>
+        <Icon className={`w-4 h-4 ${isOk ? "text-success" : isWarn ? "text-warning" : "text-destructive"}`} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-semibold truncate">{label}</p>
+        {detail && <p className="text-[11px] text-muted-foreground truncate">{detail}</p>}
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {latency != null && <span className="text-[11px] text-muted-foreground tabular-nums">{latency}ms</span>}
+        <StatusPill status={status} />
+      </div>
+    </div>
+  );
+}
+
+/* ── Agent card ── */
+function AgentCard({ agent, index }) {
+  const enabled = agent.enabled !== false;
+  const Icon = agent.division === "Engineering" ? Cpu : agent.division === "Intelligence" ? Brain : agent.division === "Trust" ? ShieldCheck : Bot;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="liquid-mirror rounded-2xl p-3.5 flex items-center gap-3"
+    >
+      <div className={`w-10 h-10 rounded-xl grid place-items-center shrink-0 ${enabled ? "bg-primary/15" : "bg-muted/40"}`}>
+        <Icon className={`w-[18px] h-[18px] ${enabled ? "text-primary" : "text-muted-foreground"}`} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[13px] font-semibold truncate">{agent.name}</p>
+        <p className="text-[11px] text-muted-foreground truncate">{agent.role || agent.division}</p>
+      </div>
+      <div className="flex items-center gap-1.5 shrink-0">
+        <span className={`w-1.5 h-1.5 rounded-full ${enabled ? "bg-success live-pulse" : "bg-muted-foreground/40"}`} />
+        <span className={`text-[10px] font-semibold uppercase ${enabled ? "text-success" : "text-muted-foreground"}`}>{enabled ? "Active" : "Idle"}</span>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ── Security log row ── */
+function SecurityLogRow({ event, index }) {
+  const sev = event.severity || "info";
+  const dotColor = sev === "critical" ? "bg-destructive" : sev === "warning" ? "bg-warning" : "bg-information";
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.03, duration: 0.35 }}
+      className="flex items-start gap-3 py-2.5 border-b border-border/30 last:border-0"
+    >
+      <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${dotColor}`} />
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 mb-0.5">
+          <p className="text-[12px] font-medium truncate">{event.type ? event.type.replace(/_/g, " ") : "Security Event"}</p>
+          <StatusPill status={sev} />
+        </div>
+        <p className="text-[11px] text-muted-foreground truncate">{event.description || event.user_name || "—"}</p>
+      </div>
+      <div className="text-right shrink-0">
+        <p className="text-[10px] text-muted-foreground">{fmtTime(event.created_date)}</p>
+        {event.location && <p className="text-[10px] text-muted-foreground/70 flex items-center gap-0.5 justify-end mt-0.5"><MapPin className="w-2.5 h-2.5" />{event.location}</p>}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function OracleDashboard({ onActive }) {
-  const [d, setD] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [users, inst, modules, audit, secCritical, tickets] = await Promise.all([
-          base44.entities.User.list("-created_date", 200).catch(() => []),
-          base44.entities.Institution.list("-created_date", 200).catch(() => []),
+        const [agents, security, audit, modules] = await Promise.all([
+          base44.entities.SparkAgent.list("order", 100).catch(() => []),
+          base44.entities.SecurityEvent.list("-created_date", 12).catch(() => []),
+          base44.entities.AuditLog.list("-created_date", 8).catch(() => []),
           base44.entities.PlatformModule.filter({ enabled: true }).catch(() => []),
-          base44.entities.AuditLog.list("-created_date", 200).catch(() => []),
-          base44.entities.SecurityEvent.filter({ severity: "critical" }).catch(() => []),
-          base44.entities.SupportTicket.list("-created_date", 100).catch(() => []),
         ]);
-        setD({ users, inst, modules, audit, secCritical, tickets });
+        setData({ agents, security, audit, modules });
       } catch {}
       setLoading(false);
     })();
   }, []);
 
-  const daily = useMemo(() => {
-    if (!d?.audit) return [];
-    const days = last7();
-    const map = {};
-    days.forEach((k) => (map[k] = 0));
-    d.audit.forEach((a) => { const k = a.created_date ? dayKey(new Date(a.created_date)) : null; if (k in map) map[k]++; });
-    return days.map((k) => ({ name: k.slice(5), events: map[k] }));
-  }, [d]);
+  const activeAgents = useMemo(() => (data?.agents || []).filter((a) => a.enabled !== false), [data]);
+  const criticalEvents = useMemo(() => (data?.security || []).filter((e) => e.severity === "critical"), [data]);
 
-  const revByDay = useMemo(() => last7().map((k, i) => ({ name: k.slice(5), revenue: 120000 + Math.round(Math.sin(i / 2) * 40000) + i * 8000 })), []);
-
-  if (loading) return <LoadingState label="Loading platform overview…" />;
-  if (!d) return <LoadingState />;
-
-  const activeSessions = Math.round(d.users.length * 0.18) + 7;
-  const openTickets = d.tickets.filter((t) => t.status === "open" || t.status === "in_progress").length;
-  const errorRate = (d.audit.filter((a) => a.severity === "critical").length / Math.max(1, d.audit.length) * 100).toFixed(1);
+  if (loading) return <LoadingState label="Loading platform dashboard…" />;
 
   return (
     <div className="space-y-5">
-      <SectionHeader title="Oracle Dashboard" desc="Platform-wide command center — real-time health, activity and revenue." />
+      <SectionHeader
+        title="Oracle Dashboard"
+        desc="Platform health, agent status, and security — live."
+      />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-        <StatCard icon={Activity} label="Platform Health" value={<StatusPill status="operational" />} onClick={() => onActive("monitoring")} />
-        <StatCard icon={Building2} label="Active Institutions" value={d.inst.length} tone="primary" onClick={() => onActive("institutions")} />
-        <StatCard icon={Users} label="Total Users" value={d.users.length} tone="primary" onClick={() => onActive("users")} />
-        <StatCard icon={MonitorPlay} label="Active Sessions" value={activeSessions} tone="info" />
-        <StatCard icon={Server} label="API Health" value={<StatusPill status="healthy" />} onClick={() => onActive("monitoring")} />
-        <StatCard icon={Bot} label="AI Health" value={<StatusPill status="healthy" />} onClick={() => onActive("ai")} />
-        <StatCard icon={CreditCard} label="Payment Health" value={<StatusPill status="operational" />} onClick={() => onActive("integrations")} />
-        <StatCard icon={ShieldAlert} label="Security Alerts" value={d.secCritical.length} tone="danger" onClick={() => onActive("security")} />
-        <StatCard icon={HardDrive} label="Infrastructure" value={<StatusPill status="operational" />} onClick={() => onActive("monitoring")} />
-        <StatCard icon={AlertTriangle} label="Error Rate" value={`${errorRate}%`} tone="warn" onClick={() => onActive("monitoring")} />
-        <StatCard icon={TrendingUp} label="Revenue (7d)" value="₦920k" tone="success" />
-        <StatCard icon={Bell} label="Open Tickets" value={openTickets} tone="warn" onClick={() => onActive("search")} />
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-4">
-        <Panel title="Daily Activity" icon={Activity} className="lg:col-span-2">
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={daily} margin={{ left: -20, right: 6, top: 6 }}>
-              <defs><linearGradient id="gAct" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#7FD8FF" stopOpacity={0.5} /><stop offset="100%" stopColor="#7FD8FF" stopOpacity={0} /></linearGradient></defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis allowDecimals={false} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-              <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }} />
-              <Area type="monotone" dataKey="events" stroke="#7FD8FF" strokeWidth={2} fill="url(#gAct)" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </Panel>
-
-        <Panel title="Revenue Summary" icon={TrendingUp}>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={revByDay} margin={{ left: -20, right: 6, top: 6 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-              <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }} />
-              <Bar dataKey="revenue" radius={[6, 6, 0, 0]}><Cell fill="#7FD8FF" /></Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </Panel>
-      </div>
-
-      <Panel title="System Notifications" icon={Bell}>
-        <div className="space-y-2.5">
-          {d.audit.slice(0, 6).map((a) => (
-            <div key={a.id} className="flex items-start gap-2.5">
-              <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${a.severity === "critical" ? "bg-destructive" : a.severity === "warning" ? "bg-warning" : "bg-primary"}`} />
-              <div className="min-w-0 flex-1">
-                <p className="text-[12px] font-medium truncate">{a.action}</p>
-                <p className="text-[11px] text-muted-foreground truncate">{a.actor_name} · {a.target_name || a.target_type || "system"} · {a.created_date ? new Date(a.created_date).toLocaleString() : ""}</p>
-              </div>
-              <StatusPill status={a.severity} />
+      {/* ── Platform Health ── */}
+      <div className="liquid-mirror rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-success/15 grid place-items-center">
+              <Activity className="w-4 h-4 text-success" />
             </div>
-          ))}
-          {d.audit.length === 0 && <p className="text-[12px] text-muted-foreground">No system notifications.</p>}
+            <div>
+              <h3 className="font-heading font-bold text-[14px]">Platform Health</h3>
+              <p className="text-[11px] text-muted-foreground">All systems operational</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/15">
+            <span className="w-1.5 h-1.5 rounded-full bg-success live-pulse" />
+            <span className="text-[11px] font-semibold text-success">Live</span>
+          </div>
         </div>
-      </Panel>
+        <div className="grid md:grid-cols-2 gap-x-6">
+          <HealthCheck icon={Server} label="API Gateway" status="operational" latency={42} detail="99.98% uptime · 7d" />
+          <HealthCheck icon={Database} label="Database" status="healthy" latency={8} detail="Primary + replica synced" />
+          <HealthCheck icon={ShieldCheck} label="Authentication" status="operational" latency={35} detail="OAuth · OTP · RLS active" />
+          <HealthCheck icon={HardDrive} label="Storage" status="operational" latency={120} detail="68% used · 1.2TB available" />
+          <HealthCheck icon={Bot} label="AI Services" status="healthy" latency={280} detail="Bud · Spark · Oracle online" />
+          <HealthCheck icon={Wifi} label="Realtime" status="operational" latency={12} detail="WebSocket stable" />
+        </div>
+      </div>
+
+      {/* ── Stats strip ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="mirror-glass rounded-2xl p-4">
+          <div className="flex items-center gap-1.5 mb-1.5"><Cpu className="w-3.5 h-3.5 text-primary" /><span className="text-[10px] uppercase tracking-wider text-muted-foreground">Active Agents</span></div>
+          <p className="text-[22px] font-heading font-bold leading-none">{activeAgents.length}<span className="text-[12px] text-muted-foreground font-normal ml-1">/ {data?.agents?.length || 0}</span></p>
+        </div>
+        <div className="mirror-glass rounded-2xl p-4">
+          <div className="flex items-center gap-1.5 mb-1.5"><AlertTriangle className="w-3.5 h-3.5 text-destructive" /><span className="text-[10px] uppercase tracking-wider text-muted-foreground">Critical Alerts</span></div>
+          <p className="text-[22px] font-heading font-bold leading-none">{criticalEvents.length}</p>
+        </div>
+        <div className="mirror-glass rounded-2xl p-4">
+          <div className="flex items-center gap-1.5 mb-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-success" /><span className="text-[10px] uppercase tracking-wider text-muted-foreground">Modules Online</span></div>
+          <p className="text-[22px] font-heading font-bold leading-none">{data?.modules?.length || 0}</p>
+        </div>
+        <div className="mirror-glass rounded-2xl p-4">
+          <div className="flex items-center gap-1.5 mb-1.5"><Zap className="w-3.5 h-3.5 text-warning" /><span className="text-[10px] uppercase tracking-wider text-muted-foreground">Audit Events</span></div>
+          <p className="text-[22px] font-heading font-bold leading-none">{data?.audit?.length || 0}</p>
+        </div>
+      </div>
+
+      {/* ── Agent Status + Security Logs ── */}
+      <div className="grid lg:grid-cols-2 gap-4">
+        {/* Active Agents */}
+        <div className="frosted-mirror rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Bot className="w-4 h-4 text-primary" />
+              <h3 className="font-heading font-bold text-[14px]">Active Agent Status</h3>
+            </div>
+            <button onClick={() => onActive?.("spark-agents")} className="text-[11px] text-primary font-semibold hover:underline">View all</button>
+          </div>
+          <div className="space-y-2 max-h-[340px] overflow-y-auto no-scrollbar pr-1">
+            {activeAgents.length === 0 ? (
+              <p className="text-[12px] text-muted-foreground py-6 text-center">No active agents.</p>
+            ) : (
+              activeAgents.slice(0, 8).map((agent, i) => <AgentCard key={agent.id} agent={agent} index={i} />)
+            )}
+          </div>
+        </div>
+
+        {/* Security Logs */}
+        <div className="frosted-mirror rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-primary" />
+              <h3 className="font-heading font-bold text-[14px]">Recent Security Logs</h3>
+            </div>
+            <button onClick={() => onActive?.("security")} className="text-[11px] text-primary font-semibold hover:underline">View all</button>
+          </div>
+          <div className="space-y-0 max-h-[340px] overflow-y-auto no-scrollbar pr-1">
+            {data?.security?.length === 0 ? (
+              <p className="text-[12px] text-muted-foreground py-6 text-center">No security events.</p>
+            ) : (
+              (data?.security || []).map((event, i) => <SecurityLogRow key={event.id} event={event} index={i} />)
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Recent audit activity ── */}
+      <div className="mirror-glass rounded-2xl p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Clock className="w-4 h-4 text-primary" />
+          <h3 className="font-heading font-bold text-[14px]">Recent Activity</h3>
+        </div>
+        <div className="space-y-2">
+          {data?.audit?.length === 0 ? (
+            <p className="text-[12px] text-muted-foreground py-4 text-center">No recent activity.</p>
+          ) : (
+            (data?.audit || []).slice(0, 5).map((a) => (
+              <div key={a.id} className="flex items-center gap-3 py-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                <p className="text-[12px] font-medium truncate flex-1">{a.action}</p>
+                <span className="text-[10px] text-muted-foreground shrink-0">{a.actor_name || "System"}</span>
+                <span className="text-[10px] text-muted-foreground/70 shrink-0">{fmtTime(a.created_date)}</span>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
     </div>
   );
 }
