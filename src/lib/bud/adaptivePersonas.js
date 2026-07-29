@@ -18,7 +18,7 @@ export const PERSONA_DIMENSIONS = [
     id: "user_type",
     label: "User Type",
     description: "Primary role in the UNIBUD ecosystem",
-    values: ["student", "educator", "researcher", "institution_admin", "parent", "business", "community", "founder"],
+    values: ["student", "educator", "researcher", "institution_admin", "business", "community", "founder"],
     weight: 1.0,
   },
   {
@@ -96,7 +96,6 @@ export const ADAPTIVE_BEHAVIOR = {
     educator: "collegial, professional",
     researcher: "analytical, precise",
     institution_admin: "formal, efficient",
-    parent: "empathetic, reassuring",
     business: "direct, commercial",
     founder: "concise, strategic",
   },
@@ -112,7 +111,6 @@ export const ADAPTIVE_BEHAVIOR = {
     educator: ["pedagogy", "course management", "grading", "student analytics"],
     researcher: ["research methods", "citations", "funding", "conferences"],
     institution_admin: ["enrollment", "accreditation", "reporting", "operations"],
-    parent: ["child progress", "fees", "events", "calendar"],
     business: ["inventory", "orders", "payments", "analytics"],
     founder: ["platform health", "agent ecosystem", "strategic opportunities"],
   },
@@ -153,13 +151,6 @@ export const BASE_PERSONAS = {
     budIdentity: "operations advisor and institutional intelligence",
     defaultTone: "formal",
     defaultProactivity: "medium",
-  },
-  parent: {
-    id: "parent",
-    label: "Parent / Guardian",
-    budIdentity: "supportive guide to your child's education",
-    defaultTone: "empathetic",
-    defaultProactivity: "low",
   },
   business: {
     id: "business",
@@ -211,7 +202,6 @@ export const ROLE_TO_BASE_PERSONA = {
   lecturer: "educator",
   educator: "educator",
   researcher: "researcher",
-  parent: "parent",
   staff: "institution_admin",
   merchant: "business",
   operator: "institution_admin",
@@ -290,7 +280,6 @@ function inferBaseFromData(data) {
   if (!data) return null;
   if (data.is_lecturer || data.staff_type === "lecturer") return "educator";
   if (data.is_researcher) return "researcher";
-  if (data.is_parent || data.is_guardian) return "parent";
   if (data.is_merchant) return "business";
   if (data.institution_role === "admin") return "institution_admin";
   return null;

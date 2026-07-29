@@ -11,7 +11,6 @@ const ACTIONS = [
   { label: "Study Suite", to: "/study" },
   { label: "Institution", to: "/institution/console" },
   { label: "Lecturer", to: "/lecturer/portal" },
-  { label: "Parent", to: "/parent/portal" },
   { label: "Exams", to: "/exam" },
   { label: "Oracle", to: "/oracle" },
   { label: "Automations", to: "/automation" },

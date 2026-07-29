@@ -55,9 +55,6 @@ export const WORKSPACE_MAP = {
   postgraduate: { path: "/home", label: "Research Workspace", group: "academic" },
   alumni: { path: "/home", label: "Alumni Workspace", group: "academic" },
 
-  // ── Guardian ──
-  guardian: { path: "/parent/portal", label: "Guardian Portal", group: "guardian" },
-
   // ── Staff & default ──
   staff: { path: "/operator", label: "Staff Workspace", group: "operations", center: "trust-ops" },
   guest: { path: "/home", label: "UNIBUD", group: "default" },

@@ -41,12 +41,6 @@
       ]
     },
     {
-      "entity_name": "ConsentLink",
-      "allowed_operations": [
-        "read"
-      ]
-    },
-    {
       "entity_name": "Role",
       "allowed_operations": [
         "read"
@@ -61,10 +55,6 @@
     {
       "function_name": "deleteAccount",
       "description": "Process an account deletion request securely"
-    },
-    {
-      "function_name": "guardianConsent",
-      "description": "Manage guardian consent for minors"
     },
     {
       "function_name": "providerSecrets",

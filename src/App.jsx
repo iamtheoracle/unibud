@@ -122,7 +122,7 @@ const InstitutionPortal = lazy(() => import("@/pages/institution/InstitutionPort
 
 // Milestone 9 — Lecturer & Parent Portals
 const LecturerPortal = lazy(() => import("@/pages/lecturer/LecturerPortal"));
-const ParentPortal = lazy(() => import("@/pages/parent/ParentPortal"));
+
 
 // Examination Platform
 const ExamHub = lazy(() => import("@/pages/exam/ExamHub"));
@@ -309,7 +309,7 @@ function App() {
                   <Route path="/onboarding/university" element={<UniversityDirectory />} />
                     <Route path="/institution/console" element={<OracleWorkspaceGuard><InstitutionPortal /></OracleWorkspaceGuard>} />
                     <Route path="/lecturer/portal" element={<OracleWorkspaceGuard><LecturerPortal /></OracleWorkspaceGuard>} />
-                    <Route path="/parent/portal" element={<OracleWorkspaceGuard><ParentPortal /></OracleWorkspaceGuard>} />
+
                     <Route path="/exam" element={<ExamHub />} />
                     <Route path="/exam/start/:paperId" element={<ExamStart />} />
                     <Route path="/exam/take/:attemptId" element={<ExamTaker />} />

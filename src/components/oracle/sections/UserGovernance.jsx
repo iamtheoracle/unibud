@@ -5,7 +5,7 @@ import { SectionHeader, Panel, StatusPill, DataTable, SearchInput, Btn, LoadingS
 import { Users, LogOut, KeyRound, UserCog, History } from "lucide-react";
 
 const ROLES = ["admin", "user"];
-const ROLE_LABELS = { admin: "Platform Admin", user: "User", university_admin: "Institution Admin", developer: "Developer", student: "Student", parent: "Parent", staff: "Staff", guest: "Guest" };
+const ROLE_LABELS = { admin: "Platform Admin", user: "User", university_admin: "Institution Admin", developer: "Developer", student: "Student", staff: "Staff", guest: "Guest" };
 
 export default function UserGovernance() {
   const { toast } = useToast();

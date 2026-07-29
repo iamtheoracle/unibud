@@ -32,9 +32,6 @@ const ROUTE_ACCESS = {
 
   // Management
   "/management": ["institution_owner", "university_admin", "registrar", "super_admin", "platform_admin"],
-
-  // Guardian
-  "/parent/portal": ["guardian", "super_admin", "platform_admin"],
 };
 
 /**

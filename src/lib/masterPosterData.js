@@ -83,7 +83,6 @@ export const USER_OPERATING_SYSTEMS = mod([
   { name: "Lecturer OS", icon: BookOpen },
   { name: "Institution OS", icon: Building2 },
   { name: "Pre-University OS", icon: Compass },
-  { name: "Parent Experience", icon: Users },
   { name: "Alumni Experience", icon: Trophy },
   { name: "Founder / Operations", icon: Crown },
 ]);

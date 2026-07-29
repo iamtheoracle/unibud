@@ -19,11 +19,6 @@ export const ROLE_DASHBOARDS = {
     subtitle: "Classes, materials and grading",
     widgets: ["classes", "submissions", "materials", "analytics", "schedule", "feedback"],
   },
-  parent: {
-    title: "Family",
-    subtitle: "Track your student's progress",
-    widgets: ["attendance", "grades", "fees", "messages", "events", "bud"],
-  },
   operator: {
     title: "Operations",
     subtitle: "Tasks and assignments",

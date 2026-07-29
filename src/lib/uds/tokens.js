@@ -36,6 +36,6 @@ export const BUD_EMOTIONS = [
 
 /** Standardized dashboard roles. */
 export const DASHBOARD_ROLES = [
-  "student", "institution", "lecturer", "parent",
+  "student", "institution", "lecturer",
   "operator", "management", "architect", "oracle",
 ];

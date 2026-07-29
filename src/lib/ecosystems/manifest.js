@@ -82,7 +82,7 @@ export const SOCIAL_ROUTES = [
 
 export const SHARED_ROUTES = [
   "/home", "/bud", "/me", "/weather", "/wallet", "/finance", "/communication",
-  "/institution", "/lecturer", "/parent", "/oracle", "/management",
+  "/institution", "/lecturer", "/oracle", "/management",
   "/operator", "/architect", "/automation", "/admin", ...ME_PATHS,
 ];
 
@@ -97,7 +97,7 @@ export const SOCIAL_FUNCTIONS = [
 
 export const SHARED_FUNCTIONS = [
   "activateAnnouncements", "budReminders", "deleteAccount", "googleCalendarSync",
-  "guardianConsent", "outreachFollowup", "parentPortalData", "providerSecrets",
+  "outreachFollowup", "providerSecrets",
   "runAutomation", "stripePayment", "studentSearch", "trustProfile",
   "universityConnectBgSync", "universityConnectSync", "updateProfile",
   "welcomeNewStudent",

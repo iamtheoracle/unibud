@@ -223,14 +223,6 @@ export const SPARK_AGENT_DEFINITIONS = [
     focus: "Global certification and launch readiness.",
   }),
   defineAgent({
-    agent_id: "guardian", name: "Guardian", division: "Governance", order: 24, role: "Risk & Compliance",
-    responsibilities: ["Risk register", "Compliance", "Privacy"],
-    tools: ["SecurityEvent", "AuditLog"], context_scope: "risk + compliance",
-    memory_scope: "risk register", permissions: ["read:risk"],
-    validation_rules: ["Risks documented"], success_criteria: ["Compliance maintained"],
-    focus: "Risk and compliance.",
-  }),
-  defineAgent({
     agent_id: "insight", name: "Insight", division: "Governance", order: 25, role: "Executive Intelligence",
     responsibilities: ["Executive summaries", "Cross-platform insight", "Decision support"],
     tools: ["Oracle", "RegistryMetrics"], context_scope: "platform-wide metrics",

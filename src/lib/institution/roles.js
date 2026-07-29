@@ -22,7 +22,6 @@ export const INSTITUTION_ROLES = [
   { key: "teaching_assistant", label: "Teaching Assistant", manages: ["classes", "materials"] },
   { key: "staff", label: "Staff", manages: ["announcements", "support"] },
   { key: "student", label: "Student", manages: [] },
-  { key: "guardian", label: "Guardian", manages: ["ward_progress"] },
   { key: "alumni", label: "Alumni", manages: [] },
   { key: "guest", label: "Guest", manages: [] },
 ];
