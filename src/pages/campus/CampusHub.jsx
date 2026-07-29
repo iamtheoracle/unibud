@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -7,6 +7,7 @@ import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useUnibudContext } from "@/lib/UnibudContext";
 import OsTopBar from "@/components/layout/OsTopBar";
+import { useSpark } from "@/hooks/useSpark";
 
 const TABS = [
   { key: "campus", label: "Campus" },
@@ -75,6 +76,18 @@ export default function CampusHub() {
 
   const quadPosts = useData("campusQuad", () => base44.entities.QuadPost.list("-created_date", 5), DISCOVER_MOCK.quadPosts);
   const communities = useData("campusCommunities", () => base44.entities.Community.list("-created_date", 4), DISCOVER_MOCK.communities);
+
+  const spark = useSpark();
+  const topRecId = useMemo(() => {
+    try {
+      const recs = spark.recommendations.recommend({
+        candidateItems: quadPosts.map((p) => ({ id: p.id || "p", tags: ["academic", p.type, p.category].filter(Boolean) })),
+        basedOnTags: ["academic", "announcement", "event", "opportunity"],
+        limit: 1,
+      });
+      return recs[0]?.itemId;
+    } catch { return null; }
+  }, [spark, quadPosts]);
 
   const onTab = (t) => {
     if (t.key === "quad") navigate("/quad");
@@ -145,6 +158,11 @@ export default function CampusHub() {
                   <p className="text-[11px] text-muted-foreground">@{post.author_handle || "campus"} · 3h ago</p>
                 </div>
               </div>
+              {post.id === topRecId && (
+                <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full text-[10px] font-semibold text-foreground" style={{ background: "hsl(var(--primary) / 0.10)", border: "1px solid hsl(var(--primary) / 0.15)" }}>
+                  <span>✦</span> Bud recommends
+                </div>
+              )}
               <p className="text-[14px] leading-[1.5] text-foreground/85 mb-2.5">{post.content || post.body || "📢 New update posted."}</p>
               {media && (
                 <div className="rounded-2xl overflow-hidden mb-3 aspect-video bg-muted/20 border border-border/20">

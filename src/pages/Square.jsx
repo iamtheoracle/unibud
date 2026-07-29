@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -7,6 +7,7 @@ import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useUnibudContext } from "@/lib/UnibudContext";
 import OsTopBar from "@/components/layout/OsTopBar";
+import { useSpark } from "@/hooks/useSpark";
 
 const TABS = [
   { key: "square", label: "Square" },
@@ -53,6 +54,12 @@ const ADAPTIVE = [
 
 const CLUB_TAGS = ["#MachineLearning", "#NLP", "#AIEthics"];
 
+const MOCK_LIVE = [
+  { title: "AI Club Talk", viewers: "245", host: "AI Club" },
+  { title: "Study With Me", viewers: "89", host: "Timi" },
+  { title: "Podcast: Tech", viewers: "134", host: "Podcast Hub" },
+];
+
 function miniGrad(n) {
   const grads = [
     "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))",
@@ -83,6 +90,20 @@ export default function Square() {
 
   const featuredClub = communities[0] || { name: "Artificial Intelligence", id: null };
   const photographyClub = communities[1] || { name: "Photography Club", id: null };
+
+  const liveSessions = useData("squareLive", () => base44.entities.LiveClass.filter({ status: "live" }, "-created_date", 5), MOCK_LIVE);
+
+  const spark = useSpark();
+  const topRecId = useMemo(() => {
+    try {
+      const recs = spark.recommendations.recommend({
+        candidateItems: quadPosts.map((p) => ({ id: p.id || "p", tags: ["social", p.category].filter(Boolean) })),
+        basedOnTags: ["social", "community"],
+        limit: 1,
+      });
+      return recs[0]?.itemId;
+    } catch { return null; }
+  }, [spark, quadPosts]);
 
   const onTab = (t) => {
     if (t.key === "quad") navigate("/quad");
@@ -170,6 +191,11 @@ export default function Square() {
                   <p className="text-[11px] text-muted-foreground">@{(post.author_handle || "square").toLowerCase()} · 2h ago</p>
                 </div>
               </div>
+              {post.id === topRecId && (
+                <div className="inline-flex items-center gap-1.5 mb-2 px-2.5 py-1 rounded-full text-[10px] font-semibold text-foreground" style={{ background: "hsl(var(--primary) / 0.10)", border: "1px solid hsl(var(--primary) / 0.15)" }}>
+                  <span>✦</span> Bud recommends
+                </div>
+              )}
               <p className="text-[14px] leading-[1.5] text-foreground/85 mb-2.5">{post.content || post.body || "📢 New update from the community."}</p>
               {media ? (
                 <div className="rounded-2xl overflow-hidden mb-3 aspect-video bg-muted/20 border border-border/20">
@@ -200,6 +226,25 @@ export default function Square() {
                 <div className="w-[72px] h-[72px] rounded-full mx-auto mb-1.5 grid place-items-center text-[24px] font-bold text-primary-foreground border-2 border-border/20" style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}>{c.initial}</div>
                 <p className="text-[12px] font-semibold text-foreground">{c.name}</p>
                 <p className="text-[10px] text-muted-foreground">{c.desc}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Live now */}
+        <div className="crystal-card p-4">
+          <div className="flex items-center justify-between mb-2.5">
+            <h3 className="text-[15px] font-bold text-foreground">🔴 Live Now</h3>
+            <button onClick={() => navigate("/shorts")} className="text-[12px] font-semibold text-foreground hover:text-muted-foreground">See all</button>
+          </div>
+          <div className="flex gap-3 overflow-x-auto no-scrollbar">
+            {liveSessions.slice(0, 4).map((live, i) => (
+              <button key={i} onClick={() => navigate(live.id ? `/classroom/${live.id}` : "/shorts")} className="flex-shrink-0 w-[180px] crystal-card p-3 text-left spring-tap">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-destructive live-pulse" />
+                  <span className="text-[13px] font-semibold text-foreground truncate">{live.title || live.name || live.course_code || "Live session"}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">{live.viewers || live.participant_count || 0} watching · {live.host_name || live.host || "Campus"}</p>
               </button>
             ))}
           </div>
