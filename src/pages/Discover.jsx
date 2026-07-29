@@ -1,105 +1,113 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft } from "lucide-react";
 import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
 import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
-import { useDiscoveryRanking } from "@/hooks/useDiscoveryRanking";
-import { CATEGORIES } from "@/components/discover/discoverCategories";
-import ForYouSection from "@/components/discover/sections/ForYouSection";
-import CampusSection from "@/components/discover/sections/CampusSection";
-import TopicSection from "@/components/discover/sections/TopicSection";
-import CareersSection from "@/components/discover/sections/CareersSection";
-import SocialSection from "@/components/discover/sections/SocialSection";
-import TrendingSection from "@/components/discover/sections/TrendingSection";
-import ScreenShell from "@/components/layout/ScreenShell";
+import { useUnibudContext } from "@/lib/UnibudContext";
+import DiscoverTopBar from "@/components/discover/DiscoverTopBar";
+import DiscoveryFeed from "@/components/discover/DiscoveryFeed";
+import ExploreView from "@/components/discover/ExploreView";
 
-const TOPIC_KEYS = ["sports", "entertainment", "technology"];
+const EASE = [0.16, 1, 0.3, 1];
+
+const QUICK = [
+  { emoji: "📰", label: "News", to: "/notifications" },
+  { emoji: "💼", label: "Jobs", to: "/opportunities" },
+  { emoji: "🎓", label: "Scholarships", to: "/scholarships" },
+  { emoji: "🏠", label: "Housing", to: "/campus" },
+  { emoji: "🛒", label: "Marketplace", to: "/marketplace" },
+  { emoji: "💳", label: "Wallet", to: "/wallet" },
+  { emoji: "🚌", label: "Transport", to: "/campus" },
+];
+
+const TABS = [
+  { key: "quad", label: "Quad" },
+  { key: "discovery", label: "Discovery" },
+  { key: "explore", label: "Explore" },
+];
 
 /**
- * Discover — intelligent discovery engine. A fixed set of categories, each
- * with its own dedicated experience. Spark adaptively ranks which category
- * appears first based on engagement, while keeping the structure familiar.
+ * Discover — redesigned discovery hub. A greeting top bar, a content-nav
+ * (Quad → post feed route, Discovery + Explore as in-page views), the glass
+ * discovery feed, and an adaptive quick-access bar. Reuses the existing
+ * data layer (entities + mock fallback) and demo-mode gating.
  */
 export default function Discover() {
-  const { isDemoMode } = useDemoMode();
   const navigate = useNavigate();
-  const baseKeys = CATEGORIES.map((c) => c.key);
-  const { ranked, recordView } = useDiscoveryRanking(baseKeys);
-  const rankedCats = ranked.map((k) => CATEGORIES.find((c) => c.key === k));
-  const [active, setActive] = useState("foryou");
-
-  useEffect(() => { recordView(active); }, [active, recordView]);
+  const { isDemoMode } = useDemoMode();
+  const ctx = useUnibudContext();
+  const [view, setView] = useState("discovery");
 
   const enabled = !isDemoMode;
-  const useData = (key, fn, mock) => fallbackIfEmpty(
-    useQuery({ queryKey: [key], queryFn: fn, enabled }).data,
-    mock
-  );
+  const useData = (key, fn, mock) =>
+    fallbackIfEmpty(useQuery({ queryKey: [key], queryFn: fn, enabled }).data, mock);
+
   const data = {
+    communities: useData("discoverCommunities", () => base44.entities.Community.list("-created_date", 8), DISCOVER_MOCK.communities),
     quadPosts: useData("discoverQuad", () => base44.entities.QuadPost.list("-created_date", 12), DISCOVER_MOCK.quadPosts),
     events: useData("discoverEvents", () => base44.entities.CampusEvent.list("-created_date", 8), DISCOVER_MOCK.events),
-    clubs: useData("discoverClubs", () => base44.entities.Club.list("-created_date", 8), DISCOVER_MOCK.clubs),
-    communities: useData("discoverCommunities", () => base44.entities.Community.list("-created_date", 8), DISCOVER_MOCK.communities),
     opportunities: useData("discoverOpps", () => base44.entities.Opportunity.list("-created_date", 8), DISCOVER_MOCK.opportunities),
-    scholarships: useData("discoverSchol", () => base44.entities.Scholarship.list("-created_date", 8), DISCOVER_MOCK.scholarships),
-    listings: useData("discoverListings", () => base44.entities.MarketplaceListing.filter({ status: "active" }), DISCOVER_MOCK.listings),
-    lostFound: useData("discoverLost", () => base44.entities.LostFoundItem.list("-created_date", 6), DISCOVER_MOCK.lostFound),
-    challenges: useData("discoverChallenges", () => base44.entities.Challenge.list("-created_date", 6), DISCOVER_MOCK.challenges),
-  };
-
-  const activeCat = CATEGORIES.find((c) => c.key === active);
-
-  const renderSection = () => {
-    if (active === "foryou") return <ForYouSection data={data} />;
-    if (active === "campus") return <CampusSection data={data} />;
-    if (TOPIC_KEYS.includes(active)) return <TopicSection category={activeCat} />;
-    if (active === "careers") return <CareersSection data={data} />;
-    if (active === "social") return <SocialSection data={data} />;
-    return <TrendingSection data={data} />;
   };
 
   return (
-    <ScreenShell back title="Discover" subtitle="What should I discover today?" sticky={false}>
+    <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
+      <DiscoverTopBar user={ctx.user} />
 
-      {/* Adaptive category rail */}
-      <div className="sticky top-0 z-20 -mx-5 px-5 py-3 glass border-b border-border/20">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
-          {rankedCats.map((c) => {
-            const Icon = c.icon;
-            const on = active === c.key;
-            return (
-              <button
-                key={c.key}
-                onClick={() => setActive(c.key)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap ${
-                  on ? "bg-primary text-primary-foreground soft-shadow" : "bg-card text-foreground/80 border border-border/40"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />{c.label}
-              </button>
-            );
-          })}
-        </div>
+      {/* Content nav: Quad | Discovery | Explore */}
+      <div className="flex gap-5 px-1 pb-3 border-b border-border/20">
+        {TABS.map((t) => {
+          const on = view === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => (t.key === "quad" ? navigate("/quad") : setView(t.key))}
+              className={`relative text-[15px] font-semibold spring-tap pb-1 ${on ? "text-foreground" : "text-muted-foreground/50"}`}
+            >
+              {t.label}
+              {on && (
+                <span
+                  className="absolute -bottom-[9px] left-0 w-full h-[2.5px] rounded-full"
+                  style={{ background: "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))" }}
+                />
+              )}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Active section */}
+      {/* Active view */}
       <div className="pt-4">
         <AnimatePresence mode="wait">
           <motion.div
-            key={active}
+            key={view}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.3, ease: EASE }}
           >
-            {renderSection()}
+            {view === "discovery" ? <DiscoveryFeed data={data} /> : <ExploreView />}
           </motion.div>
         </AnimatePresence>
       </div>
-    </ScreenShell>
+
+      {/* Adaptive quick-access bar */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pt-5 pb-2">
+        {QUICK.map((q, i) => (
+          <button
+            key={q.label}
+            onClick={() => navigate(q.to)}
+            className={`px-4 py-1.5 rounded-full glass border border-border/40 text-[12px] font-medium text-muted-foreground whitespace-nowrap spring-tap ${
+              i === 0 ? "text-primary border-primary/30 bg-primary/10" : ""
+            }`}
+          >
+            <span className="mr-1">{q.emoji}</span>
+            {q.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
