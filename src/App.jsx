@@ -303,9 +303,9 @@ function App() {
                     <Route path="/study/library" element={<DocumentLibrary />} />
                     <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
                   <Route path="/onboarding/university" element={<UniversityDirectory />} />
-                    <Route path="/institution/console" element={<InstitutionPortal />} />
-                    <Route path="/lecturer/portal" element={<LecturerPortal />} />
-                    <Route path="/parent/portal" element={<ParentPortal />} />
+                    <Route path="/institution/console" element={<OracleWorkspaceGuard><InstitutionPortal /></OracleWorkspaceGuard>} />
+                    <Route path="/lecturer/portal" element={<OracleWorkspaceGuard><LecturerPortal /></OracleWorkspaceGuard>} />
+                    <Route path="/parent/portal" element={<OracleWorkspaceGuard><ParentPortal /></OracleWorkspaceGuard>} />
                     <Route path="/exam" element={<ExamHub />} />
                     <Route path="/exam/start/:paperId" element={<ExamStart />} />
                     <Route path="/exam/take/:attemptId" element={<ExamTaker />} />
