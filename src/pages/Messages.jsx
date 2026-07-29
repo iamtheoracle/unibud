@@ -4,16 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useConversations } from "@/hooks/useConversations";
-import ConversationList from "@/components/messaging/ConversationList";
-import ChatView from "@/components/messaging/ChatView";
+import ConnectionsList from "@/components/messaging/ConnectionsList";
+import PremiumChatView from "@/components/messaging/PremiumChatView";
 import EmptyChatState from "@/components/messaging/EmptyChatState";
 import NewConversationModal from "@/components/messaging/NewConversationModal";
-import ChatHeader from "@/components/messaging/ChatHeader";
-import MessageBubble from "@/components/messaging/MessageBubble";
-import MessageComposer from "@/components/messaging/MessageComposer";
-import {
-  hasUnreadMessages, isSameDay, formatDateDivider,
-} from "@/components/messaging/messagingConstants";
+import { hasUnreadMessages } from "@/components/messaging/messagingConstants";
 
 const DEMO_USER = {
   id: "demo-user",
@@ -138,18 +133,12 @@ export default function Messages() {
     <div className="flex flex-col h-[calc(100dvh-112px)] overflow-hidden lg:flex-row lg:h-[calc(100dvh-128px)] lg:gap-0 lg:rounded-[24px] lg:overflow-hidden lg:border lg:border-border/20 lg:soft-shadow lg:bg-card">
       {/* Conversation List */}
       <div className={conversationId ? "hidden lg:block lg:w-[340px] lg:flex-shrink-0 lg:border-r lg:border-border/30" : "flex-1 min-h-0 lg:w-[340px] lg:flex-shrink-0 lg:border-r lg:border-border/30"}>
-        <ConversationList
+        <ConnectionsList
           conversations={displayConversations}
-          isLoading={!isDemoMode && isLoading}
           activeId={conversationId}
           onSelect={(id) => navigate("/messages/" + id)}
-          user={activeUser}
-          filter={filter}
-          setFilter={setFilter}
-          togglePin={togglePin}
-          toggleMute={toggleMute}
-          toggleArchive={toggleArchive}
           onNewConversation={() => isDemoMode ? navigate("/messages/demo-1") : setNewConvOpen(true)}
+          user={activeUser}
         />
       </div>
 
@@ -163,10 +152,12 @@ export default function Messages() {
               onBack={() => navigate("/messages")}
             />
           ) : (
-            <ChatView
-              conversationId={conversationId}
+            <PremiumChatView
+              conversation={displayConversations?.find((c) => c.id === conversationId)}
+              messages={[]}
               user={activeUser}
               onBack={() => navigate("/messages")}
+              onSend={(content) => {}}
             />
           )
         ) : !conversationId ? (
@@ -195,32 +186,26 @@ function DemoChatView({ conversationId, user, onBack }) {
   const conversation = DEMO_CONVERSATIONS.find((c) => c.id === conversationId);
   const initialMessages = DEMO_MESSAGES[conversationId] || [];
   const [messages, setMessages] = useState(initialMessages);
-  const [replyTo, setReplyTo] = useState(null);
   const [actionMessage, setActionMessage] = useState(null);
-  const [editValue, setEditValue] = useState("");
 
   if (!conversation) {
     return <EmptyChatState onNewConversation={onBack} />;
   }
 
-  const handleSend = (content, type = "text") => {
+  const handleSend = (content) => {
     const newMsg = {
       id: "demo_new_" + Date.now(),
       conversation_id: conversationId,
       content,
-      type,
+      type: "text",
       author_name: user.full_name,
       author_image: user.avatar_url,
       author_id: user.id,
       created_date: new Date().toISOString(),
       read_by: [user.id],
       reactions: {},
-      reply_to_id: replyTo?.id || null,
-      reply_to_content: replyTo?.content || null,
-      reply_to_author: replyTo?.author_name || null,
     };
     setMessages((prev) => [...prev, newMsg]);
-    setReplyTo(null);
   };
 
   const handleReact = (emoji) => {
@@ -246,76 +231,14 @@ function DemoChatView({ conversationId, user, onBack }) {
     setMessages((prev) => prev.filter((m) => m.id !== actionMessage.id));
   };
 
-  const renderMessages = () => {
-    const elements = [];
-    let prevMsg = null;
-
-    messages.forEach((msg, i) => {
-      if (!prevMsg || !isSameDay(msg.created_date, prevMsg.created_date)) {
-        elements.push(
-          <div key={"date_" + i} className="flex justify-center py-2">
-            <span className="text-[10px] font-medium text-muted-foreground bg-muted/60 px-3 py-1 rounded-full">
-              {formatDateDivider(msg.created_date)}
-            </span>
-          </div>
-        );
-      }
-
-      const showAvatar = !prevMsg ||
-        prevMsg.author_id !== msg.author_id ||
-        new Date(msg.created_date) - new Date(prevMsg.created_date) > 5 * 60 * 1000;
-
-      elements.push(
-        <MessageBubble
-          key={msg.id}
-          message={msg}
-          isOwn={msg.author_id === user.id}
-          showAvatar={showAvatar}
-          showName={showAvatar && msg.author_id !== user.id}
-          user={user}
-          onLongPress={() => setActionMessage(msg)}
-          isEditing={false}
-          editValue={editValue}
-          onEditChange={setEditValue}
-          onEditSubmit={() => {}}
-          onEditCancel={() => {}}
-        />
-      );
-
-      prevMsg = msg;
-    });
-
-    return elements;
-  };
-
   return (
     <div className="flex flex-col h-full">
-      <ChatHeader
+      <PremiumChatView
         conversation={conversation}
+        messages={messages}
         user={user}
-        typingUser={null}
         onBack={onBack}
-        onCall={() => {}}
-        onVideoCall={() => {}}
-        onSearch={() => {}}
-        onInfo={() => {}}
-      />
-
-      <div className="flex-1 overflow-y-auto py-3">
-        {renderMessages()}
-      </div>
-
-      <MessageComposer
         onSend={handleSend}
-        replyTo={replyTo}
-        onCancelReply={() => setReplyTo(null)}
-        editingMessage={null}
-        editValue=""
-        onEditChange={() => {}}
-        onEditSubmit={() => {}}
-        onEditCancel={() => {}}
-        onOracleOpen={() => {}}
-        disabled={false}
       />
 
       <DemoMessageActions
@@ -324,7 +247,7 @@ function DemoChatView({ conversationId, user, onBack }) {
         isOwn={actionMessage?.author_id === user.id}
         onClose={() => setActionMessage(null)}
         onReact={handleReact}
-        onReply={() => { setReplyTo(actionMessage); }}
+        onReply={() => {}}
         onDelete={handleDelete}
         onCopy={() => {
           if (actionMessage?.content) navigator.clipboard.writeText(actionMessage.content);

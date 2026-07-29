@@ -29,6 +29,8 @@ const OracleAuthRouter = lazy(() => import("@/pages/auth/OracleAuthRouter"));
 const Home = lazy(() => import("@/pages/Home"));
 const BudHome = lazy(() => import("@/pages/bud/BudHome"));
 const SocialHub = lazy(() => import("@/pages/social/SocialHub"));
+const ForYou = lazy(() => import("@/pages/social/ForYou"));
+const ProfileView = lazy(() => import("@/pages/social/ProfileView"));
 const Me = lazy(() => import("@/pages/Me"));
 
 // Social Ecosystem
@@ -220,6 +222,8 @@ function App() {
                     <Route path="/home" element={<Home />} />
                     <Route path="/bud" element={<BudHome />} />
                     <Route path="/social" element={<SocialHub />} />
+                    <Route path="/discover/people" element={<ForYou />} />
+                    <Route path="/profile/:profileId" element={<ProfileView />} />
                     <Route path="/quad" element={<Quad />} />
                     <Route path="/connect" element={<Connect />} />
                     <Route path="/services" element={<Services />} />

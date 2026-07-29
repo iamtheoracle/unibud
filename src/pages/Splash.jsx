@@ -8,6 +8,7 @@ import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];
 const LOGO_URL = "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/7de0fdf43_6C287179-9048-4978-AA9F-F2B45C76A69A.png";
+const BG_URL = "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/73b30d148_generated_image.png";
 
 /**
  * Splash — Screen 1.
@@ -40,19 +41,13 @@ export default function Splash() {
   }, [navigate]);
 
   return (
-    <div className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center" style={{ backgroundColor: "#08122A" }}>
-      <motion.div
-        className="absolute top-[-20%] left-[8%] w-[70%] h-[50%] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(37,99,235,0.16), transparent 70%)" }}
-        animate={{ x: [0, 30, 0], opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <motion.div
-        className="absolute bottom-[-15%] right-[-5%] w-[60%] h-[45%] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(37,99,235,0.08), transparent 70%)" }}
-        animate={{ x: [0, -25, 0], opacity: [0.4, 0.7, 0.4] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <div className="fixed inset-0 w-full overflow-hidden flex flex-col items-center justify-center" style={{ backgroundColor: "#05080d" }}>
+      {/* Campus sunset background */}
+      <div className="absolute inset-0 z-0">
+        <Image src={BG_URL} alt="" fittingType="fill" className="w-full h-full object-cover" />
+      </div>
+      {/* Dark overlay for contrast */}
+      <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(5,8,13,0.6) 0%, rgba(5,8,13,0.3) 50%, rgba(5,8,13,0.8) 100%)" }} />
       <SparkField count={24} />
 
       <motion.div
