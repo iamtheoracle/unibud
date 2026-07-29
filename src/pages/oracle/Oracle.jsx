@@ -23,6 +23,7 @@ import CollaborationIntelligence from "@/components/oracle/sections/Collaboratio
 import SparkAgentRegistry from "@/components/oracle/sections/SparkAgentRegistry";
 import SparkAgentObservability from "@/components/oracle/sections/SparkAgentObservability";
 import TaskIntelligence from "@/components/oracle/sections/TaskIntelligence";
+import ExecutiveAuthority from "@/components/oracle/sections/ExecutiveAuthority";
 
 const SECTIONS = {
   dashboard: OracleDashboard,
@@ -44,6 +45,7 @@ const SECTIONS = {
   "spark-agents": SparkAgentRegistry,
   "spark-observability": SparkAgentObservability,
   "task-intelligence": TaskIntelligence,
+  executive: ExecutiveAuthority,
 };
 
 export default function Oracle() {
