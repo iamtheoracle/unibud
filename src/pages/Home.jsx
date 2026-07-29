@@ -12,6 +12,7 @@ import HomeUniversityNotifs from "@/components/home/HomeUniversityNotifs";
 import HomeCampusPulse from "@/components/home/HomeCampusPulse";
 import QuickActions from "@/components/home/QuickActions";
 import HomeWeatherCompact from "@/components/home/HomeWeatherCompact";
+import RecastCard from "@/components/recast/RecastCard";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import { queryClientInstance } from "@/lib/query-client";
 
@@ -76,6 +77,9 @@ export default function Home() {
         <div className="mt-4">
           <QuickActions />
         </div>
+
+        {/* 7b — Bud Recast */}
+        <RecastCard />
 
         {/* 8 — Weather (compact) */}
         <div className="mt-4">

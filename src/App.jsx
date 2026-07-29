@@ -104,6 +104,12 @@ const DocumentLibrary = lazy(() => import("@/pages/study/DocumentLibrary"));
 // Milestone 8 — Multi-tenancy
 const InstitutionOnboarding = lazy(() => import("@/pages/institution/InstitutionOnboarding"));
 const UniversityDirectory = lazy(() => import("@/pages/onboarding/UniversityDirectory"));
+
+// Conversational Onboarding + Bud Recast
+const OnboardingConversation = lazy(() => import("@/pages/onboarding/OnboardingConversation"));
+const OnboardingSecurity = lazy(() => import("@/pages/onboarding/OnboardingSecurity"));
+const OnboardingPreparing = lazy(() => import("@/pages/onboarding/OnboardingPreparing"));
+const Recast = lazy(() => import("@/pages/recast/Recast"));
 const InstitutionPortal = lazy(() => import("@/pages/institution/InstitutionPortal"));
 
 // Milestone 9 — Lecturer & Parent Portals
@@ -190,6 +196,9 @@ function App() {
                   <Route path="/mode-select" element={<ModeSelector />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/onboarding/conversation" element={<OnboardingConversation />} />
+                  <Route path="/onboarding/security" element={<OnboardingSecurity />} />
+                  <Route path="/onboarding/preparing" element={<OnboardingPreparing />} />
                   <Route path="/privacy" element={<Privacy />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/about" element={<About />} />
@@ -222,6 +231,7 @@ function App() {
                     <Route path="/smart-notifications" element={<SmartNotifications />} />
                     <Route path="/bud/notifications" element={<BudNotificationPreferences />} />
                     <Route path="/knowledge" element={<KnowledgeHub />} />
+                    <Route path="/recast" element={<Recast />} />
                     <Route path="/collaboration" element={<CollaborationHub />} />
                     <Route path="/collaboration/:workspaceId" element={<WorkspaceDetail />} />
                     <Route path="/tasks" element={<TaskHub />} />

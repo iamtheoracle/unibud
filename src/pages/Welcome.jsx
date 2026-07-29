@@ -94,7 +94,7 @@ export default function Welcome() {
             className="mt-7 w-full space-y-4"
           >
             <button
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/onboarding/conversation")}
               className="w-full h-[54px] rounded-full flex items-center justify-center font-heading font-semibold text-[15px] tracking-wide text-primary-foreground spring-tap bg-primary ice-glow"
             >
               Sign Up
