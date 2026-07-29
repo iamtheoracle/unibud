@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
-import BottomNav from "@/components/layout/BottomNav";
+import AdaptiveNav from "@/components/navigation/AdaptiveNav";
 import EcosystemRail from "@/components/layout/EcosystemRail";
 import OfflineBanner from "@/components/layout/OfflineBanner";
 import BudCompanion from "@/components/bud/BudCompanion";
@@ -12,7 +12,7 @@ import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
-import ModeSwitcher from "@/components/layout/ModeSwitcher";
+import QuickActionCapsule from "@/components/navigation/QuickActionCapsule";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
@@ -49,7 +49,7 @@ export default function AppShell() {
           <AmbientBackground />
           <ContextPulse />
           <OfflineBanner />
-          <ModeSwitcher />
+          <QuickActionCapsule />
           <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
@@ -64,7 +64,7 @@ export default function AppShell() {
             </motion.div>
           </Suspense>
           <EcosystemRail />
-          <BottomNav />
+          <AdaptiveNav />
           <ClassroomBudGate><BudLivingOrb /></ClassroomBudGate>
           <ClassroomBudGate><BudCompanion /></ClassroomBudGate>
         </div>
