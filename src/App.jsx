@@ -46,6 +46,7 @@ const LostFound = lazy(() => import("@/pages/LostFound"));
 const Discover = lazy(() => import("@/pages/Discover"));
 const Lens = lazy(() => import("@/pages/Lens"));
 const Square = lazy(() => import("@/pages/Square"));
+const Scholar = lazy(() => import("@/pages/Scholar"));
 const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
@@ -227,6 +228,7 @@ function App() {
                     <Route path="/discover" element={<Discover />} />
                     <Route path="/lens" element={<Lens />} />
                     <Route path="/square" element={<Square />} />
+                    <Route path="/scholar" element={<Scholar />} />
                     <Route path="/campus" element={<CampusHub />} />
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/results" element={<Results />} />
