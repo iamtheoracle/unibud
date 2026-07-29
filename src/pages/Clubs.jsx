@@ -8,7 +8,7 @@ import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import ClubCard from "@/components/campus/ClubCard";
 import { CLUB_CATEGORIES } from "@/components/campus/campusConstants";
-import ScreenShell from "@/components/layout/ScreenShell";
+import CommunityShell from "@/components/community/CommunityShell";
 
 const DEMO_CLUBS = [
   {
@@ -113,7 +113,7 @@ export default function Clubs() {
   const FILTER_KEYS = ["all", ...Object.keys(CLUB_CATEGORIES)];
 
   return (
-    <ScreenShell back title="Clubs & Societies" subtitle={isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}>
+    <CommunityShell title="Clubs" icon={Users}>
 
       {/* Search */}
       <div className="py-3">
@@ -194,6 +194,6 @@ export default function Clubs() {
           ))
         )}
       </div>
-    </ScreenShell>
+    </CommunityShell>
   );
 }

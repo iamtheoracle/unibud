@@ -8,7 +8,7 @@ import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import CommunityCard from "@/components/campus/CommunityCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
-import ScreenShell from "@/components/layout/ScreenShell";
+import CommunityShell from "@/components/community/CommunityShell";
 
 const DEMO_COMMUNITIES = [
   { id: "dc1", name: "University of Benin", type: "university", description: "The official UNIBUD community for all students.", members_count: 12450, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
@@ -62,7 +62,7 @@ export default function Communities() {
   }, [displayCommunities, filter, search]);
 
   return (
-    <ScreenShell back title="Communities" subtitle={isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}>
+    <CommunityShell title="Communities" icon={Building2}>
 
       {/* Search */}
       <div className="py-3">
@@ -127,6 +127,6 @@ export default function Communities() {
           ))
         )}
       </div>
-    </ScreenShell>
+    </CommunityShell>
   );
 }

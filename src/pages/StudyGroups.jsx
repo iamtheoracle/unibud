@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap, hapticImpact } from "@/lib/haptics";
-import ScreenShell from "@/components/layout/ScreenShell";
+import CommunityShell from "@/components/community/CommunityShell";
 import IconAction from "@/components/layout/IconAction";
 
 const typeConfig = {
@@ -138,10 +138,9 @@ export default function StudyGroups() {
   };
 
   return (
-    <ScreenShell
-      back
+    <CommunityShell
       title="Study Groups"
-      subtitle="Learn together, achieve more"
+      icon={Users}
       actions={<IconAction icon={Plus} variant="primary" onClick={() => setShowCreate(true)} label="Create group" />}
     >
 
@@ -203,7 +202,7 @@ export default function StudyGroups() {
       {showCreate && (
         <CreateGroupModal form={form} setForm={setForm} onClose={() => setShowCreate(false)} onCreate={handleCreate} user={user} />
       )}
-    </ScreenShell>
+    </CommunityShell>
   );
 }
 

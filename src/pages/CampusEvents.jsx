@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Search, Calendar } from "lucide-react";
-import ScreenShell from "@/components/layout/ScreenShell";
+import CommunityShell from "@/components/community/CommunityShell";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
@@ -133,8 +133,7 @@ export default function CampusEvents() {
   };
 
   return (
-    <ScreenShell title="Events" subtitle={isDemoMode ? "Your Campus" : (user?.university || "Your Campus")} back
-      actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
+    <CommunityShell title="Events" icon={Calendar} actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Search */}
       <div className="py-3">
@@ -230,6 +229,6 @@ export default function CampusEvents() {
           ))
         )}
       </div>
-    </ScreenShell>
+    </CommunityShell>
   );
 }
