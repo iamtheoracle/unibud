@@ -15,7 +15,7 @@ import ScreenHeader from "./ScreenHeader";
 export default function ScreenShell({ title, subtitle, back, backTo, actions, sticky = true, children, className = "" }) {
   const showHeader = title || actions || back;
   return (
-    <div className={`w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt ${className}`}>
+    <div className={`w-full max-w-[520px] mx-auto px-4 pt-4 pb-28 safe-area-pt ${className}`}>
       {showHeader && (
         <ScreenHeader title={title} subtitle={subtitle} back={back} backTo={backTo} actions={actions} sticky={sticky} />
       )}

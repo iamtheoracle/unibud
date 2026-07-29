@@ -24,26 +24,26 @@ export default function ScreenHeader({ title, subtitle, back, backTo, actions, s
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: EASE }}
-      className={`flex items-center gap-3 -mx-5 px-5 pt-2 pb-3 ${sticky ? "sticky top-0 z-20 glass-strong border-b border-border/20" : "border-b border-border/15"} ${className}`}
+      className={`flex items-center gap-2.5 -mx-4 px-4 pt-1.5 pb-2 ${sticky ? "sticky top-0 z-20 glass-strong border-b border-border/20" : "border-b border-border/15"} ${className}`}
     >
       {back && (
         <button
           onClick={onBack}
           aria-label="Back"
-          className="w-10 h-10 rounded-full glass flex items-center justify-center spring-tap flex-shrink-0 border border-border/30"
+          className="w-9 h-9 rounded-full glass flex items-center justify-center spring-tap flex-shrink-0 border border-border/30"
         >
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
+          <ArrowLeft className="w-[17px] h-[17px] text-foreground" strokeWidth={2} />
         </button>
       )}
       <div className="flex-1 min-w-0">
         {title && (
-          <h1 className="font-heading font-bold text-[20px] tracking-tight text-foreground truncate leading-tight">
+          <h1 className="font-heading font-bold text-[18px] tracking-tight text-foreground truncate leading-tight">
             {title}
           </h1>
         )}
-        {subtitle && <div className="text-[12px] text-muted-foreground font-medium truncate">{subtitle}</div>}
+        {subtitle && <div className="text-[11px] text-muted-foreground font-medium truncate">{subtitle}</div>}
       </div>
-      {actions && <div className="flex items-center gap-2 flex-shrink-0">{actions}</div>}
+      {actions && <div className="flex items-center gap-1.5 flex-shrink-0">{actions}</div>}
     </motion.div>
   );
 }

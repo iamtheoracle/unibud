@@ -46,22 +46,22 @@
     --gold: 46 70% 50%;                     /* Achievements only */
 
     /* UDS — Radius scale */
-    --radius-sm: 12px;
-    --radius-md: 20px;
-    --radius-lg: 28px;
-    --radius-xl: 36px;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
     --radius-pill: 9999px;
 
     /* UDS — Type scale */
-    --text-display: 34px;
-    --text-heading: 22px;
-    --text-title: 18px;
-    --text-subtitle: 15px;
+    --text-display: 29px;
+    --text-heading: 19px;
+    --text-title: 17px;
+    --text-subtitle: 14px;
     --text-body: 14px;
     --text-caption: 12px;
     --text-label: 11px;
     --text-micro: 10px;
-    --radius: 1.5rem;
+    --radius: 1rem;
 
     --surface: 220 24% 98%;
     --surface-secondary: 220 18% 96%;
@@ -73,14 +73,14 @@
     --glass-bg-strong: rgba(255, 255, 255, 0.86);
     --glass-border: rgba(11, 31, 77, 0.06);
     --glass-border-strong: rgba(11, 31, 77, 0.12);
-    --glass-shadow: 0 2px 6px rgba(11, 31, 77, 0.05), 0 18px 48px rgba(11, 31, 77, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+    --glass-shadow: 0 1px 2px rgba(11, 31, 77, 0.04), 0 4px 14px rgba(11, 31, 77, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1);
     --glass-blur: 36px;
     --surface-grouped: 220 20% 95%;
 
-    --shadow-soft: 0 1px 2px rgba(11, 31, 77, 0.08), 0 4px 12px rgba(11, 31, 77, 0.10), 0 8px 22px rgba(11, 31, 77, 0.08);
-    --shadow-premium: 0 1px 3px rgba(11, 31, 77, 0.10), 0 8px 24px rgba(11, 31, 77, 0.12), 0 24px 60px rgba(11, 31, 77, 0.16);
-    --shadow-elevated: 0 2px 5px rgba(11, 31, 77, 0.12), 0 12px 32px rgba(11, 31, 77, 0.14), 0 40px 100px rgba(11, 31, 77, 0.20);
-    --shadow-hover: 0 2px 6px rgba(11, 31, 77, 0.14), 0 18px 44px rgba(11, 31, 77, 0.16), 0 48px 120px rgba(11, 31, 77, 0.24);
+    --shadow-soft: 0 1px 2px rgba(11, 31, 77, 0.04), 0 2px 6px rgba(11, 31, 77, 0.05);
+    --shadow-premium: 0 1px 2px rgba(11, 31, 77, 0.05), 0 4px 12px rgba(11, 31, 77, 0.07);
+    --shadow-elevated: 0 1px 3px rgba(11, 31, 77, 0.06), 0 6px 18px rgba(11, 31, 77, 0.08);
+    --shadow-hover: 0 2px 6px rgba(11, 31, 77, 0.08), 0 10px 28px rgba(11, 31, 77, 0.10);
     --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.22);  /* brand glow (electric blue) */
 
     --chart-1: 222 75% 17%;                  /* Midnight */
@@ -148,21 +148,21 @@
     --information-foreground: 222 68% 10%;
     --gold: 46 74% 55%;                      /* Achievements only */
 
-    --radius-sm: 12px;
-    --radius-md: 20px;
-    --radius-lg: 28px;
-    --radius-xl: 36px;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --radius-xl: 24px;
     --radius-pill: 9999px;
 
-    --text-display: 34px;
-    --text-heading: 22px;
-    --text-title: 18px;
-    --text-subtitle: 15px;
+    --text-display: 29px;
+    --text-heading: 19px;
+    --text-title: 17px;
+    --text-subtitle: 14px;
     --text-body: 14px;
     --text-caption: 12px;
     --text-label: 11px;
     --text-micro: 10px;
-    --radius: 1.5rem;
+    --radius: 1rem;
 
     --surface: 222 55% 12%;
     --surface-secondary: 222 68% 9%;
@@ -174,14 +174,14 @@
     --glass-bg-strong: rgba(255, 255, 255, 0.09);
     --glass-border: rgba(255, 255, 255, 0.22);
     --glass-border-strong: rgba(255, 255, 255, 0.34);
-    --glass-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 18px 56px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+    --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 14px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
     --glass-blur: 36px;
     --surface-grouped: 222 50% 11%;
 
-    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.24), 0 8px 22px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    --shadow-premium: 0 1px 3px rgba(0, 0, 0, 0.22), 0 8px 24px rgba(0, 0, 0, 0.28), 0 24px 60px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.16);
-    --shadow-elevated: 0 2px 5px rgba(0, 0, 0, 0.26), 0 12px 32px rgba(0, 0, 0, 0.3), 0 40px 100px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.3), 0 18px 44px rgba(0, 0, 0, 0.34), 0 48px 120px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.24);
+    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --shadow-premium: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    --shadow-elevated: 0 1px 3px rgba(0, 0, 0, 0.24), 0 6px 18px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.28), 0 10px 28px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.14);
     --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.30);  /* brand glow (electric blue) */
 
     --chart-1: 221 83% 58%;                  /* Electric */
@@ -286,7 +286,7 @@
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.65);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.06);
-    border-radius: 28px;
+    border-radius: 18px;
     position: relative;
   }
   /* Premium crystal card — layered reflections + edge lighting + internal glow */
@@ -296,7 +296,7 @@
     -webkit-backdrop-filter: blur(44px) saturate(1.85);
     border: 1px solid var(--glass-border-strong);
     box-shadow: var(--shadow-premium), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.04);
-    border-radius: 28px;
+    border-radius: 18px;
     position: relative;
     overflow: hidden;
   }

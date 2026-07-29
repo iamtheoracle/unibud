@@ -10,32 +10,18 @@ import {
 } from "@/lib/navigation/adaptiveNavConfig";
 
 /**
- * AdaptiveNav — UNIBUD's premium bottom navigation.
- *
- * Left  → Adaptive Navigation Capsule (morphs between 3 states):
- *            1. Mode selector   : Social | Academics
- *            2. Social mode     : Square | Discover | Connect
- *            3. Academic mode   : Campus | Quad | Connect
- *          A leading mode orb returns the capsule to the selector state.
- * Right → Me button (permanently fixed: never moves, resizes, or animates).
- *
- * Mode switching never reloads the app — it sets the ExperienceContext mode
- * and navigates to the mode home; the capsule morphs via width interpolation,
- * fade-through, and spring animations. Bud stays globally accessible via the
- * floating orb, not the dock.
+ * AdaptiveNav — UNIBUD's premium, lightweight bottom navigation.
+ * Left = morphing Adaptive Capsule (3 states); Right = fixed Me button.
  */
-
-const SPRING = { type: "spring", stiffness: 380, damping: 30 };
-const FADE = { duration: 0.22, ease: [0.16, 1, 0.3, 1] };
+const SPRING = { type: "spring", stiffness: 420, damping: 32 };
+const FADE = { duration: 0.2, ease: [0.16, 1, 0.3, 1] };
 
 export default function AdaptiveNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { mode, setMode } = useExperience();
-  // "academic" | "social" | "selector". Initial state mirrors the active mode.
   const [navState, setNavState] = useState(mode);
 
-  // Keep the capsule aligned with the route's ecosystem on navigation.
   useEffect(() => {
     const d = getDomain(location.pathname);
     if (d === "academic" || d === "social") setNavState(d);
@@ -56,13 +42,13 @@ export default function AdaptiveNav() {
   return (
     <MotionConfig reducedMotion="user">
       <nav className="fixed bottom-0 inset-x-0 z-40 pointer-events-none" aria-label="Primary">
-        <div className="max-w-[520px] mx-auto px-4 pb-4 safe-area-pb pointer-events-auto">
+        <div className="max-w-[520px] mx-auto px-4 pb-3.5 safe-area-pb pointer-events-auto">
           <div className="flex items-end justify-between gap-2">
             {/* ── Adaptive Navigation Capsule ── */}
             <motion.div
               layout
               transition={SPRING}
-              className="founder-dock rounded-[24px] h-[60px] flex items-center gap-0.5 px-1.5 relative edge-light overflow-hidden w-fit max-w-[calc(100%-68px)]"
+              className="founder-dock rounded-[20px] h-[54px] flex items-center gap-0.5 px-1.5 relative edge-light overflow-hidden w-fit max-w-[calc(100%-64px)]"
             >
               <motion.div
                 key={navState}
@@ -79,7 +65,7 @@ export default function AdaptiveNav() {
                 ) : (
                   <>
                     <ModeOrb mode={navState} onClick={openSelector} />
-                    <div className="w-px h-6 bg-white/10 shrink-0 mx-0.5" />
+                    <div className="w-px h-5 bg-white/10 shrink-0 mx-0.5" />
                     {MODE_NAV[navState].map((it) => (
                       <NavItem
                         key={it.key}
@@ -108,13 +94,13 @@ function ModeButton({ opt, active, onPick }) {
     <button
       onClick={() => onPick(opt.key)}
       aria-pressed={active}
-      className="relative flex items-center justify-center gap-1.5 h-[48px] px-4 flex-1 min-w-0 rounded-[18px] spring-tap"
+      className="relative flex items-center justify-center gap-1.5 h-[44px] px-3.5 flex-1 min-w-0 rounded-[14px] spring-tap"
     >
       {active && (
-        <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[14px] dock-pill" transition={SPRING} />
+        <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
       )}
-      <Icon className={`relative w-[18px] h-[18px] ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      <span className={`relative text-[12px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>{opt.label}</span>
+      <Icon className={`relative w-[17px] h-[17px] ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
+      <span className={`relative text-[11px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>{opt.label}</span>
     </button>
   );
 }
@@ -125,9 +111,9 @@ function ModeOrb({ mode, onClick }) {
     <button
       onClick={onClick}
       aria-label="Switch operating mode"
-      className="relative flex items-center justify-center w-[42px] h-[48px] rounded-[16px] spring-tap shrink-0"
+      className="relative flex items-center justify-center w-[40px] h-[44px] rounded-[14px] spring-tap shrink-0"
     >
-      <Icon className="relative w-[18px] h-[18px] dock-icon" strokeWidth={2} />
+      <Icon className="relative w-[16px] h-[16px] dock-icon" strokeWidth={2} />
     </button>
   );
 }
@@ -138,13 +124,13 @@ function NavItem({ item, active, onClick }) {
     <button
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className="relative flex flex-col items-center justify-center h-[48px] px-2.5 flex-1 min-w-0 rounded-[16px] spring-tap"
+      className="relative flex flex-col items-center justify-center h-[44px] px-2 flex-1 min-w-0 rounded-[14px] spring-tap"
     >
       {active && (
-        <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[14px] dock-pill" transition={SPRING} />
+        <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
       )}
-      <Icon className={`relative w-[19px] h-[19px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      <span className={`relative text-[9.5px] font-semibold truncate ${active ? "dock-label-active" : "dock-label"}`}>{item.label}</span>
+      <Icon className={`relative w-[17px] h-[17px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
+      <span className={`relative text-[9px] font-semibold truncate ${active ? "dock-label-active" : "dock-label"}`}>{item.label}</span>
     </button>
   );
 }
@@ -155,13 +141,13 @@ function MeButton({ active }) {
       to="/me"
       onClick={() => hapticSelect()}
       aria-label="Me"
-      className="founder-dock rounded-[24px] h-[60px] w-[56px] flex flex-col items-center justify-center relative edge-light spring-tap shrink-0"
+      className="founder-dock rounded-[20px] h-[54px] w-[52px] flex flex-col items-center justify-center relative edge-light spring-tap shrink-0"
     >
       {active && (
-        <motion.div layoutId="me-pill" className="absolute inset-1.5 rounded-[18px] dock-pill" transition={SPRING} />
+        <motion.div layoutId="me-pill" className="absolute inset-1.5 rounded-[16px] dock-pill" transition={SPRING} />
       )}
-      <User className={`relative w-[20px] h-[20px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      <span className={`relative text-[9.5px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>Me</span>
+      <User className={`relative w-[18px] h-[18px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
+      <span className={`relative text-[9px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>Me</span>
     </NavLink>
   );
 }
