@@ -48,6 +48,7 @@ const Lens = lazy(() => import("@/pages/Lens"));
 const Square = lazy(() => import("@/pages/Square"));
 const Scholar = lazy(() => import("@/pages/Scholar"));
 const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
+const CampusHome = lazy(() => import("@/pages/campus/CampusHome"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
 const SummaryReport = lazy(() => import("@/pages/academics/SummaryReport"));
@@ -229,7 +230,7 @@ function App() {
                     <Route path="/lens" element={<Lens />} />
                     <Route path="/square" element={<Square />} />
                     <Route path="/scholar" element={<Scholar />} />
-                    <Route path="/campus" element={<CampusHub />} />
+                    <Route path="/campus" element={<CampusHome />} />
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/results" element={<Results />} />
                     <Route path="/academics/report" element={<SummaryReport />} />
