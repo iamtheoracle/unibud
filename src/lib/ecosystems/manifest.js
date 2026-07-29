@@ -50,14 +50,14 @@ export function isSharedService(name) {
 
 // ─── Dock-highlightable route subsets (consumed by navigation) ─────────────
 export const ACADEMIC_NAV_PATHS = [
-  "/academics", "/study", "/course", "/agenda", "/tasks", "/collaboration",
+  "/campus", "/academics", "/study", "/course", "/agenda", "/tasks", "/collaboration",
   "/exam", "/notes", "/attendance", "/assignments", "/projects", "/exams",
   "/timetable", "/calendar", "/office-hours", "/study-sessions", "/results",
   "/report",
 ];
 
 export const SOCIAL_NAV_PATHS = [
-  "/quad", "/communities", "/community", "/clubs", "/social", "/connect",
+  "/square", "/quad", "/communities", "/community", "/clubs", "/social", "/connect",
   "/messages", "/shorts", "/podcasts", "/creator-studio", "/discover",
   "/following", "/friends", "/events", "/study-groups", "/mentorship",
   "/mentor", "/challenges", "/student-government", "/student-support",
@@ -77,7 +77,7 @@ export const ACADEMIC_ROUTES = [
 
 export const SOCIAL_ROUTES = [
   ...SOCIAL_NAV_PATHS,
-  "/marketplace", "/lost-found", "/campus",
+  "/marketplace", "/lost-found",
 ];
 
 export const SHARED_ROUTES = [

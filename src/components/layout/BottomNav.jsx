@@ -17,8 +17,8 @@ import ContextNavigator from "@/components/layout/ContextNavigator";
  * globally accessible via the floating Bud orb, not the dock.
  */
 const PERMANENT = [
-  { key: "academic", label: "Academic", to: "/academics", icon: GraduationCap },
-  { key: "social", label: "Social", to: "/social", icon: Users },
+  { key: "academic", label: "Academic", to: "/campus", icon: GraduationCap },
+  { key: "social", label: "Social", to: "/square", icon: Users },
   { key: "me", label: "Me", to: "/me", icon: User },
 ];
 
