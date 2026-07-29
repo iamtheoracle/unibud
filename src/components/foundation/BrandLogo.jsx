@@ -6,6 +6,7 @@ import React from "react";
  */
 export default function BrandLogo({ size = "md", showWord = true, className = "" }) {
   const text = {
+    xs: "text-[14px]",
     sm: "text-[17px]",
     md: "text-[22px]",
     lg: "text-[28px]",

@@ -14,12 +14,13 @@ export default function Login() {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [accessCode, setAccessCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/mode-select", { replace: true }); });
+    base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/auth-router", { replace: true }); });
   }, [navigate]);
 
   const handleSubmit = async (e) => {
@@ -28,7 +29,19 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(identifier, password);
-      navigate("/mode-select", { replace: true });
+
+      // If a platform access code was entered, validate & elevate silently.
+      // The code is never stored, never displayed back — evaluated and discarded.
+      if (accessCode.trim()) {
+        try {
+          await base44.functions.invoke("validatePlatformAccess", { access_code: accessCode.trim() });
+        } catch {
+          // Invalid code doesn't block login — user still authenticates normally
+        }
+      }
+
+      // Oracle silently evaluates role + permissions and routes to the correct workspace
+      window.location.href = "/auth-router";
     } catch (err) {
       setError(err.message || "Invalid credentials");
     } finally {
@@ -80,6 +93,15 @@ export default function Login() {
                     {showPassword ? "Hide" : "Show"}
                   </button>
                 }
+              />
+
+              <GlassInput
+                label="Platform Access Code (optional)"
+                type="text"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value)}
+                placeholder="For staff & administrators"
+                autoComplete="off"
               />
 
               <button type="submit" disabled={loading} className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2.5 spring-tap disabled:opacity-50 ice-glow mt-2">

@@ -22,6 +22,7 @@ const MeetBud = lazy(() => import("@/pages/MeetBud"));
 const ModeSelector = lazy(() => import("@/pages/ModeSelector"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+const OracleAuthRouter = lazy(() => import("@/pages/auth/OracleAuthRouter"));
 
 // Milestone 2 — Student Home (Campus)
 const Home = lazy(() => import("@/pages/Home"));
@@ -204,6 +205,7 @@ function App() {
                   <Route path="/mode-select" element={<ModeSelector />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/auth-router" element={<OracleAuthRouter />} />
                   <Route path="/onboarding/conversation" element={<OnboardingConversation />} />
                   <Route path="/onboarding/security" element={<OnboardingSecurity />} />
                   <Route path="/onboarding/preparing" element={<OnboardingPreparing />} />
