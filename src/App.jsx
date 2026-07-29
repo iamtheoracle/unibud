@@ -30,6 +30,7 @@ const Home = lazy(() => import("@/pages/Home"));
 const BudHome = lazy(() => import("@/pages/bud/BudHome"));
 const SocialHub = lazy(() => import("@/pages/social/SocialHub"));
 const ForYou = lazy(() => import("@/pages/social/ForYou"));
+const HeroSection6Page = lazy(() => import("@/pages/HeroSection6Page"));
 const ProfileView = lazy(() => import("@/pages/social/ProfileView"));
 const Me = lazy(() => import("@/pages/Me"));
 
@@ -228,6 +229,7 @@ function App() {
                     <Route path="/connect" element={<Connect />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/me" element={<Me />} />
+                  <Route path="/hero" element={<HeroSection6Page />} />
                     <Route path="/shorts" element={<Shorts />} />
 <Route path="/podcasts" element={<Podcasts />} />
 <Route path="/podcasts/:showId" element={<PodcastShow />} />
