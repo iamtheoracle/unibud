@@ -141,6 +141,7 @@ export default function StudyGroups() {
     <CommunityShell
       title="Study Groups"
       icon={Users}
+      accent="142 71% 45%"
       actions={<IconAction icon={Plus} variant="primary" onClick={() => setShowCreate(true)} label="Create group" />}
     >
 

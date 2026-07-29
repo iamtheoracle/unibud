@@ -62,7 +62,7 @@ export default function Communities() {
   }, [displayCommunities, filter, search]);
 
   return (
-    <CommunityShell title="Communities" icon={Building2}>
+    <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
 
       {/* Search */}
       <div className="py-3">

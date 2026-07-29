@@ -133,7 +133,7 @@ export default function CampusEvents() {
   };
 
   return (
-    <CommunityShell title="Events" icon={Calendar} actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
+    <CommunityShell title="Events" icon={Calendar} accent="217 91% 60%" actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Search */}
       <div className="py-3">

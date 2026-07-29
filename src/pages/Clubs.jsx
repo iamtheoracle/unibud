@@ -113,7 +113,7 @@ export default function Clubs() {
   const FILTER_KEYS = ["all", ...Object.keys(CLUB_CATEGORIES)];
 
   return (
-    <CommunityShell title="Clubs" icon={Users}>
+    <CommunityShell title="Clubs" icon={Users} accent="38 92% 50%">
 
       {/* Search */}
       <div className="py-3">
