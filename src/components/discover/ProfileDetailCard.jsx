@@ -52,7 +52,7 @@ export default function ProfileDetailCard({ profile, onBack, onMessage }) {
         transition={{ duration: 0.6, ease: EASE }}
         className="flex flex-col items-center px-5 py-4"
       >
-        <div className="w-[100px] h-[100px] rounded-full overflow-hidden ring-2 ring-primary/20 ring-offset-4 ring-offset-background mb-3">
+        <div className="w-[100px] h-[100px] rounded-full overflow-hidden ring-2 ring-primary/20 ring-offset-4 ring-offset-background mb-3 liquid-mirror">
           <Image
             src={profile.image_url || "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80"}
             alt={profile.name}

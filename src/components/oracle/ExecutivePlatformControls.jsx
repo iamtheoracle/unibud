@@ -11,7 +11,7 @@ import { generateExecutivePlan } from "@/lib/oracle/executiveMode";
  */
 export default function ExecutivePlatformControls({ verification }) {
   const { toast } = useToast();
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
   const logAction = async (action, targetType, targetName, result = "success") => {

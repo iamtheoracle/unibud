@@ -30,7 +30,7 @@ export default function FloatingNav() {
       aria-label="Main navigation"
     >
       <div className="mx-auto max-w-3xl px-3 pt-2 pb-2">
-        <div className="crystal-dock rounded-full px-2 py-1.5 flex items-center gap-0.5 overflow-x-auto no-scrollbar edge-light">
+        <div className="liquid-mirror rounded-full px-2 py-1.5 flex items-center gap-0.5 overflow-x-auto no-scrollbar edge-light">
           {FLOATING_NAV_ITEMS.map((item) => {
             const Icon = ICON_MAP[item.icon] || Home;
             const active = location.pathname === item.to ||

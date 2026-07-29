@@ -34,7 +34,7 @@ export default function ConnectionsList({
     <div className="flex flex-col h-full bg-background overflow-hidden">
       {/* Gradient header */}
       <div
-        className="relative px-5 pt-[3.5vh] pb-5 safe-area-pt"
+        className="relative px-5 pt-[3.5vh] pb-5 safe-area-pt liquid-mirror"
         style={{ background: "linear-gradient(135deg, rgba(167,139,250,0.18) 0%, rgba(94,234,212,0.10) 100%)" }}
       >
         <div className="flex items-center justify-between mb-4">

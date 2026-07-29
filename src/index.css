@@ -344,6 +344,108 @@
   .soft-shadow { box-shadow: var(--shadow-soft); }
   .elevated-shadow { box-shadow: var(--shadow-elevated); }
 
+  /* ── Mirror Glass — reflective surface with light catch ── */
+  .mirror-glass {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(52px) saturate(2.0);
+    -webkit-backdrop-filter: blur(52px) saturate(2.0);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(255,255,255,0.06), inset 1px 0 0 rgba(255,255,255,0.04), inset -1px 0 0 rgba(255,255,255,0.04);
+    position: relative;
+    overflow: hidden;
+  }
+  .mirror-glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 30%, transparent 50%, rgba(255,255,255,0.03) 80%, rgba(255,255,255,0.08) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .mirror-glass::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 10%; right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    pointer-events: none;
+    border-radius: 999px;
+    z-index: 1;
+  }
+  .mirror-glass > * { position: relative; z-index: 2; }
+
+  /* ── Liquid Mirror — wet, glossy surface for premium cards ── */
+  .liquid-mirror {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(60px) saturate(2.2);
+    -webkit-backdrop-filter: blur(60px) saturate(2.2);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -2px 0 rgba(255,255,255,0.04), inset 0 0 40px rgba(255,255,255,0.02);
+    position: relative;
+    overflow: hidden;
+  }
+  .liquid-mirror::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .liquid-mirror::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 200%;
+    background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.06) 50%, transparent 65%);
+    pointer-events: none;
+    animation: mirror-sweep 9s ease-in-out infinite;
+    z-index: 1;
+  }
+  @keyframes mirror-sweep {
+    0%, 100% { left: -20%; opacity: 0; }
+    30% { opacity: 0.6; }
+    70% { opacity: 0.6; }
+    100% { left: 120%; opacity: 0; }
+  }
+  .liquid-mirror > * { position: relative; z-index: 2; }
+
+  /* ── Chrome Reflect — metallic edge reflection ── */
+  .chrome-reflect {
+    position: relative;
+  }
+  .chrome-reflect::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 8%, transparent 92%, rgba(255,255,255,0.06) 100%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ── Frosted Mirror — heavy frost with double reflection ── */
+  .frosted-mirror {
+    background: var(--glass-bg-strong);
+    backdrop-filter: blur(72px) saturate(2.5) brightness(1.05);
+    -webkit-backdrop-filter: blur(72px) saturate(2.5) brightness(1.05);
+    border: 1px solid var(--glass-border-strong);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(255,255,255,0.06), inset 0 0 60px rgba(255,255,255,0.015);
+    position: relative;
+  }
+  .frosted-mirror::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    pointer-events: none;
+    border-radius: 999px;
+  }
+
   /* ── Premium card layers ── */
   .hover-lift {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);

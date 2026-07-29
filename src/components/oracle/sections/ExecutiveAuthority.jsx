@@ -23,7 +23,7 @@ import ExecutiveAgentPanel from "@/components/oracle/ExecutiveAgentPanel";
 export default function ExecutiveAuthority({ module, onActive }) {
   const { toast } = useToast();
   const [verification, setVerification] = useState(null);
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
   const levelData = verification ? levelByCode(verification.authorityCode) : null;

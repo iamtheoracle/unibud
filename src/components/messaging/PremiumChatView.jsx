@@ -41,7 +41,7 @@ export default function PremiumChatView({ conversation, messages = [], user, onB
       />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center gap-3 px-4 py-3 safe-area-pt border-b border-border/20">
+      <div className="relative z-10 flex items-center gap-3 px-4 py-3 safe-area-pt border-b border-border/20 chrome-reflect">
         <button onClick={onBack} className="w-9 h-9 rounded-full flex items-center justify-center spring-tap">
           <ArrowLeft className="w-5 h-5 text-foreground" />
         </button>
@@ -123,7 +123,7 @@ export default function PremiumChatView({ conversation, messages = [], user, onB
 
       {/* Composer */}
       <div className="relative z-10 px-4 py-3 safe-area-pb border-t border-border/20">
-        <div className="glass-strong rounded-full h-[46px] flex items-center px-4 gap-2.5">
+        <div className="frosted-mirror rounded-full h-[46px] flex items-center px-4 gap-2.5">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}

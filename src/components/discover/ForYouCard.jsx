@@ -23,7 +23,7 @@ export default function ForYouCard({ profile, onFollow, onMessage, index = 0 }) 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: EASE, delay: index * 0.1 }}
-      className="crystal-card overflow-hidden flex-shrink-0"
+      className="liquid-mirror overflow-hidden flex-shrink-0"
     >
       {/* Photo */}
       <div className="relative aspect-[4/5] overflow-hidden rounded-t-[18px]">

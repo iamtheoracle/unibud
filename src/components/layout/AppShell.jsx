@@ -12,7 +12,6 @@ import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
-import QuickActionCapsule from "@/components/navigation/QuickActionCapsule";
 import FloatingNav from "@/components/layout/FloatingNav";
 import AICommandBar from "@/components/layout/AICommandBar";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
@@ -52,7 +51,6 @@ export default function AppShell() {
           <FloatingNav />
           <ContextPulse />
           <OfflineBanner />
-          <QuickActionCapsule />
           <AICommandBar />
           <EdgeContextSwipe />
           <LiveReflectionProvider />
