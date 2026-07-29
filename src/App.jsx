@@ -10,6 +10,7 @@ import { DemoModeProvider } from '@/lib/DemoModeContext';
 import { ExperienceProvider } from '@/lib/ExperienceContext';
 import ScrollToTop from './components/ScrollToTop';
 import AppShell from '@/components/layout/AppShell';
+import OracleWorkspaceGuard from '@/components/auth/OracleWorkspaceGuard';
 import RouteLoading from '@/components/RouteLoading';
 import PageNotFound from '@/lib/PageNotFound';
 
@@ -312,16 +313,15 @@ function App() {
                     <Route path="/exam/analytics" element={<ExamAnalytics />} />
                     <Route path="/exam/coach" element={<ExamCoach />} />
                     <Route path="/exam/author" element={<ExamAuthor />} />
-                    <Route path="/oracle" element={<Oracle />} />
-                    <Route path="/management" element={<Management />} />
-                    <Route path="/operator" element={<Operator />} />
-                    <Route path="/finance" element={<Finance />} />
-                    <Route path="/wallet" element={<Wallet />} />
-                    <Route path="/architect" element={<Architect />} />
+                    <Route path="/oracle" element={<OracleWorkspaceGuard><Oracle /></OracleWorkspaceGuard>} />
+                    <Route path="/management" element={<OracleWorkspaceGuard><Management /></OracleWorkspaceGuard>} />
+                    <Route path="/operator" element={<OracleWorkspaceGuard><Operator /></OracleWorkspaceGuard>} />
+                    <Route path="/finance" element={<OracleWorkspaceGuard><Finance /></OracleWorkspaceGuard>} />
+                    <Route path="/architect" element={<OracleWorkspaceGuard><Architect /></OracleWorkspaceGuard>} />
                     <Route path="/automation" element={<AutomationCenter />} />
                     <Route path="/automation/builder" element={<WorkflowBuilder />} />
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
-                    <Route path="/security" element={<SecurityCenter />} />
+                    <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
                                       <Route path="/admin" element={<AdminHub />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
