@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, Plus, UserPlus, Users, Calendar, Circle, Trophy, Heart, Shield, BarChart3 } from "lucide-react";
+import { Search, Plus, UserPlus, Users, Calendar, CalendarClock, CalendarDays, Circle, Trophy, Heart, Shield, BarChart3, FlaskConical, KanbanSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -18,10 +18,18 @@ import ScreenShell from "@/components/layout/ScreenShell";
 import IconAction from "@/components/layout/IconAction";
 
 const quickActions = [
+  // Social priorities (Square)
   { icon: UserPlus, label: "Find Friends", desc: "Connect with classmates", color: "bg-primary/10", iconColor: "text-primary", path: "/connect", context: "social" },
-  { icon: Users, label: "Groups", desc: "Join communities", color: "bg-information/10", iconColor: "text-information", path: "/study-groups", context: "shared" },
   { icon: Trophy, label: "Challenges", desc: "Compete & win", color: "bg-accent/10", iconColor: "text-accent", path: "/challenges", context: "social" },
   { icon: Shield, label: "Government", desc: "Student leaders", color: "bg-success/10", iconColor: "text-success", path: "/student-government", context: "social" },
+  // Academic priorities (Campus)
+  { icon: CalendarClock, label: "Office Hours", desc: "Book a lecturer", color: "bg-primary/10", iconColor: "text-primary", path: "/office-hours", context: "academic" },
+  { icon: Users, label: "Study Groups", desc: "Learn together", color: "bg-information/10", iconColor: "text-information", path: "/study-groups", context: "academic" },
+  { icon: FlaskConical, label: "Research", desc: "Labs & projects", color: "bg-success/10", iconColor: "text-success", path: "/research", context: "academic" },
+  { icon: KanbanSquare, label: "Project Teams", desc: "Collaborate", color: "bg-warning/10", iconColor: "text-warning", path: "/collaboration", context: "academic" },
+  { icon: CalendarDays, label: "Academic Calendar", desc: "Key dates", color: "bg-primary/10", iconColor: "text-primary", path: "/calendar", context: "academic" },
+  // Shared across both modes
+  { icon: Users, label: "Communities", desc: "Join communities", color: "bg-information/10", iconColor: "text-information", path: "/communities", context: "shared" },
   { icon: Calendar, label: "Events", desc: "What's happening", color: "bg-warning/10", iconColor: "text-warning", path: "/events", context: "shared" },
   { icon: Heart, label: "Support", desc: "We're here for you", color: "bg-error/10", iconColor: "text-error", path: "/student-support", context: "shared" },
   { icon: BarChart3, label: "Creator Studio", desc: "Your content & analytics", color: "bg-primary/10", iconColor: "text-primary", path: "/creator-studio", context: "shared" },
@@ -131,7 +139,7 @@ export default function Connect() {
     { ctx: "academic", node: <MentorshipSection /> },
     { ctx: "social", node: <EventsSection /> },
     { ctx: "social", node: <CareerNetwork /> },
-    { ctx: "shared", node: <MessagesPreview /> },
+    { ctx: "shared", node: <MessagesPreview title={mode === "academic" ? "Course Conversations" : "Recent Conversations"} /> },
     { ctx: "shared", node: <SafetyBanner /> },
   ];
   const rank = (c) => (c === mode ? 0 : c === "shared" ? 1 : 2);
