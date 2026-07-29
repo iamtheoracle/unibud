@@ -35,12 +35,12 @@ export default function AcademicHub() {
       </div>
 
       <div className="relative mb-4 mt-5">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search academic tools"
-          className="w-full pl-10 pr-4 py-3 rounded-[18px] bg-card border border-border/40 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 spring-tap"
+          className="w-full pl-10 pr-4 py-3 rounded-[18px] glass text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 spring-tap transition-all duration-300"
         />
       </div>
 
@@ -54,7 +54,7 @@ export default function AcademicHub() {
             {recommended.map((c) => {
               const Icon = c.icon;
               return (
-                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[150px] rounded-[22px] p-4 glass-card spring-tap">
+                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[150px] crystal-card hover-lift p-4 spring-tap edge-light">
                   <div className="w-9 h-9 rounded-[12px] flex items-center justify-center mb-2" style={{ background: `hsl(${c.color} / 0.14)` }}>
                     <Icon className="w-[18px] h-[18px]" style={{ color: `hsl(${c.color})` }} />
                   </div>
@@ -72,8 +72,8 @@ export default function AcademicHub() {
           <button
             key={g.key}
             onClick={() => setGroup(g.key)}
-            className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap ${
-              group === g.key ? "bg-primary text-primary-foreground" : "bg-card border border-border/40 text-foreground/70"
+            className={`px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap transition-all duration-300 ${
+              group === g.key ? "bg-primary text-primary-foreground ice-glow" : "glass text-foreground/70 hover:text-foreground"
             }`}
           >
             {g.label}
@@ -111,8 +111,8 @@ function AcademicCard({ c }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: EASE }}
-      className={`rounded-[22px] p-4 h-full glass-card spring-tap relative ${c.live ? "" : "opacity-70"}`}
+      transition={{ duration: 0.45, ease: EASE }}
+      className={`crystal-card glass-shine hover-lift p-4 h-full spring-tap relative ${c.live ? "" : "opacity-60"}`}
     >
       <div className="w-10 h-10 rounded-[14px] flex items-center justify-center mb-3" style={{ background: `hsl(${c.color} / 0.14)` }}>
         <Icon className="w-5 h-5" style={{ color: `hsl(${c.color})` }} />
@@ -120,11 +120,11 @@ function AcademicCard({ c }) {
       <p className="text-[14px] font-semibold text-foreground leading-tight">{c.title}</p>
       <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">{c.desc}</p>
       {c.live ? (
-        <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-muted/60 flex items-center justify-center">
+        <div className="absolute top-3 right-3 w-6 h-6 rounded-full glass flex items-center justify-center">
           <ArrowRight className="w-3 h-3 text-muted-foreground" />
         </div>
       ) : (
-        <span className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-wide text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full">
+        <span className="absolute top-3 right-3 text-[9px] font-bold uppercase tracking-wide text-muted-foreground glass px-2 py-0.5 rounded-full">
           Soon
         </span>
       )}

@@ -20,8 +20,8 @@ export default function AcademicPulse() {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: EASE }}
-      className="crystal-card p-3 flex divide-x divide-border/40"
+      transition={{ duration: 0.5, ease: EASE }}
+      className="crystal-card glass-shine p-3 flex divide-x divide-border/30 edge-light"
     >
       <PulseTile
         to="/timetable"

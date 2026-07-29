@@ -57,7 +57,7 @@ export function composeBrief(nextClass, nextDeadline, gpa, todaySchedule) {
 export default function TodayBrief({ brief, loading }) {
   if (loading || !brief) {
     return (
-      <div className="rounded-2xl bg-card border border-border/30 p-4">
+      <div className="crystal-card p-4">
         <div className="h-4 w-32 rounded shimmer mb-3" />
         <div className="h-3.5 w-full rounded shimmer mb-2" />
         <div className="h-3 w-2/3 rounded shimmer" />
@@ -73,8 +73,8 @@ export default function TodayBrief({ brief, loading }) {
     <motion.section
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: EASE }}
-      className="rounded-2xl bg-card border border-border/30 p-4"
+      transition={{ duration: 0.5, ease: EASE }}
+      className="crystal-card glass-shine p-4 edge-light"
     >
       <div className="flex items-center gap-2 mb-2">
         <span className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ background: `hsl(${accent} / 0.16)` }}>
