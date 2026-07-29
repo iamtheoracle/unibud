@@ -11,7 +11,7 @@
  * Hierarchy:
  *   Oracle (orchestration & decision intelligence)
  *     → Bud (sole user-facing interface)
- *       → Orbit, Forge, Spark, Pulse, Lens, Atlas, Sentinel
+ *       → Orbit, Forge, Spark, Pulse, Lens, Atlas, Sentinel, Nexus, Echo
  *
  * Agents communicate through Oracle. Bud is the single intelligent
  * interface for the entire platform. The Founder never manually assigns
@@ -21,6 +21,7 @@
 
 import {
   Sparkles, Crown, Compass, Hammer, Zap, Activity, Search, Library, ShieldCheck,
+  Network, MessageCircle,
 } from "lucide-react";
 
 export const SPECIALIST_AGENTS = [
@@ -84,7 +85,7 @@ export const SPECIALIST_AGENTS = [
     platformRole: "Chief Product Organization",
     tagline: "Six-architect system that brings opportunities INTO the platform instead of waiting",
     description:
-      "Orbit is not a UI designer only. Orbit is a production-grade intelligent system spanning six architect roles: Product Architect, UX Architect, Content Architect, Growth Architect, Research Architect, and Innovation Architect. Orbit continuously browses public information where permitted, monitors trends, studies educational systems, discovers new product ideas, discovers UI improvements, discovers better workflows, and recommends improvements automatically. Orbit brings opportunities INTO the platform instead of waiting.",
+      "Orbit is not a UI designer only. Orbit is a production-grade intelligent system spanning six architect roles: Product Architect, UX Architect, Content Architect, Growth Architect, Research Architect, and Innovation Architect. Orbit continuously analyzes approved internal and external information sources that are available through authorized integrations or scheduled research pipelines. It monitors trends, studies educational systems, discovers new product ideas, discovers UI improvements, discovers better workflows, and recommends improvements automatically. Orbit brings opportunities INTO the platform instead of waiting.",
     architectRoles: [
       { id: "product", title: "Product Architect", focus: "Product discovery, architecture, and validation" },
       { id: "ux", title: "UX Architect", focus: "User experience, interaction design, and information architecture" },
@@ -268,6 +269,52 @@ export const SPECIALIST_AGENTS = [
     coordinatesWith: ["oracle", "pulse", "forge"],
     userFacing: false,
     accessLevel: 9,
+  },
+  {
+    id: "nexus",
+    name: "Nexus",
+    codename: "Integrations",
+    icon: Network,
+    color: "text-info",
+    bg: "bg-info/10",
+    platformRole: "Integrations Platform",
+    tagline: "Connects UNIBUD to every external service through authorized integrations",
+    description:
+      "Nexus owns the complete integration lifecycle — external service connections, API adapters, connector management, and webhook routing. Nexus ensures every external connection is authorized, monitored, and maintained. Nexus does not claim capabilities that don't exist — it only enables what official integrations allow.",
+    owns: [
+      "External service connections",
+      "API adapters",
+      "Connector management",
+      "Webhook routing",
+      "Integration health monitoring",
+      "OAuth flow management",
+    ],
+    coordinatesWith: ["forge", "pulse", "sentinel"],
+    userFacing: false,
+    accessLevel: 8,
+  },
+  {
+    id: "echo",
+    name: "Echo",
+    codename: "Communications",
+    icon: MessageCircle,
+    color: "text-purple",
+    bg: "bg-purple/10",
+    platformRole: "Communications Platform",
+    tagline: "Cross-channel messaging and conversation routing across all communication surfaces",
+    description:
+      "Echo owns the complete communications lifecycle — cross-channel messaging, external communications, notification delivery, and conversation routing. Echo ensures messages reach users through the right channel at the right time. Echo supports sharing and initiating conversations where the connected service allows it, but does not claim direct messaging capability unless an official integration exists.",
+    owns: [
+      "Cross-channel messaging",
+      "External communications",
+      "Notification delivery",
+      "Conversation routing",
+      "Channel orchestration",
+      "Message lifecycle management",
+    ],
+    coordinatesWith: ["nexus", "pulse", "bud"],
+    userFacing: false,
+    accessLevel: 8,
   },
 ];
 
