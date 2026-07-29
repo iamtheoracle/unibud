@@ -3,32 +3,40 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import {
-  ArrowLeft, Users, UserPlus, Check, BadgeCheck, MessageSquare,
-  Calendar, Home, ChevronRight, Pin, Flag,
-} from "lucide-react";
+import { ArrowLeft, Users } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import ReportModal from "@/components/ecosystem/ReportModal";
 import EmptyState from "@/components/ui/EmptyState";
-import PostCard from "@/components/quad/PostCard";
-import EventCard from "@/components/campus/EventCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
+import { useToast } from "@/components/ui/use-toast";
+import CommunityHeader from "@/components/community/CommunityHeader";
+import CommunityTabBar from "@/components/community/CommunityTabBar";
+import CommunityHome from "@/components/community/sections/CommunityHome";
+import CommunityFeed from "@/components/community/sections/CommunityFeed";
+import CommunityChat from "@/components/community/sections/CommunityChat";
+import CommunityEvents from "@/components/community/sections/CommunityEvents";
+import CommunityMembers from "@/components/community/sections/CommunityMembers";
+import CommunityMedia from "@/components/community/sections/CommunityMedia";
+import CommunityAnnouncements from "@/components/community/sections/CommunityAnnouncements";
+import CommunitySettings from "@/components/community/sections/CommunitySettings";
 
-const TABS = [
-  { key: "home", label: "Home", icon: Home },
-  { key: "discussion", label: "Discussion", icon: MessageSquare },
-  { key: "events", label: "Events", icon: Calendar },
-  { key: "members", label: "Members", icon: Users },
-];
+const EASE = [0.16, 1, 0.3, 1];
 
+/**
+ * CommunityDetail — an app-like community experience.
+ * Each community behaves like a dedicated application with its own
+ * bottom navigation, immersive header, and distinct section identities.
+ */
 export default function CommunityDetail() {
   const { communityId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isDemoMode } = useDemoMode();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("home");
   const [joined, setJoined] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
+  const [notifOn, setNotifOn] = useState(true);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -44,22 +52,14 @@ export default function CommunityDetail() {
 
   const { data: posts } = useQuery({
     queryKey: ["communityPosts", communityId],
-    queryFn: () => base44.entities.QuadPost.filter(
-      { community: communityId },
-      "-created_date",
-      20
-    ),
-    enabled: !isDemoMode && !!communityId && activeTab === "discussion",
+    queryFn: () => base44.entities.QuadPost.filter({ community: communityId }, "-created_date", 30),
+    enabled: !isDemoMode && !!communityId,
   });
 
   const { data: events } = useQuery({
     queryKey: ["communityEvents", communityId],
-    queryFn: () => base44.entities.CampusEvent.filter(
-      { community_id: communityId },
-      "-date",
-      10
-    ),
-    enabled: !isDemoMode && !!communityId && activeTab === "events",
+    queryFn: () => base44.entities.CampusEvent.filter({ community_id: communityId }, "-date", 15),
+    enabled: !isDemoMode && !!communityId,
   });
 
   useEffect(() => {
@@ -70,6 +70,7 @@ export default function CommunityDetail() {
 
   const typeMeta = community ? (COMMUNITY_TYPES[community.type] || COMMUNITY_TYPES.department) : COMMUNITY_TYPES.department;
   const Icon = community ? getIcon(community.icon || typeMeta.icon) : Users;
+  const accentColor = community?.accent_color || typeMeta.color;
 
   const handleJoin = async () => {
     if (!user || !community || joined) return;
@@ -88,8 +89,27 @@ export default function CommunityDetail() {
         members_count: (community.members_count || 0) + 1,
       });
       queryClient.invalidateQueries({ queryKey: ["community", communityId] });
+      toast({ title: "Joined!", description: `You're now a member of ${community.name}.` });
     } catch {
       setJoined(false);
+      toast({ title: "Couldn't join", description: "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleLeave = async () => {
+    if (!user || !community) return;
+    setJoined(false);
+    setActiveTab("home");
+    try {
+      const updatedMembers = (community.members || []).filter((m) => m.user_id !== user.id);
+      await base44.entities.Community.update(community.id, {
+        members: updatedMembers,
+        members_count: Math.max(0, (community.members_count || 1) - 1),
+      });
+      queryClient.invalidateQueries({ queryKey: ["community", communityId] });
+      toast({ title: "Left community", description: `You've left ${community.name}.` });
+    } catch {
+      setJoined(true);
     }
   };
 
@@ -107,8 +127,18 @@ export default function CommunityDetail() {
         source_entity: "CampusEvent",
         source_id: event.id,
       });
+      toast({ title: "Added to calendar" });
     } catch {
-      // ignore
+      toast({ title: "Couldn't add to calendar", variant: "destructive" });
+    }
+  };
+
+  const handleShare = () => {
+    if (navigator.share && community) {
+      navigator.share({ title: community.name, text: community.description || "", url: window.location.href }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(window.location.href);
+      toast({ title: "Link copied" });
     }
   };
 
@@ -124,7 +154,7 @@ export default function CommunityDetail() {
     return (
       <div className="min-h-screen">
         <div className="pt-12 px-5">
-          <button onClick={() => navigate("/communities")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
+          <button onClick={() => navigate("/communities")} className="w-10 h-10 rounded-full glass flex items-center justify-center spring-tap">
             <ArrowLeft className="w-[18px] h-[18px]" />
           </button>
         </div>
@@ -133,242 +163,84 @@ export default function CommunityDetail() {
     );
   }
 
-  const accentColor = community?.accent_color || typeMeta.color;
+  const members = community?.members || [];
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="relative">
-        <div
-          className="h-24 flex items-start justify-between px-5 pt-12"
-          style={{ background: `hsl(${accentColor} / 0.10)` }}
-        >
-          <button onClick={() => navigate("/communities")} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-            <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-          </button>
-          {community?.is_verified && (
-            <span className="px-2.5 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center gap-1 soft-shadow">
-              <BadgeCheck className="w-3 h-3" /> Verified
-            </span>
-          )}
-          <button onClick={() => setReportOpen(true)} className="w-9 h-9 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30" aria-label="Report community">
-            <Flag className="w-4 h-4 text-muted-foreground" />
-          </button>
-        </div>
+    <div className="min-h-screen pb-28">
+      <CommunityHeader
+        community={community}
+        typeMeta={typeMeta}
+        Icon={Icon}
+        accentColor={accentColor}
+        onBack={() => navigate("/communities")}
+        onReport={() => setReportOpen(true)}
+        onShare={handleShare}
+        joined={joined}
+        onJoin={user ? handleJoin : undefined}
+        onToggleNotif={() => { setNotifOn(!notifOn); toast({ title: notifOn ? "Notifications muted" : "Notifications on" }); }}
+      />
 
-        <div className="px-5 -mt-8 relative z-10">
-          <div
-            className="w-16 h-16 rounded-[20px] flex items-center justify-center bg-card soft-shadow border-4 border-background"
-            style={{ background: `hsl(${accentColor} / 0.12)` }}
-          >
-            <Icon className="w-7 h-7" style={{ color: `hsl(${accentColor})` }} strokeWidth={2} />
-          </div>
-
-          <div className="mt-2.5">
-            <h1 className="font-heading font-extrabold text-[20px] tracking-tight text-foreground">{community?.name || "Community"}</h1>
-            <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[12px] text-muted-foreground">{typeMeta.label}</span>
-              <span className="text-muted-foreground/40">·</span>
-              <span className="text-[12px] text-muted-foreground">{community?.members_count || 0} members</span>
-            </div>
-          </div>
-
-          {community?.description && (
-            <p className="text-[13px] text-foreground/80 mt-3 leading-relaxed">{community.description}</p>
-          )}
-
-          {user && (
-            <button
-              onClick={handleJoin}
-              className={
-                "mt-3 w-full py-3 rounded-[16px] font-heading font-semibold text-[14px] transition-all spring-tap flex items-center justify-center gap-2 " +
-                (joined
-                  ? "bg-muted text-muted-foreground border border-border/40"
-                  : "bg-primary text-primary-foreground gold-glow")
-              }
-            >
-              {joined ? <><Check className="w-4 h-4" /> Joined</> : <><UserPlus className="w-4 h-4" /> Join Community</>}
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="px-4 mt-4 sticky top-0 z-20 glass border-b border-border/20">
-        <div className="flex gap-1 py-2">
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={
-                "flex-1 py-2.5 rounded-[14px] text-[11px] font-semibold transition-all spring-tap flex flex-col items-center gap-1 " +
-                (activeTab === tab.key
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground")
-              }
-            >
-              <tab.icon className="w-4 h-4" strokeWidth={2} />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Tab Content */}
+      {/* Section content with app-like transitions */}
       <div className="px-4 mt-4">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, x: 12 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.28, ease: EASE }}
           >
-            {/* Home Tab */}
             {activeTab === "home" && (
-              <div className="space-y-4">
-                {community?.rules && community.rules.length > 0 && (
-                  <div className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Pin className="w-4 h-4 text-primary" />
-                      <h3 className="font-heading font-semibold text-[14px] text-foreground">Community Rules</h3>
-                    </div>
-                    <div className="space-y-2">
-                      {community.rules.map((rule, i) => (
-                        <div key={i} className="flex items-start gap-2">
-                          <span className="text-[11px] font-bold text-primary mt-0.5">{i + 1}.</span>
-                          <p className="text-[12px] text-muted-foreground">{rule}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="grid grid-cols-3 gap-2.5">
-                  <div className="bg-card rounded-[16px] p-3 soft-shadow border border-border/40 text-center">
-                    <Users className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="font-heading font-bold text-[16px] text-foreground">{community?.members_count || 0}</p>
-                    <p className="text-[9px] text-muted-foreground">Members</p>
-                  </div>
-                  <div className="bg-card rounded-[16px] p-3 soft-shadow border border-border/40 text-center">
-                    <MessageSquare className="w-5 h-5 text-info mx-auto mb-1" />
-                    <p className="font-heading font-bold text-[16px] text-foreground">{(posts || []).length}</p>
-                    <p className="text-[9px] text-muted-foreground">Posts</p>
-                  </div>
-                  <div className="bg-card rounded-[16px] p-3 soft-shadow border border-border/40 text-center">
-                    <Calendar className="w-5 h-5 text-success mx-auto mb-1" />
-                    <p className="font-heading font-bold text-[16px] text-foreground">{(events || []).length}</p>
-                    <p className="text-[9px] text-muted-foreground">Events</p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => setActiveTab("discussion")}
-                  className="w-full bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover spring-tap"
-                >
-                  <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center">
-                    <MessageSquare className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className="font-heading font-semibold text-[13px] text-foreground">Start a Discussion</p>
-                    <p className="text-[10px] text-muted-foreground">Share with your community</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("events")}
-                  className="w-full bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover spring-tap"
-                >
-                  <div className="w-10 h-10 rounded-[14px] bg-success/10 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-success" />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <p className="font-heading font-semibold text-[13px] text-foreground">Upcoming Events</p>
-                    <p className="text-[10px] text-muted-foreground">{(events || []).length} events scheduled</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </button>
-              </div>
+              <CommunityHome
+                community={community}
+                posts={posts}
+                events={events}
+                members={members}
+                onNavigate={setActiveTab}
+                accentColor={accentColor}
+              />
             )}
-
-            {/* Discussion Tab */}
-            {activeTab === "discussion" && (
-              <div className="space-y-3">
-                {(posts || []).length === 0 ? (
-                  <EmptyState
-                    icon={MessageSquare}
-                    title="No discussions yet"
-                    description="Be the first to start a conversation in this community."
-                  />
-                ) : (
-                  (posts || []).map((post, i) => (
-                    <PostCard key={post.id} post={post} user={user} index={i} />
-                  ))
-                )}
-              </div>
+            {activeTab === "feed" && (
+              <CommunityFeed posts={posts} user={user} />
             )}
-
-            {/* Events Tab */}
+            {activeTab === "chat" && (
+              <CommunityChat community={community} user={user} accentColor={accentColor} />
+            )}
             {activeTab === "events" && (
-              <div className="space-y-3">
-                {(events || []).length === 0 ? (
-                  <EmptyState
-                    icon={Calendar}
-                    title="No events scheduled"
-                    description="Community events will appear here once created."
-                  />
-                ) : (
-                  (events || []).map((event, i) => (
-                    <EventCard key={event.id} event={event} user={user} index={i} onAddToCalendar={handleAddToCalendar} />
-                  ))
-                )}
-              </div>
+              <CommunityEvents events={events} user={user} onAddToCalendar={handleAddToCalendar} />
             )}
-
-            {/* Members Tab */}
             {activeTab === "members" && (
-              <div className="space-y-2">
-                {(community?.members || []).length === 0 ? (
-                  <EmptyState
-                    icon={Users}
-                    title="No members yet"
-                    description="Be the first to join this community."
-                  />
-                ) : (
-                  (community?.members || []).map((member, i) => (
-                    <motion.div
-                      key={member.user_id || i}
-                      initial={{ opacity: 0, x: -8 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.03 }}
-                      className="bg-card rounded-[16px] p-3 soft-shadow border border-border/40 flex items-center gap-3"
-                    >
-                      {member.image ? (
-                        <img src={member.image} alt="" className="w-10 h-10 rounded-full object-cover" />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-[13px]">
-                          {(member.name || "U").charAt(0)}
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-heading font-semibold text-[13px] text-foreground truncate">{member.name}</p>
-                        <p className="text-[10px] text-muted-foreground capitalize">{member.role}</p>
-                      </div>
-                      {(member.role === "admin" || member.role === "leader" || member.role === "moderator") && (
-                        <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold capitalize">
-                          {member.role}
-                        </span>
-                      )}
-                    </motion.div>
-                  ))
-                )}
-              </div>
+              <CommunityMembers community={community} accentColor={accentColor} />
+            )}
+            {activeTab === "media" && (
+              <CommunityMedia posts={posts} accentColor={accentColor} />
+            )}
+            {activeTab === "announcements" && (
+              <CommunityAnnouncements community={community} accentColor={accentColor} />
+            )}
+            {activeTab === "settings" && (
+              <CommunitySettings
+                community={community}
+                joined={joined}
+                onLeave={handleLeave}
+                onReport={() => setReportOpen(true)}
+                accentColor={accentColor}
+              />
             )}
           </motion.div>
         </AnimatePresence>
       </div>
-      <ReportModal open={reportOpen} onClose={() => setReportOpen(false)} contentType="community" contentId={communityId} reportedUserId={community?.created_by_id} reportedUserName={community?.name} />
+
+      <CommunityTabBar activeTab={activeTab} onChange={setActiveTab} accentColor={accentColor} />
+
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        contentType="community"
+        contentId={communityId}
+        reportedUserId={community?.created_by_id}
+        reportedUserName={community?.name}
+      />
     </div>
   );
 }
