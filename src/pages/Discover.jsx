@@ -7,7 +7,7 @@ import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
 import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useUnibudContext } from "@/lib/UnibudContext";
-import DiscoverTopBar from "@/components/discover/DiscoverTopBar";
+import OsTopBar from "@/components/layout/OsTopBar";
 import DiscoveryFeed from "@/components/discover/DiscoveryFeed";
 import ExploreView from "@/components/discover/ExploreView";
 
@@ -54,7 +54,7 @@ export default function Discover() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
-      <DiscoverTopBar user={ctx.user} />
+      <OsTopBar user={ctx.user} />
 
       {/* Content nav: Quad | Discovery | Explore */}
       <div className="flex gap-5 px-1 pb-3 border-b border-border/20">

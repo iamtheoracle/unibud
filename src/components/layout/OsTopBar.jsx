@@ -16,9 +16,10 @@ function initials(name) {
 }
 
 /**
- * DiscoverTopBar — greeting + UNIBUD OS wordmark + notification + avatar.
+ * OsTopBar — shared app chrome top bar: greeting + UNIBUD OS wordmark +
+ * notification bell + avatar. Used across hub screens (Discover, Connect, …).
  */
-export default function DiscoverTopBar({ user }) {
+export default function OsTopBar({ user }) {
   const navigate = useNavigate();
   const name = user?.full_name || "Scholar";
   return (
