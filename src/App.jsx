@@ -43,6 +43,7 @@ const Clubs = lazy(() => import("@/pages/Clubs"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const LostFound = lazy(() => import("@/pages/LostFound"));
 const Discover = lazy(() => import("@/pages/Discover"));
+const Lens = lazy(() => import("@/pages/Lens"));
 const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
@@ -221,6 +222,7 @@ function App() {
                     <Route path="/marketplace" element={<Marketplace />} />
                     <Route path="/lost-found" element={<LostFound />} />
                     <Route path="/discover" element={<Discover />} />
+                    <Route path="/lens" element={<Lens />} />
                     <Route path="/campus" element={<CampusHub />} />
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/results" element={<Results />} />
