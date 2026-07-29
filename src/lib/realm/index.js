@@ -9,6 +9,14 @@ import { storageService } from "./storage";
 import { mediaService } from "./media";
 import { searchService } from "./search";
 import { analyticsService } from "./analytics";
+import { authzService } from "./authz";
+import { realtimeService } from "./realtime";
+import { jobsService } from "./jobs";
+import { schedulingService } from "./scheduling";
+import { crashService } from "./crash";
+import { featureFlagsService } from "./featureFlags";
+import { cacheService } from "./cache";
+import { configService } from "./config";
 
 /**
  * My Realm Services — the shared backend platform powering UNIBUD, SOULYNC,
@@ -39,6 +47,14 @@ export const Realm = {
   media: mediaService(base44),
   search: searchService(base44),
   analytics: analyticsService(base44),
+  authz: authzService(base44),
+  realtime: realtimeService(base44),
+  jobs: jobsService(base44),
+  scheduling: schedulingService(base44),
+  crash: crashService(base44),
+  featureFlags: featureFlagsService(base44),
+  cache: cacheService(base44),
+  config: configService(base44),
 };
 
 export default Realm;
