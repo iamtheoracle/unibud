@@ -49,7 +49,27 @@ export async function printReport(node) {
   w.print();
 }
 
-/** Future-ready share interface — returns capability info, no side effects yet. */
-export function shareReport() {
-  return { available: false, message: "Shareable report links arrive in a future update." };
+/** Shares the report node as an image via the Web Share API, or copies to clipboard. */
+export async function shareReport(node) {
+  if (!node) return { available: false, message: "Nothing to share." };
+  try {
+    const canvas = await render(node);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+    if (!blob) return { available: false, message: "Could not generate image." };
+
+    const file = new File([blob], "academic-report.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ title: "Academic Summary Report", files: [file] });
+      return { available: true, message: "Shared." };
+    }
+    if (navigator.share) {
+      await navigator.share({ title: "Academic Summary Report" });
+      return { available: true, message: "Shared." };
+    }
+    await navigator.clipboard.writeText(window.location.href);
+    return { available: true, message: "Report link copied to clipboard." };
+  } catch (e) {
+    if (e?.name === "AbortError") return { available: true, message: "Share cancelled." };
+    return { available: false, message: "Sharing not available on this device." };
+  }
 }

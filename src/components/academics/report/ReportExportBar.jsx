@@ -39,9 +39,9 @@ export default function ReportExportBar({ reportRef }) {
       </button>
       <button
         aria-label="Share report"
-        onClick={() => {
-          const s = shareReport();
-          toast({ title: "Sharing coming soon", description: s.message });
+        onClick={async () => {
+          const s = await shareReport(reportRef?.current || reportRef);
+          toast({ title: s.available ? "Shared" : "Sharing unavailable", description: s.message });
         }}
         className={btn}
       >

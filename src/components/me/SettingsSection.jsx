@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useTheme } from "@/lib/ThemeContext";
@@ -8,6 +9,14 @@ import EditProfileModal from "@/components/me/EditProfileModal";
 import { toast } from "@/components/ui/use-toast";
 import ConfirmDialog from "@/components/notifications/ConfirmDialog";
 import { queryClientInstance } from "@/lib/query-client";
+
+const ROUTE_MAP = {
+  notifications: "/bud/notifications",
+  security: "/security",
+  privacy: "/security",
+  devices: "/security",
+  data: "/me",
+};
 
 function AccountRow({ label, value }) {
   return (
@@ -35,7 +44,8 @@ const ROWS = [
  * SettingsSection — account, appearance, and about are functional; the
  * remaining categories are staged for future milestones.
  */
-export default function SettingsSection({ user }) {
+const SettingsSection = forwardRef(({ user }, ref) => {
+  const navigate = useNavigate();
   const { theme, changeTheme } = useTheme();
   const [sheet, setSheet] = useState(null);
   const [editing, setEditing] = useState(false);
@@ -49,8 +59,16 @@ export default function SettingsSection({ user }) {
       const next = theme === "dark" ? "light" : theme === "light" ? "system" : "dark";
       changeTheme(next);
       toast({ title: `Appearance: ${next}` });
+    } else if (key === "language") {
+      toast({ title: "Language", description: "English (Nigeria) — additional languages on the roadmap." });
+    } else if (key === "accessibility") {
+      document.documentElement.classList.toggle("reduce-motion");
+      const reduced = document.documentElement.classList.contains("reduce-motion");
+      toast({ title: `Reduced motion: ${reduced ? "On" : "Off"}` });
+    } else if (ROUTE_MAP[key]) {
+      navigate(ROUTE_MAP[key]);
     } else {
-      toast({ title: "Coming soon", description: "This setting arrives in a future milestone." });
+      setSheet("account");
     }
   };
 
@@ -158,4 +176,6 @@ export default function SettingsSection({ user }) {
       </AnimatePresence>
     </div>
   );
-}
+});
+
+export default SettingsSection;

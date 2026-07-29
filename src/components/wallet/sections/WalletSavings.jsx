@@ -57,7 +57,7 @@ export default function WalletSavings() {
 
       <div className="rounded-[20px] p-3.5 bg-primary/5 border border-primary/15 flex items-start gap-2">
         <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
-        <p className="text-[11px] text-muted-foreground leading-relaxed">Round-up savings and automatic savings are coming soon — Spark will help you save without thinking about it.</p>
+        <p className="text-[11px] text-muted-foreground leading-relaxed">Tip: Fund your goals consistently — even ₦1,000 a week adds up. Ask Bud to suggest a savings plan based on your spending.</p>
       </div>
     </div>
   );

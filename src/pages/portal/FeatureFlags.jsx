@@ -8,7 +8,7 @@ const FLAGS = [
   { id: 2, name: "Live Class Recording", description: "Automatic recording of all live lectures", enabled: true, audience: "Beta Cohort", category: "Academic", icon: Flag },
   { id: 3, name: "Marketplace Payments", description: "In-app payment processing for marketplace listings", enabled: false, audience: "Internal Only", category: "Commerce", icon: Flag },
   { id: 4, name: "Mentorship Booking", description: "Calendar-based mentorship session scheduling", enabled: true, audience: "All Universities", category: "Social", icon: Users },
-  { id: 5, name: "Campus Navigation", description: "Interactive campus maps with turn-by-turn directions", enabled: false, audience: "Coming Soon", category: "Services", icon: Globe },
+  { id: 5, name: "Campus Navigation", description: "Interactive campus maps with turn-by-turn directions", enabled: false, audience: "Beta Cohort", category: "Services", icon: Globe },
   { id: 6, name: "FYP Hub", description: "Final year project showcase and collaboration", enabled: true, audience: "All Universities", category: "Academic", icon: Building },
   { id: 7, name: "Wellbeing Tracker", description: "Private mood tracking and journaling space", enabled: true, audience: "All Universities", category: "Wellbeing", icon: Flag },
   { id: 8, name: "Study Groups Chat", description: "Real-time messaging in study groups", enabled: true, audience: "All Universities", category: "Social", icon: Users },

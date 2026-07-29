@@ -50,8 +50,8 @@ export default function ProductRegistry() {
           <Panel key={p.key} title={p.name} icon={p.placeholder ? Tag : Boxes}>
             {p.placeholder ? (
               <div className="py-6 text-center">
-                <p className="text-[12px] text-muted-foreground">Future My Realm applications will appear here.</p>
-                <Btn variant="soft" className="mt-3" onClick={() => toast({ title: "Product onboarding coming soon" })}><Plus className="w-3.5 h-3.5" />Register Product</Btn>
+                <p className="text-[12px] text-muted-foreground">New My Realm products can be registered here as the platform expands.</p>
+                <Btn variant="soft" className="mt-3" onClick={() => toast({ title: "Product registration", description: "Contact the platform team to onboard a new product." })}><Plus className="w-3.5 h-3.5" />Register Product</Btn>
               </div>
             ) : (
               <div className="space-y-2.5">

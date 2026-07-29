@@ -46,6 +46,7 @@ export default function ChatView({ conversationId, user, onBack }) {
 
   const [actionMessage, setActionMessage] = useState(null);
   const [oracleOpen, setOracleOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [editValue, setEditValue] = useState("");
@@ -217,10 +218,10 @@ export default function ChatView({ conversationId, user, onBack }) {
         user={user}
         typingUser={typingUser}
         onBack={onBack}
-        onCall={() => toast({ title: "Voice calls coming soon" })}
-        onVideoCall={() => toast({ title: "Video calls coming soon" })}
+        onCall={() => toast({ title: "Voice calls", description: "Ask Bud to schedule a call instead." })}
+        onVideoCall={() => toast({ title: "Video calls", description: "Ask Bud to start a live session." })}
         onSearch={() => setSearchOpen(!searchOpen)}
-        onInfo={() => toast({ title: "Conversation info coming soon" })}
+        onInfo={() => setInfoOpen(true)}
       />
 
       {/* Search bar */}
@@ -333,6 +334,69 @@ export default function ChatView({ conversationId, user, onBack }) {
         messages={messages}
         conversationTitle={conversation ? getConversationDisplayTitle(conversation, user?.id) : ""}
       />
+
+      {/* Conversation Info Sheet */}
+      <AnimatePresence>
+        {infoOpen && conversation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center"
+          >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setInfoOpen(false)} />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 360, damping: 36 }}
+              className="relative w-full max-w-[520px] glass-strong rounded-t-[28px] p-5 pb-8 safe-area-pb"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-heading font-bold text-[18px] text-foreground">Conversation Info</h2>
+                <button onClick={() => setInfoOpen(false)} className="text-[13px] font-semibold text-muted-foreground">Close</button>
+              </div>
+              <div className="space-y-3">
+                <div className="glass rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px] text-muted-foreground">Type</span>
+                    <span className="text-[13px] font-semibold capitalize">{conversation.type || "Direct"}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px] text-muted-foreground">Members</span>
+                    <span className="text-[13px] font-semibold">{conversation.participants?.length || 2}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[12px] text-muted-foreground">Messages</span>
+                    <span className="text-[13px] font-semibold">{messages?.length || 0}</span>
+                  </div>
+                  {conversation.created_date && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-[12px] text-muted-foreground">Created</span>
+                      <span className="text-[13px] font-semibold">{new Date(conversation.created_date).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                </div>
+                {conversation.participants && conversation.participants.length > 0 && (
+                  <div className="glass rounded-2xl p-4">
+                    <p className="text-[12px] text-muted-foreground mb-2">Participants</p>
+                    <div className="space-y-2">
+                      {conversation.participants.slice(0, 10).map((p) => (
+                        <div key={p.id || p.user_id} className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full bg-primary/20 grid place-items-center text-[11px] font-bold text-primary">
+                            {(p.name || p.full_name || "U").charAt(0)}
+                          </div>
+                          <span className="text-[13px] font-medium truncate">{p.name || p.full_name || "Unknown"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

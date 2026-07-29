@@ -6,6 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import { resolveDisplayName } from "@/lib/userDisplayName";
 import EditProfileModal from "@/components/me/EditProfileModal";
+import QRShareSheet from "@/components/shared/QRShareSheet";
 import SettingsSection from "@/components/me/SettingsSection";
 import MeSocial from "@/components/me/MeSocial";
 import MeAcademic from "@/components/me/MeAcademic";
@@ -60,7 +61,8 @@ export default function Me() {
       }
     } catch {}
   };
-  const handleQR = () => toast({ title: "QR code", description: "Profile QR coming soon." });
+  const [qrOpen, setQrOpen] = useState(false);
+  const handleQR = () => setQrOpen(true);
   const goSettings = () => settingsRef.current?.scrollIntoView({ behavior: "smooth" });
 
   return (
