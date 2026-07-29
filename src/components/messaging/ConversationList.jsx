@@ -33,13 +33,13 @@ export default function ConversationList({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-5 pt-12 pb-3 glass border-b border-border/20 sticky top-0 z-10">
+      <div className="px-4 pt-10 pb-2.5 glass border-b border-border/20 sticky top-0 z-10">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Messages</h1>
+            <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">Messages</h1>
             <p className="text-[12px] text-muted-foreground font-medium">Campus communication</p>
           </div>
-          <button onClick={onNewConversation} className="w-10 h-10 rounded-full bg-primary flex items-center justify-center spring-tap gold-glow">
+          <button onClick={onNewConversation} className="w-9 h-9 rounded-full bg-primary flex items-center justify-center spring-tap gold-glow">
             <PenSquare className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
           </button>
         </div>
@@ -50,7 +50,7 @@ export default function ConversationList({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search conversations..."
-            className="w-full pl-9 pr-4 py-2.5 rounded-full bg-card border border-border/40 text-[13px] outline-none focus:border-primary/40 transition-colors"
+            className="w-full pl-9 pr-3 py-2 rounded-full bg-card border border-border/40 text-[13px] outline-none focus:border-primary/40 transition-colors"
           />
         </div>
 
@@ -59,7 +59,7 @@ export default function ConversationList({
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={"px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap " +
+              className={"px-2.5 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap " +
                 (filter === f.key ? "bg-foreground text-background soft-shadow" : "bg-card text-muted-foreground border border-border/40")}
             >
               {f.label}
@@ -68,12 +68,12 @@ export default function ConversationList({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 py-2">
+      <div className="flex-1 overflow-y-auto px-2.5 py-1.5">
         {isLoading ? (
           <div className="space-y-1">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 p-3">
-                <div className="w-12 h-12 rounded-full shimmer" />
+              <div key={i} className="flex items-center gap-2.5 p-2.5">
+                <div className="w-11 h-11 rounded-full shimmer" />
                 <div className="flex-1 space-y-2">
                   <div className="h-3 w-1/2 rounded-full shimmer" />
                   <div className="h-2.5 w-3/4 rounded-full shimmer" />
@@ -99,16 +99,16 @@ export default function ConversationList({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.3) }}
-                  className={"relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-colors spring-tap " +
+                  className={"relative flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors spring-tap " +
                     (isActive ? "bg-primary/8" : "hover:bg-muted/50")}
                   onClick={() => onSelect(conv.id)}
                 >
                   <div className="relative shrink-0">
                     {image ? (
-                      <img src={image} alt="" className="w-12 h-12 rounded-full object-cover" />
+                      <img src={image} alt="" className="w-11 h-11 rounded-full object-cover" />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-primary-foreground" strokeWidth={2} />
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+                        <Icon className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />
                       </div>
                     )}
                     {unread && (
@@ -119,7 +119,7 @@ export default function ConversationList({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className={"font-semibold text-[14px] truncate " + (unread ? "text-foreground" : "text-foreground/80")}>
+                        <span className={"font-semibold text-[13px] truncate " + (unread ? "text-foreground" : "text-foreground/80")}>
                           {title}
                         </span>
                         {conv.is_pinned && <Pin className="w-3 h-3 text-muted-foreground shrink-0" />}

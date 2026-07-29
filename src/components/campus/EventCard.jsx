@@ -70,10 +70,10 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden card-hover"
+      className="bg-card rounded-[18px] soft-shadow border border-border/40 overflow-hidden card-hover"
     >
       {event.banner_url ? (
-        <div className="relative h-32 overflow-hidden">
+        <div className="relative h-28 overflow-hidden">
           <img src={event.banner_url} alt={event.title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           {event.is_featured && (
@@ -89,11 +89,11 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
         </div>
       ) : (
         <div
-          className="h-20 flex items-center justify-center relative"
+          className="h-16 flex items-center justify-center relative"
           style={{ background: `hsl(${event.accent_color || typeMeta.color} / 0.10)` }}
         >
           <Icon
-            className="w-8 h-8"
+            className="w-7 h-7"
             style={{ color: `hsl(${event.accent_color || typeMeta.color})` }}
             strokeWidth={1.5}
           />
@@ -105,7 +105,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
         </div>
       )}
 
-      <div className="p-3.5">
+      <div className="p-3">
         <h3 className="font-heading font-semibold text-[14px] text-foreground leading-snug mb-2">{event.title}</h3>
 
         <div className="space-y-1.5 mb-3">
@@ -165,7 +165,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
             <button
               onClick={() => handleRSVP("going")}
               className={
-                "flex-1 py-2 rounded-full text-[11px] font-semibold transition-all spring-tap " +
+                "flex-1 py-1.5 rounded-full text-[11px] font-semibold transition-all spring-tap " +
                 (rsvp === "going"
                   ? "bg-success text-success-foreground soft-shadow"
                   : "bg-muted text-muted-foreground border border-border/40")
@@ -176,7 +176,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
             <button
               onClick={() => handleRSVP("interested")}
               className={
-                "flex-1 py-2 rounded-full text-[11px] font-semibold transition-all spring-tap " +
+                "flex-1 py-1.5 rounded-full text-[11px] font-semibold transition-all spring-tap " +
                 (rsvp === "interested"
                   ? "bg-primary text-primary-foreground soft-shadow"
                   : "bg-muted text-muted-foreground border border-border/40")

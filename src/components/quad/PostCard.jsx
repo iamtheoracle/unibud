@@ -158,22 +158,22 @@ export default function PostCard({ post, user, index = 0 }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: Math.min(index * 0.04, 0.2), duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-card rounded-[20px] soft-shadow border border-border/20 overflow-hidden card-hover"
+      className="bg-card rounded-[18px] soft-shadow border border-border/20 overflow-hidden card-hover"
     >
       {/* Pinned indicator */}
       {isPinned && (
-        <div className="flex items-center gap-1.5 px-4 pt-3 pb-1 text-[10px] font-semibold text-primary">
+        <div className="flex items-center gap-1.5 px-3 pt-2.5 pb-1 text-[10px] font-semibold text-primary">
           <Pin className="w-3 h-3" /> Pinned
         </div>
       )}
 
       {/* Header */}
-      <div className="p-4 pb-3 pt-4">
-        <div className="flex items-center gap-3">
+      <div className="p-3 pb-2.5">
+        <div className="flex items-center gap-2.5">
           {avatar ? (
-            <img src={avatar} alt={authorName} className="w-10 h-10 rounded-full object-cover" />
+            <img src={avatar} alt={authorName} className="w-9 h-9 rounded-full object-cover" />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-sm">
               {authorName.charAt(0)}
             </div>
           )}
@@ -209,7 +209,7 @@ export default function PostCard({ post, user, index = 0 }) {
 
       {/* Content */}
       {post.content && (
-        <div className="px-4 pb-3">
+        <div className="px-3 pb-2.5">
           <p className="text-[13px] leading-relaxed text-foreground whitespace-pre-wrap break-words">
             {renderRichContent(translatedContent || post.content)}
           </p>
@@ -236,7 +236,7 @@ export default function PostCard({ post, user, index = 0 }) {
 
       {/* Poll (if applicable) */}
       {post.poll_data && (
-        <div className="px-4 pb-3 space-y-2">
+        <div className="px-3 pb-2.5 space-y-2">
           <p className="font-heading font-semibold text-[13px] text-foreground">{post.poll_data.question}</p>
           {(post.poll_data.options || []).map((opt) => {
             const totalVotes = (post.poll_data.options || []).reduce((sum, o) => sum + (o.votes || 0), 0);
@@ -255,7 +255,7 @@ export default function PostCard({ post, user, index = 0 }) {
       )}
 
       {/* Action bar */}
-      <div className="flex items-center gap-1 px-4 py-2.5 border-t border-border/20">
+      <div className="flex items-center gap-1 px-3 py-2 border-t border-border/20">
         <ReactionBar
           postId={post.id}
           reactions={localReactions}

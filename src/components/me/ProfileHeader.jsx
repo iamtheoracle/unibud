@@ -26,24 +26,24 @@ export default function ProfileHeader({ user }) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-      <div className="glass-card p-5">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-full glass-strong overflow-hidden ring-1 ring-primary/20 flex items-center justify-center flex-shrink-0">
+          <div className="w-16 h-16 rounded-full glass-strong overflow-hidden ring-1 ring-primary/20 flex items-center justify-center flex-shrink-0">
             {user?.avatar_url ? (
               <Image src={user.avatar_url} alt={name} fittingType="fill" className="w-full h-full" />
             ) : (
-              <span className="font-heading font-bold text-[28px] text-foreground">{name.charAt(0)}</span>
+              <span className="font-heading font-bold text-[24px] text-foreground">{name.charAt(0)}</span>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="font-heading font-bold text-[20px] text-foreground truncate">{name}</h1>
+            <h1 className="font-heading font-bold text-[18px] text-foreground truncate">{name}</h1>
             {handle && <p className="text-[12px] text-muted-foreground truncate">{handle}</p>}
-            <button onClick={() => setEditing(true)} className="mt-2.5 px-3 py-1.5 rounded-full glass text-[12px] font-semibold text-foreground spring-tap">
+            <button onClick={() => setEditing(true)} className="mt-2 px-3 py-1.5 rounded-full glass text-[12px] font-semibold text-foreground spring-tap">
               Edit Profile
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-5">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mt-4">
           {fields.map((f) => (
             <div key={f.label} className="min-w-0">
               <p className="text-[10px] text-muted-foreground">{f.label}</p>
