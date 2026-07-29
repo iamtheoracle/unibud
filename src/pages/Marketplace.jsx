@@ -32,7 +32,6 @@ const CAT_TILES = [
 
 const FILTERS = ["Nearby", "My Institution", "Department", "Verified", "Recently Added"];
 const SERVICE_CATS = ["tutoring", "services", "freelancers"];
-const SERVICE_GRADIENTS = ["purple", "pink", "amber", "blue"];
 
 const DEMO_LISTINGS = [
   { id: "d1", title: "Data Structures & Algorithms", price: 15500, category: "textbooks", is_verified: true, location: "2 km", seller_name: "Femi A.", contact: "0801 234 5678", description: "Gently used. Covers CSC402 syllabus." },
@@ -220,7 +219,6 @@ export default function Marketplace() {
                     <ServiceRow
                       key={item.id}
                       initial={initials(item.seller_name || item.title)}
-                      gradient={SERVICE_GRADIENTS[i % SERVICE_GRADIENTS.length]}
                       name={item.title}
                       rating={r.avg || "—"}
                       reviews={r.count}
