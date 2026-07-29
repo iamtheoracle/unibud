@@ -13,6 +13,7 @@ import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
 import QuickActionCapsule from "@/components/navigation/QuickActionCapsule";
+import FloatingNav from "@/components/layout/FloatingNav";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
@@ -47,6 +48,7 @@ export default function AppShell() {
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
+          <FloatingNav />
           <ContextPulse />
           <OfflineBanner />
           <QuickActionCapsule />
@@ -55,7 +57,7 @@ export default function AppShell() {
           <Suspense fallback={<RouteLoading />}>
             <motion.div
               key={location.pathname}
-              className="app-content"
+              className="app-content pt-14"
               initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
