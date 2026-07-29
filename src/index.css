@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,47 +13,47 @@
 
 @layer base {
   :root {
-    /* ── Light mode ── White shell, Midnight Blue signature ── */
-    --background: 220 28% 97.5%;            /* Soft Pearl White — never flat */
-    --foreground: 222 30% 14%;              /* Graphite */
-    --card: 220 34% 99.2%;                  /* Gloss White — elevated */
-    --card-foreground: 222 30% 14%;
-    --popover: 220 34% 99.4%;
-    --popover-foreground: 222 30% 14%;
-    --primary: 222 75% 17%;                 /* Deep Midnight Blue #0B1F4D */
-    --primary-foreground: 0 0% 100%;        /* White on midnight */
-    --secondary: 220 20% 95%;               /* Soft Silver */
-    --secondary-foreground: 222 30% 14%;
-    --muted: 220 18% 93%;                   /* Cloud Gray */
-    --muted-foreground: 215 16% 42%;       /* Slate Gray */
-    --accent: 221 83% 50%;                  /* Electric Blue */
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 78% 52%;
+    /* ── Monochrome — Black foundation, white structure, gray depth ── */
+    --background: 0 0% 0%;                       /* #000000 — app root */
+    --foreground: 0 0% 100%;                     /* #FFFFFF — headlines */
+    --card: 0 0% 7.8%;                           /* #141414 — cards */
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 3.9%;                         /* #0A0A0A — modals */
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;                        /* #FFFFFF — interactive */
+    --primary-foreground: 0 0% 0%;                /* #000000 on white */
+    --secondary: 0 0% 12%;                        /* #1E1E1E — elevated */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 7.8%;                           /* #141414 */
+    --muted-foreground: 0 0% 64%;                 /* #A3A3A3 — body/secondary */
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;                     /* #EF4444 — errors only */
     --destructive-foreground: 0 0% 100%;
-    --border: 220 22% 91%;                  /* Almost-invisible soft gray */
-    --input: 220 20% 89%;
-    --ring: 222 75% 22%;
-    --bg-glow: hsl(220 50% 99%);            /* Natural daylight from above */
+    --border: 0 0% 18%;                           /* subtle gray border */
+    --input: 0 0% 12%;
+    --ring: 0 0% 100%;
+    --bg-glow: hsl(0 0% 100% / 0.04);            /* ambient white bloom */
 
-    /* UDS — Semantic status */
-    --success: 173 75% 38%;                 /* Teal */
+    /* Status — used sparingly, only for meaningful states */
+    --success: 142 71% 45%;                       /* #22C55E */
     --success-foreground: 0 0% 100%;
-    --warning: 32 92% 48%;                  /* Amber (not gold) */
-    --warning-foreground: 0 0% 100%;
-    --error: 0 78% 52%;
+    --warning: 53 96% 50%;                        /* #FACC15 */
+    --warning-foreground: 0 0% 0%;
+    --error: 0 84% 60%;
     --error-foreground: 0 0% 100%;
-    --information: 198 88% 42%;             /* Sky Blue */
+    --information: 217 91% 60%;                   /* #3B82F6 */
     --information-foreground: 0 0% 100%;
-    --gold: 46 70% 50%;                     /* Achievements only */
+    --gold: 46 74% 55%;                           /* achievements only */
 
-    /* UDS — Radius scale */
-    --radius-sm: 10px;
-    --radius-md: 14px;
-    --radius-lg: 18px;
-    --radius-xl: 24px;
+    /* Radius scale */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
     --radius-pill: 9999px;
 
-    /* UDS — Type scale */
+    /* Type scale */
     --text-display: 29px;
     --text-heading: 19px;
     --text-title: 17px;
@@ -63,95 +64,94 @@
     --text-micro: 10px;
     --radius: 1rem;
 
-    --surface: 220 24% 98%;
-    --surface-secondary: 220 18% 96%;
-    --surface-elevated: 0 0% 100%;
-    --foreground-secondary: 222 22% 30%;
-    --foreground-tertiary: 215 16% 45%;
+    --surface: 0 0% 7.8%;                         /* #141414 */
+    --surface-secondary: 0 0% 3.9%;               /* #0A0A0A */
+    --surface-elevated: 0 0% 12%;                 /* #1E1E1E */
+    --foreground-secondary: 0 0% 64%;             /* #A3A3A3 */
+    --foreground-tertiary: 0 0% 42%;              /* #6B6B6B */
 
-    --glass-bg: rgba(255, 255, 255, 0.70);
-    --glass-bg-strong: rgba(255, 255, 255, 0.86);
-    --glass-border: rgba(11, 31, 77, 0.06);
-    --glass-border-strong: rgba(11, 31, 77, 0.12);
-    --glass-shadow: 0 1px 2px rgba(11, 31, 77, 0.04), 0 4px 14px rgba(11, 31, 77, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    --glass-blur: 36px;
-    --surface-grouped: 220 20% 95%;
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-bg-strong: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-border-strong: rgba(255, 255, 255, 0.10);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --glass-blur: 20px;
+    --surface-grouped: 0 0% 6%;
 
-    --shadow-soft: 0 1px 2px rgba(11, 31, 77, 0.04), 0 2px 6px rgba(11, 31, 77, 0.05);
-    --shadow-premium: 0 1px 2px rgba(11, 31, 77, 0.05), 0 4px 12px rgba(11, 31, 77, 0.07);
-    --shadow-elevated: 0 1px 3px rgba(11, 31, 77, 0.06), 0 6px 18px rgba(11, 31, 77, 0.08);
-    --shadow-hover: 0 2px 6px rgba(11, 31, 77, 0.08), 0 10px 28px rgba(11, 31, 77, 0.10);
-    --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.22);  /* brand glow (electric blue) */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --shadow-premium: 0 8px 24px rgba(0, 0, 0, 0.25);
+    --shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.35);
+    --shadow-ice: 0 0 40px rgba(255, 255, 255, 0.06);
 
-    --chart-1: 222 75% 17%;                  /* Midnight */
-    --chart-2: 221 83% 50%;                   /* Electric */
-    --chart-3: 198 88% 45%;                   /* Sky */
-    --chart-4: 173 75% 38%;                   /* Teal */
-    --chart-5: 215 16% 45%;                   /* Slate */
+    --chart-1: 0 0% 100%;
+    --chart-2: 0 0% 64%;
+    --chart-3: 0 0% 42%;
+    --chart-4: 0 0% 24%;
+    --chart-5: 0 0% 12%;
 
-    --font-heading: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
-    --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', system-ui, sans-serif;
-    --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
+    --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    /* Founder dock — deep premium dark surface for contrast in light mode */
-    --dock-bg: hsl(222 70% 14%);
-    --dock-border: rgba(255, 255, 255, 0.10);
-    --dock-shadow: 0 10px 36px rgba(11, 31, 77, 0.26), 0 2px 8px rgba(11, 31, 77, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-    --dock-icon: 218 22% 82%;
-    --dock-icon-active: 198 92% 64%;
-    --dock-label: 218 20% 78%;
-    --dock-label-active: 198 92% 68%;
-    --dock-pill: rgba(255, 255, 255, 0.10);
+    /* Founder dock — monochrome translucent */
+    --dock-bg: hsl(0 0% 3.9% / 0.55);
+    --dock-border: rgba(255, 255, 255, 0.06);
+    --dock-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --dock-icon: 0 0% 30%;
+    --dock-icon-active: 0 0% 100%;
+    --dock-label: 0 0% 30%;
+    --dock-label-active: 0 0% 100%;
+    --dock-pill: rgba(255, 255, 255, 0.06);
 
-    --sidebar-background: 222 75% 17%;       /* Midnight Blue navigation */
-    --sidebar-foreground: 218 24% 88%;       /* Soft Silver on navy */
-    --sidebar-primary: 198 92% 62%;         /* Sky Blue active item */
-    --sidebar-primary-foreground: 222 70% 12%;
-    --sidebar-accent: 222 65% 24%;          /* Navy hover */
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 64%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 12%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 222 60% 24%;
-    --sidebar-ring: 198 92% 62%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 100%;
   }
 
   .dark {
-    /* ── Dark mode ── Deep Midnight Navy shell, Electric Blue interactive ── */
-    --background: 222 68% 8%;               /* Deep midnight navy #08122A */
-    --foreground: 218 24% 90%;               /* Soft Silver white */
-    --card: 222 55% 12%;
-    --card-foreground: 218 24% 90%;
-    --popover: 222 50% 14%;
-    --popover-foreground: 218 24% 90%;
-    --primary: 221 83% 58%;                 /* Electric Blue — brand on dark */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 40% 16%;
-    --secondary-foreground: 218 24% 90%;
-    --muted: 222 38% 15%;
-    --muted-foreground: 215 18% 62%;        /* Slate Gray */
-    --accent: 198 93% 56%;                  /* Sky Blue */
-    --accent-foreground: 222 68% 10%;
-    --destructive: 0 80% 62%;
+    /* ── Monochrome — Black foundation, white structure, gray depth ── */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 7.8%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 7.8%;
+    --muted-foreground: 0 0% 64%;
+    --accent: 0 0% 100%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 222 35% 22%;
-    --input: 222 35% 22%;
-    --ring: 221 83% 58%;
-    --bg-glow: hsl(221 80% 22% / 0.5);
+    --border: 0 0% 18%;
+    --input: 0 0% 12%;
+    --ring: 0 0% 100%;
+    --bg-glow: hsl(0 0% 100% / 0.04);
 
-    /* UDS — Semantic status (dark) */
-    --success: 173 78% 52%;                  /* Teal */
+    --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
-    --warning: 32 92% 55%;
-    --warning-foreground: 222 68% 10%;
-    --error: 0 80% 62%;
+    --warning: 53 96% 50%;
+    --warning-foreground: 0 0% 0%;
+    --error: 0 84% 60%;
     --error-foreground: 0 0% 100%;
-    --information: 198 92% 58%;              /* Sky */
-    --information-foreground: 222 68% 10%;
-    --gold: 46 74% 55%;                      /* Achievements only */
+    --information: 217 91% 60%;
+    --information-foreground: 0 0% 100%;
+    --gold: 46 74% 55%;
 
-    --radius-sm: 10px;
-    --radius-md: 14px;
-    --radius-lg: 18px;
-    --radius-xl: 24px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
     --radius-pill: 9999px;
 
     --text-display: 29px;
@@ -164,50 +164,54 @@
     --text-micro: 10px;
     --radius: 1rem;
 
-    --surface: 222 55% 12%;
-    --surface-secondary: 222 68% 9%;
-    --surface-elevated: 222 50% 15%;
-    --foreground-secondary: 218 22% 78%;
-    --foreground-tertiary: 215 18% 58%;
+    --surface: 0 0% 7.8%;
+    --surface-secondary: 0 0% 3.9%;
+    --surface-elevated: 0 0% 12%;
+    --foreground-secondary: 0 0% 64%;
+    --foreground-tertiary: 0 0% 42%;
 
-    --glass-bg: rgba(255, 255, 255, 0.055);
-    --glass-bg-strong: rgba(255, 255, 255, 0.09);
-    --glass-border: rgba(255, 255, 255, 0.22);
-    --glass-border-strong: rgba(255, 255, 255, 0.34);
-    --glass-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 14px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-    --glass-blur: 36px;
-    --surface-grouped: 222 50% 11%;
+    --glass-bg: rgba(255, 255, 255, 0.04);
+    --glass-bg-strong: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    --glass-border-strong: rgba(255, 255, 255, 0.10);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --glass-blur: 20px;
+    --surface-grouped: 0 0% 6%;
 
-    --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    --shadow-premium: 0 1px 2px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    --shadow-elevated: 0 1px 3px rgba(0, 0, 0, 0.24), 0 6px 18px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    --shadow-hover: 0 2px 6px rgba(0, 0, 0, 0.28), 0 10px 28px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.14);
-    --shadow-ice: 0 8px 40px rgba(37, 99, 235, 0.30);  /* brand glow (electric blue) */
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.15);
+    --shadow-premium: 0 8px 24px rgba(0, 0, 0, 0.25);
+    --shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.35);
+    --shadow-hover: 0 16px 48px rgba(0, 0, 0, 0.35);
+    --shadow-ice: 0 0 40px rgba(255, 255, 255, 0.06);
 
-    --chart-1: 221 83% 58%;                  /* Electric */
-    --chart-2: 198 92% 60%;                  /* Sky */
-    --chart-3: 173 78% 52%;                  /* Teal */
-    --chart-4: 222 70% 35%;                  /* Midnight lighter */
-    --chart-5: 215 18% 65%;                  /* Slate */
+    --chart-1: 0 0% 100%;
+    --chart-2: 0 0% 64%;
+    --chart-3: 0 0% 42%;
+    --chart-4: 0 0% 24%;
+    --chart-5: 0 0% 12%;
 
-    /* Founder dock — translucent, blends into the immersive dark interface */
-    --dock-bg: hsl(222 50% 14% / 0.55);
-    --dock-border: rgba(255, 255, 255, 0.14);
-    --dock-shadow: 0 10px 36px rgba(0, 0, 0, 0.42), 0 2px 8px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(255, 255, 255, 0.05);
-    --dock-icon: 218 18% 68%;
-    --dock-icon-active: 221 83% 68%;
-    --dock-label: 218 18% 68%;
-    --dock-label-active: 221 83% 72%;
-    --dock-pill: hsl(221 83% 58% / 0.22);
+    --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    --sidebar-background: 222 65% 9%;        /* Deep midnight navy nav */
-    --sidebar-foreground: 218 22% 70%;
-    --sidebar-primary: 198 92% 60%;          /* Sky active */
-    --sidebar-primary-foreground: 222 68% 10%;
-    --sidebar-accent: 222 40% 16%;
-    --sidebar-accent-foreground: 198 92% 65%;
-    --sidebar-border: 222 35% 20%;
-    --sidebar-ring: 221 83% 58%;
+    --dock-bg: hsl(0 0% 3.9% / 0.55);
+    --dock-border: rgba(255, 255, 255, 0.06);
+    --dock-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --dock-icon: 0 0% 30%;
+    --dock-icon-active: 0 0% 100%;
+    --dock-label: 0 0% 30%;
+    --dock-label-active: 0 0% 100%;
+    --dock-pill: rgba(255, 255, 255, 0.06);
+
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 64%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 0% 100%;
   }
 }
 
