@@ -153,6 +153,9 @@ const WorkspaceDetail = lazy(() => import("@/pages/collaboration/WorkspaceDetail
 const TaskHub = lazy(() => import("@/pages/tasks/TaskHub"));
 const TaskDetail = lazy(() => import("@/pages/tasks/TaskDetail"));
 
+// AI — Memory & Visual Studio
+const MemoryDashboard = lazy(() => import("@/pages/ai/MemoryDashboard"));
+
 // Oracle — Platform Operating Center
 const Oracle = lazy(() => import("@/pages/oracle/Oracle"));
 
@@ -251,6 +254,7 @@ function App() {
                     <Route path="/smart-notifications" element={<SmartNotifications />} />
                     <Route path="/bud/notifications" element={<BudNotificationPreferences />} />
                     <Route path="/knowledge" element={<KnowledgeHub />} />
+                    <Route path="/memory" element={<MemoryDashboard />} />
                     <Route path="/recast" element={<Recast />} />
                     <Route path="/collaboration" element={<CollaborationHub />} />
                     <Route path="/collaboration/:workspaceId" element={<WorkspaceDetail />} />
