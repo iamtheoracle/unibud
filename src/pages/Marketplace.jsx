@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, X, MessageCircle, Sparkles, Star, Flag, Bell, Package } from "lucide-react";
+import { Search, Plus, X, MessageCircle, Sparkles, Star, Flag, Bell, Package, Store, ChevronRight, TrendingUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -15,9 +15,9 @@ import ReportModal from "@/components/ecosystem/ReportModal";
 import MarketplaceCard from "@/components/marketplace/MarketplaceCard";
 import ListingRow from "@/components/marketplace/ListingRow";
 import ServiceRow from "@/components/marketplace/ServiceRow";
+import ListingImageCard from "@/components/marketplace/ListingImageCard";
 
 const catIcons = { textbooks: "📚", past_questions: "📋", electronics: "💻", furniture: "🪑", accommodation: "🏠", tutoring: "🎓", services: "⚡", freelancers: "🧑‍💻", jobs: "💼", tickets: "🎫", other: "📦" };
-const catColors = { textbooks: "from-information to-information/80", past_questions: "from-primary to-primary/80", electronics: "from-accent to-accent/80", furniture: "from-warning to-warning/80", accommodation: "from-success to-success/80", tutoring: "from-success to-success/80", services: "from-destructive to-destructive/80", freelancers: "from-information to-information/80", jobs: "from-accent to-accent/80", tickets: "from-primary to-primary/80", other: "from-muted to-muted-foreground/50" };
 
 const CAT_TILES = [
   { emoji: "📚", label: "Textbooks", cat: "textbooks" },
@@ -34,14 +34,21 @@ const FILTERS = ["Nearby", "My Institution", "Department", "Verified", "Recently
 const SERVICE_CATS = ["tutoring", "services", "freelancers"];
 
 const DEMO_LISTINGS = [
-  { id: "d1", title: "Data Structures & Algorithms", price: 15500, category: "textbooks", is_verified: true, location: "2 km", seller_name: "Femi A.", contact: "0801 234 5678", description: "Gently used. Covers CSC402 syllabus." },
-  { id: "d2", title: 'MacBook Pro 14" M2', price: 1850000, category: "electronics", is_verified: true, location: "1.5 km", seller_name: "Chioma E.", contact: "WhatsApp: 0809 876 5432", description: "Battery strong, charger included." },
-  { id: "d3", title: "Shared Room near Campus", price: 120000, price_unit: "mo", category: "accommodation", is_verified: true, location: "500m", seller_name: "David O.", contact: "DM me", description: "Shared room, close to campus." },
-  { id: "d4", title: "Hostel 5 — Single Room", price: 150000, price_unit: "sem", category: "accommodation", location: "UNILAG", seller_name: "Hostel Office", meta: "2 beds left", contact: "0800 000 0000" },
-  { id: "d5", title: "Roommate Wanted", price: 70000, price_unit: "mo", category: "accommodation", location: "UNILAG", seller_name: "Zara", meta: "Female only", contact: "0800 111 2222" },
-  { id: "d6", title: "Tutor: Mathematics", price: 5000, price_unit: "hr", category: "tutoring", seller_name: "Tunde B.", contact: "0801 222 3333", rating: 4.9, reviews: 34 },
-  { id: "d7", title: "Designer", price: 15000, category: "freelancers", seller_name: "Dara", contact: "0802 333 4444", rating: 4.8, reviews: 22 },
-  { id: "d8", title: "Photographer", price: 25000, category: "services", seller_name: "Peter", contact: "0803 444 5555", rating: 4.9, reviews: 18 },
+  { id: "d1", title: "Data Structures & Algorithms", price: 15500, category: "textbooks", is_verified: true, location: "2 km", seller_name: "Femi A.", contact: "0801 234 5678", description: "Gently used. Covers CSC402 syllabus.", image_url: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500&q=80" },
+  { id: "d2", title: 'MacBook Pro 14" M2', price: 1850000, category: "electronics", is_verified: true, location: "1.5 km", seller_name: "Chioma E.", contact: "WhatsApp: 0809 876 5432", description: "Battery strong, charger included.", image_url: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80" },
+  { id: "d3", title: "Shared Room near Campus", price: 120000, price_unit: "mo", category: "accommodation", is_verified: true, location: "500m", seller_name: "David O.", contact: "DM me", description: "Shared room, close to campus.", image_url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&q=80" },
+  { id: "d4", title: "Hostel 5 — Single Room", price: 150000, price_unit: "sem", category: "accommodation", location: "UNILAG", seller_name: "Hostel Office", meta: "2 beds left", contact: "0800 000 0000", image_url: "https://images.unsplash.com/photo-1555854877-bab0e9843c93?w=500&q=80" },
+  { id: "d5", title: "Roommate Wanted", price: 70000, price_unit: "mo", category: "accommodation", location: "UNILAG", seller_name: "Zara", meta: "Female only", contact: "0800 111 2222", image_url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&q=80" },
+  { id: "d6", title: "Tutor: Mathematics", price: 5000, price_unit: "hr", category: "tutoring", seller_name: "Tunde B.", contact: "0801 222 3333", rating: 4.9, reviews: 34, image_url: "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=500&q=80" },
+  { id: "d7", title: "Designer", price: 15000, category: "freelancers", seller_name: "Dara", contact: "0802 333 4444", rating: 4.8, reviews: 22, image_url: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f84?w=500&q=80" },
+  { id: "d8", title: "Photographer", price: 25000, category: "services", seller_name: "Peter", contact: "0803 444 5555", rating: 4.9, reviews: 18, image_url: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=500&q=80" },
+];
+
+const STORES = [
+  { name: "Campus Tech Hub", items: 124, rating: 4.8, emoji: "💻", color: "from-foreground to-muted" },
+  { name: "Book Exchange", items: 89, rating: 4.9, emoji: "📚", color: "from-muted-foreground to-muted" },
+  { name: "Hostel Connect", items: 56, rating: 4.7, emoji: "🏠", color: "from-muted to-muted-foreground/50" },
+  { name: "Skill Market", items: 42, rating: 4.6, emoji: "⚡", color: "from-foreground/70 to-muted" },
 ];
 
 function initials(name) {
@@ -49,6 +56,13 @@ function initials(name) {
   return name.trim().charAt(0).toUpperCase() || "U";
 }
 
+/**
+ * Marketplace — Airbnb + Shopify + Facebook hybrid.
+ * Airbnb: image-forward listing cards, hero search, host/seller context.
+ * Shopify: featured stores row, product grid, ratings.
+ * Facebook: category tiles, filter chips, social contact flow.
+ * All existing logic (composer, contact sheet, reviews, reports) preserved.
+ */
 export default function Marketplace() {
   const { isDemoMode } = useDemoMode();
   const { toast } = useToast();
@@ -140,80 +154,105 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full glass border border-border/40 mb-3">
-        <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search books, hostels, services, tutors..." className="flex-1 bg-transparent border-none outline-none text-[14px] text-foreground placeholder:text-muted-foreground/50" />
+      {/* Airbnb-style hero search */}
+      <div className="rounded-2xl bg-card border border-border/30 p-4 mb-3">
+        <div className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-background border border-border/40">
+          <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search books, hostels, services..." className="flex-1 bg-transparent border-none outline-none text-[14px] text-foreground placeholder:text-muted-foreground/50" />
+        </div>
+        <div className="flex gap-2 overflow-x-auto no-scrollbar mt-3">
+          {FILTERS.map((f) => (
+            <button
+              key={f}
+              onClick={() => setScope(f)}
+              className={`px-3.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap spring-tap border ${
+                scope === f ? "text-primary border-primary/30 bg-primary/10" : "text-muted-foreground border-border/40 bg-muted/20"
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Filter chips */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            onClick={() => setScope(f)}
-            className={`px-3.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap spring-tap border ${
-              scope === f ? "text-primary border-primary/30 bg-primary/10" : "text-muted-foreground border-border/40 bg-muted/20"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
+      {/* Category tiles (Facebook-style) */}
+      <div className="grid grid-cols-4 gap-1.5 mb-4">
+        {CAT_TILES.map((t) => {
+          const on = activeCat === t.cat;
+          return (
+            <button
+              key={t.cat}
+              onClick={() => setActiveCat(on ? "All" : t.cat)}
+              className={`flex flex-col items-center gap-1 py-2.5 rounded-2xl border spring-tap ${on ? "bg-primary/10 border-primary/30" : "bg-card border-border/30"}`}
+            >
+              <span className="text-[22px] leading-none">{t.emoji}</span>
+              <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight">{t.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Content */}
-      <div className="flex flex-col gap-3.5">
-        {/* Categories */}
-        <MarketplaceCard title="Categories" action={activeCat !== "All" ? "Clear" : "See all"} onAction={() => setActiveCat("All")}>
-          <div className="grid grid-cols-4 gap-1.5">
-            {CAT_TILES.map((t) => {
-              const on = activeCat === t.cat;
-              return (
-                <button
-                  key={t.cat}
-                  onClick={() => setActiveCat(on ? "All" : t.cat)}
-                  className={`flex flex-col items-center gap-1 py-2 rounded-2xl border spring-tap ${on ? "bg-primary/10 border-primary/30" : "bg-muted/20 border-border/20"}`}
-                >
-                  <span className="text-[22px] leading-none">{t.emoji}</span>
-                  <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight">{t.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </MarketplaceCard>
-
+      <div className="flex flex-col gap-4">
         {isLoading && !isDemoMode ? (
-          [1, 2, 3].map((i) => <div key={i} className="h-[90px] rounded-[20px] shimmer" />)
+          <div className="grid grid-cols-2 gap-2.5">{[1, 2, 3, 4].map((i) => <div key={i} className="aspect-[3/4] rounded-2xl shimmer" />)}</div>
         ) : isEmpty ? (
           <div className="crystal-card p-4">
             <EmptyState icon={Package} title="No listings found" description="Try a different filter, or be the first to list something — it's free." action={<button onClick={() => setComposerOpen(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap"><Plus className="w-3.5 h-3.5" /> List an item</button>} />
           </div>
         ) : (
           <>
-            {featured.length > 0 && (
-              <MarketplaceCard title="Featured Listings" action="View all" onAction={() => setActiveCat("All")}>
-                {featured.map((item) => (
-                  <ListingRow
-                    key={item.id}
-                    icon={catIcons[item.category] || "📦"}
-                    title={item.title}
-                    price={item.price}
-                    priceUnit={item.price_unit}
-                    free={item.is_free}
-                    location={item.location}
-                    verified={item.is_verified}
-                    meta={item.meta}
-                    saved={savedItems.includes(item.id)}
-                    onToggleSave={() => toggleSave(item.id)}
-                    onClick={() => setContactListing(item)}
-                  />
+            {/* Shopify-style featured stores */}
+            <section>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-1.5">
+                  <Store className="w-3.5 h-3.5 text-foreground" />
+                  <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Featured stores</h2>
+                </div>
+                <button className="text-[11px] font-semibold text-primary spring-tap">All</button>
+              </div>
+              <div className="flex gap-2.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1">
+                {STORES.map((s) => (
+                  <div key={s.name} className="flex-shrink-0 w-[140px] rounded-2xl border border-border/30 overflow-hidden bg-card">
+                    <div className={`h-16 bg-gradient-to-br ${s.color} flex items-center justify-center text-[28px]`}>{s.emoji}</div>
+                    <div className="p-2.5">
+                      <p className="text-[12px] font-semibold text-foreground leading-tight truncate">{s.name}</p>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] text-muted-foreground">{s.items} items</span>
+                        <span className="flex items-center gap-0.5 text-[10px] font-semibold text-foreground"><Star className="w-2.5 h-2.5 fill-foreground text-foreground" />{s.rating}</span>
+                      </div>
+                    </div>
+                  </div>
                 ))}
-              </MarketplaceCard>
+              </div>
+            </section>
+
+            {/* Airbnb-style featured grid */}
+            {featured.length > 0 && (
+              <section>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Featured listings</h2>
+                  <button onClick={() => setActiveCat("All")} className="text-[11px] font-semibold text-primary spring-tap">View all</button>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {featured.map((item) => (
+                    <ListingImageCard
+                      key={item.id}
+                      listing={item}
+                      saved={savedItems.includes(item.id)}
+                      onToggleSave={() => toggleSave(item.id)}
+                      onClick={() => setContactListing(item)}
+                      rating={ratingForSeller(item.created_by_id, item.id)}
+                    />
+                  ))}
+                </div>
+              </section>
             )}
 
+            {/* Services */}
             {services.length > 0 && (
-              <MarketplaceCard title="Services Marketplace" action="More" onAction={() => setActiveCat("services")}>
-                {services.map((item, i) => {
+              <MarketplaceCard title="Services marketplace" action="More" onAction={() => setActiveCat("services")}>
+                {services.map((item) => {
                   const r = item.rating != null ? { avg: item.rating, count: item.reviews || 0 } : ratingForSeller(item.created_by_id, item.id);
                   return (
                     <ServiceRow
@@ -230,25 +269,26 @@ export default function Marketplace() {
               </MarketplaceCard>
             )}
 
+            {/* Housing */}
             {housing.length > 0 && (
-              <MarketplaceCard title="Housing" action="Explore" onAction={() => setActiveCat("accommodation")}>
-                {housing.map((item) => (
-                  <ListingRow
-                    key={item.id}
-                    icon="🏠"
-                    title={item.title}
-                    price={item.price}
-                    priceUnit={item.price_unit}
-                    free={item.is_free}
-                    location={item.location}
-                    verified={item.is_verified}
-                    meta={item.meta}
-                    saved={savedItems.includes(item.id)}
-                    onToggleSave={() => toggleSave(item.id)}
-                    onClick={() => setContactListing(item)}
-                  />
-                ))}
-              </MarketplaceCard>
+              <section>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Housing</h2>
+                  <button onClick={() => setActiveCat("accommodation")} className="text-[11px] font-semibold text-primary spring-tap">Explore</button>
+                </div>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {housing.map((item) => (
+                    <ListingImageCard
+                      key={item.id}
+                      listing={item}
+                      saved={savedItems.includes(item.id)}
+                      onToggleSave={() => toggleSave(item.id)}
+                      onClick={() => setContactListing(item)}
+                      rating={ratingForSeller(item.created_by_id, item.id)}
+                    />
+                  ))}
+                </div>
+              </section>
             )}
           </>
         )}
@@ -279,8 +319,12 @@ export default function Marketplace() {
                 <button onClick={() => setContactListing(null)} className="w-9 h-9 rounded-[12px] hover:bg-muted/60 flex items-center justify-center spring-tap"><X className="w-[18px] h-[18px]" /></button>
               </div>
               <div className="flex gap-3 mb-3">
-                <div className={"w-16 h-16 rounded-[16px] bg-gradient-to-br " + (catColors[contactListing.category] || "from-muted to-muted-foreground/50") + " flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden"}>
-                  {catIcons[contactListing.category] || "📦"}
+                <div className="w-16 h-16 rounded-[16px] overflow-hidden bg-muted flex-shrink-0">
+                  {(contactListing.image_urls?.[0] || contactListing.image_url) ? (
+                    <img src={(contactListing.image_urls?.[0] || contactListing.image_url)} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-2xl">{catIcons[contactListing.category] || "📦"}</div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-heading font-semibold text-[14px] text-foreground">{contactListing.title}</p>
