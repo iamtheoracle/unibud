@@ -26,6 +26,7 @@ class MetricsService {
   /** Record a metric. */
   record({ name, value, unit = 'count', tags = {} }) {
     this._buffer.push({
+      service: tags?.service || name?.split('.')[0] || 'runtime',
       metric_name: name,
       value,
       unit,

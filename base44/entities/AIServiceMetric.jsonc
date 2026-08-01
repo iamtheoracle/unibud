@@ -4,7 +4,25 @@
   "properties": {
     "service": {
       "type": "string",
-      "description": "Internal AI service name (Bud, Spark, Architect AI, Oracle Intelligence, \u2026)"
+      "description": "Internal AI service name (Bud, Spark, Architect AI, Oracle Intelligence, \u2026) or the metric source"
+    },
+    "metric_name": {
+      "type": "string",
+      "description": "Generic metric name (e.g. 'span.oracle.process', 'model.invoked')"
+    },
+    "value": {
+      "type": "number",
+      "default": 0,
+      "description": "Metric value (count, milliseconds, percentage, etc.)"
+    },
+    "unit": {
+      "type": "string",
+      "default": "count",
+      "description": "Unit of the metric value (count, ms, pct, etc.)"
+    },
+    "tags": {
+      "type": "object",
+      "description": "Structured tags for filtering (status, model, etc.)"
     },
     "response_time_ms": {
       "type": "number",
@@ -64,8 +82,7 @@
     }
   },
   "required": [
-    "service",
-    "health_score"
+    "service"
   ],
   "rls": {
     "read": {
