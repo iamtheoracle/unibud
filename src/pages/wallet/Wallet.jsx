@@ -103,43 +103,36 @@ export default function Wallet() {
   return (
     <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
       {/* Top bar */}
-      <div className="flex justify-between items-center px-1 pt-2 pb-3">
-        <h1 className="font-heading font-bold text-[20px] text-foreground tracking-tight">
-          Wallet <span className="text-[12px] font-normal text-muted-foreground/60">Campus</span>
-        </h1>
-        <div className="flex items-center gap-2.5">
-          <button onClick={() => navigate("/notifications")} className="relative w-8 h-8 rounded-full glass grid place-items-center spring-tap">
-            <Bell className="w-4 h-4 text-muted-foreground" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background" />
+      <div className="flex justify-between items-center px-1 pt-4 pb-4">
+        <h1 className="font-bold text-[28px] text-foreground tracking-tight">Wallet</h1>
+        <div className="flex items-center gap-1">
+          <button onClick={() => navigate("/notifications")} className="relative w-9 h-9 rounded-full grid place-items-center spring-tap hover:bg-muted/30 transition-colors">
+            <Bell className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.7} />
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-foreground ring-2 ring-background" />
           </button>
-          <button onClick={() => setTab("cards")} className="w-8 h-8 rounded-full bg-primary grid place-items-center spring-tap ice-glow" aria-label="Cards">
-            <WalletIcon className="w-4 h-4 text-primary-foreground" />
-          </button>
-          <button onClick={() => navigate("/me")} className="w-8 h-8 rounded-full grid place-items-center font-semibold text-[12px] text-primary-foreground spring-tap" style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}>
-            {(user?.full_name?.[0] || "U").toUpperCase()}
+          <button onClick={() => setTab("cards")} className="w-9 h-9 rounded-full grid place-items-center spring-tap hover:bg-muted/30 transition-colors" aria-label="Cards">
+            <WalletIcon className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.7} />
           </button>
         </div>
       </div>
 
       {/* Tab rail */}
-      <div className="sticky top-0 z-20 -mx-4 px-4 py-3 glass border-b border-border/20">
-        <div className="flex gap-2 overflow-x-auto no-scrollbar">
-          {WALLET_TABS.map((t) => {
-            const Icon = t.icon;
-            const on = tab === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap ${
-                  on ? "bg-primary text-primary-foreground soft-shadow" : "bg-card text-foreground/80 border border-border/40"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />{t.label}
-              </button>
-            );
-          })}
-        </div>
+      <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-2">
+        {WALLET_TABS.map((t) => {
+          const Icon = t.icon;
+          const on = tab === t.key;
+          return (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap spring-tap transition-colors ${
+                on ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" strokeWidth={1.8} />{t.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Active section */}

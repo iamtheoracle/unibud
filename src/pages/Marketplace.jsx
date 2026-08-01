@@ -134,59 +134,54 @@ export default function Marketplace() {
   const rec = featured[0] || housing[0];
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
+    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-28 safe-area-pt">
       {/* Top bar */}
-      <div className="flex justify-between items-center px-1 pt-2 pb-3">
-        <h1 className="font-heading font-bold text-[20px] text-foreground tracking-tight">
-          Marketplace <span className="text-[12px] font-normal text-muted-foreground/60">Campus</span>
-        </h1>
-        <div className="flex items-center gap-2.5">
-          <button onClick={() => navigate("/notifications")} className="relative w-8 h-8 rounded-full glass grid place-items-center spring-tap">
-            <Bell className="w-4 h-4 text-muted-foreground" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-background" />
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="font-bold text-[28px] text-foreground tracking-tight">Marketplace</h1>
+        <div className="flex items-center gap-1">
+          <button onClick={() => navigate("/notifications")} className="relative w-9 h-9 rounded-full grid place-items-center spring-tap hover:bg-muted/30 transition-colors">
+            <Bell className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.7} />
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-foreground ring-2 ring-background" />
           </button>
-          <button onClick={() => setComposerOpen(true)} className="w-8 h-8 rounded-full bg-primary grid place-items-center spring-tap ice-glow" aria-label="List an item">
-            <Plus className="w-4 h-4 text-primary-foreground" />
-          </button>
-          <button onClick={() => navigate("/me")} className="w-8 h-8 rounded-full grid place-items-center font-semibold text-[12px] text-primary-foreground spring-tap" style={{ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" }}>
-            {initials(name)}
+          <button onClick={() => setComposerOpen(true)} className="w-9 h-9 rounded-full grid place-items-center spring-tap hover:bg-muted/30 transition-colors" aria-label="List an item">
+            <Plus className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.7} />
           </button>
         </div>
       </div>
 
-      {/* Airbnb-style hero search */}
-      <div className="rounded-2xl bg-card border border-border/30 p-4 mb-3">
-        <div className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-background border border-border/40">
-          <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search books, hostels, services..." className="flex-1 bg-transparent border-none outline-none text-[14px] text-foreground placeholder:text-muted-foreground/50" />
-        </div>
-        <div className="flex gap-2 overflow-x-auto no-scrollbar mt-3">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              onClick={() => setScope(f)}
-              className={`px-3.5 py-1 rounded-full text-[11px] font-medium whitespace-nowrap spring-tap border ${
-                scope === f ? "text-primary border-primary/30 bg-primary/10" : "text-muted-foreground border-border/40 bg-muted/20"
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
+      {/* Search — flat, no card wrapper */}
+      <div className="flex items-center gap-3 px-4 h-[48px] rounded-2xl bg-muted/30 border border-border/20 mb-3">
+        <Search className="w-[18px] h-[18px] text-muted-foreground/60 flex-shrink-0" strokeWidth={1.8} />
+        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search books, hostels, services..." className="flex-1 bg-transparent border-none outline-none text-[15px] text-foreground placeholder:text-muted-foreground/50" />
       </div>
 
-      {/* Category tiles (Facebook-style) */}
-      <div className="grid grid-cols-4 gap-1.5 mb-4">
+      {/* Filter chips — sticky */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar mb-3">
+        {FILTERS.map((f) => (
+          <button
+            key={f}
+            onClick={() => setScope(f)}
+            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap spring-tap transition-colors ${
+              scope === f ? "bg-foreground text-background" : "bg-muted/30 text-muted-foreground border border-border/20"
+            }`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      {/* Category tiles */}
+      <div className="grid grid-cols-4 gap-1.5 mb-6">
         {CAT_TILES.map((t) => {
           const on = activeCat === t.cat;
           return (
             <button
               key={t.cat}
               onClick={() => setActiveCat(on ? "All" : t.cat)}
-              className={`flex flex-col items-center gap-1 py-2.5 rounded-2xl border spring-tap ${on ? "bg-primary/10 border-primary/30" : "bg-card border-border/30"}`}
+              className={`flex flex-col items-center gap-1 py-3 rounded-xl spring-tap transition-colors ${on ? "bg-foreground/5" : ""}`}
             >
               <span className="text-[22px] leading-none">{t.emoji}</span>
-              <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight">{t.label}</span>
+              <span className={`text-[10px] font-medium text-center leading-tight ${on ? "text-foreground" : "text-muted-foreground"}`}>{t.label}</span>
             </button>
           );
         })}
@@ -204,12 +199,9 @@ export default function Marketplace() {
           <>
             {/* Shopify-style featured stores */}
             <section>
-              <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center gap-1.5">
-                  <Store className="w-3.5 h-3.5 text-foreground" />
-                  <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Featured stores</h2>
-                </div>
-                <button className="text-[11px] font-semibold text-primary spring-tap">All</button>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">Featured Stores</h2>
+                <button className="text-[12px] font-medium text-foreground/60 spring-tap hover:text-foreground transition-colors">All</button>
               </div>
               <div className="flex gap-2.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1">
                 {STORES.map((s) => (
@@ -230,9 +222,9 @@ export default function Marketplace() {
             {/* Airbnb-style featured grid */}
             {featured.length > 0 && (
               <section>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Featured listings</h2>
-                  <button onClick={() => setActiveCat("All")} className="text-[11px] font-semibold text-primary spring-tap">View all</button>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">Featured Listings</h2>
+                  <button onClick={() => setActiveCat("All")} className="text-[12px] font-medium text-foreground/60 spring-tap hover:text-foreground transition-colors">View all</button>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
                   {featured.map((item) => (
@@ -272,9 +264,9 @@ export default function Marketplace() {
             {/* Housing */}
             {housing.length > 0 && (
               <section>
-                <div className="flex items-center justify-between mb-2.5">
-                  <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Housing</h2>
-                  <button onClick={() => setActiveCat("accommodation")} className="text-[11px] font-semibold text-primary spring-tap">Explore</button>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">Housing</h2>
+                  <button onClick={() => setActiveCat("accommodation")} className="text-[12px] font-medium text-foreground/60 spring-tap hover:text-foreground transition-colors">Explore</button>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
                   {housing.map((item) => (
@@ -295,12 +287,12 @@ export default function Marketplace() {
 
         {/* Bud AI recommendation */}
         {rec && (
-          <div className="rounded-2xl p-3.5 flex items-center gap-3" style={{ background: "hsl(var(--primary) / 0.08)", border: "1px solid hsl(var(--primary) / 0.15)" }}>
-            <div className="w-8 h-8 rounded-full grid place-items-center text-[14px] text-primary-foreground flex-shrink-0" style={{ background: "linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)))" }}>✦</div>
-            <p className="flex-1 text-[12px] font-medium text-muted-foreground leading-snug">
-              <span className="text-primary font-semibold">Bud recommends:</span> "{rec.title}" for your courses — ₦{(rec.price || 0).toLocaleString()} from a verified seller nearby.
+          <div className="flex items-center gap-3 py-4 border-t border-border/20">
+            <div className="w-9 h-9 rounded-full bg-muted/40 grid place-items-center text-[14px] text-muted-foreground flex-shrink-0 border border-border/20">✦</div>
+            <p className="flex-1 text-[13px] text-muted-foreground leading-snug">
+              <span className="text-foreground font-medium">Bud recommends</span> "{rec.title}" — ₦{(rec.price || 0).toLocaleString()} from a verified seller nearby.
             </p>
-            <button onClick={() => setContactListing(rec)} className="text-[11px] font-semibold text-primary spring-tap whitespace-nowrap">View →</button>
+            <button onClick={() => setContactListing(rec)} className="text-[12px] font-medium text-foreground/60 spring-tap whitespace-nowrap hover:text-foreground transition-colors">View →</button>
           </div>
         )}
       </div>

@@ -1,56 +1,49 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUnibudContext } from "@/lib/UnibudContext";
-import OsTopBar from "@/components/layout/OsTopBar";
+import { motion } from "framer-motion";
+import { MessageSquare, Phone, Users, ChevronRight } from "lucide-react";
 import ConnectMessages from "@/components/connect/ConnectMessages";
 import ConnectCalls from "@/components/connect/ConnectCalls";
 import ConnectCollaboration from "@/components/connect/ConnectCollaboration";
 
+const EASE = [0.16, 1, 0.3, 1];
+
 const TABS = [
-  { key: "messages", label: "Messages" },
-  { key: "calls", label: "Calls" },
-  { key: "collaboration", label: "Collaboration" },
+  { key: "messages", label: "Messages", icon: MessageSquare },
+  { key: "calls", label: "Calls", icon: Phone },
+  { key: "collaboration", label: "Teams", icon: Users },
 ];
 
 const QUICK = [
-  { emoji: "💬", label: "Messages", to: "/messages" },
-  { emoji: "👥", label: "Groups", to: "/study-groups" },
-  { emoji: "📁", label: "Files", to: "/knowledge" },
-  { emoji: "📅", label: "Calendar", to: "/calendar" },
-  { emoji: "📋", label: "Tasks", to: "/tasks" },
+  { label: "Messages", to: "/messages" },
+  { label: "Groups", to: "/study-groups" },
+  { label: "Files", to: "/knowledge" },
+  { label: "Calendar", to: "/calendar" },
+  { label: "Tasks", to: "/tasks" },
 ];
 
-/**
- * Connect — communication & collaboration hub. Three content tabs
- * (Messages · Calls · Collaboration) under the OS top bar, with an
- * adaptive quick-access bar. Messages wires groups to real StudyGroup
- * data (demo fallback); Calls/Collaboration surface real routes.
- */
 export default function Connect() {
   const navigate = useNavigate();
-  const ctx = useUnibudContext();
   const [activeTab, setActiveTab] = useState("messages");
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
-      <OsTopBar user={ctx.user} />
+    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-28 safe-area-pt">
+      <h1 className="text-[28px] font-bold tracking-tight text-foreground mb-6">Connect</h1>
 
-      <div className="flex gap-5 px-1 pb-3 border-b border-border/20">
+      {/* Tabs — underline style */}
+      <div className="flex gap-6 border-b border-border/20">
         {TABS.map((t) => {
           const on = t.key === activeTab;
+          const Icon = t.icon;
           return (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`relative text-[15px] font-semibold spring-tap pb-1 ${on ? "text-foreground" : "text-muted-foreground/50"}`}
+              className={`relative flex items-center gap-1.5 text-[14px] font-medium spring-tap pb-3 ${on ? "text-foreground" : "text-muted-foreground/40"}`}
             >
+              <Icon className="w-[15px] h-[15px]" strokeWidth={on ? 2.1 : 1.7} />
               {t.label}
-              {on && (
-                <span
-                  className="absolute -bottom-[9px] left-0 w-full h-[2.5px] rounded-full"
-                  style={{ background: "linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)))" }}
-                />
-              )}
+              {on && <motion.div layoutId="connect-tab" className="absolute -bottom-px left-0 w-full h-[2px] rounded-full bg-foreground" transition={{ type: "spring", stiffness: 380, damping: 30 }} />}
             </button>
           );
         })}
@@ -62,14 +55,14 @@ export default function Connect() {
         {activeTab === "collaboration" && <ConnectCollaboration />}
       </div>
 
+      {/* Quick actions — text-only chips, no emoji */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar pt-5 pb-2">
         {QUICK.map((q) => (
           <button
             key={q.label}
             onClick={() => q.to && navigate(q.to)}
-            className="px-4 py-1.5 rounded-full glass border border-border/40 text-[12px] font-medium whitespace-nowrap spring-tap text-muted-foreground"
+            className="px-3.5 py-2 rounded-full bg-muted/30 border border-border/20 text-[12px] font-medium whitespace-nowrap spring-tap text-muted-foreground hover:text-foreground transition-colors"
           >
-            <span className="mr-1">{q.emoji}</span>
             {q.label}
           </button>
         ))}

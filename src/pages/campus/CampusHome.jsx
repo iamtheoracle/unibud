@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   BookOpen, ClipboardCheck, Compass, FlaskConical, Briefcase, Library,
-  Sparkles, ArrowRight, Award,
+  Award, ChevronRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAcademicData } from "@/lib/academic/useAcademicData";
@@ -56,38 +56,38 @@ export default function CampusHome() {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-4"
+        transition={{ type: "spring", stiffness: 340, damping: 36, mass: 0.9 }}
+        className="mb-6"
       >
-        <h1 className="text-[22px] font-bold text-foreground tracking-tight" style={{ letterSpacing: "-0.02em" }}>
-          {greeting()}, <span className="text-ice-gradient">{firstName}</span>
-        </h1>
-        <p className="text-[12px] text-muted-foreground mt-0.5">
+        <p className="text-[13px] text-muted-foreground font-medium mb-1">{greeting()},</p>
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground leading-tight">{firstName}</h1>
+        <p className="text-[12px] text-muted-foreground/70 mt-1.5">
           {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </p>
       </motion.div>
 
-      {/* Today Brief — the single most important card */}
+      {/* Today Brief */}
       <TodayBrief brief={brief} loading={loading} />
 
-      {/* Academic Pulse — next class / next due / GPA */}
+      {/* Academic Pulse */}
       <div className="mt-3">
         <AcademicPulse />
       </div>
 
-      {/* Domain navigation */}
-      <section className="mt-5">
-        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground mb-2.5">Campus</h2>
-        <div className="grid grid-cols-3 gap-2">
+      {/* Domain navigation — divider-based list */}
+      <section className="mt-10">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Campus</h2>
+        <div className="divide-y divide-border/25">
           {DOMAINS.map((d) => {
             const Icon = d.icon;
             return (
-              <Link key={d.label} to={d.to} className="crystal-card hover-lift p-3 spring-tap edge-light">
-                <div className="w-8 h-8 rounded-lg bg-foreground/[0.08] flex items-center justify-center mb-2">
-                  <Icon className="w-4 h-4 text-foreground" strokeWidth={2} />
+              <Link key={d.label} to={d.to} className="flex items-center gap-3 py-3.5 spring-tap">
+                <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.7} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-[14px] font-medium text-foreground">{d.label}</p>
+                  <p className="text-[12px] text-muted-foreground/70 mt-0.5">{d.desc}</p>
                 </div>
-                <p className="text-[12px] font-semibold text-foreground leading-tight">{d.label}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5 leading-tight">{d.desc}</p>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.7} />
               </Link>
             );
           })}
@@ -95,53 +95,48 @@ export default function CampusHome() {
       </section>
 
       {/* Today's classes */}
-      <section className="mt-5">
-        <div className="flex items-center justify-between mb-2.5">
-          <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Today's classes</h2>
-          <Link to="/timetable" className="text-[11px] font-semibold text-primary spring-tap">Timetable</Link>
+      <section className="mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">Today's Classes</h2>
+          <Link to="/timetable" className="text-[12px] font-medium text-foreground/60 flex items-center spring-tap hover:text-foreground transition-colors">
+            Timetable <ChevronRight className="w-3 h-3" />
+          </Link>
         </div>
         {loading ? (
-          <div className="crystal-card p-4 h-16 shimmer" />
+          <div className="h-12 rounded-lg shimmer" />
         ) : today && today.length > 0 ? (
-          <div className="crystal-card divide-y divide-border/15">
+          <div className="divide-y divide-border/25">
             {today.slice(0, 4).map((s, i) => (
-              <div key={i} className="flex items-center gap-3 px-3.5 py-2.5 spring-tap">
-                <div className="w-1 h-8 rounded-full" style={{ background: `hsl(${s.color || "217 91% 60%"} / 0.6)` }} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-foreground truncate">{s.code}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{s.title}</p>
+              <div key={i} className="flex items-center gap-3 py-3.5">
+                <div className="w-14 shrink-0">
+                  <p className="text-[13px] font-semibold text-foreground tabular-nums">{s.start}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-[11px] font-semibold text-foreground">{s.start}</p>
-                  <p className="text-[10px] text-muted-foreground">{s.room}</p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[14px] font-medium text-foreground truncate">{s.code}</p>
+                  <p className="text-[12px] text-muted-foreground truncate mt-0.5">{s.title} · {s.room}</p>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="crystal-card p-4 text-center">
-            <p className="text-[12px] text-muted-foreground">No classes scheduled today — a great day for deep work.</p>
+          <div className="py-4">
+            <p className="text-[14px] text-muted-foreground">No classes scheduled today — a great day for deep work.</p>
           </div>
         )}
       </section>
 
-      {/* Spark focus — adaptive recommendations */}
+      {/* Focus recommendations */}
       {recommended.length > 0 && (
-        <section className="mt-5">
-          <div className="flex items-center gap-1.5 mb-2.5">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">Focus for you</h2>
-          </div>
+        <section className="mt-10">
+          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Focus For You</h2>
           <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
             {recommended.map((c) => {
               const Icon = c.icon;
               return (
-                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[150px] crystal-card hover-lift p-3 spring-tap edge-light">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center mb-2" style={{ background: `hsl(${c.color} / 0.14)` }}>
-                    <Icon className="w-4 h-4" style={{ color: `hsl(${c.color})` }} strokeWidth={2} />
-                  </div>
-                  <p className="text-[12px] font-semibold text-foreground leading-tight">{c.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{c.desc}</p>
+                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[140px] bg-muted/20 border border-border/15 rounded-xl p-3.5 spring-tap">
+                  <Icon className="w-[18px] h-[18px] text-foreground mb-2.5" strokeWidth={1.7} />
+                  <p className="text-[13px] font-medium text-foreground leading-tight">{c.title}</p>
+                  <p className="text-[11px] text-muted-foreground/70 mt-0.5 line-clamp-2">{c.desc}</p>
                 </Link>
               );
             })}
@@ -150,16 +145,16 @@ export default function CampusHome() {
       )}
 
       {/* Opportunities */}
-      <section className="mt-5 mb-4">
-        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted-foreground mb-2.5">Opportunities</h2>
-        <div className="flex gap-2">
+      <section className="mt-10 mb-4">
+        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Opportunities</h2>
+        <div className="divide-y divide-border/25">
           {OPPS.map((o) => {
             const Icon = o.icon;
             return (
-              <Link key={o.label} to={o.to} className="flex-1 flex items-center gap-2 crystal-card hover-lift p-3 spring-tap edge-light">
-                <Icon className="w-4 h-4 text-foreground" strokeWidth={2} />
-                <span className="text-[12px] font-semibold text-foreground">{o.label}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground ml-auto" />
+              <Link key={o.label} to={o.to} className="flex items-center gap-3 py-3.5 spring-tap">
+                <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.7} />
+                <span className="text-[14px] font-medium text-foreground flex-1">{o.label}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.7} />
               </Link>
             );
           })}

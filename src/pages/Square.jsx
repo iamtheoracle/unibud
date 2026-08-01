@@ -72,7 +72,7 @@ export default function Square() {
   });
 
   return (
-    <div className="min-h-screen pb-28 safe-area-pt">
+    <div className="min-h-screen pb-28">
       <SquareHeader user={user} />
 
       {/* Stories — real data when authenticated, demo groups otherwise */}
@@ -80,7 +80,7 @@ export default function Square() {
 
       {/* Feed — real infinite feed with real-time updates, or demo posts */}
       {isDemoMode || !user ? (
-        <div className="px-4 space-y-3 max-w-2xl mx-auto pt-1">
+        <div className="max-w-2xl mx-auto pt-1">
           {DEMO_POSTS.map((post, i) => (
             <PostCard key={post.id} post={post} user={user} index={i} />
           ))}

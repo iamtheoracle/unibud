@@ -10,27 +10,15 @@ import QRShareSheet from "@/components/shared/QRShareSheet";
 import SettingsSection from "@/components/me/SettingsSection";
 import MeSocial from "@/components/me/MeSocial";
 import MeAcademic from "@/components/me/MeAcademic";
-import { Settings, QrCode, Share2, Edit3, Camera, Github, Linkedin, Instagram, Twitter, Globe, Music } from "lucide-react";
+import { Settings, QrCode, Share2, Edit3, Camera, ChevronRight } from "lucide-react";
 
-const CHIPS = ["Student", "Creator", "Computer Science", "300 Level", "Verified", "Class Rep", "Ambassador"];
+const CHIPS = ["Student", "Creator", "Computer Science", "300 Level", "Verified", "Class Rep"];
 const STATS = [
   { label: "Posts", value: 42 },
   { label: "Followers", value: 156 },
   { label: "Following", value: 89 },
-  { label: "Views", value: "1.2K" },
-  { label: "Reputation", value: 87 },
-  { label: "Complete", value: "78%" },
 ];
-const CONNECTED = [
-  { icon: Github, label: "GitHub" },
-  { icon: Linkedin, label: "LinkedIn" },
-  { icon: Globe, label: "Portfolio" },
-  { icon: Instagram, label: "Instagram" },
-  { icon: Music, label: "TikTok" },
-  { icon: Twitter, label: "X" },
-];
-
-const avatarBg = () => ({ background: "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))" });
+const CONNECTED = ["GitHub", "LinkedIn", "Portfolio", "Instagram", "TikTok", "X"];
 
 /**
  * Me — student profile. Cover + overlapping avatar, identity chips, stats,
@@ -68,39 +56,39 @@ export default function Me() {
   return (
     <div className="w-full max-w-[520px] mx-auto pb-28 safe-area-pt">
       {/* Cover */}
-      <div className="relative w-full h-40 overflow-hidden" style={{ background: "linear-gradient(135deg, hsl(var(--surface-elevated)), hsl(var(--surface-secondary)))" }}>
-        <div className="absolute inset-0" style={{ background: "radial-gradient(60% 80% at 30% 0%, hsl(var(--primary) / 0.10), transparent 70%)" }} />
-        <div className="absolute inset-0 grid place-items-center opacity-30">
-          <Camera className="w-10 h-10 text-muted-foreground" />
+      <div className="relative w-full h-36 overflow-hidden bg-muted/20">
+        <div className="absolute inset-0" style={{ background: "radial-gradient(60% 80% at 30% 0%, hsl(var(--foreground) / 0.04), transparent 70%)" }} />
+        <div className="absolute inset-0 grid place-items-center opacity-20">
+          <Camera className="w-8 h-8 text-muted-foreground" strokeWidth={1.5} />
         </div>
       </div>
 
       {/* Overlapping avatar */}
-      <div className="px-4 -mt-12 relative">
-        <div className="w-20 h-20 rounded-full border-4 border-background overflow-hidden grid place-items-center text-[26px] font-bold text-primary-foreground" style={avatarBg()}>
+      <div className="px-5 -mt-10 relative">
+        <div className="w-20 h-20 rounded-full border-4 border-background overflow-hidden grid place-items-center text-[26px] font-semibold text-foreground bg-muted/40">
           {user?.avatar_url ? <Image src={user.avatar_url} alt={name} fittingType="fill" className="w-full h-full" /> : initials}
         </div>
       </div>
 
       {/* Profile info + actions */}
-      <div className="px-4 pt-2">
-        <div className="flex justify-between items-start gap-2">
+      <div className="px-5 pt-3">
+        <div className="flex justify-between items-start gap-3">
           <div className="min-w-0">
-            <h1 className="text-[20px] font-bold text-foreground truncate">{name}</h1>
-            {handle && <p className="text-[13px] text-muted-foreground truncate">{handle}</p>}
-            <p className="text-[11px] text-muted-foreground/70 mt-0.5">{university}</p>
+            <h1 className="text-[22px] font-bold text-foreground truncate tracking-tight">{name}</h1>
+            {handle && <p className="text-[13px] text-muted-foreground truncate mt-0.5">{handle}</p>}
+            <p className="text-[12px] text-muted-foreground/60 mt-0.5">{university}</p>
           </div>
-          <div className="flex gap-2 flex-shrink-0">
-            <button onClick={() => setEditing(true)} className="w-9 h-9 rounded-full glass grid place-items-center spring-tap"><Edit3 className="w-4 h-4 text-muted-foreground" /></button>
-            <button onClick={handleShare} className="w-9 h-9 rounded-full glass grid place-items-center spring-tap"><Share2 className="w-4 h-4 text-muted-foreground" /></button>
-            <button onClick={handleQR} className="w-9 h-9 rounded-full glass grid place-items-center spring-tap"><QrCode className="w-4 h-4 text-muted-foreground" /></button>
-            <button onClick={goSettings} className="w-9 h-9 rounded-full glass grid place-items-center spring-tap"><Settings className="w-4 h-4 text-muted-foreground" /></button>
+          <div className="flex gap-1 flex-shrink-0">
+            <button onClick={() => setEditing(true)} className="w-9 h-9 rounded-full bg-muted/30 grid place-items-center spring-tap hover:bg-muted/50 transition-colors"><Edit3 className="w-[16px] h-[16px] text-muted-foreground" strokeWidth={1.7} /></button>
+            <button onClick={handleShare} className="w-9 h-9 rounded-full bg-muted/30 grid place-items-center spring-tap hover:bg-muted/50 transition-colors"><Share2 className="w-[16px] h-[16px] text-muted-foreground" strokeWidth={1.7} /></button>
+            <button onClick={handleQR} className="w-9 h-9 rounded-full bg-muted/30 grid place-items-center spring-tap hover:bg-muted/50 transition-colors"><QrCode className="w-[16px] h-[16px] text-muted-foreground" strokeWidth={1.7} /></button>
+            <button onClick={goSettings} className="w-9 h-9 rounded-full bg-muted/30 grid place-items-center spring-tap hover:bg-muted/50 transition-colors"><Settings className="w-[16px] h-[16px] text-muted-foreground" strokeWidth={1.7} /></button>
           </div>
         </div>
-        <p className="text-[13px] text-muted-foreground mt-2 leading-relaxed">{bio}</p>
+        <p className="text-[14px] text-muted-foreground mt-3 leading-relaxed">{bio}</p>
 
         <div className="flex flex-wrap gap-1.5 mt-3">
-          {CHIPS.map((c) => <span key={c} className="px-2.5 py-1 rounded-full text-[10px] font-medium glass border border-border/40 text-muted-foreground">{c}</span>)}
+          {CHIPS.map((c) => <span key={c} className="px-2.5 py-1 rounded-full text-[11px] font-medium bg-muted/25 border border-border/15 text-muted-foreground">{c}</span>)}
         </div>
       </div>
 
@@ -116,41 +104,37 @@ export default function Me() {
         </div>
       </div>
 
-      {/* Connected accounts */}
-      <div className="px-4 mt-6">
+      {/* Connected accounts — text-based, no icon mismatch */}
+      <div className="px-5 mt-8">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-3">Connected</div>
-        <div className="flex gap-2.5">
+        <div className="flex flex-wrap gap-2">
           {CONNECTED.map((c) => (
-            <div key={c.label} className="w-10 h-10 rounded-full grid place-items-center glass border border-border/40">
-              <c.icon className="w-[18px] h-[18px] text-muted-foreground" />
-            </div>
+            <span key={c} className="px-3 py-1.5 rounded-full bg-muted/25 border border-border/15 text-[12px] font-medium text-muted-foreground">{c}</span>
           ))}
-          <button onClick={goSettings} className="w-10 h-10 rounded-full grid place-items-center glass border border-border/40 spring-tap">
-            <span className="text-[11px] font-bold text-muted-foreground">+5</span>
-          </button>
+          <button onClick={goSettings} className="px-3 py-1.5 rounded-full bg-muted/25 border border-border/15 text-[12px] font-medium text-muted-foreground spring-tap">+5</button>
         </div>
       </div>
 
       {/* Profile mode toggle */}
-      <div className="px-4 mt-4">
-        <div className="glass rounded-full p-1 flex border border-border/40">
+      <div className="px-5 mt-6">
+        <div className="flex bg-muted/20 rounded-xl p-1 border border-border/10">
           {["social", "academic"].map((m) => (
-            <button key={m} onClick={() => setMode(m)} className={`flex-1 py-2 rounded-full text-[12px] font-semibold capitalize spring-tap ${mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}>{m}</button>
+            <button key={m} onClick={() => setMode(m)} className={`flex-1 py-2 rounded-lg text-[13px] font-medium capitalize spring-tap transition-colors ${mode === m ? "bg-foreground text-background" : "text-muted-foreground"}`}>{m}</button>
           ))}
         </div>
       </div>
 
       {/* Profile content */}
-      <div className="px-4 mt-4">
+      <div className="px-5 mt-6">
         <AnimatePresence mode="wait">
-          <motion.div key={mode} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.18 }}>
+          <motion.div key={mode} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}>
             {mode === "social" ? <MeSocial bio={bio} /> : <MeAcademic user={user} />}
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Settings — preserved (logout, account, preferences) */}
-      <div ref={settingsRef} className="px-4 mt-6">
+      {/* Settings */}
+      <div ref={settingsRef} className="px-5 mt-8">
         <SettingsSection user={user} />
       </div>
 
