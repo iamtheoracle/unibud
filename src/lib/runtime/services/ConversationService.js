@@ -41,7 +41,7 @@ class ConversationService {
       const conv = await base44.entities.BudConversation.get(conversationId);
       if (!conv) return null;
       const messages = [...(conv.messages || []), { role, content, timestamp: new Date().toISOString(), ...metadata }];
-      const updated = await base44.entities.BudConversation.update(conversationId, { messages, last_message: content });
+      const updated = await base44.entities.BudConversation.update(conversationId, { messages, last_message_at: new Date().toISOString() });
       eventBus.publish({
         type: 'conversation.message_appended',
         category: 'lifecycle',

@@ -18,14 +18,16 @@ class AuditService {
   }
 
   /** Log an audit entry. */
-  async log({ actorId, action, detail, meta = {}, category = 'system' }) {
+  async log({ actorId, actorName, action, detail, meta = {}, category = 'system', severity = 'info' }) {
     try {
       const record = await base44.entities.AuditLog.create({
         actor_id: actorId,
+        actor_name: actorName || actorId || 'system',
         action,
-        detail,
+        details: detail,
         meta,
         category,
+        severity,
         timestamp: new Date().toISOString(),
       });
       eventBus.publish({

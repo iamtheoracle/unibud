@@ -26,7 +26,7 @@ class MemoryService {
       const record = await base44.entities.BudMemory.create({
         user_id: userId,
         session_id: sessionId,
-        type,
+        memory_type: type,
         content,
         metadata,
         importance,
@@ -48,7 +48,7 @@ class MemoryService {
     try {
       const filter = { user_id: userId };
       if (sessionId) filter.session_id = sessionId;
-      if (type) filter.type = type;
+      if (type) filter.memory_type = type;
       return await base44.entities.BudMemory.filter(filter, '-created_date', limit);
     } catch (e) {
       logger.error('Memory recall failed', { error: e.message });

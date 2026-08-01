@@ -4,7 +4,7 @@
   "properties": {
     "action": {
       "type": "string",
-      "description": "The action performed (e.g., 'module_disabled', 'user_role_changed', 'login')"
+      "description": "The action performed (e.g. 'module_disabled', 'user_role_changed', 'login', 'guardian.denied:model:invoke')"
     },
     "actor_name": {
       "type": "string"
@@ -17,13 +17,14 @@
     },
     "target_type": {
       "type": "string",
-      "description": "What was affected (e.g., 'module', 'user', 'system')"
+      "description": "What was affected (e.g. 'module', 'user', 'system')"
     },
     "target_name": {
       "type": "string"
     },
     "details": {
-      "type": "string"
+      "type": "string",
+      "description": "Human-readable detail of the action"
     },
     "severity": {
       "type": "string",
@@ -33,10 +34,47 @@
         "critical"
       ],
       "default": "info"
+    },
+    "meta": {
+      "type": "object",
+      "description": "Structured context (action context, metadata, etc.)"
+    },
+    "category": {
+      "type": "string",
+      "default": "system",
+      "description": "Audit category (system, security, governance, etc.)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [
-    "action",
-    "actor_name"
-  ]
+    "action"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
 }

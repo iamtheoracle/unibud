@@ -10,15 +10,37 @@
         "favorite_subject",
         "goal",
         "conversation",
-        "fact"
+        "fact",
+        "episodic",
+        "semantic",
+        "procedural"
       ],
-      "default": "fact"
+      "default": "fact",
+      "description": "Type of memory: episodic (conversation-derived), semantic (facts/preferences), procedural (learned patterns), plus legacy types"
     },
     "content": {
       "type": "string"
     },
     "source": {
-      "type": "string"
+      "type": "string",
+      "description": "Where this memory was derived from"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User this memory belongs to (denormalized for fast filtering)"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Session or correlation id this memory was created in"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Structured metadata (response snippets, tags, etc.)"
+    },
+    "importance": {
+      "type": "number",
+      "default": 0.5,
+      "description": "Importance score 0-1 (higher = more memorable)"
     }
   },
   "required": [
