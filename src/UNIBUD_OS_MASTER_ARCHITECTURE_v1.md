@@ -1087,5 +1087,15 @@ The focus now shifts from **"What else should we design?"** to **"How do we impl
 
 ---
 
+## Revision History
+
+| Version | Date | Change |
+|---|---|---|
+| v1.0 | 2026-08-01 | Initial freeze — 10 Volumes + Appendices |
+| v1.1 | 2026-08-01 | Added AI Command Authority Constitution (IACP) — see [`UNIBUD_AI_COMMAND_AUTHORITY_CONSTITUTION.md`](./UNIBUD_AI_COMMAND_AUTHORITY_CONSTITUTION.md). Extends Volume 2 with Ultimate Command Authority hierarchy, inter-agent communication protocol, constitutional compliance layer, and acceptance criteria. |
+
+---
+
 *UNIBUD OS Core Architecture v1.0 — Frozen 2026-08-01*
 *Single source of truth for Base44 and UNIBUD's engineering platform.*
+*Revisions tracked above. No in-place amendments to v1.0.*
