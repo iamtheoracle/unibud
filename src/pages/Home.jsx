@@ -36,45 +36,45 @@ export default function Home() {
 
   return (
     <PullToRefresh onRefresh={refreshHome}>
-      <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
+      <div className="w-full max-w-[520px] mx-auto px-5 pt-8 pb-36 safe-area-pt">
         <HomeHeader user={ctx.user} greeting={plan.greeting} />
 
-        <div className="mt-4">
+        <div className="mt-5">
           <FloatingSearch />
         </div>
 
         {/* 1 — Bud AI */}
-        <div className="mt-5">
+        <div className="mt-7">
           <BudHero message={plan.message} />
         </div>
 
         {/* 2 — Today's Schedule */}
-        <div className="mt-4">
+        <div className="mt-6">
           <HomeTodaySchedule nextLecture={ctx.nextLecture} nextLectureIn={ctx.nextLectureIn} />
         </div>
 
         {/* 3 — Assignments Due */}
-        <div className="mt-4">
+        <div className="mt-6">
           <HomeAssignmentsDue assignments={ctx.assignments} />
         </div>
 
         {/* 4 — Spark Team Activity */}
-        <div className="mt-4">
+        <div className="mt-6">
           <HomeSparkActivity />
         </div>
 
         {/* 5 — University Notifications */}
-        <div className="mt-4">
+        <div className="mt-6">
           <HomeUniversityNotifs />
         </div>
 
         {/* 6 — Campus Pulse */}
-        <div className="mt-4">
+        <div className="mt-6">
           <HomeCampusPulse quadPosts={ctx.quadPosts} />
         </div>
 
         {/* 7 — Quick Actions */}
-        <div className="mt-4">
+        <div className="mt-6">
           <QuickActions />
         </div>
 
@@ -82,7 +82,7 @@ export default function Home() {
         <RecastCard />
 
         {/* 8 — Weather (compact) */}
-        <div className="mt-4">
+        <div className="mt-6">
           <HomeWeatherCompact />
         </div>
       </div>

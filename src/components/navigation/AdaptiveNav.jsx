@@ -48,7 +48,7 @@ export default function AdaptiveNav() {
             <motion.div
               layout
               transition={SPRING}
-              className="founder-dock rounded-[20px] h-[54px] flex items-center gap-0.5 px-1.5 relative edge-light overflow-hidden w-fit max-w-[calc(100%-64px)]"
+              className="founder-dock rounded-[18px] h-[50px] flex items-center gap-0.5 px-1 relative edge-light overflow-hidden w-fit max-w-[calc(100%-60px)]"
             >
               <motion.div
                 key={navState}
@@ -94,7 +94,7 @@ function ModeButton({ opt, active, onPick }) {
     <button
       onClick={() => onPick(opt.key)}
       aria-pressed={active}
-      className="relative flex items-center justify-center gap-1.5 h-[44px] px-3.5 flex-1 min-w-0 rounded-[14px] spring-tap"
+      className="relative flex items-center justify-center gap-1.5 h-[42px] px-3.5 flex-1 min-w-0 rounded-[12px] spring-tap"
     >
       {active && (
         <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
@@ -111,7 +111,7 @@ function ModeOrb({ mode, onClick }) {
     <button
       onClick={onClick}
       aria-label="Switch operating mode"
-      className="relative flex items-center justify-center w-[40px] h-[44px] rounded-[14px] spring-tap shrink-0"
+      className="relative flex items-center justify-center w-[38px] h-[42px] rounded-[12px] spring-tap shrink-0"
     >
       <Icon className="relative w-[16px] h-[16px] dock-icon" strokeWidth={2} />
     </button>
@@ -124,7 +124,7 @@ function NavItem({ item, active, onClick }) {
     <button
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className="relative flex flex-col items-center justify-center h-[44px] px-2 flex-1 min-w-0 rounded-[14px] spring-tap"
+      className="relative flex flex-col items-center justify-center h-[42px] px-2 flex-1 min-w-0 rounded-[12px] spring-tap"
     >
       {active && (
         <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
@@ -141,7 +141,7 @@ function MeButton({ active }) {
       to="/me"
       onClick={() => hapticSelect()}
       aria-label="Me"
-      className="founder-dock rounded-[20px] h-[54px] w-[52px] flex flex-col items-center justify-center relative edge-light spring-tap shrink-0"
+      className="founder-dock rounded-[18px] h-[50px] w-[50px] flex flex-col items-center justify-center relative edge-light spring-tap shrink-0"
     >
       {active && (
         <motion.div layoutId="me-pill" className="absolute inset-1.5 rounded-[16px] dock-pill" transition={SPRING} />
