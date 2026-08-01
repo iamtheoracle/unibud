@@ -56,9 +56,9 @@ export default function AppShell() {
             <motion.div
               key={location.pathname}
               className="app-content pt-14"
-              initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 38, mass: 0.8 }}
             >
               {outlet}
             </motion.div>
