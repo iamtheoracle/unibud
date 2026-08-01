@@ -26,7 +26,7 @@ const SheetOverlay = React.forwardRef(({ className, ...props }, ref) => (
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName
 
 const sheetVariants = cva(
-  "fixed z-50 gap-4 bg-card/85 backdrop-blur-2xl border border-border/30 p-6 premium-shadow transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
+  "fixed z-50 gap-4 bg-card/90 backdrop-blur-2xl border border-border/40 p-7 premium-shadow transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500 data-[state=open]:animate-in data-[state=closed]:animate-out",
   {
     variants: {
       side: {
@@ -49,8 +49,8 @@ const SheetContent = React.forwardRef(({ side = "right", className, children, ..
     <SheetOverlay />
     <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
       <SheetPrimitive.Close
-        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-        <X className="h-4 w-4" />
+        className="absolute right-5 top-5 flex items-center justify-center w-8 h-8 rounded-full glass opacity-60 ring-offset-background transition-all hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary spring-tap">
+        <X className="h-[18px] w-[18px]" strokeWidth={2} />
         <span className="sr-only">Close</span>
       </SheetPrimitive.Close>
       {children}
@@ -82,7 +82,7 @@ SheetFooter.displayName = "SheetFooter"
 const SheetTitle = React.forwardRef(({ className, ...props }, ref) => (
   <SheetPrimitive.Title
     ref={ref}
-    className={cn("text-lg font-semibold text-foreground", className)}
+    className={cn("text-title font-heading font-bold text-foreground tracking-tight", className)}
     {...props} />
 ))
 SheetTitle.displayName = SheetPrimitive.Title.displayName

@@ -21,14 +21,14 @@ export default function PageNotFound({}) {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-6 safe-area-pt">
-            <div className="w-full max-w-md text-center">
-                <div className="crystal-card p-8 fade-in-up">
-                    <p className="display-number text-[56px] text-muted-foreground/35">404</p>
-                    <div className="h-px w-12 bg-border mx-auto my-4" />
-                    <h2 className="font-heading font-bold text-[22px] text-foreground">Page not found</h2>
-                    <p className="text-[13px] text-muted-foreground leading-relaxed mt-2">
-                        The page <span className="font-semibold text-foreground">"{pageName}"</span> could not be found.
-                    </p>
+          <div className="w-full max-w-md text-center">
+            <div className="crystal-card p-10 fade-in-up">
+              <p className="display-number text-[64px] text-muted-foreground/30">404</p>
+              <div className="h-px w-14 bg-border/60 mx-auto my-5" />
+              <h2 className="font-heading font-bold text-heading text-foreground tracking-tight">Page not found</h2>
+              <p className="text-[13px] text-muted-foreground leading-relaxed mt-2.5 max-w-[260px] mx-auto">
+                The page <span className="font-semibold text-foreground">"{pageName}"</span> could not be found.
+              </p>
 
                     {isFetched && authData.isAuthenticated && authData.user?.role === 'admin' && (
                         <div className="mt-6 p-3.5 rounded-2xl bg-warning/8 border border-warning/20 text-left">
@@ -41,9 +41,9 @@ export default function PageNotFound({}) {
 
                     <button
                         onClick={() => { window.location.href = authData?.isAuthenticated ? '/home' : '/'; }}
-                        className="mt-6 inline-flex items-center gap-2 h-11 px-5 rounded-full bg-primary text-primary-foreground font-heading font-semibold text-[13px] spring-tap ice-glow"
+                        className="mt-7 inline-flex items-center gap-2 h-11 px-6 rounded-full bg-primary text-primary-foreground font-heading font-semibold text-[13px] spring-tap ice-glow"
                     >
-                        <Home className="w-4 h-4" /> Go Home
+                        <Home className="w-[18px] h-[18px]" strokeWidth={2} /> Go Home
                     </button>
                 </div>
             </div>
