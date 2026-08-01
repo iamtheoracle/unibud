@@ -104,21 +104,21 @@ export default function Me() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="px-4 mt-4">
-        <div className="glass-card p-3 grid grid-cols-3 gap-2">
-          {STATS.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="text-[16px] font-bold text-foreground">{s.value}</div>
-              <div className="text-[9px] uppercase tracking-wide text-muted-foreground/70">{s.label}</div>
+      {/* Stats — divider-based, Apple Settings style */}
+      <div className="px-4 mt-5">
+        <div className="grid grid-cols-3 gap-0">
+          {STATS.map((s, i) => (
+            <div key={s.label} className={`text-center py-2 ${i > 0 ? "border-l border-border/30" : ""}`}>
+              <div className="text-[17px] font-bold text-foreground display-number">{s.value}</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground/60 mt-0.5">{s.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Connected accounts */}
-      <div className="px-4 mt-4">
-        <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/70 mb-2">Connected</div>
+      <div className="px-4 mt-6">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-3">Connected</div>
         <div className="flex gap-2.5">
           {CONNECTED.map((c) => (
             <div key={c.label} className="w-10 h-10 rounded-full grid place-items-center glass border border-border/40">

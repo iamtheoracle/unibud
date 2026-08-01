@@ -6,7 +6,7 @@ import { base44 } from "@/api/base44Client";
 import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
 import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
-import { Mic, ChevronRight } from "lucide-react";
+import { Mic, ChevronRight, Search } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -70,16 +70,16 @@ export default function Lens() {
       <motion.div
         initial={{ y: "100%", opacity: 0.4 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.35, ease: EASE }}
-        className="relative z-10 w-full max-w-[520px] mx-auto rounded-t-[28px] glass-strong border-t border-border/40 pt-3 pb-28 px-4 flex flex-col"
+        transition={{ type: "spring", stiffness: 360, damping: 34, mass: 0.9 }}
+        className="relative z-10 w-full max-w-[520px] mx-auto rounded-t-[28px] bg-card/95 backdrop-blur-2xl border-t border-border/30 pt-3 pb-28 px-5 flex flex-col premium-shadow"
         style={{ maxHeight: "82%" }}
       >
         {/* Handle */}
         <div className="w-9 h-1 rounded-full bg-foreground/15 mx-auto mb-4 flex-shrink-0" />
 
         {/* Search bar */}
-        <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-full glass border border-border/40 flex-shrink-0 mb-4">
-          <span className="text-[16px] text-muted-foreground">🔍</span>
+        <div className="flex items-center gap-3 px-4 h-[52px] rounded-2xl bg-muted/30 border border-border/30 flex-shrink-0 mb-5">
+          <Search className="w-[18px] h-[18px] text-muted-foreground/60 shrink-0" strokeWidth={1.8} />
           <input
             autoFocus
             value={query}
@@ -101,7 +101,7 @@ export default function Lens() {
         <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-4 pb-2">
           {/* Continue */}
           <section>
-            <p className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wide mb-1.5">Continue</p>
+            <p className="text-[11px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2.5">Continue</p>
             <div className="flex gap-2.5 overflow-x-auto no-scrollbar py-0.5">
               {CONTINUE.map((c) => (
                 <button key={c.title} onClick={() => navigate(c.to)} className="flex-shrink-0 min-w-[130px] glass-card px-3.5 py-2.5 flex items-center gap-2 spring-tap">
@@ -117,7 +117,7 @@ export default function Lens() {
 
           {/* Quick actions */}
           <section>
-            <p className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wide mb-1.5">Quick Actions</p>
+            <p className="text-[11px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2.5">Quick Actions</p>
             <div className="grid grid-cols-4 gap-2">
               {QUICK.map((q) => (
                 <button key={q.label} onClick={() => navigate(q.to)} className="flex flex-col items-center gap-1 py-2.5 rounded-2xl glass-card spring-tap">
@@ -130,7 +130,7 @@ export default function Lens() {
 
           {/* Communities */}
           <section>
-            <p className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wide mb-1.5">Discover Communities</p>
+            <p className="text-[11px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2.5">Discover Communities</p>
             <div className="flex gap-2 flex-wrap">
               {communityList.map((c, i) => (
                 <button
@@ -148,7 +148,7 @@ export default function Lens() {
 
           {/* Nearby */}
           <section>
-            <p className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wide mb-1.5">Nearby</p>
+            <p className="text-[11px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2.5">Nearby</p>
             <div className="flex gap-2 flex-wrap">
               {NEARBY.map((n) => (
                 <span key={n.label} className="px-3.5 py-1.5 rounded-full glass border border-border/40 text-[12px] font-medium text-muted-foreground flex items-center gap-1.5">
@@ -161,7 +161,7 @@ export default function Lens() {
 
           {/* Bud AI suggestions */}
           <section>
-            <p className="text-[11px] font-semibold text-muted-foreground/60 uppercase tracking-wide mb-1.5">Bud AI Suggests</p>
+            <p className="text-[11px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2.5">Bud Suggests</p>
             <div className="flex flex-col gap-2">
               {SUGGESTIONS.map((s, i) => (
                 <button

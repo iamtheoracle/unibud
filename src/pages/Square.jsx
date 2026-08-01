@@ -92,7 +92,7 @@ export default function Square() {
       {/* Compose button */}
       <button
         onClick={() => setComposerOpen(true)}
-        className="fixed right-4 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center spring-tap glow-pulse"
+        className="fixed right-4 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center spring-tap premium-shadow"
         style={{ bottom: "calc(96px + env(safe-area-inset-bottom))" }}
         aria-label="Create post"
       >
