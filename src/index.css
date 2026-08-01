@@ -697,6 +697,41 @@
   }
   .gentle-pulse { animation: gentle-pulse 2.2s ease-in-out infinite; }
 
+  /* Tap glow — subtle luminance on primary action press */
+  .tap-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  .tap-glow::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at center, hsl(var(--primary) / 0.15), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .tap-glow:active::after { opacity: 1; }
+
+  /* Soft checkmark — for success states */
+  @keyframes check-draw {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+  }
+  .check-draw {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: check-draw 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  }
+
+  /* Count-up entrance — for numbers and stats */
+  @keyframes count-in {
+    from { opacity: 0; transform: translateY(4px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .count-in { animation: count-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
   /* ── Spark particles — brand electric blue ── */
   @keyframes spark-rise {
     0% { transform: translateY(0) scale(1); opacity: 0; }

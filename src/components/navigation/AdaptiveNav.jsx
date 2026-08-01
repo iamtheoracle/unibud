@@ -13,8 +13,9 @@ import {
  * AdaptiveNav — UNIBUD's premium, lightweight bottom navigation.
  * Left = morphing Adaptive Capsule (3 states); Right = fixed Me button.
  */
-const SPRING = { type: "spring", stiffness: 420, damping: 32 };
-const FADE = { duration: 0.2, ease: [0.16, 1, 0.3, 1] };
+const SPRING = { type: "spring", stiffness: 380, damping: 30, mass: 0.8 };
+const FADE = { duration: 0.22, ease: [0.16, 1, 0.3, 1] };
+const ICON_SPRING = { type: "spring", stiffness: 500, damping: 28 };
 
 export default function AdaptiveNav() {
   const location = useLocation();
@@ -129,8 +130,10 @@ function NavItem({ item, active, onClick }) {
       {active && (
         <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
       )}
-      <Icon className={`relative w-[17px] h-[17px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      <span className={`relative text-[9px] font-semibold truncate ${active ? "dock-label-active" : "dock-label"}`}>{item.label}</span>
+      <motion.div animate={{ scale: active ? 1.08 : 1 }} transition={ICON_SPRING}>
+        <Icon className={`relative w-[17px] h-[17px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
+      </motion.div>
+      <motion.span animate={{ opacity: active ? 1 : 0.5 }} transition={FADE} className={`relative text-[9px] font-semibold truncate ${active ? "dock-label-active" : "dock-label"}`}>{item.label}</motion.span>
     </button>
   );
 }
@@ -146,8 +149,10 @@ function MeButton({ active }) {
       {active && (
         <motion.div layoutId="me-pill" className="absolute inset-1.5 rounded-[16px] dock-pill" transition={SPRING} />
       )}
-      <User className={`relative w-[18px] h-[18px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      <span className={`relative text-[9px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>Me</span>
+      <motion.div animate={{ scale: active ? 1.08 : 1 }} transition={ICON_SPRING}>
+        <User className={`relative w-[18px] h-[18px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
+      </motion.div>
+      <motion.span animate={{ opacity: active ? 1 : 0.5 }} transition={FADE} className={`relative text-[9px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>Me</motion.span>
     </NavLink>
   );
 }
