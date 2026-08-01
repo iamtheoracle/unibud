@@ -1093,6 +1093,7 @@ The focus now shifts from **"What else should we design?"** to **"How do we impl
 |---|---|---|
 | v1.0 | 2026-08-01 | Initial freeze — 10 Volumes + Appendices |
 | v1.1 | 2026-08-01 | Added AI Command Authority Constitution (IACP) — see [`UNIBUD_AI_COMMAND_AUTHORITY_CONSTITUTION.md`](./UNIBUD_AI_COMMAND_AUTHORITY_CONSTITUTION.md). Extends Volume 2 with Ultimate Command Authority hierarchy, inter-agent communication protocol, constitutional compliance layer, and acceptance criteria. |
+| v1.2 | 2026-08-01 | Added Domain Architecture Specification — see [`UNIBUD_DOMAIN_ARCHITECTURE_v1.2.md`](./UNIBUD_DOMAIN_ARCHITECTURE_v1.2.md) and [`UNIBUD_DOMAIN_ARCHITECTURE_Domains_v1.2.md`](./UNIBUD_DOMAIN_ARCHITECTURE_Domains_v1.2.md). Formalizes the platform into 12 DDD bounded contexts (Identity, Academic, Learning, Research, Community, Campus, Administration, AI, Workflow, Media, Integration, Analytics) with canonical entities, aggregates, domain services, commands, queries, permissions, workflows, AI interactions, and extension points — all mapped to existing implementation. |
 
 ---
 
