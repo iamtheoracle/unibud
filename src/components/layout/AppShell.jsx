@@ -12,8 +12,7 @@ import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
-import FloatingNav from "@/components/layout/FloatingNav";
-import AICommandBar from "@/components/layout/AICommandBar";
+import QuickActionCapsule from "@/components/navigation/QuickActionCapsule";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
@@ -48,10 +47,9 @@ export default function AppShell() {
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
-          <FloatingNav />
+          <QuickActionCapsule />
           <ContextPulse />
           <OfflineBanner />
-          <AICommandBar />
           <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
