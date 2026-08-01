@@ -37,51 +37,68 @@ export default function Home() {
   return (
     <PullToRefresh onRefresh={refreshHome}>
       <div className="w-full max-w-[520px] mx-auto px-5 pt-8 pb-36 safe-area-pt">
+        {/* Greeting */}
         <HomeHeader user={ctx.user} greeting={plan.greeting} />
 
-        <div className="mt-5">
+        {/* Search — the heart of the OS */}
+        <div className="mt-6">
           <FloatingSearch />
         </div>
 
-        {/* 1 — Bud AI */}
-        <div className="mt-7">
+        {/* Bud — conversational AI entry */}
+        <div className="mt-8">
           <BudHero message={plan.message} />
         </div>
 
-        {/* 2 — Today's Schedule */}
+        {/* ── Contextual Content ── */}
+        <div className="h-px bg-border/40 mt-8" />
+
+        {/* Today's Schedule */}
         <div className="mt-6">
           <HomeTodaySchedule nextLecture={ctx.nextLecture} nextLectureIn={ctx.nextLectureIn} />
         </div>
 
-        {/* 3 — Assignments Due */}
+        <div className="h-px bg-border/40 mt-6" />
+
+        {/* Assignments Due */}
         <div className="mt-6">
           <HomeAssignmentsDue assignments={ctx.assignments} />
         </div>
 
-        {/* 4 — Spark Team Activity */}
+        <div className="h-px bg-border/40 mt-6" />
+
+        {/* Spark Team Activity */}
         <div className="mt-6">
           <HomeSparkActivity />
         </div>
 
-        {/* 5 — University Notifications */}
+        <div className="h-px bg-border/40 mt-6" />
+
+        {/* University Notifications */}
         <div className="mt-6">
           <HomeUniversityNotifs />
         </div>
 
-        {/* 6 — Campus Pulse */}
+        <div className="h-px bg-border/40 mt-6" />
+
+        {/* Campus Pulse */}
         <div className="mt-6">
           <HomeCampusPulse quadPosts={ctx.quadPosts} />
         </div>
 
-        {/* 7 — Quick Actions */}
+        <div className="h-px bg-border/40 mt-6" />
+
+        {/* Quick Actions */}
         <div className="mt-6">
           <QuickActions />
         </div>
 
-        {/* 7b — Bud Recast */}
+        {/* Bud Recast */}
         <RecastCard />
 
-        {/* 8 — Weather (compact) */}
+        <div className="h-px bg-border/40 mt-6" />
+
+        {/* Weather (compact) */}
         <div className="mt-6">
           <HomeWeatherCompact />
         </div>

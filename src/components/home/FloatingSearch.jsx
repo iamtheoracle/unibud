@@ -36,16 +36,16 @@ export default function FloatingSearch() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }}>
-      <div className="flex items-center h-[52px] px-4 rounded-2xl glass-strong">
-        <Search className="w-4 h-4 text-muted-foreground shrink-0" />
+      <div className="flex items-center h-[56px] px-4 rounded-2xl bg-muted/30 border border-border/40 transition-colors focus-within:border-border/70">
+        <Search className="w-[18px] h-[18px] text-muted-foreground/70 shrink-0" strokeWidth={1.8} />
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => setFocus(true)}
           onBlur={() => setTimeout(() => setFocus(false), 150)}
           type="text"
-          placeholder="What would you like to learn today?"
-          className="flex-1 bg-transparent text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none min-w-0 ml-2.5"
+          placeholder="Search your campus…"
+          className="flex-1 bg-transparent text-[15px] text-foreground placeholder:text-muted-foreground/50 focus:outline-none min-w-0 ml-3"
         />
       </div>
 
@@ -56,7 +56,7 @@ export default function FloatingSearch() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.22, ease: EASE }}
-            className="mt-2 rounded-2xl glass-strong overflow-hidden"
+            className="mt-2 rounded-2xl bg-card/90 backdrop-blur-2xl border border-border/40 overflow-hidden premium-shadow"
           >
             {interpretations.map((it, i) => {
               const Icon = ICONS[it.icon] || Search;
@@ -65,16 +65,16 @@ export default function FloatingSearch() {
                   key={it.domain + i}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => go(it.route)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted/40 transition-colors spring-tap border-b border-border/20 last:border-0"
+                  className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-muted/30 transition-colors spring-tap border-b border-border/20 last:border-0"
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-primary" />
+                  <div className="w-9 h-9 rounded-xl bg-muted/50 flex items-center justify-center shrink-0">
+                    <Icon className="w-[18px] h-[18px] text-muted-foreground" strokeWidth={1.8} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[13px] font-semibold text-foreground truncate">{it.label}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">{it.sub}</p>
+                    <p className="text-[14px] font-medium text-foreground truncate">{it.label}</p>
+                    <p className="text-[12px] text-muted-foreground truncate">{it.sub}</p>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <ArrowRight className="w-4 h-4 text-muted-foreground/50 shrink-0" strokeWidth={1.8} />
                 </button>
               );
             })}
@@ -90,7 +90,7 @@ export default function FloatingSearch() {
           >
             <div className="flex flex-wrap gap-2 mt-3">
               {CHIPS.map((c) => (
-                <span key={c} className="px-3 py-1.5 rounded-full glass text-[11px] font-medium text-muted-foreground">
+                <span key={c} className="px-3.5 py-2 rounded-full bg-muted/30 border border-border/30 text-[12px] font-medium text-muted-foreground">
                   {c}
                 </span>
               ))}
