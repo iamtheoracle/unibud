@@ -6,7 +6,27 @@
 
 import { base44 } from "@/api/base44Client";
 import { loadActiveAgents } from "./agents/registry";
-import { runAgent } from "./agents/agentRunner";
+
+async function runAgent(agent, task, priorOutputs) {
+  const priorContext = Object.keys(priorOutputs).length
+    ? `\nPrevious agent outputs: ${JSON.stringify(priorOutputs)}`
+    : "";
+  try {
+    const output = await base44.integrations.Core.InvokeLLM({
+      prompt: [
+        `You are ${agent.name}, a specialist agent in UNIBUD.`,
+        agent.focus ? `Focus: ${agent.focus}` : "",
+        `Role: ${agent.role}`,
+        `\nTask: ${task.input_summary}`,
+        priorContext,
+        `\nRespond helpfully and concisely.`,
+      ].join(""),
+    });
+    return { agent_id: agent.agent_id, output };
+  } catch {
+    return { agent_id: agent.agent_id, output: "" };
+  }
+}
 
 const PLANNER_SCHEMA = {
   type: "object",
