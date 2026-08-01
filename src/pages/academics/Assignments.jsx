@@ -1,24 +1,21 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useMockFallback } from "@/lib/mock/useMockFallback";
 import { ASSIGNMENT_MOCK_ENTRIES } from "@/lib/academic/mockShapes";
 import ScreenShell from "@/components/layout/ScreenShell";
 import Sheet from "@/components/academics/Sheet";
-import EmptyState from "@/components/academics/EmptyState";
 import GlassInput from "@/components/foundation/GlassInput";
+import SmartTaskSections from "@/components/academics/SmartTaskSections";
+import TaskProgressPanel from "@/components/academics/TaskProgressPanel";
+import TaskEmptyState from "@/components/academics/TaskEmptyState";
 import { toast } from "@/components/ui/use-toast";
-
-const EASE = [0.16, 1, 0.3, 1];
-const STATUSES = ["all", "pending", "in_progress", "submitted", "graded", "late"];
-const STATUS_LABEL = { pending: "Not Started", in_progress: "In Progress", submitted: "Submitted", graded: "Graded", late: "Overdue" };
+import { hapticImpact } from "@/lib/haptics";
 
 export default function Assignments() {
   const qc = useQueryClient();
   const aq = useQuery({ queryKey: ["assignments"], queryFn: () => base44.entities.Assignment.list("-due_date", 100) });
   const { data: assignments } = useMockFallback(aq, ASSIGNMENT_MOCK_ENTRIES);
-  const [filter, setFilter] = useState("all");
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [uploading, setUploading] = useState(false);
@@ -29,11 +26,8 @@ export default function Assignments() {
   });
   const del = useMutation({ mutationFn: (id) => base44.entities.Assignment.delete(id), onSuccess: () => { qc.invalidateQueries({ queryKey: ["assignments"] }); toast({ title: "Assignment deleted" }); } });
 
-  const filtered = useMemo(() => {
-    let l = assignments || [];
-    if (filter !== "all") l = l.filter((a) => a.status === filter);
-    return l;
-  }, [assignments, filter]);
+  const [completedIds, setCompletedIds] = useState([]);
+  const undoTimer = useRef(null);
 
   const openNew = () => { setEditing({}); setForm({ title: "", course_code: "", course_title: "", due_date: "", status: "pending", priority: "medium", submission_type: "file", description: "", attachments: [] }); };
   const openEdit = (a) => { setEditing(a); setForm({ ...a, attachments: a.attachments || [] }); };
@@ -50,46 +44,61 @@ export default function Assignments() {
     finally { setUploading(false); e.target.value = ""; }
   };
 
+  const handleAction = (action, task) => {
+    if (action === "complete") {
+      hapticImpact(30);
+      setCompletedIds((prev) => [...prev, task.id]);
+      const label = task.__mock ? "Assignment" : (task.submission_type === "presentation" ? "Study session" : task.task_type === "reminder" ? "Reminder" : "Assignment");
+      toast({
+        title: `${label} completed`,
+        action: { label: "Undo", onClick: () => {
+          setCompletedIds((prev) => prev.filter((id) => id !== task.id));
+          clearTimeout(undoTimer.current);
+        }},
+        duration: 5000,
+      });
+      if (!task.__mock) {
+        base44.entities.Assignment.update(task.id, { status: "submitted" }).catch(() => {});
+      }
+    } else if (action === "edit") {
+      openEdit(task);
+    } else if (action === "delete") {
+      if (!task.__mock) del.mutate(task.id);
+    } else if (action === "pin") {
+      toast({ title: "Pinned", description: task.title });
+    } else if (action === "reschedule") {
+      openEdit(task);
+    } else {
+      toast({ title: action.charAt(0).toUpperCase() + action.slice(1), description: task.title });
+    }
+  };
+
+  const handleContextMenu = (actionId, task) => {
+    handleAction(actionId, task);
+  };
+
   const upcoming = (assignments || []).filter((a) => a.status === "pending" || a.status === "in_progress").sort((a, b) => (a.due_date || "").localeCompare(b.due_date || ""));
   const budHint = upcoming[0] ? `Bud suggests starting "${upcoming[0].title}"${upcoming[0].due_date ? ` — due ${upcoming[0].due_date.split("T")[0]}` : ""}.` : "You're on top of your assignments. Nice work.";
+  const hasAny = (assignments || []).length > 0;
 
   return (
     <ScreenShell title="Assignments" back actions={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>}>
-      <div className="glass-card p-3.5 mb-4 border border-primary/15 bg-primary/8"><p className="text-[13px] text-foreground/90">{budHint}</p></div>
-      <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
-        {STATUSES.map((s) => (
-          <button key={s} onClick={() => setFilter(s)} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap spring-tap capitalize ${filter === s ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{s === "all" ? "All" : STATUS_LABEL[s] || s}</button>
-        ))}
-      </div>
-      {!filtered.length ? <EmptyState message="No assignments here. Add one to start tracking." /> : (
-        <div className="space-y-3">
-          {filtered.map((a, i) => (
-            <motion.div key={a.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="glass-card p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="text-[14px] font-semibold text-foreground truncate">{a.title}</p>
-                  <p className="text-[11px] text-muted-foreground">{a.course_code}{a.course_title ? ` · ${a.course_title}` : ""}</p>
-                </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 capitalize ${a.priority === "high" ? "bg-primary/15 text-primary" : "bg-muted/60 text-muted-foreground"}`}>{a.priority}</span>
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2.5 text-[11px]">
-                <span className="text-muted-foreground">Due {a.due_date ? a.due_date.split("T")[0] : "—"}</span>
-                <span className="text-muted-foreground">·</span>
-                <span className="text-foreground/80">{STATUS_LABEL[a.status] || a.status}</span>
-                <span className="text-muted-foreground">·</span>
-                <span className="text-foreground/80 capitalize">{a.submission_type}</span>
-              </div>
-              {a.description && <p className="text-[12px] text-muted-foreground mt-2 leading-relaxed">{a.description}</p>}
-              {a.attachments?.length > 0 && <p className="text-[11px] text-primary mt-2">{a.attachments.length} attachment{a.attachments.length !== 1 ? "s" : ""}</p>}
-              <div className="flex gap-3 mt-3">
-                {!a.__mock && (<>
-                <button onClick={() => openEdit(a)} className="text-[12px] font-semibold text-primary spring-tap">Edit</button>
-                <button onClick={() => del.mutate(a.id)} className="text-[12px] font-semibold text-destructive spring-tap ml-auto">Delete</button>
-                </>)}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+      {/* Progress panel */}
+      {hasAny && <TaskProgressPanel tasks={assignments} completedIds={completedIds} />}
+
+      {/* Bud hint */}
+      <p className="text-[13px] text-muted-foreground/70 px-1 mb-4 leading-relaxed">{budHint}</p>
+
+      {/* Smart sections with swipe */}
+      {hasAny ? (
+        <SmartTaskSections
+          tasks={assignments}
+          onAction={handleAction}
+          onContextMenu={handleContextMenu}
+          completedIds={completedIds}
+        />
+      ) : (
+        <TaskEmptyState />
       )}
 
       <Sheet open={!!editing} onClose={() => setEditing(null)} title={editing?.id ? "Edit Assignment" : "Add Assignment"}>
@@ -107,7 +116,7 @@ export default function Assignments() {
             </div>
             <div>
               <label className="text-[12px] font-semibold text-muted-foreground/90 ml-1">Status</label>
-              <select value={form.status || "pending"} onChange={(e) => setForm({ ...form, status: e.target.value })} className="mt-1.5 w-full h-[52px] px-4 rounded-2xl bg-muted/50 border border-border text-[15px] text-foreground focus:outline-none focus:border-primary/60">{["pending", "in_progress", "submitted", "graded", "late"].map((p) => <option key={p} value={p}>{STATUS_LABEL[p]}</option>)}</select>
+              <select value={form.status || "pending"} onChange={(e) => setForm({ ...form, status: e.target.value })} className="mt-1.5 w-full h-[52px] px-4 rounded-2xl bg-muted/50 border border-border text-[15px] text-foreground focus:outline-none focus:border-primary/60 capitalize">{["pending", "in_progress", "submitted", "graded", "late"].map((p) => <option key={p} value={p}>{p.replace("_", " ")}</option>)}</select>
             </div>
           </div>
           <div>
