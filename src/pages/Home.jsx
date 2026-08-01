@@ -36,12 +36,12 @@ export default function Home() {
 
   return (
     <PullToRefresh onRefresh={refreshHome}>
-      <div className="w-full max-w-[520px] mx-auto px-5 pt-8 pb-36 safe-area-pt">
+      <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-36 safe-area-pt">
         {/* Greeting */}
         <HomeHeader user={ctx.user} greeting={plan.greeting} />
 
         {/* Search — the heart of the OS */}
-        <div className="mt-6">
+        <div className="mt-5">
           <FloatingSearch />
         </div>
 
@@ -50,56 +50,43 @@ export default function Home() {
           <BudHero message={plan.message} />
         </div>
 
-        {/* ── Contextual Content ── */}
-        <div className="h-px bg-border/40 mt-8" />
+        {/* ── Editorial Content Flow ── */}
 
         {/* Today's Schedule */}
-        <div className="mt-6">
+        <div className="mt-10">
           <HomeTodaySchedule nextLecture={ctx.nextLecture} nextLectureIn={ctx.nextLectureIn} />
         </div>
 
-        <div className="h-px bg-border/40 mt-6" />
-
         {/* Assignments Due */}
-        <div className="mt-6">
+        <div className="mt-10">
           <HomeAssignmentsDue assignments={ctx.assignments} />
         </div>
 
-        <div className="h-px bg-border/40 mt-6" />
-
         {/* Spark Team Activity */}
-        <div className="mt-6">
+        <div className="mt-10">
           <HomeSparkActivity />
         </div>
 
-        <div className="h-px bg-border/40 mt-6" />
-
         {/* University Notifications */}
-        <div className="mt-6">
+        <div className="mt-10">
           <HomeUniversityNotifs />
         </div>
 
-        <div className="h-px bg-border/40 mt-6" />
-
         {/* Campus Pulse */}
-        <div className="mt-6">
+        <div className="mt-10">
           <HomeCampusPulse quadPosts={ctx.quadPosts} />
         </div>
 
-        <div className="h-px bg-border/40 mt-6" />
-
         {/* Quick Actions */}
-        <div className="mt-6">
+        <div className="mt-10">
           <QuickActions />
         </div>
 
         {/* Bud Recast */}
         <RecastCard />
 
-        <div className="h-px bg-border/40 mt-6" />
-
         {/* Weather (compact) */}
-        <div className="mt-6">
+        <div className="mt-10">
           <HomeWeatherCompact />
         </div>
       </div>
