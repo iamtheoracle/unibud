@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { SectionHeader, Panel, Btn } from "@/components/management/management-ui";
 import { FileBarChart, Wallet, ArrowLeftRight, RotateCcw, Award, Receipt, Download, FileSpreadsheet, Printer } from "lucide-react";
+import MonthlyFinancialReport from "./MonthlyFinancialReport";
 
 const REPORTS = [
   { id: "revenue", label: "Revenue Report", entity: "FinancialTransaction", icon: FileBarChart },
@@ -37,6 +38,13 @@ export default function FinanceReports({ institutionId }) {
   return (
     <div>
       <SectionHeader title="Financial Reporting" desc="Revenue, payment, wallet, refund, outstanding fees and scholarship reports — export to PDF, Excel or CSV." />
+
+      {/* Monthly transaction summary with growth comparison and integrity verification */}
+      <div className="mb-6">
+        <MonthlyFinancialReport institutionId={institutionId} />
+      </div>
+
+      <h3 className="font-heading font-semibold text-[15px] mb-2">Entity Reports</h3>
       <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
         {REPORTS.map((r) => {
           const Icon = r.icon;

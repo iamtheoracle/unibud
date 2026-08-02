@@ -1,16 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
-
-/**
- * updateProfile — the single, authoritative path for changing a user's
- * identity fields (preferred_name, username, bio, avatar_url, phone).
- *
- *  • Runs as service role so it can enforce username uniqueness across
- *    ALL users and write the update to the real User record.
- *  • Supports `dry_run: true` to validate a username (format + uniqueness)
- *    without persisting — used for live availability checks in the editor.
- *  • Never touches built-in email / full_name (the platform login identifier
- *    and legal name are not changed here).
- */
+import { logAuditEvent } from "../../shared/auditLogger.ts";
 
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
@@ -41,7 +30,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Dry-run: validation only, no persistence.
     if (dry_run) return Response.json({ ok: true });
 
     const updates = {};
@@ -61,6 +49,81 @@ Deno.serve(async (req) => {
     }
 
     await base44.asServiceRole.entities.User.update(user.id, updates);
+
+    // ── Audit logging for significant changes ──
+    const actorName = user.full_name || user.preferred_name || user.email || 'Unknown';
+    const actorRole = user.role || 'student';
+
+    // Username change — security event
+    if (username !== undefined && user.username !== updates.username) {
+      await logAuditEvent(base44, {
+        action: 'username_changed',
+        actor_id: user.id,
+        actor_name: actorName,
+        actor_role: actorRole,
+        target_type: 'user',
+        target_user_id: user.id,
+        details: `Username changed from @${user.username || '(none)'} to @${updates.username}`,
+        previous_value: user.username || null,
+        new_value: updates.username,
+        severity: 'warning',
+        category: 'security',
+      });
+    }
+
+    // University change — major event
+    if (university !== undefined && user.university !== updates.university) {
+      await logAuditEvent(base44, {
+        action: 'university_changed',
+        actor_id: user.id,
+        actor_name: actorName,
+        actor_role: actorRole,
+        target_type: 'user',
+        target_user_id: user.id,
+        details: `University changed from "${user.university || '(none)'}" to "${updates.university}"`,
+        previous_value: user.university || null,
+        new_value: updates.university,
+        severity: 'warning',
+        category: 'account',
+      });
+    }
+
+    // Matriculation number change — verification event
+    if (matriculation_number !== undefined && user.matriculation_number !== updates.matriculation_number) {
+      await logAuditEvent(base44, {
+        action: 'matriculation_updated',
+        actor_id: user.id,
+        actor_name: actorName,
+        actor_role: actorRole,
+        target_type: 'user',
+        target_user_id: user.id,
+        details: 'Matriculation number updated',
+        previous_value: user.matriculation_number || null,
+        new_value: updates.matriculation_number,
+        severity: 'info',
+        category: 'academic',
+      });
+    }
+
+    // General profile update (catches bio, avatar, phone, preferred_name, faculty, department, level)
+    const otherFields = ['preferred_name', 'bio', 'avatar_url', 'phone', 'faculty', 'department', 'level'];
+    const hasOtherChanges = otherFields.some((f) => updates[f] !== undefined && updates[f] !== user[f]);
+    if (hasOtherChanges) {
+      const changedFields = otherFields.filter((f) => updates[f] !== undefined && updates[f] !== user[f]);
+      await logAuditEvent(base44, {
+        action: 'profile_updated',
+        actor_id: user.id,
+        actor_name: actorName,
+        actor_role: actorRole,
+        target_type: 'user',
+        target_user_id: user.id,
+        details: `Profile fields updated: ${changedFields.join(', ')}`,
+        meta: { fields: changedFields },
+        severity: 'info',
+        category: 'account',
+      });
+    }
+
     const fresh = await base44.auth.me();
     return Response.json({ ok: true, user: fresh });
   } catch (error) {
