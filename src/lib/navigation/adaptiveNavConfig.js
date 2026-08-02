@@ -1,59 +1,29 @@
 import {
-  Sparkles, GraduationCap, MessageSquareText, Compass, Users,
-  Search, Plus, ScanLine, CalendarDays, Bell, Camera,
+  Users as SocialIcon,
+  BookOpen as AcademicIcon,
 } from "lucide-react";
 
 /**
- * Adaptive Navigation configuration — the single source of truth for the
- * UNIBUD bottom Adaptive Capsule states and the top Quick Action Capsule.
+ * Adaptive Navigation configuration — simplified to 3 primary destinations.
+ *
+ * UNIBUD is no longer a collection of separate apps. Users navigate between
+ * only three high-level areas:
+ *   - Social    → everything student life (feed, friends, events, marketplace)
+ *   - Academic  → the complete academic workspace (classes, assignments, exams)
+ *   - Me        → personal space (profile, settings, achievements)
+ *
+ * Bud is NOT a navigation item — it's permanently available across the app
+ * through the persistent input and conversational interface.
  */
 
-/** Where each operating mode "lands" when selected from the capsule selector. */
+export const PRIMARY_NAV = [
+  { key: "social", label: "Social", to: "/social", icon: SocialIcon },
+  { key: "academic", label: "Academic", to: "/academics", icon: AcademicIcon },
+  { key: "me", label: "Me", to: "/me", icon: null }, // icon handled separately as a circular profile button
+];
+
+/** Legacy compat — kept for any code still referencing MODE_HOME */
 export const MODE_HOME = {
   academic: "/academics",
   social: "/social",
-};
-
-/** STATE 1 — Mode selector (not navigation). Choosing a mode morphs the capsule. */
-export const MODE_SELECTOR_OPTIONS = [
-  { key: "social", label: "Social", icon: Sparkles },
-  { key: "academic", label: "Academics", icon: GraduationCap },
-];
-
-/**
- * STATE 2 / STATE 3 — Per-mode navigation.
- * Bud lives as the floating AI companion, NOT in the quick-action strip.
- */
-export const MODE_NAV = {
-  social: [
-    { key: "square", label: "Square", to: "/social", icon: MessageSquareText },
-    { key: "discover", label: "Discover", to: "/discover", icon: Compass },
-    { key: "connect", label: "Connect", to: "/connect", icon: Users },
-  ],
-  academic: [
-    { key: "campus", label: "Campus", to: "/academics", icon: GraduationCap },
-    { key: "explore", label: "Explore", to: "/opportunities", icon: Compass },
-    { key: "connect", label: "Connect", to: "/connect", icon: Users },
-  ],
-};
-
-/**
- * Top Quick Action Capsule — contextual actions per mode.
- * Bud is intentionally absent — it lives as the floating companion.
- */
-export const QUICK_ACTIONS = {
-  social: [
-    { key: "search", label: "Search", to: "/discover", icon: Search },
-    { key: "create", label: "Create", to: "/creator-studio", icon: Plus },
-    { key: "camera", label: "Camera", to: "/shorts", icon: Camera },
-    { key: "events", label: "Events", to: "/events", icon: CalendarDays },
-    { key: "alerts", label: "Alerts", to: "/notifications", icon: Bell },
-  ],
-  academic: [
-    { key: "search", label: "Search", to: "/knowledge", icon: Search },
-    { key: "create", label: "Create", to: "/assignments", icon: Plus },
-    { key: "scan", label: "Scan", to: "/study/library", icon: ScanLine },
-    { key: "calendar", label: "Calendar", to: "/calendar", icon: CalendarDays },
-    { key: "alerts", label: "Alerts", to: "/notifications", icon: Bell },
-  ],
 };

@@ -1,53 +1,51 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
-import SocialFeed, { SOCIAL_TABS } from "@/components/social/SocialFeed";
-import SocialForYou from "@/components/social/SocialForYou";
-import ShareSheet from "@/components/social/ShareSheet";
-import ConnectedAccounts from "@/components/social/ConnectedAccounts";
-import SocialAI from "@/components/social/SocialAI";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
+import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
+import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
+
+const EASE = [0.16, 1, 0.3, 1];
 
 /**
- * SocialHub — a unified, AI-curated academic & career feed inside UNIBUD.
- * Not a copy of social media: Bud surfaces campus, community, career and
- * scholarship signals, with opt-in connections and one-tap sharing.
+ * SocialHub — one intelligent social workspace.
+ *
+ * Everything social (feed, friends, events, communities, marketplace,
+ * opportunities, social accounts) lives as modular cards on this single
+ * scrollable page. Bud ranks cards based on context.
  */
 export default function SocialHub() {
-  const [tab, setTab] = useState("foryou");
-  const [share, setShare] = useState(null);
+  // Fetch context signals for the card ranker
+  const { data: events } = useQuery({
+    queryKey: ["social-hub-events"],
+    queryFn: () => base44.entities.CampusEvent.list("-date", 5),
+    staleTime: 120000,
+  });
+  const { data: announcements } = useQuery({
+    queryKey: ["social-hub-announcements"],
+    queryFn: () => base44.entities.QuadPost.filter({ type: "news" }, "-created_date", 3),
+    staleTime: 60000,
+  });
+
+  // Build context and rank cards
+  const rankedCards = useMemo(() => {
+    const baseCards = getCardsForWorkspace("social");
+    const ctx = buildContext({
+      events: events,
+      announcements: announcements,
+    });
+    return rankCards(baseCards, ctx);
+  }, [events, announcements]);
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Curated by Bud</p>
-        <h1 className="font-heading font-bold text-[24px] text-foreground leading-tight">Social</h1>
-        <p className="text-[12px] text-muted-foreground mt-1">Your academic & career world — one calm feed.</p>
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }} className="mb-5">
+        <h1 className="font-heading font-bold text-[28px] text-foreground leading-tight">Social</h1>
+        <p className="text-[12px] text-muted-foreground mt-1">Your campus life — one calm, intelligent feed.</p>
       </motion.div>
 
-      <div className="mt-5">
-        <SocialAI />
-      </div>
-
-      <div className="mt-5 flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
-        {[{ key: "foryou", label: "For You" }, ...SOCIAL_TABS].map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={`flex-shrink-0 px-3.5 h-9 rounded-full text-[12px] font-semibold spring-tap whitespace-nowrap ${tab === t.key ? "bg-primary text-primary-foreground" : "glass text-foreground/80"}`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-4">
-        {tab === "foryou" ? <SocialForYou onShare={setShare} /> : <SocialFeed tab={tab} onShare={setShare} />}
-      </div>
-
-      <div className="mt-6">
-        <ConnectedAccounts />
-      </div>
-
-      <ShareSheet open={!!share} onClose={() => setShare(null)} title={share?.title} text={share?.text} url={share?.url} />
+      <WorkspaceRenderer cards={rankedCards} />
     </div>
   );
 }
