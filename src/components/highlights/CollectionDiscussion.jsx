@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { Search, MessageSquare, Filter } from "lucide-react";
+import { Search, MessageSquare, Filter, CheckCircle2, BookOpen } from "lucide-react";
 import { useCollectionDiscussion } from "@/hooks/useCollectionDiscussion";
 import DiscussionComposer from "./DiscussionComposer";
 import DiscussionCommentItem from "./DiscussionCommentItem";
 import EmptyState from "@/components/ui/EmptyState";
+import TypingIndicator from "./TypingIndicator";
+import { DISCUSSION_TYPES } from "./discussionConstants";
 
 const SORT_OPTIONS = [
   { id: "newest", label: "Newest" },
@@ -25,6 +27,17 @@ export default function CollectionDiscussion({
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [showUnanswered, setShowUnanswered] = useState(false);
+  const [showAccepted, setShowAccepted] = useState(false);
+  const [showRecommended, setShowRecommended] = useState(false);
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimer = useRef(null);
+
+  const handleTyping = () => {
+    setIsTyping(true);
+    if (typingTimer.current) clearTimeout(typingTimer.current);
+    typingTimer.current = setTimeout(() => setIsTyping(false), 3000);
+  };
 
   const sorted = useMemo(() => {
     let list = [...discussion.unpinned];
@@ -39,6 +52,15 @@ export default function CollectionDiscussion({
     if (showUnanswered) {
       list = list.filter((c) => (c.replies_count || 0) === 0);
     }
+    if (showAccepted) {
+      list = list.filter((c) => c.is_answered);
+    }
+    if (showRecommended) {
+      list = list.filter((c) => c.is_recommended);
+    }
+    if (typeFilter !== "all") {
+      list = list.filter((c) => c.discussion_type === typeFilter);
+    }
     list.sort((a, b) => {
       if (sortBy === "newest") return new Date(b.created_date) - new Date(a.created_date);
       if (sortBy === "oldest") return new Date(a.created_date) - new Date(b.created_date);
@@ -46,7 +68,7 @@ export default function CollectionDiscussion({
       return 0;
     });
     return list;
-  }, [discussion.unpinned, search, sortBy, showUnanswered]);
+  }, [discussion.unpinned, search, sortBy, showUnanswered, showAccepted, showRecommended, typeFilter]);
 
   if (discussion.isLoading) {
     return (
@@ -87,6 +109,28 @@ export default function CollectionDiscussion({
               </button>
             ))}
             <button
+              onClick={() => setShowAccepted(!showAccepted)}
+              className={"flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold spring-tap " + (showAccepted ? "bg-foreground text-background" : "glass text-muted-foreground")}
+            >
+              <CheckCircle2 className="w-3 h-3" /> Accepted
+            </button>
+            <button
+              onClick={() => setShowRecommended(!showRecommended)}
+              className={"flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold spring-tap " + (showRecommended ? "bg-foreground text-background" : "glass text-muted-foreground")}
+            >
+              <BookOpen className="w-3 h-3" /> Recommended
+            </button>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-muted/40 border border-border/30 focus:outline-none"
+            >
+              <option value="all">All Types</option>
+              {DISCUSSION_TYPES.filter((t) => t.id !== "none").map((t) => (
+                <option key={t.id} value={t.id}>{t.emoji} {t.label}</option>
+              ))}
+            </select>
+            <button
               onClick={() => setShowUnanswered(!showUnanswered)}
               className={"ml-auto flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold spring-tap " + (showUnanswered ? "bg-foreground text-background" : "glass text-muted-foreground")}
             >
@@ -95,6 +139,8 @@ export default function CollectionDiscussion({
           </div>
         </div>
       )}
+
+      {isTyping && <TypingIndicator />}
 
       <div className="flex-1 overflow-y-auto no-scrollbar space-y-2 mb-3">
         {isEmpty ? (
@@ -137,9 +183,10 @@ export default function CollectionDiscussion({
 
       {canComment && (
         <DiscussionComposer
-          onSubmit={(content, parentId, mediaUrls) => discussion.createComment(content, parentId, mediaUrls)}
+          onSubmit={(content, parentId, mediaUrls, discussionType) => discussion.createComment(content, parentId, mediaUrls, discussionType)}
           collaborators={collaborators}
           placeholder="Ask a question about this collection..."
+          onTyping={handleTyping}
         />
       )}
     </div>

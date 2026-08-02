@@ -57,6 +57,21 @@
         "type": "string"
       }
     },
+    "discussion_type": {
+      "type": "string",
+      "enum": [
+        "none",
+        "question",
+        "insight",
+        "tip",
+        "explanation",
+        "related_resource",
+        "warning",
+        "recommendation"
+      ],
+      "default": "none",
+      "description": "Classification badge for collection discussion comments"
+    },
     "reactions": {
       "type": "object",
       "description": "Aggregate reaction counts: { like: 3, love: 1, ... }"
@@ -81,12 +96,17 @@
     "is_answered": {
       "type": "boolean",
       "default": false,
-      "description": "Marked as answered by collection owner/manager"
+      "description": "Marked as accepted answer by collection owner/manager"
     },
     "is_helpful": {
       "type": "boolean",
       "default": false,
-      "description": "Marked as helpful by collection owner/manager"
+      "description": "Marked as most helpful by collection owner/manager"
+    },
+    "is_recommended": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as recommended reading by collection owner/manager"
     },
     "university": {
       "type": "string"

@@ -3,19 +3,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Send, Smile, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmojiPicker from "@/components/quad/EmojiPicker";
+import { DISCUSSION_TYPES } from "./discussionConstants";
 
 /**
  * DiscussionComposer — rich input for collection discussions.
  * Supports text, emoji, @mentions (collaborator dropdown), and
  * image attachments. Reuses EmojiPicker and UploadFile.
  */
-export default function DiscussionComposer({ onSubmit, collaborators = [], placeholder, disabled }) {
+export default function DiscussionComposer({ onSubmit, collaborators = [], placeholder, disabled, onTyping }) {
   const [content, setContent] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [showMentions, setShowMentions] = useState(false);
   const [mentionQuery, setMentionQuery] = useState("");
   const [uploading, setUploading] = useState(false);
   const [mediaUrls, setMediaUrls] = useState([]);
+  const [selectedType, setSelectedType] = useState("none");
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -29,6 +31,7 @@ export default function DiscussionComposer({ onSubmit, collaborators = [], place
   const handleTextChange = (e) => {
     const val = e.target.value;
     setContent(val);
+    onTyping?.();
     const pos = e.target.selectionStart;
     const before = val.slice(0, pos);
     const match = before.match(/@(\w*)$/);
@@ -70,9 +73,10 @@ export default function DiscussionComposer({ onSubmit, collaborators = [], place
 
   const handleSubmit = () => {
     if ((!content.trim() && mediaUrls.length === 0) || disabled) return;
-    onSubmit(content.trim(), null, mediaUrls);
+    onSubmit(content.trim(), null, mediaUrls, selectedType);
     setContent("");
     setMediaUrls([]);
+    setSelectedType("none");
     setShowEmoji(false);
     setShowMentions(false);
   };
@@ -109,6 +113,18 @@ export default function DiscussionComposer({ onSubmit, collaborators = [], place
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="flex gap-1 overflow-x-auto no-scrollbar mb-2">
+        {DISCUSSION_TYPES.filter((t) => t.id !== "none").map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setSelectedType(selectedType === t.id ? "none" : t.id)}
+            className={"flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-semibold whitespace-nowrap spring-tap " + (selectedType === t.id ? "bg-foreground text-background" : "glass text-muted-foreground")}
+          >
+            <span>{t.emoji}</span> {t.label}
+          </button>
+        ))}
+      </div>
 
       {mediaUrls.length > 0 && (
         <div className="flex gap-2 mb-2">

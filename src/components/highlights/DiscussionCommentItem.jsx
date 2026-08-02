@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Pin, CheckCircle2, Star, MoreHorizontal, Reply, Edit3, Trash2,
-  Link2, Flag, ChevronDown, ChevronUp,
+  Link2, Flag, ChevronDown, ChevronUp, BookOpen, Share2,
 } from "lucide-react";
 import { REACTIONS, timeAgo, renderRichContent } from "@/components/quad/quadConstants";
+import { DISCUSSION_TYPES } from "./discussionConstants";
 import { useToast } from "@/components/ui/use-toast";
 import { base44 } from "@/api/base44Client";
 import DiscussionComposer from "./DiscussionComposer";
@@ -44,6 +45,17 @@ export default function DiscussionCommentItem({
     setShowActions(false);
   };
 
+  const shareComment = async () => {
+    const url = `${window.location.origin}/highlights?comment=${comment.id}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: "Collection discussion", url }); } catch {}
+    } else {
+      navigator.clipboard?.writeText(url);
+      toast({ title: "Link copied!" });
+    }
+    setShowActions(false);
+  };
+
   const report = async () => {
     try {
       await base44.entities.ContentReport.create({
@@ -80,9 +92,15 @@ export default function DiscussionCommentItem({
           <span className="text-[9px] text-muted-foreground/60">{timeAgo(comment.created_date)}</span>
           {comment.is_edited && <span className="text-[8px] text-muted-foreground/40 italic">edited</span>}
           <div className="flex items-center gap-1 ml-auto">
+            {comment.discussion_type && comment.discussion_type !== "none" && (
+              <span className="flex items-center gap-0.5 text-[8px] font-bold text-muted-foreground px-1.5 py-0.5 rounded-full bg-muted/40">
+                {DISCUSSION_TYPES.find((t) => t.id === comment.discussion_type)?.emoji} {DISCUSSION_TYPES.find((t) => t.id === comment.discussion_type)?.label}
+              </span>
+            )}
             {comment.is_pinned && <span className="flex items-center gap-0.5 text-[8px] font-bold text-primary"><Pin className="w-2.5 h-2.5" />Pinned</span>}
             {comment.is_answered && <span className="flex items-center gap-0.5 text-[8px] font-bold text-success"><CheckCircle2 className="w-2.5 h-2.5" />Answered</span>}
             {comment.is_helpful && <span className="flex items-center gap-0.5 text-[8px] font-bold text-gold"><Star className="w-2.5 h-2.5" />Helpful</span>}
+            {comment.is_recommended && <span className="flex items-center gap-0.5 text-[8px] font-bold text-information"><BookOpen className="w-2.5 h-2.5" />Recommended</span>}
           </div>
         </div>
 
@@ -189,8 +207,14 @@ export default function DiscussionCommentItem({
                       <button onClick={() => { discussion.toggleHelpful(comment.id); setShowActions(false); }} className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-muted text-[11px] font-medium text-left">
                         <Star className="w-3 h-3" /> {comment.is_helpful ? "Unmark helpful" : "Mark helpful"}
                       </button>
+                      <button onClick={() => { discussion.toggleRecommended(comment.id); setShowActions(false); }} className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-muted text-[11px] font-medium text-left">
+                        <BookOpen className="w-3 h-3" /> {comment.is_recommended ? "Unrecommend" : "Recommend Reading"}
+                      </button>
                     </>
                   )}
+                  <button onClick={shareComment} className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-muted text-[11px] font-medium text-left">
+                    <Share2 className="w-3 h-3" /> Share
+                  </button>
                   <button onClick={copyLink} className="w-full flex items-center gap-2 p-2 rounded-xl hover:bg-muted text-[11px] font-medium text-left">
                     <Link2 className="w-3 h-3" /> Copy Link
                   </button>
@@ -218,8 +242,8 @@ export default function DiscussionCommentItem({
             className="overflow-hidden ml-4 mt-2"
           >
             <DiscussionComposer
-              onSubmit={(content, _parentId, mediaUrls) => {
-                discussion.createComment(content, comment.id, mediaUrls);
+              onSubmit={(content, _parentId, mediaUrls, discussionType) => {
+                discussion.createComment(content, comment.id, mediaUrls, discussionType);
                 setReplying(false);
               }}
               collaborators={collaborators}

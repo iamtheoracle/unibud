@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { extractMentions, getUserReaction, setUserReaction } from "@/components/quad/quadConstants";
+import { extractMentions, getUserReaction, setUserReaction, REACTIONS } from "@/components/quad/quadConstants";
 
 /**
  * useCollectionDiscussion — manages threaded discussions for shared
@@ -46,7 +46,7 @@ export function useCollectionDiscussion(collectionId, itemId, collaborators = []
   const pinned = threads.filter((c) => c.is_pinned);
   const unpinned = threads.filter((c) => !c.is_pinned);
 
-  const createComment = async (content, parentId = null, mediaUrls = []) => {
+  const createComment = async (content, parentId = null, mediaUrls = [], discussionType = "none") => {
     const mentions = extractMentions(content);
     await base44.entities.QuadComment.create({
       post_id: collectionId,
@@ -59,6 +59,7 @@ export function useCollectionDiscussion(collectionId, itemId, collaborators = []
       parent_id: parentId || "",
       mentions,
       media_urls: mediaUrls,
+      discussion_type: discussionType,
       reactions: {},
       likes_count: 0,
       replies_count: 0,
@@ -66,6 +67,7 @@ export function useCollectionDiscussion(collectionId, itemId, collaborators = []
       is_pinned: false,
       is_answered: false,
       is_helpful: false,
+      is_recommended: false,
       university: user?.university || "",
     });
 
@@ -151,10 +153,27 @@ export function useCollectionDiscussion(collectionId, itemId, collaborators = []
       setUserReaction(commentId, reactionId);
     }
     const total = Object.values(reactions).reduce((a, b) => a + b, 0);
+    const isAdding = current !== reactionId;
     await base44.entities.QuadComment.update(commentId, {
       reactions,
       likes_count: total,
     });
+    if (isAdding && comment?.created_by_id && comment.created_by_id !== userId) {
+      const emoji = REACTIONS.find((r) => r.id === reactionId)?.emoji || "";
+      try {
+        await base44.entities.Notification.create({
+          title: "New reaction",
+          message: `${userName} reacted ${emoji} to your comment in "${collectionId}"`,
+          type: "social",
+          category: "social",
+          user_id: comment.created_by_id,
+          link: `${window.location.origin}/highlights?collection=${encodeURIComponent(collectionId)}`,
+          icon: "Heart",
+          source: "highlights",
+          action: "comment_reaction",
+        });
+      } catch {}
+    }
     queryClient.invalidateQueries({ queryKey });
   };
 
@@ -168,17 +187,73 @@ export function useCollectionDiscussion(collectionId, itemId, collaborators = []
 
   const toggleAnswered = async (commentId) => {
     const comment = comments.find((c) => c.id === commentId);
+    const newAnswered = !comment?.is_answered;
     await base44.entities.QuadComment.update(commentId, {
-      is_answered: !comment?.is_answered,
+      is_answered: newAnswered,
     });
+    if (newAnswered && comment?.created_by_id && comment.created_by_id !== userId) {
+      try {
+        await base44.entities.Notification.create({
+          title: "Answer accepted",
+          message: `${userName} accepted your answer in "${collectionId}"`,
+          type: "social",
+          category: "social",
+          user_id: comment.created_by_id,
+          link: `${window.location.origin}/highlights?collection=${encodeURIComponent(collectionId)}`,
+          icon: "CheckCircle2",
+          source: "highlights",
+          action: "answer_accepted",
+        });
+      } catch {}
+    }
     queryClient.invalidateQueries({ queryKey });
   };
 
   const toggleHelpful = async (commentId) => {
     const comment = comments.find((c) => c.id === commentId);
+    const newHelpful = !comment?.is_helpful;
     await base44.entities.QuadComment.update(commentId, {
-      is_helpful: !comment?.is_helpful,
+      is_helpful: newHelpful,
     });
+    if (newHelpful && comment?.created_by_id && comment.created_by_id !== userId) {
+      try {
+        await base44.entities.Notification.create({
+          title: "Marked as Most Helpful",
+          message: `${userName} marked your comment as Most Helpful in "${collectionId}"`,
+          type: "social",
+          category: "social",
+          user_id: comment.created_by_id,
+          link: `${window.location.origin}/highlights?collection=${encodeURIComponent(collectionId)}`,
+          icon: "Star",
+          source: "highlights",
+          action: "marked_helpful",
+        });
+      } catch {}
+    }
+    queryClient.invalidateQueries({ queryKey });
+  };
+
+  const toggleRecommended = async (commentId) => {
+    const comment = comments.find((c) => c.id === commentId);
+    const newRecommended = !comment?.is_recommended;
+    await base44.entities.QuadComment.update(commentId, {
+      is_recommended: newRecommended,
+    });
+    if (newRecommended && comment?.created_by_id && comment.created_by_id !== userId) {
+      try {
+        await base44.entities.Notification.create({
+          title: "Recommended Reading",
+          message: `${userName} marked your comment as Recommended Reading in "${collectionId}"`,
+          type: "social",
+          category: "social",
+          user_id: comment.created_by_id,
+          link: `${window.location.origin}/highlights?collection=${encodeURIComponent(collectionId)}`,
+          icon: "BookOpen",
+          source: "highlights",
+          action: "marked_recommended",
+        });
+      } catch {}
+    }
     queryClient.invalidateQueries({ queryKey });
   };
 
@@ -195,6 +270,7 @@ export function useCollectionDiscussion(collectionId, itemId, collaborators = []
     togglePin,
     toggleAnswered,
     toggleHelpful,
+    toggleRecommended,
     isAuthor: (comment) => comment.created_by_id === userId,
     userReaction: (commentId) => getUserReaction(commentId),
   };
