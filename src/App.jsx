@@ -91,6 +91,7 @@ const Opportunities = lazy(() => import("@/pages/Opportunities"));
 const Scholarships = lazy(() => import("@/pages/Scholarships"));
 const ResearchHub = lazy(() => import("@/pages/ResearchHub"));
 const CareerHub = lazy(() => import("@/pages/CareerHub"));
+const CareerCenter = lazy(() => import("@/pages/career/CareerCenter"));
 const Companies = lazy(() => import("@/pages/Companies"));
 const Portfolio = lazy(() => import("@/pages/Portfolio"));
 const CVBuilder = lazy(() => import("@/pages/CVBuilder"));
@@ -347,6 +348,7 @@ function App() {
                     <Route path="/scholarships" element={<Scholarships />} />
                     <Route path="/research" element={<ResearchHub />} />
                     <Route path="/career" element={<CareerHub />} />
+                    <Route path="/career-center" element={<CareerCenter />} />
                     <Route path="/companies" element={<Companies />} />
                     <Route path="/portfolio" element={<Portfolio />} />
                     <Route path="/cv-builder" element={<CVBuilder />} />
