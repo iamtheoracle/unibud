@@ -120,6 +120,7 @@ export const HUB_REGISTRY = {
     entity: "Course",
     entityFilter: {},
     budTip: "I join every study session to help you learn.",
+    isAcademic: true,
   },
   discussions: {
     id: "discussions",

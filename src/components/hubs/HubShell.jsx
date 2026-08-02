@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, Share2, Bell, Search, Users, Sparkles } from "lucide-react";
+import { ChevronLeft, Share2, Bell, Search, Users } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
+import OrbitBadge from "@/components/hubs/OrbitBadge";
+import BudStudyCompanion from "@/components/hubs/BudStudyCompanion";
+import BudInviteBar from "@/components/hubs/BudInviteBar";
 
 /**
  * HubShell — the shared foundation every hub uses.
@@ -123,18 +126,27 @@ export default function HubShell({ hub, children }) {
         </div>
       </div>
 
-      {/* ── Bud suggestion ── */}
-      <div className="px-5 pb-4">
-        <div className="flex items-center gap-2.5 p-3 rounded-[16px] glass-card">
-          <div className="w-8 h-8 rounded-full bg-primary/10 grid place-items-center shrink-0">
-            <Sparkles className="w-4 h-4 text-primary" />
-          </div>
-          <p className="text-[12px] text-muted-foreground leading-relaxed">{hub.budTip}</p>
-        </div>
+      {/* ── Orbit badge — communities belong to Orbit, not Bud ── */}
+      <div className="px-5 pb-3">
+        <OrbitBadge />
       </div>
+
+      {/* ── Bud study companion (academic hubs only) ── */}
+      {hub.isAcademic && (
+        <div className="px-5 pb-4">
+          <BudStudyCompanion hub={hub} />
+        </div>
+      )}
 
       {/* ── Content ── */}
       <div className="px-5">{children}</div>
+
+      {/* ── @Bud invite bar (non-academic hubs — Bud joins when invited, then leaves) ── */}
+      {!hub.isAcademic && (
+        <div className="px-5 pt-4">
+          <BudInviteBar hub={hub} />
+        </div>
+      )}
     </div>
   );
 }
