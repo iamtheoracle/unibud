@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, LayoutGrid, Building2, Compass, MessagesSquare, User,
-  ShieldAlert, Check, X, FileText,
+  ShieldAlert, Check, X, FileText, ShieldCheck, AlertTriangle, Loader2,
 } from "lucide-react";
 import {
   CONTENT_ARCH_PREAMBLE,
@@ -12,6 +13,8 @@ import {
   CONTENT_ARCH_RULES,
   CONTENT_ARCH_GLOBAL_RULE,
 } from "@/lib/constitution/contentArchitecture";
+import { runContentArchitectureValidation, ALLOWED_USER_VISIBILITY, RESTRICTED_VISIBILITY } from "@/lib/constitution/contentArchitectureValidator";
+import { base44 } from "@/api/base44Client";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -147,6 +150,9 @@ export default function ContentArchitecture() {
         );
       })}
 
+      {/* Live Validation */}
+      <LiveValidationPanel />
+
       {/* Internal OS Layer */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
@@ -198,5 +204,91 @@ export default function ContentArchitecture() {
         ))}
       </motion.div>
     </div>
+  );
+}
+
+/**
+ * LiveValidationPanel — fetches a small sample from each user-facing space
+ * and runs the content architecture validator to confirm no system documents
+ * or restricted-visibility records can leak through.
+ */
+function LiveValidationPanel() {
+  const { data: validation, isLoading } = useQuery({
+    queryKey: ["contentArchitectureValidation"],
+    queryFn: async () => {
+      const [posts, events, clubs, communities, marketplace, opportunities] = await Promise.all([
+        base44.entities.QuadPost.list("-created_date", 20).catch(() => []),
+        base44.entities.CampusEvent.list("-created_date", 10).catch(() => []),
+        base44.entities.Club.list("-created_date", 10).catch(() => []),
+        base44.entities.Community.list("-created_date", 10).catch(() => []),
+        base44.entities.MarketplaceListing.list("-created_date", 10).catch(() => []),
+        base44.entities.Opportunity.list("-created_date", 10).catch(() => []),
+      ]);
+      return runContentArchitectureValidation({
+        square: posts,
+        campus: [...events, ...clubs],
+        discovery: [...communities, ...marketplace, ...opportunities],
+        quad: posts,
+        me: [],
+      });
+    },
+    staleTime: 60000,
+  });
+
+  const passed = validation?.passed ?? false;
+  const totalViolations = validation?.totalViolations ?? 0;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: EASE, delay: 0.12 }}
+      className={`glass rounded-2xl p-4 mb-6 border ${passed ? "border-success/20" : "border-destructive/20"}`}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        {isLoading ? (
+          <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+        ) : passed ? (
+          <ShieldCheck className="w-4 h-4 text-success" />
+        ) : (
+          <AlertTriangle className="w-4 h-4 text-destructive" />
+        )}
+        <p className="text-[13px] font-bold text-foreground">Runtime Validation</p>
+        {!isLoading && (
+          <span className={`ml-auto text-[11px] font-bold px-2 py-0.5 rounded-full ${passed ? "bg-success/15 text-success" : "bg-destructive/15 text-destructive"}`}>
+            {passed ? "PASSED" : "FAILED"}
+          </span>
+        )}
+      </div>
+      {isLoading ? (
+        <p className="text-[11px] text-muted-foreground">Scanning feeds for system document leaks…</p>
+      ) : (
+        <>
+          <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">
+            Live check across {validation?.spacesChecked || 5} user spaces. {totalViolations === 0
+              ? "No system documents or restricted-visibility records detected in user-facing feeds."
+              : `${totalViolations} violation(s) detected — system documents are leaking into user spaces.`}
+          </p>
+          <div className="space-y-1.5">
+            {validation?.results?.map((r) => (
+              <div key={r.space} className="flex items-center justify-between text-[11px]">
+                <span className="capitalize text-muted-foreground">{r.space}</span>
+                <span className={`font-semibold ${r.valid ? "text-success" : "text-destructive"}`}>
+                  {r.valid ? "Clean" : `${r.violations.length} leak(s)`}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 pt-3 border-t border-border/30 flex flex-wrap gap-1.5">
+            {ALLOWED_USER_VISIBILITY.map((v) => (
+              <span key={v} className="px-1.5 py-0.5 rounded bg-success/10 text-[9px] font-bold text-success">{v}</span>
+            ))}
+            {RESTRICTED_VISIBILITY.map((v) => (
+              <span key={v} className="px-1.5 py-0.5 rounded bg-destructive/10 text-[9px] font-bold text-destructive line-through">{v}</span>
+            ))}
+          </div>
+        </>
+      )}
+    </motion.div>
   );
 }

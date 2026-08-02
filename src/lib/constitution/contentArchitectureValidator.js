@@ -15,6 +15,25 @@
 
 import { CONTENT_ARCH_GLOBAL_RULE } from "@/lib/constitution/contentArchitecture";
 
+// ── Visibility Model ──
+// Every content item must include a visibility level.
+// Only these levels are allowed in user-facing spaces.
+export const ALLOWED_USER_VISIBILITY = [
+  "public",
+  "campus",
+  "followers",
+  "friends",
+  "club",
+  "department",
+  "faculty",
+];
+
+// These visibility levels are NEVER returned in user-facing spaces.
+export const RESTRICTED_VISIBILITY = ["admin", "founder", "system"];
+
+// All valid visibility values (for schema validation).
+export const ALL_VISIBILITY_LEVELS = [...ALLOWED_USER_VISIBILITY, ...RESTRICTED_VISIBILITY];
+
 // ── Patterns that indicate an internal OS document ──
 // If any user-facing record matches these, it is treated as a system document
 // leak and removed from the feed immediately.
@@ -196,16 +215,111 @@ export function validateAllUserSpaces(feeds = {}) {
 }
 
 /**
- * Wraps an entity feed query to automatically filter system documents.
- * Use this as a query transformation in React Query pipelines.
+ * Checks if a record has a restricted visibility level (admin/founder/system).
+ * Such records must never appear in user-facing spaces.
+ */
+export function hasRestrictedVisibility(record) {
+  if (!record || typeof record !== "object") return false;
+  const vis = record.visibility;
+  if (!vis) return false; // No visibility set = user-facing by default
+  return RESTRICTED_VISIBILITY.includes(vis);
+}
+
+/**
+ * Unified content gate: filters both system-document leaks AND restricted
+ * visibility records from a feed result set. This is the single function
+ * every user-facing feed, search, recommendation, and notification pipeline
+ * must pass results through before rendering.
+ *
+ * @param {Array} records - Feed results from entity queries
+ * @param {Object} options - { space: 'square'|'campus'|'discovery'|'quad'|'me', allowSystem: false }
+ * @returns {Array} Filtered records safe for user-facing display
+ */
+export function filterUserFacing(records, options = {}) {
+  if (!Array.isArray(records)) return [];
+  const { space = "unknown", allowSystem = false } = options;
+
+  const filtered = records.filter((record) => {
+    // System document leak check
+    if (isSystemDocumentLeak(record)) return false;
+    // Restricted visibility check (unless Founder/Admin mode explicitly allows it)
+    if (!allowSystem && hasRestrictedVisibility(record)) return false;
+    return true;
+  });
+
+  if (import.meta.env?.DEV && filtered.length < records.length) {
+    const removed = records.length - filtered.length;
+    console.warn(
+      `[ContentArchitecture] Removed ${removed} restricted record(s) from ${space} feed`
+    );
+  }
+
+  return filtered;
+}
+
+/**
+ * Wraps an entity feed query to automatically filter system documents
+ * and restricted-visibility records.
  *
  * @param {Function} queryFn - Original query function returning records
  * @param {String} space - Which user space this feed serves
- * @returns {Function} Wrapped query function that filters system documents
+ * @param {Object} options - { allowSystem: false }
+ * @returns {Function} Wrapped query function that enforces content architecture
  */
-export function withSystemDocumentFilter(queryFn, space = "unknown") {
+export function withContentGate(queryFn, space = "unknown", options = {}) {
   return async (...args) => {
     const records = await queryFn(...args);
-    return filterSystemDocuments(records, { space });
+    return filterUserFacing(records, { space, ...options });
+  };
+}
+
+// Backward-compatible alias
+export const withSystemDocumentFilter = withContentGate;
+
+/**
+ * Runs a comprehensive content architecture validation across all user spaces.
+ * Returns a summary with per-space checks and overall pass/fail status.
+ *
+ * @param {Object} feeds - { square: [...], campus: [...], discovery: [...], quad: [...], me: [...] }
+ * @param {Object} options - { allowSystem: false }
+ * @returns {Object} { passed: boolean, results: Array, totalViolations: number }
+ */
+export function runContentArchitectureValidation(feeds = {}, options = {}) {
+  const spaces = ["square", "campus", "discovery", "quad", "me"];
+  const results = spaces.map((space) => {
+    const records = feeds[space] || [];
+    const visResult = validateFeedSpace(records, space);
+
+    // Also check for restricted visibility
+    const restrictedVis = records.filter((r) => hasRestrictedVisibility(r));
+    const systemDocs = records.filter((r) => isSystemDocumentLeak(r));
+
+    return {
+      space,
+      valid: visResult.valid && restrictedVis.length === 0,
+      checked: records.length,
+      systemDocumentLeaks: systemDocs.length,
+      restrictedVisibilityLeaks: restrictedVis.length,
+      violations: [
+        ...visResult.violations,
+        ...restrictedVis.map((r, i) => ({
+          index: i,
+          id: r.id || "unknown",
+          space,
+          reason: `Restricted visibility: ${r.visibility}`,
+        })),
+      ],
+    };
+  });
+
+  const totalViolations = results.reduce((sum, r) => sum + r.violations.length, 0);
+
+  return {
+    passed: totalViolations === 0,
+    results,
+    totalViolations,
+    spacesChecked: spaces.length,
+    rule: CONTENT_ARCH_GLOBAL_RULE.rule,
+    allowSystem: options.allowSystem || false,
   };
 }

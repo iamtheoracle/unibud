@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { filterUserFacing } from "@/lib/constitution/contentArchitectureValidator";
 
 /**
  * Universal Campus Search — searches across all UNIBUD entity types in parallel.
@@ -57,7 +58,7 @@ async function searchEntity(entityName, fields, limit, query) {
     const results = await base44.entities[entityName].list("-updated_date", limit * 2);
     if (!results || !Array.isArray(results)) return [];
     const lower = query.toLowerCase();
-    return results
+    return filterUserFacing(results, { space: "discovery" })
       .filter((item) =>
         fields.some((f) => {
           const val = item[f];
