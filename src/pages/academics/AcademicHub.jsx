@@ -9,6 +9,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { useAcademicData } from "@/lib/academic/useAcademicData";
 import { ACADEMIC_CATEGORIES } from "@/lib/academics/registry";
+import OrbitBuildingCard from "@/components/academics/OrbitBuildingCard";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -28,7 +29,7 @@ function dueLabel(days) {
 
 /** AcademicHub — the premium, editorial front door to the academic OS. */
 export default function AcademicHub() {
-  const { nextClass, nextDeadline, gpa, today, loading } = useAcademicData();
+  const { nextClass, nextDeadline, gpa, today, loading, orbitActive } = useAcademicData();
   const [q, setQ] = useState("");
 
   const { data: assignments } = useQuery({
@@ -71,6 +72,15 @@ export default function AcademicHub() {
         />
       </div>
 
+      {/* Orbit Building State */}
+      {orbitActive && (
+        <section className="mt-8">
+          <OrbitBuildingCard />
+        </section>
+      )}
+
+      {!orbitActive && (
+      <>
       {/* Stats — divider-based */}
       <div className="mt-8 flex">
         <StatTile
@@ -162,6 +172,8 @@ export default function AcademicHub() {
           <SummaryRow to="/courses" icon={BookOpen} label="Courses" value="All courses" />
         </div>
       </section>
+      </>
+      )}
 
       {/* Search results */}
       {q.trim() && (

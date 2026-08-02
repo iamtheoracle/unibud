@@ -57,11 +57,13 @@ export function useAcademicData() {
   const loading = today.isLoading || deadlines.isLoading || gpa.isLoading;
   const nextClass = (today.data || []).find((s) => s.status !== "done") || null;
   const nextDeadline = (deadlines.data || []).find((d) => d.dueInDays >= 0) || (deadlines.data || [])[0] || null;
+  const orbitActive = loading && !today.data && !deadlines.data && !gpa.data;
   return {
     today: today.data || [],
     nextClass,
     nextDeadline,
     gpa: gpa.data || null,
     loading,
+    orbitActive,
   };
 }

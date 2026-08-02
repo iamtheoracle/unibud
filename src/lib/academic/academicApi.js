@@ -1,26 +1,13 @@
 /**
- * UNIBUD Academic — mock API service.
+ * UNIBUD Academic — Orbit-powered API service.
  *
- * Returns realistic academic data with simulated latency. Structured so a
- * real base44 entity-backed implementation can drop in later without changing
- * the hook signatures. Every method is async and returns plain JSON.
+ * Blank by default. When data is requested, Orbit browses the web to build
+ * a realistic academic profile for the student's university and program.
+ * The Orbit generation is cached and shared across all consumers.
  */
-import {
-  ACADEMIC_STUDENT,
-  ACADEMIC_COURSES_MOCK,
-  ACADEMIC_TIMETABLE_MOCK,
-  ACADEMIC_ASSIGNMENTS_MOCK,
-  ACADEMIC_EXAMS_MOCK,
-  ACADEMIC_GPA_MOCK,
-  ACADEMIC_ATTENDANCE_MOCK,
-  ACADEMIC_STATS_MOCK,
-  ACADEMIC_CALENDAR_MOCK,
-} from "./mockData";
+import { getOrbitData } from "./orbitPopulate";
 
-const LATENCY = 350;
-const wait = (ms = LATENCY) => new Promise((r) => setTimeout(r, ms));
-
-const courseById = (id) => ACADEMIC_COURSES_MOCK.find((c) => c.id === id);
+const courseById = (courses, id) => (courses || []).find((c) => c.id === id);
 
 function daysFromNowISO(n) {
   const d = new Date();
@@ -28,7 +15,6 @@ function daysFromNowISO(n) {
   return d.toISOString();
 }
 
-/** "HH:MM" today -> minutes since midnight. */
 function toMin(hm) {
   const [h, m] = hm.split(":").map(Number);
   return h * 60 + m;
@@ -46,21 +32,21 @@ function classStatus(start, end) {
 
 export const academicApi = {
   async getStudent() {
-    await wait(120);
-    return ACADEMIC_STUDENT;
+    const data = await getOrbitData();
+    return data.student || {};
   },
 
   async getCourses() {
-    await wait();
-    return ACADEMIC_COURSES_MOCK;
+    const data = await getOrbitData();
+    return data.courses || [];
   },
 
   async getTodaySchedule() {
-    await wait();
+    const data = await getOrbitData();
     const day = new Date().getDay();
-    const slots = ACADEMIC_TIMETABLE_MOCK[day] || [];
+    const slots = (data.timetableSlots || []).filter((s) => s.day === day);
     return slots.map((s) => {
-      const course = courseById(s.courseId);
+      const course = courseById(data.courses, s.courseId);
       return {
         ...s,
         course,
@@ -73,60 +59,63 @@ export const academicApi = {
   },
 
   async getUpcomingDeadlines() {
-    await wait();
-    const assignments = ACADEMIC_ASSIGNMENTS_MOCK.map((a) => {
-      const course = courseById(a.courseId);
-      return {
-        ...a,
-        course,
-        code: course?.code,
-        color: course?.color,
-        dueDate: daysFromNowISO(a.dueInDays),
-        dueInDays: a.dueInDays,
-      };
-    });
-    // Overdue first, then nearest due first.
-    return assignments.sort((a, b) => a.dueInDays - b.dueInDays);
+    const data = await getOrbitData();
+    return (data.assignments || [])
+      .map((a) => {
+        const course = courseById(data.courses, a.courseId);
+        return {
+          ...a,
+          course,
+          code: course?.code,
+          color: course?.color,
+          dueDate: daysFromNowISO(a.dueInDays),
+          dueInDays: a.dueInDays,
+        };
+      })
+      .sort((a, b) => a.dueInDays - b.dueInDays);
   },
 
   async getExams() {
-    await wait();
-    return ACADEMIC_EXAMS_MOCK.map((e) => {
-      const course = courseById(e.courseId);
-      return {
-        ...e,
-        course,
-        code: course?.code,
-        color: course?.color,
-        date: daysFromNowISO(e.inDays),
-        inDays: e.inDays,
-      };
-    }).sort((a, b) => a.inDays - b.inDays);
+    const data = await getOrbitData();
+    return (data.exams || [])
+      .map((e) => {
+        const course = courseById(data.courses, e.courseId);
+        return {
+          ...e,
+          course,
+          code: course?.code,
+          color: course?.color,
+          date: daysFromNowISO(e.inDays),
+          inDays: e.inDays,
+        };
+      })
+      .sort((a, b) => a.inDays - b.inDays);
   },
 
   async getGpa() {
-    await wait();
-    return ACADEMIC_GPA_MOCK;
+    const data = await getOrbitData();
+    return data.gpa || null;
   },
 
   async getAttendance() {
-    await wait(260);
+    const data = await getOrbitData();
+    const attendance = data.attendance || { overall: 0, perCourse: [] };
     return {
-      ...ACADEMIC_ATTENDANCE_MOCK,
-      perCourse: ACADEMIC_ATTENDANCE_MOCK.perCourse.map((p) => ({
+      ...attendance,
+      perCourse: (attendance.perCourse || []).map((p) => ({
         ...p,
-        course: courseById(p.courseId),
+        course: courseById(data.courses, p.courseId),
       })),
     };
   },
 
   async getStudyStats() {
-    await wait(260);
-    return ACADEMIC_STATS_MOCK;
+    const data = await getOrbitData();
+    return data.stats || { streakDays: 0, weekStudyHours: 0, focusSessions: 0, avgSessionMin: 0 };
   },
 
   async getAcademicCalendar() {
-    await wait(260);
-    return ACADEMIC_CALENDAR_MOCK;
+    const data = await getOrbitData();
+    return data.calendar || [];
   },
 };
