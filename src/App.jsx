@@ -202,6 +202,7 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <DemoModeProvider>
           <ExperienceProvider>
+            <SearchProvider>
             <Router>
               <ScrollToTop />
               <Suspense fallback={<RouteLoading />}>
@@ -343,6 +344,7 @@ function App() {
               </Suspense>
               <Toaster />
             </Router>
+            </SearchProvider>
           </ExperienceProvider>
           </DemoModeProvider>
         </QueryClientProvider>

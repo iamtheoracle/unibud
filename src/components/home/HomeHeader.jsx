@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Bell, Search } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { resolveFirstName } from "@/lib/userDisplayName";
-import { useSearch } from "@/lib/search/SearchContext";
+import { useSearch } from "@/lib/SearchContext";
 import { useQuery } from "@tanstack/react-query";
 
 const CREAM = "#F7F0E8";
@@ -31,8 +31,8 @@ function getMotivation() {
 }
 
 export default function HomeHeader() {
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { openSearch } = useSearch();
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: notifs } = useQuery({
     queryKey: ["home-unread-notifs"],
     queryFn: () => base44.entities.Notification.filter({ is_read: false }, "-created_date", 1),
