@@ -20,7 +20,7 @@ export default function Welcome() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
-      if (authed) navigate("/home", { replace: true });
+      if (authed) navigate("/academics", { replace: true });
     });
     const t = setTimeout(() => setShowWhiteFade(false), 50);
     return () => clearTimeout(t);
@@ -128,7 +128,7 @@ export default function Welcome() {
           animate={{ opacity: 1, y: 0 }}
           transition={reduceMotion ? { duration: 0.4, ease: EASE, delay: d.signup } : { type: "spring", stiffness: 400, damping: 30, delay: d.signup }}
           className="relative w-full h-[52px] rounded-full font-semibold text-[15px] text-white spring-tap overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-          style={{ background: "linear-gradient(135deg, #1E2A44 0%, #2B3D66 100%)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12), 0 4px 20px rgba(30,42,68,0.35)" }}
+          style={{ background: "linear-gradient(135deg, #FF7A00 0%, #4A2C1D 100%)", boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 20px rgba(255,122,0,0.30)" }}
           aria-label="Sign up for UNIBUD"
         >
           <span className="absolute inset-0 bg-gradient-to-b from-white/8 to-transparent rounded-full" />

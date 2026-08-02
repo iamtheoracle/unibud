@@ -12,8 +12,8 @@ const BG_URL = "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/
 
 /**
  * Splash — Screen 1.
- * Wordmark + tagline. The official logo and Bud visual will be added
- * here once provided.
+ * Official logo, campus sunset background, and spark field.
+ * Routes authenticated users to the campus, new users to welcome.
  */
 export default function Splash() {
   const navigate = useNavigate();
