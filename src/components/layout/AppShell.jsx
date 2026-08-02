@@ -25,6 +25,7 @@ import { useBudPush } from "@/lib/notifications/useBudPush";
 import { useAutonomousEngine } from "@/hooks/useAutonomousEngine";
 import { useSelfHealingEngine } from "@/hooks/useSelfHealingEngine";
 import { ClassroomModeProvider } from "@/lib/classroom/ClassroomModeContext";
+import { CreateProvider } from "@/lib/CreateContext";
 
 function UniversalSearchOverlayWithContext() {
   const { searchOpen, closeSearch } = useSearch();
@@ -67,6 +68,7 @@ export default function AppShell() {
 
   return (
     <BudLauncherProvider>
+      <CreateProvider>
       <BudPresenceProvider>
       <VoiceProvider>
       <SearchProvider>
@@ -104,6 +106,7 @@ export default function AppShell() {
       </SearchProvider>
       </VoiceProvider>
       </BudPresenceProvider>
+      </CreateProvider>
     </BudLauncherProvider>
   );
 }

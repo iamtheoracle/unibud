@@ -5,9 +5,11 @@ import {
   Users as SocialIcon,
   BookOpen as AcademicIcon,
   User as MeIcon,
+  Plus as CreateIcon,
 } from "lucide-react";
 import { hapticTap } from "@/lib/haptics";
 import { PRIMARY_NAV } from "@/lib/navigation/adaptiveNavConfig";
+import { useCreate } from "@/lib/CreateContext";
 import BudHead from "@/components/bud/BudHead";
 
 /* ── Warm palette ── */
@@ -33,11 +35,17 @@ export default function AdaptiveNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const pathname = location.pathname;
+  const { openCreate } = useCreate();
 
   const handleNav = useCallback((to) => {
     hapticTap();
     navigate(to);
   }, []);
+
+  const handleCreate = useCallback(() => {
+    hapticTap();
+    openCreate();
+  }, [openCreate]);
 
   const homeActive = pathname === "/home";
   const socialActive = isActive(pathname, "/social") || isActive(pathname, "/square") || isActive(pathname, "/quad");
@@ -112,6 +120,19 @@ export default function AdaptiveNav() {
                 </button>
               );
             })}
+
+            {/* Create — universal creation hub */}
+            <button
+              onClick={handleCreate}
+              aria-label="Create"
+              className="relative flex items-center justify-center w-[42px] h-[42px] rounded-full shrink-0 spring-tap"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,138,42,0.85), rgba(255,110,20,0.75))",
+                boxShadow: "0 0 20px rgba(255,138,42,0.25), inset 0 1px 0 rgba(255,255,255,0.12)",
+              }}
+            >
+              <CreateIcon className="w-[20px] h-[20px]" strokeWidth={2.4} style={{ color: "#FFF" }} />
+            </button>
 
             {/* Me — circular profile button */}
             <button
