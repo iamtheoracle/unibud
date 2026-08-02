@@ -245,7 +245,7 @@ export default function PostCard({ post, user, index = 0 }) {
 
       {/* Media */}
       {post.media_urls && post.media_urls.length > 0 && (
-        <PostMediaGallery mediaUrls={post.media_urls} mediaTypes={post.media_types} />
+        <PostMediaGallery mediaUrls={post.media_urls} mediaTypes={post.media_types} post={post} user={user} />
       )}
 
       {/* Poll (if applicable) */}
