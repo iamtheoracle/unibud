@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ExternalLink, Radio, RefreshCw } from "lucide-react";
 import { EqualizerBars, LiveIndicator, BreakingBadge, CinematicGlow, OrbitSearchingBars } from "@/components/hubs/HubAnimations";
+import SaveButton from "@/components/hubs/SaveButton";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -64,7 +65,10 @@ function OrbitLiveCard({ item, hub, index }) {
     >
       {isCinematic && <CinematicGlow />}
       <div className="relative">
-        <div className="flex items-center gap-2 mb-1">
+        <div className="absolute top-0 right-0 z-10">
+          <SaveButton item={item} hubId={hub.id} color={hub.color} />
+        </div>
+        <div className="flex items-center gap-2 mb-1 pr-10">
           {decoration}
           {item.source && <span className="text-[10px] text-muted-foreground/70">{item.source}</span>}
         </div>

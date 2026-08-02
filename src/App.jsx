@@ -220,6 +220,7 @@ const BudProductVision = lazy(() => import("@/pages/BudProductVision"));
 const ConnectedAccountsSettings = lazy(() => import("@/pages/ConnectedAccountsSettings"));
 const InterestsSettings = lazy(() => import("@/pages/settings/Interests"));
 const HubPage = lazy(() => import("@/pages/hubs/HubPage"));
+const Highlights = lazy(() => import("@/pages/Highlights"));
 
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
@@ -268,6 +269,7 @@ function App() {
                     <Route path="/settings/connected-accounts" element={<ConnectedAccountsSettings />} />
                     <Route path="/interests" element={<InterestsSettings />} />
                     <Route path="/hub/:hubId" element={<HubPage />} />
+                    <Route path="/highlights" element={<Highlights />} />
                   <Route path="/hero" element={<HeroSection6Page />} />
                     <Route path="/shorts" element={<Shorts />} />
 <Route path="/podcasts" element={<Podcasts />} />
