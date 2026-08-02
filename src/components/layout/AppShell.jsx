@@ -7,16 +7,13 @@ import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import AdaptiveNav from "@/components/navigation/AdaptiveNav";
 import EcosystemRail from "@/components/layout/EcosystemRail";
 import OfflineBanner from "@/components/layout/OfflineBanner";
-import BudCompanion from "@/components/bud/BudCompanion";
-import BudLivingOrb from "@/components/bud/BudLivingOrb";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
-import QuickActionCapsule from "@/components/navigation/QuickActionCapsule";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
-import { ClassroomModeProvider, ClassroomBudGate } from "@/lib/classroom/ClassroomModeContext";
+import { ClassroomModeProvider } from "@/lib/classroom/ClassroomModeContext";
 
 /**
  * AppShell — the authenticated student shell: page content + floating
@@ -47,7 +44,6 @@ export default function AppShell() {
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
-          <QuickActionCapsule />
           <ContextPulse />
           <OfflineBanner />
           <EdgeContextSwipe />
@@ -65,8 +61,6 @@ export default function AppShell() {
           </Suspense>
           <EcosystemRail />
           <AdaptiveNav />
-          <ClassroomBudGate><BudLivingOrb /></ClassroomBudGate>
-          <ClassroomBudGate><BudCompanion /></ClassroomBudGate>
         </div>
       </ClassroomModeProvider>
       </UnibudContextProvider>
