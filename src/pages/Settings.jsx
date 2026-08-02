@@ -1,11 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Eye, Rocket, Sparkles, Database, Link2, Heart, Bookmark } from "lucide-react";
+import { ChevronLeft, Eye, Rocket, Sparkles, Database, Link2, Heart, Bookmark, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import SettingsSection from "@/components/me/SettingsSection";
 import BudPresenceSettings from "@/components/bud/BudPresenceSettings";
+import AcademicNotificationPreferences from "@/components/academics/AcademicNotificationPreferences";
 
 /**
  * Settings — dedicated settings page, accessed from the profile action bar.
@@ -96,6 +97,15 @@ export default function Settings() {
             </div>
           </Link>
         </div>
+
+        {/* Academic Notifications — customizable reminder timing */}
+        <div className="mb-5">
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1 flex items-center gap-1.5">
+            <Bell className="w-3.5 h-3.5" /> Academic Reminders
+          </h2>
+          <AcademicNotificationPreferences />
+        </div>
+
         {/* Bud Experience — floating Bud controls */}
         <div className="mb-5">
           <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1">Bud Experience</h2>

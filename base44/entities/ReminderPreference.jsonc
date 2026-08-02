@@ -53,6 +53,88 @@
     "meeting_reminders": {
       "type": "boolean",
       "default": true
+    },
+    "assignment_lead_days": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "default": [
+        7,
+        3,
+        1,
+        0
+      ],
+      "description": "Days before assignment deadline to send reminders (0 = due today)"
+    },
+    "exam_lead_days": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "default": [
+        14,
+        7,
+        3,
+        1,
+        0
+      ],
+      "description": "Days before exam to send reminders (0 = morning of exam)"
+    },
+    "quiz_lead_days": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "default": [
+        3,
+        1,
+        0
+      ],
+      "description": "Days before quiz to send reminders"
+    },
+    "project_lead_days": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "default": [
+        7,
+        3,
+        1,
+        0
+      ],
+      "description": "Days before project milestone to send reminders"
+    },
+    "class_lead_minutes": {
+      "type": "number",
+      "default": 15,
+      "description": "Minutes before class to send reminder"
+    },
+    "class_travel_reminder": {
+      "type": "boolean",
+      "default": true,
+      "description": "Send travel reminder when location is available"
+    },
+    "study_session_lead_minutes": {
+      "type": "number",
+      "default": 10,
+      "description": "Minutes before a scheduled study session"
+    },
+    "attendance_lead_minutes": {
+      "type": "number",
+      "default": 30,
+      "description": "Minutes before attendance requirement"
+    },
+    "smart_prioritization": {
+      "type": "boolean",
+      "default": true,
+      "description": "Bud intelligently prioritizes urgent academic reminders"
+    },
+    "reminders_actionable_until_deadline": {
+      "type": "boolean",
+      "default": true,
+      "description": "Reminders remain actionable until completed, dismissed, or deadline passes"
     }
   },
   "required": [],

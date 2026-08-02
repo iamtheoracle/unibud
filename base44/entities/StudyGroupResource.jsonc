@@ -1,0 +1,138 @@
+{
+  "name": "StudyGroupResource",
+  "type": "object",
+  "properties": {
+    "study_group_id": {
+      "type": "string",
+      "description": "ID of the StudyGroup this resource belongs to"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display name for the shared resource"
+    },
+    "description": {
+      "type": "string"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "lecture_slides",
+        "pdf",
+        "past_questions",
+        "notes",
+        "study_guide",
+        "link",
+        "document",
+        "presentation",
+        "image",
+        "video",
+        "spreadsheet"
+      ],
+      "default": "pdf",
+      "description": "What kind of shared material this is"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded file URL (via UploadFile integration)"
+    },
+    "external_url": {
+      "type": "string",
+      "description": "External link (Google Drive, Dropbox, etc.) when file_type is link"
+    },
+    "folder": {
+      "type": "string",
+      "description": "Custom folder name for organizing resources"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pinned by group members as important material"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "access_level": {
+      "type": "string",
+      "enum": [
+        "read_only",
+        "editable"
+      ],
+      "default": "read_only",
+      "description": "Whether members can edit or only view this resource"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Current version number for version tracking"
+    },
+    "uploaded_by_name": {
+      "type": "string"
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "file_size_bytes": {
+      "type": "number",
+      "default": 0
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "study_group_id",
+    "title",
+    "file_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

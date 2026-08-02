@@ -6,12 +6,14 @@ import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Users, MessageCircle, ListTodo, Video, Mic, Share2,
   Send, Plus, CheckCircle2, Circle, Loader2,
-  Calendar, Link2,
+  Calendar, Link2, FolderOpen,
 } from "lucide-react";
+import StudyGroupResources from "@/components/study/StudyGroupResources";
 
 const TABS = [
   { key: "chat", label: "Chat", icon: MessageCircle },
   { key: "tasks", label: "Tasks", icon: ListTodo },
+  { key: "resources", label: "Files", icon: FolderOpen },
   { key: "members", label: "Members", icon: Users },
 ];
 
@@ -320,6 +322,10 @@ export default function StudyGroupDetail() {
               ))
             )}
           </div>
+        )}
+
+        {activeTab === "resources" && (
+          <StudyGroupResources groupId={groupId} groupName={group.name} />
         )}
 
         {activeTab === "members" && (
