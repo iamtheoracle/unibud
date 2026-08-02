@@ -239,6 +239,8 @@ export default function Highlights() {
           collaborators={collaboration.collaborators}
           activity={collaboration.activity}
           comments={collaboration.comments}
+          permissions={collaboration.permissions}
+          onPermissionsChange={collaboration.updatePermissions}
           onInvite={collaboration.inviteCollaborator}
           onRemove={collaboration.removeCollaborator}
           onRoleChange={collaboration.updateRole}

@@ -102,15 +102,43 @@ export function useCollaboration(folder, highlights, userId, userName) {
     await _write({ privacy: newPrivacy });
   };
 
+  const permissions = collab?.permissions || {
+    view: "invited",
+    contribute: "all_invited",
+    comment: "collaborators",
+    allowInvite: false,
+    showHistory: true,
+  };
+
+  const updatePermissions = async (newPermissions) => {
+    const merged = { ...permissions, ...newPermissions };
+    const viewToVisibility = {
+      only_me: "private",
+      invited: "private",
+      friends: "private",
+      community: "private",
+      public: "public",
+    };
+    const newVisibility = viewToVisibility[newPermissions.view] || "private";
+    if (folderItems.length === 0 || !userId) return;
+    await base44.entities.Highlight.updateMany(
+      { folder, created_by_id: userId },
+      { $set: { "metadata.collaboration.permissions": merged, visibility: newVisibility } }
+    );
+    queryClient.invalidateQueries({ queryKey: ["highlights"] });
+  };
+
   return {
     collaborators,
     activity,
     comments,
     privacy,
+    permissions,
     inviteCollaborator,
     removeCollaborator,
     updateRole,
     addComment,
     setPrivacy,
+    updatePermissions,
   };
 }

@@ -6,7 +6,9 @@ import { base44 } from "@/api/base44Client";
 import {
   Search, Send, Eye, Plus, Pencil, Shield, Crown, Trash2,
   MessageSquare, Activity, Users2, X,
+  Lock, Mail, Users, Building2, Globe, Check,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
 
@@ -102,12 +104,24 @@ function CollaboratorsTab({ collaborators, onInvite, onRemove, onRoleChange }) {
                       selectedUser?.id === u.id ? "bg-foreground text-background" : "hover:bg-muted/30"
                     }`}
                   >
-                    <div className="w-9 h-9 rounded-full glass-card grid place-items-center shrink-0">
-                      <span className="text-[11px] font-bold">{(u.full_name || u.email || "U").charAt(0).toUpperCase()}</span>
+                    <div className="w-9 h-9 rounded-full glass-card grid place-items-center shrink-0 overflow-hidden">
+                      {u.image || u.data?.image ? (
+                        <img src={u.image || u.data?.image} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-[11px] font-bold">{(u.full_name || u.email || "U").charAt(0).toUpperCase()}</span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-[13px] font-medium truncate">{u.full_name || u.email}</p>
-                      {u.username && <p className="text-[11px] opacity-60 truncate">@{u.username}</p>}
+                      <div className="flex items-center gap-1.5">
+                        {u.username && <span className="text-[10px] opacity-60 truncate">@{u.username}</span>}
+                        {(u.data?.university || u.university) && (
+                          <>
+                            <span className="text-[10px] opacity-30">·</span>
+                            <span className="text-[10px] opacity-60 truncate">{u.data?.university || u.university}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </motion.button>
                 ))}
@@ -314,8 +328,99 @@ function CommentsTab({ comments, onAdd, canComment }) {
   );
 }
 
+const VIEW_OPTIONS = [
+  { id: "only_me", label: "Only Me", icon: Lock },
+  { id: "invited", label: "Invited People", icon: Mail },
+  { id: "friends", label: "Friends", icon: Users },
+  { id: "community", label: "Community Members", icon: Building2 },
+  { id: "public", label: "Public", icon: Globe },
+];
+
+const CONTRIBUTE_OPTIONS = [
+  { id: "no_one", label: "No one" },
+  { id: "selected", label: "Selected Collaborators" },
+  { id: "all_invited", label: "All Invited Collaborators" },
+  { id: "community", label: "Community Members" },
+];
+
+const COMMENT_OPTIONS = [
+  { id: "off", label: "Off" },
+  { id: "collaborators", label: "Collaborators Only" },
+  { id: "everyone", label: "Everyone with access" },
+];
+
+function PermissionsTab({ permissions = {}, onChange }) {
+  const perms = { view: "invited", contribute: "all_invited", comment: "collaborators", allowInvite: false, showHistory: true, ...permissions };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">Who can view?</p>
+        <div className="space-y-1">
+          {VIEW_OPTIONS.map((opt) => {
+            const Icon = opt.icon;
+            const active = perms.view === opt.id;
+            return (
+              <button key={opt.id} onClick={() => { hapticTap(); onChange?.({ view: opt.id }); }} className={"w-full flex items-center gap-3 p-2.5 rounded-2xl spring-tap transition-all " + (active ? "bg-foreground text-background" : "glass text-foreground/70")}>
+                <Icon className="w-4 h-4 shrink-0" strokeWidth={1.8} />
+                <span className="text-[12px] font-medium flex-1 text-left">{opt.label}</span>
+                {active && <Check className="w-4 h-4" />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">Who can contribute?</p>
+        <div className="space-y-1">
+          {CONTRIBUTE_OPTIONS.map((opt) => {
+            const active = perms.contribute === opt.id;
+            return (
+              <button key={opt.id} onClick={() => { hapticTap(); onChange?.({ contribute: opt.id }); }} className={"w-full flex items-center gap-3 p-2.5 rounded-2xl spring-tap transition-all " + (active ? "bg-foreground text-background" : "glass text-foreground/70")}>
+                <span className="text-[12px] font-medium flex-1 text-left">{opt.label}</span>
+                {active && <Check className="w-4 h-4" />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">Who can comment?</p>
+        <div className="space-y-1">
+          {COMMENT_OPTIONS.map((opt) => {
+            const active = perms.comment === opt.id;
+            return (
+              <button key={opt.id} onClick={() => { hapticTap(); onChange?.({ comment: opt.id }); }} className={"w-full flex items-center gap-3 p-2.5 rounded-2xl spring-tap transition-all " + (active ? "bg-foreground text-background" : "glass text-foreground/70")}>
+                <span className="text-[12px] font-medium flex-1 text-left">{opt.label}</span>
+                {active && <Check className="w-4 h-4" />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between p-3 rounded-2xl glass-card">
+          <div>
+            <p className="text-[12px] font-medium text-foreground">Allow collaborators to invite others</p>
+            <p className="text-[10px] text-muted-foreground">Managers can always invite</p>
+          </div>
+          <Switch checked={perms.allowInvite} onCheckedChange={(v) => { hapticTap(); onChange?.({ allowInvite: v }); }} />
+        </div>
+        <div className="flex items-center justify-between p-3 rounded-2xl glass-card">
+          <div>
+            <p className="text-[12px] font-medium text-foreground">Show collaboration history</p>
+            <p className="text-[10px] text-muted-foreground">Activity visible to collaborators</p>
+          </div>
+          <Switch checked={perms.showHistory} onCheckedChange={(v) => { hapticTap(); onChange?.({ showHistory: v }); }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const TABS = [
   { id: "collaborators", label: "Collaborators", icon: Users2 },
+  { id: "permissions", label: "Permissions", icon: Shield },
   { id: "activity", label: "Activity", icon: Activity },
   { id: "comments", label: "Comments", icon: MessageSquare },
 ];
@@ -326,6 +431,7 @@ const TABS = [
  */
 export default function InviteCollaboratorsSheet({
   open, onOpenChange, folder, collaborators, activity, comments,
+  permissions, onPermissionsChange,
   onInvite, onRemove, onRoleChange, onAddComment, canComment,
 }) {
   const [tab, setTab] = useState("collaborators");
@@ -370,6 +476,9 @@ export default function InviteCollaboratorsSheet({
               onRemove={onRemove}
               onRoleChange={onRoleChange}
             />
+          )}
+          {tab === "permissions" && (
+            <PermissionsTab permissions={permissions} onChange={onPermissionsChange} />
           )}
           {tab === "activity" && <ActivityTab activity={activity} />}
           {tab === "comments" && (
