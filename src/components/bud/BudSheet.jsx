@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { getScreenContext } from "@/lib/budScreenContext";
 import { base44 } from "@/api/base44Client";
+import { useVoice } from "@/lib/voice/VoiceProvider";
 
 const SUGGESTIONS = ["Plan my study week", "Explain a concept", "What should I focus on today?"];
 
@@ -23,6 +24,7 @@ export default function BudSheet() {
 
   const screenContext = getScreenContext(location.pathname);
   const suggestions = screenContext.suggestedPrompts || SUGGESTIONS;
+  const { speak, settings: voiceSettings } = useVoice();
 
   const send = async (text) => {
     const content = (text ?? input).trim();
@@ -34,9 +36,13 @@ export default function BudSheet() {
       const contextClause = screenContext.description
         ? ` The student is currently on the ${screenContext.name} screen — ${screenContext.description}. Tailor your response to this context.`
         : "";
-      const res = await base44.integrations.Core.InvokeLLM({ prompt: BUD_SYSTEM_PROMPT + contextClause + "\n\nStudent message: " + content });
+      const historyClause = messages.length > 0
+        ? "\n\nRecent conversation:\n" + messages.slice(-6).map(m => `${m.role === "user" ? "Student" : "Bud"}: ${m.content}`).join("\n")
+        : "";
+      const res = await base44.integrations.Core.InvokeLLM({ prompt: BUD_SYSTEM_PROMPT + contextClause + historyClause + "\n\nStudent message: " + content });
       const reply = typeof res === "string" ? res : res?.response || res?.text || "I'm here for you.";
       setMessages((m) => [...m, { role: "bud", content: reply }]);
+      if (voiceSettings.autoSpeak && !voiceSettings.muted) speak(reply);
     } catch {
       setMessages((m) => [...m, { role: "bud", content: "I'm right here — try again in a moment." }]);
     } finally {

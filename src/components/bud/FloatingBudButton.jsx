@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mic, X } from "lucide-react";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { getScreenContext, UNIVERSAL_QUICK_ACTIONS } from "@/lib/budScreenContext";
-import { useVoiceInput } from "@/hooks/useVoiceInput";
+import { useVoice } from "@/lib/voice/VoiceProvider";
 import { hapticImpact, hapticSelect, hapticTap } from "@/lib/haptics";
 import BudQuickActions from "@/components/bud/BudQuickActions";
 
@@ -20,9 +20,8 @@ const LONG_PRESS_MS = 400;
 export default function FloatingBudButton() {
   const location = useLocation();
   const { open, setOpen, openWithPrompt, openVoice } = useBudLauncher();
-  const { isListening, isSupported, toggleListening } = useVoiceInput();
+  const { state: voiceState, isSupported, startConversation } = useVoice();
   const [showQuickActions, setShowQuickActions] = useState(false);
-  const [voiceTranscript, setVoiceTranscript] = useState("");
   const longPressTimer = useRef(null);
   const longPressTriggered = useRef(false);
   const buttonRef = useRef(null);
@@ -85,17 +84,8 @@ export default function FloatingBudButton() {
       return;
     }
     hapticSelect();
-    if (isListening) {
-      toggleListening((transcript) => {
-        setVoiceTranscript("");
-        if (transcript.trim()) {
-          openWithPrompt(transcript.trim());
-        }
-      });
-    } else {
-      toggleListening((transcript) => setVoiceTranscript(transcript));
-    }
-  }, [isSupported, isListening, toggleListening, openWithPrompt, openVoice]);
+    startConversation();
+  }, [isSupported, startConversation, openVoice]);
 
   return (
     <>
@@ -110,7 +100,7 @@ export default function FloatingBudButton() {
         <div className="flex items-center gap-2.5">
           {/* Voice button */}
           <AnimatePresence>
-            {(isListening || voiceTranscript) && (
+            {(voiceState === "listening" || voiceState === "speaking") && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.5, x: 10 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -125,11 +115,9 @@ export default function FloatingBudButton() {
                   <span className="voice-wave-bar h-5" />
                   <span className="voice-wave-bar h-3" />
                 </div>
-                {voiceTranscript ? (
-                  <span className="text-[11px] text-foreground truncate max-w-[120px]">{voiceTranscript}</span>
-                ) : (
-                  <span className="text-[11px] text-muted-foreground">Listening…</span>
-                )}
+                <span className="text-[11px] text-muted-foreground">
+                  {voiceState === "listening" ? "Listening…" : "Speaking…"}
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -142,10 +130,10 @@ export default function FloatingBudButton() {
             className="w-11 h-11 rounded-full glass-strong flex items-center justify-center spring-tap shrink-0"
           >
             <Mic
-              className={`w-[18px] h-[18px] ${isListening ? "text-primary" : "text-muted-foreground"}`}
+              className={`w-[18px] h-[18px] ${(voiceState === "listening" || voiceState === "speaking") ? "text-primary" : "text-muted-foreground"}`}
               strokeWidth={2}
             />
-            {isListening && (
+            {(voiceState === "listening" || voiceState === "speaking") && (
               <span className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" />
             )}
           </motion.button>

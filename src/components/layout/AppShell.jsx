@@ -16,6 +16,7 @@ import { useRecentViews } from "@/lib/resilience/useRecentViews";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
+import { VoiceProvider } from "@/lib/voice/VoiceProvider";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
@@ -60,6 +61,7 @@ export default function AppShell() {
 
   return (
     <BudLauncherProvider>
+      <VoiceProvider>
       <SearchProvider>
       <UnibudContextProvider>
       <ClassroomModeProvider>
@@ -92,6 +94,7 @@ export default function AppShell() {
       </ClassroomModeProvider>
       </UnibudContextProvider>
       </SearchProvider>
+      </VoiceProvider>
     </BudLauncherProvider>
   );
 }
