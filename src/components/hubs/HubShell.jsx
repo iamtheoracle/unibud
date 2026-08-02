@@ -6,6 +6,7 @@ import { hapticTap } from "@/lib/haptics";
 import OrbitBadge from "@/components/hubs/OrbitBadge";
 import BudStudyCompanion from "@/components/hubs/BudStudyCompanion";
 import BudInviteBar from "@/components/hubs/BudInviteBar";
+import HubSources from "@/components/hubs/HubSources";
 
 /**
  * HubShell — the shared foundation every hub uses.
@@ -27,7 +28,7 @@ export default function HubShell({ hub, children }) {
     setJoined(!joined);
     toast({
       title: joined ? `Left ${hub.label}` : `Joined ${hub.label}`,
-      description: joined ? "You can rejoin anytime." : "Bud will keep you updated here.",
+      description: joined ? "You can rejoin anytime." : "You'll see updates from this community.",
     });
   };
 
@@ -137,6 +138,9 @@ export default function HubShell({ hub, children }) {
           <BudStudyCompanion hub={hub} />
         </div>
       )}
+
+      {/* ── Trusted external sources — "Open on [Platform]" ── */}
+      <HubSources hub={hub} />
 
       {/* ── Content ── */}
       <div className="px-5">{children}</div>

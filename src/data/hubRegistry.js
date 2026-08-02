@@ -1,6 +1,7 @@
 import {
   Camera, Headphones, Film, Newspaper, Trophy, Gamepad2,
   Briefcase, GraduationCap, MessageCircle, Calendar, ShoppingBag, Target,
+  Youtube, Globe, BookOpen, Tv, Video, Radio,
 } from "lucide-react";
 
 /**
@@ -14,7 +15,12 @@ import {
  * - entity: the base44 entity to query for feed content
  * - entityFilter: filter object for the entity query
  * - feedType: "grid" (visual) or "list" (text)
- * - budTip: contextual Bud suggestion shown in the hub
+ * - vibe: visual personality ("cinematic", "energetic", "immersive", etc.)
+ * - sources: trusted external platforms with "Open on [Platform]" links
+ * - isAcademic: if true, Bud appears as a built-in study companion
+ *
+ * Orbit discovers and organizes. Orbit never fabricates content.
+ * Students discuss real content from trusted sources inside UNIBUD.
  */
 export const HUB_REGISTRY = {
   creators: {
@@ -28,7 +34,14 @@ export const HUB_REGISTRY = {
     feedType: "grid",
     entity: "QuadPost",
     entityFilter: { type: "photo" },
-    budTip: "I can recommend creators to follow based on your style.",
+    vibe: "visual",
+    isAcademic: false,
+    sources: [
+      { name: "YouTube", label: "Open on YouTube", url: "https://www.youtube.com", icon: Youtube },
+      { name: "Instagram", label: "Open on Instagram", url: "https://www.instagram.com", icon: Camera },
+      { name: "Behance", label: "Open on Behance", url: "https://www.behance.net", icon: Globe },
+      { name: "TikTok", label: "Open on TikTok", url: "https://www.tiktok.com", icon: Video },
+    ],
   },
   music: {
     id: "music",
@@ -41,7 +54,14 @@ export const HUB_REGISTRY = {
     feedType: "grid",
     entity: "Podcast",
     entityFilter: {},
-    budTip: "I can create playlists for your study sessions.",
+    vibe: "immersive",
+    isAcademic: false,
+    sources: [
+      { name: "Spotify", label: "Open on Spotify", url: "https://open.spotify.com", icon: Headphones },
+      { name: "Apple Music", label: "Open on Apple Music", url: "https://music.apple.com", icon: Headphones },
+      { name: "YouTube Music", label: "Open on YouTube", url: "https://music.youtube.com", icon: Youtube },
+      { name: "SoundCloud", label: "Open on SoundCloud", url: "https://soundcloud.com", icon: Radio },
+    ],
   },
   movies_tv: {
     id: "movies_tv",
@@ -54,7 +74,15 @@ export const HUB_REGISTRY = {
     feedType: "grid",
     entity: "QuadPost",
     entityFilter: { type: "video" },
-    budTip: "I can recommend movies based on what you've watched.",
+    vibe: "cinematic",
+    isAcademic: false,
+    sources: [
+      { name: "YouTube", label: "Open on YouTube", url: "https://www.youtube.com/results?search_query=official+trailer", icon: Youtube },
+      { name: "Netflix", label: "Open on Netflix", url: "https://www.netflix.com", icon: Tv },
+      { name: "Disney+", label: "Open on Disney+", url: "https://www.disneyplus.com", icon: Tv },
+      { name: "Crunchyroll", label: "Open on Crunchyroll", url: "https://www.crunchyroll.com", icon: Tv },
+      { name: "IMDb", label: "Open on IMDb", url: "https://www.imdb.com", icon: Globe },
+    ],
   },
   news_tech: {
     id: "news_tech",
@@ -67,7 +95,14 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "FootballNews",
     entityFilter: {},
-    budTip: "I can summarize long articles in seconds.",
+    vibe: "editorial",
+    isAcademic: false,
+    sources: [
+      { name: "BBC News", label: "Open on BBC News", url: "https://www.bbc.co.uk/news", icon: Newspaper },
+      { name: "Reuters", label: "Open on Reuters", url: "https://www.reuters.com", icon: Newspaper },
+      { name: "The Guardian", label: "Open on The Guardian", url: "https://www.theguardian.com", icon: Newspaper },
+      { name: "Google News", label: "Open on Google News", url: "https://news.google.com", icon: Globe },
+    ],
   },
   sports: {
     id: "sports",
@@ -80,7 +115,15 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "FootballMatch",
     entityFilter: {},
-    budTip: "I can explain the stats behind every match.",
+    vibe: "energetic",
+    isAcademic: false,
+    sources: [
+      { name: "BBC Sport", label: "Open on BBC Sport", url: "https://www.bbc.co.uk/sport", icon: Trophy },
+      { name: "ESPN", label: "Open on ESPN", url: "https://www.espn.com", icon: Trophy },
+      { name: "FIFA", label: "Open on FIFA", url: "https://www.fifa.com", icon: Trophy },
+      { name: "NBA", label: "Open on NBA", url: "https://www.nba.com", icon: Trophy },
+      { name: "Premier League", label: "Open on Premier League", url: "https://www.premierleague.com", icon: Trophy },
+    ],
   },
   gaming: {
     id: "gaming",
@@ -93,7 +136,14 @@ export const HUB_REGISTRY = {
     feedType: "grid",
     entity: "QuadPost",
     entityFilter: {},
-    budTip: "I can help you find squads and tournaments.",
+    vibe: "interactive",
+    isAcademic: false,
+    sources: [
+      { name: "Steam", label: "Open on Steam", url: "https://store.steampowered.com", icon: Gamepad2 },
+      { name: "Epic Games", label: "Open on Epic Games", url: "https://www.epicgames.com", icon: Gamepad2 },
+      { name: "Twitch", label: "Open on Twitch", url: "https://www.twitch.tv", icon: Video },
+      { name: "IGN", label: "Open on IGN", url: "https://www.ign.com", icon: Globe },
+    ],
   },
   careers: {
     id: "careers",
@@ -106,7 +156,13 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "Opportunity",
     entityFilter: {},
-    budTip: "I can help prepare your CV and cover letters.",
+    vibe: "professional",
+    isAcademic: false,
+    sources: [
+      { name: "LinkedIn", label: "Open on LinkedIn", url: "https://www.linkedin.com", icon: Briefcase },
+      { name: "Indeed", label: "Open on Indeed", url: "https://www.indeed.com", icon: Briefcase },
+      { name: "Glassdoor", label: "Open on Glassdoor", url: "https://www.glassdoor.com", icon: Briefcase },
+    ],
   },
   academics: {
     id: "academics",
@@ -119,8 +175,14 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "Course",
     entityFilter: {},
-    budTip: "I join every study session to help you learn.",
+    vibe: "scholarly",
     isAcademic: true,
+    sources: [
+      { name: "Google Scholar", label: "Open on Google Scholar", url: "https://scholar.google.com", icon: BookOpen },
+      { name: "ResearchGate", label: "Open on ResearchGate", url: "https://www.researchgate.net", icon: BookOpen },
+      { name: "arXiv", label: "Open on arXiv", url: "https://arxiv.org", icon: BookOpen },
+      { name: "JSTOR", label: "Open on JSTOR", url: "https://www.jstor.org", icon: BookOpen },
+    ],
   },
   discussions: {
     id: "discussions",
@@ -133,7 +195,12 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "QuadPost",
     entityFilter: { type: "question" },
-    budTip: "I highlight the most useful answers for you.",
+    vibe: "conversational",
+    isAcademic: false,
+    sources: [
+      { name: "Reddit", label: "Open on Reddit", url: "https://www.reddit.com", icon: MessageCircle },
+      { name: "Quora", label: "Open on Quora", url: "https://www.quora.com", icon: MessageCircle },
+    ],
   },
   events: {
     id: "events",
@@ -146,7 +213,12 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "CampusEvent",
     entityFilter: {},
-    budTip: "I'll remind you before events you care about.",
+    vibe: "festive",
+    isAcademic: false,
+    sources: [
+      { name: "Eventbrite", label: "Open on Eventbrite", url: "https://www.eventbrite.com", icon: Calendar },
+      { name: "Meetup", label: "Open on Meetup", url: "https://www.meetup.com", icon: Calendar },
+    ],
   },
   marketplace: {
     id: "marketplace",
@@ -159,7 +231,9 @@ export const HUB_REGISTRY = {
     feedType: "grid",
     entity: "MarketplaceListing",
     entityFilter: {},
-    budTip: "I check listings to keep you safe from scams.",
+    vibe: "commerce",
+    isAcademic: false,
+    sources: [],
   },
   challenge: {
     id: "challenge",
@@ -172,7 +246,9 @@ export const HUB_REGISTRY = {
     feedType: "list",
     entity: "Challenge",
     entityFilter: {},
-    budTip: "I encourage you to participate and earn rewards.",
+    vibe: "competitive",
+    isAcademic: false,
+    sources: [],
   },
 };
 

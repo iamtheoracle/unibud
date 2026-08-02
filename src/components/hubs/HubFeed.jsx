@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
+import HubEmptyState from "@/components/hubs/HubEmptyState";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -144,19 +145,9 @@ export default function HubFeed({ hub }) {
     );
   }
 
-  // Empty state — Bud-led, no fake data
+  // Empty state — beautiful, encourages first conversation. Never fake data.
   if (items.length === 0) {
-    return (
-      <div className="flex flex-col items-center text-center py-12 px-6">
-        <div className="w-16 h-16 rounded-full grid place-items-center mb-4" style={{ background: `hsl(${hub.color} / 0.1)` }}>
-          <Icon className="w-8 h-8" style={{ color: `hsl(${hub.color} / 0.5)` }} strokeWidth={1.5} />
-        </div>
-        <p className="text-[15px] font-bold text-foreground">This hub is coming alive.</p>
-        <p className="text-[12px] text-muted-foreground mt-1.5 max-w-[240px] leading-relaxed">
-          When students share {hub.description.toLowerCase()}, I'll surface it here. Be the first to start a conversation.
-        </p>
-      </div>
-    );
+    return <HubEmptyState hub={hub} />;
   }
 
   const processed = items.map((item) => getItemData(item, hub.entity));
