@@ -5,6 +5,7 @@ import { base44 } from "@/api/base44Client";
 import { matchesCategory } from "@/data/contentCategories";
 import DiscoverySection from "@/components/discovery/DiscoverySection";
 import EmptyState from "@/components/ui/EmptyState";
+import NewsFeed from "@/components/news/NewsFeed";
 import { Sparkles, Users, Calendar, ShoppingBag, Newspaper } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -101,6 +102,10 @@ export default function OrbitCategoryFeed({ category }) {
   }, [category, posts, communities, events, listings]);
 
   const isLoading = postsLoading || commLoading;
+
+  if (category === "news") {
+    return <NewsFeed />;
+  }
 
   if (isLoading) {
     return (
