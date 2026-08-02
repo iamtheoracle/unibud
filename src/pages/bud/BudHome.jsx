@@ -1,8 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import BudHero from "@/components/bud/home/BudHero";
+import BudMorningEntrance from "@/components/bud/BudMorningEntrance";
 import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
 import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
 import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
@@ -21,6 +22,20 @@ const EASE = [0.16, 1, 0.3, 1];
  * Bud doesn't replace navigation. Bud prioritizes it.
  */
 export default function BudHome() {
+  // Morning entrance — shows once per day
+  const [showEntrance, setShowEntrance] = useState(() => {
+    try {
+      const today = new Date().toDateString();
+      return sessionStorage.getItem("bud_morning_entrance") !== today;
+    } catch { return false; }
+  });
+
+  useEffect(() => {
+    if (showEntrance) {
+      try { sessionStorage.setItem("bud_morning_entrance", new Date().toDateString()); } catch {}
+    }
+  }, [showEntrance]);
+
   // Fetch context signals for card ranking
   const { data: today } = useTodaySchedule();
   const { data: deadlines } = useUpcomingDeadlines();
@@ -45,6 +60,9 @@ export default function BudHome() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-36 safe-area-pt">
+      {/* ═══ Morning entrance — Bud walks in with the briefing ═══ */}
+      <BudMorningEntrance visible={showEntrance} onComplete={() => setShowEntrance(false)} />
+
       {/* ═══ BUD — the interface ═══ */}
       <BudHero />
 

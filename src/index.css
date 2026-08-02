@@ -936,6 +936,38 @@
   @keyframes like-pop { 0% { transform: scale(0.6); } 50% { transform: scale(1.4) rotate(-8deg); } 100% { transform: scale(1) rotate(0deg); } }
   .like-pop { animation: like-pop 0.5s cubic-bezier(0.34, 1.8, 0.64, 1) both; }
 
+  /* Error shake — gentle wobble before Bud explains what happened */
+  @keyframes error-shake {
+    0%, 100% { transform: translateX(0); }
+    15%, 75% { transform: translateX(-4px); }
+    30%, 60% { transform: translateX(4px); }
+    45% { transform: translateX(-2px); }
+  }
+  .error-shake { animation: error-shake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+
+  /* Success bloom — soft radial expansion for success cards */
+  @keyframes success-bloom {
+    0% { opacity: 0; transform: scale(0.92); }
+    60% { opacity: 1; }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  .success-bloom { animation: success-bloom 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  /* Upload flow — content flowing upward into Bud */
+  @keyframes upload-flow {
+    0% { opacity: 0; transform: translateY(24px) scale(0.8); }
+    40% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-30px) scale(0.5); }
+  }
+  .upload-flow { animation: upload-flow 1.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+  /* Gentle sway — for floating decorative elements */
+  @keyframes gentle-sway {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(1.5deg); }
+  }
+  .gentle-sway { animation: gentle-sway 4s ease-in-out infinite; transform-origin: top center; }
+
   @keyframes heart-burst { 0% { transform: scale(0); opacity: 0.7; } 100% { transform: scale(2.6); opacity: 0; } }
   .heart-burst { animation: heart-burst 0.6s ease-out forwards; }
 
@@ -1018,7 +1050,7 @@
   /* UDS — Accessibility */
   .uds-focus:focus-visible { outline: 3px solid hsl(var(--ring)); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle, .breathe, .glow-pulse, .like-pop, .heart-burst, .msg-in, .slide-in-right, .chart-rise, .live-pulse { animation: none !important; }
+    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle, .breathe, .glow-pulse, .like-pop, .heart-burst, .msg-in, .slide-in-right, .chart-rise, .live-pulse, .error-shake, .success-bloom, .upload-flow, .gentle-sway { animation: none !important; }
   }
 
   /* ════════════════════════════════════════════════════════════
