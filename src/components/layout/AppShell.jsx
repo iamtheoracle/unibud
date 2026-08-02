@@ -6,7 +6,7 @@ import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import { BudPresenceProvider } from "@/lib/bud/BudPresenceContext";
 import { SearchProvider, useSearch } from "@/lib/search/SearchContext";
-import AdaptiveNav from "@/components/navigation/AdaptiveNav";
+import MainTabBar from "@/components/layout/MainTabBar";
 import FloatingBudButton from "@/components/bud/FloatingBudButton";
 import BudPresenceReactor from "@/components/bud/BudPresenceReactor";
 import BudSheet from "@/components/bud/BudSheet";
@@ -86,7 +86,7 @@ export default function AppShell() {
           <Suspense fallback={<RouteLoading />}>
             <motion.div
               key={location.pathname}
-              className="app-content safe-area-pt"
+              className="app-content safe-area-pt pb-28"
               initial={reduceMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 38, mass: 0.8 }}
@@ -94,7 +94,7 @@ export default function AppShell() {
               {outlet}
             </motion.div>
           </Suspense>
-          <AdaptiveNav />
+          <MainTabBar />
           <FloatingBudButton />
           <BudPresenceReactor />
           <BudSheet />

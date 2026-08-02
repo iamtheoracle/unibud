@@ -1,14 +1,11 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import MainTabBar from "@/components/layout/MainTabBar";
 
+/**
+ * MainShell — pass-through layout for the four primary tab routes.
+ * The unified bottom tab bar (MainTabBar) is rendered by AppShell so
+ * every authenticated screen shares the same navigation.
+ */
 export default function MainShell() {
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="app-content pb-24">
-        <Outlet />
-      </div>
-      <MainTabBar />
-    </div>
-  );
+  return <Outlet />;
 }
