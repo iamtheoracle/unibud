@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText } from "lucide-react";
+import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText, Bell, BellOff } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import PodcastPlayer from "@/components/podcast/PodcastPlayer";
@@ -25,6 +25,8 @@ export default function PodcastShow() {
   const [activeEpisode, setActiveEpisode] = useState(null);
   const [transcribing, setTranscribing] = useState({});
   const [showTranscript, setShowTranscript] = useState({});
+  const [following, setFollowing] = useState(false);
+  const [followerCount, setFollowerCount] = useState(0);
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: podcast, isLoading } = useQuery({ queryKey: ["podcast", showId], queryFn: () => base44.entities.Podcast.get(showId), enabled: !!showId });

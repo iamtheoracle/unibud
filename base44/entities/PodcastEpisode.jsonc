@@ -38,6 +38,7 @@
       "type": "string",
       "enum": [
         "draft",
+        "scheduled",
         "published"
       ],
       "default": "published"
@@ -45,6 +46,11 @@
     "published_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When a scheduled episode should auto-publish"
     },
     "transcript": {
       "type": "string",
@@ -54,12 +60,34 @@
       "type": "string",
       "description": "Bud-generated concise summary shown to listeners"
     },
+    "show_notes": {
+      "type": "string",
+      "description": "Detailed show notes \u2014 Bud can assist with generation"
+    },
     "takeaways": {
       "type": "array",
       "items": {
         "type": "string"
       },
       "description": "Bud-extracted key takeaways"
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "start_seconds": {
+            "type": "number"
+          },
+          "end_seconds": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Episode chapters for navigation \u2014 Bud can auto-generate from transcript"
     },
     "tags": {
       "type": "array",
@@ -73,6 +101,29 @@
     },
     "institution_id": {
       "type": "string"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "shares_count": {
+      "type": "number",
+      "default": 0
+    },
+    "downloads_count": {
+      "type": "number",
+      "default": 0
+    },
+    "liked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who liked this episode"
     }
   },
   "required": [

@@ -7,6 +7,9 @@ import { base44 } from "@/api/base44Client";
 import { hapticTap } from "@/lib/haptics";
 import { extractHashtags, extractMentions } from "@/components/quad/quadConstants";
 import { AUDIENCE_CARDS } from "./audienceConstants";
+import FilterStrip from "./FilterStrip";
+import EditingControls from "./EditingControls";
+import { buildCombinedCss, bakeFilterToImage } from "@/data/unibudFilters";
 
 const ACADEMIC_FIELDS = [
   { id: "course", label: "Course", placeholder: "e.g., CSC 301" },
@@ -37,6 +40,12 @@ export default function SmartCreationPanel({
   const [music, setMusic] = useState("");
   const [academicData, setAcademicData] = useState({});
   const [publishing, setPublishing] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("natural");
+  const [filterIntensity, setFilterIntensity] = useState(1);
+  const [adjustments, setAdjustments] = useState({ brightness: 1, contrast: 1, saturation: 1, warmth: 0, rotation: 0 });
+
+  const filterCss = buildCombinedCss(selectedFilter, filterIntensity, adjustments);
+  const rotation = adjustments.rotation || 0;
 
   const visibility = AUDIENCE_CARDS.find((a) => a.id === audience)?.visibility || "campus";
 
@@ -45,7 +54,21 @@ export default function SmartCreationPanel({
     setPublishing(true);
     hapticTap();
     try {
-      const result = await uploadMedia(media.blob, {
+      let blobToUpload = media.blob;
+      let mediaUrl = media.url;
+
+      // Bake filter into images before upload
+      if (media.type === "image" && (filterCss !== "none" || rotation !== 0)) {
+        try {
+          const bakedBlob = await bakeFilterToImage(media.url, filterCss, rotation);
+          blobToUpload = bakedBlob;
+        } catch {
+          // Fall back to original if baking fails
+          blobToUpload = media.blob;
+        }
+      }
+
+      const result = await uploadMedia(blobToUpload, {
         compress: media.type === "image",
         generateThumb: media.type === "video",
       });
@@ -128,12 +151,14 @@ export default function SmartCreationPanel({
           exit={{ opacity: 0 }}
           className="absolute inset-0 z-20 bg-black/95 flex flex-col"
         >
-          {/* Media preview — top portion */}
+          {/* Media preview — top portion with filter applied */}
           <div className="flex-1 relative overflow-hidden flex items-center justify-center">
             {media.type === "video" ? (
-              <video src={media.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+              <video src={media.url} className="w-full h-full object-cover" autoPlay muted loop playsInline
+                style={{ filter: filterCss, transform: `rotate(${rotation}deg)` }} />
             ) : (
-              <img src={media.url} className="w-full h-full object-cover" alt="Capture" />
+              <img src={media.url} className="w-full h-full object-cover" alt="Capture"
+                style={{ filter: filterCss, transform: `rotate(${rotation}deg)` }} />
             )}
             <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 rounded-full glass-strong grid place-items-center spring-tap z-10">
               <X className="w-4 h-4 text-white" />
@@ -152,6 +177,30 @@ export default function SmartCreationPanel({
             className="bg-card rounded-t-[28px] elevated-shadow border-t border-border/30 max-h-[55vh] overflow-y-auto no-scrollbar"
           >
             <div className="w-10 h-1 rounded-full bg-muted-foreground/30 mx-auto mt-3" />
+
+            {/* Filter strip — only for images */}
+            {media?.type === "image" && (
+              <FilterStrip
+                mediaUrl={media.url}
+                selectedFilter={selectedFilter}
+                intensity={filterIntensity}
+                onFilterChange={(id) => { hapticTap(); setSelectedFilter(id); }}
+                onIntensityChange={(v) => setFilterIntensity(v)}
+              />
+            )}
+
+            {/* Editing controls — only for images */}
+            {media?.type === "image" && (
+              <EditingControls
+                adjustments={adjustments}
+                onAdjustmentsChange={setAdjustments}
+                onReset={() => {
+                  setAdjustments({ brightness: 1, contrast: 1, saturation: 1, warmth: 0, rotation: 0 });
+                  setSelectedFilter("natural");
+                  setFilterIntensity(1);
+                }}
+              />
+            )}
 
             {/* Context toggle */}
             <div className="flex items-center gap-1 p-1 mx-4 mt-3 rounded-full glass-card">

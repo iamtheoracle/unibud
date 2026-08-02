@@ -4,14 +4,14 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   BarChart3, FileText, Video, Mic, ShoppingBag, Heart, Eye, MessageCircle,
-  Share2, Trash2, Plus, CalendarClock, Sparkles, Loader2,
+  Share2, Trash2, Plus, CalendarClock, Sparkles, Loader2, TrendingUp, Bookmark, Radio, Users,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/use-toast";
 
 const EASE = [0.16, 1, 0.3, 1];
-const ENTITY = { posts: "QuadPost", shorts: "ShortVideo", podcasts: "PodcastEpisode", listings: "MarketplaceListing" };
+const ENTITY = { posts: "QuadPost", shorts: "ShortVideo", stories: "Story", podcasts: "PodcastEpisode", listings: "MarketplaceListing" };
 
 /**
  * CreatorStudio — the unified dashboard for everything a UNIBUD creator makes.
@@ -27,14 +27,17 @@ export default function CreatorStudio() {
 
   const { data: posts, isLoading: postsLoading } = useQuery({ queryKey: ["myPosts"], queryFn: () => base44.entities.QuadPost.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
   const { data: shorts } = useQuery({ queryKey: ["myShorts"], queryFn: () => base44.entities.ShortVideo.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
+  const { data: stories } = useQuery({ queryKey: ["myStories"], queryFn: () => base44.entities.Story.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
   const { data: episodes } = useQuery({ queryKey: ["myEpisodes"], queryFn: () => base44.entities.PodcastEpisode.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
   const { data: listings } = useQuery({ queryKey: ["myListings"], queryFn: () => base44.entities.MarketplaceListing.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
 
-  const p = posts || [], s = shorts || [], e = episodes || [], l = listings || [];
-  const reactions = useMemo(() => [...p, ...s].reduce((a, x) => a + (x.likes_count || 0), 0), [p, s]);
+  const p = posts || [], s = shorts || [], st = stories || [], e = episodes || [], l = listings || [];
+  const reactions = useMemo(() => [...p, ...s, ...st].reduce((a, x) => a + (x.likes_count || 0), 0), [p, s, st]);
   const comments = useMemo(() => [...p, ...s].reduce((a, x) => a + (x.comments_count || 0), 0), [p, s]);
   const shares = useMemo(() => [...p, ...s].reduce((a, x) => a + (x.shares_count || 0), 0), [p, s]);
-  const views = useMemo(() => s.reduce((a, x) => a + (x.views_count || 0), 0), [s]);
+  const views = useMemo(() => [...s, ...st].reduce((a, x) => a + (x.views_count || 0), 0), [s, st]);
+  const listens = useMemo(() => e.reduce((a, x) => a + (x.downloads_count || 0), 0), [e]);
+  const bookmarks = useMemo(() => [...p, ...s].reduce((a, x) => a + (x.bookmarks_count || 0), 0), [p, s]);
   const drafts = useMemo(() => p.filter((x) => x.draft_status === "draft" || x.draft_status === "scheduled"), [p]);
 
   async function del(type, id, key) {
@@ -52,6 +55,7 @@ export default function CreatorStudio() {
   const TABS = [
     { key: "overview", label: "Overview" },
     { key: "posts", label: `Posts · ${p.length}` },
+    { key: "stories", label: `Stories · ${st.length}` },
     { key: "shorts", label: `Shorts · ${s.length}` },
     { key: "podcasts", label: `Episodes · ${e.length}` },
     { key: "listings", label: `Listings · ${l.length}` },
@@ -92,11 +96,17 @@ export default function CreatorStudio() {
           </div>
 
           {/* Analytics */}
-          <div className="grid grid-cols-4 gap-2.5 mb-5">
+          <div className="grid grid-cols-4 gap-2.5 mb-3">
             <Stat icon={Heart} value={reactions} label="Reactions" color="text-error" />
             <Stat icon={Eye} value={views} label="Views" color="text-primary" />
             <Stat icon={MessageCircle} value={comments} label="Comments" color="text-accent" />
             <Stat icon={Share2} value={shares} label="Shares" color="text-success" />
+          </div>
+          <div className="grid grid-cols-4 gap-2.5 mb-5">
+            <Stat icon={Mic} value={listens} label="Listens" color="text-primary" />
+            <Stat icon={Bookmark} value={bookmarks} label="Saves" color="text-accent" />
+            <Stat icon={Users} value={p.length + s.length + st.length + e.length} label="Total" color="text-success" />
+            <Stat icon={TrendingUp} value={drafts.length} label="Drafts" color="text-warning" />
           </div>
 
           {/* Drafts & scheduled */}
@@ -128,6 +138,7 @@ export default function CreatorStudio() {
           {tab === "overview" && (
             <div className="space-y-3">
               <OverviewRow icon={FileText} title="Posts" count={p.length} to="/quad" hint="Text, photos, polls" />
+              <OverviewRow icon={Radio} title="Stories" count={st.length} to="/quad" hint="24-hour stories & highlights" />
               <OverviewRow icon={Video} title="Shorts" count={s.length} to="/shorts" hint="Short videos & reels" />
               <OverviewRow icon={Mic} title="Podcast episodes" count={e.length} to="/podcasts" hint="Audio shows" />
               <OverviewRow icon={ShoppingBag} title="Marketplace listings" count={l.length} to="/marketplace" hint="Items you're selling" />
@@ -139,8 +150,9 @@ export default function CreatorStudio() {
           )}
 
           {tab === "posts" && <ContentList items={p} type="posts" qk="myPosts" del={del} render={(x) => x.content?.slice(0, 80) || "Untitled"} metrics={(x) => <Metrics likes={x.likes_count} comments={x.comments_count} shares={x.shares_count} />} empty="You haven't posted yet. Head to the Quad to share something." />}
+          {tab === "stories" && <ContentList items={st} type="stories" qk="myStories" del={del} render={(x) => x.content?.slice(0, 60) || (x.type === "video" ? "Video story" : "Photo story")} metrics={(x) => <Metrics likes={x.likes_count || 0} views={x.views_count} />} empty="No stories yet. Share a moment from the camera." />}
           {tab === "shorts" && <ContentList items={s} type="shorts" qk="myShorts" del={del} render={(x) => x.title} metrics={(x) => <Metrics likes={x.likes_count} comments={x.comments_count} shares={x.shares_count} views={x.views_count} />} empty="No shorts uploaded yet." />}
-          {tab === "podcasts" && <ContentList items={e} type="podcasts" qk="myEpisodes" del={del} render={(x) => x.title} metrics={(x) => <span className="text-[10px] text-muted-foreground">S{x.season_number} · E{x.episode_number}</span>} empty="No podcast episodes published yet." />}
+          {tab === "podcasts" && <ContentList items={e} type="podcasts" qk="myEpisodes" del={del} render={(x) => x.title} metrics={(x) => <Metrics likes={x.likes_count || 0} comments={x.comments_count || 0} shares={x.shares_count || 0} />} empty="No podcast episodes published yet." />}
           {tab === "listings" && <ContentList items={l} type="listings" qk="myListings" del={del} render={(x) => x.title} metrics={(x) => <span className="text-[10px] font-semibold text-primary">{x.is_free ? "Free" : `₦${x.price}`}</span>} empty="No marketplace listings yet." />}
         </>
       )}

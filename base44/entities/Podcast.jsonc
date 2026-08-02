@@ -17,6 +17,18 @@
     "host_id": {
       "type": "string"
     },
+    "show_type": {
+      "type": "string",
+      "enum": [
+        "student",
+        "university",
+        "faculty",
+        "club",
+        "creator"
+      ],
+      "default": "student",
+      "description": "What kind of podcast show this is"
+    },
     "category": {
       "type": "string",
       "description": "e.g. Technology, Academics, Student Life"
@@ -38,6 +50,21 @@
         "published"
       ],
       "default": "published"
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "followed_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs following this show"
+    },
+    "total_listens": {
+      "type": "number",
+      "default": 0
     },
     "institution_id": {
       "type": "string"

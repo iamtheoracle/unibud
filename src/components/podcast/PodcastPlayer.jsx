@@ -1,30 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Play, Pause, Loader2, CheckCircle2 } from "lucide-react";
+import { Play, Pause, Loader2, CheckCircle2, Download, Heart, Share2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import SleepTimerControl from "./SleepTimerControl";
+import PodcastChapters from "./PodcastChapters";
 
 function fmt(s) {
   s = Math.max(0, Math.floor(s || 0));
-  const m = Math.floor(s / 60);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
   const r = s % 60;
+  if (h > 0) return `${h}:${m < 10 ? "0" : ""}${m}:${r < 10 ? "0" : ""}${r}`;
   return `${m}:${r < 10 ? "0" : ""}${r}`;
 }
 
 /**
  * PodcastPlayer — inline audio player with resume, seek, playback speed,
- * and silent progress persistence to PodcastListen (drives Continue Listening).
+ * sleep timer, chapter navigation, like, share, and download.
+ * Progress persists to PodcastListen (drives Continue Listening).
  */
-export default function PodcastPlayer({ episode, listen, user }) {
+export default function PodcastPlayer({ episode, listen, user, podcast }) {
   const qc = useQueryClient();
   const audioRef = useRef(null);
   const listenId = useRef(listen?.id || null);
   const lastSave = useRef(0);
+  const sleepTimerRef = useRef(null);
+
   const [playing, setPlaying] = useState(false);
   const [cur, setCur] = useState(0);
   const [dur, setDur] = useState(0);
   const [rate, setRate] = useState(1);
   const [loading, setLoading] = useState(true);
   const [done, setDone] = useState(!!listen?.completed);
+  const [liked, setLiked] = useState(episode.liked_by?.includes(user?.id));
+  const [likeCount, setLikeCount] = useState(episode.likes_count || 0);
+  const [showChapters, setShowChapters] = useState(false);
+  const [sleepRemaining, setSleepRemaining] = useState(0);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -32,7 +43,13 @@ export default function PodcastPlayer({ episode, listen, user }) {
     if (listen?.position_seconds && !listen.completed) {
       try { a.currentTime = listen.position_seconds; setCur(listen.position_seconds); } catch {}
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cleanup sleep timer on unmount
+  useEffect(() => {
+    return () => {
+      if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
+    };
   }, []);
 
   async function save(position, duration, completed) {
@@ -92,12 +109,17 @@ export default function PodcastPlayer({ episode, listen, user }) {
     setPlaying(false);
     const a = audioRef.current;
     save(a?.duration || dur, a?.duration || dur, true);
+    if (sleepTimerRef.current) {
+      clearInterval(sleepTimerRef.current);
+      sleepTimerRef.current = null;
+      setSleepRemaining(0);
+    }
   }
 
-  function seek(e) {
+  function seek(seconds) {
     const a = audioRef.current;
     if (!a) return;
-    a.currentTime = Number(e.target.value);
+    a.currentTime = Number(seconds);
     setCur(a.currentTime);
   }
 
@@ -106,6 +128,64 @@ export default function PodcastPlayer({ episode, listen, user }) {
     const a = audioRef.current;
     if (a) a.playbackRate = v;
   }
+
+  function setSleepTimer(seconds) {
+    if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
+    if (seconds === -1) {
+      // End of episode — no timer needed, just let it finish
+      return;
+    }
+    setSleepRemaining(seconds);
+    sleepTimerRef.current = setInterval(() => {
+      setSleepRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(sleepTimerRef.current);
+          sleepTimerRef.current = null;
+          const a = audioRef.current;
+          if (a) { a.pause(); setPlaying(false); save(a.currentTime, a.duration, false); }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
+
+  function cancelSleepTimer() {
+    if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
+    sleepTimerRef.current = null;
+    setSleepRemaining(0);
+  }
+
+  async function toggleLike() {
+    if (!user) return;
+    const wasLiked = liked;
+    setLiked(!wasLiked);
+    setLikeCount((c) => (wasLiked ? c - 1 : c + 1));
+    try {
+      const newLikedBy = wasLiked
+        ? (episode.liked_by || []).filter((id) => id !== user.id)
+        : [...(episode.liked_by || []), user.id];
+      await base44.entities.PodcastEpisode.update(episode.id, {
+        liked_by: newLikedBy,
+        likes_count: newLikedBy.length,
+      });
+      qc.invalidateQueries({ queryKey: ["episodes", episode.podcast_id] });
+    } catch {
+      setLiked(wasLiked);
+      setLikeCount((c) => (wasLiked ? c + 1 : c - 1));
+    }
+  }
+
+  function share() {
+    if (navigator.share) {
+      navigator.share({ title: episode.title, text: episode.podcast_title, url: window.location.href }).catch(() => {});
+    } else {
+      navigator.clipboard?.writeText(window.location.href);
+    }
+  }
+
+  const chapters = Array.isArray(episode.chapters) ? episode.chapters : [];
+  const hasChapters = chapters.length > 0;
 
   return (
     <div className="rounded-[20px] glass-card p-4">
@@ -130,16 +210,52 @@ export default function PodcastPlayer({ episode, listen, user }) {
           </p>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-[10px] text-muted-foreground tabular-nums w-10">{fmt(cur)}</span>
-            <input type="range" min={0} max={dur || 0} value={cur} onChange={seek} className="flex-1 h-1 accent-primary" />
+            <input type="range" min={0} max={dur || 0} value={cur} onChange={(e) => seek(e.target.value)} className="flex-1 h-1 accent-primary" />
             <span className="text-[10px] text-muted-foreground tabular-nums w-10 text-right">{fmt(dur)}</span>
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-1.5 mt-2.5">
+
+      {/* Controls row: speed, chapters, sleep timer, like, share, download */}
+      <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
         {[0.75, 1, 1.25, 1.5, 2].map((r) => (
           <button key={r} onClick={() => speed(r)} className={`px-2 py-0.5 rounded-full text-[10px] font-semibold spring-tap ${rate === r ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}>{r}×</button>
         ))}
+        {hasChapters && (
+          <button onClick={() => setShowChapters(!showChapters)} className={`px-2 py-0.5 rounded-full text-[10px] font-semibold spring-tap ${showChapters ? "bg-primary text-primary-foreground" : "bg-muted/50 text-muted-foreground"}`}>
+            Chapters
+          </button>
+        )}
+        <SleepTimerControl
+          active={sleepRemaining > 0}
+          remaining={sleepRemaining}
+          onSet={setSleepTimer}
+          onCancel={cancelSleepTimer}
+        />
+        <button onClick={toggleLike} className="w-8 h-8 rounded-full grid place-items-center spring-tap bg-muted/50">
+          <Heart className={`w-4 h-4 ${liked ? "text-error fill-error" : "text-muted-foreground"}`} />
+        </button>
+        <button onClick={share} className="w-8 h-8 rounded-full grid place-items-center spring-tap bg-muted/50">
+          <Share2 className="w-4 h-4 text-muted-foreground" />
+        </button>
+        <a href={episode.audio_url} download className="w-8 h-8 rounded-full grid place-items-center spring-tap bg-muted/50">
+          <Download className="w-4 h-4 text-muted-foreground" />
+        </a>
       </div>
+
+      {/* Like count */}
+      {likeCount > 0 && (
+        <p className="text-[10px] text-muted-foreground mt-2">{likeCount} like{likeCount === 1 ? "" : "s"}</p>
+      )}
+
+      {/* Chapter list */}
+      {showChapters && hasChapters && (
+        <PodcastChapters
+          chapters={chapters}
+          currentPosition={cur}
+          onSeek={seek}
+        />
+      )}
     </div>
   );
 }
