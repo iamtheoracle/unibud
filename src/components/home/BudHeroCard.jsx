@@ -39,7 +39,7 @@ export default function BudHeroCard({ firstName = "Scholar", insight = "You're a
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: EASE }}
-      className="bg-card border border-border rounded-[24px] p-6 premium-shadow relative overflow-hidden"
+      className="glass-strong rounded-[28px] p-6 relative overflow-hidden"
     >
       {/* Subtle brand-tinted gradient */}
       <div

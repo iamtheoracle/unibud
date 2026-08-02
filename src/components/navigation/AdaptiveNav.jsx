@@ -117,10 +117,10 @@ export default function AdaptiveNav() {
         aria-label="Primary navigation"
       >
         <div className="max-w-[520px] mx-auto px-3 pb-3 safe-area-pb pointer-events-auto">
-          <div className="luxury-dock rounded-[34px] h-[72px] flex items-stretch p-2 gap-1.5">
+          <div className="luxury-dock rounded-[38px] h-[80px] flex items-stretch p-2 gap-2">
             {/* ═══ LEFT: Adaptive Capsule ═══ */}
             <div
-              className="flex-1 flex items-center min-w-0 relative overflow-hidden rounded-[26px]"
+              className="flex-1 flex items-center min-w-0 relative overflow-hidden rounded-[30px]"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -177,7 +177,7 @@ export default function AdaptiveNav() {
                             className="relative flex flex-col items-center gap-1"
                           >
                             <Icon
-                              className={`w-[26px] h-[26px] transition-colors duration-300 ${isCurrent ? "dock-icon-active" : "dock-icon"}`}
+                              className={`w-[28px] h-[28px] transition-colors duration-300 ${isCurrent ? "dock-icon-active" : "dock-icon"}`}
                               strokeWidth={isCurrent ? 2.2 : 1.7}
                             />
                             <span className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ${isCurrent ? "dock-label-active" : "dock-label"}`}>
@@ -234,7 +234,7 @@ function NavTab({ tab, active, onClick }) {
         className="relative flex flex-col items-center gap-1"
       >
         <Icon
-          className={`w-[26px] h-[26px] transition-colors duration-300 ${active ? "dock-icon-active" : "dock-icon"}`}
+          className={`w-[28px] h-[28px] transition-colors duration-300 ${active ? "dock-icon-active" : "dock-icon"}`}
           strokeWidth={active ? 2.2 : 1.7}
         />
         <span className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ${active ? "dock-label-active" : "dock-label"}`}>
@@ -255,7 +255,7 @@ function MeButton({ active, onClick }) {
       onClick={onClick}
       aria-current={active ? "page" : undefined}
       aria-label="Me"
-      className="relative flex items-center justify-center w-[64px] h-full shrink-0 spring-tap"
+      className="relative flex items-center justify-center w-[72px] h-full shrink-0 spring-tap"
     >
       {active && (
         <motion.div
@@ -269,8 +269,8 @@ function MeButton({ active, onClick }) {
         transition={ICON_SPRING}
         className="relative"
       >
-        <div className={`w-[34px] h-[34px] rounded-full grid place-items-center transition-colors duration-300 ${active ? "bg-foreground/10 dock-icon-active" : "dock-icon"}`}>
-          <MeIcon className="w-[22px] h-[22px]" strokeWidth={active ? 2.2 : 1.7} />
+        <div className={`w-[38px] h-[38px] rounded-full grid place-items-center transition-colors duration-300 ${active ? "bg-foreground/10 dock-icon-active" : "dock-icon"}`}>
+          <MeIcon className="w-[24px] h-[24px]" strokeWidth={active ? 2.2 : 1.7} />
         </div>
       </motion.div>
     </button>

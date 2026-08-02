@@ -245,7 +245,7 @@ export default function Home() {
                 <Link
                   key={q.to}
                   to={q.to}
-                  className="flex flex-col items-center gap-2 py-4 bg-card border border-border rounded-2xl spring-tap hover:bg-muted/20 transition-colors group"
+                  className="flex flex-col items-center gap-2 py-4 glass rounded-2xl spring-tap transition-colors group"
                 >
                   <span className="text-[24px] leading-none">{q.emoji}</span>
                   <span className="text-[12px] font-medium text-muted-foreground">{q.label}</span>
@@ -266,7 +266,7 @@ export default function Home() {
 
 function NextCard({ to, icon: Icon, label, title, sub }) {
   return (
-    <Link to={to} className="bg-card border border-border rounded-2xl p-4 spring-tap hover:shadow-premium transition-shadow group">
+    <Link to={to} className="glass rounded-2xl p-4 spring-tap hover:shadow-premium transition-shadow group">
       <div className="flex items-center gap-1.5 mb-2">
         <Icon className="w-3.5 h-3.5 text-primary" strokeWidth={2} />
         <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
@@ -280,7 +280,7 @@ function NextCard({ to, icon: Icon, label, title, sub }) {
 function SuggestionRow({ icon: Icon, title, desc, onClick }) {
   return (
     <button onClick={onClick} className="flex items-center gap-3 py-4 w-full text-left spring-tap group">
-      <div className="w-9 h-9 rounded-xl bg-muted/40 grid place-items-center shrink-0">
+      <div className="w-9 h-9 rounded-xl glass grid place-items-center shrink-0">
         <Icon className="w-[18px] h-[18px] text-primary" strokeWidth={1.8} />
       </div>
       <div className="flex-1 min-w-0">
