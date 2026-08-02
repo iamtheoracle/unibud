@@ -90,7 +90,7 @@ export default function AdaptiveNav() {
       >
         <div className="max-w-[520px] mx-auto px-3 pb-3 safe-area-pb pointer-events-auto">
           {/* ── Floating pill dock — 76px, 36px radius, crystal frosted glass ── */}
-          <div className="luxury-dock rounded-[36px] h-[76px] flex items-center justify-between px-2.5">
+          <div className="luxury-dock rounded-[38px] h-[80px] flex items-center justify-between px-2.5">
             {tabs.map((tab) => (
               <NavTab
                 key={tab.key}
@@ -125,7 +125,7 @@ function NavTab({ tab, active, onClick }) {
       {active && (
         <motion.div
           layoutId="nav-active-capsule"
-          className="absolute inset-1.5 rounded-[26px] luxury-capsule"
+          className="absolute inset-1.5 rounded-[28px] luxury-capsule"
           transition={SPRING}
         />
       )}
