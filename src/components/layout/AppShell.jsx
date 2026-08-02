@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import AdaptiveNav from "@/components/navigation/AdaptiveNav";
-import EcosystemRail from "@/components/layout/EcosystemRail";
+import QuickActionBar from "@/components/navigation/QuickActionBar";
 import OfflineBanner from "@/components/layout/OfflineBanner";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
@@ -59,7 +59,7 @@ export default function AppShell() {
               {outlet}
             </motion.div>
           </Suspense>
-          <EcosystemRail />
+          <QuickActionBar />
           <AdaptiveNav />
         </div>
       </ClassroomModeProvider>
