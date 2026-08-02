@@ -9,6 +9,7 @@ import { PlatformProvider } from '@/lib/platform/PlatformProvider';
 
 import { ExperienceProvider } from '@/lib/ExperienceContext';
 import { SearchProvider } from '@/lib/SearchContext';
+import RealtimeSyncProvider from '@/lib/realtime/RealtimeSyncProvider';
 import ScrollToTop from './components/ScrollToTop';
 import AppShell from '@/components/layout/AppShell';
 import OperationsShell from '@/components/layout/OperationsShell';
@@ -252,6 +253,7 @@ function App() {
       <ThemeProvider>
         <PlatformProvider>
         <QueryClientProvider client={queryClientInstance}>
+            <RealtimeSyncProvider>
             <ExperienceProvider>
             <SearchProvider>
             <Router>
@@ -447,6 +449,7 @@ function App() {
             </Router>
             </SearchProvider>
           </ExperienceProvider>
+          </RealtimeSyncProvider>
         </QueryClientProvider>
         </PlatformProvider>
       </ThemeProvider>
