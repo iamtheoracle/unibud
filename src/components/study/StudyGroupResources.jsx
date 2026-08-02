@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/AuthContext";
 import ResourceRow, { FILE_TYPE_CONFIG, formatDate } from "./ResourceRow";
 import ResourceDetailSheet from "./ResourceDetailSheet";
 import AddResourceSheet from "./AddResourceSheet";
+import ResourceTemplateSheet from "./ResourceTemplateSheet";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -40,6 +41,7 @@ export default function StudyGroupResources({ groupId, groupName }) {
   const [sortBy, setSortBy] = useState("recent");
   const [showFilters, setShowFilters] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const [selected, setSelected] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -121,6 +123,26 @@ export default function StudyGroupResources({ groupId, groupName }) {
     } catch {}
   };
 
+  const applyTemplate = async (template) => {
+    try {
+      const records = template.folders.map((f) => ({
+        study_group_id: groupId,
+        title: f.title,
+        file_type: f.file_type,
+        folder: f.folder,
+        tags: f.tags || [],
+        uploaded_by_name: user?.full_name || user?.email || "Member",
+        uploaded_by_id: user?.id,
+      }));
+      await base44.entities.StudyGroupResource.bulkCreate(records);
+      setShowTemplates(false);
+      toast({ title: "Template applied", description: `${template.folders.length} folders created for ${template.name}` });
+      load();
+    } catch {
+      toast({ title: "Could not apply template", variant: "destructive" });
+    }
+  };
+
   const handleUpload = async (file) => {
     setUploading(true);
     try {
@@ -174,6 +196,9 @@ export default function StudyGroupResources({ groupId, groupName }) {
         </div>
         <button onClick={() => setShowFilters(!showFilters)} className={`w-9 h-9 rounded-full flex items-center justify-center spring-tap ${showFilters ? "bg-foreground text-background" : "glass-card text-muted-foreground"}`}>
           <SlidersHorizontal className="w-4 h-4" strokeWidth={2} />
+        </button>
+        <button onClick={() => setShowTemplates(true)} className="w-9 h-9 rounded-full glass-card text-muted-foreground flex items-center justify-center spring-tap" aria-label="Library templates">
+          <FolderOpen className="w-4 h-4" strokeWidth={2} />
         </button>
         <button onClick={() => setShowAdd(true)} className="w-9 h-9 rounded-full bg-foreground text-background flex items-center justify-center spring-tap" aria-label="Add resource">
           <Plus className="w-4 h-4" strokeWidth={2} />
@@ -235,6 +260,9 @@ export default function StudyGroupResources({ groupId, groupName }) {
       {/* Sheets */}
       <AnimatePresence>
         {showAdd && <AddResourceSheet onClose={() => setShowAdd(false)} onAdd={addResource} onUpload={handleUpload} uploading={uploading} />}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showTemplates && <ResourceTemplateSheet onClose={() => setShowTemplates(false)} onApply={applyTemplate} groupName={groupName} />}
       </AnimatePresence>
       <AnimatePresence>
         {selected && (

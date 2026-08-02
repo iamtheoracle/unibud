@@ -4,18 +4,46 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Award, Search, LayoutGrid, List, Share2,
-  BookOpen, Flame, Briefcase, Users, Trophy, X,
+  BookOpen, Flame, Briefcase, Users, Trophy, TrendingUp,
+  GraduationCap, Target, ScrollText, BadgeCheck, Heart,
+  HandHeart, Medal, Rocket, FlaskConical, CalendarDays,
+  Star, Mic, Video, Sparkles, X, Loader2,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import AchievementDetailSheet from "@/components/achievements/AchievementDetailSheet";
+import BudMilestoneSummary from "@/components/achievements/BudMilestoneSummary";
+
+const EASE = [0.16, 1, 0.3, 1];
 
 const CATEGORIES = [
   { id: "all", label: "All", icon: Award },
   { id: "academic", label: "Academic", icon: BookOpen },
+  { id: "gpa", label: "GPA", icon: TrendingUp },
   { id: "study", label: "Study", icon: Flame },
+  { id: "streaks", label: "Streaks", icon: Flame },
+  { id: "course_completion", label: "Courses", icon: GraduationCap },
+  { id: "degree_progress", label: "Degree", icon: Target },
+  { id: "assignments", label: "Assignments", icon: BookOpen },
+  { id: "exams", label: "Exams", icon: Award },
+  { id: "scholarships", label: "Scholarships", icon: ScrollText },
+  { id: "certifications", label: "Certifications", icon: BadgeCheck },
+  { id: "leadership", label: "Leadership", icon: Users },
+  { id: "clubs", label: "Clubs", icon: Users },
+  { id: "community", label: "Community", icon: Heart },
+  { id: "volunteer", label: "Volunteer", icon: HandHeart },
+  { id: "competitions", label: "Competitions", icon: Medal },
+  { id: "hackathon", label: "Hackathon", icon: Rocket },
+  { id: "research", label: "Research", icon: FlaskConical },
+  { id: "events", label: "Events", icon: CalendarDays },
+  { id: "mentor", label: "Mentor", icon: Star },
+  { id: "creator", label: "Creator", icon: Video },
+  { id: "podcast", label: "Podcast", icon: Mic },
+  { id: "milestone", label: "Milestones", icon: Trophy },
+  { id: "collaboration", label: "Collaboration", icon: Users },
+  { id: "campus_life", label: "Campus Life", icon: Heart },
+  { id: "learning", label: "Learning", icon: BookOpen },
   { id: "projects", label: "Projects", icon: Briefcase },
-  { id: "communities", label: "Communities", icon: Users },
-  { id: "career", label: "Career", icon: Trophy },
 ];
 
 const VIEW_MODES = [
@@ -23,13 +51,24 @@ const VIEW_MODES = [
   { id: "timeline", label: "Timeline", icon: List },
 ];
 
+const ACHIEVEMENT_ICONS = {
+  study: Flame, assignments: BookOpen, exams: Award, learning: BookOpen,
+  collaboration: Users, campus_life: Heart, milestone: Trophy,
+  gpa: TrendingUp, streaks: Flame, course_completion: GraduationCap,
+  degree_progress: Target, scholarships: ScrollText, certifications: BadgeCheck,
+  leadership: Users, clubs: Users, community: Heart, volunteer: HandHeart,
+  competitions: Medal, hackathon: Rocket, research: FlaskConical,
+  events: CalendarDays, mentor: Star, creator: Video, podcast: Mic,
+  projects: Briefcase,
+};
+
 export default function AchievementGallery() {
   const navigate = useNavigate();
   const isOnline = useOnlineStatus();
   const [category, setCategory] = useState("all");
   const [viewMode, setViewMode] = useState("grid");
   const [search, setSearch] = useState("");
-  const [shareItem, setShareItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const { data: achievements, isLoading } = useQuery({
     queryKey: ["achievement-gallery"],
@@ -40,34 +79,42 @@ export default function AchievementGallery() {
   const filtered = useMemo(() => {
     if (!achievements) return [];
     let list = achievements;
-
     if (category !== "all") {
       list = list.filter((a) => a.category === category);
     }
-
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
         (a) =>
           a.title?.toLowerCase().includes(q) ||
-          a.description?.toLowerCase().includes(q)
+          a.description?.toLowerCase().includes(q) ||
+          a.verification_source?.toLowerCase().includes(q)
       );
     }
-
     return list;
   }, [achievements, category, search]);
 
-  // Group by date for timeline
   const timelineGroups = useMemo(() => {
     if (viewMode !== "timeline") return [];
     const groups = {};
     filtered.forEach((a) => {
-      const date = a.date_earned ? new Date(a.date_earned).toLocaleDateString("en", { month: "long", year: "numeric" }) : "Unspecified";
+      const date = a.date_earned ? new Date(a.date_earned).toLocaleDateString("en", { month: "long", year: "numeric" }) : "Recent";
       if (!groups[date]) groups[date] = [];
       groups[date].push(a);
     });
     return Object.entries(groups);
   }, [filtered, viewMode]);
+
+  // Category counts
+  const categoryCounts = useMemo(() => {
+    const counts = {};
+    (achievements || []).forEach((a) => {
+      counts[a.category] = (counts[a.category] || 0) + 1;
+    });
+    return counts;
+  }, [achievements]);
+
+  const visibleCategories = CATEGORIES.filter((c) => c.id === "all" || categoryCounts[c.id]);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -78,8 +125,8 @@ export default function AchievementGallery() {
             <ArrowLeft className="w-4 h-4 text-foreground" strokeWidth={2.2} />
           </button>
           <div className="flex-1">
-            <h1 className="text-[18px] font-bold text-foreground tracking-tight">Achievements</h1>
-            <p className="text-[11px] text-muted-foreground">{filtered.length} earned</p>
+            <h1 className="text-[18px] font-bold text-foreground tracking-tight">Achievement Board</h1>
+            <p className="text-[11px] text-muted-foreground">{filtered.length} verified {filtered.length === 1 ? "achievement" : "achievements"}</p>
           </div>
           <div className="flex gap-1">
             {VIEW_MODES.map((v) => {
@@ -105,7 +152,7 @@ export default function AchievementGallery() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
           <input
             type="text"
-            placeholder="Search achievements..."
+            placeholder="Search achievements, certificates, sources..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full h-10 pl-10 pr-4 rounded-full bg-card text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -115,8 +162,9 @@ export default function AchievementGallery() {
 
         {/* Category filters */}
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
-          {CATEGORIES.map((c) => {
+          {visibleCategories.map((c) => {
             const Icon = c.icon;
+            const count = c.id === "all" ? (achievements || []).length : (categoryCounts[c.id] || 0);
             return (
               <button
                 key={c.id}
@@ -128,6 +176,7 @@ export default function AchievementGallery() {
               >
                 <Icon className="w-3.5 h-3.5" strokeWidth={2.2} />
                 {c.label}
+                {count > 0 && <span className={`text-[9px] ${category === c.id ? "opacity-80" : "opacity-50"}`}>{count}</span>}
               </button>
             );
           })}
@@ -143,69 +192,91 @@ export default function AchievementGallery() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-            <div className="w-16 h-16 rounded-[20px] bg-muted flex items-center justify-center mb-5">
+            <div className="w-16 h-16 rounded-[20px] glass-card flex items-center justify-center mb-5 crystal-bloom">
               <Award className="w-7 h-7 text-muted-foreground" strokeWidth={1.6} />
             </div>
             <h3 className="text-[16px] font-bold text-foreground mb-1.5">No achievements yet</h3>
             <p className="text-[12px] text-muted-foreground leading-relaxed max-w-[280px]">
               {search || category !== "all"
                 ? "No achievements match your filters. Try adjusting them."
-                : "Achievements you earn will appear here. Keep studying and participating!"}
+                : "Achievements you earn through study, exams, leadership, and campus participation will appear here. Keep going!"}
             </p>
           </div>
-        ) : viewMode === "grid" ? (
-          <div className="grid grid-cols-2 gap-3">
-            {filtered.map((a, i) => (
-              <AchievementCard key={a.id} achievement={a} index={i} onShare={() => setShareItem(a)} />
-            ))}
-          </div>
         ) : (
-          <div className="space-y-5">
-            {timelineGroups.map(([month, items]) => (
-              <div key={month}>
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-2 h-2 rounded-full bg-primary" />
-                  <h3 className="text-[13px] font-bold text-foreground">{month}</h3>
-                  <div className="flex-1 h-px bg-border/30" />
-                  <span className="text-[10px] text-muted-foreground">{items.length}</span>
-                </div>
-                <div className="space-y-2 pl-4 border-l border-border/20">
-                  {items.map((a, i) => (
-                    <AchievementRow key={a.id} achievement={a} index={i} onShare={() => setShareItem(a)} />
-                  ))}
-                </div>
+          <>
+            {/* Bud milestone summary */}
+            <div className="mb-4">
+              <BudMilestoneSummary achievements={filtered} />
+            </div>
+
+            {/* Grid or Timeline */}
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-2 gap-3">
+                {filtered.map((a, i) => (
+                  <AchievementCard key={a.id} achievement={a} index={i} onClick={() => setSelectedItem(a)} />
+                ))}
               </div>
-            ))}
-          </div>
+            ) : (
+              <div className="space-y-5">
+                {timelineGroups.map(([month, items]) => (
+                  <div key={month}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-primary" />
+                      <h3 className="text-[13px] font-bold text-foreground">{month}</h3>
+                      <div className="flex-1 h-px bg-border/30" />
+                      <span className="text-[10px] text-muted-foreground">{items.length}</span>
+                    </div>
+                    <div className="space-y-2 pl-4 border-l border-border/20">
+                      {items.map((a, i) => (
+                        <AchievementRow key={a.id} achievement={a} index={i} onClick={() => setSelectedItem(a)} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Share sheet */}
+      {/* Detail sheet */}
       <AnimatePresence>
-        {shareItem && (
-          <ShareSheet achievement={shareItem} onClose={() => setShareItem(null)} />
+        {selectedItem && (
+          <AchievementDetailSheet achievement={selectedItem} onClose={() => setSelectedItem(null)} />
         )}
       </AnimatePresence>
     </div>
   );
 }
 
-function AchievementCard({ achievement, index, onShare }) {
+function AchievementCard({ achievement, index, onClick }) {
   const Icon = ACHIEVEMENT_ICONS[achievement.category] || Award;
   const dateStr = achievement.date_earned
     ? new Date(achievement.date_earned).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" })
     : "";
+  const progress = achievement.progress ?? 100;
+  const isInProgress = progress < 100;
 
   return (
-    <motion.div
+    <motion.button
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.05, type: "spring", stiffness: 200, damping: 20 }}
-      className="relative rounded-[20px] bg-card p-4 flex flex-col items-center text-center overflow-hidden"
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)" }}
+      transition={{ delay: index * 0.04, type: "spring", stiffness: 200, damping: 20 }}
+      onClick={onClick}
+      className="relative rounded-[20px] glass-card p-4 flex flex-col items-center text-center overflow-hidden spring-tap card-hover"
     >
-      {/* Glow */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-chocolate/5 pointer-events-none" />
+
+      {isInProgress && (
+        <span className="absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-warning/15 text-warning">
+          {progress}%
+        </span>
+      )}
+      {achievement.certificate_url && (
+        <span className="absolute top-2 left-2">
+          <BadgeCheck className="w-3.5 h-3.5 text-chocolate" strokeWidth={2.2} />
+        </span>
+      )}
 
       <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-primary to-chocolate flex items-center justify-center mb-2.5" style={{ boxShadow: "0 4px 16px rgba(255,122,0,0.2)" }}>
         <Icon className="w-6 h-6 text-white" strokeWidth={2} />
@@ -220,29 +291,34 @@ function AchievementCard({ achievement, index, onShare }) {
         <p className="text-[9px] font-bold text-muted-foreground mt-2 uppercase tracking-wide">{dateStr}</p>
       )}
 
-      <button
-        onClick={onShare}
-        className="mt-2 w-7 h-7 rounded-full bg-muted flex items-center justify-center active:scale-90 transition-transform"
-      >
-        <Share2 className="w-3 h-3 text-muted-foreground" strokeWidth={2.2} />
-      </button>
-    </motion.div>
+      {achievement.verification_source && (
+        <p className="text-[8px] text-muted-foreground/70 mt-0.5 truncate w-full">{achievement.verification_source}</p>
+      )}
+
+      {isInProgress && (
+        <div className="w-full h-1 rounded-full bg-muted/40 overflow-hidden mt-2">
+          <div className="h-full rounded-full bg-gradient-to-r from-primary to-chocolate" style={{ width: `${progress}%` }} />
+        </div>
+      )}
+    </motion.button>
   );
 }
 
-function AchievementRow({ achievement, index, onShare }) {
+function AchievementRow({ achievement, index, onClick }) {
   const Icon = ACHIEVEMENT_ICONS[achievement.category] || Award;
   const dateStr = achievement.date_earned
     ? new Date(achievement.date_earned).toLocaleDateString("en", { month: "short", day: "numeric" })
     : "";
+  const progress = achievement.progress ?? 100;
+  const isInProgress = progress < 100;
 
   return (
-    <motion.div
+    <motion.button
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: index * 0.05 }}
-      className="flex items-center gap-3 p-3 rounded-[16px] bg-card"
-      style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)" }}
+      transition={{ delay: index * 0.04 }}
+      onClick={onClick}
+      className="w-full flex items-center gap-3 p-3 rounded-[16px] glass-card spring-tap card-hover text-left"
     >
       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-chocolate flex items-center justify-center flex-shrink-0">
         <Icon className="w-4 h-4 text-white" strokeWidth={2} />
@@ -252,78 +328,19 @@ function AchievementRow({ achievement, index, onShare }) {
         {achievement.description && (
           <p className="text-[10px] text-muted-foreground truncate">{achievement.description}</p>
         )}
-        {dateStr && (
-          <p className="text-[9px] text-muted-foreground mt-0.5">{dateStr}</p>
+        <div className="flex items-center gap-1.5 mt-0.5">
+          {dateStr && <span className="text-[9px] text-muted-foreground">{dateStr}</span>}
+          {achievement.verification_source && (
+            <span className="text-[8px] text-muted-foreground/60 truncate">· {achievement.verification_source}</span>
+          )}
+        </div>
+        {isInProgress && (
+          <div className="w-full h-0.5 rounded-full bg-muted/40 overflow-hidden mt-1">
+            <div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
+          </div>
         )}
       </div>
-      <button onClick={onShare} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center active:scale-90 transition-transform flex-shrink-0">
-        <Share2 className="w-3 h-3 text-muted-foreground" strokeWidth={2.2} />
-      </button>
-    </motion.div>
+      {achievement.certificate_url && <BadgeCheck className="w-3.5 h-3.5 text-chocolate flex-shrink-0" strokeWidth={2.2} />}
+    </motion.button>
   );
 }
-
-function ShareSheet({ achievement, onClose }) {
-  const shareText = `I earned "${achievement.title}" on UNIBUD! ${achievement.description || ""}`;
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: achievement.title, text: shareText });
-      } catch (e) {
-        // User cancelled
-      }
-    } else {
-      await navigator.clipboard.writeText(shareText);
-    }
-    onClose();
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-end justify-center"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      <motion.div
-        initial={{ y: "100%" }}
-        animate={{ y: 0 }}
-        exit={{ y: "100%" }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="relative w-full max-w-[640px] bg-background rounded-t-[28px] p-6 pb-8"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="w-10 h-1 rounded-full bg-muted mx-auto mb-4" />
-        <div className="flex flex-col items-center text-center mb-5">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-chocolate flex items-center justify-center mb-3" style={{ boxShadow: "0 4px 20px rgba(255,122,0,0.3)" }}>
-            <Award className="w-7 h-7 text-white" strokeWidth={2} />
-          </div>
-          <h3 className="text-[16px] font-bold text-foreground">{achievement.title}</h3>
-          {achievement.description && <p className="text-[12px] text-muted-foreground mt-1">{achievement.description}</p>}
-        </div>
-        <button
-          onClick={handleShare}
-          className="w-full h-11 rounded-full bg-primary text-primary-foreground text-[14px] font-bold active:scale-95 transition-transform"
-        >
-          Share Achievement
-        </button>
-        <button onClick={onClose} className="w-full h-11 mt-2 text-[14px] font-bold text-muted-foreground">
-          Cancel
-        </button>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-const ACHIEVEMENT_ICONS = {
-  study: Flame,
-  assignments: BookOpen,
-  exams: Award,
-  learning: BookOpen,
-  collaboration: Users,
-  campus_life: Users,
-  milestone: Trophy,
-};

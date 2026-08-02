@@ -64,6 +64,25 @@ export async function syncToGoogleCalendar() {
 }
 
 /**
+ * Normalize academic events (assignments, exams, study sessions, etc.) into
+ * CalendarEvent records so they appear in the unified calendar and sync to
+ * Google Calendar.
+ */
+export async function normalizeAcademicEvents() {
+  const res = await base44.functions.invoke("googleCalendarSync", { action: "normalize" });
+  return res.data;
+}
+
+/**
+ * Full bidirectional sync: normalize academic events, push to Google Calendar,
+ * and pull from Google Calendar. Includes conflict detection.
+ */
+export async function fullCalendarSync() {
+  const res = await base44.functions.invoke("googleCalendarSync", { action: "full_sync" });
+  return res.data;
+}
+
+/**
  * Create a manual timetable entry.
  */
 export async function createManualTimetableEntry(entry) {

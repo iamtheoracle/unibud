@@ -22,7 +22,24 @@
         "learning",
         "collaboration",
         "campus_life",
-        "milestone"
+        "milestone",
+        "gpa",
+        "streaks",
+        "course_completion",
+        "degree_progress",
+        "scholarships",
+        "certifications",
+        "leadership",
+        "clubs",
+        "community",
+        "volunteer",
+        "competitions",
+        "hackathon",
+        "research",
+        "events",
+        "mentor",
+        "creator",
+        "podcast"
       ],
       "default": "study",
       "description": "Achievement category"
@@ -76,6 +93,19 @@
     },
     "university": {
       "type": "string"
+    },
+    "verification_source": {
+      "type": "string",
+      "description": "How this achievement was verified (e.g. 'System verified', 'University registrar', 'Course completion system')"
+    },
+    "progress": {
+      "type": "number",
+      "default": 100,
+      "description": "Progress percentage (0-100) for in-progress achievements; 100 when fully earned"
+    },
+    "certificate_url": {
+      "type": "string",
+      "description": "File URL for the certificate or badge attachment, if available"
     }
   },
   "required": [

@@ -8,6 +8,7 @@ import { base44 } from "@/api/base44Client";
 import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
 import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
 import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
+import UnifiedCalendarWidget from "@/components/calendar/UnifiedCalendarWidget";
 import BudBriefingBar from "@/components/bud/home/BudBriefingBar";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -74,6 +75,9 @@ export default function AcademicHub() {
           className="w-full pl-10 pr-4 py-3 rounded-2xl bg-card border border-border text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 spring-tap transition-colors duration-300"
         />
       </div>
+
+      {/* Unified Calendar */}
+      <UnifiedCalendarWidget />
 
       {/* Ranked card grid */}
       <WorkspaceRenderer cards={rankedCards} />
