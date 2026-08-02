@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+@import "./styles/adaptive.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1451,23 +1452,43 @@
   }
 }
 
-/* Responsive content containers — widen page content on tablets/desktops.
+/* ═══ Adaptive Layout — never scale down, always reflow ═══
+   Each screen size gets its own optimized content width.
    Scoped to .app-content so the fixed nav dock keeps its compact width. */
-@media (min-width: 768px) {
+.app-content .max-w-\[520px\],
+.app-content .max-w-\[600px\],
+.app-content .max-w-\[640px\] {
+  max-width: var(--content-max, 100%);
+  padding-left: var(--content-padding-x, 1rem);
+  padding-right: var(--content-padding-x, 1rem);
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
   .app-content .max-w-\[520px\],
   .app-content .max-w-\[600px\],
-  .app-content .max-w-\[640px\] { max-width: 760px; }
+  .app-content .max-w-\[640px\] { max-width: 720px; }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .app-content .max-w-\[520px\],
+  .app-content .max-w-\[600px\],
+  .app-content .max-w-\[640px\] { max-width: 960px; }
+}
+@media (min-width: 1280px) and (max-width: 1535px) {
   .app-content .max-w-\[520px\],
   .app-content .max-w-\[600px\],
   .app-content .max-w-\[640px\] { max-width: 1080px; }
 }
+@media (min-width: 1536px) {
+  .app-content .max-w-\[520px\],
+  .app-content .max-w-\[600px\],
+  .app-content .max-w-\[640px\] { max-width: 1200px; }
+}
 
-/* Desktop pointer affordances — snappier, less exaggerated taps */
+/* Desktop pointer affordances — snappier, less exaggerated taps with ambient lighting */
 @media (hover: hover) and (pointer: fine) {
   .spring-tap:active { transform: scale(0.985); }
-  .card-hover:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.22), 0 28px 64px rgba(0,0,0,0.36); }
+  .card-hover:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(135,180,230,0.05); }
 }
 
 /* ════════════════════════════════════════════════════════════

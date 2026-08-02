@@ -4,6 +4,10 @@ module.exports = {
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
+  		screens: {
+  			'xs': '360px',
+  			'3xl': '1920px',
+  		},
   		borderRadius: {
   			sm: '0.5rem',
   			md: '1rem',
