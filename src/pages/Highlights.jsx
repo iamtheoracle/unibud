@@ -191,6 +191,7 @@ export default function Highlights() {
           onOpenChange={setShowShareSheet}
           folder={activeFolder}
           itemCount={filtered.length}
+          highlightIds={filtered.map((h) => h.id)}
           isShared={filtered.length > 0 && filtered.every((h) => h.visibility === "public")}
           onShare={async () => {
             const items = highlights.filter((h) => h.folder === activeFolder);

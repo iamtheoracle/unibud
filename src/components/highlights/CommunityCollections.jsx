@@ -4,6 +4,19 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { Folder, ChevronRight, Bookmark, ExternalLink, Globe } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import SharedCollectionCard from "@/components/highlights/SharedCollectionCard";
+
+function formatRelative(dateStr) {
+  if (!dateStr) return null;
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return "today";
+  if (diffDays === 1) return "yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString();
+}
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -65,21 +78,13 @@ export default function CommunityCollections() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: i * 0.04, ease: EASE }}
         >
-          <button
-            onClick={() => setExpandedFolder(expandedFolder === col.folder ? null : col.folder)}
-            className="w-full glass-card rounded-[16px] p-4 spring-tap text-left"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[12px] bg-primary/10 grid place-items-center shrink-0">
-                <Folder className="w-5 h-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[14px] font-semibold text-foreground line-clamp-1">{col.folder}</p>
-                <p className="text-[11px] text-muted-foreground">{col.items.length} {col.items.length === 1 ? "item" : "items"} · Shared collection</p>
-              </div>
-              <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${expandedFolder === col.folder ? "rotate-90" : ""}`} />
-            </div>
-          </button>
+          <SharedCollectionCard
+            folder={col.folder}
+            itemCount={col.items.length}
+            coverImage={col.items.find((h) => h.image_url)?.image_url}
+            updatedAt={formatRelative(col.items[0]?.updated_date)}
+            onOpen={() => setExpandedFolder(expandedFolder === col.folder ? null : col.folder)}
+          />
 
           {expandedFolder === col.folder && (
             <div className="mt-2 ml-4 space-y-2 border-l border-border/30 pl-4">

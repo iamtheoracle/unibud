@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Share2, Copy, Check, Globe, Link2, ChevronRight } from "lucide-react";
+import { Share2, Copy, Check, Globe, Link2, Eye, Lightbulb, Users2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
+import { base44 } from "@/api/base44Client";
 import SharedCollectionCard from "@/components/highlights/SharedCollectionCard";
 import RecipientPicker from "@/components/highlights/RecipientPicker";
 
-export default function ShareFolderSheet({ open, onOpenChange, folder, itemCount, isShared, onShare }) {
+export default function ShareFolderSheet({ open, onOpenChange, folder, itemCount, isShared, onShare, highlightIds = [] }) {
   const [shared, setShared] = useState(isShared);
   const [copied, setCopied] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [collaboration, setCollaboration] = useState("view");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -22,9 +26,22 @@ export default function ShareFolderSheet({ open, onOpenChange, folder, itemCount
     try {
       await onShare();
       setShared(true);
-      toast({ title: "Collection shared!", description: `"${folder}" is now visible to your community.` });
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 1800);
     } catch {
       toast({ title: "Couldn't share", description: "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleCollaborationChange = async (permission) => {
+    hapticTap();
+    setCollaboration(permission);
+    if (highlightIds.length > 0) {
+      try {
+        await base44.entities.Highlight.bulkUpdate(
+          highlightIds.map((id) => ({ id, metadata: { collaboration: permission } }))
+        );
+      } catch {}
     }
   };
 
@@ -47,9 +64,77 @@ export default function ShareFolderSheet({ open, onOpenChange, folder, itemCount
             Share {itemCount} saved {itemCount === 1 ? "item" : "items"} from this collection with other students in your community.
           </SheetDescription>
         </SheetHeader>
-        <div className="space-y-4 px-1 pb-8 pt-3">
+        <div className="space-y-4 px-1 pb-8 pt-3 relative">
+          {/* Success overlay */}
+          <AnimatePresence>
+            {showSuccess && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-background/95 rounded-t-[28px]"
+              >
+                <motion.div
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 280, damping: 18 }}
+                  className="w-16 h-16 rounded-full bg-success/15 grid place-items-center mb-3"
+                >
+                  <svg viewBox="0 0 24 24" className="w-8 h-8 text-success" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 6L9 17l-5-5" className="check-draw" />
+                  </svg>
+                </motion.div>
+                <motion.p
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="text-[15px] font-bold text-foreground"
+                >
+                  Collection Shared
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="text-[12px] text-muted-foreground mt-0.5"
+                >
+                  "{folder}" is now visible to your community.
+                </motion.p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Collection preview */}
           <SharedCollectionCard folder={folder} itemCount={itemCount} />
+
+          {/* Collaboration permissions */}
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2 px-1">
+              Collaboration
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: "view", label: "View Only", icon: Eye },
+                { id: "suggest", label: "Suggest", icon: Lightbulb },
+                { id: "collaborate", label: "Full Access", icon: Users2 },
+              ].map((opt) => {
+                const Icon = opt.icon;
+                const active = collaboration === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    onClick={() => handleCollaborationChange(opt.id)}
+                    className={`flex flex-col items-center gap-1.5 py-3 rounded-2xl spring-tap transition-all ${
+                      active ? "bg-foreground text-background" : "glass text-foreground/70"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" strokeWidth={1.8} />
+                    <span className="text-[10px] font-semibold">{opt.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Visibility / quick actions */}
           {!shared ? (
