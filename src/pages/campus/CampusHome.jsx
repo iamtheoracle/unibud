@@ -38,8 +38,7 @@ function greeting() {
 
 /**
  * CampusHome — the Today Brief. The intelligent front door to Campus.
- * Answers, in order: what needs attention today → deadlines → classes →
- * recommendations → progress → opportunities. Calm, focused, distraction-free.
+ * Editorial flow: greeting → brief → pulse → domains → classes → focus → opportunities.
  */
 export default function CampusHome() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -57,10 +56,10 @@ export default function CampusHome() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 340, damping: 36, mass: 0.9 }}
-        className="mb-6"
+        className="mb-7"
       >
-        <p className="text-[13px] text-muted-foreground font-medium mb-1">{greeting()},</p>
-        <h1 className="text-[28px] font-bold tracking-tight text-foreground leading-tight">{firstName}</h1>
+        <p className="text-[13px] text-muted-foreground font-medium">{greeting()},</p>
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground leading-tight mt-0.5">{firstName}</h1>
         <p className="text-[12px] text-muted-foreground/70 mt-1.5">
           {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </p>
@@ -70,24 +69,24 @@ export default function CampusHome() {
       <TodayBrief brief={brief} loading={loading} />
 
       {/* Academic Pulse */}
-      <div className="mt-3">
+      <div className="mt-6">
         <AcademicPulse />
       </div>
 
       {/* Domain navigation — divider-based list */}
       <section className="mt-10">
-        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Campus</h2>
-        <div className="divide-y divide-border/25">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">Campus</span>
+        <div className="divide-y divide-border border-t border-b border-border">
           {DOMAINS.map((d) => {
             const Icon = d.icon;
             return (
-              <Link key={d.label} to={d.to} className="flex items-center gap-3 py-3.5 spring-tap">
-                <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.7} />
+              <Link key={d.label} to={d.to} className="flex items-center gap-3 py-4 spring-tap group">
+                <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.8} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-medium text-foreground">{d.label}</p>
-                  <p className="text-[12px] text-muted-foreground/70 mt-0.5">{d.desc}</p>
+                  <p className="text-[15px] font-medium text-foreground">{d.label}</p>
+                  <p className="text-[12px] text-muted-foreground mt-0.5">{d.desc}</p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.7} />
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
               </Link>
             );
           })}
@@ -96,21 +95,19 @@ export default function CampusHome() {
 
       {/* Today's classes */}
       <section className="mt-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50">Today's Classes</h2>
-          <Link to="/timetable" className="text-[12px] font-medium text-foreground/60 flex items-center spring-tap hover:text-foreground transition-colors">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Today's Classes</span>
+          <Link to="/timetable" className="text-[12px] font-medium text-primary flex items-center gap-0.5 spring-tap">
             Timetable <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
         {loading ? (
           <div className="h-12 rounded-lg shimmer" />
         ) : today && today.length > 0 ? (
-          <div className="divide-y divide-border/25">
+          <div className="divide-y divide-border border-t border-b border-border">
             {today.slice(0, 4).map((s, i) => (
-              <div key={i} className="flex items-center gap-3 py-3.5">
-                <div className="w-14 shrink-0">
-                  <p className="text-[13px] font-semibold text-foreground tabular-nums">{s.start}</p>
-                </div>
+              <div key={i} className="flex items-center gap-3 py-4">
+                <p className="text-[13px] font-semibold text-foreground tabular-nums w-14 shrink-0">{s.start}</p>
                 <div className="flex-1 min-w-0">
                   <p className="text-[14px] font-medium text-foreground truncate">{s.code}</p>
                   <p className="text-[12px] text-muted-foreground truncate mt-0.5">{s.title} · {s.room}</p>
@@ -119,7 +116,7 @@ export default function CampusHome() {
             ))}
           </div>
         ) : (
-          <div className="py-4">
+          <div className="py-5 border-t border-b border-border">
             <p className="text-[14px] text-muted-foreground">No classes scheduled today — a great day for deep work.</p>
           </div>
         )}
@@ -128,15 +125,15 @@ export default function CampusHome() {
       {/* Focus recommendations */}
       {recommended.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Focus For You</h2>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 block">Focus For You</span>
           <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
             {recommended.map((c) => {
               const Icon = c.icon;
               return (
-                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[140px] bg-muted/20 border border-border/15 rounded-xl p-3.5 spring-tap">
-                  <Icon className="w-[18px] h-[18px] text-foreground mb-2.5" strokeWidth={1.7} />
+                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[140px] bg-card border border-border rounded-xl p-4 spring-tap card-hover">
+                  <Icon className="w-[18px] h-[18px] text-primary mb-2.5" strokeWidth={2} />
                   <p className="text-[13px] font-medium text-foreground leading-tight">{c.title}</p>
-                  <p className="text-[11px] text-muted-foreground/70 mt-0.5 line-clamp-2">{c.desc}</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{c.desc}</p>
                 </Link>
               );
             })}
@@ -146,15 +143,15 @@ export default function CampusHome() {
 
       {/* Opportunities */}
       <section className="mt-10 mb-4">
-        <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Opportunities</h2>
-        <div className="divide-y divide-border/25">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">Opportunities</span>
+        <div className="divide-y divide-border border-t border-b border-border">
           {OPPS.map((o) => {
             const Icon = o.icon;
             return (
-              <Link key={o.label} to={o.to} className="flex items-center gap-3 py-3.5 spring-tap">
-                <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.7} />
-                <span className="text-[14px] font-medium text-foreground flex-1">{o.label}</span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground/40" strokeWidth={1.7} />
+              <Link key={o.label} to={o.to} className="flex items-center gap-3 py-4 spring-tap group">
+                <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.8} />
+                <span className="text-[15px] font-medium text-foreground flex-1">{o.label}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
               </Link>
             );
           })}

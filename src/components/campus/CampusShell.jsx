@@ -24,8 +24,8 @@ export default function CampusShell({ children }) {
       <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
         <div className="ambient-orb absolute -top-24 left-1/2 -translate-x-1/2 w-[480px] h-[360px]" style={{ background: "radial-gradient(50% 50% at 50% 50%, hsl(0 0% 100% / 0.06), transparent 70%)" }} />
       </div>
-      <header className="sticky top-0 z-30 founder-dock border-b border-border/10">
-        <div className="max-w-2xl mx-auto px-4">
+      <header className="sticky top-0 z-30 bg-card border-b border-border">
+        <div className="max-w-2xl mx-auto px-6">
           <div className="flex items-center justify-between h-14">
             <Link to="/campus" className="flex items-center gap-2 spring-tap">
               <div className="w-8 h-8 rounded-[11px] crystal-card flex items-center justify-center edge-light">
@@ -49,8 +49,8 @@ export default function CampusShell({ children }) {
                   to={n.to}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap transition-all duration-300 ${
                     active
-                      ? "bg-foreground text-background ice-glow"
-                      : "text-muted-foreground hover:text-foreground dock-pill"
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground bg-muted/40"
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" strokeWidth={2.2} /> {n.label}
@@ -60,7 +60,7 @@ export default function CampusShell({ children }) {
           </nav>
         </div>
       </header>
-      <div className="max-w-2xl mx-auto px-4 pt-4 relative z-10">{children}</div>
+      <div className="max-w-2xl mx-auto px-6 pt-6 relative z-10">{children}</div>
     </div>
   );
 }

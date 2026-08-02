@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { useTheme } from "@/lib/ThemeContext";
 import { COMPANY_IDENTITY, PLATFORM_IDENTITY } from "@/lib/companyIdentity";
+import { ChevronRight } from "lucide-react";
 import SectionHeader from "@/components/me/SectionHeader";
 import EditProfileModal from "@/components/me/EditProfileModal";
 import { toast } from "@/components/ui/use-toast";
@@ -89,15 +90,16 @@ const SettingsSection = forwardRef(({ user }, ref) => {
   return (
     <div>
       <SectionHeader title="Settings" />
-      <div className="glass-card p-2">
-        {ROWS.map((r, i) => (
+      <div className="divide-y divide-border border-t border-b border-border">
+        {ROWS.map((r) => (
           <button
             key={r.key}
             onClick={() => handle(r.key)}
-            className={`w-full flex items-center justify-between px-4 py-3.5 spring-tap ${i > 0 ? "border-t border-border/30" : ""}`}
+            className="w-full flex items-center gap-3 py-4 spring-tap group"
           >
-            <span className="text-[14px] font-semibold text-foreground">{r.label}</span>
-            <span className="text-[12px] text-muted-foreground capitalize">{r.key === "appearance" ? theme : "›"}</span>
+            <span className="text-[15px] font-medium text-foreground flex-1 text-left">{r.label}</span>
+            <span className="text-[13px] text-muted-foreground capitalize">{r.key === "appearance" ? theme : ""}</span>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
           </button>
         ))}
       </div>

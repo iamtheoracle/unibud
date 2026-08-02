@@ -27,11 +27,11 @@ export default function Connect() {
   const [activeTab, setActiveTab] = useState("messages");
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-28 safe-area-pt">
-      <h1 className="text-[28px] font-bold tracking-tight text-foreground mb-6">Connect</h1>
+    <div className="w-full max-w-[520px] mx-auto px-6 pt-6 pb-28 safe-area-pt">
+      <h1 className="text-[28px] font-bold tracking-tight text-foreground mb-7">Connect</h1>
 
       {/* Tabs — underline style */}
-      <div className="flex gap-6 border-b border-border/20">
+      <div className="flex gap-6 border-b border-border">
         {TABS.map((t) => {
           const on = t.key === activeTab;
           const Icon = t.icon;
@@ -39,29 +39,29 @@ export default function Connect() {
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
-              className={`relative flex items-center gap-1.5 text-[14px] font-medium spring-tap pb-3 ${on ? "text-foreground" : "text-muted-foreground/40"}`}
+              className={`relative flex items-center gap-1.5 text-[14px] font-medium spring-tap pb-3 ${on ? "text-foreground" : "text-muted-foreground"}`}
             >
               <Icon className="w-[15px] h-[15px]" strokeWidth={on ? 2.1 : 1.7} />
               {t.label}
-              {on && <motion.div layoutId="connect-tab" className="absolute -bottom-px left-0 w-full h-[2px] rounded-full bg-foreground" transition={{ type: "spring", stiffness: 380, damping: 30 }} />}
+              {on && <motion.div layoutId="connect-tab" className="absolute -bottom-px left-0 w-full h-[2px] rounded-full bg-primary" transition={{ type: "spring", stiffness: 380, damping: 30 }} />}
             </button>
           );
         })}
       </div>
 
-      <div className="pt-4">
+      <div className="pt-5">
         {activeTab === "messages" && <ConnectMessages />}
         {activeTab === "calls" && <ConnectCalls />}
         {activeTab === "collaboration" && <ConnectCollaboration />}
       </div>
 
-      {/* Quick actions — text-only chips, no emoji */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pt-5 pb-2">
+      {/* Quick actions */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar pt-6 pb-2">
         {QUICK.map((q) => (
           <button
             key={q.label}
             onClick={() => q.to && navigate(q.to)}
-            className="px-3.5 py-2 rounded-full bg-muted/30 border border-border/20 text-[12px] font-medium whitespace-nowrap spring-tap text-muted-foreground hover:text-foreground transition-colors"
+            className="px-3.5 py-2 rounded-full bg-muted/40 border border-border text-[12px] font-medium whitespace-nowrap spring-tap text-muted-foreground hover:text-foreground transition-colors"
           >
             {q.label}
           </button>
