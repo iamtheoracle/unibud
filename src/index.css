@@ -1209,6 +1209,55 @@
   /* Large touch targets — accessibility (WCAG AA) */
   .touch-target { min-height: 44px; min-width: 44px; }
 
+  /* ── Elegant Dividers — premium section separators ── */
+  .divider-elegant {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--border) / 0.6), transparent);
+    border: none;
+  }
+  .divider-fade {
+    height: 1px;
+    background: linear-gradient(90deg, hsl(var(--border) / 0.4), transparent);
+    border: none;
+  }
+
+  /* ── Section Label — consistent section headers ── */
+  .section-label {
+    font-size: var(--text-label);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* ── Card separator — subtle inner divider for card sections ── */
+  .card-separator {
+    border-top: 1px solid hsl(var(--border) / 0.4);
+  }
+
+  /* ── Progressive image loading — fade-in on load ── */
+  .progressive-img {
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .progressive-img.loaded { opacity: 1; }
+
+  /* ── Premium gradient text — for hero titles ── */
+  .text-premium-gradient {
+    background: linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--foreground) / 0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── Staggered entrance — for grid and list items ── */
+  .stagger-in-1 { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both; }
+  .stagger-in-2 { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+  .stagger-in-3 { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both; }
+  .stagger-in-4 { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+  .stagger-in-5 { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+  .stagger-in-6 { animation: staggerIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+
   /* Reduced motion — Mirror Glass 350 */
   @media (prefers-reduced-motion: reduce) {
     .motion-spring, .motion-elastic, .motion-fade-through, .glass-morph,
