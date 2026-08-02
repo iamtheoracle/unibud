@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import {
@@ -11,8 +11,10 @@ import {
   Users as SocialIcon,
   BookOpen as AcademicIcon,
 } from "lucide-react";
-import { hapticSelect, hapticTap } from "@/lib/haptics";
+import { hapticSelect, hapticTap, hapticImpact } from "@/lib/haptics";
 import { useExperience } from "@/lib/ExperienceContext";
+import QuickActionButton from "./QuickActionButton";
+import QuickActionMenu from "./QuickActionMenu";
 
 /* ── Spring physics — visionOS standard ── */
 const SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.9 };
@@ -50,6 +52,12 @@ export default function AdaptiveNav() {
 
   const contextTabs = mode === "social" ? SOCIAL_CONTEXT : ACADEMIC_CONTEXT;
   const meActive = isActive(pathname, "/me");
+  const [quickAction, setQuickAction] = useState(null);
+
+  const handleQuickAction = useCallback((itemKey, rect) => {
+    hapticImpact();
+    setQuickAction({ itemKey, rect });
+  }, []);
 
   const handleModeSwitch = (newMode) => {
     if (newMode === mode) return;
@@ -82,12 +90,14 @@ export default function AdaptiveNav() {
                 const Icon = m.icon;
                 const active = mode === m.key;
                 return (
-                  <button
+                  <QuickActionButton
                     key={m.key}
+                    itemKey={m.key}
                     onClick={() => handleModeSwitch(m.key)}
+                    onQuickAction={handleQuickAction}
                     aria-current={active ? "page" : undefined}
                     aria-label={`Switch to ${m.label} mode`}
-                    className="relative flex items-center justify-center h-[42px] px-5 spring-tap"
+                    className="relative flex items-center justify-center h-[42px] px-5"
                   >
                     {active && (
                       <motion.div
@@ -105,17 +115,19 @@ export default function AdaptiveNav() {
                         {m.label}
                       </span>
                     </div>
-                  </button>
+                  </QuickActionButton>
                 );
               })}
             </div>
 
             {/* Me — permanently fixed, independent */}
-            <button
+            <QuickActionButton
+              itemKey="me"
               onClick={() => handleNav("/me")}
+              onQuickAction={handleQuickAction}
               aria-current={meActive ? "page" : undefined}
               aria-label="Me"
-              className="os-me-capsule w-[50px] h-[50px] rounded-full flex items-center justify-center shrink-0 spring-tap relative"
+              className="os-me-capsule w-[50px] h-[50px] rounded-full flex items-center justify-center shrink-0 relative"
             >
               {meActive && (
                 <motion.div
@@ -130,7 +142,7 @@ export default function AdaptiveNav() {
                   strokeWidth={meActive ? 2.2 : 1.7}
                 />
               </div>
-            </button>
+            </QuickActionButton>
           </div>
 
           {/* ═══ Row 2: Context Navigation ═══ */}
@@ -148,12 +160,14 @@ export default function AdaptiveNav() {
                   const Icon = tab.icon;
                   const active = isActive(pathname, tab.to);
                   return (
-                    <button
+                    <QuickActionButton
                       key={tab.key}
+                      itemKey={tab.key}
                       onClick={() => handleNav(tab.to)}
+                      onQuickAction={handleQuickAction}
                       aria-current={active ? "page" : undefined}
                       aria-label={tab.label}
-                      className="relative flex items-center justify-center h-[42px] px-4 spring-tap"
+                      className="relative flex items-center justify-center h-[42px] px-4"
                     >
                       {active && (
                         <motion.div
@@ -171,7 +185,7 @@ export default function AdaptiveNav() {
                           {tab.label}
                         </span>
                       </div>
-                    </button>
+                    </QuickActionButton>
                   );
                 })}
               </motion.div>
@@ -179,6 +193,13 @@ export default function AdaptiveNav() {
           </div>
         </div>
       </motion.nav>
+
+      {/* Quick Action Menu — iOS Home Screen style long-press actions */}
+      <AnimatePresence>
+        {quickAction && (
+          <QuickActionMenu quickAction={quickAction} onClose={() => setQuickAction(null)} />
+        )}
+      </AnimatePresence>
     </MotionConfig>
   );
 }
