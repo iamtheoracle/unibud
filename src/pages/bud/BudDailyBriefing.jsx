@@ -9,6 +9,8 @@ import {
 import { base44 } from "@/api/base44Client";
 import { hapticTap } from "@/lib/haptics";
 import { generateDailyBriefing, getCurrentBriefingType } from "@/lib/autonomous/briefingGenerator";
+import BudIntelligentLoader from "@/components/bud/BudIntelligentLoader";
+import { Trophy } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 const STORAGE_KEY = "bud_briefing_date";
@@ -183,6 +185,7 @@ export default function BudDailyBriefing() {
   const navigate = useNavigate();
   const [briefing, setBriefing] = useState(null);
   const [loadingBriefing, setLoadingBriefing] = useState(true);
+  const [newAchievements, setNewAchievements] = useState([]);
 
   const today = new Date().toISOString().split("T")[0];
   const briefingType = getCurrentBriefingType();
@@ -249,6 +252,19 @@ export default function BudDailyBriefing() {
     loadBriefing();
   }, [loadBriefing]);
 
+  // Check for new achievements on briefing load — Bud celebrates milestones
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await base44.functions.invoke("checkAchievements", { action: "check" });
+        const data = res?.data || res;
+        if (data.newly_earned && data.newly_earned.length > 0) {
+          setNewAchievements(data.newly_earned);
+        }
+      } catch {}
+    })();
+  }, []);
+
   const hasContent = upcomingAssignments.length > 0 || events.length > 0 || notifications.length > 0;
 
   return (
@@ -281,11 +297,7 @@ export default function BudDailyBriefing() {
 
         {/* Bud's narrative briefing */}
         {loadingBriefing ? (
-          <div className="space-y-2">
-            <div className="h-3 rounded-full shimmer w-full" />
-            <div className="h-3 rounded-full shimmer w-[90%]" />
-            <div className="h-3 rounded-full shimmer w-[75%]" />
-          </div>
+          <BudIntelligentLoader context="study_summary" size="sm" />
         ) : briefing ? (
           <p className="text-[14px] text-foreground/90 leading-relaxed whitespace-pre-line">
             {briefing}
@@ -299,6 +311,43 @@ export default function BudDailyBriefing() {
           </div>
         )}
       </motion.div>
+
+      {/* Achievement celebration — Bud celebrates milestones naturally */}
+      {newAchievements.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="crystal-card p-4 mb-5 border-primary/20"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Trophy className="w-4 h-4 text-primary" />
+            <span className="text-[13px] font-bold text-foreground">
+              {newAchievements.length === 1 ? "You earned a new achievement!" : `You earned ${newAchievements.length} new achievements!`}
+            </span>
+          </div>
+          {newAchievements.map((ach) => (
+            <div key={ach.id} className="flex items-center gap-2.5 py-1.5">
+              <div
+                className="w-7 h-7 rounded-lg grid place-items-center shrink-0"
+                style={{ background: "hsl(" + (ach.accent_color || "142 71% 45%") + " / 0.14)", color: "hsl(" + (ach.accent_color || "142 71% 45%") + ")" }}
+              >
+                <Trophy className="w-3.5 h-3.5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-foreground">{ach.title}</p>
+                <p className="text-[11px] text-muted-foreground">{ach.bud_message}</p>
+              </div>
+            </div>
+          ))}
+          <button
+            onClick={() => setNewAchievements([])}
+            className="text-[11px] text-muted-foreground mt-2 spring-tap"
+          >
+            Dismiss
+          </button>
+        </motion.div>
+      )}
 
       {/* Quick summary stats */}
       {hasContent && (

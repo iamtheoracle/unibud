@@ -11,6 +11,7 @@ import { ExperienceProvider } from '@/lib/ExperienceContext';
 import { SearchProvider } from '@/lib/SearchContext';
 import ScrollToTop from './components/ScrollToTop';
 import AppShell from '@/components/layout/AppShell';
+import OperationsShell from '@/components/layout/OperationsShell';
 import OracleWorkspaceGuard from '@/components/auth/OracleWorkspaceGuard';
 import RouteLoading from '@/components/RouteLoading';
 import PageNotFound from '@/lib/PageNotFound';
@@ -350,26 +351,13 @@ function App() {
                     <Route path="/study/library" element={<DocumentLibrary />} />
                     <Route path="/institution/onboard" element={<InstitutionOnboarding />} />
                   <Route path="/onboarding/university" element={<UniversityDirectory />} />
-                    <Route path="/institution/console" element={<OracleWorkspaceGuard><InstitutionPortal /></OracleWorkspaceGuard>} />
-                    <Route path="/lecturer/portal" element={<OracleWorkspaceGuard><LecturerPortal /></OracleWorkspaceGuard>} />
-
+                    {/* Student-facing exam experience */}
                     <Route path="/exam" element={<ExamHub />} />
                     <Route path="/exam/start/:paperId" element={<ExamStart />} />
                     <Route path="/exam/take/:attemptId" element={<ExamTaker />} />
                     <Route path="/exam/result/:attemptId" element={<ExamResult />} />
                     <Route path="/exam/analytics" element={<ExamAnalytics />} />
                     <Route path="/exam/coach" element={<ExamCoach />} />
-                    <Route path="/exam/author" element={<ExamAuthor />} />
-                    <Route path="/oracle" element={<OracleWorkspaceGuard><Oracle /></OracleWorkspaceGuard>} />
-                    <Route path="/management" element={<OracleWorkspaceGuard><Management /></OracleWorkspaceGuard>} />
-                    <Route path="/operator" element={<OracleWorkspaceGuard><Operator /></OracleWorkspaceGuard>} />
-                    <Route path="/finance" element={<OracleWorkspaceGuard><Finance /></OracleWorkspaceGuard>} />
-                    <Route path="/architect" element={<OracleWorkspaceGuard><Architect /></OracleWorkspaceGuard>} />
-                    <Route path="/automation" element={<AutomationCenter />} />
-                    <Route path="/automation/builder" element={<WorkflowBuilder />} />
-                    <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
-                    <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
-                                      <Route path="/admin" element={<AdminHub />} />
                     <Route path="/directory" element={<DirectoryHub />} />
                     <Route path="/help" element={<HelpCenter />} />
                     <Route path="/campus-services" element={<CampusServices />} />
@@ -379,8 +367,26 @@ function App() {
                     <Route path="/library" element={<LibraryHub />} />
                     <Route path="/campus-map" element={<CampusNavigation />} />
                     <Route path="/accessibility" element={<Accessibility />} />
-                    <Route path="/launch-readiness" element={<LaunchReadiness />} />
-                    <Route path="/automation-settings" element={<AutomationSettings />} />
+                  </Route>
+
+                  {/* ═══ Operations Platform — completely isolated from the Student Application ═══
+                      Students never see these routes. Role-based access enforced by OracleWorkspaceGuard. */}
+                  <Route element={<OperationsShell />}>
+                    <Route path="/institution/console" element={<OracleWorkspaceGuard><InstitutionPortal /></OracleWorkspaceGuard>} />
+                    <Route path="/lecturer/portal" element={<OracleWorkspaceGuard><LecturerPortal /></OracleWorkspaceGuard>} />
+                    <Route path="/exam/author" element={<OracleWorkspaceGuard><ExamAuthor /></OracleWorkspaceGuard>} />
+                    <Route path="/oracle" element={<OracleWorkspaceGuard><Oracle /></OracleWorkspaceGuard>} />
+                    <Route path="/management" element={<OracleWorkspaceGuard><Management /></OracleWorkspaceGuard>} />
+                    <Route path="/operator" element={<OracleWorkspaceGuard><Operator /></OracleWorkspaceGuard>} />
+                    <Route path="/finance" element={<OracleWorkspaceGuard><Finance /></OracleWorkspaceGuard>} />
+                    <Route path="/architect" element={<OracleWorkspaceGuard><Architect /></OracleWorkspaceGuard>} />
+                    <Route path="/automation" element={<OracleWorkspaceGuard><AutomationCenter /></OracleWorkspaceGuard>} />
+                    <Route path="/automation/builder" element={<OracleWorkspaceGuard><WorkflowBuilder /></OracleWorkspaceGuard>} />
+                    <Route path="/automation/builder/:id" element={<OracleWorkspaceGuard><WorkflowBuilder /></OracleWorkspaceGuard>} />
+                    <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
+                    <Route path="/admin" element={<OracleWorkspaceGuard><AdminHub /></OracleWorkspaceGuard>} />
+                    <Route path="/launch-readiness" element={<OracleWorkspaceGuard><LaunchReadiness /></OracleWorkspaceGuard>} />
+                    <Route path="/automation-settings" element={<OracleWorkspaceGuard><AutomationSettings /></OracleWorkspaceGuard>} />
                     <Route path="/self-healing" element={<OracleWorkspaceGuard><SelfHealing /></OracleWorkspaceGuard>} />
                     <Route path="/demo-content" element={<OracleWorkspaceGuard><DemoContentManager /></OracleWorkspaceGuard>} />
                     <Route path="/constitution" element={<OracleWorkspaceGuard><EngineeringConstitution /></OracleWorkspaceGuard>} />
