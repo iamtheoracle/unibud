@@ -7,6 +7,29 @@ import PostCard from "./PostCard";
 import PostSkeleton from "./PostSkeleton";
 import NewPostsBanner from "./NewPostsBanner";
 import EmptyState from "@/components/ui/EmptyState";
+import OfficialPinnedBar from "./OfficialPinnedBar";
+import { prioritizeAuthenticContent } from "@/lib/authentic/contentFilter";
+
+/**
+ * Sorts feed posts by priority: pinned → official announcements →
+ * official events → lecturer posts → club posts → regular posts.
+ * Within each tier, most recent first.
+ */
+function sortByPriority(posts) {
+  const tier = (p) => {
+    if (p.is_pinned) return 0;
+    if (p.author_role === "admin" || p.type === "news") return 1;
+    if (p.type === "event" || p.event_data) return 2;
+    if (p.author_role === "lecturer") return 3;
+    if (p.author_role === "club") return 4;
+    return 5;
+  };
+  return [...posts].sort((a, b) => {
+    const ta = tier(a), tb = tier(b);
+    if (ta !== tb) return ta - tb;
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+}
 
 const SCROLL_KEY = "quad_scroll_position";
 const SCROLL_TIMEOUT = 30000; // 30s threshold for "new posts" banner
@@ -149,8 +172,9 @@ export default function QuadFeed({ user, university }) {
     setIsPulling(false);
   };
 
-  // Show cached posts while loading
-  const displayPosts = isLoading ? getCachedFeed() : posts;
+  // Filter out simulated content and prioritize official posts
+  const rawPosts = isLoading ? getCachedFeed() : posts;
+  const displayPosts = sortByPriority(prioritizeAuthenticContent(rawPosts));
 
   return (
     <div
@@ -179,6 +203,9 @@ export default function QuadFeed({ user, university }) {
         visible={bannerVisible}
         onClick={handleRefresh}
       />
+
+      {/* Pinned official announcement / event */}
+      {!isLoading && <OfficialPinnedBar university={university} />}
 
       {/* Feed */}
       <div className="px-4 space-y-3 pb-8 max-w-2xl mx-auto">
