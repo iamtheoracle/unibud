@@ -38,6 +38,9 @@ module.exports = {
   			ring: 'hsl(var(--ring))',
         ice: { DEFAULT: 'hsl(var(--primary))', foreground: 'hsl(var(--primary-foreground))' },
         gold: { DEFAULT: 'hsl(var(--gold))', foreground: '0 0% 100%' },
+        chocolate: { DEFAULT: 'hsl(var(--chocolate))', light: 'hsl(var(--chocolate-light))', dark: 'hsl(var(--chocolate-dark))' },
+        beige: { DEFAULT: 'hsl(var(--warm-beige))' },
+        orange: { DEFAULT: 'hsl(var(--primary))', glow: 'hsl(var(--orange-glow))' },
   			chart: {
   				'1': 'hsl(var(--chart-1))',
   				'2': 'hsl(var(--chart-2))',
