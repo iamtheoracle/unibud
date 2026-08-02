@@ -90,7 +90,7 @@ export default function AdaptiveNav() {
       >
         <div className="max-w-[520px] mx-auto px-3 pb-3 safe-area-pb pointer-events-auto">
           {/* ── Floating pill dock — 76px, 36px radius, crystal frosted glass ── */}
-          <div className="crystal-dock rounded-[36px] h-[76px] flex items-center justify-between px-2.5 relative">
+          <div className="luxury-dock rounded-[36px] h-[76px] flex items-center justify-between px-2.5">
             {tabs.map((tab) => (
               <NavTab
                 key={tab.key}
@@ -125,7 +125,7 @@ function NavTab({ tab, active, onClick }) {
       {active && (
         <motion.div
           layoutId="nav-active-capsule"
-          className="absolute inset-1.5 rounded-[26px] dock-pill"
+          className="absolute inset-1.5 rounded-[26px] luxury-capsule"
           transition={SPRING}
         />
       )}
@@ -140,13 +140,13 @@ function NavTab({ tab, active, onClick }) {
         className="relative flex flex-col items-center gap-1"
       >
         <Icon
-          className={`w-[26px] h-[26px] ${active ? "dock-icon-active" : "dock-icon"}`}
-          strokeWidth={active ? 2.3 : 1.8}
+          className={`w-[30px] h-[30px] transition-colors duration-300 ${active ? "dock-icon-active" : "dock-icon"}`}
+          strokeWidth={active ? 2.2 : 1.7}
         />
         <motion.span
           animate={{ opacity: active ? 1 : 0.45 }}
           transition={FADE}
-          className={`text-[10px] font-medium tracking-tight ${active ? "dock-label-active" : "dock-label"}`}
+          className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ${active ? "dock-label-active" : "dock-label"}`}
         >
           {tab.label}
         </motion.span>
