@@ -9,6 +9,7 @@ import PersonalHighlights from "@/components/home/PersonalHighlights";
 import PinnedSection from "@/components/home/PinnedSection";
 import HomeSocialFeed from "@/components/home/HomeSocialFeed";
 import DiscoverForYou from "@/components/home/DiscoverForYou";
+import StudyProgressWidget from "@/components/home/StudyProgressWidget";
 
 const CREAM = "#F7F0E8";
 const CREAM_MUTED = "rgba(247, 240, 232, 0.50)";
@@ -43,6 +44,16 @@ export default function Home() {
           className="mt-6"
         >
           <QuickActionStrip />
+        </motion.section>
+
+        {/* Study Progress Tracker */}
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: EASE, delay: 0.12 }}
+          className="mt-6"
+        >
+          <StudyProgressWidget />
         </motion.section>
 
         {/* 3. Personal Highlights */}

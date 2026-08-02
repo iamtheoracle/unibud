@@ -1,0 +1,121 @@
+{
+  "name": "AcademicCalendarSync",
+  "type": "object",
+  "properties": {
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "ics_url",
+        "ics_upload",
+        "google_calendar",
+        "manual",
+        "lms",
+        "sis"
+      ],
+      "default": "manual",
+      "description": "How the calendar is connected"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Human-readable name (university name, LMS name, etc.)"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "URL for .ics feed or LMS/SIS endpoint"
+    },
+    "ics_content": {
+      "type": "string",
+      "description": "Raw .ics content for uploaded feeds (cached for re-sync)"
+    },
+    "sync_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "error",
+        "disconnected"
+      ],
+      "default": "active"
+    },
+    "last_synced_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sync_frequency_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "How often to check for updates"
+    },
+    "auto_sync": {
+      "type": "boolean",
+      "default": true,
+      "description": "Periodically re-sync automatically"
+    },
+    "authorized": {
+      "type": "boolean",
+      "default": false,
+      "description": "Explicit user authorization granted for this source"
+    },
+    "last_error": {
+      "type": "string"
+    },
+    "events_imported": {
+      "type": "number",
+      "default": 0
+    },
+    "last_sync_result": {
+      "type": "object",
+      "description": "Summary of the last sync (created, updated, skipped)"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Institution-specific configuration"
+    }
+  },
+  "required": [
+    "source_type",
+    "source_name",
+    "authorized"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
