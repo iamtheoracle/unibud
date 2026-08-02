@@ -23,11 +23,78 @@ Deno.serve(async (req) => {
     }
 
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
     const body = await req.json().catch(() => ({}));
     const { action } = body;
+
+    // ─── Background sync — no authenticated user (called by scheduled workflow) ───
+    if (action === 'background_sync') {
+      const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+      const authHeader = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
+
+      const normalizeResult = await normalizeAcademicEvents(base44, null);
+      const pushResult = await withRetry(() => pushToGoogle(base44, authHeader));
+      const pullResult = await withRetry(() => pullFromGoogle(base44, accessToken));
+
+      // Update all active sync records
+      try {
+        const syncRecords = await base44.asServiceRole.entities.AcademicCalendarSync.filter(
+          { source_type: 'google_calendar', sync_status: 'active' },
+          '-created_date', 50
+        );
+        for (const rec of syncRecords) {
+          await base44.asServiceRole.entities.AcademicCalendarSync.update(rec.id, {
+            last_synced_at: new Date().toISOString(),
+            last_sync_result: {
+              normalized: normalizeResult.created,
+              pushed: pushResult.created + pushResult.updated,
+              pulled: pullResult.created + pullResult.updated,
+              errors: [...pushResult.errors, ...pullResult.errors].slice(0, 5),
+            },
+          });
+        }
+      } catch (e) {
+        console.error('[googleCalendarSync] Background sync record update failed:', e.message);
+      }
+
+      // Notify users of conflicts
+      if (pullResult.conflicts > 0) {
+        try {
+          const syncRecs = await base44.asServiceRole.entities.AcademicCalendarSync.filter(
+            { source_type: 'google_calendar', sync_status: 'active' },
+            '-created_date', 50
+          );
+          for (const rec of syncRecs) {
+            if (rec.created_by_id) {
+              await base44.asServiceRole.entities.Notification.create({
+                title: 'Calendar sync conflict',
+                message: `${pullResult.conflicts} event(s) were modified in both UNIBUD and Google Calendar. The most recent version was kept.`,
+                type: 'system',
+                category: 'system',
+                user_id: rec.created_by_id,
+                priority: 'normal',
+                link: '/settings/calendar-sync',
+                icon: 'AlertCircle',
+                source: 'google_calendar_sync',
+              });
+            }
+          }
+        } catch (e) {
+          console.error('[googleCalendarSync] Failed to create conflict notification:', e.message);
+        }
+      }
+
+      return Response.json({
+        status: 'success',
+        normalized: normalizeResult.created,
+        pushed: { created: pushResult.created, updated: pushResult.updated },
+        pulled: { created: pullResult.created, updated: pullResult.updated },
+        conflicts: pullResult.conflicts,
+        errors: [...pushResult.errors, ...pullResult.errors].slice(0, 10),
+      });
+    }
+
+    const user = await base44.auth.me();
+    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlecalendar');
     const authHeader = { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' };
@@ -41,8 +108,8 @@ Deno.serve(async (req) => {
     // ─── Full sync: normalize + push to Google + pull from Google ───
     if (action === 'full_sync') {
       const normalizeResult = await normalizeAcademicEvents(base44, user);
-      const pushResult = await pushToGoogle(base44, authHeader);
-      const pullResult = await pullFromGoogle(base44, accessToken);
+      const pushResult = await withRetry(() => pushToGoogle(base44, authHeader));
+      const pullResult = await withRetry(() => pullFromGoogle(base44, accessToken));
 
       // Update sync record
       try {
@@ -63,6 +130,25 @@ Deno.serve(async (req) => {
         }
       } catch (e) {
         console.error('[googleCalendarSync] Failed to update sync record:', e.message);
+      }
+
+      // Notify the user of conflicts
+      if (pullResult.conflicts > 0) {
+        try {
+          await base44.asServiceRole.entities.Notification.create({
+            title: 'Calendar sync conflict',
+            message: `${pullResult.conflicts} event(s) were modified in both UNIBUD and Google Calendar. The most recent version was kept.`,
+            type: 'system',
+            category: 'system',
+            user_id: user.id,
+            priority: 'normal',
+            link: '/settings/calendar-sync',
+            icon: 'AlertCircle',
+            source: 'google_calendar_sync',
+          });
+        } catch (e) {
+          console.error('[googleCalendarSync] Failed to create conflict notification:', e.message);
+        }
       }
 
       return Response.json({
@@ -155,6 +241,19 @@ Deno.serve(async (req) => {
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
+
+// ─── Retry wrapper for resilient API calls ───
+async function withRetry(fn, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      if (i === retries - 1) throw e;
+      console.warn(`[googleCalendarSync] Retry ${i + 1}/${retries}:`, e.message);
+      await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+    }
+  }
+}
 
 // ─── Normalize: read from academic entities and create CalendarEvent records ───
 async function normalizeAcademicEvents(base44, user) {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, SlidersHorizontal, ChevronDown, FolderOpen, Sparkles, X } from "lucide-react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/AuthContext";
@@ -8,6 +9,7 @@ import ResourceRow, { FILE_TYPE_CONFIG, formatDate } from "./ResourceRow";
 import ResourceDetailSheet from "./ResourceDetailSheet";
 import AddResourceSheet from "./AddResourceSheet";
 import ResourceTemplateSheet from "./ResourceTemplateSheet";
+import ResourceShareSheet from "./ResourceShareSheet";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -24,6 +26,7 @@ const CATEGORIES = [
 ];
 
 const SORTS = [
+  { id: "custom", label: "Custom Order" },
   { id: "recent", label: "Most Recent" },
   { id: "alphabetical", label: "A → Z" },
   { id: "downloads", label: "Most Downloaded" },
@@ -38,12 +41,13 @@ export default function StudyGroupResources({ groupId, groupName }) {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [sortBy, setSortBy] = useState("recent");
+  const [sortBy, setSortBy] = useState("custom");
   const [showFilters, setShowFilters] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [selected, setSelected] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [shareResource, setShareResource] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -96,6 +100,7 @@ export default function StudyGroupResources({ groupId, groupName }) {
     }
 
     switch (sortBy) {
+      case "custom": list.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)); break;
       case "alphabetical": list.sort((a, b) => (a.title || "").localeCompare(b.title || "")); break;
       case "downloads": list.sort((a, b) => (b.download_count || 0) - (a.download_count || 0)); break;
       case "views": list.sort((a, b) => (b.view_count || 0) - (a.view_count || 0)); break;
@@ -163,6 +168,47 @@ export default function StudyGroupResources({ groupId, groupName }) {
       setShowAdd(false);
       toast({ title: "Resource shared" });
     } catch { toast({ title: "Couldn't share resource", variant: "destructive" }); }
+  };
+
+  const handleDragEnd = async (result) => {
+    if (!result.destination || result.source.index === result.destination.index) return;
+    if (sortBy !== "custom" || search) return;
+
+    const items = Array.from(list);
+    const [reordered] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reordered);
+
+    const updates = items.map((item, index) => ({ id: item.id, sort_order: index }));
+    const orderMap = {};
+    updates.forEach((u) => { orderMap[u.id] = u.sort_order; });
+    setResources((prev) => prev.map((r) => orderMap[r.id] !== undefined ? { ...r, sort_order: orderMap[r.id] } : r));
+
+    try {
+      await base44.entities.StudyGroupResource.bulkUpdate(updates);
+    } catch {
+      toast({ title: "Could not save order", variant: "destructive" });
+      load();
+    }
+  };
+
+  const toggleOffline = async (resource) => {
+    try {
+      await base44.entities.StudyGroupResource.update(resource.id, { is_offline_available: !resource.is_offline_available });
+      setResources((prev) => prev.map((r) => r.id === resource.id ? { ...r, is_offline_available: !r.is_offline_available } : r));
+      toast({ title: resource.is_offline_available ? "Removed from offline" : "Available offline" });
+    } catch {
+      toast({ title: "Could not update", variant: "destructive" });
+    }
+  };
+
+  const handleDownload = (resource) => {
+    if (!resource.file_url) return;
+    const a = document.createElement("a");
+    a.href = resource.file_url;
+    a.download = resource.title || "download";
+    a.target = "_blank";
+    a.click();
+    base44.entities.StudyGroupResource.update(resource.id, { download_count: (resource.download_count || 0) + 1 }).catch(() => {});
   };
 
   const handleUpdate = (updated) => {
@@ -248,13 +294,24 @@ export default function StudyGroupResources({ groupId, groupName }) {
 
       {/* Resource list */}
       {list.length > 0 && (
-        <div className="space-y-2">
-          <AnimatePresence mode="popLayout">
-            {list.map((r) => (
-              <ResourceRow key={r.id} resource={r} userId={user?.id} onOpen={setSelected} onPin={togglePin} onBookmark={toggleBookmark} />
-            ))}
-          </AnimatePresence>
-        </div>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="resources">
+            {(provided) => (
+              <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-2">
+                {list.map((r, index) => (
+                  <Draggable key={r.id} draggableId={r.id} index={index} isDragDisabled={sortBy !== "custom" || !!search}>
+                    {(prov) => (
+                      <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps} style={prov.draggableProps.style}>
+                        <ResourceRow resource={r} userId={user?.id} onOpen={setSelected} onPin={togglePin} onBookmark={toggleBookmark} onShare={setShareResource} onDownload={handleDownload} onToggleOffline={toggleOffline} />
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )}
 
       {/* Sheets */}
@@ -267,6 +324,11 @@ export default function StudyGroupResources({ groupId, groupName }) {
       <AnimatePresence>
         {selected && (
           <ResourceDetailSheet resource={selected} groupId={groupId} user={user} onClose={() => setSelected(null)} onUpdate={handleUpdate} onDelete={handleDelete} />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {shareResource && (
+          <ResourceShareSheet resource={shareResource} groupName={groupName} onClose={() => setShareResource(null)} />
         )}
       </AnimatePresence>
     </div>

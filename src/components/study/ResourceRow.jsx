@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FileText, BookOpen, Link2, Video, Mic, Code, Archive, ClipboardList, FlaskConical, StickyNote, HelpCircle, Layout, Monitor, Pin, Bookmark } from "lucide-react";
+import { FileText, BookOpen, Link2, Video, Mic, Code, Archive, ClipboardList, FlaskConical, StickyNote, HelpCircle, Layout, Monitor, Pin, Bookmark, Share2, Download, WifiOff } from "lucide-react";
 
 export const FILE_TYPE_CONFIG = {
   lecture_slides: { label: "Slides", icon: Monitor },
@@ -36,7 +36,7 @@ export function formatDate(dateStr) {
   return new Date(dateStr).toLocaleDateString("en", { month: "short", day: "numeric" });
 }
 
-export default function ResourceRow({ resource, userId, onOpen, onPin, onBookmark }) {
+export default function ResourceRow({ resource, userId, onOpen, onPin, onBookmark, onShare, onDownload, onToggleOffline }) {
   const config = FILE_TYPE_CONFIG[resource.file_type] || FILE_TYPE_CONFIG.pdf;
   const Icon = config.icon;
   const isBookmarked = resource.bookmarked_by?.includes(userId);
@@ -71,6 +71,21 @@ export default function ResourceRow({ resource, userId, onOpen, onPin, onBookmar
         <div className="flex items-center gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
           {resource.download_count > 0 && (
             <span className="text-[9px] text-muted-foreground mr-1">{resource.download_count}↓</span>
+          )}
+          {resource.file_url && onDownload && (
+            <button onClick={() => onDownload(resource)} className="w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-transform" aria-label="Download">
+              <Download className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.6} />
+            </button>
+          )}
+          {onToggleOffline && (
+            <button onClick={() => onToggleOffline(resource)} className="w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-transform" aria-label="Toggle offline">
+              <WifiOff className={`w-3.5 h-3.5 ${resource.is_offline_available ? "text-primary" : "text-muted-foreground"}`} strokeWidth={1.6} />
+            </button>
+          )}
+          {onShare && (
+            <button onClick={() => onShare(resource)} className="w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-transform" aria-label="Share">
+              <Share2 className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.6} />
+            </button>
           )}
           <button onClick={() => onBookmark(resource)} className="w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-transform" aria-label="Bookmark">
             <Bookmark className={`w-3.5 h-3.5 ${isBookmarked ? "text-primary fill-primary" : "text-muted-foreground"}`} strokeWidth={1.6} />

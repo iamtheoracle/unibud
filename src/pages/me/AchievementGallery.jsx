@@ -12,6 +12,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import AchievementDetailSheet from "@/components/achievements/AchievementDetailSheet";
+import AchievementShareSheet from "@/components/achievements/AchievementShareSheet";
 import BudMilestoneSummary from "@/components/achievements/BudMilestoneSummary";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -69,6 +70,7 @@ export default function AchievementGallery() {
   const [viewMode, setViewMode] = useState("grid");
   const [search, setSearch] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
+  const [shareItem, setShareItem] = useState(null);
 
   const { data: achievements, isLoading } = useQuery({
     queryKey: ["achievement-gallery"],
@@ -213,7 +215,7 @@ export default function AchievementGallery() {
             {viewMode === "grid" ? (
               <div className="grid grid-cols-2 gap-3">
                 {filtered.map((a, i) => (
-                  <AchievementCard key={a.id} achievement={a} index={i} onClick={() => setSelectedItem(a)} />
+                  <AchievementCard key={a.id} achievement={a} index={i} onClick={() => setSelectedItem(a)} onShare={() => setShareItem(a)} />
                 ))}
               </div>
             ) : (
@@ -228,7 +230,7 @@ export default function AchievementGallery() {
                     </div>
                     <div className="space-y-2 pl-4 border-l border-border/20">
                       {items.map((a, i) => (
-                        <AchievementRow key={a.id} achievement={a} index={i} onClick={() => setSelectedItem(a)} />
+                        <AchievementRow key={a.id} achievement={a} index={i} onClick={() => setSelectedItem(a)} onShare={() => setShareItem(a)} />
                       ))}
                     </div>
                   </div>
@@ -245,11 +247,17 @@ export default function AchievementGallery() {
           <AchievementDetailSheet achievement={selectedItem} onClose={() => setSelectedItem(null)} />
         )}
       </AnimatePresence>
+      {/* Share sheet */}
+      <AnimatePresence>
+        {shareItem && (
+          <AchievementShareSheet achievement={shareItem} onClose={() => setShareItem(null)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-function AchievementCard({ achievement, index, onClick }) {
+function AchievementCard({ achievement, index, onClick, onShare }) {
   const Icon = ACHIEVEMENT_ICONS[achievement.category] || Award;
   const dateStr = achievement.date_earned
     ? new Date(achievement.date_earned).toLocaleDateString("en", { month: "short", day: "numeric", year: "numeric" })
@@ -267,11 +275,18 @@ function AchievementCard({ achievement, index, onClick }) {
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-chocolate/5 pointer-events-none" />
 
-      {isInProgress && (
-        <span className="absolute top-2 right-2 text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-warning/15 text-warning">
-          {progress}%
-        </span>
-      )}
+      <div className="absolute top-2 right-2 flex items-center gap-1">
+        {isInProgress && (
+          <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full bg-warning/15 text-warning">
+            {progress}%
+          </span>
+        )}
+        {onShare && (
+          <button onClick={(e) => { e.stopPropagation(); onShare(achievement); }} className="w-6 h-6 rounded-full bg-muted/30 flex items-center justify-center active:scale-90 transition-transform">
+            <Share2 className="w-3 h-3 text-muted-foreground" strokeWidth={2} />
+          </button>
+        )}
+      </div>
       {achievement.certificate_url && (
         <span className="absolute top-2 left-2">
           <BadgeCheck className="w-3.5 h-3.5 text-chocolate" strokeWidth={2.2} />
@@ -304,7 +319,7 @@ function AchievementCard({ achievement, index, onClick }) {
   );
 }
 
-function AchievementRow({ achievement, index, onClick }) {
+function AchievementRow({ achievement, index, onClick, onShare }) {
   const Icon = ACHIEVEMENT_ICONS[achievement.category] || Award;
   const dateStr = achievement.date_earned
     ? new Date(achievement.date_earned).toLocaleDateString("en", { month: "short", day: "numeric" })
@@ -340,6 +355,11 @@ function AchievementRow({ achievement, index, onClick }) {
           </div>
         )}
       </div>
+      {onShare && (
+        <button onClick={(e) => { e.stopPropagation(); onShare(achievement); }} className="w-7 h-7 rounded-full flex items-center justify-center active:scale-90 transition-transform flex-shrink-0">
+          <Share2 className="w-3.5 h-3.5 text-muted-foreground" strokeWidth={1.6} />
+        </button>
+      )}
       {achievement.certificate_url && <BadgeCheck className="w-3.5 h-3.5 text-chocolate flex-shrink-0" strokeWidth={2.2} />}
     </motion.button>
   );
