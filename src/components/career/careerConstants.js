@@ -1,5 +1,5 @@
 import {
-  Briefcase, Trophy, GraduationCap, Globe, Award, Heart, Users, Code, FlaskConical, Building2,
+  Briefcase, Trophy, GraduationCap, Globe, Award, Heart, Users, Code, FlaskConical, Building2, FileText,
 } from "lucide-react";
 
 export const TYPE_META = {
@@ -79,3 +79,29 @@ export const TRACKER_STATUSES = [
   { key: "rejected", label: "Rejected", color: "error" },
   { key: "withdrawn", label: "Withdrawn", color: "muted-foreground" },
 ];
+
+export const COMPANY_TYPES = {
+  tech: { icon: Code, label: "Tech", bg: "bg-primary/10", color: "text-primary" },
+  finance: { icon: Briefcase, label: "Finance", bg: "bg-success/10", color: "text-success" },
+  healthcare: { icon: Heart, label: "Healthcare", bg: "bg-error/10", color: "text-error" },
+  education: { icon: GraduationCap, label: "Education", bg: "bg-information/10", color: "text-information" },
+  manufacturing: { icon: Building2, label: "Manufacturing", bg: "bg-warning/10", color: "text-warning" },
+  consulting: { icon: Briefcase, label: "Consulting", bg: "bg-accent/10", color: "text-accent" },
+  media: { icon: Globe, label: "Media", bg: "bg-information/10", color: "text-information" },
+  telecommunications: { icon: Globe, label: "Telecom", bg: "bg-information/10", color: "text-information" },
+  agriculture: { icon: FlaskConical, label: "Agriculture", bg: "bg-success/10", color: "text-success" },
+  energy: { icon: Award, label: "Energy", bg: "bg-warning/10", color: "text-warning" },
+  government: { icon: Building2, label: "Government", bg: "bg-accent/10", color: "text-accent" },
+  ngo: { icon: Heart, label: "NGO", bg: "bg-success/10", color: "text-success" },
+  startup: { icon: Code, label: "Startup", bg: "bg-primary/10", color: "text-primary" },
+  research_lab: { icon: FlaskConical, label: "Research Lab", bg: "bg-accent/10", color: "text-accent" },
+  university: { icon: GraduationCap, label: "University", bg: "bg-information/10", color: "text-information" },
+  other: { icon: Building2, label: "Organization", bg: "bg-muted", color: "text-muted-foreground" },
+};
+
+export function formatNumber(n) {
+  if (n == null) return "0";
+  if (n < 1000) return String(n);
+  if (n < 1000000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "k";
+  return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+}

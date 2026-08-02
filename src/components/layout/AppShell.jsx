@@ -29,7 +29,7 @@ import { CreateProvider } from "@/lib/CreateContext";
 
 function UniversalSearchOverlayWithContext() {
   const { searchOpen, closeSearch } = useSearch();
-  return <UniversalSearchOverlay visible={searchOpen} onClose={closeSearch} />;
+  return <UniversalSearchOverlay open={searchOpen} onClose={closeSearch} />;
 }
 
 /**

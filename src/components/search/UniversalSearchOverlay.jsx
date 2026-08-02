@@ -1,67 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  X, Search, FileText, Calendar, Users, MessageCircle, ShoppingBag,
-  GraduationCap, Briefcase, Award, BookOpen, FlaskConical, Loader2,
+  X, Search, Loader2, Clock, ArrowRight, Sparkles,
 } from "lucide-react";
-import { useUniversalSearch } from "@/hooks/useUniversalSearch";
+import { useUniversalSearch, getRecentSearches, addRecentSearch } from "@/hooks/useUniversalSearch";
+import { CONFIG_MAP } from "@/lib/search/searchConfig";
 import { hapticTap } from "@/lib/haptics";
 import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];
 
-const RESULT_CONFIG = {
-  posts: { label: "Posts", icon: FileText, route: (r) => "/quad", color: "text-blue-400" },
-  events: { label: "Events", icon: Calendar, route: (r) => `/events`, color: "text-orange-400" },
-  clubs: { label: "Clubs", icon: Users, route: (r) => `/clubs`, color: "text-purple-400" },
-  communities: { label: "Communities", icon: MessageCircle, route: (r) => `/communities`, color: "text-green-400" },
-  marketplace: { label: "Marketplace", icon: ShoppingBag, route: (r) => `/marketplace`, color: "text-pink-400" },
-  studyGroups: { label: "Study Groups", icon: Users, route: (r) => `/study-groups`, color: "text-teal-400" },
-  opportunities: { label: "Opportunities", icon: Briefcase, route: (r) => `/opportunities`, color: "text-cyan-400" },
-  scholarships: { label: "Scholarships", icon: Award, route: (r) => `/scholarships`, color: "text-yellow-400" },
-  courses: { label: "Courses", icon: BookOpen, route: (r) => r.id ? `/course/${r.id}` : `/courses`, color: "text-indigo-400" },
-  research: { label: "Research", icon: FlaskConical, route: (r) => `/research`, color: "text-red-400" },
-};
-
-const getTitle = (type, r) => {
-  switch (type) {
-    case "posts": return r.content?.slice(0, 60) || "Post";
-    case "events": return r.title;
-    case "clubs": return r.name;
-    case "communities": return r.name;
-    case "marketplace": return r.title;
-    case "studyGroups": return r.name;
-    case "opportunities": return r.title;
-    case "scholarships": return r.name;
-    case "courses": return r.course_code ? `${r.course_code} — ${r.title}` : r.title;
-    case "research": return r.title;
-    default: return "Untitled";
-  }
-};
-
-const getSubtitle = (type, r) => {
-  switch (type) {
-    case "posts": return r.author_name;
-    case "events": return [r.location, r.date].filter(Boolean).join(" · ");
-    case "clubs": return r.category;
-    case "communities": return r.member_count ? `${r.member_count} members` : "Community";
-    case "marketplace": return r.price ? `₦${r.price.toLocaleString()}` : r.category;
-    case "studyGroups": return r.subject;
-    case "opportunities": return r.company;
-    case "scholarships": return r.provider;
-    case "courses": return r.department;
-    case "research": return r.author;
-    default: return "";
-  }
-};
+const TRENDING = [
+  "Scholarships",
+  "Study groups",
+  "Campus events",
+  "Past questions",
+  "Internships",
+  "Clubs",
+];
 
 /**
- * UniversalSearchOverlay — full-screen search across all UNIBUD entities.
+ * UniversalSearchOverlay — full-screen search across every UNIBUD resource.
+ * Indexes students, courses, lecturers, study groups, organizations, events,
+ * files, podcasts, articles, marketplace listings, scholarships, buildings,
+ * and Bud knowledge. Only resources the student has permission to access are
+ * returned (enforced by RLS at the database level).
  */
 export default function UniversalSearchOverlay({ open, onClose }) {
   const navigate = useNavigate();
   const { query, setQuery, results, isLoading, clear } = useUniversalSearch();
+  const [recent, setRecent] = useState([]);
+
+  useEffect(() => {
+    if (open) setRecent(getRecentSearches());
+  }, [open]);
 
   const handleClose = () => {
     hapticTap();
@@ -69,14 +42,20 @@ export default function UniversalSearchOverlay({ open, onClose }) {
     onClose();
   };
 
-  const handleResultClick = (type, r) => {
+  const handleResultClick = (config, record) => {
     hapticTap();
-    const config = RESULT_CONFIG[type];
-    if (config) navigate(config.route(r));
+    if (query.trim()) addRecentSearch(query.trim());
+    navigate(config.route(record));
     handleClose();
   };
 
-  const totalResults = Object.values(results).reduce((sum, arr) => sum + arr.length, 0);
+  const handleQuickSearch = (term) => {
+    hapticTap();
+    setQuery(term);
+  };
+
+  const { categories, total } = results;
+  const hasQuery = query.trim().length >= 2;
 
   return (
     <AnimatePresence>
@@ -119,49 +98,50 @@ export default function UniversalSearchOverlay({ open, onClose }) {
               </button>
             </div>
 
-            {/* Results */}
+            {/* Content */}
             <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-8">
-              {query.trim().length < 2 ? (
-                <EmptyState query="" />
-              ) : totalResults === 0 && !isLoading ? (
-                <EmptyState query={query} />
+              {!hasQuery ? (
+                <LandingState recent={recent} onQuickSearch={handleQuickSearch} />
+              ) : total === 0 && !isLoading ? (
+                <NoResults query={query} />
               ) : (
                 <div className="space-y-5 pt-2">
-                  {Object.entries(results).map(([type, items]) => {
-                    const config = RESULT_CONFIG[type];
-                    if (!config || !items.length) return null;
+                  {categories.map(({ key, label, results: items }) => {
+                    const config = CONFIG_MAP[key];
+                    if (!config) return null;
                     const Icon = config.icon;
                     return (
                       <motion.div
-                        key={type}
+                        key={key}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3, ease: EASE }}
                       >
                         <div className="flex items-center gap-2 mb-2.5">
-                          <Icon className={`w-[14px] h-[14px] ${config.color}`} strokeWidth={2} />
+                          <Icon className="w-[14px] h-[14px] text-muted-foreground" strokeWidth={2} />
                           <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                            {config.label} · {items.length}
+                            {label} · {items.length}
                           </span>
                         </div>
                         <div className="space-y-1.5">
                           {items.slice(0, 5).map((r) => (
                             <button
-                              key={r.id}
-                              onClick={() => handleResultClick(type, r)}
-                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl glass spring-tap text-left hover:bg-white/5 transition-colors"
+                              key={r.id || key + Math.random()}
+                              onClick={() => handleResultClick(config, r)}
+                              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl glass spring-tap text-left"
                             >
-                              <ResultThumb type={type} record={r} />
+                              <ResultThumb config={config} record={r} />
                               <div className="flex-1 min-w-0">
                                 <p className="text-[14px] font-medium text-foreground truncate">
-                                  {getTitle(type, r)}
+                                  {config.title(r)}
                                 </p>
-                                {getSubtitle(type, r) && (
+                                {config.subtitle(r) && (
                                   <p className="text-[12px] text-muted-foreground truncate">
-                                    {getSubtitle(type, r)}
+                                    {config.subtitle(r)}
                                   </p>
                                 )}
                               </div>
+                              <ArrowRight className="w-4 h-4 text-muted-foreground/40 shrink-0" strokeWidth={1.8} />
                             </button>
                           ))}
                         </div>
@@ -178,41 +158,82 @@ export default function UniversalSearchOverlay({ open, onClose }) {
   );
 }
 
-function ResultThumb({ type, record }) {
-  const img = record.image_url || record.author_image || record.avatar_url || record.logo_url;
-  if (img) {
+function ResultThumb({ config, record }) {
+  const img = config.imageField ? record[config.imageField] : null;
+  const fallbackImg = record.image_url || record.logo_url || record.cover_url || record.avatar_url || record.thumbnail_url || (record.images && record.images[0]);
+  const src = img || fallbackImg;
+
+  if (src) {
     return (
       <div className="w-10 h-10 rounded-lg overflow-hidden shrink-0">
-        <Image src={img} alt="" className="w-full h-full object-cover" />
+        <Image src={src} alt="" className="w-full h-full" />
       </div>
     );
   }
-  const config = RESULT_CONFIG[type];
-  const Icon = config?.icon || Search;
+  const Icon = config.icon;
   return (
     <div className="w-10 h-10 rounded-lg glass flex items-center justify-center shrink-0">
-      <Icon className={`w-[16px] h-[16px] ${config?.color || "text-muted-foreground"}`} strokeWidth={2} />
+      <Icon className="w-[16px] h-[16px] text-muted-foreground" strokeWidth={2} />
     </div>
   );
 }
 
-function EmptyState({ query }) {
+function LandingState({ recent, onQuickSearch }) {
+  return (
+    <div className="pt-6">
+      {recent.length > 0 && (
+        <div className="mb-6">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">Recent</p>
+          <div className="space-y-1">
+            {recent.map((term, i) => (
+              <button
+                key={i}
+                onClick={() => onQuickSearch(term)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl glass spring-tap text-left"
+              >
+                <Clock className="w-4 h-4 text-muted-foreground shrink-0" strokeWidth={1.8} />
+                <span className="text-[14px] text-foreground truncate">{term}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div>
+        <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">Trending</p>
+        <div className="flex flex-wrap gap-2">
+          {TRENDING.map((term, i) => (
+            <button
+              key={i}
+              onClick={() => onQuickSearch(term)}
+              className="px-4 py-2 rounded-full glass spring-tap text-[13px] font-medium text-foreground"
+            >
+              {term}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-10 flex flex-col items-center justify-center text-center">
+        <div className="w-14 h-14 rounded-full glass-strong flex items-center justify-center mb-3">
+          <Sparkles className="w-6 h-6 text-primary" strokeWidth={1.5} />
+        </div>
+        <p className="text-[13px] text-muted-foreground leading-relaxed max-w-[280px]">
+          Search students, courses, lecturers, events, files, podcasts, scholarships, buildings & more
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function NoResults({ query }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <div className="w-16 h-16 rounded-full glass-strong flex items-center justify-center mb-4">
         <Search className="w-7 h-7 text-muted-foreground" strokeWidth={1.5} />
       </div>
-      {query.trim().length < 2 ? (
-        <>
-          <p className="text-[15px] font-medium text-foreground">Search UNIBUD</p>
-          <p className="text-[13px] text-muted-foreground mt-1">Find people, posts, events, courses, clubs & more</p>
-        </>
-      ) : (
-        <>
-          <p className="text-[15px] font-medium text-foreground">No results for "{query}"</p>
-          <p className="text-[13px] text-muted-foreground mt-1">Try a different search term</p>
-        </>
-      )}
+      <p className="text-[15px] font-medium text-foreground">No results for "{query}"</p>
+      <p className="text-[13px] text-muted-foreground mt-1">Try a different search term</p>
     </div>
   );
 }

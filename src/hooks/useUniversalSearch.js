@@ -1,76 +1,89 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useDeferredValue, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
+import { SEARCH_INDEX } from "@/lib/search/searchConfig";
+
+const RECENT_KEY = "unibud_recent_searches";
+const MAX_RECENT = 8;
+
+export function getRecentSearches() {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+export function addRecentSearch(term) {
+  const trimmed = term.trim();
+  if (!trimmed) return;
+  try {
+    const existing = getRecentSearches();
+    const filtered = existing.filter((s) => s.toLowerCase() !== trimmed.toLowerCase());
+    localStorage.setItem(RECENT_KEY, JSON.stringify([trimmed, ...filtered].slice(0, MAX_RECENT)));
+  } catch {}
+}
+
+export function clearRecentSearches() {
+  try { localStorage.removeItem(RECENT_KEY); } catch {}
+}
 
 /**
- * useUniversalSearch — searches across all major UNIBUD entities in parallel.
- * Returns grouped results by entity type.
+ * Fetches a batch of recent records from one entity and filters client-side
+ * by the query string across the configured text fields.
+ *
+ * RLS is enforced by the SDK — only records the authenticated student has
+ * permission to read are returned by .list().
+ */
+async function searchEntity(entityName, fields, limit, query) {
+  try {
+    const results = await base44.entities[entityName].list("-updated_date", limit * 3);
+    if (!results || !Array.isArray(results)) return [];
+    const lower = query.toLowerCase();
+    return results
+      .filter((item) =>
+        fields.some((f) => {
+          const val = item[f];
+          return val && typeof val === "string" && val.toLowerCase().includes(lower);
+        })
+      )
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * useUniversalSearch — searches across all 13 UNIBUD resource types in
+ * parallel. Returns categorized results grouped by entity type.
+ *
+ * Uses useDeferredValue so the search fires after the user pauses typing,
+ * not on every keystroke. Results are cached for 15s per query.
  */
 export function useUniversalSearch() {
   const [query, setQuery] = useState("");
-
-  const q = query.trim().toLowerCase();
+  const deferredQuery = useDeferredValue(query);
+  const q = deferredQuery.trim().toLowerCase();
   const enabled = q.length >= 2;
 
   const { data, isLoading } = useQuery({
     queryKey: ["universalSearch", q],
     queryFn: async () => {
-      const results = {};
+      const searches = SEARCH_INDEX.map(async (config) => {
+        const results = await searchEntity(config.entity, config.fields, config.limit, q);
+        return { key: config.key, label: config.label, results };
+      });
 
-      // Run all searches in parallel
-      const [
-        posts, events, clubs, communities, marketplace,
-        studyGroups, opportunities, scholarships, courses, research,
-      ] = await Promise.allSettled([
-        base44.entities.QuadPost.filter({}, "-created_date", 30),
-        base44.entities.CampusEvent.filter({}, "-created_date", 30),
-        base44.entities.Club.list("-created_date", 30),
-        base44.entities.Community.list("-created_date", 30),
-        base44.entities.MarketplaceListing.filter({}, "-created_date", 30),
-        base44.entities.StudyGroup.list("-created_date", 30),
-        base44.entities.Opportunity.list("-created_date", 30),
-        base44.entities.Scholarship.list("-created_date", 30),
-        base44.entities.Course.list("-created_date", 30),
-        base44.entities.ResearchProject.list("-created_date", 30),
-      ]);
-
-      const match = (text) => (text || "").toLowerCase().includes(q);
-      const unwrap = (r) => (r.status === "fulfilled" ? (r.value || []) : []);
-
-      const postsData = unwrap(posts).filter(p => match(p.content) || match(p.author_name));
-      if (postsData.length) results.posts = postsData;
-
-      const eventsData = unwrap(events).filter(e => match(e.title) || match(e.description) || match(e.location));
-      if (eventsData.length) results.events = eventsData;
-
-      const clubsData = unwrap(clubs).filter(c => match(c.name) || match(c.description) || match(c.category));
-      if (clubsData.length) results.clubs = clubsData;
-
-      const communitiesData = unwrap(communities).filter(c => match(c.name) || match(c.description));
-      if (communitiesData.length) results.communities = communitiesData;
-
-      const marketData = unwrap(marketplace).filter(m => match(m.title) || match(m.description) || match(m.category));
-      if (marketData.length) results.marketplace = marketData;
-
-      const sgData = unwrap(studyGroups).filter(s => match(s.name) || match(s.subject) || match(s.description));
-      if (sgData.length) results.studyGroups = sgData;
-
-      const oppData = unwrap(opportunities).filter(o => match(o.title) || match(o.company) || match(o.description));
-      if (oppData.length) results.opportunities = oppData;
-
-      const scholData = unwrap(scholarships).filter(s => match(s.name) || match(s.provider) || match(s.description));
-      if (scholData.length) results.scholarships = scholData;
-
-      const courseData = unwrap(courses).filter(c => match(c.title) || match(c.course_code) || match(c.department));
-      if (courseData.length) results.courses = courseData;
-
-      const researchData = unwrap(research).filter(r => match(r.title) || match(r.abstract) || match(r.author));
-      if (researchData.length) results.research = researchData;
-
-      return results;
+      const settled = await Promise.allSettled(searches);
+      const categories = settled
+        .filter((s) => s.status === "fulfilled" && s.value.results.length > 0)
+        .map((s) => s.value);
+      const total = categories.reduce((sum, c) => sum + c.results.length, 0);
+      return { categories, total };
     },
     enabled,
     staleTime: 15000,
+    gcTime: 60000,
   });
 
   const clear = useCallback(() => setQuery(""), []);
@@ -79,5 +92,11 @@ export function useUniversalSearch() {
     return () => setQuery("");
   }, []);
 
-  return { query, setQuery, results: data || {}, isLoading: enabled && isLoading, clear };
+  return {
+    query,
+    setQuery,
+    results: data || { categories: [], total: 0 },
+    isLoading: enabled && isLoading,
+    clear,
+  };
 }
