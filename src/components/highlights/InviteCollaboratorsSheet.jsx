@@ -14,6 +14,7 @@ import { hapticTap } from "@/lib/haptics";
 import CollectionDiscussion from "./CollectionDiscussion";
 import CollectionItemsTab from "./CollectionItemsTab";
 import ItemDiscussionSheet from "./ItemDiscussionSheet";
+import CollectionStats from "./CollectionStats";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -235,36 +236,38 @@ function CollaboratorsTab({ collaborators, onInvite, onRemove, onRoleChange }) {
   );
 }
 
-function ActivityTab({ activity }) {
-  if (activity.length === 0) {
-    return (
-      <div className="text-center py-8">
-        <Activity className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" strokeWidth={1.5} />
-        <p className="text-[12px] text-muted-foreground">No activity yet. Actions by collaborators will appear here.</p>
-      </div>
-    );
-  }
+function ActivityTab({ activity, collectionId, items, collaborators }) {
   return (
-    <div className="space-y-0.5">
-      {[...activity].reverse().map((entry, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.03 }}
-          className="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-muted/20"
-        >
-          <div className="w-2 h-2 rounded-full bg-primary/60 mt-2 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-[12px] text-foreground">
-              <span className="font-semibold">{entry.name}</span>{" "}
-              <span className="text-muted-foreground">{entry.action}</span>{" "}
-              <span className="font-medium">"{entry.target}"</span>
-            </p>
-            <p className="text-[10px] text-muted-foreground/60">{timeAgo(entry.timestamp)}</p>
-          </div>
-        </motion.div>
-      ))}
+    <div>
+      <CollectionStats collectionId={collectionId} items={items} collaborators={collaborators} />
+      {activity.length === 0 ? (
+        <div className="text-center py-6">
+          <Activity className="w-7 h-7 text-muted-foreground/30 mx-auto mb-2" strokeWidth={1.5} />
+          <p className="text-[12px] text-muted-foreground">No activity yet. Actions by collaborators will appear here.</p>
+        </div>
+      ) : (
+        <div className="space-y-0.5">
+          {[...activity].reverse().map((entry, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-muted/20"
+            >
+              <div className="w-2 h-2 rounded-full bg-primary/60 mt-2 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] text-foreground">
+                  <span className="font-semibold">{entry.name}</span>{" "}
+                  <span className="text-muted-foreground">{entry.action}</span>{" "}
+                  <span className="font-medium">"{entry.target}"</span>
+                </p>
+                <p className="text-[10px] text-muted-foreground/60">{timeAgo(entry.timestamp)}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -500,7 +503,7 @@ export default function InviteCollaboratorsSheet({
               canComment={canComment}
             />
           )}
-          {tab === "activity" && <ActivityTab activity={activity} />}
+          {tab === "activity" && <ActivityTab activity={activity} collectionId={folder} items={items} collaborators={collaborators} />}
           {tab === "collaborators" && (
             <CollaboratorsTab
               collaborators={collaborators}
