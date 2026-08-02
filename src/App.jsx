@@ -88,6 +88,9 @@ const Courses = lazy(() => import("@/pages/academics/Courses"));
 const CourseSpace = lazy(() => import("@/pages/academics/CourseSpace"));
 const UnifiedAgenda = lazy(() => import("@/pages/academics/UnifiedAgenda"));
 const Weather = lazy(() => import("@/pages/Weather"));
+const GpaCalculator = lazy(() => import("@/pages/academics/GpaCalculator"));
+const LibraryHub = lazy(() => import("@/pages/library/LibraryHub"));
+const CampusNavigation = lazy(() => import("@/pages/campus/CampusNavigation"));
 const AcademicTimeline = lazy(() => import("@/pages/identity/AcademicTimeline"));
 const Timetable = lazy(() => import("@/pages/academics/Timetable"));
 const Calendar = lazy(() => import("@/pages/academics/Calendar"));
@@ -352,6 +355,9 @@ function App() {
                     <Route path="/campus-services" element={<CampusServices />} />
                     <Route path="/safety" element={<SafetyCenter />} />
                     <Route path="/digital-id" element={<DigitalId />} />
+                    <Route path="/gpa-calculator" element={<GpaCalculator />} />
+                    <Route path="/library" element={<LibraryHub />} />
+                    <Route path="/campus-map" element={<CampusNavigation />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>

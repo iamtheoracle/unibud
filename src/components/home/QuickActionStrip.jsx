@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Clock, CheckSquare, Users, CalendarDays, BookUser, LifeBuoy, CreditCard, ShieldAlert, Wrench, X } from "lucide-react";
+import { Clock, CheckSquare, Users, CalendarDays, BookUser, LifeBuoy, CreditCard, ShieldAlert, Wrench, Calculator, Library, MapPin, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
@@ -21,6 +21,9 @@ const ACTIONS = [
   { id: "digital-id", icon: CreditCard, label: "Digital ID", to: "/digital-id" },
   { id: "services", icon: Wrench, label: "Services", to: "/campus-services" },
   { id: "safety", icon: ShieldAlert, label: "Safety", to: "/safety" },
+  { id: "gpa", icon: Calculator, label: "GPA", to: "/gpa-calculator" },
+  { id: "library", icon: Library, label: "Library", to: "/library" },
+  { id: "map", icon: MapPin, label: "Map", to: "/campus-map" },
 ];
 
 export default function QuickActionStrip() {
