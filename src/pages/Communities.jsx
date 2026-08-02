@@ -1,12 +1,14 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Building2 } from "lucide-react";
+import { Search, Building2, Compass } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import CommunityCard from "@/components/campus/CommunityCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
 import CommunityShell from "@/components/community/CommunityShell";
 import InterestSelection from "@/components/communities/InterestSelection";
+import HubCard from "@/components/hubs/HubCard";
+import { getHubsForInterests, getOtherHubs } from "@/data/hubRegistry";
 import { useInterests } from "@/hooks/useInterests";
 
 const FILTER_KEYS = ["all", ...Object.keys(COMMUNITY_TYPES).slice(0, 8)];
@@ -15,6 +17,8 @@ export default function Communities() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const { interests, loading: interestsLoading, hasInterests } = useInterests();
+  const userHubs = getHubsForInterests(interests);
+  const exploreHubs = getOtherHubs(interests);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -70,8 +74,37 @@ export default function Communities() {
   return (
     <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
 
+      {/* ── Your Hubs ── specialized community workspaces based on interests */}
+      {userHubs.length > 0 && (
+        <div className="pb-5">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1">Your Hubs</p>
+          <div className="grid grid-cols-2 gap-3">
+            {userHubs.map((hub, i) => (
+              <HubCard key={hub.id} hub={hub} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Explore ── other hubs available on campus */}
+      {exploreHubs.length > 0 && (
+        <div className="pb-5">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1 flex items-center gap-1.5">
+            <Compass className="w-3 h-3" /> Explore
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {exploreHubs.map((hub, i) => (
+              <HubCard key={hub.id} hub={hub} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Browse Communities ── */}
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1">Browse Communities</p>
+
       {/* Search */}
-      <div className="py-3">
+      <div className="py-1">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
