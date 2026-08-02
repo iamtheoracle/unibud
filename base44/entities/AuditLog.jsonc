@@ -4,7 +4,7 @@
   "properties": {
     "action": {
       "type": "string",
-      "description": "The action performed (e.g. 'module_disabled', 'user_role_changed', 'login', 'guardian.denied:model:invoke')"
+      "description": "The action performed (e.g. 'account_created', 'username_changed', 'profile_updated', 'university_changed', 'role_changed', 'verification_completed', 'account_suspended', 'account_restored')"
     },
     "actor_name": {
       "type": "string"
@@ -17,14 +17,26 @@
     },
     "target_type": {
       "type": "string",
-      "description": "What was affected (e.g. 'module', 'user', 'system')"
+      "description": "What was affected (e.g. 'user', 'system', 'security', 'academic_record')"
     },
     "target_name": {
       "type": "string"
     },
+    "target_user_id": {
+      "type": "string",
+      "description": "The user whose account was affected \u2014 enables per-user audit filtering"
+    },
     "details": {
       "type": "string",
       "description": "Human-readable detail of the action"
+    },
+    "previous_value": {
+      "type": "string",
+      "description": "The value before the change (serialized JSON or plain text)"
+    },
+    "new_value": {
+      "type": "string",
+      "description": "The value after the change (serialized JSON or plain text)"
     },
     "severity": {
       "type": "string",
@@ -42,7 +54,7 @@
     "category": {
       "type": "string",
       "default": "system",
-      "description": "Audit category (system, security, governance, etc.)"
+      "description": "Audit category (system, security, governance, account, academic, etc.)"
     },
     "timestamp": {
       "type": "string",
@@ -54,16 +66,9 @@
   ],
   "rls": {
     "read": {
-      "$or": [
-        {
-          "created_by_id": "{{user.id}}"
-        },
-        {
-          "user_condition": {
-            "role": "admin"
-          }
-        }
-      ]
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "create": {},
     "update": {
