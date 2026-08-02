@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, Users, GraduationCap, User } from "lucide-react";
+import { hapticSelect } from "@/lib/haptics";
 
 const TABS = [
   { to: "/bud", label: "Bud", icon: Sparkles },
@@ -41,6 +42,7 @@ export default function MainTabBar() {
             <NavLink
               key={tab.to}
               to={tab.to}
+              onClick={() => { if (!isActive) hapticSelect(); }}
               aria-current={isActive ? "page" : undefined}
               className="relative flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-[20px] spring-tap"
             >
