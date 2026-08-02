@@ -9,6 +9,9 @@ import {
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
+import BudAcademicInsights from "@/components/bud/BudAcademicInsights";
+import SmartReminders from "@/components/bud/SmartReminders";
+import GoogleCalendarConnect from "@/components/bud/GoogleCalendarConnect";
 import { Image } from "@/components/ui/image";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -162,6 +165,15 @@ export default function MeTab() {
                 </div>
                 <ChevronRight className="w-5 h-5 text-white/40" strokeWidth={2} />
               </button>
+
+              {/* Bud Insights */}
+              <BudAcademicInsights />
+
+              {/* Smart Reminders */}
+              <SmartReminders />
+
+              {/* Google Calendar */}
+              <GoogleCalendarConnect />
 
               {/* Achievements preview */}
               {(achievements?.length ?? 0) > 0 && (
