@@ -8,7 +8,7 @@ import {
   getIcon, EVENT_TYPES, formatEventDate, formatEventTime, getDaysUntil,
 } from "./campusConstants";
 
-export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
+export default function EventCard({ event, user, index = 0, onAddToCalendar, onOpen }) {
   const qc = useQueryClient();
   const existingRSVP = user && event.rsvp_list
     ? event.rsvp_list.find((r) => r.user_id === user.id)
@@ -70,7 +70,8 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-card rounded-[18px] soft-shadow border border-border/40 overflow-hidden card-hover"
+      onClick={() => onOpen?.(event)}
+      className="bg-card rounded-[18px] soft-shadow border border-border/40 overflow-hidden card-hover cursor-pointer"
     >
       {event.banner_url ? (
         <div className="relative h-28 overflow-hidden">
@@ -140,19 +141,22 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
               <Users className="w-3 h-3" />
               <span>{attendees}</span>
             </div>
+            {!event.is_free && event.price > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold">${event.price}</span>
+            )}
             {event.organizer_name && (
               <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">by {event.organizer_name}</span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             <button
-              onClick={toggleSave}
+              onClick={(e) => { e.stopPropagation(); toggleSave(); }}
               className="w-7 h-7 rounded-full flex items-center justify-center spring-tap hover:bg-muted"
             >
               <Bookmark className={"w-3.5 h-3.5 " + (saved ? "text-primary fill-primary" : "text-muted-foreground")} />
             </button>
             <button
-              onClick={() => onAddToCalendar?.(event)}
+              onClick={(e) => { e.stopPropagation(); onAddToCalendar?.(event); }}
               className="w-7 h-7 rounded-full flex items-center justify-center spring-tap hover:bg-muted"
             >
               <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
@@ -163,7 +167,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
         {user && (
           <div className="flex gap-2 mt-3">
             <button
-              onClick={() => handleRSVP("going")}
+              onClick={(e) => { e.stopPropagation(); handleRSVP("going"); }}
               className={
                 "flex-1 py-1.5 rounded-full text-[11px] font-semibold transition-all spring-tap " +
                 (rsvp === "going"
@@ -174,7 +178,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar }) {
               {rsvp === "going" ? "✓ Going" : "Going"}
             </button>
             <button
-              onClick={() => handleRSVP("interested")}
+              onClick={(e) => { e.stopPropagation(); handleRSVP("interested"); }}
               className={
                 "flex-1 py-1.5 rounded-full text-[11px] font-semibold transition-all spring-tap " +
                 (rsvp === "interested"

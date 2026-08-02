@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Search, Calendar } from "lucide-react";
@@ -8,6 +9,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
 import EmptyState from "@/components/ui/EmptyState";
 import EventCard from "@/components/campus/EventCard";
+import EventDetailSheet from "@/components/events/EventDetailSheet";
+import BudEventRecommendations from "@/components/events/BudEventRecommendations";
 import WeatherStrip from "@/components/weather/WeatherStrip";
 import { EVENT_TYPES, getIcon } from "@/components/campus/campusConstants";
 
@@ -75,6 +78,7 @@ export default function CampusEvents() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [showPast, setShowPast] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -94,6 +98,38 @@ export default function CampusEvents() {
 
   const displayEvents = isDemoMode ? DEMO_EVENTS : (events || []);
   const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
+
+  useEffect(() => {
+    if (isDemoMode || !user?.id) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const checkinId = urlParams.get("checkin");
+    const purchasedId = urlParams.get("purchased");
+    if (checkinId) {
+      base44.entities.CampusEvent.get(checkinId).then((event) => {
+        const checkedIn = event.checked_in || [];
+        if (!checkedIn.includes(user.id)) {
+          base44.entities.CampusEvent.update(checkinId, { checked_in: [...checkedIn, user.id] });
+          toast({ title: "Checked in!", description: event.title });
+          qc.invalidateQueries({ queryKey: ["campusEvents"] });
+        }
+        window.history.replaceState({}, "", "/events");
+      }).catch(() => {});
+    }
+    if (purchasedId) {
+      base44.entities.CampusEvent.get(purchasedId).then((event) => {
+        const rsvpList = event.rsvp_list || [];
+        if (!rsvpList.some((r) => r.user_id === user.id)) {
+          base44.entities.CampusEvent.update(purchasedId, {
+            rsvp_list: [...rsvpList, { user_id: user.id, name: user.full_name, status: "going", rsvp_at: new Date().toISOString() }],
+            attendees_count: (event.attendees_count || 0) + 1,
+          });
+          toast({ title: "Ticket purchased!", description: "You're going. See you there!" });
+          qc.invalidateQueries({ queryKey: ["campusEvents"] });
+        }
+        window.history.replaceState({}, "", "/events");
+      }).catch(() => {});
+    }
+  }, [user, qc, toast, isDemoMode]);
 
   const filtered = useMemo(() => {
     const now = new Date();
@@ -196,6 +232,11 @@ export default function CampusEvents() {
         </div>
       </div>
 
+      {/* Bud Recommendations */}
+      {!isDemoMode && (
+        <BudEventRecommendations user={activeUser} onOpenEvent={setSelectedEvent} />
+      )}
+
       {/* Events Grid */}
       <div className="responsive-cards">
         {isLoading ? (
@@ -225,10 +266,30 @@ export default function CampusEvents() {
               user={activeUser}
               index={i}
               onAddToCalendar={handleAddToCalendar}
+              onOpen={setSelectedEvent}
             />
           ))
         )}
       </div>
+
+      <AnimatePresence>
+        {selectedEvent && (
+          <EventDetailSheet
+            event={selectedEvent}
+            user={activeUser}
+            onClose={() => setSelectedEvent(null)}
+            onAddToCalendar={handleAddToCalendar}
+            onShare={() => {
+              if (navigator.share) {
+                navigator.share({ title: selectedEvent.title, url: `${window.location.origin}/events` });
+              } else {
+                navigator.clipboard?.writeText(`${window.location.origin}/events`);
+                toast({ title: "Link copied" });
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
     </CommunityShell>
   );
 }
