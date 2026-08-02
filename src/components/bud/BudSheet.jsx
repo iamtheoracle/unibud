@@ -5,6 +5,7 @@ import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { getScreenContext } from "@/lib/budScreenContext";
 import { base44 } from "@/api/base44Client";
 import { useVoice } from "@/lib/voice/VoiceProvider";
+import { routeAndRespond } from "@/lib/agents/oracleRouter";
 
 const SUGGESTIONS = ["Plan my study week", "Explain a concept", "What should I focus on today?"];
 
@@ -33,14 +34,7 @@ export default function BudSheet() {
     setMessages((m) => [...m, { role: "user", content }]);
     setLoading(true);
     try {
-      const contextClause = screenContext.description
-        ? ` The student is currently on the ${screenContext.name} screen — ${screenContext.description}. Tailor your response to this context.`
-        : "";
-      const historyClause = messages.length > 0
-        ? "\n\nRecent conversation:\n" + messages.slice(-6).map(m => `${m.role === "user" ? "Student" : "Bud"}: ${m.content}`).join("\n")
-        : "";
-      const res = await base44.integrations.Core.InvokeLLM({ prompt: BUD_SYSTEM_PROMPT + contextClause + historyClause + "\n\nStudent message: " + content });
-      const reply = typeof res === "string" ? res : res?.response || res?.text || "I'm here for you.";
+      const reply = await routeAndRespond(content, screenContext, messages);
       setMessages((m) => [...m, { role: "bud", content: reply }]);
       if (voiceSettings.autoSpeak && !voiceSettings.muted) speak(reply);
     } catch {
