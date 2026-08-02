@@ -1,40 +1,24 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { useMockFallback } from "@/lib/mock/useMockFallback";
-import { ArrowLeft, Search, Building2 } from "lucide-react";
-import { useDemoMode } from "@/lib/DemoModeContext";
+import { Search, Building2 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import CommunityCard from "@/components/campus/CommunityCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
 import CommunityShell from "@/components/community/CommunityShell";
-
-const DEMO_COMMUNITIES = [
-  { id: "dc1", name: "University of Benin", type: "university", description: "The official UNIBUD community for all students.", members_count: 12450, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
-  { id: "dc2", name: "Faculty of Engineering", type: "faculty", description: "All engineering departments and students.", members_count: 3200, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
-  { id: "dc3", name: "Department of Computer Science", type: "department", description: "CSC students, lecturers, and resources.", members_count: 850, is_verified: true, is_official: true, accent_color: "142 71% 45%" },
-  { id: "dc4", name: "200 Level Computer Science", type: "level", description: "200L CSC students — your class community.", members_count: 210, is_verified: true, is_official: true, accent_color: "0 72% 51%" },
-  { id: "dc5", name: "CSC 301 — Data Structures", type: "course", course_code: "CSC 301", description: "Course space for lectures, notes, and discussions.", members_count: 180, is_verified: true, is_official: true, accent_color: "217 91% 60%" },
-  { id: "dc6", name: "UNIBUD Programming Club", type: "club", description: "Weekly coding sessions, hackathons, and tech talks.", members_count: 340, is_verified: true, accent_color: "38 92% 50%" },
-  { id: "dc7", name: "AI Research Group", type: "research_group", description: "Exploring machine learning and AI applications.", members_count: 45, accent_color: "142 71% 45%" },
-  { id: "dc8", name: "Student Union Government", type: "sug", description: "The official student government body.", members_count: 120, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
-  { id: "dc9", name: "Hall 3 Hostel", type: "hostel", description: "Residents of Hall 3 — announcements and updates.", members_count: 280, accent_color: "262 83% 58%" },
-  { id: "dc10", name: "Photography Enthusiasts", type: "interest_group", description: "Capturing moments on and off campus.", members_count: 95, accent_color: "142 71% 45%" },
-];
+import InterestSelection from "@/components/communities/InterestSelection";
+import { useInterests } from "@/hooks/useInterests";
 
 const FILTER_KEYS = ["all", ...Object.keys(COMMUNITY_TYPES).slice(0, 8)];
 
 export default function Communities() {
-  const navigate = useNavigate();
-  const { isDemoMode } = useDemoMode();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const { interests, loading: interestsLoading, hasInterests } = useInterests();
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
-    enabled: !isDemoMode,
   });
 
   const cq = useQuery({
@@ -44,22 +28,44 @@ export default function Communities() {
       "-members_count",
       50
     ),
-    enabled: !isDemoMode && !!user,
+    enabled: !!user,
   });
-  const { data: mockCommunities } = useMockFallback(cq, DEMO_COMMUNITIES);
+
+  const communities = cq.data || [];
   const isLoading = cq.isLoading;
-  const displayCommunities = isDemoMode ? DEMO_COMMUNITIES : mockCommunities;
-  const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
 
   const filtered = useMemo(() => {
-    return displayCommunities.filter((c) => {
+    return communities.filter((c) => {
       const matchesFilter = filter === "all" || c.type === filter;
       const matchesSearch = !search ||
         c.name?.toLowerCase().includes(search.toLowerCase()) ||
         c.description?.toLowerCase().includes(search.toLowerCase());
       return matchesFilter && matchesSearch;
     });
-  }, [displayCommunities, filter, search]);
+  }, [communities, filter, search]);
+
+  // ── Interest selection gate ── first-time visitors pick interests before seeing communities
+  if (!interestsLoading && !hasInterests) {
+    return <InterestSelection onComplete={() => {}} />;
+  }
+
+  if (interestsLoading) {
+    return (
+      <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
+        <div className="space-y-2.5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-[16px] shimmer" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 w-1/2 shimmer rounded-full" />
+                <div className="h-2 w-1/3 shimmer rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </CommunityShell>
+    );
+  }
 
   return (
     <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
@@ -118,12 +124,12 @@ export default function Communities() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Building2}
-            title="No communities found"
-            description={search ? "Try a different search term." : "Communities will appear here as they're created."}
+            title="No communities yet"
+            description={search ? "Try a different search term." : "When communities are created, I'll recommend the ones that match your interests."}
           />
         ) : (
           filtered.map((community, i) => (
-            <CommunityCard key={community.id} community={community} user={activeUser} index={i} />
+            <CommunityCard key={community.id} community={community} user={user} index={i} />
           ))
         )}
       </div>

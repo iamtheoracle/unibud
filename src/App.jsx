@@ -218,6 +218,7 @@ const NonNegotiables = lazy(() => import("@/pages/NonNegotiables"));
 const ContentArchitecture = lazy(() => import("@/pages/ContentArchitecture"));
 const BudProductVision = lazy(() => import("@/pages/BudProductVision"));
 const ConnectedAccountsSettings = lazy(() => import("@/pages/ConnectedAccountsSettings"));
+const InterestsSettings = lazy(() => import("@/pages/settings/Interests"));
 
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
@@ -264,6 +265,7 @@ function App() {
                     <Route path="/me" element={<Me />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/settings/connected-accounts" element={<ConnectedAccountsSettings />} />
+                    <Route path="/interests" element={<InterestsSettings />} />
                   <Route path="/hero" element={<HeroSection6Page />} />
                     <Route path="/shorts" element={<Shorts />} />
 <Route path="/podcasts" element={<Podcasts />} />
