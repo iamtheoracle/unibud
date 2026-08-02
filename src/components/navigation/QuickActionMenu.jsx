@@ -9,12 +9,14 @@ import {
   Clock, CheckSquare, Users, PenLine, Camera, MessageSquare,
   Calendar, ClipboardList, BookOpen, Megaphone, Search, Award,
   FlaskConical, Trophy, Edit3, QrCode, Share2, Settings, UserPlus,
-  X,
+  Radio, GraduationCap, X,
 } from "lucide-react";
 
 const MENU_SPRING = { type: "spring", stiffness: 420, damping: 32, mass: 0.85 };
 const SHEET_SPRING = { type: "spring", stiffness: 360, damping: 36 };
-const ORANGE = "#FF8A00";
+const ORANGE = "#FF8A2A";
+const CREAM = "#F7F0E8";
+const CREAM_MUTED = "rgba(247, 240, 232, 0.45)";
 
 /* ── Global quick actions (always available) ── */
 const GLOBAL_ACTIONS = [
@@ -29,11 +31,14 @@ const CONTEXT_ACTIONS = {
     { id: "new-post", icon: PenLine, title: "New Post", subtitle: "Share with campus", to: "/square" },
     { id: "new-story", icon: Camera, title: "New Story", subtitle: "Share a moment", to: "/square" },
     { id: "create-community", icon: Users, title: "Create Community", subtitle: "Start a group", to: "/communities" },
+    { id: "start-live", icon: Radio, title: "Start Live Room", subtitle: "Go live now", to: "/live" },
   ],
   academic: [
-    { id: "new-assignment", icon: ClipboardList, title: "New Assignment", subtitle: "Add a task", to: "/assignments" },
+    { id: "log-study", icon: Clock, title: "Log Study Hour", subtitle: "Track study time", sheet: "study" },
+    { id: "new-assignment", icon: ClipboardList, title: "Create Assignment", subtitle: "Add a task", to: "/assignments" },
+    { id: "create-task", icon: CheckSquare, title: "Create Task", subtitle: "Quick task capture", sheet: "task" },
     { id: "open-timetable", icon: Calendar, title: "Open Timetable", subtitle: "View schedule", to: "/timetable" },
-    { id: "upcoming-classes", icon: Clock, title: "Upcoming Classes", subtitle: "See what's next", to: "/timetable" },
+    { id: "join-group", icon: Users, title: "Join Study Group", subtitle: "Find a group", sheet: "group" },
   ],
   square: [
     { id: "create-post", icon: PenLine, title: "Create Post", subtitle: "Share something", to: "/square" },
@@ -140,12 +145,12 @@ export default function QuickActionMenu({ quickAction, onClose }) {
                 transform: "translateX(-50%)",
                 width: `${menuWidth}px`,
                 maxWidth: "calc(100vw - 32px)",
-                background: "rgba(0, 0, 0, 0.85)",
-                backdropFilter: "blur(32px) saturate(1.6)",
-                WebkitBackdropFilter: "blur(32px) saturate(1.6)",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                borderRadius: "24px",
-                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.02)",
+                background: "rgba(44, 33, 26, 0.92)",
+                backdropFilter: "blur(40px) saturate(1.5)",
+                WebkitBackdropFilter: "blur(40px) saturate(1.5)",
+                border: "1px solid rgba(255, 255, 255, 0.06)",
+                borderRadius: "28px",
+                boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
                 overflow: "hidden",
               }}
               className="z-50"
@@ -174,9 +179,9 @@ export default function QuickActionMenu({ quickAction, onClose }) {
                         <Icon className="w-[17px] h-[17px]" strokeWidth={2} style={{ color: ORANGE }} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[14px] font-semibold text-white leading-tight">{action.title}</p>
-                        {action.subtitle && (
-                          <p className="text-[12px] text-white/50 mt-0.5 leading-tight">{action.subtitle}</p>
+                        <p className="text-[14px] font-semibold leading-tight" style={{ color: CREAM }}>{action.title}</p>
+                      {action.subtitle && (
+                        <p className="text-[12px] mt-0.5 leading-tight" style={{ color: "rgba(247, 240, 232, 0.45)" }}>{action.subtitle}</p>
                         )}
                       </div>
                     </button>
@@ -216,17 +221,17 @@ function SheetShell({ title, onClose, children }) {
         transition={SHEET_SPRING}
         className="relative w-full max-w-[520px] rounded-t-[28px] p-5 pb-8 safe-area-pb"
         style={{
-          background: "rgba(0, 0, 0, 0.92)",
-          backdropFilter: "blur(32px) saturate(1.6)",
-          WebkitBackdropFilter: "blur(32px) saturate(1.6)",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
+          background: "rgba(44, 33, 26, 0.95)",
+          backdropFilter: "blur(40px) saturate(1.5)",
+          WebkitBackdropFilter: "blur(40px) saturate(1.5)",
+          border: "1px solid rgba(255, 255, 255, 0.06)",
           borderBottom: "none",
         }}
       >
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-[18px] font-bold text-white">{title}</h2>
+          <h2 className="text-[18px] font-bold" style={{ color: CREAM }}>{title}</h2>
           <button onClick={onClose} className="w-8 h-8 rounded-full grid place-items-center" style={{ background: "rgba(255,255,255,0.06)" }}>
-            <X className="w-4 h-4 text-white/60" strokeWidth={2} />
+            <X className="w-4 h-4" strokeWidth={2} style={{ color: CREAM_MUTED }} />
           </button>
         </div>
         {children}
@@ -238,11 +243,11 @@ function SheetShell({ title, onClose, children }) {
 function SheetInput({ label, ...props }) {
   return (
     <div>
-      <label className="text-[12px] font-medium text-white/50 mb-1.5 block">{label}</label>
+      <label className="text-[12px] font-medium mb-1.5 block" style={{ color: CREAM_MUTED }}>{label}</label>
       <input
         {...props}
-        className="w-full h-[48px] px-4 rounded-[14px] text-[15px] text-white placeholder:text-white/30 outline-none"
-        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)" }}
+        className="w-full h-[48px] px-4 rounded-[14px] text-[15px] placeholder:outline-none"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)", color: CREAM }}
       />
     </div>
   );
@@ -256,8 +261,8 @@ function SheetButton({ children, onClick, disabled, variant }) {
       className="w-full h-[52px] rounded-[16px] text-[15px] font-semibold spring-tap disabled:opacity-50 flex items-center justify-center gap-2"
       style={
         variant === "primary"
-          ? { background: ORANGE, color: "#000" }
-          : { background: "rgba(255,255,255,0.06)", color: "white", border: "1px solid rgba(255,255,255,0.08)" }
+          ? { background: ORANGE, color: "#1A1006" }
+          : { background: "rgba(255,255,255,0.04)", color: CREAM, border: "1px solid rgba(255,255,255,0.06)" }
       }
     >
       {children}
@@ -298,11 +303,11 @@ function StudyHourSheet({ onClose }) {
       <div className="space-y-4">
         <SheetInput label="Course" placeholder="e.g. CSC 301" value={course} onChange={(e) => setCourse(e.target.value)} />
         <div>
-          <label className="text-[12px] font-medium text-white/50 mb-1.5 block">Duration (minutes)</label>
+          <label className="text-[12px] font-medium mb-1.5 block" style={{ color: CREAM_MUTED }}>Duration (minutes)</label>
           <div className="flex items-center gap-3">
-            <button onClick={() => setDuration((d) => Math.max(15, d - 15))} className="w-12 h-12 rounded-[14px] grid place-items-center text-white text-xl font-bold" style={{ background: "rgba(255,255,255,0.06)" }}>−</button>
-            <div className="flex-1 text-center text-[28px] font-bold text-white tabular-nums">{duration}</div>
-            <button onClick={() => setDuration((d) => d + 15)} className="w-12 h-12 rounded-[14px] grid place-items-center text-white text-xl font-bold" style={{ background: "rgba(255,255,255,0.06)" }}>+</button>
+            <button onClick={() => setDuration((d) => Math.max(15, d - 15))} className="w-12 h-12 rounded-[14px] grid place-items-center text-xl font-bold" style={{ background: "rgba(255,255,255,0.04)", color: CREAM }}>−</button>
+            <div className="flex-1 text-center text-[28px] font-bold tabular-nums" style={{ color: CREAM }}>{duration}</div>
+            <button onClick={() => setDuration((d) => d + 15)} className="w-12 h-12 rounded-[14px] grid place-items-center text-xl font-bold" style={{ background: "rgba(255,255,255,0.04)", color: CREAM }}>+</button>
           </div>
         </div>
         <SheetButton variant="primary" onClick={handleSave} disabled={saving}>
@@ -359,7 +364,7 @@ function TaskQuickSheet({ onClose }) {
         <SheetInput label="Title" placeholder="Task title" value={title} onChange={(e) => setTitle(e.target.value)} />
         <SheetInput label="Due Date" type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         <div>
-          <label className="text-[12px] font-medium text-white/50 mb-1.5 block">Priority</label>
+          <label className="text-[12px] font-medium mb-1.5 block" style={{ color: CREAM_MUTED }}>Priority</label>
           <div className="flex gap-2">
             {priorities.map((p) => (
               <button
@@ -368,8 +373,8 @@ function TaskQuickSheet({ onClose }) {
                 className="flex-1 h-[44px] rounded-[12px] text-[13px] font-semibold spring-tap transition-all"
                 style={
                   priority === p.key
-                    ? { background: ORANGE, color: "#000" }
-                    : { background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)" }
+                    ? { background: ORANGE, color: "#1A1006" }
+                    : { background: "rgba(255,255,255,0.04)", color: CREAM_MUTED }
                 }
               >
                 {p.label}
@@ -410,18 +415,18 @@ function JoinGroupSheet({ onClose }) {
             ))
           ) : filtered.length > 0 ? (
             filtered.map((g) => (
-              <div key={g.id} className="flex items-center gap-3 p-3 rounded-[14px]" style={{ background: "rgba(255,255,255,0.04)" }}>
-                <div className="w-10 h-10 rounded-[12px] grid place-items-center text-[16px]" style={{ background: "rgba(255,138,0,0.12)" }}>
+              <div key={g.id} className="flex items-center gap-3 p-3 rounded-[14px]" style={{ background: "rgba(255,255,255,0.03)" }}>
+                <div className="w-10 h-10 rounded-[12px] grid place-items-center text-[16px]" style={{ background: "rgba(255,138,42,0.10)" }}>
                   <Users className="w-5 h-5" style={{ color: ORANGE }} strokeWidth={2} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold text-white truncate">{g.name || g.title}</p>
-                  <p className="text-[12px] text-white/50">{g.member_count || 0} members</p>
+                  <p className="text-[14px] font-semibold truncate" style={{ color: CREAM }}>{g.name || g.title}</p>
+                  <p className="text-[12px]" style={{ color: CREAM_MUTED }}>{g.member_count || 0} members</p>
                 </div>
                 <button
                   onClick={() => { onClose(); navigate(`/study-groups/${g.id}`); }}
                   className="px-4 h-9 rounded-full text-[13px] font-bold spring-tap"
-                  style={{ background: ORANGE, color: "#000" }}
+                  style={{ background: ORANGE, color: "#1A1006" }}
                 >
                   Join
                 </button>
@@ -429,7 +434,7 @@ function JoinGroupSheet({ onClose }) {
             ))
           ) : (
             <div className="text-center py-8">
-              <p className="text-[14px] text-white/40">No groups found</p>
+              <p className="text-[14px]" style={{ color: CREAM_MUTED }}>No groups found</p>
             </div>
           )}
         </div>

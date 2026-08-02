@@ -16,7 +16,12 @@ import { useExperience } from "@/lib/ExperienceContext";
 import QuickActionButton from "./QuickActionButton";
 import QuickActionMenu from "./QuickActionMenu";
 
-/* ── Spring physics — visionOS standard ── */
+/* ── Warm palette ── */
+const CREAM = "#F7F0E8";
+const CREAM_MUTED = "rgba(247, 240, 232, 0.45)";
+const ORANGE = "#FF8A2A";
+
+/* ── Spring physics ── */
 const SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.9 };
 const EASE = [0.16, 1, 0.3, 1];
 const DOCK_ENTER = { duration: 0.55, ease: EASE };
@@ -74,60 +79,114 @@ export default function AdaptiveNav() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <motion.nav
-        initial={{ opacity: 0, y: 28 }}
+      {/* ═══ Floating Context Switcher (Level 1) ═══ */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={DOCK_ENTER}
         className="fixed bottom-0 inset-x-0 z-40 pointer-events-none"
-        aria-label="Primary navigation"
       >
-        <div className="flex flex-col items-center gap-2 px-3 pb-3 safe-area-pb pointer-events-auto">
-          {/* ═══ Row 1: Mode Switcher + Me ═══ */}
+        <div className="flex flex-col items-center gap-2.5 px-3 pb-3 safe-area-pb pointer-events-auto">
+          {/* OS Mode Switcher — floating capsule above bottom nav */}
+          <div className="os-dock h-[48px] rounded-[28px] flex items-center p-1.5">
+            {MODES.map((m) => {
+              const Icon = m.icon;
+              const active = mode === m.key;
+              return (
+                <QuickActionButton
+                  key={m.key}
+                  itemKey={m.key}
+                  onClick={() => handleModeSwitch(m.key)}
+                  onQuickAction={handleQuickAction}
+                  aria-current={active ? "page" : undefined}
+                  aria-label={`Switch to ${m.label} mode`}
+                  className="relative flex items-center justify-center h-[38px] px-6"
+                >
+                  {active && (
+                    <motion.div
+                      layoutId="mode-active-pill"
+                      className="absolute inset-0 rounded-[22px] os-pill-active"
+                      transition={SPRING}
+                    />
+                  )}
+                  <div className="relative flex items-center gap-2">
+                    <Icon
+                      className="w-[18px] h-[18px] transition-colors duration-300"
+                      style={{ color: active ? CREAM : CREAM_MUTED }}
+                      strokeWidth={active ? 2.2 : 1.7}
+                    />
+                    <span
+                      className="text-[14px] font-semibold tracking-tight transition-colors duration-300"
+                      style={{ color: active ? CREAM : CREAM_MUTED }}
+                    >
+                      {m.label}
+                    </span>
+                  </div>
+                </QuickActionButton>
+              );
+            })}
+          </div>
+
+          {/* ═══ Bottom Navigation (Level 2) + Me ═══ */}
           <div className="flex items-center gap-2.5">
-            {/* Level 1: Chrome-style segmented mode switcher */}
-            <div className="os-dock h-[50px] rounded-full flex items-center p-1">
-              {MODES.map((m) => {
-                const Icon = m.icon;
-                const active = mode === m.key;
-                return (
-                  <QuickActionButton
-                    key={m.key}
-                    itemKey={m.key}
-                    onClick={() => handleModeSwitch(m.key)}
-                    onQuickAction={handleQuickAction}
-                    aria-current={active ? "page" : undefined}
-                    aria-label={`Switch to ${m.label} mode`}
-                    className="relative flex items-center justify-center h-[42px] px-5"
-                  >
-                    {active && (
-                      <motion.div
-                        layoutId="mode-active-pill"
-                        className="absolute inset-0 rounded-full os-pill-active"
-                        transition={SPRING}
-                      />
-                    )}
-                    <div className="relative flex items-center gap-2">
-                      <Icon
-                        className={`w-[19px] h-[19px] transition-colors duration-300 ${active ? "text-foreground" : "text-muted-foreground"}`}
-                        strokeWidth={active ? 2.2 : 1.7}
-                      />
-                      <span className={`text-[14px] font-semibold tracking-tight transition-colors duration-300 ${active ? "text-foreground" : "text-muted-foreground"}`}>
-                        {m.label}
-                      </span>
-                    </div>
-                  </QuickActionButton>
-                );
-              })}
+            <div className="os-dock h-[52px] rounded-[28px] flex items-center p-1.5">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`context-${mode}`}
+                  initial={{ opacity: 0, scale: 0.94 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.94 }}
+                  transition={{ duration: 0.28, ease: EASE }}
+                  className="flex items-center"
+                >
+                  {contextTabs.map((tab) => {
+                    const Icon = tab.icon;
+                    const active = isActive(pathname, tab.to);
+                    return (
+                      <QuickActionButton
+                        key={tab.key}
+                        itemKey={tab.key}
+                        onClick={() => handleNav(tab.to)}
+                        onQuickAction={handleQuickAction}
+                        aria-current={active ? "page" : undefined}
+                        aria-label={tab.label}
+                        className="relative flex items-center justify-center h-[42px] px-5"
+                      >
+                        {active && (
+                          <motion.div
+                            layoutId={`context-active-pill-${mode}`}
+                            className="absolute inset-0 rounded-[22px] os-pill-active"
+                            transition={SPRING}
+                          />
+                        )}
+                        <div className="relative flex items-center gap-2">
+                          <Icon
+                            className="w-[18px] h-[18px] transition-colors duration-300"
+                            style={{ color: active ? CREAM : CREAM_MUTED }}
+                            strokeWidth={active ? 2.2 : 1.7}
+                          />
+                          <span
+                            className="text-[13px] font-semibold tracking-tight transition-colors duration-300"
+                            style={{ color: active ? CREAM : CREAM_MUTED }}
+                          >
+                            {tab.label}
+                          </span>
+                        </div>
+                      </QuickActionButton>
+                    );
+                  })}
+                </motion.div>
+              </AnimatePresence>
             </div>
 
-            {/* Me — permanently fixed, independent */}
+            {/* Me — permanently fixed, separate floating circle */}
             <QuickActionButton
               itemKey="me"
               onClick={() => handleNav("/me")}
               onQuickAction={handleQuickAction}
               aria-current={meActive ? "page" : undefined}
               aria-label="Me"
-              className="os-me-capsule w-[50px] h-[50px] rounded-full flex items-center justify-center shrink-0 relative"
+              className="os-me-capsule w-[52px] h-[52px] rounded-full flex items-center justify-center shrink-0 relative"
             >
               {meActive && (
                 <motion.div
@@ -138,61 +197,15 @@ export default function AdaptiveNav() {
               )}
               <div className="relative">
                 <MeIcon
-                  className={`w-[22px] h-[22px] transition-colors duration-300 ${meActive ? "text-foreground" : "text-muted-foreground"}`}
+                  className="w-[22px] h-[22px] transition-colors duration-300"
+                  style={{ color: meActive ? CREAM : CREAM_MUTED }}
                   strokeWidth={meActive ? 2.2 : 1.7}
                 />
               </div>
             </QuickActionButton>
           </div>
-
-          {/* ═══ Row 2: Context Navigation ═══ */}
-          <div className="os-dock h-[50px] rounded-full flex items-center p-1">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`context-${mode}`}
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.94 }}
-                transition={{ duration: 0.28, ease: EASE }}
-                className="flex items-center"
-              >
-                {contextTabs.map((tab) => {
-                  const Icon = tab.icon;
-                  const active = isActive(pathname, tab.to);
-                  return (
-                    <QuickActionButton
-                      key={tab.key}
-                      itemKey={tab.key}
-                      onClick={() => handleNav(tab.to)}
-                      onQuickAction={handleQuickAction}
-                      aria-current={active ? "page" : undefined}
-                      aria-label={tab.label}
-                      className="relative flex items-center justify-center h-[42px] px-4"
-                    >
-                      {active && (
-                        <motion.div
-                          layoutId={`context-active-pill-${mode}`}
-                          className="absolute inset-0 rounded-full os-pill-active"
-                          transition={SPRING}
-                        />
-                      )}
-                      <div className="relative flex items-center gap-2">
-                        <Icon
-                          className={`w-[18px] h-[18px] transition-colors duration-300 ${active ? "text-foreground" : "text-muted-foreground"}`}
-                          strokeWidth={active ? 2.2 : 1.7}
-                        />
-                        <span className={`text-[13px] font-semibold tracking-tight transition-colors duration-300 ${active ? "text-foreground" : "text-muted-foreground"}`}>
-                          {tab.label}
-                        </span>
-                      </div>
-                    </QuickActionButton>
-                  );
-                })}
-              </motion.div>
-            </AnimatePresence>
-          </div>
         </div>
-      </motion.nav>
+      </motion.div>
 
       {/* Quick Action Menu — iOS Home Screen style long-press actions */}
       <AnimatePresence>
