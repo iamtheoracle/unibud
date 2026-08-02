@@ -9,6 +9,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
 import MorningBriefing from "@/components/bud/MorningBriefing";
+import BudPriorityDashboard from "@/components/bud/BudPriorityDashboard";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const CATEGORIES = [
@@ -122,6 +123,7 @@ export default function BudTab() {
             </button>
 
             <div className="space-y-2">
+              <Suggestion icon={Zap} title="What's my priority?" description="See what Bud thinks you should focus on" onClick={() => setActiveCategory("productivity")} />
               <Suggestion icon={BookOpen} title="Study help" description="Get help with assignments and study materials" onClick={() => navigate("/study")} />
               <Suggestion icon={CalendarClock} title="Plan my day" description="Let Bud organize your schedule" onClick={() => navigate("/timetable")} />
               <Suggestion icon={TrendingUp} title="Grade insights" description="Understand your academic performance" onClick={() => navigate("/academics/results")} />
@@ -188,11 +190,22 @@ export default function BudTab() {
 
         {/* Productivity */}
         {activeCategory === "productivity" && (
-          <div className="space-y-2">
-            <Suggestion icon={CalendarClock} title="Plan my day" description="Let Bud organize your schedule" onClick={() => navigate("/timetable")} />
-            <Suggestion icon={TrendingUp} title="Grade tracking" description="Monitor your academic progress" onClick={() => navigate("/academics/results")} />
-            <Suggestion icon={BookOpen} title={`${assignments?.length || 0} assignments due`} description="Stay on top of your deadlines" onClick={() => navigate("/assignments")} />
-            <Suggestion icon={MessageSquare} title="Inbox summary" description="Get a digest of your messages" onClick={() => navigate("/messages")} />
+          <div className="space-y-4">
+            {/* Priority Dashboard */}
+            <div>
+              <div className="flex items-center gap-2 mb-2 px-1">
+                <Zap className="w-3.5 h-3.5 text-primary" strokeWidth={2.2} />
+                <p className="text-[13px] font-bold text-foreground">Priority Dashboard</p>
+              </div>
+              <BudPriorityDashboard />
+            </div>
+
+            <div className="space-y-2">
+              <Suggestion icon={CalendarClock} title="Plan my day" description="Let Bud organize your schedule" onClick={() => navigate("/timetable")} />
+              <Suggestion icon={TrendingUp} title="Grade tracking" description="Monitor your academic progress" onClick={() => navigate("/academics/results")} />
+              <Suggestion icon={BookOpen} title={`${assignments?.length || 0} assignments due`} description="Stay on top of your deadlines" onClick={() => navigate("/assignments")} />
+              <Suggestion icon={MessageSquare} title="Inbox summary" description="Get a digest of your messages" onClick={() => navigate("/messages")} />
+            </div>
           </div>
         )}
 

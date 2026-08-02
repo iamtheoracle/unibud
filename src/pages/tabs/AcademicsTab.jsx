@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BookOpen, ClipboardList, GraduationCap, CalendarClock,
   TrendingUp, Library, Wallet, Award, ChevronRight, Sparkles,
-  FileText, Briefcase, CheckCircle,
+  FileText, Briefcase, CheckCircle, Folder, Upload,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
@@ -21,6 +21,7 @@ const CATEGORIES = [
   { id: "exams", label: "Exams" },
   { id: "attendance", label: "Attendance" },
   { id: "notes", label: "Notes" },
+  { id: "files", label: "Files" },
   { id: "research", label: "Research" },
   { id: "library", label: "Library" },
   { id: "scholarships", label: "Scholarships" },
@@ -174,6 +175,20 @@ export default function AcademicsTab() {
                 <StatCard icon={Award} label="Exams" value={exams?.length || 0} onClick={() => navigate("/exams")} />
               </div>
 
+              <button
+                onClick={() => navigate("/academics/files")}
+                className="w-full flex items-center gap-3 p-3.5 rounded-[18px] bg-card shadow-sm text-left active:scale-[0.98] transition-transform"
+              >
+                <div className="w-9 h-9 rounded-[12px] bg-chocolate/10 flex items-center justify-center flex-shrink-0">
+                  <Folder className="w-4.5 h-4.5 text-chocolate" strokeWidth={2.2} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[13px] font-bold text-foreground">Academic Files</p>
+                  <p className="text-[11px] text-muted-foreground">Slides, PDFs, past questions & notes</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+              </button>
+
               {(courses?.length ?? 0) > 0 && (
                 <Section title="My Courses" onSeeAll={() => navigate("/courses")}>
                   <div className="grid grid-cols-2 gap-2">
@@ -312,6 +327,37 @@ export default function AcademicsTab() {
               </div>
             )}
           </ProductionState>
+        )}
+
+        {activeCategory === "files" && (
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate("/academics/files")}
+              className="w-full flex items-center gap-3 p-4 rounded-[20px] bg-gradient-to-br from-primary/5 to-chocolate/5 border border-primary/10 text-left active:scale-[0.98] transition-transform"
+            >
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-chocolate flex items-center justify-center flex-shrink-0">
+                <Folder className="w-5 h-5 text-white" strokeWidth={2.2} />
+              </div>
+              <div className="flex-1">
+                <p className="text-[14px] font-bold text-foreground">File Manager</p>
+                <p className="text-[12px] text-muted-foreground">Organize lecture slides, PDFs, past questions & more</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            </button>
+            <button
+              onClick={() => navigate("/academics/files")}
+              className="w-full flex items-center gap-3 p-3.5 rounded-[18px] bg-card shadow-sm text-left active:scale-[0.98] transition-transform"
+            >
+              <div className="w-9 h-9 rounded-[12px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Upload className="w-4.5 h-4.5 text-primary" strokeWidth={2.2} />
+              </div>
+              <div className="flex-1">
+                <p className="text-[13px] font-bold text-foreground">Upload Material</p>
+                <p className="text-[11px] text-muted-foreground">Add files or link external cloud documents</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+            </button>
+          </div>
         )}
 
         {activeCategory === "research" && (
