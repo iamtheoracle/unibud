@@ -4,10 +4,11 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
+import { SearchProvider, useSearch } from "@/lib/search/SearchContext";
 import AdaptiveNav from "@/components/navigation/AdaptiveNav";
 import FloatingBudButton from "@/components/bud/FloatingBudButton";
 import BudSheet from "@/components/bud/BudSheet";
-
+import UniversalSearchOverlay from "@/components/search/UniversalSearchOverlay";
 import OfflineBanner from "@/components/layout/OfflineBanner";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
@@ -16,6 +17,11 @@ import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
 import { ClassroomModeProvider } from "@/lib/classroom/ClassroomModeContext";
+
+function UniversalSearchOverlayWithContext() {
+  const { searchOpen, closeSearch } = useSearch();
+  return <UniversalSearchOverlay visible={searchOpen} onClose={closeSearch} />;
+}
 
 /**
  * AppShell — the authenticated student shell: page content + floating
@@ -42,6 +48,7 @@ export default function AppShell() {
 
   return (
     <BudLauncherProvider>
+      <SearchProvider>
       <UnibudContextProvider>
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
@@ -64,9 +71,11 @@ export default function AppShell() {
           <AdaptiveNav />
           <FloatingBudButton />
           <BudSheet />
+          <UniversalSearchOverlayWithContext />
         </div>
       </ClassroomModeProvider>
       </UnibudContextProvider>
+      </SearchProvider>
     </BudLauncherProvider>
   );
 }

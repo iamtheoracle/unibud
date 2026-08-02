@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Bell, Search } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { resolveFirstName } from "@/lib/userDisplayName";
+import { useSearch } from "@/lib/search/SearchContext";
 import { useQuery } from "@tanstack/react-query";
 
 const CREAM = "#F7F0E8";
@@ -31,6 +32,7 @@ function getMotivation() {
 
 export default function HomeHeader() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const { openSearch } = useSearch();
   const { data: notifs } = useQuery({
     queryKey: ["home-unread-notifs"],
     queryFn: () => base44.entities.Notification.filter({ is_read: false }, "-created_date", 1),
@@ -62,10 +64,10 @@ export default function HomeHeader() {
 
       <p className="text-[14px] leading-relaxed mb-5" style={{ color: CREAM_MUTED }}>{getMotivation()}</p>
 
-      <Link to="/discover" className="flex items-center gap-3 w-full h-[48px] px-4 rounded-[16px] spring-tap" style={{ background: "rgba(44, 33, 26, 0.6)", border: "1px solid rgba(255,255,255,0.05)" }}>
+      <button onClick={openSearch} className="flex items-center gap-3 w-full h-[48px] px-4 rounded-[16px] spring-tap" style={{ background: "rgba(44, 33, 26, 0.6)", border: "1px solid rgba(255,255,255,0.05)" }}>
         <Search className="w-[18px] h-[18px] shrink-0" strokeWidth={1.8} style={{ color: CREAM_MUTED }} />
         <span className="text-[14px]" style={{ color: CREAM_MUTED }}>Search people, courses, events…</span>
-      </Link>
+      </button>
     </motion.div>
   );
 }

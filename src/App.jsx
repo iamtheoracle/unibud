@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/lib/ThemeContext';
 import { PlatformProvider } from '@/lib/platform/PlatformProvider';
 import { DemoModeProvider } from '@/lib/DemoModeContext';
 import { ExperienceProvider } from '@/lib/ExperienceContext';
+import { SearchProvider } from '@/lib/SearchContext';
 import ScrollToTop from './components/ScrollToTop';
 import AppShell from '@/components/layout/AppShell';
 import OracleWorkspaceGuard from '@/components/auth/OracleWorkspaceGuard';
