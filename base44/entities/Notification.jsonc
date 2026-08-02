@@ -28,7 +28,8 @@
         "marketplace",
         "library",
         "transport",
-        "timetable"
+        "timetable",
+        "wallet"
       ],
       "default": "system"
     },
@@ -74,7 +75,10 @@
         "event",
         "streak",
         "community",
-        "career"
+        "career",
+        "wallet",
+        "marketplace",
+        "message"
       ],
       "default": "system"
     },

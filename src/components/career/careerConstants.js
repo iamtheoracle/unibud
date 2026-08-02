@@ -62,6 +62,14 @@ export function formatRelativeTime(deadline) {
   return `${Math.ceil(days / 30)}mo left`;
 }
 
+export const RESEARCH_TYPES = {
+  project: { icon: FlaskConical, label: "Project", bg: "bg-accent/10", color: "text-accent" },
+  thesis: { icon: GraduationCap, label: "Thesis", bg: "bg-success/10", color: "text-success" },
+  publication: { icon: FileText, label: "Publication", bg: "bg-information/10", color: "text-information" },
+  grant: { icon: Award, label: "Grant", bg: "bg-warning/10", color: "text-warning" },
+  collaboration: { icon: Users, label: "Collaboration", bg: "bg-primary/10", color: "text-primary" },
+};
+
 export const TRACKER_STATUSES = [
   { key: "interested", label: "Interested", color: "muted-foreground" },
   { key: "preparing", label: "Preparing", color: "warning" },
