@@ -27,6 +27,12 @@ const CoursesCard = lazy(() => import("@/components/workspace/cards/academic/Cou
 const ExamsCard = lazy(() => import("@/components/workspace/cards/academic/ExamsCard"));
 const GPACard = lazy(() => import("@/components/workspace/cards/academic/GPACard"));
 const AcademicQuickActionsCard = lazy(() => import("@/components/workspace/cards/academic/QuickActionsCard"));
+const NotesCard = lazy(() => import("@/components/workspace/cards/academic/NotesCard"));
+const LibraryCard = lazy(() => import("@/components/workspace/cards/academic/LibraryCard"));
+const ResearchCard = lazy(() => import("@/components/workspace/cards/academic/ResearchCard"));
+const ProgressCard = lazy(() => import("@/components/workspace/cards/academic/ProgressCard"));
+const CalendarCard = lazy(() => import("@/components/workspace/cards/academic/CalendarCard"));
+const CareerCard = lazy(() => import("@/components/workspace/cards/academic/CareerCard"));
 
 // ─── Social Cards ────────────────────────────────────────────────
 
@@ -36,6 +42,8 @@ const EventsCard = lazy(() => import("@/components/workspace/cards/social/Events
 const CommunitiesCard = lazy(() => import("@/components/workspace/cards/social/CommunitiesCard"));
 const MarketplaceCard = lazy(() => import("@/components/workspace/cards/social/MarketplaceCard"));
 const OpportunitiesCard = lazy(() => import("@/components/workspace/cards/social/OpportunitiesCard"));
+const DiscoverCard = lazy(() => import("@/components/workspace/cards/social/DiscoverCard"));
+const ActivityCard = lazy(() => import("@/components/workspace/cards/social/ActivityCard"));
 // ─── Registry ───────────────────────────────────────────────────
 
 export const CARD_REGISTRY = [
@@ -47,6 +55,12 @@ export const CARD_REGISTRY = [
   { id: "timetable", type: "academic", title: "Timetable", workspace: "academic", priority: 5, expandable: true, refreshable: true, component: TimetableCard },
   { id: "courses", type: "academic", title: "Courses", workspace: "academic", priority: 6, expandable: true, refreshable: true, component: CoursesCard },
   { id: "academic_quick_actions", type: "academic", title: "Quick Actions", workspace: "academic", priority: 7, expandable: false, refreshable: false, component: AcademicQuickActionsCard },
+  { id: "notes", type: "academic", title: "Notes", workspace: "academic", priority: 8, expandable: true, refreshable: true, component: NotesCard },
+  { id: "library", type: "academic", title: "Library", workspace: "academic", priority: 9, expandable: true, refreshable: true, component: LibraryCard },
+  { id: "research", type: "academic", title: "Research", workspace: "academic", priority: 10, expandable: true, refreshable: true, component: ResearchCard },
+  { id: "progress", type: "academic", title: "Academic Progress", workspace: "academic", priority: 11, expandable: true, refreshable: true, component: ProgressCard },
+  { id: "calendar", type: "academic", title: "Calendar", workspace: "academic", priority: 12, expandable: true, refreshable: true, component: CalendarCard },
+  { id: "career", type: "academic", title: "Career", workspace: "academic", priority: 13, expandable: true, refreshable: true, component: CareerCard },
 
   // Social
   { id: "feed", type: "social", title: "Campus Feed", workspace: "social", priority: 1, expandable: true, refreshable: true, component: FeedCard },
@@ -55,6 +69,8 @@ export const CARD_REGISTRY = [
   { id: "communities", type: "social", title: "Communities & Clubs", workspace: "social", priority: 4, expandable: true, refreshable: true, component: CommunitiesCard },
   { id: "opportunities", type: "social", title: "Opportunities", workspace: "social", priority: 5, expandable: true, refreshable: true, component: OpportunitiesCard },
   { id: "marketplace", type: "social", title: "Marketplace", workspace: "social", priority: 6, expandable: true, refreshable: true, component: MarketplaceCard },
+  { id: "discover", type: "social", title: "Discover", workspace: "social", priority: 7, expandable: true, refreshable: true, component: DiscoverCard },
+  { id: "activity", type: "social", title: "Activity", workspace: "social", priority: 8, expandable: true, refreshable: true, component: ActivityCard },
 ];
 
 /**
