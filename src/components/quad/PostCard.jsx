@@ -71,6 +71,20 @@ export default function PostCard({ post, user, index = 0 }) {
         likes_count: newCount,
       });
       qc.invalidateQueries({ queryKey: ["quadFeed"] });
+      // Notify the post author on new reaction (skip self-reactions and removals)
+      if (reaction && reaction !== currentReaction && post.created_by_id && post.created_by_id !== user?.id) {
+        const reactorName = user?.full_name || user?.email?.split("@")[0] || "Someone";
+        base44.entities.Notification.create({
+          title: `${reactorName} reacted to your post`,
+          message: `Reacted with ${reaction}`,
+          type: "social",
+          category: "social",
+          priority: "low",
+          user_id: post.created_by_id,
+          link: "/quad",
+          icon: "Heart",
+        }).catch(() => {});
+      }
     } catch {}
   }, [post.id, localReactions, qc]);
 

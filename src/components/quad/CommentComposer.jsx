@@ -120,6 +120,20 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
           base44.entities.QuadPost.update(postId, {
             comments_count: (post.comments_count || 0) + 1,
           });
+          // Notify the post author (skip if commenting on your own post)
+          const postAuthorId = post.created_by_id;
+          if (postAuthorId && postAuthorId !== user?.id) {
+            base44.entities.Notification.create({
+              title: `${authorName} commented on your post`,
+              message: text.trim().slice(0, 100) || "Left a comment",
+              type: "comment",
+              category: "social",
+              priority: "normal",
+              user_id: postAuthorId,
+              link: `/quad`,
+              icon: "MessageCircle",
+            }).catch(() => {});
+          }
         }
       }).catch(() => {});
 

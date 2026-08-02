@@ -7,9 +7,9 @@ import { base44 } from "@/api/base44Client";
 
 const SUGGESTIONS = ["Plan my study week", "Explain a concept", "What should I focus on today?"];
 
-const BUD_PROMPT =
+const BUD_SYSTEM_PROMPT =
   "You are Bud, a warm, calm, and encouraging academic companion for a university student. " +
-  "Keep replies short, friendly, and helpful — never robotic. Student message: ";
+  "Keep replies short, friendly, and helpful — never robotic.";
 
 /**
  * BudSheet — the Bud conversation sheet. Opens Bud instantly.
@@ -31,7 +31,10 @@ export default function BudSheet() {
     setMessages((m) => [...m, { role: "user", content }]);
     setLoading(true);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({ prompt: BUD_PROMPT + content });
+      const contextClause = screenContext.description
+        ? ` The student is currently on the ${screenContext.name} screen — ${screenContext.description}. Tailor your response to this context.`
+        : "";
+      const res = await base44.integrations.Core.InvokeLLM({ prompt: BUD_SYSTEM_PROMPT + contextClause + "\n\nStudent message: " + content });
       const reply = typeof res === "string" ? res : res?.response || res?.text || "I'm here for you.";
       setMessages((m) => [...m, { role: "bud", content: reply }]);
     } catch {
