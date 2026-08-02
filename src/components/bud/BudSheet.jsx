@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
+import { getScreenContext } from "@/lib/budScreenContext";
 import { base44 } from "@/api/base44Client";
 
 const SUGGESTIONS = ["Plan my study week", "Explain a concept", "What should I focus on today?"];
@@ -13,10 +15,14 @@ const BUD_PROMPT =
  * BudSheet — the Bud conversation sheet. Opens Bud instantly.
  */
 export default function BudSheet() {
-  const { open, setOpen } = useBudLauncher();
+  const { open, setOpen, pendingPrompt, clearPrompt, voiceMode, setVoiceMode } = useBudLauncher();
+  const location = useLocation();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const screenContext = getScreenContext(location.pathname);
+  const suggestions = screenContext.suggestedPrompts || SUGGESTIONS;
 
   const send = async (text) => {
     const content = (text ?? input).trim();
@@ -34,6 +40,22 @@ export default function BudSheet() {
       setLoading(false);
     }
   };
+
+  // Auto-send pending prompt from quick actions
+  useEffect(() => {
+    if (open && pendingPrompt) {
+      send(pendingPrompt);
+      clearPrompt();
+    }
+  }, [open, pendingPrompt]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-focus input when opened in voice mode
+  useEffect(() => {
+    if (open && !voiceMode) {
+      const el = document.getElementById("bud-input");
+      if (el) el.focus();
+    }
+  }, [open, voiceMode]);
 
   return (
     <AnimatePresence>
@@ -54,10 +76,13 @@ export default function BudSheet() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 min-w-0">
-                <p className="font-heading font-bold text-[15px] text-foreground">Bud</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-heading font-bold text-[15px] text-foreground">Bud</p>
+                  <span className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">{screenContext.name}</span>
+                </div>
                 <p className="text-[11px] text-muted-foreground">Your academic companion</p>
               </div>
-              <button onClick={() => setOpen(false)} className="text-[13px] font-semibold text-muted-foreground hover:text-foreground spring-tap">
+              <button onClick={() => { setVoiceMode(false); setOpen(false); }} className="text-[13px] font-semibold text-muted-foreground hover:text-foreground spring-tap">
                 Close
               </button>
             </div>
@@ -90,7 +115,7 @@ export default function BudSheet() {
 
             {messages.length === 0 && (
               <div className="flex flex-wrap gap-2 mb-3">
-                {SUGGESTIONS.map((s) => (
+                {suggestions.map((s) => (
                   <button key={s} onClick={() => send(s)} className="px-3 py-2 rounded-full glass text-[12px] text-foreground spring-tap">
                     {s}
                   </button>
@@ -100,11 +125,14 @@ export default function BudSheet() {
 
             <div className="flex gap-2 items-center">
               <input
+                id="bud-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && send()}
-                placeholder="Ask Bud anything…"
+                placeholder={voiceMode ? "Tap mic to speak…" : "Ask Bud anything…"}
                 className="flex-1 h-[48px] px-4 rounded-2xl bg-muted/50 border border-border text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60 focus:ring-2 focus:ring-primary/25 min-w-0"
+                inputMode="text"
+                autoComplete="off"
               />
               <button
                 onClick={() => send()}
