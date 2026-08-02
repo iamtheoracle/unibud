@@ -4,13 +4,15 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import {
   Search, Sparkles, Users, Calendar, Briefcase, Award,
-  ShoppingBag, Building2, TrendingUp,
+  ShoppingBag, Building2, TrendingUp, MapPin, Music, SlidersHorizontal,
 } from "lucide-react";
 import ScreenShell from "@/components/layout/ScreenShell";
 import DiscoverySection from "@/components/discovery/DiscoverySection";
 import DiscoveryEmptyState from "@/components/discovery/DiscoveryEmptyState";
 import { useInterests } from "@/hooks/useInterests";
 import RecentSearches, { saveRecentSearch } from "@/components/discovery/RecentSearches";
+import PullToRefresh from "@/components/ui/PullToRefresh";
+import FilterSheet from "@/components/discovery/FilterSheet";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -27,6 +29,8 @@ const FILTERS = [
 
 const ACADEMIC_TYPES = ["course", "department", "faculty", "study_group", "research_group", "programme"];
 
+const LIFESTYLE_CATEGORIES = ["sports", "music", "drama", "dance", "art", "photography", "gaming", "literary", "debate", "journalism", "volunteer", "entrepreneurship"];
+
 /**
  * Discover — the Orbit Discovery Feed.
  *
@@ -39,6 +43,8 @@ export default function Discover() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("all");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({ verifiedOnly: false, myFaculty: false, myDepartment: false });
   const { interests } = useInterests();
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -90,6 +96,17 @@ export default function Discover() {
     }
   }, [query]);
 
+  const refetchAll = async () => {
+    await Promise.all([
+      communitiesQ.refetch(),
+      eventsQ.refetch(),
+      clubsQ.refetch(),
+      oppsQ.refetch(),
+      scholarshipsQ.refetch(),
+      listingsQ.refetch(),
+    ]);
+  };
+
   const communities = communitiesQ.data || [];
   const events = eventsQ.data || [];
   const clubs = clubsQ.data || [];
@@ -98,9 +115,15 @@ export default function Discover() {
   const listings = listingsQ.data || [];
   const isLoading = communitiesQ.isLoading || eventsQ.isLoading;
 
-  // ── Search filter ──
+  // ── Search + advanced filter ──
   const q = query.toLowerCase();
-  const filterFn = (item) => !q || JSON.stringify(item).toLowerCase().includes(q);
+  const filterFn = (item) => {
+    if (q && !JSON.stringify(item).toLowerCase().includes(q)) return false;
+    if (advancedFilters.verifiedOnly && !item.is_verified) return false;
+    if (advancedFilters.myFaculty && user?.faculty && item.faculty && item.faculty !== user.faculty) return false;
+    if (advancedFilters.myDepartment && user?.department && item.department && item.department !== user.department) return false;
+    return true;
+  };
 
   // ── "For You" — communities matching user interests ──
   const interestTags = (interests || []).map((i) => (typeof i === "string" ? i : i?.id || i?.label || "").toLowerCase());
@@ -119,6 +142,12 @@ export default function Discover() {
   // ── "Academics" — academic-type communities ──
   const academic = communities.filter((c) => ACADEMIC_TYPES.includes(c.type));
 
+  // ── "Nearby" — communities from the student's faculty ──
+  const nearby = user?.faculty ? communities.filter((c) => c.faculty === user.faculty) : [];
+
+  // ── "Campus Life" — lifestyle-oriented clubs ──
+  const campusLife = clubs.filter((c) => LIFESTYLE_CATEGORIES.includes(c.category));
+
   // ── Build sections ──
   const sections = useMemo(() => {
     const result = [];
@@ -129,6 +158,12 @@ export default function Discover() {
     }
     if (showAll && academic.length > 0) {
       result.push({ id: "academic", title: "Academic Communities", icon: Briefcase, to: "/communities", items: academic.slice(0, 8).filter(filterFn), type: "community" });
+    }
+    if (showAll && nearby.length > 0) {
+      result.push({ id: "nearby", title: "Nearby", icon: MapPin, to: "/communities", items: nearby.slice(0, 8).filter(filterFn), type: "community" });
+    }
+    if (showAll && campusLife.length > 0) {
+      result.push({ id: "campuslife", title: "Campus Life", icon: Music, to: "/clubs", items: campusLife.filter(filterFn), type: "club" });
     }
     if ((showAll || filter === "communities") && trending.length > 0) {
       result.push({ id: "trending", title: "Trending Communities", icon: TrendingUp, to: "/communities", items: trending.filter(filterFn), type: "community" });
@@ -156,21 +191,34 @@ export default function Discover() {
     }
 
     return result.filter((s) => s.items.length > 0);
-  }, [filter, query, forYou, academic, trending, clubs, events, opportunities, scholarships, listings, people]);
+  }, [filter, query, forYou, academic, trending, clubs, events, opportunities, scholarships, listings, people, nearby, campusLife, advancedFilters]);
 
   return (
     <ScreenShell title="Discover" subtitle="Explore communities, events, opportunities, and everything campus." sticky={false}>
-      {/* Search */}
-      <div className="relative mb-4 mt-4">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setSearchFocused(true)}
-          onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-          placeholder="Search communities, events, people…"
-          className="w-full pl-10 pr-4 py-3 rounded-[18px] glass text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 spring-tap transition-all duration-300"
-        />
+      {/* Search + Filter */}
+      <div className="flex gap-2 mb-4 mt-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+            placeholder="Search communities, events, people…"
+            className="w-full pl-10 pr-4 py-3 rounded-[18px] glass text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 spring-tap transition-all duration-300"
+          />
+        </div>
+        <button
+          onClick={() => setShowFilters(true)}
+          className={`w-12 h-12 rounded-[18px] grid place-items-center spring-tap transition-all shrink-0 ${
+            advancedFilters.verifiedOnly || advancedFilters.myFaculty || advancedFilters.myDepartment
+              ? "bg-foreground text-background"
+              : "glass text-foreground/70"
+          }`}
+          aria-label="Filters"
+        >
+          <SlidersHorizontal className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Recent searches — shown when focused and no query */}
@@ -198,25 +246,36 @@ export default function Discover() {
         })}
       </div>
 
+      {/* Advanced filter sheet */}
+      <FilterSheet
+        open={showFilters}
+        onOpenChange={setShowFilters}
+        filters={advancedFilters}
+        onChange={setAdvancedFilters}
+        user={user}
+      />
+
       {/* Content */}
-      {isLoading ? (
-        <DiscoverySkeleton />
-      ) : sections.length === 0 ? (
-        <DiscoveryEmptyState query={query} />
-      ) : (
-        <div className="space-y-6">
-          {sections.map((section, i) => (
-            <motion.div
-              key={section.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
-            >
-              <DiscoverySection {...section} />
-            </motion.div>
-          ))}
-        </div>
-      )}
+      <PullToRefresh onRefresh={refetchAll}>
+        {isLoading ? (
+          <DiscoverySkeleton />
+        ) : sections.length === 0 ? (
+          <DiscoveryEmptyState query={query} />
+        ) : (
+          <div className="space-y-6">
+            {sections.map((section, i) => (
+              <motion.div
+                key={section.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+              >
+                <DiscoverySection {...section} />
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </PullToRefresh>
     </ScreenShell>
   );
 }
