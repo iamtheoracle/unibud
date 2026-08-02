@@ -7,6 +7,7 @@ import {
 import { hapticTap } from "@/lib/haptics";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
 import SmartCreationPanel from "./SmartCreationPanel";
+import AudienceSelector from "./AudienceSelector";
 
 const MODES = [
   { id: "story", label: "Story", maxDuration: 15 },
@@ -40,6 +41,7 @@ export default function OrbitCamera({ open, initialMode = "post", user, onClose 
   const [capturedMedia, setCapturedMedia] = useState(null);
   const [showControls, setShowControls] = useState(true);
   const [showPanel, setShowPanel] = useState(false);
+  const [audience, setAudience] = useState("campus");
   const [error, setError] = useState(null);
   const { uploadMedia, isUploading } = useMediaUpload();
 
@@ -251,6 +253,12 @@ export default function OrbitCamera({ open, initialMode = "post", user, onClose 
                     </button>
                   </div>
                 </div>
+                {/* Audience selector — floating glass pill */}
+                {!recording && (
+                  <div className="flex justify-center mt-3">
+                    <AudienceSelector value={audience} onChange={(v) => { hapticTap(); setAudience(v); }} />
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -377,6 +385,7 @@ export default function OrbitCamera({ open, initialMode = "post", user, onClose 
             media={capturedMedia}
             mode={mode}
             user={user}
+            initialAudience={audience}
             uploadMedia={uploadMedia}
             isUploading={isUploading}
             onClose={() => {

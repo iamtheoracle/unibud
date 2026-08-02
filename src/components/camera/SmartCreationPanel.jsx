@@ -1,21 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  X, Send, Loader2, Globe, Users, Building2, BookOpen,
-  MessageSquare, Lock, MapPin, Music, Tag, Save, GraduationCap, Sparkles,
+  X, Send, Loader2, MapPin, GraduationCap, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { hapticTap } from "@/lib/haptics";
 import { extractHashtags, extractMentions } from "@/components/quad/quadConstants";
-
-const AUDIENCE_CARDS = [
-  { id: "public", label: "Public", icon: Globe, visibility: "public" },
-  { id: "friends", label: "Friends", icon: Users, visibility: "friend" },
-  { id: "campus", label: "Campus", icon: Building2, visibility: "campus" },
-  { id: "academic", label: "Academic", icon: BookOpen, visibility: "course" },
-  { id: "community", label: "Community", icon: MessageSquare, visibility: "club" },
-  { id: "private", label: "Private", icon: Lock, visibility: "private" },
-];
+import { AUDIENCE_CARDS } from "./audienceConstants";
 
 const ACADEMIC_FIELDS = [
   { id: "course", label: "Course", placeholder: "e.g., CSC 301" },
@@ -32,10 +23,14 @@ const ACADEMIC_FIELDS = [
  * fields for academic vs social context.
  */
 export default function SmartCreationPanel({
-  open, media, mode, user, uploadMedia, isUploading, onClose, onPublished,
+  open, media, mode, user, uploadMedia, isUploading, onClose, onPublished, initialAudience,
 }) {
   const [caption, setCaption] = useState("");
-  const [audience, setAudience] = useState("campus");
+  const [audience, setAudience] = useState(initialAudience || "campus");
+
+  useEffect(() => {
+    if (open && initialAudience) setAudience(initialAudience);
+  }, [open, initialAudience]);
   const [context, setContext] = useState("social");
   const [location, setLocation] = useState("");
   const [tags, setTags] = useState("");
