@@ -61,6 +61,13 @@ const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
 const CampusHome = lazy(() => import("@/pages/campus/CampusHome"));
 const CampusHomeScreen = lazy(() => import("@/pages/campus/CampusHomeScreen"));
 const WalletScreen = lazy(() => import("@/pages/wallet/WalletScreen"));
+
+// Main Tab Pages — four-tab navigation
+const BudTab = lazy(() => import("@/pages/tabs/BudTab"));
+const SocialTab = lazy(() => import("@/pages/tabs/SocialTab"));
+const AcademicsTab = lazy(() => import("@/pages/tabs/AcademicsTab"));
+const MeTab = lazy(() => import("@/pages/tabs/MeTab"));
+const MainShell = lazy(() => import("@/components/layout/MainShell"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const Results = lazy(() => import("@/pages/academics/Results"));
 const SummaryReport = lazy(() => import("@/pages/academics/SummaryReport"));
@@ -258,8 +265,13 @@ function App() {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/about" element={<About />} />
                   <Route element={<AppShell />}>
+                    <Route element={<MainShell />}>
+                      <Route path="/bud" element={<BudTab />} />
+                      <Route path="/social" element={<SocialTab />} />
+                      <Route path="/academics" element={<AcademicsTab />} />
+                      <Route path="/me" element={<MeTab />} />
+                    </Route>
                     <Route path="/home" element={<BudHome />} />
-                    <Route path="/bud" element={<BudHome />} />
                     <Route path="/briefing" element={<BudDailyBriefing />} />
                     <Route path="/social" element={<SocialHub />} />
                     <Route path="/discover/people" element={<ForYou />} />
