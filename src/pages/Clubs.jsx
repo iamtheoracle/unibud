@@ -190,7 +190,7 @@ export default function Clubs() {
           </div>
         ) : (
           filtered.map((club, i) => (
-            <ClubCard key={club.id} club={club} user={activeUser} index={i} />
+            <ClubCard key={club.id} club={club} user={activeUser} index={i} onView={(c) => navigate(`/organization/${c.id}`)} />
           ))
         )}
       </div>

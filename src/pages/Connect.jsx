@@ -18,6 +18,7 @@ const TABS = [
 
 const QUICK = [
   { label: "Messages", to: "/messages" },
+  { label: "Organizations", to: "/clubs" },
   { label: "Groups", to: "/study-groups" },
   { label: "Files", to: "/knowledge" },
   { label: "Calendar", to: "/calendar" },

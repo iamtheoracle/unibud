@@ -17,6 +17,7 @@ const BRIEFING_PROMPTS = {
     "3) Today's classes and schedule, 4) Assignments due soon, " +
     "5) Any official announcements from the university, 6) Upcoming academic calendar events, " +
     "7) Any upcoming exams from the official exam schedule, 8) A brief encouraging note. " +
+    "8) Any club or society meetings or activities today (from the student's clubs), 9) A brief encouraging note. " +
     "Keep it under 180 words, warm and motivating. Prioritize official institutional information.",
   evening:
     "Generate an evening recap for this university student. Include: " +
@@ -41,17 +42,22 @@ const BRIEFING_PROMPTS = {
  * getUniversityProfileOfficial backend function — Bud's verified source.
  */
 async function fetchStudentData() {
-  const [assignments, exams, events, timetable, courses, official] = await Promise.allSettled([
+  let currentUser = null;
+  try { currentUser = await base44.auth.me(); } catch {}
+
+  const [assignments, exams, events, timetable, courses, official, clubs] = await Promise.allSettled([
     base44.entities.Assignment.list("-due_date", 5),
     base44.entities.Exam.list("-created_date", 3),
     base44.entities.CampusEvent.list("-created_date", 5),
     base44.entities.TimetableEntry.list("-created_date", 5),
     base44.entities.Course.list("-created_date", 5),
     base44.functions.invoke("getUniversityProfileOfficial", {}),
+    base44.entities.Club.list("-members_count", 10),
   ]);
 
   const unwrap = (r) => (r.status === "fulfilled" ? r.value || [] : []);
   const officialData = official.status === "fulfilled" ? official.value?.data || official.value : null;
+  const myClubs = unwrap(clubs).filter((c) => (c.members || []).some((m) => m.user_id === currentUser?.id));
 
   return {
     assignments: unwrap(assignments).map((a) => ({
@@ -87,6 +93,13 @@ async function fetchStudentData() {
       upcoming_official_exams: officialData.exams || [],
       stats: officialData.stats || {},
     } : null,
+    // ── Club & society activity ──
+    my_clubs: myClubs.map((c) => ({
+      name: c.name,
+      role: (c.members || []).find((m) => m.user_id === currentUser?.id)?.role || "member",
+      meeting_schedule: c.meeting_schedule,
+      is_recruiting: c.is_recruiting,
+    })),
   };
 }
 
@@ -106,6 +119,7 @@ export async function generateDailyBriefing(type = "morning") {
     `IMPORTANT: The "official_university_profile" field contains VERIFIED information published by the student's institution. ` +
     `Always prioritize this over any other data. If there are active emergencies, mention them FIRST. ` +
     `Reference official announcements, calendar events, and exam schedules as coming from the university. ` +
+    `If the student has club memberships, mention any relevant club meetings or activities. ` +
     `Generate the briefing now. Be specific — reference real dates, course codes, and assignment titles.`;
 
   const res = await base44.integrations.Core.InvokeLLM({ prompt });

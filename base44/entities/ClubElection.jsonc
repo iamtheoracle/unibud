@@ -1,0 +1,152 @@
+{
+  "name": "ClubElection",
+  "type": "object",
+  "properties": {
+    "club_id": {
+      "type": "string",
+      "description": "Reference to the Club this election belongs to"
+    },
+    "club_name": {
+      "type": "string",
+      "description": "Denormalized club name"
+    },
+    "title": {
+      "type": "string",
+      "description": "Election title e.g. '2025 Executive Elections'"
+    },
+    "description": {
+      "type": "string"
+    },
+    "position": {
+      "type": "string",
+      "description": "Position being contested e.g. President, Secretary"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "voting",
+        "closed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting opens"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When voting closes"
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "manifesto": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string",
+            "description": "Student year level"
+          }
+        }
+      }
+    },
+    "votes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "voter_id": {
+            "type": "string"
+          },
+          "candidate_id": {
+            "type": "string"
+          },
+          "voted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "winner_id": {
+      "type": "string",
+      "description": "User ID of the winning candidate"
+    },
+    "total_votes_cast": {
+      "type": "number",
+      "default": 0
+    },
+    "created_by_name": {
+      "type": "string"
+    },
+    "created_by_id": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "club_id",
+    "title",
+    "position",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

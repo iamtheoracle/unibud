@@ -235,6 +235,7 @@ const ContentArchitecture = lazy(() => import("@/pages/ContentArchitecture"));
 const BudProductVision = lazy(() => import("@/pages/BudProductVision"));
 const ConnectedAccountsSettings = lazy(() => import("@/pages/ConnectedAccountsSettings"));
 const UniversityProfile = lazy(() => import("@/pages/university/UniversityProfile"));
+const OrganizationHub = lazy(() => import("@/pages/organization/OrganizationHub"));
 const InterestsSettings = lazy(() => import("@/pages/settings/Interests"));
 const HubPage = lazy(() => import("@/pages/hubs/HubPage"));
 const Highlights = lazy(() => import("@/pages/Highlights"));
@@ -291,6 +292,7 @@ function App() {
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/settings/connected-accounts" element={<ConnectedAccountsSettings />} />
                     <Route path="/university" element={<UniversityProfile />} />
+                    <Route path="/organization/:clubId" element={<OrganizationHub />} />
                     <Route path="/interests" element={<InterestsSettings />} />
                     <Route path="/hub/:hubId" element={<HubPage />} />
                     <Route path="/highlights" element={<Highlights />} />

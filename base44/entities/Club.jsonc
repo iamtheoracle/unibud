@@ -9,8 +9,16 @@
     "name": {
       "type": "string"
     },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
     "description": {
       "type": "string"
+    },
+    "mission": {
+      "type": "string",
+      "description": "Club mission statement"
     },
     "category": {
       "type": "string",
@@ -68,6 +76,9 @@
           },
           "image": {
             "type": "string"
+          },
+          "user_id": {
+            "type": "string"
           }
         }
       }
@@ -109,26 +120,66 @@
         }
       }
     },
+    "join_mode": {
+      "type": "string",
+      "enum": [
+        "open",
+        "request",
+        "invite_only"
+      ],
+      "default": "open",
+      "description": "How new members can join"
+    },
     "is_verified": {
       "type": "boolean",
       "default": false
+    },
+    "is_official": {
+      "type": "boolean",
+      "default": false,
+      "description": "Officially recognized by the university"
     },
     "is_recruiting": {
       "type": "boolean",
       "default": true
     },
+    "founded_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the club was founded"
+    },
     "meeting_schedule": {
       "type": "string"
+    },
+    "meeting_day": {
+      "type": "string",
+      "description": "e.g. Fridays"
+    },
+    "meeting_time": {
+      "type": "string",
+      "description": "e.g. 16:00"
+    },
+    "meeting_location": {
+      "type": "string"
+    },
+    "dues_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Membership dues amount"
+    },
+    "dues_currency": {
+      "type": "string",
+      "default": "NGN"
+    },
+    "social_links": {
+      "type": "object",
+      "description": "{ website, instagram, twitter, linkedin }"
     },
     "tags": {
       "type": "array",
       "items": {
         "type": "string"
       }
-    },
-    "social_links": {
-      "type": "object",
-      "description": "{ website, instagram, twitter, linkedin }"
     }
   },
   "required": [
