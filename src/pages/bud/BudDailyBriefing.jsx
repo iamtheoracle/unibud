@@ -260,6 +260,10 @@ export default function BudDailyBriefing() {
         const data = res?.data || res;
         if (data.newly_earned && data.newly_earned.length > 0) {
           setNewAchievements(data.newly_earned);
+          // Bud celebrates the student's achievement
+          window.dispatchEvent(new CustomEvent("bud-react", {
+            detail: { mood: "celebrating", duration: 3000 }
+          }));
         }
       } catch {}
     })();

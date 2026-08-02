@@ -5,6 +5,7 @@ import { ChevronLeft, Eye, Rocket, Sparkles, Database, Link2 } from "lucide-reac
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import SettingsSection from "@/components/me/SettingsSection";
+import BudPresenceSettings from "@/components/bud/BudPresenceSettings";
 
 /**
  * Settings — dedicated settings page, accessed from the profile action bar.
@@ -77,6 +78,12 @@ export default function Settings() {
             </div>
           </Link>
         </div>
+        {/* Bud Experience — floating Bud controls */}
+        <div className="mb-5">
+          <h2 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1">Bud Experience</h2>
+          <BudPresenceSettings />
+        </div>
+
         <SettingsSection user={user} />
       </div>
     </div>

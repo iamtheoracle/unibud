@@ -4,9 +4,11 @@ import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
+import { BudPresenceProvider } from "@/lib/bud/BudPresenceContext";
 import { SearchProvider, useSearch } from "@/lib/search/SearchContext";
 import AdaptiveNav from "@/components/navigation/AdaptiveNav";
 import FloatingBudButton from "@/components/bud/FloatingBudButton";
+import BudPresenceReactor from "@/components/bud/BudPresenceReactor";
 import BudSheet from "@/components/bud/BudSheet";
 import UniversalSearchOverlay from "@/components/search/UniversalSearchOverlay";
 import OfflineSyncBanner from "@/components/resilience/OfflineSyncBanner";
@@ -65,6 +67,7 @@ export default function AppShell() {
 
   return (
     <BudLauncherProvider>
+      <BudPresenceProvider>
       <VoiceProvider>
       <SearchProvider>
       <UnibudContextProvider>
@@ -91,6 +94,7 @@ export default function AppShell() {
           </Suspense>
           <AdaptiveNav />
           <FloatingBudButton />
+          <BudPresenceReactor />
           <BudSheet />
           <UniversalSearchOverlayWithContext />
           <ConsentBanner />
@@ -99,6 +103,7 @@ export default function AppShell() {
       </UnibudContextProvider>
       </SearchProvider>
       </VoiceProvider>
+      </BudPresenceProvider>
     </BudLauncherProvider>
   );
 }
