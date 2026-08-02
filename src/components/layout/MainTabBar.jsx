@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Sparkles, Users, GraduationCap, User } from "lucide-react";
 import { hapticSelect } from "@/lib/haptics";
+import { useMotion } from "@/lib/motion/useMotion";
 
 const TABS = [
   { to: "/bud", label: "Bud", icon: Sparkles },
@@ -10,8 +11,6 @@ const TABS = [
   { to: "/academics", label: "Academics", icon: GraduationCap },
   { to: "/me", label: "Me", icon: User },
 ];
-
-const SPRING = { type: "spring", stiffness: 420, damping: 32, mass: 0.9 };
 
 /**
  * MainTabBar — the single, unified bottom navigation for UNIBUD OS.
@@ -22,6 +21,8 @@ const SPRING = { type: "spring", stiffness: 420, damping: 32, mass: 0.9 };
  */
 export default function MainTabBar() {
   const location = useLocation();
+  const motionEngine = useMotion();
+  const SPRING = motionEngine.spring('navigation');
 
   return (
     <div
@@ -31,7 +32,7 @@ export default function MainTabBar() {
       <motion.nav
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.9 }}
+        transition={SPRING}
         className="liquid-mirror pointer-events-auto flex items-center gap-0.5 mx-3 px-1.5 h-[58px] rounded-[26px] max-w-[380px] w-full"
         aria-label="Primary navigation"
       >

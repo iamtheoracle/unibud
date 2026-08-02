@@ -4,14 +4,20 @@
  * Design philosophy: Motion communicates state changes and improves
  * usability. Never distracts. Calm, fast, premium, GPU-accelerated.
  *
+ * All values reference motionTokens — no hardcoded spring/duration/easing.
+ * Tokens are the single source of truth; presets compose them into
+ * reusable variant configs.
+ *
  * Usage:
  *   import { pageTransition, cardEntrance, staggerContainer } from "@/lib/motion/motionPresets";
  *   <motion.div {...pageTransition}>...</motion.div>
  *   <motion.div variants={cardEntrance} initial="initial" animate="animate">...</motion.div>
  */
 
-export const EASE = [0.16, 1, 0.3, 1];
-export const EASE_OUT_BACK = [0.34, 1.56, 0.64, 1];
+import { motionTokens, resolveSpring } from './motionTokens';
+
+export const EASE = motionTokens.easing.standard;
+export const EASE_OUT_BACK = motionTokens.easing.overshoot;
 
 // ── Page transitions — smooth fade + slide for route changes ──
 export const pageTransition = {
@@ -58,7 +64,7 @@ export const slideInRight = {
   initial: { x: "100%" },
   animate: { x: 0 },
   exit: { x: "100%" },
-  transition: { type: "spring", stiffness: 300, damping: 30, ease: EASE },
+  transition: resolveSpring('sheet'),
 };
 
 // ── Slide up — for bottom sheets ──
@@ -66,7 +72,7 @@ export const slideUp = {
   initial: { y: "100%" },
   animate: { y: 0 },
   exit: { y: "100%" },
-  transition: { type: "spring", stiffness: 300, damping: 30, ease: EASE },
+  transition: resolveSpring('sheet'),
 };
 
 // ── Fade through — for tab switches and modal content ──
@@ -85,13 +91,13 @@ export const scaleIn = {
   transition: { duration: 0.2, ease: EASE_OUT_BACK },
 };
 
-// ── Spring presets — tactile interaction feedback ──
-export const springGentle = { type: "spring", stiffness: 200, damping: 22 };
-export const springSnappy = { type: "spring", stiffness: 350, damping: 28 };
-export const springBouncy = { type: "spring", stiffness: 400, damping: 15 };
+// ── Spring presets — tactile interaction feedback (tokenized) ──
+export const springGentle = resolveSpring('normal');
+export const springSnappy = resolveSpring('button');
+export const springBouncy = resolveSpring('elastic');
 
 // ── Gesture configs — drag, swipe, pull ──
-export const dragSpring = { type: "spring", stiffness: 300, damping: 30 };
+export const dragSpring = resolveSpring('sheet');
 
 // ── Animated counter — for numbers and stats ──
 export const counterVariants = {

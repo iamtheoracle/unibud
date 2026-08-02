@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
+import { MotionProvider } from '@/lib/motion/MotionProvider';
 import { PlatformProvider } from '@/lib/platform/PlatformProvider';
 
 import { ExperienceProvider } from '@/lib/ExperienceContext';
@@ -251,6 +252,7 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
+        <MotionProvider>
         <PlatformProvider>
         <QueryClientProvider client={queryClientInstance}>
             <RealtimeSyncProvider>
@@ -452,6 +454,7 @@ function App() {
           </RealtimeSyncProvider>
         </QueryClientProvider>
         </PlatformProvider>
+        </MotionProvider>
       </ThemeProvider>
     </AuthProvider>
   )
