@@ -1,158 +1,165 @@
-import React, { useEffect, useState } from "react";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, MotionConfig } from "framer-motion";
-import { User } from "lucide-react";
-import { hapticSelect, hapticImpact } from "@/lib/haptics";
-import { useExperience } from "@/lib/ExperienceContext";
-import { getDomain } from "@/lib/navigation/contextMap";
 import {
-  MODE_SELECTOR_OPTIONS, MODE_NAV, MODE_HOME,
-} from "@/lib/navigation/adaptiveNavConfig";
+  Home as HomeIcon,
+  Users as ConnectIcon,
+  User as UserIcon,
+  GraduationCap as CampusIcon,
+  Wallet as WalletIcon,
+  ShoppingBag as MarketIcon,
+  LayoutGrid as SquareIcon,
+} from "lucide-react";
+import { hapticSelect } from "@/lib/haptics";
+import { useExperience } from "@/lib/ExperienceContext";
+
+/* ── Spring physics — Apple-like: high stiffness, medium damping, natural bounce ── */
+const SPRING = { type: "spring", stiffness: 420, damping: 32, mass: 1 };
+const ICON_SPRING = { type: "spring", stiffness: 500, damping: 28, mass: 0.8 };
+const FADE = { duration: 0.25, ease: [0.16, 1, 0.3, 1] };
+const DOCK_ENTER = { duration: 0.55, ease: [0.16, 1, 0.3, 1] };
+
+/* ── Permanent tabs — Home (left), Connect, Me (always far right) ── */
+const PERMANENT = {
+  home: { to: "/home", label: "Home", icon: HomeIcon },
+  connect: { to: "/connect", label: "Connect", icon: ConnectIcon },
+  me: { to: "/me", label: "Me", icon: UserIcon },
+};
+
+/* ── Adaptive center — one destination, never multiple simultaneously ── */
+const ADAPTIVE_CENTERS = {
+  campus: { to: "/academics", label: "Campus", icon: CampusIcon },
+  wallet: { to: "/wallet", label: "Wallet", icon: WalletIcon },
+  marketplace: { to: "/marketplace", label: "Market", icon: MarketIcon },
+  square: { to: "/square", label: "Square", icon: SquareIcon },
+};
+
+/** Determine which center destination to show based on the current route. */
+function getCenterKey(pathname, mode) {
+  if (pathname.startsWith("/wallet")) return "wallet";
+  if (pathname.startsWith("/marketplace")) return "marketplace";
+  if (pathname.startsWith("/social") || pathname.startsWith("/square") || pathname.startsWith("/quad")) return "square";
+  if (pathname.startsWith("/campus") || pathname.startsWith("/academics")) return "campus";
+  return mode === "social" ? "square" : "campus";
+}
+
+function isActive(pathname, to) {
+  return pathname === to || pathname.startsWith(to + "/");
+}
 
 /**
- * AdaptiveNav — UNIBUD's premium, lightweight bottom navigation.
- * Left = morphing Adaptive Capsule (3 states); Right = fixed Me button.
+ * AdaptiveNav — UNIBUD's signature floating navigation dock.
+ *
+ * Rebuilt from scratch as a premium pill-shaped floating dock inspired by
+ * Apple Wallet, Apple Music, and iOS 26. Heavy frosted glass, large Lucide
+ * icons, spring-physics active capsule morph, and an adaptive center slot.
+ *
+ * Permanent tabs: Home · [adaptive] · Connect · Me
+ * Bud is NOT navigation — Bud lives inside the Home page.
  */
-const SPRING = { type: "spring", stiffness: 380, damping: 30, mass: 0.8 };
-const FADE = { duration: 0.22, ease: [0.16, 1, 0.3, 1] };
-const ICON_SPRING = { type: "spring", stiffness: 500, damping: 28 };
-
 export default function AdaptiveNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { mode, setMode } = useExperience();
-  const [navState, setNavState] = useState(mode);
+  const { mode } = useExperience();
+  const pathname = location.pathname;
 
-  useEffect(() => {
-    const d = getDomain(location.pathname);
-    if (d === "academic" || d === "social") setNavState(d);
-  }, [location.pathname]);
+  const centerKey = getCenterKey(pathname, mode);
+  const center = ADAPTIVE_CENTERS[centerKey];
 
-  const chooseMode = (m) => {
-    hapticImpact();
-    setMode(m);
-    setNavState(m);
-    navigate(MODE_HOME[m]);
+  /* Build the four tabs: Home · Center · Connect · Me */
+  const tabs = [
+    { key: "home", ...PERMANENT.home },
+    { key: "center", ...center },
+    { key: "connect", ...PERMANENT.connect },
+    { key: "me", ...PERMANENT.me },
+  ];
+
+  const handleNav = (to) => {
+    hapticSelect();
+    navigate(to);
   };
-
-  const openSelector = () => { hapticSelect(); setNavState("selector"); };
-
-  const isActive = (to) =>
-    location.pathname === to || location.pathname.startsWith(to + "/");
 
   return (
     <MotionConfig reducedMotion="user">
-      <nav className="fixed bottom-0 inset-x-0 z-40 pointer-events-none" aria-label="Primary">
-        <div className="max-w-[520px] mx-auto px-4 pb-6 safe-area-pb pointer-events-auto">
-          <div className="flex items-end justify-between gap-2">
-            {/* ── Adaptive Navigation Capsule — floating, white, shadowed ── */}
-            <motion.div
-              layout
-              transition={SPRING}
-              className="founder-dock rounded-[28px] h-[54px] flex items-center gap-0.5 px-1.5 relative overflow-hidden w-fit max-w-[calc(100%-64px)] elevated-shadow"
-            >
-              <motion.div
-                key={navState}
-                layout
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={FADE}
-                className="flex items-center gap-0.5 w-full"
-              >
-                {navState === "selector" ? (
-                  MODE_SELECTOR_OPTIONS.map((o) => (
-                    <ModeButton key={o.key} opt={o} active={o.key === mode} onPick={chooseMode} />
-                  ))
-                ) : (
-                  <>
-                    <ModeOrb mode={navState} onClick={openSelector} />
-                    <div className="w-px h-5 bg-white/10 shrink-0 mx-0.5" />
-                    {MODE_NAV[navState].map((it) => (
-                      <NavItem
-                        key={it.key}
-                        item={it}
-                        active={isActive(it.to)}
-                        onClick={() => { hapticSelect(); navigate(it.to); }}
-                      />
-                    ))}
-                  </>
-                )}
-              </motion.div>
-            </motion.div>
-
-            {/* ── Me button — fixed right, never moves or resizes ── */}
-            <MeButton active={getDomain(location.pathname) === "me"} />
+      <motion.nav
+        initial={{ opacity: 0, y: 28 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={DOCK_ENTER}
+        className="fixed bottom-0 inset-x-0 z-40 pointer-events-none"
+        aria-label="Primary navigation"
+      >
+        <div className="max-w-[520px] mx-auto px-3 pb-3 safe-area-pb pointer-events-auto">
+          {/* ── Floating pill dock — 76px, 36px radius, crystal frosted glass ── */}
+          <div className="crystal-dock rounded-[36px] h-[76px] flex items-center justify-between px-2.5 relative">
+            {tabs.map((tab) => (
+              <NavTab
+                key={tab.key}
+                tab={tab}
+                active={isActive(pathname, tab.to)}
+                onClick={() => handleNav(tab.to)}
+              />
+            ))}
           </div>
         </div>
-      </nav>
+      </motion.nav>
     </MotionConfig>
   );
 }
 
-function ModeButton({ opt, active, onPick }) {
-  const Icon = opt.icon;
-  return (
-    <button
-      onClick={() => onPick(opt.key)}
-      aria-pressed={active}
-      className="relative flex items-center justify-center gap-1.5 h-[42px] px-3.5 flex-1 min-w-0 rounded-[12px] spring-tap"
-    >
-      {active && (
-        <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
-      )}
-      <Icon className={`relative w-[17px] h-[17px] ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      <span className={`relative text-[11px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>{opt.label}</span>
-    </button>
-  );
-}
+/**
+ * NavTab — a single dock destination.
+ * Active state: icon grows + lifts, capsule morphs in, label strengthens,
+ * accent color appears, indicator dot appears. All spring-physics.
+ */
+function NavTab({ tab, active, onClick }) {
+  const Icon = tab.icon;
 
-function ModeOrb({ mode, onClick }) {
-  const Icon = MODE_SELECTOR_OPTIONS.find((o) => o.key === mode)?.icon;
-  return (
-    <button
-      onClick={onClick}
-      aria-label="Switch operating mode"
-      className="relative flex items-center justify-center w-[38px] h-[42px] rounded-[12px] spring-tap shrink-0"
-    >
-      <Icon className="relative w-[16px] h-[16px] dock-icon" strokeWidth={2} />
-    </button>
-  );
-}
-
-function NavItem({ item, active, onClick }) {
-  const Icon = item.icon;
   return (
     <button
       onClick={onClick}
       aria-current={active ? "page" : undefined}
-      className="relative flex flex-col items-center justify-center h-[42px] px-2 flex-1 min-w-0 rounded-[12px] spring-tap"
+      aria-label={tab.label}
+      className="relative flex flex-col items-center justify-center flex-1 h-full min-w-0 spring-tap"
     >
+      {/* Active capsule — morphs between tabs via shared layoutId */}
       {active && (
-        <motion.div layoutId="cap-pill" className="absolute inset-1 rounded-[12px] dock-pill" transition={SPRING} />
+        <motion.div
+          layoutId="nav-active-capsule"
+          className="absolute inset-1.5 rounded-[26px] dock-pill"
+          transition={SPRING}
+        />
       )}
-      <motion.div animate={{ scale: active ? 1.08 : 1 }} transition={ICON_SPRING}>
-        <Icon className={`relative w-[17px] h-[17px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
-      </motion.div>
-      <motion.span animate={{ opacity: active ? 1 : 0.5 }} transition={FADE} className={`relative text-[9px] font-semibold truncate ${active ? "dock-label-active" : "dock-label"}`}>{item.label}</motion.span>
-    </button>
-  );
-}
 
-function MeButton({ active }) {
-  return (
-    <NavLink
-      to="/me"
-      onClick={() => hapticSelect()}
-      aria-label="Me"
-      className="founder-dock rounded-[28px] h-[54px] w-[54px] flex flex-col items-center justify-center relative spring-tap shrink-0 elevated-shadow"
-    >
-      {active && (
-        <motion.div layoutId="me-pill" className="absolute inset-1.5 rounded-[16px] dock-pill" transition={SPRING} />
-      )}
-      <motion.div animate={{ scale: active ? 1.08 : 1 }} transition={ICON_SPRING}>
-        <User className={`relative w-[18px] h-[18px] mb-0.5 ${active ? "dock-icon-active" : "dock-icon"}`} strokeWidth={active ? 2.3 : 1.9} />
+      {/* Icon + Label — scales up and lifts when active */}
+      <motion.div
+        animate={{
+          scale: active ? 1.1 : 1,
+          y: active ? -2 : 0,
+        }}
+        transition={ICON_SPRING}
+        className="relative flex flex-col items-center gap-1"
+      >
+        <Icon
+          className={`w-[26px] h-[26px] ${active ? "dock-icon-active" : "dock-icon"}`}
+          strokeWidth={active ? 2.3 : 1.8}
+        />
+        <motion.span
+          animate={{ opacity: active ? 1 : 0.45 }}
+          transition={FADE}
+          className={`text-[10px] font-medium tracking-tight ${active ? "dock-label-active" : "dock-label"}`}
+        >
+          {tab.label}
+        </motion.span>
       </motion.div>
-      <motion.span animate={{ opacity: active ? 1 : 0.5 }} transition={FADE} className={`relative text-[9px] font-semibold ${active ? "dock-label-active" : "dock-label"}`}>Me</motion.span>
-    </NavLink>
+
+      {/* Active indicator — small dot underneath */}
+      {active && (
+        <motion.div
+          layoutId="nav-indicator"
+          className="absolute bottom-1 w-1 h-1 rounded-full dock-dot"
+          transition={SPRING}
+        />
+      )}
+    </button>
   );
 }
