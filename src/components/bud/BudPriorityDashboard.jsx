@@ -9,6 +9,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import { usePriorityItems } from "@/lib/academic/usePriorityItems";
 import { toast } from "@/components/ui/use-toast";
+import PriorityQuickActionsFAB from "./PriorityQuickActionsFAB";
 
 const PRIORITY_CONFIG = {
   critical: { label: "Critical", color: "bg-destructive", text: "text-destructive", icon: AlertCircle, dot: "bg-destructive" },
@@ -98,6 +99,7 @@ export default function BudPriorityDashboard() {
       <div className="flex flex-col items-center justify-center gap-2 py-12">
         <Inbox className="w-6 h-6 text-muted-foreground" strokeWidth={1.6} />
         <p className="text-[12px] text-muted-foreground">Priority list loads when you're online</p>
+        <PriorityQuickActionsFAB />
       </div>
     );
   }
@@ -110,6 +112,7 @@ export default function BudPriorityDashboard() {
         </div>
         <p className="text-[14px] font-bold text-foreground">All clear</p>
         <p className="text-[12px] text-muted-foreground">No pending deadlines or tasks right now</p>
+        <PriorityQuickActionsFAB />
       </div>
     );
   }
@@ -175,6 +178,8 @@ export default function BudPriorityDashboard() {
           )}
         </AnimatePresence>
       </div>
+
+      <PriorityQuickActionsFAB />
     </div>
   );
 }
