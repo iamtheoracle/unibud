@@ -6,14 +6,18 @@ import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Users, MessageCircle, ListTodo, Video, Mic, Share2,
   Send, Plus, CheckCircle2, Circle, Loader2,
-  Calendar, Link2, FolderOpen,
+  Calendar, Link2, FolderOpen, TrendingUp, Trophy,
 } from "lucide-react";
 import StudyGroupResources from "@/components/study/StudyGroupResources";
+import StudyGroupProgress from "@/components/study/StudyGroupProgress";
+import StudyGroupLeaderboard from "@/components/study/StudyGroupLeaderboard";
 
 const TABS = [
   { key: "chat", label: "Chat", icon: MessageCircle },
   { key: "tasks", label: "Tasks", icon: ListTodo },
   { key: "resources", label: "Files", icon: FolderOpen },
+  { key: "progress", label: "Progress", icon: TrendingUp },
+  { key: "leaderboard", label: "Ranks", icon: Trophy },
   { key: "members", label: "Members", icon: Users },
 ];
 
@@ -326,6 +330,14 @@ export default function StudyGroupDetail() {
 
         {activeTab === "resources" && (
           <StudyGroupResources groupId={groupId} groupName={group.name} />
+        )}
+
+        {activeTab === "progress" && (
+          <StudyGroupProgress groupId={groupId} group={group} />
+        )}
+
+        {activeTab === "leaderboard" && (
+          <StudyGroupLeaderboard groupId={groupId} group={group} />
         )}
 
         {activeTab === "members" && (

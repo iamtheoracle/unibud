@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MessageSquare, Phone, Users, ChevronRight } from "lucide-react";
+import { MessageSquare, Phone, Users, ChevronRight, BookOpen } from "lucide-react";
 import ConnectMessages from "@/components/connect/ConnectMessages";
 import ConnectCalls from "@/components/connect/ConnectCalls";
 import ConnectCollaboration from "@/components/connect/ConnectCollaboration";
+import StudyGroupDirectory from "@/components/study/StudyGroupDirectory";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -12,6 +13,7 @@ const TABS = [
   { key: "messages", label: "Messages", icon: MessageSquare },
   { key: "calls", label: "Calls", icon: Phone },
   { key: "collaboration", label: "Teams", icon: Users },
+  { key: "groups", label: "Groups", icon: BookOpen },
 ];
 
 const QUICK = [
@@ -53,6 +55,7 @@ export default function Connect() {
         {activeTab === "messages" && <ConnectMessages />}
         {activeTab === "calls" && <ConnectCalls />}
         {activeTab === "collaboration" && <ConnectCollaboration />}
+        {activeTab === "groups" && <StudyGroupDirectory />}
       </div>
 
       {/* Quick actions */}
