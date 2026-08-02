@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ArrowLeft, Users } from "lucide-react";
-import { useDemoMode } from "@/lib/DemoModeContext";
 import ReportModal from "@/components/ecosystem/ReportModal";
 import EmptyState from "@/components/ui/EmptyState";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
@@ -31,7 +30,6 @@ export default function CommunityDetail() {
   const { communityId } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { isDemoMode } = useDemoMode();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("home");
   const [joined, setJoined] = useState(false);
@@ -41,25 +39,24 @@ export default function CommunityDetail() {
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
-    enabled: !isDemoMode,
   });
 
   const { data: community, isLoading } = useQuery({
     queryKey: ["community", communityId],
     queryFn: () => base44.entities.Community.get(communityId),
-    enabled: !isDemoMode && !!communityId,
+    enabled: !!communityId,
   });
 
   const { data: posts } = useQuery({
     queryKey: ["communityPosts", communityId],
     queryFn: () => base44.entities.QuadPost.filter({ community: communityId }, "-created_date", 30),
-    enabled: !isDemoMode && !!communityId,
+    enabled: !!communityId,
   });
 
   const { data: events } = useQuery({
     queryKey: ["communityEvents", communityId],
     queryFn: () => base44.entities.CampusEvent.filter({ community_id: communityId }, "-date", 15),
-    enabled: !isDemoMode && !!communityId,
+    enabled: !!communityId,
   });
 
   useEffect(() => {
@@ -150,7 +147,7 @@ export default function CommunityDetail() {
     );
   }
 
-  if (!community && !isDemoMode) {
+  if (!community) {
     return (
       <div className="min-h-screen">
         <div className="pt-12 px-5">

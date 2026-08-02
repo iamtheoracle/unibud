@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { MessageSquare, Send, Plus } from "lucide-react";
-import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 
 /**
@@ -10,7 +9,6 @@ import EmptyState from "@/components/ui/EmptyState";
  * the community, so each community has its own persistent conversation.
  */
 export default function CommunityChat({ community, user, accentColor }) {
-  const { isDemoMode } = useDemoMode();
   const accent = accentColor || "0 0% 100%";
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -27,16 +25,6 @@ export default function CommunityChat({ community, user, accentColor }) {
     setMessages((prev) => [...prev, msg]);
     setInput("");
   };
-
-  if (isDemoMode) {
-    return (
-      <EmptyState
-        icon={MessageSquare}
-        title="Community chat"
-        description="Sign in to join the conversation."
-      />
-    );
-  }
 
   return (
     <div className="flex flex-col" style={{ minHeight: "calc(100vh - 280px)" }}>
