@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Mic, Send, AlertCircle, GraduationCap, MessageCircle, Clock, Wallet } from "lucide-react";
+import { Mic, Send, AlertCircle, GraduationCap, MessageCircle, Clock, Wallet, Sun, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useUnibudContext } from "@/lib/UnibudContext";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import BudVoiceOrb from "@/components/bud/BudVoiceOrb";
@@ -112,6 +113,22 @@ export default function BudHero() {
           })}
         </div>
       )}
+
+      {/* Daily briefing entry point */}
+      <Link
+        to="/briefing"
+        onClick={() => hapticTap()}
+        className="w-full flex items-center gap-2.5 px-4 py-3 rounded-2xl glass mb-4 spring-tap"
+      >
+        <div className="w-9 h-9 rounded-xl bg-primary/10 grid place-items-center shrink-0">
+          <Sun className="w-4 h-4 text-primary" />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-[13px] font-semibold text-foreground">Today's Briefing</p>
+          <p className="text-[11px] text-muted-foreground">Assignments, schedule & notifications</p>
+        </div>
+        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+      </Link>
 
       {/* Input bar — "Ask me anything..." */}
       <form onSubmit={handleSubmit} className="w-full relative">
