@@ -207,6 +207,7 @@ const SelfHealing = lazy(() => import("@/pages/SelfHealing"));
 const DemoContentManager = lazy(() => import("@/pages/DemoContentManager"));
 const EngineeringConstitution = lazy(() => import("@/pages/EngineeringConstitution"));
 const ProductConstitution = lazy(() => import("@/pages/ProductConstitution"));
+const EvolutionConstitution = lazy(() => import("@/pages/EvolutionConstitution"));
 
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
@@ -372,6 +373,7 @@ function App() {
                     <Route path="/demo-content" element={<OracleWorkspaceGuard><DemoContentManager /></OracleWorkspaceGuard>} />
                     <Route path="/constitution" element={<OracleWorkspaceGuard><EngineeringConstitution /></OracleWorkspaceGuard>} />
                     <Route path="/product-constitution" element={<OracleWorkspaceGuard><ProductConstitution /></OracleWorkspaceGuard>} />
+                    <Route path="/evolution-constitution" element={<OracleWorkspaceGuard><EvolutionConstitution /></OracleWorkspaceGuard>} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>
