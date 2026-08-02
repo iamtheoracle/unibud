@@ -84,6 +84,7 @@ const StudyGroups = lazy(() => import("@/pages/StudyGroups"));
 const StudyGroupDetail = lazy(() => import("@/pages/StudyGroupDetail"));
 const Mentorship = lazy(() => import("@/pages/Mentorship"));
 const MentorProfile = lazy(() => import("@/pages/MentorProfile"));
+const TutorHub = lazy(() => import("@/pages/tutor/TutorHub"));
 
 // Professional Hub
 const Opportunities = lazy(() => import("@/pages/Opportunities"));
@@ -341,6 +342,7 @@ function App() {
                     <Route path="/study-groups/:groupId" element={<StudyGroupDetail />} />
                     <Route path="/mentorship" element={<Mentorship />} />
                     <Route path="/mentor/:mentorId" element={<MentorProfile />} />
+                    <Route path="/tutor-hub" element={<TutorHub />} />
                     <Route path="/opportunities" element={<Opportunities />} />
                     <Route path="/scholarships" element={<Scholarships />} />
                     <Route path="/research" element={<ResearchHub />} />
