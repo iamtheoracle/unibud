@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { Clock, CheckSquare, Users, CalendarDays, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
@@ -174,7 +175,7 @@ function TaskForm({ onClose, toast, user }) {
 }
 
 function GroupForm({ onClose }) {
-  const navigate = useNavigateImport();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const { data: groups, isLoading } = useQuery({ queryKey: ["quick-groups"], queryFn: () => base44.entities.StudyGroup.list("-created_date", 10) });
   const filtered = (groups || []).filter((g) => !query || (g.name || g.title || "").toLowerCase().includes(query.toLowerCase()));
@@ -200,6 +201,3 @@ function GroupForm({ onClose }) {
     </div>
   );
 }
-
-import { useNavigate } from "react-router-dom";
-function useNavigateImport() { return useNavigate(); }
