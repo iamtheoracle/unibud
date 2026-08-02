@@ -74,6 +74,11 @@ function FeedCard({ post, index }) {
           <div className="flex items-center gap-1.5">
             <p className="text-[14px] font-semibold truncate" style={{ color: CREAM }}>{post.author_name}</p>
             {post.is_verified && <BadgeCheck className="w-[14px] h-[14px] shrink-0" style={{ color: ORANGE }} fill={ORANGE} />}
+            {post.is_seed_content && (
+              <span className="text-[9px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded-full shrink-0" style={{ background: "rgba(255,138,42,0.12)", color: ORANGE }}>
+                Launch
+              </span>
+            )}
           </div>
           <p className="text-[12px] truncate" style={{ color: CREAM_MUTED }}>
             {[post.author_handle, post.university, timeAgo(post.created_date)].filter(Boolean).join(" · ")}

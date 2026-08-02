@@ -7,6 +7,7 @@ import { ShieldCheck, Sparkles, FileText, Search, Megaphone, ArrowRight } from "
 import { getAdminRole, ADMIN_ROLES } from "@/lib/admin/roles";
 import AdminInsights from "@/components/admin/AdminInsights";
 import AdminLaunchers from "@/components/admin/AdminLaunchers";
+import SeedContentPanel from "@/components/social/SeedContentPanel";
 import ScreenShell from "@/components/layout/ScreenShell";
 
 const BUD_ASSIST = [
@@ -85,6 +86,15 @@ export default function AdminHub() {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.15 }}
+      >
+        <h2 className="text-[14px] font-semibold text-foreground mb-3">Campus Feed Launch Content</h2>
+        <SeedContentPanel />
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
       >
         <h2 className="text-[14px] font-semibold text-foreground mb-3">Bud Assistance</h2>
         <div className="grid grid-cols-3 gap-3">
