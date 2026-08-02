@@ -193,6 +193,11 @@ const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 const DirectoryHub = lazy(() => import("@/pages/directory/DirectoryHub"));
 const HelpCenter = lazy(() => import("@/pages/help/HelpCenter"));
 
+// Campus Services, Safety & Digital ID
+const CampusServices = lazy(() => import("@/pages/campus/CampusServices"));
+const SafetyCenter = lazy(() => import("@/pages/safety/SafetyCenter"));
+const DigitalId = lazy(() => import("@/pages/identity/DigitalId"));
+
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
 const Terms = lazy(() => import("@/pages/legal/Terms"));
@@ -344,6 +349,9 @@ function App() {
                                       <Route path="/admin" element={<AdminHub />} />
                     <Route path="/directory" element={<DirectoryHub />} />
                     <Route path="/help" element={<HelpCenter />} />
+                    <Route path="/campus-services" element={<CampusServices />} />
+                    <Route path="/safety" element={<SafetyCenter />} />
+                    <Route path="/digital-id" element={<DigitalId />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>
