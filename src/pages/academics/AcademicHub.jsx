@@ -10,6 +10,10 @@ import { base44 } from "@/api/base44Client";
 import { useAcademicData } from "@/lib/academic/useAcademicData";
 import { ACADEMIC_CATEGORIES } from "@/lib/academics/registry";
 import OrbitBuildingCard from "@/components/academics/OrbitBuildingCard";
+import { useBackgroundRefresh } from "@/lib/resilience/useBackgroundRefresh";
+import { ListSkeleton, StatsSkeleton } from "@/components/resilience/SkeletonKit";
+import RetryError from "@/components/resilience/RetryError";
+import EmptyWithSuggestions from "@/components/resilience/EmptyWithSuggestions";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -29,14 +33,19 @@ function dueLabel(days) {
 
 /** AcademicHub — the premium, editorial front door to the academic OS. */
 export default function AcademicHub() {
-  const { nextClass, nextDeadline, gpa, today, loading, orbitActive } = useAcademicData();
+  const { nextClass, nextDeadline, gpa, today, loading, orbitActive, refetch } = useAcademicData();
   const [q, setQ] = useState("");
 
-  const { data: assignments } = useQuery({
+  const assignmentsQuery = useQuery({
     queryKey: ["hub-assignments"],
     queryFn: () => base44.entities.Assignment.list("-due_date", 10),
     staleTime: 60000,
+    retry: 2,
   });
+  const { data: assignments, isError: assignError, refetch: refetchAssign } = assignmentsQuery;
+
+  // Background refresh — keeps data fresh when the tab is visible
+  useBackgroundRefresh(() => refetch?.(), 120000);
 
   const dueCount = (assignments || []).filter(
     (a) => a.status === "pending" || a.status === "in_progress"
@@ -82,31 +91,35 @@ export default function AcademicHub() {
       {!orbitActive && (
       <>
       {/* Stats — divider-based */}
+      {loading ? (
+        <div className="mt-8"><StatsSkeleton /></div>
+      ) : (
       <div className="mt-8 flex">
         <StatTile
           to="/timetable"
           icon={nextClass ? Clock : TrendingUp}
           label="Next class"
-          value={loading ? "—" : nextClass ? nextClass.code : "Free"}
-          sub={loading ? "…" : nextClass ? nextClass.start : "No classes"}
+          value={nextClass ? nextClass.code : "Free"}
+          sub={nextClass ? nextClass.start : "No classes"}
         />
         <div className="w-px bg-border shrink-0" />
         <StatTile
           to="/assignments"
           icon={AlertCircle}
           label="Due"
-          value={loading ? "—" : dueCount > 0 ? `${dueCount}` : "None"}
-          sub={loading ? "…" : nextDeadline ? dueLabel(nextDeadline.dueInDays) : "All caught up"}
+          value={dueCount > 0 ? `${dueCount}` : "None"}
+          sub={nextDeadline ? dueLabel(nextDeadline.dueInDays) : "All caught up"}
         />
         <div className="w-px bg-border shrink-0" />
         <StatTile
           to="/results"
           icon={TrendingUp}
           label="GPA"
-          value={loading ? "—" : gpa ? gpa.current.toFixed(2) : "—"}
+          value={gpa ? gpa.current.toFixed(2) : "—"}
           sub={gpa ? `/${gpa.scale.toFixed(1)}` : "—"}
         />
       </div>
+      )}
 
       {/* Today's Focus — single premium recommendation */}
       {focusItem && (
@@ -131,11 +144,17 @@ export default function AcademicHub() {
       {/* Tasks */}
       <section className="mt-10">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">Tasks</span>
+        {assignError ? (
+          <div className="border-t border-b border-border">
+            <RetryError onRetry={refetchAssign} compact />
+          </div>
+        ) : (
         <div className="divide-y divide-border border-t border-b border-border">
           <SummaryRow to="/assignments" icon={ClipboardList} label="Assignments" value={dueCount > 0 ? `${dueCount} due` : "All caught up"} />
           <SummaryRow to="/exams" icon={AlertCircle} label="Exams" value="View upcoming" />
           <SummaryRow to="/projects" icon={BookOpen} label="Projects" value="View active" />
         </div>
+        )}
       </section>
 
       {/* Timetable */}
@@ -146,7 +165,7 @@ export default function AcademicHub() {
         </div>
         <div className="divide-y divide-border border-t border-b border-border">
           {loading ? (
-            <div className="py-5"><div className="h-5 rounded shimmer" /></div>
+            <ListSkeleton rows={3} />
           ) : today && today.length > 0 ? (
             today.slice(0, 3).map((s, i) => (
               <div key={i} className="flex items-center gap-3 py-4">
@@ -158,9 +177,15 @@ export default function AcademicHub() {
               </div>
             ))
           ) : (
-            <div className="py-5">
-              <p className="text-[14px] text-muted-foreground">No classes today — perfect for deep work.</p>
-            </div>
+            <EmptyWithSuggestions
+              icon={BookOpen}
+              title="No classes today"
+              message="Perfect for deep work. Catch up on assignments or plan your week."
+              suggestions={[
+                { to: "/assignments", icon: ClipboardList, label: "Review assignments", desc: "Check what's due" },
+                { to: "/calendar", icon: CalendarDays, label: "Open calendar", desc: "See the full week" },
+              ]}
+            />
           )}
         </div>
       </section>
@@ -179,15 +204,32 @@ export default function AcademicHub() {
       {q.trim() && (
         <section className="mt-10">
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">Results</p>
-          <div className="divide-y divide-border border-t border-b border-border">
-            {ACADEMIC_CATEGORIES.filter((c) =>
-               c.to &&
-               (c.title.toLowerCase().includes(q.toLowerCase()) ||
-                c.desc.toLowerCase().includes(q.toLowerCase()))
-             ).map((c) => (
-              <SummaryRow key={c.key} to={c.to} icon={c.icon} label={c.title} value={c.desc} />
-            ))}
-          </div>
+          {ACADEMIC_CATEGORIES.filter((c) =>
+             c.to &&
+             (c.title.toLowerCase().includes(q.toLowerCase()) ||
+              c.desc.toLowerCase().includes(q.toLowerCase()))
+           ).length > 0 ? (
+            <div className="divide-y divide-border border-t border-b border-border">
+              {ACADEMIC_CATEGORIES.filter((c) =>
+                 c.to &&
+                 (c.title.toLowerCase().includes(q.toLowerCase()) ||
+                  c.desc.toLowerCase().includes(q.toLowerCase()))
+                ).map((c) => (
+                <SummaryRow key={c.key} to={c.to} icon={c.icon} label={c.title} value={c.desc} />
+              ))}
+            </div>
+          ) : (
+            <EmptyWithSuggestions
+              icon={Search}
+              title={`No results for "${q.trim()}"`}
+              message="Try a different term, or explore these academic tools:"
+              suggestions={[
+                { to: "/assignments", icon: ClipboardList, label: "Assignments", desc: "Track due dates" },
+                { to: "/exams", icon: AlertCircle, label: "Exams", desc: "View upcoming exams" },
+                { to: "/courses", icon: BookOpen, label: "Courses", desc: "Browse all courses" },
+              ]}
+            />
+          )}
         </section>
       )}
     </div>

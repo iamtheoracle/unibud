@@ -58,6 +58,9 @@ export function useAcademicData() {
   const nextClass = (today.data || []).find((s) => s.status !== "done") || null;
   const nextDeadline = (deadlines.data || []).find((d) => d.dueInDays >= 0) || (deadlines.data || [])[0] || null;
   const orbitActive = loading && !today.data && !deadlines.data && !gpa.data;
+  const refetch = async () => {
+    await Promise.allSettled([today.refetch(), deadlines.refetch(), gpa.refetch()]);
+  };
   return {
     today: today.data || [],
     nextClass,
@@ -65,5 +68,6 @@ export function useAcademicData() {
     gpa: gpa.data || null,
     loading,
     orbitActive,
+    refetch,
   };
 }

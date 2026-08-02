@@ -1,3 +1,4 @@
+import React from "react";
 import { AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import {
@@ -23,7 +24,9 @@ export function Toaster() {
                 {title && <ToastTitle>{title}</ToastTitle>}
                 {description && <ToastDescription>{description}</ToastDescription>}
               </div>
-              {action}
+              {action && (React.isValidElement(action) ? action : (
+                <ToastAction onClick={() => { action.onClick?.(); dismiss(id); }}>{action.label}</ToastAction>
+              ))}
               <ToastClose onClick={() => dismiss(id)} aria-label="Dismiss" />
             </Toast>
           ))}

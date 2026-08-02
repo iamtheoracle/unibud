@@ -9,7 +9,7 @@ import AdaptiveNav from "@/components/navigation/AdaptiveNav";
 import FloatingBudButton from "@/components/bud/FloatingBudButton";
 import BudSheet from "@/components/bud/BudSheet";
 import UniversalSearchOverlay from "@/components/search/UniversalSearchOverlay";
-import OfflineBanner from "@/components/layout/OfflineBanner";
+import OfflineSyncBanner from "@/components/resilience/OfflineSyncBanner";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
@@ -54,7 +54,7 @@ export default function AppShell() {
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
           <ContextPulse />
-          <OfflineBanner />
+          <OfflineSyncBanner />
           <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
