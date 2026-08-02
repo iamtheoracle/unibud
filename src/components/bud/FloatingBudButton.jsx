@@ -42,9 +42,6 @@ export default function FloatingBudButton() {
     };
   }, []);
 
-  // Hide on BudHome — Bud is already the hero there, not a floating button
-  if (isHome) return null;
-
   const handleTap = useCallback(() => {
     if (longPressTriggered.current) {
       longPressTriggered.current = false;
@@ -90,6 +87,9 @@ export default function FloatingBudButton() {
     hapticSelect();
     startConversation();
   }, [isSupported, startConversation, openVoice]);
+
+  // Hide on BudHome — Bud is already the hero there, not a floating button
+  if (isHome) return null;
 
   return (
     <>

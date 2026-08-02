@@ -4,6 +4,7 @@ import { Mic, Send, AlertCircle, GraduationCap, MessageCircle, Clock, Wallet } f
 import { useUnibudContext } from "@/lib/UnibudContext";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import BudVoiceOrb from "@/components/bud/BudVoiceOrb";
+import BudGrowthStrip from "@/components/bud/home/BudGrowthStrip";
 import { hapticTap } from "@/lib/haptics";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -139,6 +140,9 @@ export default function BudHero() {
           </button>
         </div>
       </form>
+
+      {/* Growth — quiet proof that Bud is growing alongside the student */}
+      <BudGrowthStrip />
     </motion.div>
   );
 }
