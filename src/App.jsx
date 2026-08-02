@@ -69,6 +69,7 @@ const AcademicsTab = lazy(() => import("@/pages/tabs/AcademicsTab"));
 const MeTab = lazy(() => import("@/pages/tabs/MeTab"));
 const MainShell = lazy(() => import("@/components/layout/MainShell"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
+const AcademicInsights = lazy(() => import("@/pages/academics/AcademicInsights"));
 const Results = lazy(() => import("@/pages/academics/Results"));
 const SummaryReport = lazy(() => import("@/pages/academics/SummaryReport"));
 const CommunicationHub = lazy(() => import("@/pages/communication/CommunicationHub"));
@@ -109,6 +110,7 @@ const Assignments = lazy(() => import("@/pages/academics/Assignments"));
 const Projects = lazy(() => import("@/pages/academics/Projects"));
 const Exams = lazy(() => import("@/pages/academics/Exams"));
 const Achievements = lazy(() => import("@/pages/academics/Achievements"));
+const AchievementGallery = lazy(() => import("@/pages/me/AchievementGallery"));
 const Attendance = lazy(() => import("@/pages/academics/Attendance"));
 const Notes = lazy(() => import("@/pages/academics/Notes"));
 const OfficeHours = lazy(() => import("@/pages/academics/OfficeHours"));
@@ -308,6 +310,7 @@ function App() {
                     <Route path="/campus" element={<CampusHome />} />
                     <Route path="/campus-v2" element={<CampusHomeScreen />} />
                     <Route path="/academics" element={<AcademicHub />} />
+                    <Route path="/academics/insights" element={<AcademicInsights />} />
                     <Route path="/academics/results" element={<Results />} />
                     <Route path="/academics/report" element={<SummaryReport />} />
                     <Route path="/communication" element={<CommunicationHub />} />
@@ -355,6 +358,7 @@ function App() {
                     <Route path="/projects" element={<Projects />} />
                     <Route path="/exams" element={<Exams />} />
                     <Route path="/achievements" element={<Achievements />} />
+                    <Route path="/achievements/gallery" element={<AchievementGallery />} />
                     <Route path="/attendance" element={<Attendance />} />
 <Route path="/office-hours" element={<OfficeHours />} />
                     <Route path="/notes" element={<Notes />} />

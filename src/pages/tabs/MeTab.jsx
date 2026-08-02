@@ -12,6 +12,7 @@ import ProductionState from "@/components/shared/ProductionState";
 import BudAcademicInsights from "@/components/bud/BudAcademicInsights";
 import SmartReminders from "@/components/bud/SmartReminders";
 import GoogleCalendarConnect from "@/components/bud/GoogleCalendarConnect";
+import DeadlineAlertsBanner from "@/components/academics/DeadlineAlertsBanner";
 import { Image } from "@/components/ui/image";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
@@ -166,6 +167,9 @@ export default function MeTab() {
                 <ChevronRight className="w-5 h-5 text-white/40" strokeWidth={2} />
               </button>
 
+ {/* Deadline Alerts — persistent, auto-generated */}
+              <DeadlineAlertsBanner />
+
               {/* Bud Insights */}
               <BudAcademicInsights />
 
@@ -180,16 +184,16 @@ export default function MeTab() {
                 <div>
                   <div className="flex items-center justify-between mb-2.5">
                     <h3 className="text-[15px] font-bold text-foreground tracking-tight">Achievements</h3>
-                    <button onClick={() => setActiveCategory("achievements")} className="text-[11px] font-bold text-primary active:scale-95 transition-transform">See all</button>
+                    <button onClick={() => navigate("/achievements/gallery")} className="text-[11px] font-bold text-primary active:scale-95 transition-transform">Gallery</button>
                   </div>
                   <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
                     {achievements.slice(0, 5).map((a) => (
-                      <div key={a.id} className="flex flex-col items-center gap-1.5 flex-shrink-0 w-20 p-2.5 rounded-[16px] bg-card shadow-sm">
+                      <button key={a.id} onClick={() => navigate("/achievements/gallery")} className="flex flex-col items-center gap-1.5 flex-shrink-0 w-20 p-2.5 rounded-[16px] bg-card shadow-sm active:scale-95 transition-transform">
                         <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center">
                           <Award className="w-5 h-5 text-primary" strokeWidth={2} />
                         </div>
                         <p className="text-[10px] font-bold text-foreground text-center line-clamp-2">{a.title}</p>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>

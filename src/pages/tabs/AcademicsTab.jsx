@@ -9,10 +9,12 @@ import {
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
+import DeadlineAlertsBanner from "@/components/academics/DeadlineAlertsBanner";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const CATEGORIES = [
   { id: "dashboard", label: "Dashboard" },
+  { id: "insights", label: "Insights" },
   { id: "courses", label: "Courses" },
   { id: "timetable", label: "Timetable" },
   { id: "assignments", label: "Assignments" },
@@ -151,6 +153,21 @@ export default function AcademicsTab() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
               </button>
 
+              {/* Insights entry — Bud's academic intelligence */}
+              <button
+                onClick={() => navigate("/academics/insights")}
+                className="w-full flex items-center gap-3 p-3.5 rounded-[18px] bg-gradient-to-br from-primary/5 to-chocolate/5 border border-primary/10 text-left active:scale-[0.98] transition-transform"
+              >
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-chocolate flex items-center justify-center flex-shrink-0">
+                  <TrendingUp className="w-4.5 h-4.5 text-white" strokeWidth={2.2} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[13px] font-bold text-foreground">Academic Insights</p>
+                  <p className="text-[11px] text-muted-foreground">GPA, streaks, progress & more — explained by Bud</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.2} />
+              </button>
+
               <div className="grid grid-cols-3 gap-2">
                 <StatCard icon={BookOpen} label="Courses" value={courses?.length || 0} onClick={() => navigate("/courses")} />
                 <StatCard icon={ClipboardList} label="Due" value={assignments?.length || 0} onClick={() => navigate("/assignments")} />
@@ -198,6 +215,25 @@ export default function AcademicsTab() {
               )}
             </div>
           </ProductionState>
+        )}
+
+        {activeCategory === "insights" && (
+          <div className="space-y-4">
+            <button
+              onClick={() => navigate("/academics/insights")}
+              className="w-full flex items-center gap-3 p-4 rounded-[20px] bg-gradient-to-br from-primary/5 to-chocolate/5 border border-primary/10 text-left active:scale-[0.98] transition-transform"
+            >
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-chocolate flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="w-5 h-5 text-white" strokeWidth={2.2} />
+              </div>
+              <div className="flex-1">
+                <p className="text-[14px] font-bold text-foreground">View Full Insights</p>
+                <p className="text-[12px] text-muted-foreground">GPA trends, study streaks, degree progress & more</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            </button>
+            <DeadlineAlertsBanner />
+          </div>
         )}
 
         {activeCategory === "courses" && (
