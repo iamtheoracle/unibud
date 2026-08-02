@@ -7,6 +7,7 @@ import OrbitBadge from "@/components/hubs/OrbitBadge";
 import BudStudyCompanion from "@/components/hubs/BudStudyCompanion";
 import BudInviteBar from "@/components/hubs/BudInviteBar";
 import HubSources from "@/components/hubs/HubSources";
+import OrbitLiveSection from "@/components/hubs/OrbitLiveSection";
 
 /**
  * HubShell — the shared foundation every hub uses.
@@ -141,6 +142,9 @@ export default function HubShell({ hub, children }) {
 
       {/* ── Trusted external sources — "Open on [Platform]" ── */}
       <HubSources hub={hub} />
+
+      {/* ── Orbit Live — real-time public information, never fabricated ── */}
+      <OrbitLiveSection hub={hub} />
 
       {/* ── Content ── */}
       <div className="px-5">{children}</div>

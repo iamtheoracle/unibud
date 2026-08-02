@@ -983,6 +983,18 @@
   @keyframes live-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.7); } }
   .live-pulse { animation: live-pulse 1.6s ease-in-out infinite; }
 
+  /* Equalizer bars — for Music hub live cards */
+  @keyframes eq-bar { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+  .eq-bar { animation: eq-bar 0.8s ease-in-out infinite; transform-origin: bottom; }
+
+  /* Cinematic shimmer sweep — for Movies hub live cards */
+  @keyframes cinematic-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  .cinematic-shimmer { background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.04), transparent); background-size: 200% 100%; animation: cinematic-shimmer 3s ease-in-out infinite; }
+
+  /* Breaking ribbon scroll — for News hub */
+  @keyframes ribbon-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+  .ribbon-scroll { animation: ribbon-scroll 20s linear infinite; }
+
   /* ── Accessibility overrides (toggled from the Ecosystem Rail) ── */
   .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
     animation: none !important;
