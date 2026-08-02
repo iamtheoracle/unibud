@@ -200,6 +200,8 @@ const HelpCenter = lazy(() => import("@/pages/help/HelpCenter"));
 const CampusServices = lazy(() => import("@/pages/campus/CampusServices"));
 const SafetyCenter = lazy(() => import("@/pages/safety/SafetyCenter"));
 const DigitalId = lazy(() => import("@/pages/identity/DigitalId"));
+const Accessibility = lazy(() => import("@/pages/Accessibility"));
+const LaunchReadiness = lazy(() => import("@/pages/admin/LaunchReadiness"));
 
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
@@ -358,6 +360,8 @@ function App() {
                     <Route path="/gpa-calculator" element={<GpaCalculator />} />
                     <Route path="/library" element={<LibraryHub />} />
                     <Route path="/campus-map" element={<CampusNavigation />} />
+                    <Route path="/accessibility" element={<Accessibility />} />
+                    <Route path="/launch-readiness" element={<LaunchReadiness />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>

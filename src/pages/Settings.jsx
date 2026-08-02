@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Eye, Rocket } from "lucide-react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import SettingsSection from "@/components/me/SettingsSection";
 
@@ -29,6 +30,26 @@ export default function Settings() {
       </header>
 
       <div className="max-w-[520px] mx-auto px-4 pt-4">
+        <div className="flex flex-col gap-2.5 mb-4">
+          <Link to="/accessibility" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
+              <Eye className="w-[18px] h-[18px] text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-[14px] font-semibold text-foreground">Accessibility</p>
+              <p className="text-[12px] text-muted-foreground">High contrast, motion, text size</p>
+            </div>
+          </Link>
+          <Link to="/launch-readiness" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
+              <Rocket className="w-[18px] h-[18px] text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-[14px] font-semibold text-foreground">Launch Readiness</p>
+              <p className="text-[12px] text-muted-foreground">Production status & system health</p>
+            </div>
+          </Link>
+        </div>
         <SettingsSection user={user} />
       </div>
     </div>

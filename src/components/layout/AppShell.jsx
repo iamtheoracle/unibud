@@ -11,6 +11,7 @@ import BudSheet from "@/components/bud/BudSheet";
 import UniversalSearchOverlay from "@/components/search/UniversalSearchOverlay";
 import OfflineSyncBanner from "@/components/resilience/OfflineSyncBanner";
 import AnnouncementBanner from "@/components/notifications/AnnouncementBanner";
+import ConsentBanner from "@/components/legal/ConsentBanner";
 import { useRecentViews } from "@/lib/resilience/useRecentViews";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
@@ -86,6 +87,7 @@ export default function AppShell() {
           <FloatingBudButton />
           <BudSheet />
           <UniversalSearchOverlayWithContext />
+          <ConsentBanner />
         </div>
       </ClassroomModeProvider>
       </UnibudContextProvider>
