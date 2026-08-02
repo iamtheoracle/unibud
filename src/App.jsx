@@ -29,6 +29,7 @@ const OracleAuthRouter = lazy(() => import("@/pages/auth/OracleAuthRouter"));
 // Milestone 2 — Student Home (Campus)
 const Home = lazy(() => import("@/pages/Home"));
 const BudHome = lazy(() => import("@/pages/bud/BudHome"));
+const BudDailyBriefing = lazy(() => import("@/pages/bud/BudDailyBriefing"));
 const SocialHub = lazy(() => import("@/pages/social/SocialHub"));
 const ForYou = lazy(() => import("@/pages/social/ForYou"));
 const HeroSection6Page = lazy(() => import("@/pages/HeroSection6Page"));
@@ -252,6 +253,7 @@ function App() {
                   <Route element={<AppShell />}>
                     <Route path="/home" element={<BudHome />} />
                     <Route path="/bud" element={<BudHome />} />
+                    <Route path="/briefing" element={<BudDailyBriefing />} />
                     <Route path="/social" element={<SocialHub />} />
                     <Route path="/discover/people" element={<ForYou />} />
                     <Route path="/profile/:profileId" element={<ProfileView />} />
