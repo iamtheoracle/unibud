@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
-import { ChevronLeft, Bookmark, ExternalLink, Trash2, Folder } from "lucide-react";
+import { ChevronLeft, Bookmark, ExternalLink, Trash2, Folder, Share2 } from "lucide-react";
 import { Image } from "@/components/ui/image";
+import ShareFolderSheet from "@/components/highlights/ShareFolderSheet";
+import CommunityCollections from "@/components/highlights/CommunityCollections";
 
 const EASE = [0.16, 1, 0.3, 1];
 const DEFAULT_FOLDERS = [
@@ -21,11 +23,22 @@ export default function Highlights() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [activeFolder, setActiveFolder] = useState("All");
+  const [tab, setTab] = useState("mine");
+  const [showShareSheet, setShowShareSheet] = useState(false);
 
   const { data: highlights = [], isLoading } = useQuery({
     queryKey: ["highlights"],
     queryFn: () => base44.entities.Highlight.list("-created_date", 200),
     staleTime: 30000,
+  });
+
+  const shareMutation = useMutation({
+    mutationFn: async ({ items }) => {
+      await base44.entities.Highlight.bulkUpdate(
+        items.map((h) => ({ id: h.id, visibility: "public" }))
+      );
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["highlights"] }),
   });
 
   const deleteMutation = useMutation({
@@ -50,6 +63,20 @@ export default function Highlights() {
       </header>
 
       <div className="max-w-[520px] mx-auto px-4 pt-4">
+        {/* Tab toggle */}
+        <div className="flex gap-2 mb-4">
+          <button onClick={() => setTab("mine")} className={`flex-1 py-2 rounded-[14px] text-[12px] font-semibold spring-tap transition-all ${tab === "mine" ? "bg-foreground text-background" : "glass text-foreground/70"}`}>
+            My Collections
+          </button>
+          <button onClick={() => setTab("community")} className={`flex-1 py-2 rounded-[14px] text-[12px] font-semibold spring-tap transition-all ${tab === "community" ? "bg-foreground text-background" : "glass text-foreground/70"}`}>
+            Community
+          </button>
+        </div>
+
+        {tab === "community" ? (
+          <CommunityCollections />
+        ) : (
+        <>
         {/* Folder chips */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3">
           {folders.map((f) => (
@@ -65,6 +92,16 @@ export default function Highlights() {
             </button>
           ))}
         </div>
+
+        {/* Share button when a specific folder is active */}
+        {activeFolder !== "All" && filtered.length > 0 && (
+          <button
+            onClick={() => setShowShareSheet(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold spring-tap mb-3"
+          >
+            <Share2 className="w-3.5 h-3.5" /> Share "{activeFolder}"
+          </button>
+        )}
 
         {/* Suggested folders when user has none */}
         {userFolders.length === 0 && !isLoading && (
@@ -147,6 +184,20 @@ export default function Highlights() {
               </motion.div>
             ))}
           </div>
+        )}
+
+        <ShareFolderSheet
+          open={showShareSheet}
+          onOpenChange={setShowShareSheet}
+          folder={activeFolder}
+          itemCount={filtered.length}
+          isShared={filtered.length > 0 && filtered.every((h) => h.visibility === "public")}
+          onShare={async () => {
+            const items = highlights.filter((h) => h.folder === activeFolder);
+            await shareMutation.mutateAsync({ items });
+          }}
+        />
+        </>
         )}
       </div>
     </div>
