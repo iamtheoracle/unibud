@@ -34,6 +34,12 @@
     --input: 30 8% 92%;
     --ring: 26 100% 50%;                          /* Orange focus ring */
     --bg-glow: hsl(26 100% 50% / 0.04);           /* ambient orange bloom */
+    --sky-tint: 210 40% 75%;                      /* soft sky blue for reflections */
+    --sky-glow: rgba(135, 180, 230, 0.06);         /* ambient sky-blue light beneath surfaces */
+    --bud-core-glow: rgba(255, 255, 255, 0.15);    /* Bud white core */
+    --bud-energy-glow: rgba(255, 122, 0, 0.10);    /* Bud soft orange energy */
+    --bud-halo-glow: rgba(74, 44, 29, 0.06);       /* Bud warm chocolate halo */
+    --bud-sky-reflection: rgba(135, 180, 230, 0.04); /* Bud gentle sky reflection */
 
     /* ── Chocolate — premium warmth & depth ── */
     --chocolate: 21 45% 20%;                      /* #4A2C1D — Rich Chocolate */
@@ -83,17 +89,17 @@
     --glass-bg-strong: rgba(255, 255, 255, 0.95);
     --glass-border: rgba(74, 44, 29, 0.10);
     --glass-border-strong: rgba(74, 44, 29, 0.15);
-    --glass-shadow: 0 0.5px 1px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.04), 0 8px 16px rgba(0,0,0,0.06), 0 16px 48px rgba(0,0,0,0.08), 0 32px 80px rgba(0,0,0,0.04);
+    --glass-shadow: 0 1px 2px rgba(0,0,0,0.015), 0 4px 12px rgba(135,180,230,0.04), 0 8px 24px rgba(255,255,255,0.50), 0 16px 48px rgba(135,180,230,0.03), 0 32px 80px rgba(255,255,255,0.30), inset 0 1px 0 rgba(255,255,255,0.90);
     --glass-blur: 28px;
     --surface-grouped: 33 38% 95%;
 
     /* Premium Apple-style layered shadows — multi-layer depth with ambient + contact + edge light */
-    --shadow-soft: 0 0.5px 1px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
-    --shadow-premium: 0 0.5px 1px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.06), 0 8px 16px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.10), 0 32px 80px rgba(0,0,0,0.06);
-    --shadow-elevated: 0 0.5px 1px rgba(0,0,0,0.08), 0 3px 6px rgba(0,0,0,0.06), 0 12px 24px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.12), 0 48px 120px rgba(0,0,0,0.08);
-    --shadow-hover: 0 0.5px 1px rgba(0,0,0,0.06), 0 3px 6px rgba(0,0,0,0.06), 0 12px 28px rgba(0,0,0,0.10), 0 24px 64px rgba(0,0,0,0.12), 0 48px 120px rgba(0,0,0,0.08);
-    --shadow-ice: 0 0 40px rgba(255, 255, 255, 0.04);
-    --shadow-350: 0 0.5px 1px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.08), 0 8px 16px rgba(0,0,0,0.10), 0 16px 48px rgba(0,0,0,0.14), 0 32px 80px rgba(0,0,0,0.10);
+    --shadow-soft: 0 1px 2px rgba(0,0,0,0.015), 0 4px 12px rgba(135,180,230,0.04), 0 8px 24px rgba(255,255,255,0.5), inset 0 1px 0 rgba(255,255,255,0.90);
+    --shadow-premium: 0 1px 2px rgba(0,0,0,0.02), 0 4px 16px rgba(135,180,230,0.05), 0 12px 32px rgba(255,255,255,0.40), 0 24px 64px rgba(135,180,230,0.03), inset 0 1px 0 rgba(255,255,255,0.95);
+    --shadow-elevated: 0 1px 2px rgba(0,0,0,0.02), 0 6px 20px rgba(135,180,230,0.06), 0 16px 48px rgba(255,255,255,0.35), 0 32px 80px rgba(135,180,230,0.04), inset 0 1px 0 rgba(255,255,255,0.98);
+    --shadow-hover: 0 1px 2px rgba(0,0,0,0.02), 0 8px 24px rgba(135,180,230,0.07), 0 16px 48px rgba(255,255,255,0.45), 0 32px 80px rgba(135,180,230,0.05), inset 0 1px 0 rgba(255,255,255,0.98);
+    --shadow-ice: 0 0 40px rgba(135,180,230,0.08);
+    --shadow-350: 0 1px 2px rgba(0,0,0,0.02), 0 4px 16px rgba(135,180,230,0.05), 0 12px 32px rgba(255,255,255,0.45), 0 24px 64px rgba(135,180,230,0.04), 0 32px 80px rgba(255,255,255,0.30), inset 0 1px 0 rgba(255,255,255,0.95);
 
     --chart-1: 0 0% 100%;
     --chart-2: 0 0% 64%;
@@ -148,6 +154,12 @@
     --input: 18 15% 12%;
     --ring: 26 100% 50%;                           /* Orange focus */
     --bg-glow: hsl(26 100% 50% / 0.06);            /* ambient orange bloom */
+    --sky-tint: 210 40% 65%;                      /* soft sky blue for dark reflections */
+    --sky-glow: rgba(96, 165, 250, 0.06);          /* ambient sky-blue light beneath surfaces */
+    --bud-core-glow: rgba(255, 255, 255, 0.10);    /* Bud white core */
+    --bud-energy-glow: rgba(255, 122, 0, 0.08);    /* Bud soft orange energy */
+    --bud-halo-glow: rgba(74, 44, 29, 0.10);       /* Bud warm chocolate halo */
+    --bud-sky-reflection: rgba(96, 165, 250, 0.04); /* Bud gentle sky reflection */
 
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
@@ -175,16 +187,16 @@
     --glass-bg-strong: rgba(255, 255, 255, 0.16);
     --glass-border: rgba(255, 255, 255, 0.14);
     --glass-border-strong: rgba(255, 255, 255, 0.20);
-    --glass-shadow: 0 0.5px 1px rgba(0,0,0,0.20), 0 2px 4px rgba(0,0,0,0.16), 0 8px 16px rgba(0,0,0,0.20), 0 16px 48px rgba(0,0,0,0.24), 0 32px 80px rgba(0,0,0,0.18);
+    --glass-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 4px 12px rgba(96,165,250,0.06), 0 8px 24px rgba(255,122,0,0.04), 0 16px 48px rgba(74,44,29,0.10), 0 32px 80px rgba(96,165,250,0.04), inset 0 1px 0 rgba(255,255,255,0.08);
     --glass-blur: 28px;
     --surface-grouped: 18 15% 7%;
 
-    --shadow-soft: 0 0.5px 1px rgba(0,0,0,0.12), 0 1px 3px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.08);
-    --shadow-premium: 0 0.5px 1px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.12), 0 8px 16px rgba(0,0,0,0.14), 0 16px 48px rgba(0,0,0,0.18), 0 32px 80px rgba(0,0,0,0.12);
-    --shadow-elevated: 0 0.5px 1px rgba(0,0,0,0.14), 0 3px 6px rgba(0,0,0,0.12), 0 12px 24px rgba(0,0,0,0.14), 0 24px 64px rgba(0,0,0,0.20), 0 48px 120px rgba(0,0,0,0.14);
-    --shadow-hover: 0 0.5px 1px rgba(0,0,0,0.12), 0 3px 6px rgba(0,0,0,0.12), 0 12px 28px rgba(0,0,0,0.16), 0 24px 64px rgba(0,0,0,0.20), 0 48px 120px rgba(0,0,0,0.14);
-    --shadow-ice: 0 0 40px rgba(255, 122, 0, 0.06);
-    --shadow-350: 0 0.5px 1px rgba(0,0,0,0.18), 0 2px 4px rgba(0,0,0,0.16), 0 8px 16px rgba(0,0,0,0.18), 0 16px 48px rgba(0,0,0,0.22), 0 32px 80px rgba(0,0,0,0.18);
+    --shadow-soft: 0 1px 2px rgba(0,0,0,0.10), 0 4px 12px rgba(96,165,250,0.05), 0 8px 24px rgba(255,122,0,0.03), inset 0 1px 0 rgba(255,255,255,0.06);
+    --shadow-premium: 0 1px 2px rgba(0,0,0,0.12), 0 4px 16px rgba(96,165,250,0.06), 0 12px 32px rgba(255,122,0,0.04), 0 24px 64px rgba(74,44,29,0.08), inset 0 1px 0 rgba(255,255,255,0.08);
+    --shadow-elevated: 0 1px 2px rgba(0,0,0,0.12), 0 6px 20px rgba(96,165,250,0.07), 0 16px 48px rgba(255,122,0,0.05), 0 32px 80px rgba(74,44,29,0.10), inset 0 1px 0 rgba(255,255,255,0.10);
+    --shadow-hover: 0 1px 2px rgba(0,0,0,0.12), 0 8px 24px rgba(96,165,250,0.08), 0 16px 48px rgba(255,122,0,0.06), 0 32px 80px rgba(74,44,29,0.10), inset 0 1px 0 rgba(255,255,255,0.10);
+    --shadow-ice: 0 0 40px rgba(255,122,0,0.06);
+    --shadow-350: 0 1px 2px rgba(0,0,0,0.14), 0 4px 16px rgba(96,165,250,0.06), 0 12px 32px rgba(255,122,0,0.05), 0 24px 64px rgba(74,44,29,0.10), 0 32px 80px rgba(96,165,250,0.04), inset 0 1px 0 rgba(255,255,255,0.08);
 
     --chart-1: 26 100% 50%;
     --chart-2: 21 45% 20%;
@@ -225,7 +237,7 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
-    background-image: linear-gradient(180deg, var(--background) 0%, var(--warm-beige) 100%), radial-gradient(120% 70% at 50% -12%, var(--bg-glow), transparent 55%);
+    background-image: linear-gradient(180deg, var(--background) 0%, var(--warm-beige) 100%), radial-gradient(120% 70% at 50% -12%, var(--bg-glow), transparent 55%), radial-gradient(80% 50% at 100% 100%, var(--sky-glow), transparent 60%);
     background-attachment: fixed;
     touch-action: manipulation;
     -webkit-touch-callout: none;
@@ -296,34 +308,34 @@
   /* ── Crystal Glass ── premium layered material with reflections & edge lighting ── */
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.6) brightness(1.01);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.6) brightness(1.01);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(0,0,0,0.03);
+    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(135,180,230,0.05);
   }
   .glass-strong {
     background: var(--glass-bg-strong);
-    backdrop-filter: blur(36px) saturate(1.5);
-    -webkit-backdrop-filter: blur(36px) saturate(1.5);
+    backdrop-filter: blur(36px) saturate(1.5) brightness(1.02);
+    -webkit-backdrop-filter: blur(36px) saturate(1.5) brightness(1.02);
     border: 1px solid var(--glass-border-strong);
-    box-shadow: var(--shadow-premium), inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(255,255,255,0.06);
+    box-shadow: var(--shadow-premium), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -1px 0 rgba(135,180,230,0.06);
   }
   .glass-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur)) saturate(2.0);
-    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(2.0);
+    backdrop-filter: blur(var(--glass-blur)) saturate(2.0) brightness(1.01);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(2.0) brightness(1.01);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(135,180,230,0.05);
     border-radius: 18px;
     position: relative;
   }
   /* Premium crystal card — layered reflections + edge lighting + internal glow */
   .crystal-card {
     background: var(--glass-bg-strong);
-    backdrop-filter: blur(44px) saturate(2.0);
-    -webkit-backdrop-filter: blur(44px) saturate(2.0);
+    backdrop-filter: blur(44px) saturate(2.0) brightness(1.02);
+    -webkit-backdrop-filter: blur(44px) saturate(2.0) brightness(1.02);
     border: 1px solid var(--glass-border-strong);
-    box-shadow: 0 1px 1px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.18), 0 12px 32px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.04);
+    box-shadow: 0 1px 1px rgba(0,0,0,0.02), 0 4px 12px rgba(135,180,230,0.05), 0 12px 32px rgba(255,255,255,0.15), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -1px 0 rgba(135,180,230,0.04);
     border-radius: 18px;
     position: relative;
     overflow: hidden;
@@ -333,11 +345,127 @@
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 38%, transparent 62%, rgba(255,255,255,0.035) 100%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(135,180,230,0.02) 38%, rgba(135,180,230,0.02) 62%, rgba(255,255,255,0.04) 100%);
     pointer-events: none;
     z-index: 0;
   }
   .crystal-card > * { position: relative; z-index: 1; }
+
+  /* ════════════════════════════════════════════════════════════
+     Ambient Lighting System — depth through illumination, not shadows
+     Soft light from below · Sky-tinted reflections · Edge highlights
+     ════════════════════════════════════════════════════════════ */
+
+  /* Ambient glow — soft light pooling beneath floating surfaces */
+  .ambient-glow {
+    position: relative;
+  }
+  .ambient-glow::after {
+    content: "";
+    position: absolute;
+    inset: -8%;
+    border-radius: inherit;
+    background: radial-gradient(50% 30% at 50% 100%, var(--sky-glow), transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(16px);
+  }
+
+  /* Edge illumination — delicate specular light catch on top edge */
+  .edge-illumination {
+    position: relative;
+  }
+  .edge-illumination::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 15%; right: 15%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), rgba(135,180,230,0.10), rgba(255,255,255,0.25), transparent);
+    pointer-events: none;
+    border-radius: 999px;
+  }
+
+  /* Floating surface — ambient light from below creating suspension */
+  .floating-surface {
+    position: relative;
+  }
+  .floating-surface::after {
+    content: "";
+    position: absolute;
+    bottom: -12%; left: 10%; right: 10%;
+    height: 40%;
+    border-radius: 50%;
+    background: radial-gradient(50% 100% at 50% 100%, var(--sky-glow), transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(20px);
+  }
+
+  /* Ambient bloom — warm light pooling behind hero elements */
+  .ambient-bloom {
+    position: relative;
+  }
+  .ambient-bloom::before {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    border-radius: inherit;
+    background: radial-gradient(50% 40% at 50% 0%, hsl(var(--primary) / 0.06), transparent 65%);
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(28px);
+  }
+
+  /* Bud ambient glow — the strongest light in the system
+     White core · Soft orange energy · Warm chocolate halo · Sky reflections */
+  .bud-ambient-glow {
+    box-shadow:
+      0 0 60px rgba(255,255,255,0.12),
+      0 0 120px rgba(255,122,0,0.08),
+      0 0 180px rgba(74,44,29,0.06),
+      0 0 240px rgba(135,180,230,0.04);
+  }
+  .bud-ambient-glow-strong {
+    box-shadow:
+      0 0 40px rgba(255,255,255,0.18),
+      0 0 80px rgba(255,122,0,0.12),
+      0 0 140px rgba(74,44,29,0.08),
+      0 0 200px rgba(135,180,230,0.06),
+      inset 0 0 20px rgba(255,255,255,0.08);
+  }
+
+  /* Illuminated button — softly glowing primary action
+     Press reduces glow instead of darkening; hover increases ambient light */
+  .illuminated {
+    box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.20), 0 0 24px hsl(var(--primary) / 0.10);
+    transition: box-shadow 0.3s ease, transform 0.14s ease;
+  }
+  .illuminated:hover {
+    box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.25), 0 0 32px hsl(var(--primary) / 0.14);
+  }
+  .illuminated:active {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 0 8px hsl(var(--primary) / 0.04);
+    transform: scale(0.98);
+  }
+  .illuminated:focus-visible {
+    box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.25), 0 0 36px hsl(var(--primary) / 0.16), 0 0 0 3px hsl(var(--ring) / 0.30);
+  }
+
+  /* Glass motion — lighting adapts naturally when cards move */
+  .glass-motion {
+    transition: box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, box-shadow;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .glass-motion:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(135,180,230,0.06);
+    }
+  }
+  .glass-motion:active {
+    transform: translateY(0) scale(0.99);
+  }
+
   /* Floating crystal dock — premium frosted navigation */
   .crystal-dock {
     background: var(--glass-bg-strong);
@@ -607,10 +735,10 @@
   @media (hover: hover) and (pointer: fine) {
     .hover-lift:hover {
       transform: translateY(-2px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.22), 0 28px 64px rgba(0,0,0,0.36), inset 0 1px 0 rgba(255,255,255,0.10);
+      box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(135,180,230,0.06);
     }
   }
-  .hover-lift:active { transform: translateY(0) scale(0.985); box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+  .hover-lift:active { transform: translateY(0) scale(0.985); box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.10); }
 
   /* Light bloom — ambient light pooling behind hero elements */
   .light-bloom {
@@ -788,7 +916,7 @@
   @media (hover: hover) and (pointer: fine) {
     .card-hover:hover {
       transform: translateY(-2px);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.22), 0 28px 64px rgba(0,0,0,0.36);
+      box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -1px 0 rgba(135,180,230,0.05);
     }
   }
   .card-hover:active { transform: translateY(0) scale(0.985); box-shadow: var(--shadow-soft); }
@@ -1085,10 +1213,10 @@
   /* Mirror Glass 350 — definitive premium glass surface */
   .mirror-glass-350 {
     background: var(--glass-bg);
-    backdrop-filter: blur(35px) saturate(200%);
-    -webkit-backdrop-filter: blur(35px) saturate(200%);
+    backdrop-filter: blur(35px) saturate(200%) brightness(1.01);
+    -webkit-backdrop-filter: blur(35px) saturate(200%) brightness(1.01);
     border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-350), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-350), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(135,180,230,0.05);
     border-radius: 24px;
     position: relative;
     overflow: hidden;
@@ -1191,9 +1319,9 @@
 
   /* Dynamic glass overlay — scroll-aware reflection */
   .dynamic-glass {
-    background: var(--glass-bg); backdrop-filter: blur(35px) saturate(200%);
-    -webkit-backdrop-filter: blur(35px) saturate(200%);
-    border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft);
+    background: var(--glass-bg); backdrop-filter: blur(35px) saturate(200%) brightness(1.01);
+    -webkit-backdrop-filter: blur(35px) saturate(200%) brightness(1.01);
+    border: 1px solid var(--glass-border); box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(135,180,230,0.05);
     position: relative;
   }
   .dynamic-glass::before {
