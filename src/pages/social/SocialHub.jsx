@@ -70,12 +70,14 @@ export default function SocialHub() {
         />
       </div>
 
-      <div className="px-5 pt-4">
+      <div className="px-5 pt-5">
         {/* Top navigation — Discover · Communities · Create · Messages · Events */}
         <SocialTopNav />
 
         {/* Bud presence — contextual briefing */}
-        <BudBriefingBar />
+        <div className="mt-4">
+          <BudBriefingBar />
+        </div>
 
         {/* Category-filtered content */}
         <AnimatePresence mode="wait">
