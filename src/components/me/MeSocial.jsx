@@ -15,7 +15,7 @@ function SectionLabel({ children }) {
 /**
  * MeSocial — content-first profile sections with real data and premium empty states.
  * No fake highlights, no placeholder posts, no empty grids.
- * Flow: About → Highlights → Pinned → Posts/Media/Videos
+ * Flow: About -> Highlights -> Pinned -> Posts/Media/Videos
  */
 export default function MeSocial({ bio, user }) {
   const navigate = useNavigate();
@@ -38,26 +38,20 @@ export default function MeSocial({ bio, user }) {
   return (
     <div className="flex flex-col gap-8">
       {/* About */}
-      <div>
-        <SectionLabel>About</SectionLabel>
-        <p className="text-[14px] text-muted-foreground whitespace-pre-line leading-relaxed">{bio}</p>
-      </div>
+      {bio && (
+        <div>
+          <SectionLabel>About</SectionLabel>
+          <p className="text-[14px] text-muted-foreground whitespace-pre-line leading-relaxed">{bio}</p>
+        </div>
+      )}
 
-      {/* Highlights — empty state until user creates one */}
+      {/* Highlights */}
       <div>
         <SectionLabel>Highlights</SectionLabel>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <p className="text-[14px] text-muted-foreground mb-3">No Highlights Yet</p>
-          <button
-            onClick={() => toast({ title: "Coming soon", description: "Highlight creation is on the roadmap." })}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full glass text-foreground text-[13px] font-semibold spring-tap hover:shadow-premium transition-shadow"
-          >
-            <Plus className="w-4 h-4" strokeWidth={2.2} /> New Highlight
-          </button>
-        </div>
+        <HighlightsSection user={user} />
       </div>
 
-      {/* Pinned — empty state */}
+      {/* Pinned */}
       <div>
         <SectionLabel>Pinned</SectionLabel>
         <div className="flex flex-col items-center justify-center py-6 text-center">
@@ -66,7 +60,7 @@ export default function MeSocial({ bio, user }) {
         </div>
       </div>
 
-      {/* Posts / Media / Videos — grid only appears when content exists */}
+      {/* Posts / Media / Videos */}
       <div>
         {hasPosts ? (
           <>
@@ -97,7 +91,7 @@ export default function MeSocial({ bio, user }) {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 text-center">
-            <div className="text-[40px] mb-2">📷</div>
+            <div className="text-[40px] mb-2">{"📷"}</div>
             <h3 className="text-[16px] font-semibold text-foreground">No Posts Yet</h3>
             <p className="text-[13px] text-muted-foreground mt-1 max-w-[260px]">
               Share your first moment with your university community.
@@ -111,6 +105,45 @@ export default function MeSocial({ bio, user }) {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function HighlightsSection({ user }) {
+  const navigate = useNavigate();
+  const { data: highlights = [] } = useQuery({
+    queryKey: ["me-highlights", user?.id],
+    queryFn: () => base44.entities.Highlight.filter({ created_by_id: user.id }, "-created_date", 10),
+    enabled: !!user?.id,
+  });
+
+  if (highlights.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-6 text-center">
+        <Bookmark className="w-6 h-6 text-muted-foreground/30 mb-2" strokeWidth={1.5} />
+        <p className="text-[13px] text-muted-foreground">No saved collections yet</p>
+        <button onClick={() => navigate("/highlights")} className="mt-2 text-[12px] font-semibold text-primary spring-tap">
+          Browse Highlights
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 overflow-x-auto no-scrollbar">
+      {highlights.map((h) => (
+        <button
+          key={h.id}
+          onClick={() => navigate("/highlights")}
+          className="flex flex-col items-start gap-1.5 p-2.5 rounded-[14px] glass-card shrink-0 w-32 text-left spring-tap"
+        >
+          <div className="w-full h-16 rounded-lg overflow-hidden bg-muted/30">
+            {h.image_url && <UIImage src={h.image_url} fittingType="fill" className="w-full h-full" />}
+          </div>
+          <span className="text-[11px] font-semibold text-foreground line-clamp-1">{h.title}</span>
+          <span className="text-[9px] text-muted-foreground">{h.content_type?.replace(/_/g, " ") || "Collection"}</span>
+        </button>
+      ))}
     </div>
   );
 }

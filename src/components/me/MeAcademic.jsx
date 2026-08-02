@@ -1,153 +1,153 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Award } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import {
+  BookOpen, GraduationCap, Calendar, ClipboardList, Trophy,
+  Target, Award, ChevronRight,
+} from "lucide-react";
 
-const STATS = [
-  { label: "CGPA", value: "4.32", to: "/academics/results" },
-  { label: "Attendance", value: "92%", to: "/attendance" },
-  { label: "Credits", value: "78", to: "/academics" },
-  { label: "Standing", value: "Good", to: "/academics", status: true },
-];
-const COURSES = [
-  { code: "CSC401", title: "Artificial Intelligence", lecturer: "Dr. Bello" },
-  { code: "CSC403", title: "Software Engineering", lecturer: "Dr. Adebayo" },
-  { code: "CSC405", title: "Database Systems", lecturer: "Prof. Okafor" },
-  { code: "MTH301", title: "Linear Algebra", lecturer: "Dr. Eze" },
-];
-const TIMETABLE = [
-  { day: "Mon", time: "9:00", course: "CSC401", loc: "LT2" },
-  { day: "Mon", time: "11:00", course: "CSC403", loc: "LT3" },
-  { day: "Wed", time: "10:00", course: "CSC405", loc: "Lab 4" },
-  { day: "Fri", time: "9:00", course: "MTH301", loc: "LT1" },
-];
-const PROJECTS = [
-  { title: "AI Study Companion", desc: "AI-powered study tool" },
-  { title: "Campus Navigation App", desc: "Indoor navigation for UNILAG" },
-];
-const CERTS = [
-  { name: "AI Ethics Certificate", issuer: "AI Club", date: "2025" },
-  { name: "Software Engineering Internship", issuer: "Google DSC", date: "2024" },
-];
-const ORGS = [
-  { name: "AI Club", role: "Lead" },
-  { name: "Google Developer Student Club", role: "Member" },
-  { name: "IEEE Computer Society", role: "Student Member" },
-];
-const ACHIEVEMENTS = [
-  { title: "Dean's List", year: "2024/2025" },
-  { title: "Hackathon Winner", year: "2025" },
-  { title: "Top Contributor", year: "2024" },
+const EASE = [0.16, 1, 0.3, 1];
+
+const QUICK_LINKS = [
+  { label: "Courses", to: "/courses", icon: BookOpen },
+  { label: "Results", to: "/academics/results", icon: GraduationCap },
+  { label: "Attendance", to: "/attendance", icon: Calendar },
+  { label: "Assignments", to: "/assignments", icon: ClipboardList },
+  { label: "Timetable", to: "/timetable", icon: Calendar },
+  { label: "Exams", to: "/exams", icon: Award },
 ];
 
-function Section({ title, onMore, children }) {
+function SectionLabel({ children, action, onAction }) {
   return (
-    <div>
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/70">{title}</span>
-        {onMore && <button onClick={onMore} className="text-[11px] text-primary spring-tap">More</button>}
-      </div>
-      {children}
+    <div className="flex items-center justify-between mb-2.5">
+      <h2 className="text-[13px] font-bold text-foreground tracking-tight">{children}</h2>
+      {action && (
+        <button onClick={onAction} className="flex items-center gap-0.5 text-[11px] font-semibold text-muted-foreground spring-tap">
+          {action} <ChevronRight className="w-3 h-3" />
+        </button>
+      )}
     </div>
   );
 }
 
-/** MeAcademic — academic profile snapshot. Real identity fields + demo
- * metrics, every section linking to its full dedicated route. */
+function EmptyCard({ icon: Icon, title, description }) {
+  return (
+    <div className="flex flex-col items-center text-center py-8 px-6 rounded-[16px] glass-card">
+      <div className="w-11 h-11 rounded-full grid place-items-center mb-2 bg-muted/40">
+        <Icon className="w-5 h-5 text-muted-foreground/40" strokeWidth={1.5} />
+      </div>
+      <p className="text-[13px] font-bold text-foreground">{title}</p>
+      <p className="text-[11px] text-muted-foreground mt-0.5 max-w-[220px]">{description}</p>
+    </div>
+  );
+}
+
+/**
+ * MeAcademic — academic profile snapshot with real data only.
+ * No hardcoded courses, grades, or achievements.
+ */
 export default function MeAcademic({ user }) {
   const navigate = useNavigate();
-  const university = user?.university || "University of Lagos";
-  const faculty = user?.faculty || "Faculty of Engineering";
-  const department = user?.department || "Computer Science";
-  const level = user?.level || "300 Level";
+
+  const university = user?.university || "";
+  const faculty = user?.faculty || "";
+  const department = user?.department || "";
+  const level = user?.level || "";
+  const uniParts = [university, faculty, department, level].filter(Boolean);
+
+  const { data: achievements = [] } = useQuery({
+    queryKey: ["me-academic-achievements", user?.id],
+    queryFn: () => base44.entities.StudentAchievement.filter({ created_by_id: user.id }, "-created_date", 10),
+    enabled: !!user?.id,
+  });
+
+  const { data: goals = [] } = useQuery({
+    queryKey: ["me-academic-goals", user?.id],
+    queryFn: () => base44.entities.StudentGoal.filter({ created_by_id: user.id }, "-created_date", 10),
+    enabled: !!user?.id,
+  });
 
   return (
     <div className="flex flex-col gap-5">
-      <Section title="University" onMore={() => navigate("/academics")}>
-        <div className="glass-card p-3.5">
-          <div className="text-[13px] font-semibold text-foreground">{university}</div>
-          <div className="text-[12px] text-muted-foreground">{faculty} · {department}</div>
-          <div className="text-[11px] text-muted-foreground/70 mt-0.5">{level}</div>
+      {/* University info */}
+      {uniParts.length > 0 && (
+        <div>
+          <SectionLabel>Academic Identity</SectionLabel>
+          <div className="p-3.5 rounded-[16px] glass-card">
+            <div className="flex items-center gap-2 mb-1">
+              <GraduationCap className="w-4 h-4 text-muted-foreground" />
+              <span className="text-[14px] font-semibold text-foreground">{university || "University"}</span>
+            </div>
+            <div className="text-[12px] text-muted-foreground ml-6">{[faculty, department].filter(Boolean).join(" · ")}</div>
+            {level && <div className="text-[11px] text-muted-foreground/70 ml-6 mt-0.5">{level}</div>}
+          </div>
         </div>
-      </Section>
+      )}
 
-      <div className="grid grid-cols-2 gap-2.5">
-        {STATS.map((s) => (
-          <button key={s.label} onClick={() => navigate(s.to)} className="text-left p-3 rounded-2xl glass border border-border/40 spring-tap">
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground/70">{s.label}</div>
-            <div className={`text-[18px] font-bold ${s.status ? "text-success" : "text-foreground"}`}>{s.value}</div>
-          </button>
-        ))}
+      {/* Quick links */}
+      <div>
+        <SectionLabel>Academic Tools</SectionLabel>
+        <div className="grid grid-cols-3 gap-2">
+          {QUICK_LINKS.map((link) => {
+            const Icon = link.icon;
+            return (
+              <button
+                key={link.label}
+                onClick={() => navigate(link.to)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-[14px] glass-card spring-tap"
+              >
+                <Icon className="w-4 h-4 text-foreground" strokeWidth={1.8} />
+                <span className="text-[10px] font-medium text-foreground">{link.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <Section title="Current Courses" onMore={() => navigate("/courses")}>
-        <div className="glass-card p-1">
-          {COURSES.map((c) => (
-            <button key={c.code} onClick={() => navigate("/courses")} className="w-full flex justify-between items-center py-2 px-2 border-b border-border/20 last:border-0 spring-tap">
-              <div className="text-left">
-                <div className="text-[13px] font-medium text-foreground">{c.code}</div>
-                <div className="text-[11px] text-muted-foreground">{c.title}</div>
+      {/* Achievements */}
+      <div>
+        <SectionLabel action="See All" onAction={() => navigate("/achievements")}>Achievements</SectionLabel>
+        {achievements.length === 0 ? (
+          <EmptyCard icon={Trophy} title="No achievements yet" description="Earn achievements by studying, completing assignments, and participating in campus life." />
+        ) : (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            {achievements.map((a) => (
+              <div key={a.id} className="flex flex-col items-center gap-1.5 p-3 rounded-[14px] glass-card shrink-0 w-20">
+                <div className="w-9 h-9 rounded-full grid place-items-center bg-gold/10">
+                  <Trophy className="w-4 h-4 text-gold" strokeWidth={1.5} />
+                </div>
+                <span className="text-[10px] font-bold text-foreground text-center line-clamp-2 leading-tight">{a.title}</span>
               </div>
-              <div className="text-[11px] text-muted-foreground/70">{c.lecturer}</div>
-            </button>
-          ))}
-        </div>
-      </Section>
+            ))}
+          </div>
+        )}
+      </div>
 
-      <Section title="Timetable" onMore={() => navigate("/timetable")}>
-        <div className="glass-card p-1">
-          {TIMETABLE.map((t, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 px-2 border-b border-border/20 last:border-0">
-              <span className="text-[11px] font-semibold text-foreground w-8">{t.day}</span>
-              <span className="text-[11px] text-muted-foreground w-10">{t.time}</span>
-              <span className="text-[12px] text-foreground flex-1">{t.course}</span>
-              <span className="text-[11px] text-muted-foreground/70">{t.loc}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Projects" onMore={() => navigate("/projects")}>
-        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
-          {PROJECTS.map((p) => (
-            <div key={p.title} className="flex-shrink-0 w-44 p-3 rounded-2xl glass border border-border/40">
-              <div className="text-[12px] font-semibold text-foreground">{p.title}</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">{p.desc}</div>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Certificates" onMore={() => navigate("/academic-timeline")}>
-        <div className="glass-card p-1">
-          {CERTS.map((c) => (
-            <div key={c.name} className="flex justify-between items-center py-2 px-2 border-b border-border/20 last:border-0">
-              <span className="text-[12px] text-foreground">{c.name}</span>
-              <span className="text-[11px] text-muted-foreground/70">{c.issuer} · {c.date}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Organizations" onMore={() => navigate("/clubs")}>
-        <div className="glass-card p-1">
-          {ORGS.map((o) => (
-            <div key={o.name} className="flex justify-between items-center py-2 px-2 border-b border-border/20 last:border-0">
-              <span className="text-[12px] text-foreground">{o.name}</span>
-              <span className="text-[11px] text-muted-foreground/70">{o.role}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      <Section title="Achievements" onMore={() => navigate("/academic-timeline")}>
-        <div className="flex flex-wrap gap-2">
-          {ACHIEVEMENTS.map((a) => (
-            <span key={a.title} className="px-3 py-1.5 rounded-full text-[11px] glass border border-border/40 text-muted-foreground flex items-center gap-1">
-              <Award className="w-3 h-3 text-gold" /> {a.title} · {a.year}
-            </span>
-          ))}
-        </div>
-      </Section>
+      {/* Goals */}
+      <div>
+        <SectionLabel action="See All" onAction={() => navigate("/study")}>Goals</SectionLabel>
+        {goals.length === 0 ? (
+          <EmptyCard icon={Target} title="No goals yet" description="Set academic and personal goals to track your progress and stay motivated." />
+        ) : (
+          <div className="space-y-1.5">
+            {goals.map((g) => (
+              <div key={g.id} className="flex items-center gap-3 p-3 rounded-[14px] glass-card">
+                <div className="w-8 h-8 rounded-full grid place-items-center bg-primary/10 shrink-0">
+                  <Target className="w-4 h-4 text-primary" strokeWidth={1.5} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold text-foreground line-clamp-1">{g.title || g.goal_text || "Goal"}</p>
+                  {g.description && <p className="text-[11px] text-muted-foreground line-clamp-1">{g.description}</p>}
+                </div>
+                {g.progress != null && (
+                  <span className="text-[11px] font-bold text-muted-foreground tabular-nums">{g.progress}%</span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
