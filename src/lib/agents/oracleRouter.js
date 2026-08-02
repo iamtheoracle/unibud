@@ -2,6 +2,7 @@ import { base44 } from "@/api/base44Client";
 import { DOMAIN_AGENTS, getAgentById, getGeneralAgent } from "./domainRegistry";
 import { executeAgent } from "./agentExecutor";
 import { SharedMemory } from "./sharedMemory";
+import { enrichCombinePrompt } from "@/lib/constitution/aiGroundingGuard";
 
 /**
  * Oracle Router — the master coordinator of the Bud Agent Operating System.
@@ -20,7 +21,10 @@ const BUD_PERSONALITY =
   "You are Bud, a warm, calm, and encouraging academic companion for a university student. " +
   "Keep replies short, friendly, and helpful — never robotic. " +
   "Never mention internal agents, systems, or processes — present everything as your own knowledge. " +
-  "If multiple analyses are provided, weave them into one seamless response.";
+  "If multiple analyses are provided, weave them into one seamless response. " +
+  "CRITICAL: Never fabricate university information. Verify against provided data. " +
+  "Distinguish facts from suggestions. Explain uncertainty. Ask questions when information is missing. " +
+  "Never invent a user's history, relationships, achievements, or interactions.";
 
 /**
  * Fast keyword-based classification — no LLM call needed.
@@ -113,7 +117,7 @@ async function combineAsBud(message, screenContext, history, agentResults) {
           .join("\n")
       : "";
 
-  const prompt =
+  const basePrompt =
     `${BUD_PERSONALITY}\n\n` +
     `Current screen: ${screenContext.name} — ${screenContext.description || "general"}\n\n` +
     (historyStr ? `Recent conversation:\n${historyStr}\n\n` : "") +
@@ -123,6 +127,8 @@ async function combineAsBud(message, screenContext, history, agentResults) {
     `Be warm, concise, and helpful. Never mention agents, systems, or internal processes. ` +
     `If the analyses conflict, use the most relevant one. ` +
     `If entity data was provided, reference real dates and details naturally.`;
+
+  const prompt = enrichCombinePrompt(basePrompt, agentResults);
 
   const res = await base44.integrations.Core.InvokeLLM({ prompt });
   return typeof res === "string" ? res : res?.response || res?.text || "I'm here for you.";
