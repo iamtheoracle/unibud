@@ -11,7 +11,8 @@
       "description": "Display name for the shared resource"
     },
     "description": {
-      "type": "string"
+      "type": "string",
+      "description": "Optional description of the resource content"
     },
     "file_type": {
       "type": "string",
@@ -26,7 +27,15 @@
         "presentation",
         "image",
         "video",
-        "spreadsheet"
+        "audio_recording",
+        "spreadsheet",
+        "archive",
+        "code",
+        "assignment",
+        "project",
+        "template",
+        "research_paper",
+        "handout"
       ],
       "default": "pdf",
       "description": "What kind of shared material this is"
@@ -37,7 +46,7 @@
     },
     "external_url": {
       "type": "string",
-      "description": "External link (Google Drive, Dropbox, etc.) when file_type is link"
+      "description": "External link (Google Drive, Dropbox, etc.)"
     },
     "folder": {
       "type": "string",
@@ -48,14 +57,29 @@
       "default": false,
       "description": "Pinned by group members as important material"
     },
+    "is_archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Archived \u2014 hidden from main view but retained"
+    },
     "course_code": {
-      "type": "string"
+      "type": "string",
+      "description": "Related course code"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject area (e.g. Calculus, Organic Chemistry)"
+    },
+    "semester": {
+      "type": "string",
+      "description": "e.g. '2024/2025 First Semester'"
     },
     "tags": {
       "type": "array",
       "items": {
         "type": "string"
-      }
+      },
+      "description": "Searchable tags"
     },
     "access_level": {
       "type": "string",
@@ -71,15 +95,78 @@
       "default": 1,
       "description": "Current version number for version tracking"
     },
+    "previous_versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "file_size_bytes": {
+            "type": "number"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_by": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "History of previous file versions for restoration"
+    },
     "uploaded_by_name": {
-      "type": "string"
+      "type": "string",
+      "description": "Display name of uploader"
+    },
+    "uploaded_by_id": {
+      "type": "string",
+      "description": "User ID of uploader \u2014 for permission checks"
     },
     "mime_type": {
-      "type": "string"
+      "type": "string",
+      "description": "MIME type of the uploaded file"
     },
     "file_size_bytes": {
       "type": "number",
-      "default": 0
+      "default": 0,
+      "description": "File size in bytes"
+    },
+    "download_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total downloads"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total views"
+    },
+    "bookmarked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who bookmarked this resource"
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last content modification timestamp"
+    },
+    "is_reported": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged as inappropriate"
+    },
+    "report_reason": {
+      "type": "string",
+      "description": "Reason for reporting"
     },
     "institution_id": {
       "type": "string",
