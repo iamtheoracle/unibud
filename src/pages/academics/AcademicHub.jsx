@@ -2,12 +2,13 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useState } from "react";
-import { useTodaySchedule, useUpcomingDeadlines, useExams } from "@/lib/academic/useAcademicData";
+import { useUpcomingDeadlines, useExams } from "@/lib/academic/useAcademicData";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
 import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
 import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
+import BudBriefingBar from "@/components/bud/home/BudBriefingBar";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -19,18 +20,16 @@ function greeting() {
 }
 
 /**
- * AcademicHub — one intelligent academic workspace.
+ * AcademicHub — Bud's academic workspace.
  *
- * Pipeline: Load Context → Load Cards → Bud ranks cards → Render cards
- *
- * All academic features (schedule, assignments, exams, GPA, courses, notes,
- * timetable) live as modular cards on this single scrollable page.
+ * Begins with Bud's contextual understanding (BudBriefingBar), then
+ * presents ranked academic cards. Bud prioritizes what the student
+ * sees based on deadlines, exams, and schedule.
  */
 export default function AcademicHub() {
   const [q, setQ] = useState("");
 
   // Fetch context signals for the card ranker
-  const { data: today } = useTodaySchedule();
   const { data: deadlines } = useUpcomingDeadlines();
   const { data: exams } = useExams();
   const { data: events } = useQuery({
@@ -52,15 +51,17 @@ export default function AcademicHub() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-36 safe-area-pt">
-      {/* Greeting + Title */}
+      {/* Bud presence — contextual briefing */}
+      <BudBriefingBar />
+
+      {/* Title */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE }}
         className="mb-5"
       >
-        <p className="text-[13px] text-muted-foreground font-medium">{greeting()},</p>
-        <h1 className="text-[28px] font-bold tracking-tight text-foreground leading-tight mt-0.5">Academics</h1>
+        <h1 className="text-[28px] font-bold tracking-tight text-foreground leading-tight">Academics</h1>
       </motion.div>
 
       {/* Search */}
@@ -76,22 +77,6 @@ export default function AcademicHub() {
 
       {/* Ranked card grid */}
       <WorkspaceRenderer cards={rankedCards} />
-
-      {/* Search results overlay */}
-      {q.trim() && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-6"
-        >
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">Search</p>
-          <div className="crystal-card p-4">
-            <p className="text-[12px] text-muted-foreground">
-              Use Bud to find "{q.trim()}" across your academic workspace.
-            </p>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 }

@@ -5,15 +5,16 @@ import { base44 } from "@/api/base44Client";
 import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
 import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
 import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
+import BudBriefingBar from "@/components/bud/home/BudBriefingBar";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 /**
- * SocialHub — one intelligent social workspace.
+ * SocialHub — Bud's social workspace.
  *
- * Everything social (feed, friends, events, communities, marketplace,
- * opportunities, social accounts) lives as modular cards on this single
- * scrollable page. Bud ranks cards based on context.
+ * Begins with Bud's contextual understanding (BudBriefingBar), then
+ * presents ranked social cards. Bud prioritizes what the student
+ * sees based on events, announcements, and community activity.
  */
 export default function SocialHub() {
   // Fetch context signals for the card ranker
@@ -40,6 +41,9 @@ export default function SocialHub() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
+      {/* Bud presence — contextual briefing */}
+      <BudBriefingBar />
+
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }} className="mb-5">
         <h1 className="font-heading font-bold text-[28px] text-foreground leading-tight">Social</h1>
         <p className="text-[12px] text-muted-foreground mt-1">Your campus life — one calm, intelligent feed.</p>

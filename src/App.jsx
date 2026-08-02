@@ -248,7 +248,7 @@ function App() {
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/about" element={<About />} />
                   <Route element={<AppShell />}>
-                    <Route path="/home" element={<Home />} />
+                    <Route path="/home" element={<BudHome />} />
                     <Route path="/bud" element={<BudHome />} />
                     <Route path="/social" element={<SocialHub />} />
                     <Route path="/discover/people" element={<ForYou />} />

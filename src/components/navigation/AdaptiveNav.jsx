@@ -38,6 +38,7 @@ export default function AdaptiveNav() {
     navigate(to);
   }, []);
 
+  const homeActive = pathname === "/home";
   const socialActive = isActive(pathname, "/social") || isActive(pathname, "/square") || isActive(pathname, "/quad");
   const academicActive = isActive(pathname, "/academics") || isActive(pathname, "/academic");
   const meActive = isActive(pathname, "/me");
@@ -58,6 +59,27 @@ export default function AdaptiveNav() {
         <div className="flex items-center justify-center gap-2.5 px-3 pb-3 safe-area-pb pointer-events-auto">
           {/* Single dock — Social + Academic + Me */}
           <div className="os-dock h-[52px] rounded-[28px] flex items-center p-1.5 gap-1">
+            {/* Bud — home button */}
+            <button
+              onClick={() => handleNav("/home")}
+              aria-current={homeActive ? "page" : undefined}
+              aria-label="Bud — Home"
+              className="os-me-capsule w-[42px] h-[42px] rounded-full flex items-center justify-center shrink-0 relative mr-1"
+            >
+              {homeActive && (
+                <motion.div
+                  layoutId="nav-active-pill"
+                  className="absolute inset-0 rounded-full os-pill-active"
+                  transition={SPRING}
+                />
+              )}
+              <div className="relative flex items-center justify-center">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary to-primary/70 grid place-items-center">
+                  <div className="w-2 h-0.5 rounded-full bg-primary-foreground/90" />
+                </div>
+              </div>
+            </button>
+
             {items.map((item) => {
               const Icon = item.icon;
               return (

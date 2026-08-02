@@ -1,51 +1,80 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useUnibudContext } from "@/lib/UnibudContext";
-import { useBudMemory } from "@/hooks/useBudMemory";
-import BudHomeHeader from "@/components/bud/home/BudHomeHeader";
-import BudHomeOrb from "@/components/bud/home/BudHomeOrb";
-import BudToday from "@/components/bud/home/BudToday";
-import BudInsights from "@/components/bud/home/BudInsights";
-import BudContextMode from "@/components/bud/home/BudContextMode";
-import BudMemoryStrip from "@/components/bud/home/BudMemoryStrip";
+import React, { useMemo } from "react";
+import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
+import BudHero from "@/components/bud/home/BudHero";
+import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
+import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
+import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
+import { useTodaySchedule, useUpcomingDeadlines, useExams } from "@/lib/academic/useAcademicData";
+
+const EASE = [0.16, 1, 0.3, 1];
 
 /**
- * BudHome — Bud's Living Space. A dedicated companion dashboard that evolves
- * with the student. The layout rotates daily so it never looks identical twice.
+ * BudHome — Bud IS the home. There is no separate "Home" page anymore.
+ *
+ * The first thing the student sees is Bud: a greeting, a live briefing
+ * of what matters, and an input bar to act. Below Bud, Academic and Social
+ * workspaces render as content sections — cards that Bud has ranked based
+ * on the student's current context.
+ *
+ * Bud doesn't replace navigation. Bud prioritizes it.
  */
 export default function BudHome() {
-  const ctx = useUnibudContext();
-  const bud = useBudMemory();
-  const seed = new Date().getDate();
+  // Fetch context signals for card ranking
+  const { data: today } = useTodaySchedule();
+  const { data: deadlines } = useUpcomingDeadlines();
+  const { data: exams } = useExams();
+  const { data: events } = useQuery({
+    queryKey: ["budhome-events"],
+    queryFn: () => base44.entities.CampusEvent.list("-date", 5),
+    staleTime: 120000,
+  });
 
-  const sections = [
-    { k: "today", el: <BudToday ctx={ctx} /> },
-    { k: "insights", el: <BudInsights ctx={ctx} memories={bud.memories} /> },
-    { k: "mode", el: <BudContextMode ctx={ctx} /> },
-    { k: "memory", el: <BudMemoryStrip memories={bud.memories} /> },
-  ];
-  const rotated = [...sections].sort(
-    (a, b) => ((a.k.charCodeAt(0) + seed) % 7) - ((b.k.charCodeAt(0) + seed) % 7)
-  );
+  const academicCards = useMemo(() => {
+    const base = getCardsForWorkspace("academic");
+    const ctx = buildContext({ assignments: deadlines, exams, events });
+    return rankCards(base, ctx);
+  }, [deadlines, exams, events]);
+
+  const socialCards = useMemo(() => {
+    const base = getCardsForWorkspace("social");
+    const ctx = buildContext({ events });
+    return rankCards(base, ctx);
+  }, [events]);
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
-      <BudHomeHeader ctx={ctx} />
-      <BudHomeOrb ctx={ctx} />
-      <AnimatePresence>
-        {rotated.map((s, i) => (
-          <motion.section
-            key={s.k}
-            layout
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: i * 0.05 }}
-            className="mt-6"
-          >
-            {s.el}
-          </motion.section>
-        ))}
-      </AnimatePresence>
+    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-36 safe-area-pt">
+      {/* ═══ BUD — the interface ═══ */}
+      <BudHero />
+
+      {/* ═══ Academic Workspace ═══ */}
+      <motion.section
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3, ease: EASE }}
+        className="mt-6"
+      >
+        <div className="flex items-center justify-between mb-4 px-1">
+          <h2 className="text-[15px] font-bold text-foreground tracking-tight">Academic</h2>
+          <span className="text-[11px] text-muted-foreground font-medium">{academicCards.length} cards</span>
+        </div>
+        <WorkspaceRenderer cards={academicCards} />
+      </motion.section>
+
+      {/* ═══ Social Workspace ═══ */}
+      <motion.section
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.45, ease: EASE }}
+        className="mt-8"
+      >
+        <div className="flex items-center justify-between mb-4 px-1">
+          <h2 className="text-[15px] font-bold text-foreground tracking-tight">Social</h2>
+          <span className="text-[11px] text-muted-foreground font-medium">{socialCards.length} cards</span>
+        </div>
+        <WorkspaceRenderer cards={socialCards} />
+      </motion.section>
     </div>
   );
 }

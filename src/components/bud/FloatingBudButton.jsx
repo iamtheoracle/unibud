@@ -19,6 +19,7 @@ const LONG_PRESS_MS = 400;
  */
 export default function FloatingBudButton() {
   const location = useLocation();
+  const isHome = location.pathname === "/home";
   const { open, setOpen, openWithPrompt, openVoice } = useBudLauncher();
   const { state: voiceState, isSupported, startConversation } = useVoice();
   const [showQuickActions, setShowQuickActions] = useState(false);
@@ -40,6 +41,9 @@ export default function FloatingBudButton() {
       if (longPressTimer.current) clearTimeout(longPressTimer.current);
     };
   }, []);
+
+  // Hide on BudHome — Bud is already the hero there, not a floating button
+  if (isHome) return null;
 
   const handleTap = useCallback(() => {
     if (longPressTriggered.current) {
