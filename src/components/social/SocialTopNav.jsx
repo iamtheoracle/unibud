@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Compass, Users, Plus, MessageSquare, Calendar } from "lucide-react";
+import { Compass, Users, Plus, MessageSquare, Calendar, Gamepad2 } from "lucide-react";
 import { useCreate } from "@/lib/CreateContext";
 import { hapticTap } from "@/lib/haptics";
 
@@ -13,6 +13,7 @@ const TABS = [
   { id: "create",      label: "Create",      icon: Plus,          isCreate: true },
   { id: "messages",    label: "Messages",    to: "/messages",    icon: MessageSquare },
   { id: "events",      label: "Events",      to: "/events",      icon: Calendar },
+  { id: "games",       label: "Games",       to: "/games",       icon: Gamepad2 },
 ];
 
 /**
