@@ -2,6 +2,59 @@
   "name": "BudMemory",
   "type": "object",
   "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "academic",
+        "preferences",
+        "campus",
+        "career",
+        "conversation"
+      ],
+      "default": "conversation",
+      "description": "Memory category \u2014 determines which domain this memory serves"
+    },
+    "key": {
+      "type": "string",
+      "description": "Structured key (e.g. 'preferred_study_time', 'university', 'weak_subjects')"
+    },
+    "value": {
+      "type": "string",
+      "description": "Memory value (serialized as string; structured objects JSON-encoded)"
+    },
+    "confidence": {
+      "type": "number",
+      "default": 0.5,
+      "description": "Confidence score 0-1 (higher = more certain this memory is accurate)"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "inferred"
+      ],
+      "default": "inferred",
+      "description": "user = explicitly stated by user, inferred = derived by Bud from behaviour"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why this memory exists \u2014 every memory has a reason for being stored"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Optional expiry \u2014 low-scoring memories auto-expire after this time"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times this memory was retrieved and injected into a prompt"
+    },
+    "last_accessed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time this memory was retrieved (for freshness scoring)"
+    },
     "memory_type": {
       "type": "string",
       "enum": [
@@ -16,14 +69,15 @@
         "procedural"
       ],
       "default": "fact",
-      "description": "Type of memory: episodic (conversation-derived), semantic (facts/preferences), procedural (learned patterns), plus legacy types"
+      "description": "Legacy type tag (kept for backward compatibility)"
     },
     "content": {
-      "type": "string"
+      "type": "string",
+      "description": "Legacy content field \u2014 mirrors value for backward-compatible display"
     },
     "source": {
       "type": "string",
-      "description": "Where this memory was derived from"
+      "description": "Where this memory was derived from (screen, session, passive observer, etc.)"
     },
     "user_id": {
       "type": "string",
@@ -35,17 +89,18 @@
     },
     "metadata": {
       "type": "object",
-      "description": "Structured metadata (response snippets, tags, etc.)"
+      "description": "Structured metadata (tags, scoring breakdown, etc.)"
     },
     "importance": {
       "type": "number",
       "default": 0.5,
-      "description": "Importance score 0-1 (higher = more memorable)"
+      "description": "Legacy importance score (mirrors confidence)"
     }
   },
   "required": [
-    "memory_type",
-    "content"
+    "category",
+    "key",
+    "value"
   ],
   "rls": {
     "read": {
@@ -59,6 +114,9 @@
           }
         }
       ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
     },
     "update": {
       "$or": [
