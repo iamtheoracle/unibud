@@ -22,9 +22,9 @@ const SOCIAL_ACTIONS = [
 const ACADEMIC_ACTIONS = [
   { key: "search", icon: Search, label: "Search", to: "/discover" },
   { key: "timetable", icon: Clock, label: "Timetable", to: "/timetable" },
-  { key: "tasks", icon: ClipboardList, label: "Tasks", to: "/assignments" },
-  { key: "bud", icon: Sparkles, label: "Bud", kind: "bud", glow: true },
+  { key: "assignments", icon: ClipboardList, label: "Assignments", to: "/assignments" },
   { key: "scan", icon: QrCode, label: "Scan", to: "/smart-attendance" },
+  { key: "bud", icon: Sparkles, label: "Bud", kind: "bud", glow: true },
 ];
 
 /**
