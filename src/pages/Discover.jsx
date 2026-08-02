@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import {
   Search, Sparkles, Users, Calendar, Briefcase, Award,
@@ -13,6 +13,8 @@ import { useInterests } from "@/hooks/useInterests";
 import RecentSearches, { saveRecentSearch } from "@/components/discovery/RecentSearches";
 import PullToRefresh from "@/components/ui/PullToRefresh";
 import FilterSheet from "@/components/discovery/FilterSheet";
+import CategoryTabs from "@/components/discovery/CategoryTabs";
+import { DISCOVERY_TABS, matchesCategory } from "@/data/contentCategories";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -31,6 +33,8 @@ const ACADEMIC_TYPES = ["course", "department", "faculty", "study_group", "resea
 
 const LIFESTYLE_CATEGORIES = ["sports", "music", "drama", "dance", "art", "photography", "gaming", "literary", "debate", "journalism", "volunteer", "entrepreneurship"];
 
+const CATEGORY_STORAGE_KEY = "discover_active_category";
+
 /**
  * Discover — the Orbit Discovery Feed.
  *
@@ -45,7 +49,21 @@ export default function Discover() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState({ verifiedOnly: false, myFaculty: false, myDepartment: false });
+  const [activeCategory, setActiveCategory] = useState(() => {
+    try { return localStorage.getItem(CATEGORY_STORAGE_KEY) || "foryou"; } catch { return "foryou"; }
+  });
+  const scrollPositions = useRef({});
   const { interests } = useInterests();
+
+  const handleCategoryChange = (catId) => {
+    scrollPositions.current[activeCategory] = window.scrollY;
+    setActiveCategory(catId);
+    try { localStorage.setItem(CATEGORY_STORAGE_KEY, catId); } catch {}
+    if (catId !== "foryou") setFilter("all");
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollPositions.current[catId] || 0, behavior: "instant" });
+    });
+  };
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const uni = user?.university || "";
@@ -118,6 +136,7 @@ export default function Discover() {
   // ── Search + advanced filter ──
   const q = query.toLowerCase();
   const filterFn = (item) => {
+    if (activeCategory !== "foryou" && !matchesCategory(item, activeCategory)) return false;
     if (q && !JSON.stringify(item).toLowerCase().includes(q)) return false;
     if (advancedFilters.verifiedOnly && !item.is_verified) return false;
     if (advancedFilters.myFaculty && user?.faculty && item.faculty && item.faculty !== user.faculty) return false;
@@ -191,7 +210,16 @@ export default function Discover() {
     }
 
     return result.filter((s) => s.items.length > 0);
-  }, [filter, query, forYou, academic, trending, clubs, events, opportunities, scholarships, listings, people, nearby, campusLife, advancedFilters]);
+  }, [filter, query, forYou, academic, trending, clubs, events, opportunities, scholarships, listings, people, nearby, campusLife, advancedFilters, activeCategory]);
+
+  // Compute which category tabs have content — hide empty ones
+  const availableTabs = useMemo(() => {
+    const allItems = [...communities, ...clubs, ...events, ...opportunities, ...scholarships, ...listings];
+    return DISCOVERY_TABS.filter((tab) => {
+      if (tab.id === "foryou") return true;
+      return allItems.some((item) => matchesCategory(item, tab.id));
+    });
+  }, [communities, clubs, events, opportunities, scholarships, listings]);
 
   return (
     <ScreenShell title="Discover" subtitle="Explore communities, events, opportunities, and everything campus." sticky={false}>
@@ -226,6 +254,11 @@ export default function Discover() {
         <RecentSearches onSelect={(term) => setQuery(term)} />
       )}
 
+      {/* Category tabs — horizontally scrollable, animated */}
+      <div className="mb-3">
+        <CategoryTabs tabs={availableTabs} activeTab={activeCategory} onChange={handleCategoryChange} />
+      </div>
+
       {/* Filter chips */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar mb-5 -mx-1 px-1">
         {FILTERS.map((f) => {
@@ -257,24 +290,34 @@ export default function Discover() {
 
       {/* Content */}
       <PullToRefresh onRefresh={refetchAll}>
-        {isLoading ? (
-          <DiscoverySkeleton />
-        ) : sections.length === 0 ? (
-          <DiscoveryEmptyState query={query} />
-        ) : (
-          <div className="space-y-6">
-            {sections.map((section, i) => (
-              <motion.div
-                key={section.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
-              >
-                <DiscoverySection {...section} />
-              </motion.div>
-            ))}
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: EASE }}
+          >
+            {isLoading ? (
+              <DiscoverySkeleton />
+            ) : sections.length === 0 ? (
+              <DiscoveryEmptyState query={query} />
+            ) : (
+              <div className="space-y-6">
+                {sections.map((section, i) => (
+                  <motion.div
+                    key={section.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                  >
+                    <DiscoverySection {...section} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </PullToRefresh>
     </ScreenShell>
   );

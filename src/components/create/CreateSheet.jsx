@@ -7,12 +7,30 @@ import {
   Users, MessageSquare, Megaphone,
   NotebookPen, Layers, ClipboardList, Briefcase, FlaskConical,
   FolderOpen, HelpCircle, Target,
-  Search as SearchIcon, Building2, HeartHandshake,
+  Search as SearchIcon, Building2, HeartHandshake, ShoppingBag, Pin, Sparkles,
   Film, Music, Tv, Newspaper, BookOpen, Headphones,
 } from "lucide-react";
 import { hapticTap } from "@/lib/haptics";
+import { useQuickActions } from "@/hooks/useQuickActions";
 
 const EASE = [0.16, 1, 0.3, 1];
+
+/* ── Quick Actions — the most common creation actions.
+   Sorted adaptively by usage frequency + pinning. ── */
+const QUICK_ACTIONS = [
+  { id: "post", label: "Post", icon: PenLine, to: "/square" },
+  { id: "photo", label: "Photo", icon: Camera, to: "/square" },
+  { id: "video", label: "Video", icon: Video, to: "/square" },
+  { id: "discussion", label: "Discussion", icon: MessageSquare, to: "/square" },
+  { id: "event", label: "Event", icon: Calendar, to: "/events" },
+  { id: "poll", label: "Poll", icon: BarChart3, to: "/square" },
+  { id: "marketplace", label: "Listing", icon: ShoppingBag, to: "/marketplace" },
+  { id: "lost-found", label: "Lost & Found", icon: SearchIcon, to: "/lost-found" },
+  { id: "community", label: "Community", icon: Users, to: "/communities" },
+  { id: "note", label: "Study Note", icon: NotebookPen, to: "/study/notes" },
+  { id: "study-group", label: "Study Group", icon: Users, to: "/study-groups" },
+  { id: "resource", label: "Resource", icon: FolderOpen, to: "/knowledge" },
+];
 
 /* ── Category definitions ──
    Each option either navigates to a route or opens the smart
@@ -83,9 +101,11 @@ const CATEGORIES = [
 
 export default function CreateSheet({ open, onClose, onMediaDiscussion }) {
   const navigate = useNavigate();
+  const { sorted: sortedQuickActions, pinned: pinnedActions, trackUsage, togglePin } = useQuickActions(QUICK_ACTIONS);
 
-  const handleSelect = (option) => {
+  const handleSelect = (option, isQuickAction = false) => {
     hapticTap();
+    if (isQuickAction) trackUsage(option.id);
     onClose();
     if (option.media) {
       setTimeout(() => onMediaDiscussion(option.media), 150);
@@ -131,6 +151,56 @@ export default function CreateSheet({ open, onClose, onMediaDiscussion }) {
                 <X className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
+
+            {/* Quick Actions — adaptive to most-used actions */}
+            {sortedQuickActions.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05, duration: 0.3, ease: EASE }}
+                className="px-5 pb-3"
+              >
+                <div className="flex items-center gap-2 mb-2.5">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    Quick Actions
+                  </span>
+                </div>
+                <div className="flex gap-2.5 overflow-x-auto no-scrollbar -mx-1 px-1 pb-1">
+                  {sortedQuickActions.map((action) => {
+                    const Icon = action.icon;
+                    const isPinned = pinnedActions.includes(action.id);
+                    return (
+                      <div key={action.id} className="relative shrink-0">
+                        <button
+                          onClick={() => handleSelect(action, true)}
+                          className="flex flex-col items-center gap-1.5 w-[64px] spring-tap"
+                        >
+                          <div className="w-[46px] h-[46px] rounded-[14px] glass-card grid place-items-center hover-lift edge-light">
+                            <Icon className="w-[20px] h-[20px] text-foreground" strokeWidth={1.8} />
+                          </div>
+                          <span className="text-[9px] font-medium text-muted-foreground text-center leading-tight line-clamp-1">
+                            {action.label}
+                          </span>
+                        </button>
+                        <button
+                          onClick={() => togglePin(action.id)}
+                          className="absolute -top-1 -right-1 w-[18px] h-[18px] rounded-full grid place-items-center spring-tap"
+                          style={{ background: isPinned ? "hsl(var(--primary))" : "hsl(var(--muted))" }}
+                          aria-label={isPinned ? "Unpin" : "Pin"}
+                        >
+                          <Pin
+                            className="w-2.5 h-2.5"
+                            style={{ color: isPinned ? "hsl(var(--primary-foreground))" : "hsl(var(--muted-foreground))" }}
+                            strokeWidth={2.5}
+                          />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
 
             {/* Category sections */}
             <div className="px-5 pb-8 pt-3 space-y-5">
