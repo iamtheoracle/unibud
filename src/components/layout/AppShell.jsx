@@ -10,6 +10,8 @@ import FloatingBudButton from "@/components/bud/FloatingBudButton";
 import BudSheet from "@/components/bud/BudSheet";
 import UniversalSearchOverlay from "@/components/search/UniversalSearchOverlay";
 import OfflineSyncBanner from "@/components/resilience/OfflineSyncBanner";
+import AnnouncementBanner from "@/components/notifications/AnnouncementBanner";
+import { useRecentViews } from "@/lib/resilience/useRecentViews";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
@@ -32,8 +34,17 @@ export default function AppShell() {
   const location = useLocation();
   const outlet = useOutlet();
   const [checking, setChecking] = useState(true);
+  const { record } = useRecentViews();
   const reduceMotion = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   useBudPush();
+
+  // Track recently viewed pages for "Continue where you left off"
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === "/" || path === "/home") return;
+    const label = path.split("/").pop().replace(/-/g, " ").replace(/^\w/, (c) => c.toUpperCase()) || "Page";
+    record(path, label);
+  }, [location.pathname, record]);
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((ok) => {
@@ -55,6 +66,9 @@ export default function AppShell() {
           <AmbientBackground />
           <ContextPulse />
           <OfflineSyncBanner />
+          <div className="relative z-10 max-w-[520px] mx-auto px-4 pt-2 safe-area-pt">
+            <AnnouncementBanner />
+          </div>
           <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
