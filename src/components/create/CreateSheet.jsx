@@ -19,8 +19,8 @@ const EASE = [0.16, 1, 0.3, 1];
    Sorted adaptively by usage frequency + pinning. ── */
 const QUICK_ACTIONS = [
   { id: "post", label: "Post", icon: PenLine, to: "/square" },
-  { id: "photo", label: "Photo", icon: Camera, to: "/square" },
-  { id: "video", label: "Video", icon: Video, to: "/square" },
+  { id: "photo", label: "Photo", icon: Camera, camera: "post" },
+  { id: "video", label: "Video", icon: Video, camera: "short" },
   { id: "discussion", label: "Discussion", icon: MessageSquare, to: "/square" },
   { id: "event", label: "Event", icon: Calendar, to: "/events" },
   { id: "poll", label: "Poll", icon: BarChart3, to: "/square" },
@@ -43,9 +43,9 @@ const CATEGORIES = [
     accent: "251 90% 67%",
     options: [
       { id: "post", label: "Post", icon: PenLine, to: "/square" },
-      { id: "photo", label: "Photo", icon: Camera, to: "/square" },
-      { id: "video", label: "Video", icon: Video, to: "/square" },
-      { id: "story", label: "Story", icon: CircleDot, to: "/square" },
+      { id: "photo", label: "Photo", icon: Camera, camera: "post" },
+      { id: "video", label: "Video", icon: Video, camera: "short" },
+      { id: "story", label: "Story", icon: CircleDot, camera: "story" },
       { id: "poll", label: "Poll", icon: BarChart3, to: "/square" },
       { id: "event", label: "Event", icon: Calendar, to: "/events" },
       { id: "challenge", label: "Challenge", icon: Trophy, to: "/challenges" },
@@ -99,7 +99,7 @@ const CATEGORIES = [
   },
 ];
 
-export default function CreateSheet({ open, onClose, onMediaDiscussion }) {
+export default function CreateSheet({ open, onClose, onMediaDiscussion, onCamera }) {
   const navigate = useNavigate();
   const { sorted: sortedQuickActions, pinned: pinnedActions, trackUsage, togglePin } = useQuickActions(QUICK_ACTIONS);
 
@@ -107,7 +107,9 @@ export default function CreateSheet({ open, onClose, onMediaDiscussion }) {
     hapticTap();
     if (isQuickAction) trackUsage(option.id);
     onClose();
-    if (option.media) {
+    if (option.camera) {
+      setTimeout(() => onCamera?.(option.camera), 150);
+    } else if (option.media) {
       setTimeout(() => onMediaDiscussion(option.media), 150);
     } else if (option.to) {
       setTimeout(() => navigate(option.to), 150);

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import CreateSheet from "@/components/create/CreateSheet";
 import MediaDiscussionComposer from "@/components/create/MediaDiscussionComposer";
+import OrbitCamera from "@/components/camera/OrbitCamera";
 
 const CreateContext = createContext(null);
 
@@ -19,6 +20,7 @@ export function useCreate() {
 export function CreateProvider({ children }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [mediaComposer, setMediaComposer] = useState(null);
+  const [cameraState, setCameraState] = useState(null);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -27,6 +29,8 @@ export function CreateProvider({ children }) {
 
   const openCreate = useCallback(() => setSheetOpen(true), []);
   const closeCreate = useCallback(() => setSheetOpen(false), []);
+  const openCamera = useCallback((mode) => { setSheetOpen(false); setCameraState({ mode: mode || "post" }); }, []);
+  const closeCamera = useCallback(() => setCameraState(null), []);
 
   const openMediaDiscussion = useCallback((mediaType) => {
     setSheetOpen(false);
@@ -36,13 +40,22 @@ export function CreateProvider({ children }) {
   const closeMediaDiscussion = useCallback(() => setMediaComposer(null), []);
 
   return (
-    <CreateContext.Provider value={{ openCreate, closeCreate }}>
+    <CreateContext.Provider value={{ openCreate, closeCreate, openCamera }}>
       {children}
       <CreateSheet
         open={sheetOpen}
         onClose={closeCreate}
         onMediaDiscussion={openMediaDiscussion}
+        onCamera={openCamera}
       />
+      {cameraState && (
+        <OrbitCamera
+          open
+          initialMode={cameraState.mode}
+          user={user}
+          onClose={closeCamera}
+        />
+      )}
       {mediaComposer && (
         <MediaDiscussionComposer
           mediaType={mediaComposer.mediaType}
