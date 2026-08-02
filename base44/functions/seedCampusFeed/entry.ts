@@ -1,6 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.41';
 import { AUTHORS, POSTS, SEED_OPPORTUNITIES, SEED_SCHOLARSHIPS, COMMENT_TEMPLATES } from './data.ts';
 import { CONVERSATIONS, CAMPUS_EVENTS, CLUBS, MARKETPLACE_LISTINGS, STORIES, STUDY_GROUPS, COMMUNITIES, SHORT_VIDEOS, LOST_FOUND_ITEMS, NOTIFICATIONS, RESEARCH_PROJECTS, SEED_FLAG } from './socialData.ts';
+import { generatePost, generateComment, generateStory, generateNotification } from '../../shared/launchContent.ts';
 
 const SEED_BATCH = 'launch_v1';
 const CHUNK_SIZE = 50;
@@ -62,10 +63,15 @@ async function chunkedCreate(client, entityName, items) {
 }
 
 async function deleteSeed(client, entityName) {
-  const records = await client.entities[entityName].filter({ is_seed_content: true }, '-created_date', 200);
   let deleted = 0;
-  for (const r of records || []) {
-    try { await client.entities[entityName].delete(r.id); deleted++; } catch {}
+  let hasMore = true;
+  while (hasMore) {
+    const records = await client.entities[entityName].filter({ is_seed_content: true }, '-created_date', 200);
+    if (!records || records.length === 0) { hasMore = false; break; }
+    for (const r of records) {
+      try { await client.entities[entityName].delete(r.id); deleted++; } catch {}
+    }
+    if (records.length < 200) hasMore = false;
   }
   return deleted;
 }
@@ -88,16 +94,26 @@ export default async function(req) {
 
       const results = {};
 
-      // 1. Posts
+      // 1a. Hand-written posts (160)
       const postsToCreate = POSTS.map(buildPost);
+
+      // 1b. Procedurally generated posts to reach 300+ total
+      const TARGET_TOTAL = 300;
+      const proceduralCount = Math.max(0, TARGET_TOTAL - postsToCreate.length);
+      for (let i = 0; i < proceduralCount; i++) {
+        postsToCreate.push(generatePost());
+      }
+
       const createdPosts = await chunkedCreate(base44.asServiceRole, 'QuadPost', postsToCreate);
       results.posts = createdPosts.length;
+      results.proceduralPosts = proceduralCount;
 
-      // 2. Comments on posts
+      // 2. Comments on posts (target: 1000+)
       let commentCount = 0;
       for (const post of (createdPosts || [])) {
         if (post.comments_count > 0) {
-          const comments = generateComments(post, Math.min(post.comments_count, 5));
+          const numComments = Math.min(post.comments_count, post.comments_count > 10 ? 3 : 2);
+          const comments = generateComments(post, numComments);
           if (comments.length > 0) {
             const commentData = comments.map(c => ({ ...c, post_id: post.id }));
             await chunkedCreate(base44.asServiceRole, 'QuadComment', commentData);
@@ -105,10 +121,25 @@ export default async function(req) {
           }
         }
       }
+      // Generate additional procedural comments to reach 600+
+      const TARGET_COMMENTS = 500;
+      const batchComments = [];
+      while (batchComments.length < TARGET_COMMENTS - commentCount) {
+        const post = (createdPosts || [])[randInt(0, (createdPosts || []).length - 1)];
+        if (post) batchComments.push(generateComment(post));
+      }
+      if (batchComments.length > 0) {
+        const extraComments = await chunkedCreate(base44.asServiceRole, 'QuadComment', batchComments);
+        commentCount += extraComments.length;
+      }
       results.comments = commentCount;
 
-      // 3. Stories
+      // 3. Stories (seed data + procedural to reach 100+)
       const storiesToCreate = STORIES.map(s => ({ ...s, ...SEED_FLAG }));
+      const TARGET_STORIES = 100;
+      while (storiesToCreate.length < TARGET_STORIES) {
+        storiesToCreate.push(generateStory());
+      }
       results.stories = (await chunkedCreate(base44.asServiceRole, 'Story', storiesToCreate)).length;
 
       // 4. Conversations + Messages
@@ -123,6 +154,7 @@ export default async function(req) {
 
       // Messages for each conversation
       let msgCount = 0;
+      let msgCountTotal = 0;
       for (let i = 0; i < createdConvs.length; i++) {
         const conv = createdConvs[i];
         const convDef = CONVERSATIONS[i];
@@ -134,7 +166,74 @@ export default async function(req) {
           msgCount += msgs.length;
         }
       }
-      results.messages = msgCount;
+      // 4b. Procedural conversations to reach 60+ total
+      const TARGET_CONVS = 60;
+      const studentNames = [
+        { id: 'seed_s1', name: 'Ngozi Eze', role: 'student', handle: 'Pharmacy · 300L' },
+        { id: 'seed_s2', name: 'Ibrahim Suleiman', role: 'student', handle: 'Accounting · 400L' },
+        { id: 'seed_s3', name: 'Grace Adewale', role: 'student', handle: 'Sociology · 200L' },
+        { id: 'seed_s4', name: 'Samuel Okon', role: 'student', handle: 'Petroleum Eng · 500L' },
+        { id: 'seed_s5', name: 'Halima Bello', role: 'student', handle: 'Political Science · 300L' },
+        { id: 'seed_s6', name: 'Chukwuemeka Okafor', role: 'student', handle: 'Mechanical Eng · 400L' },
+        { id: 'seed_s7', name: 'Bola Ahmed', role: 'student', handle: 'Architecture · 200L' },
+        { id: 'seed_s8', name: 'Funke Akinwale', role: 'student', handle: 'Medicine · 300L' },
+        { id: 'seed_s9', name: 'Kennedy Obi', role: 'student', handle: 'Civil Engineering · 500L' },
+        { id: 'seed_s10', name: 'Aminata Diallo', role: 'student', handle: 'International Relations · 400L' },
+      ];
+      const messageSnippets = [
+        'Hey! How was the lecture today? 📚',
+        'Did you understand the assignment? I need help with Q3',
+        'Let\'s meet at the library later 📚',
+        'Thanks for the notes! You\'re a lifesaver 🙏',
+        'Are you coming to the study group?',
+        'The prof extended the deadline! 🎉',
+        'Did you see the new post on the Quad?',
+        'Coffee break? ☕',
+        'I finally figured out that problem! 💡',
+        'Good luck with your exam tomorrow! 💪',
+        'See you at the event 🎉',
+        'Can you share the slides from today?',
+        'That meme you sent was too funny 😂😂',
+        'NEPA took the light again 😅',
+        'Heading to class now, see you there!',
+      ];
+      // Batch-create procedural conversations
+      const proceduralConvData = [];
+      const proceduralMsgs = [];
+      while (proceduralConvData.length < TARGET_CONVS - createdConvs.length) {
+        const s = studentNames[randInt(0, studentNames.length - 1)];
+        const convMsgCount = randInt(3, 6);
+        const msgs = [];
+        for (let m = 0; m < convMsgCount; m++) {
+          const fromUser = m % 2 === 0;
+          msgs.push({
+            content: messageSnippets[randInt(0, messageSnippets.length - 1)],
+            author_name: fromUser ? s.name : 'You',
+            author_id: fromUser ? s.id : 'seed_me',
+            author_role: fromUser ? 'student' : 'student',
+            type: 'text',
+          });
+        }
+        proceduralConvData.push({
+          type: 'direct', title: s.name, avatar_url: '',
+          participants: [{ user_id: s.id, name: s.name, role: s.role, handle: s.handle }],
+          last_message: { content: msgs[msgs.length - 1].content, author_name: msgs[msgs.length - 1].author_name, type: 'text' },
+          is_pinned: false, university: 'University of Lagos',
+          shared_files_count: randInt(0, 3), ...SEED_FLAG, _msgs: msgs,
+        });
+      }
+      const extraConvs = await chunkedCreate(base44.asServiceRole, 'Conversation', proceduralConvData.map(({ _msgs, ...rest }) => rest));
+      createdConvs.push(...extraConvs);
+      results.conversations = createdConvs.length;
+      // Messages for procedural conversations
+      for (let i = 0; i < extraConvs.length; i++) {
+        const conv = extraConvs[i];
+        const msgs = proceduralConvData[i]._msgs;
+        const msgData = msgs.map(m => ({ ...m, conversation_id: conv.id, status: 'read', ...SEED_FLAG }));
+        await chunkedCreate(base44.asServiceRole, 'Message', msgData);
+        msgCountTotal += msgData.length;
+      }
+      results.messages = msgCount + msgCountTotal;
 
       // 5. Campus Events
       const eventData = CAMPUS_EVENTS.map(e => ({ ...e, ...SEED_FLAG }));
@@ -164,8 +263,12 @@ export default async function(req) {
       const lfData = LOST_FOUND_ITEMS.map(l => ({ ...l, ...SEED_FLAG }));
       results.lostFound = (await chunkedCreate(base44.asServiceRole, 'LostFoundItem', lfData)).length;
 
-      // 12. Notifications
+      // 12. Notifications (seed data + procedural to reach 50+)
       const notifData = NOTIFICATIONS.map(n => ({ ...n, ...SEED_FLAG }));
+      const TARGET_NOTIFS = 50;
+      while (notifData.length < TARGET_NOTIFS) {
+        notifData.push(generateNotification());
+      }
       results.notifications = (await chunkedCreate(base44.asServiceRole, 'Notification', notifData)).length;
 
       // 13. Research Projects
