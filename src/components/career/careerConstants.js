@@ -77,6 +77,16 @@ export function formatNumber(n) {
   return String(n);
 }
 
+export const COMPANY_TYPES = {
+  tech: { icon: Code, label: "Technology", bg: "bg-information/10", color: "text-information" },
+  finance: { icon: Briefcase, label: "Finance", bg: "bg-success/10", color: "text-success" },
+  healthcare: { icon: Heart, label: "Healthcare", bg: "bg-error/10", color: "text-error" },
+  education: { icon: GraduationCap, label: "Education", bg: "bg-accent/10", color: "text-accent" },
+  manufacturing: { icon: Building2, label: "Manufacturing", bg: "bg-warning/10", color: "text-warning" },
+  consulting: { icon: Briefcase, label: "Consulting", bg: "bg-primary/10", color: "text-primary" },
+  other: { icon: Building2, label: "Company", bg: "bg-muted/30", color: "text-muted-foreground" },
+};
+
 export const PORTFOLIO_TYPES = {
   project: { icon: Briefcase, label: "Project", bg: "bg-accent/10", color: "text-accent" },
   research: { icon: FlaskConical, label: "Research", bg: "bg-information/10", color: "text-information" },

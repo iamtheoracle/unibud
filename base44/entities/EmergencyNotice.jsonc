@@ -1,0 +1,254 @@
+{
+  "name": "EmergencyNotice",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Notice headline"
+    },
+    "message": {
+      "type": "string",
+      "description": "Full notice body"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "urgent",
+        "critical"
+      ],
+      "default": "warning",
+      "description": "Severity level for prioritization"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "security",
+        "weather",
+        "health",
+        "facility",
+        "safety",
+        "transport",
+        "security_threat",
+        "other"
+      ],
+      "default": "safety"
+    },
+    "location": {
+      "type": "string",
+      "description": "Affected location or building"
+    },
+    "affected_areas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas or faculties affected"
+    },
+    "start_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the notice takes effect"
+    },
+    "end_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the notice expires (if time-bound)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "resolved",
+        "cancelled"
+      ],
+      "default": "active"
+    },
+    "instructions": {
+      "type": "string",
+      "description": "What students should do"
+    },
+    "contact_info": {
+      "type": "string",
+      "description": "Emergency contact number or email"
+    },
+    "link_url": {
+      "type": "string",
+      "description": "Additional info link"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": true,
+      "description": "Officially published by institution authorities"
+    },
+    "issued_by_name": {
+      "type": "string"
+    },
+    "issued_by_id": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolution_notes": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "title",
+    "message",
+    "institution_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$and": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "institution_owner"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "university_admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "registrar"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "security_officer"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "platform_admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "super_admin"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "security_officer"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

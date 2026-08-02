@@ -6,6 +6,7 @@ import {
   Settings, Shield, Bell, Palette, Globe, Smartphone,
   BadgeCheck, Award, Briefcase, FileText, ChevronRight, Sparkles,
   Wallet as WalletIcon, Lock, Activity, Calendar as CalendarIcon,
+  Building2, ShieldCheck,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
@@ -153,6 +154,24 @@ export default function MeTab() {
                 <QuickLink icon={Award} label="Awards" onClick={() => setActiveCategory("achievements")} />
                 <QuickLink icon={WalletIcon} label="Wallet" onClick={() => setActiveCategory("wallet")} />
               </div>
+
+              {/* University Profile — official verified source */}
+              <button
+                onClick={() => navigate("/university")}
+                className="w-full flex items-center gap-3 p-3.5 rounded-[18px] bg-card shadow-sm text-left active:scale-[0.98] transition-transform"
+              >
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Building2 className="w-4.5 h-4.5 text-primary" strokeWidth={2.2} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[12px] font-bold text-foreground flex items-center gap-1">
+                    University Profile
+                    <ShieldCheck className="w-3 h-3 text-primary" strokeWidth={2.5} />
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">Official announcements, calendar, exams & alerts</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+              </button>
 
               {/* Wallet preview */}
               <button
