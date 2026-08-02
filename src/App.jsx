@@ -6,7 +6,7 @@ import { lazy, Suspense } from 'react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { PlatformProvider } from '@/lib/platform/PlatformProvider';
-import { DemoModeProvider } from '@/lib/DemoModeContext';
+
 import { ExperienceProvider } from '@/lib/ExperienceContext';
 import { SearchProvider } from '@/lib/SearchContext';
 import ScrollToTop from './components/ScrollToTop';
@@ -230,8 +230,7 @@ function App() {
       <ThemeProvider>
         <PlatformProvider>
         <QueryClientProvider client={queryClientInstance}>
-          <DemoModeProvider>
-          <ExperienceProvider>
+            <ExperienceProvider>
             <SearchProvider>
             <Router>
               <ScrollToTop />
@@ -406,7 +405,6 @@ function App() {
             </Router>
             </SearchProvider>
           </ExperienceProvider>
-          </DemoModeProvider>
         </QueryClientProvider>
         </PlatformProvider>
       </ThemeProvider>

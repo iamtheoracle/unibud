@@ -1,26 +1,21 @@
 /**
- * UNIBUD Academic — Orbit-powered API service.
+ * UNIBUD Academic — real entity-backed API service.
  *
- * Blank by default. When data is requested, Orbit browses the web to build
- * a realistic academic profile for the student's university and program.
- * The Orbit generation is cached and shared across all consumers.
+ * All methods query real base44 entities (Course, TimetableEntry, Assignment,
+ * Exam, StudentGrade, AttendanceRecord, StudySession, CalendarEvent).
+ * When no data exists, returns empty values so consumers show Bud empty states.
+ * No orbit-generated data. No fabrication. No mock.
  */
-import { getOrbitData } from "./orbitPopulate";
-
-const courseById = (courses, id) => (courses || []).find((c) => c.id === id);
-
-function daysFromNowISO(n) {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  return d.toISOString();
-}
+import { base44 } from "@/api/base44Client";
 
 function toMin(hm) {
+  if (!hm) return 0;
   const [h, m] = hm.split(":").map(Number);
   return h * 60 + m;
 }
 
 function classStatus(start, end) {
+  if (!start || !end) return "upcoming";
   const now = new Date();
   const cur = now.getHours() * 60 + now.getMinutes();
   const s = toMin(start);
@@ -32,90 +27,101 @@ function classStatus(start, end) {
 
 export const academicApi = {
   async getStudent() {
-    const data = await getOrbitData();
-    return data.student || {};
+    const user = await base44.auth.me();
+    const data = user?.data || {};
+    return {
+      full_name: user?.full_name || "",
+      university: data.university || "",
+      department: data.department || "",
+      level: data.level || "",
+      matriculation_number: data.matriculation_number || "",
+    };
   },
 
   async getCourses() {
-    const data = await getOrbitData();
-    return data.courses || [];
+    return await base44.entities.Course.list() || [];
   },
 
   async getTodaySchedule() {
-    const data = await getOrbitData();
-    const day = new Date().getDay();
-    const slots = (data.timetableSlots || []).filter((s) => s.day === day);
-    return slots.map((s) => {
-      const course = courseById(data.courses, s.courseId);
-      return {
-        ...s,
-        course,
-        code: course?.code,
-        title: course?.title,
-        color: course?.color,
-        status: classStatus(s.start, s.end),
-      };
-    });
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const today = dayNames[new Date().getDay()];
+    const slots = await base44.entities.TimetableEntry.filter({ day: today }) || [];
+    return slots.map((s) => ({
+      ...s,
+      code: s.course_code,
+      title: s.course_title,
+      status: classStatus(s.start_time, s.end_time),
+    }));
   },
 
   async getUpcomingDeadlines() {
-    const data = await getOrbitData();
-    return (data.assignments || [])
-      .map((a) => {
-        const course = courseById(data.courses, a.courseId);
-        return {
-          ...a,
-          course,
-          code: course?.code,
-          color: course?.color,
-          dueDate: daysFromNowISO(a.dueInDays),
-          dueInDays: a.dueInDays,
-        };
-      })
-      .sort((a, b) => a.dueInDays - b.dueInDays);
+    const assignments = await base44.entities.Assignment.list("-due_date", 20) || [];
+    return assignments.map((a) => ({
+      ...a,
+      code: a.course_code,
+      dueDate: a.due_date,
+      dueInDays: a.due_date ? Math.round((new Date(a.due_date) - new Date()) / 86400000) : null,
+    }));
   },
 
   async getExams() {
-    const data = await getOrbitData();
-    return (data.exams || [])
-      .map((e) => {
-        const course = courseById(data.courses, e.courseId);
-        return {
-          ...e,
-          course,
-          code: course?.code,
-          color: course?.color,
-          date: daysFromNowISO(e.inDays),
-          inDays: e.inDays,
-        };
-      })
-      .sort((a, b) => a.inDays - b.inDays);
+    const exams = await base44.entities.Exam.list("date", 20) || [];
+    return exams.map((e) => ({
+      ...e,
+      code: e.course_code,
+      date: e.date,
+      inDays: e.date ? Math.round((new Date(e.date) - new Date()) / 86400000) : null,
+    }));
   },
 
   async getGpa() {
-    const data = await getOrbitData();
-    return data.gpa || null;
+    const grades = await base44.entities.StudentGrade.list() || [];
+    if (!grades.length) return null;
+    const totalPoints = grades.reduce((sum, g) => sum + (g.grade_point || 0) * (g.credit_units || 1), 0);
+    const totalCredits = grades.reduce((sum, g) => sum + (g.credit_units || 1), 0);
+    const gpa = totalCredits > 0 ? totalPoints / totalCredits : 0;
+    return {
+      scale: 5.0,
+      current: gpa,
+      lastSemesterGrades: grades.map((g) => ({
+        courseId: g.course_id,
+        code: g.course_code,
+        title: g.course_title,
+        grade: g.grade,
+        point: g.grade_point,
+      })),
+    };
   },
 
   async getAttendance() {
-    const data = await getOrbitData();
-    const attendance = data.attendance || { overall: 0, perCourse: [] };
+    const records = await base44.entities.AttendanceRecord.list() || [];
+    if (!records.length) return { overall: 0, perCourse: [] };
+    const overall = records.reduce((sum, r) => sum + (r.attendance_rate || 0), 0) / records.length;
     return {
-      ...attendance,
-      perCourse: (attendance.perCourse || []).map((p) => ({
-        ...p,
-        course: courseById(data.courses, p.courseId),
+      overall: Math.round(overall),
+      perCourse: records.map((r) => ({
+        courseId: r.course_id,
+        pct: r.attendance_rate,
+        course: { code: r.course_code, title: r.course_title },
       })),
     };
   },
 
   async getStudyStats() {
-    const data = await getOrbitData();
-    return data.stats || { streakDays: 0, weekStudyHours: 0, focusSessions: 0, avgSessionMin: 0 };
+    const sessions = await base44.entities.StudySession.list("-created_date", 50) || [];
+    if (!sessions.length) return { streakDays: 0, weekStudyHours: 0, focusSessions: 0, avgSessionMin: 0 };
+    const weekAgo = new Date(Date.now() - 7 * 86400000);
+    const weekSessions = sessions.filter((s) => new Date(s.created_date) >= weekAgo);
+    const totalMin = weekSessions.reduce((sum, s) => sum + (s.duration_minutes || 0), 0);
+    return {
+      streakDays: 0,
+      weekStudyHours: totalMin / 60,
+      focusSessions: weekSessions.length,
+      avgSessionMin: weekSessions.length > 0 ? totalMin / weekSessions.length : 0,
+    };
   },
 
   async getAcademicCalendar() {
-    const data = await getOrbitData();
-    return data.calendar || [];
+    return await base44.entities.CalendarEvent.list("date", 20) || [];
   },
 };

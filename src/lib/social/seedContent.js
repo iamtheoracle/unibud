@@ -1,29 +1,8 @@
 /**
- * Seed Content Service — manages launch content for the Campus Feed.
- *
- * - seed: generate realistic posts, comments, opportunities, and scholarships
- * - clear: remove all seed content
- * - status: check seed vs real content ratio and Orbit replacement phase
- * - archive: gradually replace seed content as real activity grows
+ * Neutralized — no seed content generation.
+ * Real content comes from real users and real events only.
  */
-import { base44 } from "@/api/base44Client";
-
-export async function seedFeed() {
-  const res = await base44.functions.invoke("seedCampusFeed", { action: "seed" });
-  return res.data;
-}
-
-export async function clearSeedContent() {
-  const res = await base44.functions.invoke("seedCampusFeed", { action: "clear" });
-  return res.data;
-}
-
-export async function getSeedStatus() {
-  const res = await base44.functions.invoke("seedCampusFeed", { action: "status" });
-  return res.data;
-}
-
-export async function archiveSeedContent() {
-  const res = await base44.functions.invoke("seedCampusFeed", { action: "archive" });
-  return res.data;
-}
+export async function seedFeed() { return { status: "disabled" }; }
+export async function clearSeedContent() { return { status: "disabled" }; }
+export async function getSeedStatus() { return { seeded: false, ratio: 0 }; }
+export async function archiveSeedContent() { return { status: "disabled" }; }
