@@ -32,7 +32,7 @@ export const MODE_NAV = {
   ],
   academic: [
     { key: "campus", label: "Campus", to: "/academics", icon: GraduationCap },
-    { key: "quad", label: "Quad", to: "/opportunities", icon: Compass },
+    { key: "explore", label: "Explore", to: "/opportunities", icon: Compass },
     { key: "connect", label: "Connect", to: "/connect", icon: Users },
   ],
 };
