@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BookOpen, ClipboardList, GraduationCap, CalendarClock,
   TrendingUp, Library, Wallet, Award, ChevronRight, Sparkles,
+  FileText, Briefcase, CheckCircle,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
@@ -13,21 +14,16 @@ import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 const CATEGORIES = [
   { id: "dashboard", label: "Dashboard" },
   { id: "courses", label: "Courses" },
+  { id: "timetable", label: "Timetable" },
   { id: "assignments", label: "Assignments" },
   { id: "exams", label: "Exams" },
-  { id: "timetable", label: "Timetable" },
+  { id: "attendance", label: "Attendance" },
+  { id: "notes", label: "Notes" },
+  { id: "research", label: "Research" },
   { id: "library", label: "Library" },
-  { id: "wallet", label: "Wallet" },
+  { id: "scholarships", label: "Scholarships" },
   { id: "career", label: "Career" },
-];
-
-const QUICK_LINKS = [
-  { id: "timetable", label: "Timetable", icon: CalendarClock, path: "/timetable" },
-  { id: "courses", label: "Courses", icon: BookOpen, path: "/courses" },
-  { id: "grades", label: "Grades", icon: TrendingUp, path: "/academics/results" },
-  { id: "library", label: "Library", icon: Library, path: "/library" },
-  { id: "wallet", label: "Wallet", icon: Wallet, path: "/wallet" },
-  { id: "career", label: "Career", icon: GraduationCap, path: "/career" },
+  { id: "internships", label: "Internships" },
 ];
 
 export default function AcademicsTab() {
@@ -66,49 +62,53 @@ export default function AcademicsTab() {
     enabled: isOnline && activeCategory === "library",
   });
 
-  const { data: wallet, isLoading: walletLoading } = useQuery({
-    queryKey: ["academics", "wallet"],
-    queryFn: () => base44.entities.Wallet.list("-created_date", 1),
-    enabled: isOnline && activeCategory === "wallet",
+  const { data: scholarships, isLoading: scholarshipLoading } = useQuery({
+    queryKey: ["academics", "scholarships"],
+    queryFn: () => base44.entities.Scholarship.list("-created_date", 5),
+    enabled: isOnline && activeCategory === "scholarships",
   });
 
   const { data: opportunities, isLoading: oppLoading } = useQuery({
     queryKey: ["academics", "opportunities"],
     queryFn: () => base44.entities.Opportunity.list("-created_date", 5),
-    enabled: isOnline && activeCategory === "career",
+    enabled: isOnline && (activeCategory === "career" || activeCategory === "internships"),
+  });
+
+  const { data: notes, isLoading: notesLoading } = useQuery({
+    queryKey: ["academics", "notes"],
+    queryFn: () => base44.entities.Note.list("-created_date", 5),
+    enabled: isOnline && activeCategory === "notes",
+  });
+
+  const { data: projects, isLoading: projLoading } = useQuery({
+    queryKey: ["academics", "projects"],
+    queryFn: () => base44.entities.Project.list("-created_date", 5),
+    enabled: isOnline && activeCategory === "research",
   });
 
   const handleRefresh = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ["academics"] });
   }, [queryClient]);
 
-  const allLoading = coursesLoading && assignmentsLoading;
-  const state = !isOnline ? "offline" : allLoading ? "loading" : "ready";
+  const isLoading =
+    (activeCategory === "courses" && coursesLoading) ||
+    (activeCategory === "assignments" && assignmentsLoading) ||
+    (activeCategory === "exams" && examsLoading) ||
+    (activeCategory === "library" && resLoading) ||
+    (activeCategory === "scholarships" && scholarshipLoading) ||
+    (activeCategory === "notes" && notesLoading) ||
+    (activeCategory === "research" && projLoading) ||
+    (activeCategory === "career" && oppLoading) ||
+    (activeCategory === "internships" && oppLoading);
+
+  const dashboardLoading = coursesLoading && assignmentsLoading;
+  const state = !isOnline ? "offline" : isLoading || (activeCategory === "dashboard" && dashboardLoading) ? "loading" : "ready";
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto pb-24">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm px-4 pt-5 pb-2">
         <h1 className="text-[24px] font-bold text-foreground tracking-tight mb-3">Academics</h1>
-
-        {/* Quick links */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2">
-          {QUICK_LINKS.map((link) => {
-            const Icon = link.icon;
-            return (
-              <button
-                key={link.id}
-                onClick={() => navigate(link.path)}
-                className="flex flex-col items-center gap-1 flex-shrink-0 w-14 active:scale-95 transition-transform"
-              >
-                <div className="w-11 h-11 rounded-[14px] bg-card shadow-sm flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-chocolate" strokeWidth={2} />
-                </div>
-                <span className="text-[9px] font-semibold text-muted-foreground">{link.label}</span>
-              </button>
-            );
-          })}
-        </div>
 
         {/* Category tabs */}
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar">
@@ -128,12 +128,10 @@ export default function AcademicsTab() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-4 py-3 pb-24">
+      <div className="px-4 py-3">
         {activeCategory === "dashboard" && (
           <ProductionState state={state} onRefresh={handleRefresh} skeleton={<DashboardSkeleton />}>
             <div className="space-y-4">
-              {/* Bud suggestion */}
               <button
                 onClick={() => navigate("/bud")}
                 className="w-full flex items-center gap-3 p-3.5 rounded-[18px] bg-card shadow-sm text-left active:scale-[0.98] transition-transform"
@@ -153,14 +151,12 @@ export default function AcademicsTab() {
                 <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
               </button>
 
-              {/* Quick stats */}
               <div className="grid grid-cols-3 gap-2">
                 <StatCard icon={BookOpen} label="Courses" value={courses?.length || 0} onClick={() => navigate("/courses")} />
                 <StatCard icon={ClipboardList} label="Due" value={assignments?.length || 0} onClick={() => navigate("/assignments")} />
                 <StatCard icon={Award} label="Exams" value={exams?.length || 0} onClick={() => navigate("/exams")} />
               </div>
 
-              {/* Courses */}
               {(courses?.length ?? 0) > 0 && (
                 <Section title="My Courses" onSeeAll={() => navigate("/courses")}>
                   <div className="grid grid-cols-2 gap-2">
@@ -171,7 +167,6 @@ export default function AcademicsTab() {
                 </Section>
               )}
 
-              {/* Assignments */}
               {(assignments?.length ?? 0) > 0 && (
                 <Section title="Assignments" onSeeAll={() => navigate("/assignments")}>
                   <div className="space-y-2">
@@ -182,7 +177,6 @@ export default function AcademicsTab() {
                 </Section>
               )}
 
-              {/* Exams */}
               {(exams?.length ?? 0) > 0 && (
                 <Section title="Upcoming Exams" onSeeAll={() => navigate("/exams")}>
                   <div className="space-y-2">
@@ -193,7 +187,6 @@ export default function AcademicsTab() {
                 </Section>
               )}
 
-              {/* Grades */}
               {(grades?.length ?? 0) > 0 && (
                 <Section title="Recent Grades" onSeeAll={() => navigate("/academics/results")}>
                   <div className="space-y-2">
@@ -208,41 +201,13 @@ export default function AcademicsTab() {
         )}
 
         {activeCategory === "courses" && (
-          <ProductionState state={coursesLoading ? "loading" : "ready"} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<GridSkeleton />}>
             {(courses?.length ?? 0) === 0 ? (
-              <EmptyContent icon={BookOpen} text="No courses enrolled yet" />
+              <EmptyContent icon={BookOpen} text="No courses enrolled" subtext="Your courses will appear here" />
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 {courses.map((c) => (
                   <CourseCard key={c.id} course={c} onClick={() => navigate(`/course/${c.id}`)} />
-                ))}
-              </div>
-            )}
-          </ProductionState>
-        )}
-
-        {activeCategory === "assignments" && (
-          <ProductionState state={assignmentsLoading ? "loading" : "ready"} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
-            {(assignments?.length ?? 0) === 0 ? (
-              <EmptyContent icon={ClipboardList} text="No assignments due" />
-            ) : (
-              <div className="space-y-2">
-                {assignments.map((a) => (
-                  <AssignmentRow key={a.id} assignment={a} onClick={() => navigate("/assignments")} />
-                ))}
-              </div>
-            )}
-          </ProductionState>
-        )}
-
-        {activeCategory === "exams" && (
-          <ProductionState state={examsLoading ? "loading" : "ready"} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
-            {(exams?.length ?? 0) === 0 ? (
-              <EmptyContent icon={Award} text="No upcoming exams" />
-            ) : (
-              <div className="space-y-2">
-                {exams.map((e) => (
-                  <ExamRow key={e.id} exam={e} onClick={() => navigate("/exams")} />
                 ))}
               </div>
             )}
@@ -260,10 +225,77 @@ export default function AcademicsTab() {
           </button>
         )}
 
+        {activeCategory === "assignments" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(assignments?.length ?? 0) === 0 ? (
+              <EmptyContent icon={ClipboardList} text="No assignments due" subtext="Your assignments will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {assignments.map((a) => (
+                  <AssignmentRow key={a.id} assignment={a} onClick={() => navigate("/assignments")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
+        )}
+
+        {activeCategory === "exams" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(exams?.length ?? 0) === 0 ? (
+              <EmptyContent icon={Award} text="No upcoming exams" subtext="Your exam schedule will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {exams.map((e) => (
+                  <ExamRow key={e.id} exam={e} onClick={() => navigate("/exams")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
+        )}
+
+        {activeCategory === "attendance" && (
+          <button
+            onClick={() => navigate("/attendance")}
+            className="w-full p-4 rounded-[18px] bg-card shadow-sm flex items-center gap-3 text-left active:scale-[0.98] transition-transform"
+          >
+            <CheckCircle className="w-5 h-5 text-primary" strokeWidth={2} />
+            <span className="text-[13px] font-bold text-foreground flex-1">View Attendance</span>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+          </button>
+        )}
+
+        {activeCategory === "notes" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(notes?.length ?? 0) === 0 ? (
+              <EmptyContent icon={FileText} text="No notes yet" subtext="Your study notes will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {notes.map((n) => (
+                  <ListRow key={n.id} icon={FileText} title={n.title} subtitle={n.course_code || n.subject || "Note"} onClick={() => navigate("/notes")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
+        )}
+
+        {activeCategory === "research" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(projects?.length ?? 0) === 0 ? (
+              <EmptyContent icon={Briefcase} text="No research projects" subtext="Your research projects will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {projects.map((p) => (
+                  <ListRow key={p.id} icon={Briefcase} title={p.title} subtitle={p.description || p.status || "Project"} onClick={() => navigate("/projects")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
+        )}
+
         {activeCategory === "library" && (
-          <ProductionState state={resLoading ? "loading" : "ready"} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
             {(resources?.length ?? 0) === 0 ? (
-              <EmptyContent icon={Library} text="No resources available" />
+              <EmptyContent icon={Library} text="No resources available" subtext="Library resources will appear here" />
             ) : (
               <div className="space-y-2">
                 {resources.map((r) => (
@@ -274,31 +306,42 @@ export default function AcademicsTab() {
           </ProductionState>
         )}
 
-        {activeCategory === "wallet" && (
-          <ProductionState state={walletLoading ? "loading" : "ready"} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
-            <button
-              onClick={() => navigate("/wallet")}
-              className="w-full p-4 rounded-[20px] bg-chocolate text-white shadow-sm flex items-center justify-between text-left active:scale-[0.98] transition-transform"
-            >
-              <div>
-                <p className="text-[10px] text-white/60 uppercase tracking-wider">Campus Wallet</p>
-                <p className="text-[22px] font-bold mt-0.5">
-                  ₦{Number(wallet?.[0]?.balance || 0).toLocaleString()}
-                </p>
+        {activeCategory === "scholarships" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(scholarships?.length ?? 0) === 0 ? (
+              <EmptyContent icon={GraduationCap} text="No scholarships available" subtext="Scholarship opportunities will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {scholarships.map((s) => (
+                  <ListRow key={s.id} icon={GraduationCap} title={s.title || s.name} subtitle={s.provider || s.organization || "Scholarship"} onClick={() => navigate("/scholarships")} />
+                ))}
               </div>
-              <Wallet className="w-6 h-6 text-white/40" strokeWidth={2} />
-            </button>
+            )}
           </ProductionState>
         )}
 
         {activeCategory === "career" && (
-          <ProductionState state={oppLoading ? "loading" : "ready"} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
             {(opportunities?.length ?? 0) === 0 ? (
-              <EmptyContent icon={GraduationCap} text="No opportunities available" />
+              <EmptyContent icon={Briefcase} text="No career opportunities" subtext="Career opportunities will appear here" />
             ) : (
               <div className="space-y-2">
                 {opportunities.map((o) => (
-                  <ListRow key={o.id} icon={GraduationCap} title={o.title} subtitle={o.company || o.organization || "Opportunity"} onClick={() => navigate("/opportunities")} />
+                  <ListRow key={o.id} icon={Briefcase} title={o.title} subtitle={o.company || o.organization || "Opportunity"} onClick={() => navigate("/career")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
+        )}
+
+        {activeCategory === "internships" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(opportunities?.length ?? 0) === 0 ? (
+              <EmptyContent icon={Briefcase} text="No internships available" subtext="Internship opportunities will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {opportunities.map((o) => (
+                  <ListRow key={o.id} icon={Briefcase} title={o.title} subtitle={o.company || o.organization || "Internship"} onClick={() => navigate("/opportunities")} />
                 ))}
               </div>
             )}
@@ -331,9 +374,7 @@ function Section({ title, onSeeAll, children }) {
       <div className="flex items-center justify-between mb-2.5">
         <h3 className="text-[15px] font-bold text-foreground tracking-tight">{title}</h3>
         {onSeeAll && (
-          <button onClick={onSeeAll} className="text-[11px] font-bold text-primary active:scale-95 transition-transform">
-            See all
-          </button>
+          <button onClick={onSeeAll} className="text-[11px] font-bold text-primary active:scale-95 transition-transform">See all</button>
         )}
       </div>
       {children}
@@ -437,13 +478,14 @@ function ListRow({ icon: Icon, title, subtitle, onClick }) {
   );
 }
 
-function EmptyContent({ icon: Icon, text }) {
+function EmptyContent({ icon: Icon, text, subtext }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 py-16">
       <div className="w-14 h-14 rounded-[18px] bg-muted flex items-center justify-center">
         <Icon className="w-6 h-6 text-muted-foreground" strokeWidth={1.6} />
       </div>
       <p className="text-[13px] text-muted-foreground">{text}</p>
+      {subtext && <p className="text-[11px] text-muted-foreground/70">{subtext}</p>}
     </div>
   );
 }
@@ -453,6 +495,16 @@ function ListSkeleton() {
     <div className="space-y-2">
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className="h-16 rounded-[16px] bg-card shadow-sm animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="h-20 rounded-[16px] bg-card shadow-sm animate-pulse" />
       ))}
     </div>
   );

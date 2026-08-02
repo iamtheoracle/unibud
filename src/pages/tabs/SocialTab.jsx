@@ -2,7 +2,10 @@ import React, { useState, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Users, Store, Home, MessageCircle, CalendarDays, Compass } from "lucide-react";
+import {
+  Users, Store, Home, MessageCircle, CalendarDays, Compass,
+  TrendingUp, Briefcase, Star, Newspaper, ChevronRight,
+} from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
 import QuadFeedProduction from "@/components/quad/QuadFeedProduction";
@@ -10,29 +13,25 @@ import { Image } from "@/components/ui/image";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const CATEGORIES = [
-  { id: "feed", label: "Feed" },
+  { id: "foryou", label: "For You" },
+  { id: "following", label: "Following" },
+  { id: "campus", label: "Campus" },
   { id: "stories", label: "Stories" },
-  { id: "communities", label: "Communities" },
   { id: "clubs", label: "Clubs" },
+  { id: "communities", label: "Communities" },
   { id: "events", label: "Events" },
-  { id: "marketplace", label: "Market" },
+  { id: "marketplace", label: "Marketplace" },
   { id: "housing", label: "Housing" },
-  { id: "discover", label: "Discover" },
-];
-
-const QUICK_LINKS = [
-  { id: "messages", label: "Messages", icon: MessageCircle, path: "/messages" },
-  { id: "events", label: "Events", icon: CalendarDays, path: "/events" },
-  { id: "marketplace", label: "Marketplace", icon: Store, path: "/marketplace" },
-  { id: "housing", label: "Housing", icon: Home, path: "/housing" },
-  { id: "discover", label: "Discover", icon: Compass, path: "/discover" },
+  { id: "jobs", label: "Jobs" },
+  { id: "creators", label: "Creators" },
+  { id: "trending", label: "Trending" },
 ];
 
 export default function SocialTab() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isOnline = useOnlineStatus();
-  const [activeCategory, setActiveCategory] = useState("feed");
+  const [activeCategory, setActiveCategory] = useState("foryou");
 
   const { data: stories, isLoading: storiesLoading } = useQuery({
     queryKey: ["social", "stories"],
@@ -64,6 +63,18 @@ export default function SocialTab() {
     enabled: isOnline && activeCategory === "marketplace",
   });
 
+  const { data: opportunities, isLoading: jobsLoading } = useQuery({
+    queryKey: ["social", "jobs"],
+    queryFn: () => base44.entities.Opportunity.list("-created_date", 10),
+    enabled: isOnline && activeCategory === "jobs",
+  });
+
+  const { data: posts, isLoading: trendingLoading } = useQuery({
+    queryKey: ["social", "trending"],
+    queryFn: () => base44.entities.QuadPost.filter({}, "-likes_count", 10),
+    enabled: isOnline && activeCategory === "trending",
+  });
+
   const handleRefresh = useCallback(async () => {
     await queryClient.invalidateQueries({ queryKey: ["social"] });
   }, [queryClient]);
@@ -73,33 +84,24 @@ export default function SocialTab() {
     (activeCategory === "communities" && commLoading) ||
     (activeCategory === "clubs" && clubsLoading) ||
     (activeCategory === "events" && eventsLoading) ||
-    (activeCategory === "marketplace" && listingsLoading);
+    (activeCategory === "marketplace" && listingsLoading) ||
+    (activeCategory === "jobs" && jobsLoading) ||
+    (activeCategory === "trending" && trendingLoading);
 
   const state = !isOnline ? "offline" : isLoading ? "loading" : "ready";
 
   return (
-    <div className="max-w-[600px] mx-auto">
+    <div className="max-w-[600px] mx-auto pb-24">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm px-4 pt-5 pb-2">
-        <h1 className="text-[24px] font-bold text-foreground tracking-tight mb-3">Social</h1>
-
-        {/* Quick links */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2">
-          {QUICK_LINKS.map((link) => {
-            const Icon = link.icon;
-            return (
-              <button
-                key={link.id}
-                onClick={() => navigate(link.path)}
-                className="flex flex-col items-center gap-1 flex-shrink-0 w-14 active:scale-95 transition-transform"
-              >
-                <div className="w-11 h-11 rounded-[14px] bg-card shadow-sm flex items-center justify-center">
-                  <Icon className="w-5 h-5 text-chocolate" strokeWidth={2} />
-                </div>
-                <span className="text-[9px] font-semibold text-muted-foreground">{link.label}</span>
-              </button>
-            );
-          })}
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-[24px] font-bold text-foreground tracking-tight">Social</h1>
+          <button
+            onClick={() => navigate("/messages")}
+            className="w-9 h-9 rounded-full bg-card shadow-sm flex items-center justify-center active:scale-90 transition-transform"
+          >
+            <MessageCircle className="w-4.5 h-4.5 text-chocolate" strokeWidth={2} />
+          </button>
         </div>
 
         {/* Category tabs */}
@@ -120,9 +122,8 @@ export default function SocialTab() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="px-4 py-3 pb-24">
-        {activeCategory === "feed" && (
+      <div className="px-4 py-3">
+        {(activeCategory === "foryou" || activeCategory === "following" || activeCategory === "campus") && (
           <QuadFeedProduction
             onPostPress={(post) => navigate("/quad")}
             onProfilePress={(userId) => navigate(`/profile/${userId}`)}
@@ -131,9 +132,9 @@ export default function SocialTab() {
         )}
 
         {activeCategory === "stories" && (
-          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<GridSkeleton />}>
             {(stories?.length ?? 0) === 0 ? (
-              <EmptyContent icon={Users} text="No stories yet" />
+              <EmptyContent icon={Users} text="No stories yet" subtext="Stories from your campus will appear here" />
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 {stories.map((story) => (
@@ -144,40 +145,28 @@ export default function SocialTab() {
           </ProductionState>
         )}
 
-        {activeCategory === "communities" && (
+        {activeCategory === "clubs" && (
           <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
-            {(communities?.length ?? 0) === 0 ? (
-              <EmptyContent icon={Users} text="No communities yet" />
+            {(clubs?.length ?? 0) === 0 ? (
+              <EmptyContent icon={Users} text="No clubs yet" subtext="Discover and join campus clubs" />
             ) : (
               <div className="space-y-2">
-                {communities.map((c) => (
-                  <ListRow
-                    key={c.id}
-                    icon={Users}
-                    title={c.name}
-                    subtitle={c.description || `${c.members_count || 0} members`}
-                    onClick={() => navigate(`/community/${c.id}`)}
-                  />
+                {clubs.map((c) => (
+                  <ListRow key={c.id} icon={Users} title={c.name} subtitle={c.description || `${c.members_count || 0} members`} onClick={() => navigate("/clubs")} />
                 ))}
               </div>
             )}
           </ProductionState>
         )}
 
-        {activeCategory === "clubs" && (
+        {activeCategory === "communities" && (
           <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
-            {(clubs?.length ?? 0) === 0 ? (
-              <EmptyContent icon={Users} text="No clubs yet" />
+            {(communities?.length ?? 0) === 0 ? (
+              <EmptyContent icon={Users} text="No communities yet" subtext="Join communities to connect with peers" />
             ) : (
               <div className="space-y-2">
-                {clubs.map((c) => (
-                  <ListRow
-                    key={c.id}
-                    icon={Users}
-                    title={c.name}
-                    subtitle={c.description || `${c.members_count || 0} members`}
-                    onClick={() => navigate("/clubs")}
-                  />
+                {communities.map((c) => (
+                  <ListRow key={c.id} icon={Users} title={c.name} subtitle={c.description || `${c.members_count || 0} members`} onClick={() => navigate(`/community/${c.id}`)} />
                 ))}
               </div>
             )}
@@ -187,7 +176,7 @@ export default function SocialTab() {
         {activeCategory === "events" && (
           <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
             {(events?.length ?? 0) === 0 ? (
-              <EmptyContent icon={CalendarDays} text="No upcoming events" />
+              <EmptyContent icon={CalendarDays} text="No upcoming events" subtext="Campus events will appear here" />
             ) : (
               <div className="space-y-2">
                 {events.map((e) => (
@@ -199,9 +188,9 @@ export default function SocialTab() {
         )}
 
         {activeCategory === "marketplace" && (
-          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<GridSkeleton />}>
             {(listings?.length ?? 0) === 0 ? (
-              <EmptyContent icon={Store} text="No listings yet" />
+              <EmptyContent icon={Store} text="No listings yet" subtext="Browse items for sale on campus" />
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 {listings.map((l) => (
@@ -213,11 +202,39 @@ export default function SocialTab() {
         )}
 
         {activeCategory === "housing" && (
-          <EmptyContent icon={Home} text="Housing listings will appear here" />
+          <EmptyContent icon={Home} text="No housing listings" subtext="Housing options will appear here" />
         )}
 
-        {activeCategory === "discover" && (
-          <EmptyContent icon={Compass} text="Discover students will appear here" />
+        {activeCategory === "jobs" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(opportunities?.length ?? 0) === 0 ? (
+              <EmptyContent icon={Briefcase} text="No job openings" subtext="Internships and jobs will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {opportunities.map((o) => (
+                  <ListRow key={o.id} icon={Briefcase} title={o.title} subtitle={o.company || o.organization || "Opportunity"} onClick={() => navigate("/opportunities")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
+        )}
+
+        {activeCategory === "creators" && (
+          <EmptyContent icon={Star} text="No creators yet" subtext="Creator profiles will appear here" />
+        )}
+
+        {activeCategory === "trending" && (
+          <ProductionState state={state} onRefresh={handleRefresh} skeleton={<ListSkeleton />}>
+            {(posts?.length ?? 0) === 0 ? (
+              <EmptyContent icon={TrendingUp} text="No trending posts" subtext="Trending campus posts will appear here" />
+            ) : (
+              <div className="space-y-2">
+                {posts.map((p) => (
+                  <ListRow key={p.id} icon={TrendingUp} title={p.title || "Post"} subtitle={`${p.likes_count || 0} likes · ${p.comments_count || 0} comments`} onClick={() => navigate("/quad")} />
+                ))}
+              </div>
+            )}
+          </ProductionState>
         )}
       </div>
     </div>
@@ -258,6 +275,7 @@ function ListRow({ icon: Icon, title, subtitle, onClick }) {
         <p className="text-[13px] font-bold text-foreground truncate">{title}</p>
         <p className="text-[11px] text-muted-foreground truncate">{subtitle}</p>
       </div>
+      <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" strokeWidth={2.2} />
     </motion.button>
   );
 }
@@ -278,6 +296,7 @@ function EventCard({ event, onClick }) {
         <p className="text-[13px] font-bold text-foreground truncate">{event.title}</p>
         <p className="text-[11px] text-muted-foreground truncate">{event.location || "Campus"}</p>
       </div>
+      <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" strokeWidth={2.2} />
     </motion.button>
   );
 }
@@ -300,21 +319,20 @@ function ListingCard({ listing, onClick }) {
       </div>
       <div className="p-2.5">
         <p className="text-[12px] font-bold text-foreground truncate">{listing.title}</p>
-        <p className="text-[13px] font-bold text-primary mt-0.5">
-          ₦{Number(listing.price || 0).toLocaleString()}
-        </p>
+        <p className="text-[13px] font-bold text-primary mt-0.5">₦{Number(listing.price || 0).toLocaleString()}</p>
       </div>
     </motion.button>
   );
 }
 
-function EmptyContent({ icon: Icon, text }) {
+function EmptyContent({ icon: Icon, text, subtext }) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 py-16">
       <div className="w-14 h-14 rounded-[18px] bg-muted flex items-center justify-center">
         <Icon className="w-6 h-6 text-muted-foreground" strokeWidth={1.6} />
       </div>
       <p className="text-[13px] text-muted-foreground">{text}</p>
+      {subtext && <p className="text-[11px] text-muted-foreground/70">{subtext}</p>}
     </div>
   );
 }
@@ -324,6 +342,16 @@ function ListSkeleton() {
     <div className="space-y-2">
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className="h-16 rounded-[16px] bg-card shadow-sm animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
+function GridSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="aspect-square rounded-[16px] bg-card shadow-sm animate-pulse" />
       ))}
     </div>
   );
