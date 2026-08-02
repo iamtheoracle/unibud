@@ -4,7 +4,15 @@
   "properties": {
     "post_id": {
       "type": "string",
-      "description": "ID of the QuadPost this comment belongs to"
+      "description": "ID of the QuadPost this comment belongs to (for quad post comments)"
+    },
+    "collection_id": {
+      "type": "string",
+      "description": "Collection/folder name for collection discussions"
+    },
+    "item_id": {
+      "type": "string",
+      "description": "Highlight item ID for per-item collection discussions (empty for collection-level)"
     },
     "content": {
       "type": "string"
@@ -70,12 +78,21 @@
       "type": "boolean",
       "default": false
     },
+    "is_answered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as answered by collection owner/manager"
+    },
+    "is_helpful": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marked as helpful by collection owner/manager"
+    },
     "university": {
       "type": "string"
     }
   },
   "required": [
-    "post_id",
     "content",
     "author_name"
   ]

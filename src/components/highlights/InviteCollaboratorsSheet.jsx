@@ -5,12 +5,15 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   Search, Send, Eye, Plus, Pencil, Shield, Crown, Trash2,
-  MessageSquare, Activity, Users2, X,
+  MessageSquare, Activity, Users2, X, Bookmark,
   Lock, Mail, Users, Building2, Globe, Check,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
+import CollectionDiscussion from "./CollectionDiscussion";
+import CollectionItemsTab from "./CollectionItemsTab";
+import ItemDiscussionSheet from "./ItemDiscussionSheet";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -419,10 +422,10 @@ function PermissionsTab({ permissions = {}, onChange }) {
 }
 
 const TABS = [
-  { id: "collaborators", label: "Collaborators", icon: Users2 },
-  { id: "permissions", label: "Permissions", icon: Shield },
+  { id: "items", label: "Items", icon: Bookmark },
+  { id: "discussion", label: "Discussion", icon: MessageSquare },
   { id: "activity", label: "Activity", icon: Activity },
-  { id: "comments", label: "Comments", icon: MessageSquare },
+  { id: "collaborators", label: "Team", icon: Users2 },
 ];
 
 /**
@@ -433,8 +436,15 @@ export default function InviteCollaboratorsSheet({
   open, onOpenChange, folder, collaborators, activity, comments,
   permissions, onPermissionsChange,
   onInvite, onRemove, onRoleChange, onAddComment, canComment,
+  items = [], user,
 }) {
-  const [tab, setTab] = useState("collaborators");
+  const [tab, setTab] = useState("discussion");
+  const [openItem, setOpenItem] = useState(null);
+  const [showPerms, setShowPerms] = useState(false);
+
+  const isOwner = !!user && items.length > 0 && items[0]?.created_by_id === user.id;
+  const isManager = collaborators.some((c) => c.user_id === user?.id && c.role === "manager");
+  const canModerate = isOwner || isManager;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -449,26 +459,48 @@ export default function InviteCollaboratorsSheet({
         </SheetHeader>
 
         {/* Tabs */}
-        <div className="flex gap-2 mt-3 mb-4">
-          {TABS.map((t) => {
-            const Icon = t.icon;
-            const active = tab === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => { hapticTap(); setTab(t.id); }}
-                className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[14px] text-[11px] font-semibold spring-tap transition-all ${
-                  active ? "bg-foreground text-background" : "glass text-foreground/70"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" /> {t.label}
-              </button>
-            );
-          })}
+        <div className="flex gap-2 mt-3 mb-4 items-center">
+          <div className="flex gap-1.5 flex-1">
+            {TABS.map((t) => {
+              const Icon = t.icon;
+              const active = tab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => { hapticTap(); setTab(t.id); }}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-[14px] text-[11px] font-semibold spring-tap transition-all ${
+                    active ? "bg-foreground text-background" : "glass text-foreground/70"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" /> {t.label}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => { hapticTap(); setShowPerms(!showPerms); }}
+            className={`w-9 h-9 rounded-[14px] grid place-items-center spring-tap shrink-0 ${showPerms ? "bg-foreground text-background" : "glass text-foreground/70"}`}
+            title="Permissions"
+          >
+            <Shield className="w-3.5 h-3.5" />
+          </button>
         </div>
 
         {/* Tab content */}
         <div className="pb-8">
+          {tab === "items" && (
+            <CollectionItemsTab items={items} collectionId={folder} onOpenItem={setOpenItem} />
+          )}
+          {tab === "discussion" && (
+            <CollectionDiscussion
+              collectionId={folder}
+              collaborators={collaborators}
+              user={user}
+              canModerate={canModerate}
+              canComment={canComment}
+            />
+          )}
+          {tab === "activity" && <ActivityTab activity={activity} />}
           {tab === "collaborators" && (
             <CollaboratorsTab
               collaborators={collaborators}
@@ -477,19 +509,28 @@ export default function InviteCollaboratorsSheet({
               onRoleChange={onRoleChange}
             />
           )}
-          {tab === "permissions" && (
-            <PermissionsTab permissions={permissions} onChange={onPermissionsChange} />
-          )}
-          {tab === "activity" && <ActivityTab activity={activity} />}
-          {tab === "comments" && (
-            <CommentsTab
-              comments={comments}
-              onAdd={onAddComment}
-              canComment={canComment}
-            />
-          )}
+          <AnimatePresence>
+            {showPerms && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mt-4"
+              >
+                <PermissionsTab permissions={permissions} onChange={onPermissionsChange} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </SheetContent>
+      <ItemDiscussionSheet
+        item={openItem}
+        collectionId={folder}
+        collaborators={collaborators}
+        user={user}
+        canModerate={canModerate}
+        onClose={() => setOpenItem(null)}
+      />
     </Sheet>
   );
 }

@@ -245,7 +245,9 @@ export default function Highlights() {
           onRemove={collaboration.removeCollaborator}
           onRoleChange={collaboration.updateRole}
           onAddComment={collaboration.addComment}
-          canComment={true}
+          canComment={collaboration.permissions?.comment !== "off"}
+          items={filtered}
+          user={user}
         />
         </>
         )}
