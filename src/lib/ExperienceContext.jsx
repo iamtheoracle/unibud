@@ -37,6 +37,12 @@ export function ExperienceProvider({ children }) {
     try { localStorage.setItem(STORAGE_KEY, m); } catch {}
   };
 
+  useEffect(() => {
+    if (loaded) {
+      document.documentElement.setAttribute("data-exp", mode);
+    }
+  }, [mode, loaded]);
+
   return (
     <Ctx.Provider value={{ mode, setMode, modes: EXPERIENCE_MODES, loaded }}>
       {children}

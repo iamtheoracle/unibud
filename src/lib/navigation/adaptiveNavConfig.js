@@ -1,15 +1,11 @@
 import {
   Sparkles, GraduationCap, MessageSquareText, Compass, Users,
-  Search, Plus, Camera, CalendarDays, CalendarClock, ClipboardList, ScanLine,
+  Search, Plus, ScanLine, CalendarDays, Bell, Camera,
 } from "lucide-react";
 
 /**
  * Adaptive Navigation configuration — the single source of truth for the
  * UNIBUD bottom Adaptive Capsule states and the top Quick Action Capsule.
- *
- * Modes are owned by ExperienceContext (Academic | Social). This module
- * only maps modes to destinations and contextual quick actions — it never
- * holds state, so there is nothing to duplicate or drift out of sync.
  */
 
 /** Where each operating mode "lands" when selected from the capsule selector. */
@@ -25,9 +21,8 @@ export const MODE_SELECTOR_OPTIONS = [
 ];
 
 /**
- * STATE 2 / STATE 3 — Per-mode navigation. Three destinations each.
- * Routes reuse existing screens — no new pages, no duplicated navigation.
- * Academic "Quad" routes to the existing academic discovery surface.
+ * STATE 2 / STATE 3 — Per-mode navigation.
+ * Bud lives as the floating AI companion, NOT in the quick-action strip.
  */
 export const MODE_NAV = {
   social: [
@@ -43,8 +38,8 @@ export const MODE_NAV = {
 };
 
 /**
- * Top Quick Action Capsule — intelligent contextual actions per mode.
- * `action: "bud"` opens the Bud launcher; everything else navigates.
+ * Top Quick Action Capsule — contextual actions per mode.
+ * Bud is intentionally absent — it lives as the floating companion.
  */
 export const QUICK_ACTIONS = {
   social: [
@@ -52,13 +47,13 @@ export const QUICK_ACTIONS = {
     { key: "create", label: "Create", to: "/creator-studio", icon: Plus },
     { key: "camera", label: "Camera", to: "/shorts", icon: Camera },
     { key: "events", label: "Events", to: "/events", icon: CalendarDays },
-    { key: "bud", label: "Bud", action: "bud", icon: Sparkles, accent: true },
+    { key: "alerts", label: "Alerts", to: "/notifications", icon: Bell },
   ],
   academic: [
     { key: "search", label: "Search", to: "/knowledge", icon: Search },
-    { key: "timetable", label: "Timetable", to: "/timetable", icon: CalendarClock },
-    { key: "assignments", label: "Assignments", to: "/assignments", icon: ClipboardList },
-    { key: "bud", label: "Bud", action: "bud", icon: Sparkles, accent: true },
+    { key: "create", label: "Create", to: "/assignments", icon: Plus },
     { key: "scan", label: "Scan", to: "/study/library", icon: ScanLine },
+    { key: "calendar", label: "Calendar", to: "/calendar", icon: CalendarDays },
+    { key: "alerts", label: "Alerts", to: "/notifications", icon: Bell },
   ],
 };

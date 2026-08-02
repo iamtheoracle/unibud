@@ -43,13 +43,13 @@ export default function AdaptiveNav() {
   return (
     <MotionConfig reducedMotion="user">
       <nav className="fixed bottom-0 inset-x-0 z-40 pointer-events-none" aria-label="Primary">
-        <div className="max-w-[520px] mx-auto px-4 pb-3.5 safe-area-pb pointer-events-auto">
+        <div className="max-w-[520px] mx-auto px-4 pb-5 safe-area-pb pointer-events-auto">
           <div className="flex items-end justify-between gap-2">
-            {/* ── Adaptive Navigation Capsule ── */}
+            {/* ── Adaptive Navigation Capsule — floating, white, shadowed ── */}
             <motion.div
               layout
               transition={SPRING}
-              className="founder-dock rounded-[18px] h-[50px] flex items-center gap-0.5 px-1 relative edge-light overflow-hidden w-fit max-w-[calc(100%-60px)]"
+              className="founder-dock rounded-[28px] h-[54px] flex items-center gap-0.5 px-1.5 relative overflow-hidden w-fit max-w-[calc(100%-64px)] elevated-shadow"
             >
               <motion.div
                 key={navState}
@@ -144,7 +144,7 @@ function MeButton({ active }) {
       to="/me"
       onClick={() => hapticSelect()}
       aria-label="Me"
-      className="founder-dock rounded-[18px] h-[50px] w-[50px] flex flex-col items-center justify-center relative edge-light spring-tap shrink-0"
+      className="founder-dock rounded-[28px] h-[54px] w-[54px] flex flex-col items-center justify-center relative spring-tap shrink-0 elevated-shadow"
     >
       {active && (
         <motion.div layoutId="me-pill" className="absolute inset-1.5 rounded-[16px] dock-pill" transition={SPRING} />
