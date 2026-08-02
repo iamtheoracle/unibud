@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
+import MorningBriefing from "@/components/bud/MorningBriefing";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const CATEGORIES = [
@@ -94,6 +95,9 @@ export default function BudTab() {
       </div>
 
       <div className="px-4 py-3">
+        {/* Morning Briefing */}
+        <MorningBriefing />
+
         {/* Bud Orb */}
         <div className="flex flex-col items-center py-6">
           <motion.div
