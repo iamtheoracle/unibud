@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Eye, Rocket, Sparkles, Database, ScrollText, BookOpen, TrendingUp, CheckCircle, ShieldCheck, Fingerprint, Lock, Layers, Compass, Link2 } from "lucide-react";
+import { ChevronLeft, Eye, Rocket, Sparkles, Database, Link2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import SettingsSection from "@/components/me/SettingsSection";
@@ -74,87 +74,6 @@ export default function Settings() {
             <div className="flex-1">
               <p className="text-[14px] font-semibold text-foreground">Launch Content</p>
               <p className="text-[12px] text-muted-foreground">Manage official launch & demo content</p>
-            </div>
-          </Link>
-          <Link to="/constitution" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <ScrollText className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Engineering Constitution</p>
-              <p className="text-[12px] text-muted-foreground">Permanent rules & compliance checks</p>
-            </div>
-          </Link>
-          <Link to="/product-constitution" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <BookOpen className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Product Constitution</p>
-              <p className="text-[12px] text-muted-foreground">Product principles & launch standards</p>
-            </div>
-          </Link>
-          <Link to="/content-architecture" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <Layers className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Content Architecture</p>
-              <p className="text-[12px] text-muted-foreground">5 user spaces & internal OS separation rules</p>
-            </div>
-          </Link>
-          <Link to="/non-negotiables" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <Lock className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Non-Negotiables</p>
-              <p className="text-[12px] text-muted-foreground">Permanent rules that cannot be violated</p>
-            </div>
-          </Link>
-          <Link to="/bud-vision" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <Compass className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Bud Product Vision</p>
-              <p className="text-[12px] text-muted-foreground">Bud is the product — foundational direction</p>
-            </div>
-          </Link>
-          <Link to="/founder-vision" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <Fingerprint className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Founder Vision</p>
-              <p className="text-[12px] text-muted-foreground">Permanent vision & mission of UNIBUD</p>
-            </div>
-          </Link>
-          <Link to="/evolution-constitution" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <TrendingUp className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Evolution Constitution</p>
-              <p className="text-[12px] text-muted-foreground">Continuous evolution & scalability principles</p>
-            </div>
-          </Link>
-          <Link to="/definition-of-done" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <CheckCircle className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Definition of Done</p>
-              <p className="text-[12px] text-muted-foreground">Completion criteria for every feature</p>
-            </div>
-          </Link>
-          <Link to="/release-gate" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
-            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
-              <ShieldCheck className="w-[18px] h-[18px] text-primary" />
-            </div>
-            <div className="flex-1">
-              <p className="text-[14px] font-semibold text-foreground">Release Gate</p>
-              <p className="text-[12px] text-muted-foreground">Certification checklist before every release</p>
             </div>
           </Link>
         </div>
