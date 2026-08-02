@@ -189,6 +189,10 @@ const SecurityCenter = lazy(() => import("@/pages/SecurityCenter"));
 // Milestone 34 — Intelligent Admin Platform
 const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 
+// Directory & Help Center
+const DirectoryHub = lazy(() => import("@/pages/directory/DirectoryHub"));
+const HelpCenter = lazy(() => import("@/pages/help/HelpCenter"));
+
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
 const Terms = lazy(() => import("@/pages/legal/Terms"));
@@ -338,6 +342,8 @@ function App() {
                     <Route path="/automation/builder/:id" element={<WorkflowBuilder />} />
                     <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
                                       <Route path="/admin" element={<AdminHub />} />
+                    <Route path="/directory" element={<DirectoryHub />} />
+                    <Route path="/help" element={<HelpCenter />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>

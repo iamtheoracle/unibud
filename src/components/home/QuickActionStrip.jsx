@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Clock, CheckSquare, Users, CalendarDays, X } from "lucide-react";
+import { Clock, CheckSquare, Users, CalendarDays, BookUser, LifeBuoy, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
@@ -16,6 +16,8 @@ const ACTIONS = [
   { id: "task", icon: CheckSquare, label: "Create Task" },
   { id: "group", icon: Users, label: "Join Group" },
   { id: "plan", icon: CalendarDays, label: "Today's Plan", to: "/timetable" },
+  { id: "directory", icon: BookUser, label: "Directory", to: "/directory" },
+  { id: "help", icon: LifeBuoy, label: "Help", to: "/help" },
 ];
 
 export default function QuickActionStrip() {
