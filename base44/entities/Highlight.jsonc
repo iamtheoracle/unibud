@@ -70,7 +70,7 @@
     },
     "metadata": {
       "type": "object",
-      "description": "Additional content-specific data (rating, score, artist, etc.)"
+      "description": "Additional content-specific data (rating, score, artist, collaboration info, etc.)"
     },
     "hub_id": {
       "type": "string",
@@ -89,6 +89,9 @@
         },
         {
           "data.visibility": "public"
+        },
+        {
+          "data.metadata.collaboration.collaborators.user_id": "{{user.id}}"
         },
         {
           "user_condition": {
