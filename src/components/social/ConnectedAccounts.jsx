@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Check, Loader2, ChevronRight, Link2, Unlink,
+  Check, Loader2, ChevronRight, Link2, Unlink, RefreshCw,
   Music, Video, MessageCircle, Calendar, Cloud, Share2, Lock,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -100,6 +100,7 @@ const KEY = "unibud_social_connections";
 export default function ConnectedAccounts() {
   const [connected, setConnected] = useState({});
   const [syncTimes, setSyncTimes] = useState({});
+  const [usernames, setUsernames] = useState({});
   const [authed, setAuthed] = useState(false);
   const [busy, setBusy] = useState({});
   const [expandedRow, setExpandedRow] = useState(null);
@@ -109,13 +110,15 @@ export default function ConnectedAccounts() {
       const stored = JSON.parse(localStorage.getItem(KEY) || "{}");
       setConnected(stored.connections || stored);
       setSyncTimes(stored.syncTimes || {});
+      setUsernames(stored.usernames || {});
     } catch {}
     base44.auth.isAuthenticated().then(setAuthed);
   }, []);
 
-  const persist = (conns, times) => {
+  const persist = (conns, times, names) => {
     try {
-      localStorage.setItem(KEY, JSON.stringify({ connections: conns, syncTimes: times }));
+      localStorage.setItem(KEY, JSON.stringify({ connections: conns, syncTimes: times, usernames: names }));
+      window.dispatchEvent(new Event("unibud-connections-changed"));
     } catch {}
   };
 
@@ -123,15 +126,18 @@ export default function ConnectedAccounts() {
     try {
       const res = await base44.functions.invoke("socialProfile", { connector: key });
       const ok = res?.data?.connected || res?.connected || false;
+      const username = res?.data?.username || res?.username || res?.data?.handle || null;
       setConnected((p) => {
         const n = { ...p, [key]: ok };
-        persist(n, syncTimes);
+        const u = { ...usernames, [key]: username };
+        setUsernames(u);
+        persist(n, syncTimes, u);
         return n;
       });
       if (ok) {
         setSyncTimes((p) => {
           const n = { ...p, [key]: new Date().toISOString() };
-          persist(connected, n);
+          persist(connected, n, usernames);
           return n;
         });
       }
@@ -172,7 +178,7 @@ export default function ConnectedAccounts() {
               const n = { ...p, [key]: true };
               const t = { ...syncTimes, [key]: new Date().toISOString() };
               setSyncTimes(t);
-              persist(n, t);
+              persist(n, t, usernames);
               return n;
             });
             setBusy((b) => ({ ...b, [key]: false }));
@@ -195,8 +201,10 @@ export default function ConnectedAccounts() {
       setConnected((p) => {
         const n = { ...p, [key]: false };
         const t = { ...syncTimes, [key]: null };
+        const u = { ...usernames, [key]: null };
+        setUsernames(u);
         setSyncTimes(t);
-        persist(n, t);
+        persist(n, t, u);
         return n;
       });
     } finally {
@@ -211,7 +219,7 @@ export default function ConnectedAccounts() {
       if (next[key]) t[key] = new Date().toISOString();
       else t[key] = null;
       setSyncTimes(t);
-      persist(next, t);
+      persist(next, t, usernames);
       return next;
     });
   };
@@ -271,6 +279,7 @@ export default function ConnectedAccounts() {
                 const isOAuth = platform.type === "oauth" || platform.type === "shared_oauth";
                 const isExpanded = expandedRow === platform.key;
                 const lastSync = formatSyncTime(syncTimes[platform.key]);
+                const username = usernames[platform.key];
                 const isLast = idx === cat.platforms.length - 1;
 
                 return (
@@ -301,7 +310,7 @@ export default function ConnectedAccounts() {
                           {isBusy
                             ? "Connecting…"
                             : isOn
-                            ? lastSync ? `Last sync ${lastSync}` : "Connected"
+                            ? username ? `@${username}` : lastSync ? `Last sync ${lastSync}` : "Connected"
                             : isOAuth
                             ? authed ? "Tap to connect" : "Sign in to connect"
                             : "Not connected"}
@@ -321,7 +330,7 @@ export default function ConnectedAccounts() {
                       )}
                     </button>
 
-                    {/* Expanded details — sync status, permissions, disconnect */}
+                    {/* Expanded details — username, sync status, permissions, reconnect, disconnect */}
                     <AnimatePresence>
                       {isExpanded && isOn && (
                         <motion.div
@@ -331,6 +340,14 @@ export default function ConnectedAccounts() {
                           className="overflow-hidden"
                         >
                           <div className="px-3.5 pb-3.5 pt-1 space-y-2.5 bg-muted/20">
+                            {/* Username */}
+                            {username && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Username</span>
+                                <span className="text-[11px] font-medium text-foreground">@{username}</span>
+                              </div>
+                            )}
+
                             {/* Sync status */}
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Sync Status</span>
@@ -352,19 +369,31 @@ export default function ConnectedAccounts() {
                             <div className="flex items-center justify-between">
                               <span className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Permissions</span>
                               <span className="text-[11px] font-medium text-muted-foreground">
-                                {platform.type === "oauth" ? "Profile & content" : "Share only"}
+                                {isOAuth ? "Profile & content" : "Share only"}
                               </span>
                             </div>
 
-                            {/* Disconnect */}
-                            <button
-                              onClick={() => onClick(platform)}
-                              disabled={isBusy}
-                              className="w-full flex items-center justify-center gap-2 h-9 rounded-[12px] bg-destructive/8 text-destructive text-[12px] font-bold active:scale-[0.98] transition-transform mt-1"
-                            >
-                              <Unlink className="w-3.5 h-3.5" strokeWidth={2} />
-                              Disconnect
-                            </button>
+                            {/* Reconnect + Disconnect */}
+                            <div className="flex gap-2 mt-1">
+                              {isOAuth && (
+                                <button
+                                  onClick={() => handleConnect(platform.key)}
+                                  disabled={isBusy}
+                                  className="flex-1 flex items-center justify-center gap-2 h-9 rounded-[12px] bg-muted/50 text-foreground text-[12px] font-bold active:scale-[0.98] transition-transform"
+                                >
+                                  <RefreshCw className="w-3.5 h-3.5" strokeWidth={2} />
+                                  Reconnect
+                                </button>
+                              )}
+                              <button
+                                onClick={() => onClick(platform)}
+                                disabled={isBusy}
+                                className={`flex items-center justify-center gap-2 h-9 rounded-[12px] bg-destructive/8 text-destructive text-[12px] font-bold active:scale-[0.98] transition-transform ${isOAuth ? "flex-1" : "w-full"}`}
+                              >
+                                <Unlink className="w-3.5 h-3.5" strokeWidth={2} />
+                                Disconnect
+                              </button>
+                            </div>
                           </div>
                         </motion.div>
                       )}

@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import ConnectedAccounts from "@/components/social/ConnectedAccounts";
+import FeedSourceControls from "@/components/social/FeedSourceControls";
 
 /**
  * ConnectedAccountsSettings — advanced settings area for managing
@@ -26,8 +27,19 @@ export default function ConnectedAccountsSettings() {
         </div>
       </header>
 
-      <div className="max-w-[520px] mx-auto px-4 pt-4">
+      <div className="max-w-[520px] mx-auto px-4 pt-4 space-y-6">
         <ConnectedAccounts />
+
+        {/* Feed source controls — quiet settings for the unified feed */}
+        <div>
+          <div className="flex items-center justify-between mb-1 px-1">
+            <h2 className="text-[15px] font-bold tracking-tight text-foreground">Feed Sources</h2>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-3 px-1 leading-relaxed">
+            Control which sources appear in your feed, reorder them, mute noisy ones, and refresh manually.
+          </p>
+          <FeedSourceControls />
+        </div>
       </div>
     </div>
   );
