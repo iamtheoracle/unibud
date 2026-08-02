@@ -28,6 +28,7 @@ export const AUTOMATION_CATEGORIES = [
   { id: "learning", label: "Learning Intelligence", icon: "Brain" },
   { id: "social", label: "Social Intelligence", icon: "Users" },
   { id: "safety", label: "Safety & Security", icon: "ShieldCheck" },
+  { id: "living", label: "Living Campus", icon: "Flame" },
 ];
 
 export const AUTOMATIONS = [
@@ -119,6 +120,14 @@ export const AUTOMATIONS = [
   { id: "phishing_detection", category: "safety", name: "Phishing Detection", desc: "Detect phishing attempts", defaultEnabled: true },
   { id: "abuse_detection", category: "safety", name: "Abuse Detection", desc: "Detect abusive content", defaultEnabled: true },
   { id: "emergency_alerts", category: "safety", name: "Emergency Alerts", desc: "Detect emergency announcements", defaultEnabled: true },
+
+  // ── Living Campus ──
+  { id: "living_campus", category: "living", name: "Living Campus Engine", desc: "Continuously simulate realistic campus activity", defaultEnabled: true },
+  { id: "living_social", category: "living", name: "Social Activity", desc: "Generate realistic posts, stories, and engagement", defaultEnabled: true },
+  { id: "living_academic", category: "living", name: "Academic Activity", desc: "Generate assignment announcements and study sessions", defaultEnabled: true },
+  { id: "living_marketplace", category: "living", name: "Marketplace Activity", desc: "Generate realistic marketplace listings", defaultEnabled: true },
+  { id: "living_events", category: "living", name: "Event Activity", desc: "Generate campus events and updates", defaultEnabled: true },
+  { id: "living_engagement", category: "living", name: "Engagement Simulation", desc: "Simulate organic likes, comments, and reactions", defaultEnabled: true },
 ];
 
 export function getAutomationsByCategory(categoryId) {
