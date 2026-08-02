@@ -33,9 +33,9 @@ export default function Timetable() {
 
   return (
     <ScreenShell title="Timetable" back actions={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>}>
-      <div className="flex gap-2 mb-4">
+      <div className="flex bg-muted/40 rounded-xl p-1 mb-4">
         {[["daily", "Daily"], ["weekly", "Weekly"], ["monthly", "Monthly"]].map(([k, l]) => (
-          <button key={k} onClick={() => setView(k)} className={`flex-1 py-2 rounded-2xl text-[12px] font-semibold spring-tap ${view === k ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{l}</button>
+          <button key={k} onClick={() => setView(k)} className={`flex-1 py-2.5 rounded-lg text-[13px] font-medium spring-tap transition-all ${view === k ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>{l}</button>
         ))}
       </div>
 
@@ -46,7 +46,7 @@ export default function Timetable() {
         </div>
       )}
       {view === "monthly" && (
-        <div className="glass-card p-5">
+        <div className="bg-card border border-border rounded-2xl p-5">
           <p className="text-[12px] text-muted-foreground mb-3">Your weekly schedule repeats every week. Each class is a recurring weekly slot.</p>
           <div className="space-y-3">
             {DAYS.map((d) => <DayColumn key={d} title={d} items={byDay(d)} onEdit={openEdit} onDel={del.mutate} compact />)}
@@ -97,7 +97,7 @@ function DayColumn({ title, items, onEdit, onDel, highlight, compact }) {
       {items.length === 0 ? <p className="text-[12px] text-muted-foreground/60 py-2">No classes</p> : (
         <div className="space-y-2">
           {items.map((e, i) => (
-            <motion.div key={e.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3 }} className="glass-card p-3 flex items-center gap-3">
+            <motion.div key={e.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3 }} className="bg-card border border-border rounded-2xl p-3 flex items-center gap-3">
               <span className="w-1 h-10 rounded-full flex-shrink-0" style={{ background: e.color || "#7FD8FF" }} />
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold text-foreground truncate">{e.course_code} · {e.course_title}</p>

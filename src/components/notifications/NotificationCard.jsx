@@ -19,9 +19,9 @@ function timeAgo(d) {
 }
 
 /**
- * NotificationCard — prototype notification row: category icon, bold title +
- * message, meta with action link, relative time, and a kebab menu preserving
- * pin / mark-read / archive actions.
+ * NotificationCard — editorial divider-based notification row.
+ * Category icon, bold title + message, meta, time, and a kebab menu
+ * preserving pin / mark-read / archive actions.
  */
 export default function NotificationCard({ item, onMarkRead, onTogglePin, onArchive }) {
   const [menu, setMenu] = useState(false);
@@ -44,38 +44,38 @@ export default function NotificationCard({ item, onMarkRead, onTogglePin, onArch
   const isPriority = item.priority === "high" || item.priority === "critical";
 
   return (
-    <div className={`relative rounded-2xl p-3 px-3.5 border flex gap-3 items-start ${isPriority ? "bg-muted/40 border-border/40" : "bg-muted/20 border-border/20"}`}>
-      <button onClick={open} className="w-9 h-9 rounded-full bg-muted/40 grid place-items-center text-[16px] flex-shrink-0 spring-tap">
+    <div className="flex gap-3 items-start py-4 spring-tap group">
+      <button onClick={open} className="w-9 h-9 rounded-full bg-muted/40 grid place-items-center text-[16px] flex-shrink-0 hover:bg-muted/60 transition-colors">
         {CAT_ICON[item.category] || "🔔"}
       </button>
       <button onClick={open} className="flex-1 text-left min-w-0">
-        <p className="text-[13px] text-muted-foreground leading-snug">
-          <span className="font-semibold text-foreground">{item.title}</span>
+        <p className="text-[14px] text-muted-foreground leading-snug">
+          <span className="font-medium text-foreground">{item.title}</span>
           {item.message ? ` — ${item.message}` : ""}
         </p>
-        <div className="flex gap-2.5 mt-1 text-[10px] text-muted-foreground/60">
+        <div className="flex items-center gap-2 mt-1 text-[11px] text-muted-foreground/60">
           <span>{CAT_LABEL[item.category] || "System"}{isPriority ? " · High Priority" : ""}</span>
-          {item.link && <span className="text-foreground font-medium">View →</span>}
+          {item.link && <span className="text-primary font-medium">View →</span>}
         </div>
       </button>
       <div className="flex flex-col items-end gap-1 flex-shrink-0">
         <span className="text-[10px] text-muted-foreground/50">{timeAgo(item.created_date)}</span>
         <div className="relative" ref={ref}>
-          <button onClick={(e) => { e.stopPropagation(); setMenu((m) => !m); }} className="w-6 h-6 rounded-full grid place-items-center text-muted-foreground spring-tap" aria-label="More">
-            <MoreHorizontal className="w-3.5 h-3.5" />
+          <button onClick={(e) => { e.stopPropagation(); setMenu((m) => !m); }} className="w-7 h-7 rounded-full grid place-items-center text-muted-foreground hover:bg-muted/40 transition-colors" aria-label="More">
+            <MoreHorizontal className="w-4 h-4" strokeWidth={1.8} />
           </button>
           {menu && (
-            <div className="absolute right-0 top-7 z-30 w-36 rounded-xl glass-strong p-1 flex flex-col gap-0.5">
-              <button onClick={(e) => { e.stopPropagation(); onTogglePin?.(item); setMenu(false); }} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] text-foreground hover:bg-muted/60 text-left">
-                <Pin className="w-3 h-3" /> {item.pinned ? "Unpin" : "Pin"}
+            <div className="absolute right-0 top-8 z-30 w-36 rounded-xl bg-popover border border-border p-1 flex flex-col gap-0.5 premium-shadow">
+              <button onClick={(e) => { e.stopPropagation(); onTogglePin?.(item); setMenu(false); }} className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] text-foreground hover:bg-muted/60 text-left transition-colors">
+                <Pin className="w-3.5 h-3.5" strokeWidth={1.8} /> {item.pinned ? "Unpin" : "Pin"}
               </button>
               {!item.is_read && (
-                <button onClick={(e) => { e.stopPropagation(); onMarkRead?.(item); setMenu(false); }} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] text-foreground hover:bg-muted/60 text-left">
-                  <Check className="w-3 h-3" /> Mark read
+                <button onClick={(e) => { e.stopPropagation(); onMarkRead?.(item); setMenu(false); }} className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] text-foreground hover:bg-muted/60 text-left transition-colors">
+                  <Check className="w-3.5 h-3.5" strokeWidth={1.8} /> Mark read
                 </button>
               )}
-              <button onClick={(e) => { e.stopPropagation(); onArchive?.(item); setMenu(false); }} className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[12px] text-foreground hover:bg-muted/60 text-left">
-                <Archive className="w-3 h-3" /> Archive
+              <button onClick={(e) => { e.stopPropagation(); onArchive?.(item); setMenu(false); }} className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-[12px] text-foreground hover:bg-muted/60 text-left transition-colors">
+                <Archive className="w-3.5 h-3.5" strokeWidth={1.8} /> Archive
               </button>
             </div>
           )}

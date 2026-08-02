@@ -62,8 +62,8 @@ export default function Projects() {
             const ms = p.milestones || [];
             const done = ms.filter((m) => m.done).length;
             return (
-              <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="glass-card p-4">
-                <p className="text-[14px] font-semibold text-foreground">{p.title}</p>
+              <motion.div key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="bg-card border border-border rounded-2xl p-4">
+                <p className="text-[14px] font-medium text-foreground">{p.title}</p>
                 <p className="text-[11px] text-muted-foreground">{p.supervisor ? `Supervisor: ${p.supervisor} · ` : ""}{p.deadline ? `Due ${p.deadline}` : ""}{p.status ? ` · ${p.status.replace("_", " ")}` : ""}</p>
                 {(p.team_members || []).length > 0 && <p className="text-[11px] text-muted-foreground mt-1">Team: {(p.team_members || []).join(", ")}</p>}
                 {ms.length > 0 && (

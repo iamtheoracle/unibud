@@ -53,9 +53,9 @@ export default function Attendance() {
             const pct = s.total ? Math.round(((s.present + s.excused) / s.total) * 100) : null;
             const below = pct != null && pct < REQUIRED;
             return (
-              <motion.div key={s.code + i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="glass-card p-4">
+              <motion.div key={s.code + i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="bg-card border border-border rounded-2xl p-4">
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[14px] font-semibold text-foreground truncate">{s.title}</p>
+                  <p className="text-[14px] font-medium text-foreground truncate">{s.title}</p>
                   <span className={`text-[14px] font-heading font-bold ${below ? "text-destructive" : "text-primary"}`}>{pct != null ? `${pct}%` : "—"}</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2 mt-2 text-center">

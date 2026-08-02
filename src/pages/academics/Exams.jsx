@@ -54,10 +54,10 @@ export default function Exams() {
           {exams.map((ex, i) => {
             const cd = countdown(ex.date);
             return (
-              <motion.div key={ex.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="glass-card p-4">
+              <motion.div key={ex.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="bg-card border border-border rounded-2xl p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <p className="text-[14px] font-semibold text-foreground truncate">{ex.title}</p>
+                    <p className="text-[14px] font-medium text-foreground truncate">{ex.title}</p>
                     <p className="text-[11px] text-muted-foreground">{ex.course_code}{ex.type ? ` · ${ex.type}` : ""}</p>
                   </div>
                   {cd ? <div className="text-right flex-shrink-0"><p className="font-heading font-bold text-[16px] text-primary">{cd.days}d</p><p className="text-[9px] text-muted-foreground">{cd.hours}h left</p></div> : <span className="text-[11px] text-muted-foreground capitalize flex-shrink-0">{ex.status}</span>}

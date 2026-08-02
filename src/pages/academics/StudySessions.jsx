@@ -73,7 +73,7 @@ export default function StudySessions() {
 
   return (
     <ScreenShell title="Study Sessions" back>
-      <div className="glass-card p-5 text-center mb-4">
+      <div className="bg-card border border-border rounded-2xl p-5 text-center mb-4">
         <p className="font-heading font-bold text-[40px] text-primary tabular-nums">{fmt(remaining)}</p>
         <p className="text-[11px] text-muted-foreground mt-1">{running ? "Focus session in progress" : "Set up a session to begin"}</p>
         {!running && !showRating && (
@@ -87,17 +87,17 @@ export default function StudySessions() {
           </div>
         )}
         {!running && !showRating && <button onClick={start} className="w-full h-[52px] mt-4 rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] spring-tap ice-glow">Start Session</button>}
-        {running && <button onClick={stop} className="w-full h-[52px] mt-4 rounded-2xl glass text-foreground font-heading font-semibold text-[15px] spring-tap">End Session</button>}
+        {running && <button onClick={stop} className="w-full h-[52px] mt-4 rounded-2xl bg-card border border-border text-foreground font-heading font-semibold text-[15px] spring-tap">End Session</button>}
       </div>
-      <div className="glass-card p-3.5 mb-4 border border-primary/15 bg-primary/8"><p className="text-[13px] text-foreground/90">{budHint}</p></div>
+      <div className="rounded-2xl p-3.5 mb-4 border border-primary/15 bg-primary/8"><p className="text-[13px] text-foreground/90">{budHint}</p></div>
 
       <p className="text-[13px] font-bold text-foreground px-1 mb-2">Recent Sessions</p>
       {!sessions?.length ? <EmptyState message="No sessions logged yet. Start one above." /> : (
         <div className="space-y-3">
           {sessions.map((s, i) => (
-            <motion.div key={s.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3 }} className="glass-card p-4">
+            <motion.div key={s.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3 }} className="bg-card border border-border rounded-2xl p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[14px] font-semibold text-foreground truncate">{s.subject || "Study session"}</p>
+                <p className="text-[14px] font-medium text-foreground truncate">{s.subject || "Study session"}</p>
                 <span className="text-[11px] text-muted-foreground">{s.session_date}</span>
               </div>
               <p className="text-[11px] text-muted-foreground mt-0.5">{s.duration_minutes || 0} min{s.goal ? ` · ${s.goal}` : ""}{s.productivity_score ? ` · Rating ${s.productivity_score}/5` : ""}</p>
@@ -112,7 +112,7 @@ export default function StudySessions() {
         <p className="text-[13px] text-muted-foreground mb-4">You focused for {Math.round(pendingDuration / 60)} minutes. How productive did it feel?</p>
         <div className="flex justify-center gap-3 mb-5">
           {[1, 2, 3, 4, 5].map((n) => (
-            <button key={n} onClick={() => setRating(n)} className={`w-11 h-11 rounded-full spring-tap font-heading font-bold text-[16px] ${rating === n ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{n}</button>
+            <button key={n} onClick={() => setRating(n)} className={`w-11 h-11 rounded-full spring-tap font-heading font-bold text-[16px] ${rating === n ? "bg-primary text-primary-foreground" : "bg-muted/40 border border-border text-muted-foreground"}`}>{n}</button>
           ))}
         </div>
         <button onClick={finish} disabled={create.isPending} className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] spring-tap disabled:opacity-50 ice-glow">{create.isPending ? "Saving…" : "Save Session"}</button>

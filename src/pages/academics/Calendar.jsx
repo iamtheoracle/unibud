@@ -64,14 +64,14 @@ export default function Calendar() {
   return (
     <ScreenShell title="Calendar" back>
       <WeatherStrip className="mb-4" />
-      <div className="flex gap-2 mb-4">
+      <div className="flex bg-muted/40 rounded-xl p-1 mb-4">
         {[["month", "Month"], ["agenda", "Agenda"]].map(([k, l]) => (
-          <button key={k} onClick={() => setView(k)} className={`flex-1 py-2 rounded-2xl text-[12px] font-semibold spring-tap ${view === k ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{l}</button>
+          <button key={k} onClick={() => setView(k)} className={`flex-1 py-2.5 rounded-lg text-[13px] font-medium spring-tap transition-all ${view === k ? "bg-card text-foreground shadow-sm" : "text-muted-foreground"}`}>{l}</button>
         ))}
       </div>
 
       {view === "month" && (
-        <div className="glass-card p-4">
+        <div className="bg-card border border-border rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
             <button onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))} className="text-muted-foreground spring-tap text-[16px] font-semibold px-2">‹</button>
             <span className="font-heading font-bold text-[15px] text-foreground">{cursor.toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span>
@@ -96,10 +96,10 @@ export default function Calendar() {
             {selEvents.length === 0 ? <p className="text-[12px] text-muted-foreground">Nothing scheduled.</p> : (
               <div className="space-y-2">
                 {selEvents.map((e, i) => (
-                  <div key={i} className="flex items-center gap-3 p-2 rounded-xl bg-muted/30">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[13px] font-semibold text-foreground truncate">{e.title}</p>
+                  <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-muted/30">
+                     <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                     <div className="flex-1 min-w-0">
+                       <p className="text-[13px] font-medium text-foreground truncate">{e.title}</p>
                       <p className="text-[10px] text-muted-foreground capitalize">{e.type}{e.detail ? ` · ${e.detail}` : ""}</p>
                     </div>
                   </div>
@@ -113,9 +113,9 @@ export default function Calendar() {
       {view === "agenda" && (
         <div className="space-y-3">
           {!agenda.length ? <EmptyState message="No upcoming events in the next 30 days." /> : agenda.map((e, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.02, 0.2), duration: 0.3 }} className="glass-card p-4">
+            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.02, 0.2), duration: 0.3 }} className="bg-card border border-border rounded-2xl p-4">
               <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{e.type} · {e.date}</p>
-              <p className="text-[14px] font-semibold text-foreground">{e.title}</p>
+              <p className="text-[14px] font-medium text-foreground">{e.title}</p>
               {e.detail && <p className="text-[11px] text-muted-foreground">{e.detail}</p>}
             </motion.div>
           ))}

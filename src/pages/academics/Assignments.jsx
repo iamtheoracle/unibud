@@ -129,7 +129,7 @@ export default function Assignments() {
           </div>
           <div>
             <label className="text-[12px] font-semibold text-muted-foreground/90 ml-1">Attachments</label>
-            <label className="mt-1.5 flex items-center gap-3 h-[48px] px-4 rounded-2xl glass cursor-pointer">
+            <label className="mt-1.5 flex items-center gap-3 h-[48px] px-4 rounded-2xl bg-muted/40 border border-border cursor-pointer">
               <input type="file" onChange={addFile} className="hidden" />
               <span className="text-[13px] text-muted-foreground flex-1">{uploading ? "Uploading…" : "+ Add file"}</span>
             </label>

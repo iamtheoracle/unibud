@@ -51,15 +51,15 @@ export default function Notes() {
     <ScreenShell title="Notes" back actions={<button onClick={openNew} className="text-[12px] font-semibold text-primary spring-tap">+ Add</button>}>
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search notes…" className="w-full h-[44px] px-4 rounded-2xl bg-muted/50 border border-border text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60 mb-3" />
       <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
-        <button onClick={() => setCourse("all")} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap spring-tap ${course === "all" ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>All</button>
-        {(courses || []).map((c) => <button key={c.id} onClick={() => setCourse(c.code)} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap spring-tap ${course === c.code ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{c.code}</button>)}
+        <button onClick={() => setCourse("all")} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap spring-tap ${course === "all" ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground"}`}>All</button>
+        {(courses || []).map((c) => <button key={c.id} onClick={() => setCourse(c.code)} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap spring-tap ${course === c.code ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground"}`}>{c.code}</button>)}
       </div>
       {!filtered.length ? <EmptyState message="No notes yet. Create a note to capture your ideas." /> : (
         <div className="space-y-3">
           {filtered.map((n, i) => (
-            <motion.div key={n.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3 }} className="glass-card p-4">
+            <motion.div key={n.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3 }} className="bg-card border border-border rounded-2xl p-4">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-[14px] font-semibold text-foreground truncate">{n.title}</p>
+                <p className="text-[14px] font-medium text-foreground truncate">{n.title}</p>
                 <span className="text-[10px] text-muted-foreground capitalize flex-shrink-0">{n.note_type}</span>
               </div>
               {n.course_code && <p className="text-[11px] text-muted-foreground mt-0.5">{n.course_code}</p>}

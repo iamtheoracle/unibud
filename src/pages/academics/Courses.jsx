@@ -66,7 +66,7 @@ export default function Courses() {
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search courses…" className="w-full h-[44px] px-4 rounded-2xl bg-muted/50 border border-border text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/60 mb-3" />
       <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
         {semesters.map((s) => (
-          <button key={s} onClick={() => setSem(s)} className={`px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap spring-tap ${sem === s ? "bg-primary text-primary-foreground" : "glass text-muted-foreground"}`}>{s === "all" ? "All" : s}</button>
+          <button key={s} onClick={() => setSem(s)} className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap spring-tap border transition-colors ${sem === s ? "bg-primary text-primary-foreground border-primary" : "bg-card border-border text-muted-foreground"}`}>{s === "all" ? "All" : s}</button>
         ))}
       </div>
       {!filtered.length ? <EmptyState message="No courses yet. Add your first course to get started." /> : (
@@ -74,12 +74,12 @@ export default function Courses() {
           {filtered.map((c, i) => {
             const att = attFor(c.code);
             return (
-              <motion.div key={c.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="glass-card p-4">
+              <motion.div key={c.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }} className="bg-card border border-border rounded-2xl p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: c.color || "#7FD8FF" }} />
-                      <p className="text-[14px] font-semibold text-foreground truncate">{c.title}</p>
+                      <p className="text-[14px] font-medium text-foreground truncate">{c.title}</p>
                     </div>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{c.code}{c.lecturer ? ` · ${c.lecturer}` : ""}</p>
                   </div>

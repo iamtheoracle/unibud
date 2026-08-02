@@ -134,7 +134,7 @@ export default function Marketplace() {
   const rec = featured[0] || housing[0];
 
   return (
-    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-28 safe-area-pt">
+    <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-36 safe-area-pt">
       {/* Top bar */}
       <div className="flex justify-between items-center mb-5">
         <h1 className="font-bold text-[28px] text-foreground tracking-tight">Marketplace</h1>
@@ -192,7 +192,7 @@ export default function Marketplace() {
         {isLoading && !isDemoMode ? (
           <div className="grid grid-cols-2 gap-2.5">{[1, 2, 3, 4].map((i) => <div key={i} className="aspect-[3/4] rounded-2xl shimmer" />)}</div>
         ) : isEmpty ? (
-          <div className="crystal-card p-4">
+          <div className="bg-card border border-border rounded-2xl p-4">
             <EmptyState icon={Package} title="No listings found" description="Try a different filter, or be the first to list something — it's free." action={<button onClick={() => setComposerOpen(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap"><Plus className="w-3.5 h-3.5" /> List an item</button>} />
           </div>
         ) : (
@@ -208,7 +208,7 @@ export default function Marketplace() {
                   <div key={s.name} className="flex-shrink-0 w-[140px] rounded-2xl border border-border/30 overflow-hidden bg-card">
                     <div className={`h-16 bg-gradient-to-br ${s.color} flex items-center justify-center text-[28px]`}>{s.emoji}</div>
                     <div className="p-2.5">
-                      <p className="text-[12px] font-semibold text-foreground leading-tight truncate">{s.name}</p>
+                      <p className="text-[12px] font-medium text-foreground leading-tight truncate">{s.name}</p>
                       <div className="flex items-center justify-between mt-1">
                         <span className="text-[10px] text-muted-foreground">{s.items} items</span>
                         <span className="flex items-center gap-0.5 text-[10px] font-semibold text-foreground"><Star className="w-2.5 h-2.5 fill-foreground text-foreground" />{s.rating}</span>
