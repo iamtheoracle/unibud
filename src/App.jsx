@@ -33,6 +33,7 @@ const ForYou = lazy(() => import("@/pages/social/ForYou"));
 const HeroSection6Page = lazy(() => import("@/pages/HeroSection6Page"));
 const ProfileView = lazy(() => import("@/pages/social/ProfileView"));
 const Me = lazy(() => import("@/pages/Me"));
+const Settings = lazy(() => import("@/pages/Settings"));
 
 // Social Ecosystem
 const Quad = lazy(() => import("@/pages/Quad"));
@@ -229,6 +230,7 @@ function App() {
                     <Route path="/connect" element={<Connect />} />
                     <Route path="/services" element={<Services />} />
                     <Route path="/me" element={<Me />} />
+                    <Route path="/settings" element={<Settings />} />
                   <Route path="/hero" element={<HeroSection6Page />} />
                     <Route path="/shorts" element={<Shorts />} />
 <Route path="/podcasts" element={<Podcasts />} />
