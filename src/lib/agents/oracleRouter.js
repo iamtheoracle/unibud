@@ -3,6 +3,7 @@ import { DOMAIN_AGENTS, getAgentById, getGeneralAgent } from "./domainRegistry";
 import { executeAgent } from "./agentExecutor";
 import { SharedMemory } from "./sharedMemory";
 import { enrichCombinePrompt } from "@/lib/constitution/aiGroundingGuard";
+import { route as routeCapabilities } from "@/lib/bud/capabilityRouter";
 
 /**
  * Oracle Router — the master coordinator of the Bud Agent Operating System.
@@ -54,28 +55,39 @@ export async function routeAndRespond(message, screenContext, history = []) {
   memory.setContext("screen", screenContext);
   memory.setContext("history", history);
 
-  // Step 1: Classify — which agents are needed?
-  let agentIds = classifyByKeywords(message);
+  // Step 1: Capability Router — structured intent + capability classification
+  // v0.1: rule-based routing that outputs { intent, capabilities, confidence, agents }
+  const route = routeCapabilities(message, screenContext, history);
+  memory.setContext("route", route);
 
-  // Step 2: Execute selected agents in parallel (max 3 per request)
+  // Step 2: Use routed agents (falling back to keyword classification for coverage)
+  let agentIds = route.agents;
+  if (agentIds.length === 0 || (agentIds.length === 1 && agentIds[0] === "general")) {
+    const keywordHits = classifyByKeywords(message);
+    if (keywordHits.length > 0) agentIds = keywordHits;
+  }
+
+  // Step 3: Execute selected agents in parallel (max 3 per request)
   let agentResults = [];
-  if (agentIds.length > 0) {
+  if (agentIds.length > 0 && !agentIds.every((id) => id === "general")) {
     const agents = agentIds
       .map((id) => getAgentById(id))
       .filter(Boolean)
       .slice(0, 3);
 
-    const results = await Promise.allSettled(
-      agents.map((agent) =>
-        executeAgent(agent, message, screenContext, history, memory)
-      )
-    );
-    agentResults = results
-      .filter((r) => r.status === "fulfilled" && r.value?.response)
-      .map((r) => r.value);
+    if (agents.length > 0) {
+      const results = await Promise.allSettled(
+        agents.map((agent) =>
+          executeAgent(agent, message, screenContext, history, memory)
+        )
+      );
+      agentResults = results
+        .filter((r) => r.status === "fulfilled" && r.value?.response)
+        .map((r) => r.value);
+    }
   }
 
-  // Step 3: Combine results into one unified Bud response
+  // Step 4: Combine results into one unified Bud response
   if (agentResults.length === 0) {
     // No domain agents matched — use general conversational agent
     const general = getGeneralAgent();
@@ -92,11 +104,11 @@ export async function routeAndRespond(message, screenContext, history = []) {
 
   if (agentResults.length === 1) {
     // Single agent — present as Bud (revoice through Bud's personality)
-    return combineAsBud(message, screenContext, history, agentResults);
+    return combineAsBud(message, screenContext, history, agentResults, route);
   }
 
   // Multiple agents — combine their analyses
-  return combineAsBud(message, screenContext, history, agentResults);
+  return combineAsBud(message, screenContext, history, agentResults, route);
 }
 
 /**
@@ -104,7 +116,7 @@ export async function routeAndRespond(message, screenContext, history = []) {
  * Oracle calls this with all agent outputs, and Bud's personality
  * wraps them into one natural, seamless reply.
  */
-async function combineAsBud(message, screenContext, history, agentResults) {
+async function combineAsBud(message, screenContext, history, agentResults, route) {
   const agentOutputs = agentResults
     .map((r) => `[${r.domain}]: ${r.response}`)
     .join("\n\n");
@@ -117,9 +129,15 @@ async function combineAsBud(message, screenContext, history, agentResults) {
           .join("\n")
       : "";
 
+  const routeContext = route
+    ? `Intent: ${route.intent} (confidence ${(route.confidence * 100).toFixed(0)}%)\n` +
+      `Capabilities: ${route.capabilities.join(", ")}\n\n`
+    : "";
+
   const basePrompt =
     `${BUD_PERSONALITY}\n\n` +
     `Current screen: ${screenContext.name} — ${screenContext.description || "general"}\n\n` +
+    (routeContext ? `Routing context:\n${routeContext}` : "") +
     (historyStr ? `Recent conversation:\n${historyStr}\n\n` : "") +
     `Student request: ${message}\n\n` +
     `Specialist analysis:\n${agentOutputs}\n\n` +
@@ -135,9 +153,10 @@ async function combineAsBud(message, screenContext, history, agentResults) {
 }
 
 /**
- * Get a summary of which agents would handle a message (for debugging/monitoring).
+ * Get a structured routing plan for a message (for debugging/monitoring/admin).
+ * Returns the v0.1 Capability Router contract: { intent, capabilities, confidence, agents }.
  * Not exposed to users — internal Oracle intelligence only.
  */
-export function getRoutingPlan(message) {
-  return classifyByKeywords(message);
+export function getRoutingPlan(message, screenContext = {}, history = []) {
+  return routeCapabilities(message, screenContext, history);
 }
