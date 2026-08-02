@@ -1,14 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { store as storeMemory, forget as forgetMemory, clearAll as clearAllMemories, update as updateMemory, exportAll, retrieveRelevant, markAccessed, privacyGuard, scoreMemory } from "@/lib/bud/memoryBank";
 
 const PAUSE_KEY = "bud_memory_paused";
 
 /**
- * useBudMemory — Bud's long-term memory engine (client core).
- * - Lists, deletes, exports, and pauses memory (privacy).
- * - observe(signal): passively derives ONE concise memory from behaviour via
- *   InvokeLLM and stores it. Throttled; no-ops when paused. Bud learns from
- *   behaviour, not interviews.
+ * useBudMemory — Bud Memory Bank v1.0 hook.
+ *
+ * Provides full user control over their memory:
+ *   - View memories (by category)
+ *   - Edit / delete individual memories
+ *   - Clear all memories
+ *   - Disable memory entirely (pause)
+ *   - Export memories
+ *
+ * Also exposes the retrieval pipeline for Bud's prompt injection and
+ * a passive observer that derives memories from behaviour (privacy-guarded).
  */
 export function useBudMemory() {
   const [memories, setMemories] = useState([]);
@@ -41,24 +48,51 @@ export function useBudMemory() {
 
   const remove = useCallback(async (id) => {
     setMemories((m) => m.filter((x) => x.id !== id));
-    try { await base44.entities.BudMemory.delete(id); } catch {}
+    await forgetMemory(id);
   }, []);
 
   const clearAll = useCallback(async () => {
     setMemories([]);
-    try { await base44.entities.BudMemory.deleteMany({}); } catch {}
+    await clearAllMemories();
   }, []);
 
-  const exportMemory = useCallback(() => {
-    const blob = new Blob([JSON.stringify(memories, null, 2)], { type: "application/json" });
+  const update = useCallback(async (id, changes) => {
+    const result = await updateMemory(id, changes);
+    if (result.success) {
+      setMemories((m) => m.map((x) => (x.id === id ? { ...x, ...changes } : x)));
+    }
+    return result;
+  }, []);
+
+  const exportMemory = useCallback(async () => {
+    const data = await exportAll();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = "bud-memory.json";
     a.click();
     URL.revokeObjectURL(url);
-  }, [memories]);
+  }, []);
 
+  /**
+   * Retrieval pipeline — fetch relevant memories for a user message.
+   * Returns a context block string for prompt injection.
+   */
+  const retrieve = useCallback(async (message, context = {}) => {
+    if (paused) return { memories: [], scores: [], contextBlock: "" };
+    const result = await retrieveRelevant(message, context);
+    // Track usage
+    if (result.memories.length > 0) {
+      markAccessed(result.memories.map((m) => m.id));
+    }
+    return result;
+  }, [paused]);
+
+  /**
+   * Passive observer — derives ONE concise memory from behaviour via InvokeLLM.
+   * Privacy-guarded before storage. Throttled. No-ops when paused.
+   */
   const observe = useCallback(async (signal) => {
     if (paused || !signal || !signal.summary) return null;
     const now = Date.now();
@@ -69,29 +103,45 @@ export function useBudMemory() {
         prompt:
           "You are Bud, a calm university companion. From the student's recent behaviour, derive ONE concise memory " +
           "that will help you support them better. Use short second-person phrasing (e.g. 'Studies best at night'). " +
-          "If the behaviour is not worth remembering, reply exactly 'SKIP'. Behaviour: " + signal.summary,
+          "If the behaviour is not worth remembering, reply with memory = 'SKIP'. Behaviour: " + signal.summary,
         response_json_schema: {
           type: "object",
           properties: {
             memory: { type: "string" },
-            type: { type: "string", enum: ["preference", "learning_style", "favorite_subject", "goal", "conversation", "fact"] },
+            category: { type: "string", enum: ["academic", "preferences", "campus", "career", "conversation"] },
+            key: { type: "string" },
+            reason: { type: "string" },
           },
         },
       });
-      const memory = res?.memory || (typeof res === "string" ? res : "");
-      if (!memory || memory.trim().toUpperCase() === "SKIP") return null;
-      const type = res?.type || "fact";
-      const rec = await base44.entities.BudMemory.create({
-        memory_type: type,
-        content: memory,
-        source: signal.source || "passive",
-      });
-      setMemories((m) => [rec, ...m]);
-      return rec;
+      const memoryStr = res?.memory || (typeof res === "string" ? res : "");
+      if (!memoryStr || memoryStr.trim().toUpperCase() === "SKIP") return null;
+
+      const candidate = {
+        key: res?.key || signal.key || "observed_behaviour",
+        value: memoryStr,
+        category: res?.category || signal.category || "conversation",
+        source_type: "inferred",
+        reason: res?.reason || `Derived from passive observation: ${signal.source || "behaviour"}`,
+        sourceLabel: signal.source || "passive_observer",
+      };
+
+      const result = await storeMemory(candidate);
+      if (result.success) {
+        setMemories((m) => [result.memory, ...m]);
+        return result.memory;
+      }
+      return null;
     } catch {
       return null;
     }
   }, [paused]);
 
-  return { memories, loading, paused, togglePause, remove, clearAll, exportMemory, observe, refresh: load };
+  return { 
+    memories, loading, paused, togglePause, 
+    remove, clearAll, update, exportMemory, 
+    retrieve, observe, 
+    privacyGuard, scoreMemory,
+    refresh: load 
+  };
 }
