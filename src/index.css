@@ -1027,3 +1027,78 @@
 [data-exp="academic"] ::selection {
   background: hsl(221 83% 53% / 0.12);
 }
+
+/* ── Experience Light Theme — Social ── */
+/* Same light foundation as Academic, purple accent (#7C5CFC) */
+[data-exp="social"] {
+  --background: 220 14% 97%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 251 90% 67%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 93%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 220 14% 95%;
+  --muted-foreground: 220 9% 44%;
+  --accent: 251 90% 67%;
+  --accent-foreground: 0 0% 100%;
+  --border: 220 13% 90%;
+  --input: 220 14% 93%;
+  --ring: 251 90% 67%;
+  --bg-glow: transparent;
+
+  --surface: 0 0% 100%;
+  --surface-secondary: 220 14% 97%;
+  --surface-elevated: 0 0% 100%;
+  --foreground-secondary: 220 9% 44%;
+  --foreground-tertiary: 220 5% 64%;
+  --surface-grouped: 220 14% 96%;
+
+  --glass-bg: rgba(255, 255, 255, 0.82);
+  --glass-bg-strong: rgba(255, 255, 255, 0.94);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-border-strong: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --glass-blur: 20px;
+
+  --shadow-soft: 0 1px 2px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-premium: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.06);
+  --shadow-elevated: 0 2px 8px rgba(0,0,0,0.05), 0 8px 28px rgba(0,0,0,0.08);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.10);
+  --shadow-ice: 0 0 40px rgba(124, 92, 252, 0.06);
+
+  --dock-bg: rgba(255, 255, 255, 0.90);
+  --dock-border: rgba(0, 0, 0, 0.05);
+  --dock-shadow: 0 -1px 3px rgba(0,0,0,0.03), 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+  --dock-icon: 220 9% 44%;
+  --dock-icon-active: 251 90% 67%;
+  --dock-label: 220 9% 52%;
+  --dock-label-active: 251 90% 67%;
+  --dock-pill: rgba(124, 92, 252, 0.10);
+
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 220 9% 44%;
+  --sidebar-primary: 251 90% 67%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 14% 96%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-border: 220 13% 90%;
+  --sidebar-ring: 251 90% 67%;
+
+  --chart-1: 251 90% 67%;
+  --chart-2: 142 71% 45%;
+  --chart-3: 46 74% 55%;
+  --chart-4: 220 9% 64%;
+  --chart-5: 220 9% 42%;
+}
+
+[data-exp="social"] body {
+  background-image: none;
+}
+
+[data-exp="social"] ::selection {
+  background: hsl(251 90% 67% / 0.12);
+}
