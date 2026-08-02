@@ -21,6 +21,7 @@ import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
 import { useAutonomousEngine } from "@/hooks/useAutonomousEngine";
+import { useSelfHealingEngine } from "@/hooks/useSelfHealingEngine";
 import { ClassroomModeProvider } from "@/lib/classroom/ClassroomModeContext";
 
 function UniversalSearchOverlayWithContext() {
@@ -41,6 +42,7 @@ export default function AppShell() {
   const reduceMotion = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   useBudPush();
   useAutonomousEngine();
+  useSelfHealingEngine();
 
   // Track recently viewed pages for "Continue where you left off"
   useEffect(() => {
