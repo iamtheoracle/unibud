@@ -99,7 +99,7 @@
     /* Founder dock — monochrome translucent */
     --dock-bg: hsl(220 8% 5% / 0.5);
     --dock-border: rgba(255, 255, 255, 0.06);
-    --dock-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --dock-shadow: 0 -2px 16px rgba(0, 0, 0, 0.2), 0 12px 48px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --dock-icon: 0 0% 30%;
     --dock-icon-active: 0 0% 100%;
     --dock-label: 0 0% 30%;
@@ -199,7 +199,7 @@
 
     --dock-bg: hsl(220 8% 5% / 0.5);
     --dock-border: rgba(255, 255, 255, 0.06);
-    --dock-shadow: 0 -4px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --dock-shadow: 0 -2px 16px rgba(0, 0, 0, 0.2), 0 12px 48px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     --dock-icon: 0 0% 30%;
     --dock-icon-active: 0 0% 100%;
     --dock-label: 0 0% 30%;
@@ -356,8 +356,8 @@
      Dark mode: translucent, blending into the immersive interface. */
   .founder-dock {
     background: var(--dock-bg);
-    backdrop-filter: blur(28px) saturate(1.7);
-    -webkit-backdrop-filter: blur(28px) saturate(1.7);
+    backdrop-filter: blur(40px) saturate(1.8);
+    -webkit-backdrop-filter: blur(40px) saturate(1.8);
     border: 1px solid var(--dock-border);
     box-shadow: var(--dock-shadow);
   }
@@ -856,8 +856,8 @@
   /* UDS — Typography scale */
   .text-display { font-size: var(--text-display); line-height: 1.1; font-family: var(--font-display); font-weight: 700; letter-spacing: -0.02em; }
   .text-heading { font-size: var(--text-heading); line-height: 1.2; font-family: var(--font-heading); font-weight: 700; letter-spacing: -0.01em; }
-  .text-title { font-size: var(--text-title); line-height: 1.25; font-family: var(--font-heading); font-weight: 600; }
-  .text-subtitle { font-size: var(--text-subtitle); line-height: 1.3; font-family: var(--font-heading); font-weight: 600; }
+  .text-title { font-size: var(--text-title); line-height: 1.25; font-family: var(--font-heading); font-weight: 500; }
+  .text-subtitle { font-size: var(--text-subtitle); line-height: 1.3; font-family: var(--font-heading); font-weight: 500; }
   .text-body { font-size: var(--text-body); line-height: 1.5; font-family: var(--font-body); font-weight: 400; }
   .text-caption { font-size: var(--text-caption); line-height: 1.4; font-family: var(--font-body); font-weight: 500; }
   .text-label { font-size: var(--text-label); line-height: 1.3; font-family: var(--font-body); font-weight: 600; letter-spacing: 0.01em; }
@@ -997,7 +997,7 @@
 
   --dock-bg: rgba(255, 255, 255, 0.90);
   --dock-border: rgba(0, 0, 0, 0.05);
-  --dock-shadow: 0 -1px 3px rgba(0,0,0,0.03), 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+  --dock-shadow: 0 -1px 3px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
   --dock-icon: 220 9% 44%;
   --dock-icon-active: 221 83% 53%;
   --dock-label: 220 9% 52%;
@@ -1072,7 +1072,7 @@
 
   --dock-bg: rgba(255, 255, 255, 0.90);
   --dock-border: rgba(0, 0, 0, 0.05);
-  --dock-shadow: 0 -1px 3px rgba(0,0,0,0.03), 0 8px 32px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+  --dock-shadow: 0 -1px 3px rgba(0,0,0,0.03), 0 12px 48px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
   --dock-icon: 220 9% 44%;
   --dock-icon-active: 251 90% 67%;
   --dock-label: 220 9% 52%;

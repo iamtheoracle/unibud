@@ -125,15 +125,18 @@ export default function CampusHome() {
       {/* Focus recommendations */}
       {recommended.length > 0 && (
         <section className="mt-10">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-4 block">Focus For You</span>
-          <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-1">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">Focus For You</span>
+          <div className="divide-y divide-border border-t border-b border-border">
             {recommended.map((c) => {
               const Icon = c.icon;
               return (
-                <Link key={c.key} to={c.to} className="flex-shrink-0 w-[140px] bg-card border border-border rounded-xl p-4 spring-tap card-hover">
-                  <Icon className="w-[18px] h-[18px] text-primary mb-2.5" strokeWidth={2} />
-                  <p className="text-[13px] font-medium text-foreground leading-tight">{c.title}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{c.desc}</p>
+                <Link key={c.key} to={c.to} className="flex items-center gap-3 py-4 spring-tap group">
+                  <Icon className="w-[18px] h-[18px] text-muted-foreground shrink-0" strokeWidth={1.8} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[15px] font-medium text-foreground">{c.title}</p>
+                    <p className="text-[12px] text-muted-foreground mt-0.5 truncate">{c.desc}</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5" strokeWidth={1.8} />
                 </Link>
               );
             })}

@@ -121,9 +121,9 @@ export default function Home() {
             </div>
             <Link to={focusItem.to} className="block spring-tap group">
               <div className="bg-card border border-border rounded-2xl p-5 premium-shadow transition-shadow duration-300 hover:shadow-hover">
-                <p className="text-[17px] font-semibold text-foreground leading-tight">{focusItem.title}</p>
+                <p className="text-[17px] font-medium text-foreground leading-tight">{focusItem.title}</p>
                 <p className="text-[13px] text-muted-foreground mt-1">{focusItem.sub}</p>
-                <div className="flex items-center gap-1 mt-4 text-primary text-[13px] font-semibold">
+                <div className="flex items-center gap-1 mt-4 text-primary text-[13px] font-medium">
                   Continue
                   <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
                 </div>

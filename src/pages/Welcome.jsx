@@ -33,7 +33,7 @@ export default function Welcome() {
       {/* Gradient overlay for text legibility */}
       <div
         className="absolute inset-0 z-[1] pointer-events-none"
-        style={{ background: "linear-gradient(180deg, rgba(5,8,13,0.55) 0%, rgba(5,8,13,0.2) 35%, rgba(5,8,13,0.5) 65%, rgba(5,8,13,0.92) 100%)" }}
+        style={{ background: "linear-gradient(180deg, rgba(5,8,13,0.78) 0%, rgba(5,8,13,0.42) 35%, rgba(5,8,13,0.72) 65%, rgba(5,8,13,0.96) 100%)" }}
       />
 
       {/* Top branding */}

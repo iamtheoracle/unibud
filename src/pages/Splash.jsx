@@ -46,8 +46,8 @@ export default function Splash() {
       <div className="absolute inset-0 z-0">
         <Image src={BG_URL} alt="" fittingType="fill" className="w-full h-full object-cover" />
       </div>
-      {/* Dark overlay for contrast */}
-      <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(5,8,13,0.6) 0%, rgba(5,8,13,0.3) 50%, rgba(5,8,13,0.8) 100%)" }} />
+      {/* Dark overlay for contrast — heavier to reduce image dominance */}
+      <div className="absolute inset-0 z-[1] pointer-events-none" style={{ background: "linear-gradient(180deg, rgba(5,8,13,0.88) 0%, rgba(5,8,13,0.62) 45%, rgba(5,8,13,0.94) 100%)" }} />
       <SparkField count={24} />
 
       <motion.div

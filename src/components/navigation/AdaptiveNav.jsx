@@ -43,7 +43,7 @@ export default function AdaptiveNav() {
   return (
     <MotionConfig reducedMotion="user">
       <nav className="fixed bottom-0 inset-x-0 z-40 pointer-events-none" aria-label="Primary">
-        <div className="max-w-[520px] mx-auto px-4 pb-5 safe-area-pb pointer-events-auto">
+        <div className="max-w-[520px] mx-auto px-4 pb-6 safe-area-pb pointer-events-auto">
           <div className="flex items-end justify-between gap-2">
             {/* ── Adaptive Navigation Capsule — floating, white, shadowed ── */}
             <motion.div
