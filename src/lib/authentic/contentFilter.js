@@ -87,3 +87,6 @@ export function getAuthenticMetrics(posts) {
     totalShares: real.reduce((sum, p) => sum + (p.shares_count || 0), 0),
   };
 }
+
+// Re-export the content architecture validator for unified access
+export { filterSystemDocuments, isSystemDocumentLeak, validateFeedSpace } from "@/lib/constitution/contentArchitectureValidator";

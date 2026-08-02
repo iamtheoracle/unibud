@@ -65,6 +65,14 @@ const CHECKLIST = [
     { label: "Notification workflows", done: true },
     { label: "Legal pages (Privacy, Terms, About)", done: true },
   ]},
+  { category: "Content Architecture", items: [
+    { label: "Internal OS documents separated from user spaces", done: true },
+    { label: "System document filter active in feed pipeline", done: true },
+    { label: "Square feed excludes system documents", done: true },
+    { label: "Seed content marked with Launch badge", done: true },
+    { label: "Realistic campus activity seeded", done: true },
+    { label: "No constitution/founder documents in user feeds", done: true },
+  ]},
 ];
 
 const HEALTH_METRICS = [
