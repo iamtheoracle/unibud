@@ -15,8 +15,8 @@ import { hapticSelect, hapticImpact, hapticTap } from "@/lib/haptics";
 import { useExperience } from "@/lib/ExperienceContext";
 
 /* ── Spring physics — Apple-like: high stiffness, medium damping ── */
-const SPRING = { type: "spring", stiffness: 400, damping: 30, mass: 0.9 };
-const ICON_SPRING = { type: "spring", stiffness: 500, damping: 28, mass: 0.8 };
+const SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.9 };
+const ICON_SPRING = { type: "spring", stiffness: 420, damping: 34, mass: 0.8 };
 const EASE = [0.16, 1, 0.3, 1];
 const DOCK_ENTER = { duration: 0.55, ease: EASE };
 const LENS_AUTO_DISMISS_MS = 3500;
@@ -177,7 +177,7 @@ export default function AdaptiveNav() {
                             className="relative flex flex-col items-center gap-1"
                           >
                             <Icon
-                              className={`w-[28px] h-[28px] transition-colors duration-300 ${isCurrent ? "dock-icon-active" : "dock-icon"}`}
+                              className={`w-[30px] h-[30px] transition-colors duration-300 ${isCurrent ? "dock-icon-active" : "dock-icon"}`}
                               strokeWidth={isCurrent ? 2.2 : 1.7}
                             />
                             <span className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ${isCurrent ? "dock-label-active" : "dock-label"}`}>
@@ -234,7 +234,7 @@ function NavTab({ tab, active, onClick }) {
         className="relative flex flex-col items-center gap-1"
       >
         <Icon
-          className={`w-[28px] h-[28px] transition-colors duration-300 ${active ? "dock-icon-active" : "dock-icon"}`}
+          className={`w-[30px] h-[30px] transition-colors duration-300 ${active ? "dock-icon-active" : "dock-icon"}`}
           strokeWidth={active ? 2.2 : 1.7}
         />
         <span className={`text-[10px] font-medium tracking-tight transition-colors duration-300 ${active ? "dock-label-active" : "dock-label"}`}>
