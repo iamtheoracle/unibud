@@ -36,8 +36,6 @@ const EventsCard = lazy(() => import("@/components/workspace/cards/social/Events
 const CommunitiesCard = lazy(() => import("@/components/workspace/cards/social/CommunitiesCard"));
 const MarketplaceCard = lazy(() => import("@/components/workspace/cards/social/MarketplaceCard"));
 const OpportunitiesCard = lazy(() => import("@/components/workspace/cards/social/OpportunitiesCard"));
-const SocialAccountsCard = lazy(() => import("@/components/workspace/cards/social/SocialAccountsCard"));
-
 // ─── Registry ───────────────────────────────────────────────────
 
 export const CARD_REGISTRY = [
@@ -57,7 +55,6 @@ export const CARD_REGISTRY = [
   { id: "communities", type: "social", title: "Communities & Clubs", workspace: "social", priority: 4, expandable: true, refreshable: true, component: CommunitiesCard },
   { id: "opportunities", type: "social", title: "Opportunities", workspace: "social", priority: 5, expandable: true, refreshable: true, component: OpportunitiesCard },
   { id: "marketplace", type: "social", title: "Marketplace", workspace: "social", priority: 6, expandable: true, refreshable: true, component: MarketplaceCard },
-  { id: "social_accounts", type: "social", title: "Social Accounts", workspace: "social", priority: 7, expandable: false, refreshable: false, component: SocialAccountsCard },
 ];
 
 /**
