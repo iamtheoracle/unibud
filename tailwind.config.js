@@ -5,12 +5,12 @@ module.exports = {
   theme: {
   	extend: {
   		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: '0.75rem',
   			sm: '0.5rem',
-        xl: '1.5rem',
-        '2xl': '1.75rem',
-        '3xl': '2.25rem',
+  			md: '1rem',
+  			lg: 'var(--radius)',
+        xl: '1.75rem',
+        '2xl': '1.875rem',
+        '3xl': '2rem',
         pill: '9999px'
   		},
   		spacing: {
