@@ -7,6 +7,7 @@ import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
 import GlassInput from "@/components/foundation/GlassInput";
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -113,6 +114,15 @@ export default function Login() {
               <Link to="/forgot-password" className="text-[13px] text-primary font-semibold hover:underline">
                 Forgot Password?
               </Link>
+            </div>
+
+            <div className="flex items-center gap-3 mt-5">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-[11px] font-medium text-muted-foreground">or continue with</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="mt-3">
+              <SocialAuthButtons onError={setError} />
             </div>
           </motion.div>
 

@@ -8,6 +8,7 @@ import BrandLogo from "@/components/foundation/BrandLogo";
 import SparkField from "@/components/foundation/SparkField";
 import CompanyFooter from "@/components/foundation/CompanyFooter";
 import GlassInput from "@/components/foundation/GlassInput";
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import { toast } from "@/components/ui/use-toast";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -243,6 +244,19 @@ export default function Register() {
               "Next"
             )}
           </button>
+
+          {step === 0 && (
+            <>
+              <div className="flex items-center gap-3 mt-6">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-[11px] font-medium text-muted-foreground">or sign up with</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+              <div className="mt-3">
+                <SocialAuthButtons fromUrl="/auth-router" onError={setError} />
+              </div>
+            </>
+          )}
 
           <p className="text-center text-[13px] text-muted-foreground mt-6">
             Already have an account?{" "}
