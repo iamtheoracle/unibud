@@ -10,11 +10,13 @@ import {
 import {
   ArrowLeft, TrendingUp, TrendingDown, Flame, Award, Target,
   CheckCircle, CalendarClock, BookOpen, GraduationCap, Sparkles,
-  Clock, ChevronDown,
+  Clock, ChevronDown, Download, Loader2, ChevronRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import StudyStreakIntelligence from "@/components/academics/StudyStreakIntelligence";
+import ClassReminderSystem from "@/components/academics/ClassReminderSystem";
+import { toast } from "@/components/ui/use-toast";
 
 const TIME_RANGES = [
   { id: "weekly", label: "Weekly" },
@@ -43,6 +45,46 @@ export default function AcademicInsights() {
   const navigate = useNavigate();
   const isOnline = useOnlineStatus();
   const [range, setRange] = useState("semester");
+  const [exporting, setExporting] = useState(false);
+  const reportRef = React.useRef(null);
+
+  const handleExportPDF = async () => {
+    if (!reportRef.current) return;
+    setExporting(true);
+    try {
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import("jspdf"),
+        import("html2canvas"),
+      ]);
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#FFFFFF",
+        logging: false,
+      });
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      let heightLeft = pdfHeight;
+      let position = 0;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      while (heightLeft > 0) {
+        position -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+      pdf.save(`UNIBUD-Academic-Report-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast({ title: "Report exported", description: "Your academic report has been downloaded." });
+    } catch (err) {
+      toast({ title: "Export failed", description: "Could not generate PDF. Please try again.", variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
 
   const { data: grades } = useQuery({
     queryKey: ["insights", "grades", range],
@@ -255,8 +297,19 @@ export default function AcademicInsights() {
             <h1 className="text-[18px] font-bold text-foreground tracking-tight">Academic Insights</h1>
             <p className="text-[11px] text-muted-foreground">Bud's analysis of your academic progress</p>
           </div>
-          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-primary" strokeWidth={2.2} />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportPDF}
+              disabled={exporting || !hasAnyData}
+              className="h-9 px-3 rounded-full bg-primary text-primary-foreground text-[12px] font-bold flex items-center gap-1.5 active:scale-95 transition-transform disabled:opacity-50"
+            >
+              {exporting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={2.2} />
+              ) : (
+                <Download className="w-3.5 h-3.5" strokeWidth={2.2} />
+              )}
+              PDF
+            </button>
           </div>
         </div>
 
@@ -279,7 +332,7 @@ export default function AcademicInsights() {
         </div>
       </div>
 
-      <div className="max-w-[640px] mx-auto px-4 pt-4 space-y-4">
+      <div ref={reportRef} className="max-w-[640px] mx-auto px-4 pt-4 space-y-4">
         {/* Bud explanation */}
         {budMessages.length > 0 && (
           <motion.div
@@ -399,6 +452,25 @@ export default function AcademicInsights() {
             </div>
           </InsightCard>
         )}
+
+        {/* Class Reminder System */}
+        <ClassReminderSystem />
+
+        {/* Calendar Sync shortcut */}
+        <button
+          onClick={() => navigate("/settings/calendar-sync")}
+          className="w-full flex items-center gap-2.5 p-3 rounded-[16px] bg-card text-left active:scale-[0.98] transition-transform"
+          style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)" }}
+        >
+          <div className="w-8 h-8 rounded-[12px] bg-chocolate/10 flex items-center justify-center flex-shrink-0">
+            <CalendarClock className="w-4 h-4 text-chocolate" strokeWidth={2.2} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[12px] font-bold text-foreground">Calendar Sync</p>
+            <p className="text-[10px] text-muted-foreground">Connect Google, Outlook & Apple calendars</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+        </button>
 
         {/* Study Streak Intelligence */}
         <StudyStreakIntelligence sessions={sessions} />

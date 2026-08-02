@@ -5,13 +5,12 @@ import { useNavigate } from "react-router-dom";
 import {
   Settings, Shield, Bell, Palette, Globe, Smartphone,
   BadgeCheck, Award, Briefcase, FileText, ChevronRight, Sparkles,
-  Wallet as WalletIcon, Lock, Activity,
+  Wallet as WalletIcon, Lock, Activity, Calendar as CalendarIcon,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
 import BudAcademicInsights from "@/components/bud/BudAcademicInsights";
 import SmartReminders from "@/components/bud/SmartReminders";
-import GoogleCalendarConnect from "@/components/bud/GoogleCalendarConnect";
 import DeadlineAlertsBanner from "@/components/academics/DeadlineAlertsBanner";
 import { Image } from "@/components/ui/image";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
@@ -176,8 +175,21 @@ export default function MeTab() {
               {/* Smart Reminders */}
               <SmartReminders />
 
-              {/* Google Calendar */}
-              <GoogleCalendarConnect />
+              {/* Calendar Sync — full settings */}
+              <button
+                onClick={() => navigate("/settings/calendar-sync")}
+                className="w-full flex items-center gap-2.5 p-3.5 rounded-[18px] bg-card text-left active:scale-[0.98] transition-transform"
+                style={{ boxShadow: "0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04)" }}
+              >
+                <div className="w-9 h-9 rounded-full bg-chocolate/10 flex items-center justify-center flex-shrink-0">
+                  <CalendarIcon className="w-4 h-4 text-chocolate" strokeWidth={2.2} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[13px] font-bold text-foreground">Calendar Sync</p>
+                  <p className="text-[11px] text-muted-foreground">Google, Outlook & Apple Calendar</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" strokeWidth={2.2} />
+              </button>
 
               {/* Achievements preview */}
               {(achievements?.length ?? 0) > 0 && (

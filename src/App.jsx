@@ -70,6 +70,7 @@ const MeTab = lazy(() => import("@/pages/tabs/MeTab"));
 const MainShell = lazy(() => import("@/components/layout/MainShell"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const AcademicInsights = lazy(() => import("@/pages/academics/AcademicInsights"));
+const CalendarSyncSettings = lazy(() => import("@/pages/settings/CalendarSyncSettings"));
 const Results = lazy(() => import("@/pages/academics/Results"));
 const SummaryReport = lazy(() => import("@/pages/academics/SummaryReport"));
 const CommunicationHub = lazy(() => import("@/pages/communication/CommunicationHub"));
@@ -311,6 +312,7 @@ function App() {
                     <Route path="/campus-v2" element={<CampusHomeScreen />} />
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/insights" element={<AcademicInsights />} />
+                    <Route path="/settings/calendar-sync" element={<CalendarSyncSettings />} />
                     <Route path="/academics/results" element={<Results />} />
                     <Route path="/academics/report" element={<SummaryReport />} />
                     <Route path="/communication" element={<CommunicationHub />} />
