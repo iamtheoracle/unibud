@@ -16,19 +16,19 @@ import {
 const EASE = [0.16, 1, 0.3, 1];
 
 const CATEGORY_ICONS = {
-  core: Command,
-  journey: TrendingUp,
+  identity: Command,
+  relationship: Heart,
+  evolution: TrendingUp,
+  builds: Target,
   experience: MousePointerClick,
   workspace: Layers,
-  role: Target,
   design: Palette,
-  personality: Heart,
   longterm: Telescope,
 };
 
 export default function BudProductVision() {
   const navigate = useNavigate();
-  const [expandedCategory, setExpandedCategory] = useState("core");
+  const [expandedCategory, setExpandedCategory] = useState("identity");
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
