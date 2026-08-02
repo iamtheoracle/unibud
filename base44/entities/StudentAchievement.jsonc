@@ -2,56 +2,139 @@
   "name": "StudentAchievement",
   "type": "object",
   "properties": {
-    "student_name": {
-      "type": "string"
-    },
-    "university": {
-      "type": "string"
+    "achievement_key": {
+      "type": "string",
+      "description": "Catalog key linking to the achievement definition"
     },
     "title": {
       "type": "string"
     },
     "description": {
-      "type": "string"
+      "type": "string",
+      "description": "What the student achieved"
     },
     "category": {
       "type": "string",
       "enum": [
-        "academic",
-        "leadership",
-        "club",
-        "volunteer",
-        "competition",
-        "sports",
-        "research",
-        "certification",
-        "project",
-        "award",
-        "creative"
+        "study",
+        "assignments",
+        "exams",
+        "learning",
+        "collaboration",
+        "campus_life",
+        "milestone"
       ],
-      "default": "academic"
+      "default": "study",
+      "description": "Achievement category"
     },
-    "date": {
+    "date_earned": {
       "type": "string",
-      "format": "date"
+      "format": "date-time",
+      "description": "When the achievement was earned"
     },
-    "image_url": {
-      "type": "string"
+    "related_course": {
+      "type": "string",
+      "description": "Course code if the achievement is course-specific"
     },
-    "is_public": {
-      "type": "boolean",
-      "default": true
+    "milestone_description": {
+      "type": "string",
+      "description": "Longer description for milestone achievements"
     },
-    "issuer": {
-      "type": "string"
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "friends",
+        "university",
+        "public"
+      ],
+      "default": "private",
+      "description": "Who can see this achievement \u2014 student controls visibility"
+    },
+    "bud_message": {
+      "type": "string",
+      "description": "Bud's personalized congratulation message"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name for this achievement"
     },
     "accent_color": {
+      "type": "string",
+      "description": "HSL color channels for the achievement badge"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional context (streak count, score, progress percentage, etc.)"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "university": {
       "type": "string"
     }
   },
   "required": [
-    "student_name",
+    "achievement_key",
     "title",
     "category"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.visibility": "public"
+        },
+        {
+          "$and": [
+            {
+              "data.visibility": "university"
+            },
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            }
+          ]
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

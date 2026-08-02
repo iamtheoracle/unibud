@@ -98,6 +98,7 @@ const Calendar = lazy(() => import("@/pages/academics/Calendar"));
 const Assignments = lazy(() => import("@/pages/academics/Assignments"));
 const Projects = lazy(() => import("@/pages/academics/Projects"));
 const Exams = lazy(() => import("@/pages/academics/Exams"));
+const Achievements = lazy(() => import("@/pages/academics/Achievements"));
 const Attendance = lazy(() => import("@/pages/academics/Attendance"));
 const Notes = lazy(() => import("@/pages/academics/Notes"));
 const OfficeHours = lazy(() => import("@/pages/academics/OfficeHours"));
@@ -329,6 +330,7 @@ function App() {
                     <Route path="/assignments" element={<Assignments />} />
                     <Route path="/projects" element={<Projects />} />
                     <Route path="/exams" element={<Exams />} />
+                    <Route path="/achievements" element={<Achievements />} />
                     <Route path="/attendance" element={<Attendance />} />
 <Route path="/office-hours" element={<OfficeHours />} />
                     <Route path="/notes" element={<Notes />} />

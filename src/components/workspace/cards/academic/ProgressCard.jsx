@@ -4,6 +4,7 @@ import { Award, Target, Flame, Clock, GraduationCap, CheckCircle2 } from "lucide
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ListSkeleton } from "@/components/resilience/SkeletonKit";
+import RecentAchievements from "@/components/academic/RecentAchievements";
 
 function computeGPA(grades) {
   if (!grades || grades.length === 0) return null;
@@ -173,9 +174,17 @@ export default function ProgressCard() {
         </div>
       )}
 
-      <Link to="/academics/results" className="block text-[12px] font-medium text-primary pt-1">
-        Full academic report →
-      </Link>
+      {/* Recent achievements */}
+      <RecentAchievements />
+
+      <div className="flex items-center justify-between pt-1">
+        <Link to="/academics/results" className="text-[12px] font-medium text-primary">
+          Full report →
+        </Link>
+        <Link to="/achievements" className="text-[12px] font-medium text-primary">
+          Achievements →
+        </Link>
+      </div>
     </div>
   );
 }
