@@ -169,9 +169,10 @@ export default function AcademicHub() {
           <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">Results</p>
           <div className="divide-y divide-border border-t border-b border-border">
             {ACADEMIC_CATEGORIES.filter((c) =>
-              c.title.toLowerCase().includes(q.toLowerCase()) ||
-              c.desc.toLowerCase().includes(q.toLowerCase())
-            ).map((c) => (
+               c.to &&
+               (c.title.toLowerCase().includes(q.toLowerCase()) ||
+                c.desc.toLowerCase().includes(q.toLowerCase()))
+             ).map((c) => (
               <SummaryRow key={c.key} to={c.to} icon={c.icon} label={c.title} value={c.desc} />
             ))}
           </div>
