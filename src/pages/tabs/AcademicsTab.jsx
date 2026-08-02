@@ -11,6 +11,7 @@ import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
 import DeadlineAlertsBanner from "@/components/academics/DeadlineAlertsBanner";
 import AcademicProgressCard from "@/components/academics/AcademicProgressCard";
+import AcademicChartsDashboard from "@/components/academics/AcademicChartsDashboard";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const CATEGORIES = [
@@ -211,6 +212,12 @@ export default function AcademicsTab() {
                 <StatCard icon={ClipboardList} label="Due" value={assignments?.length || 0} onClick={() => navigate("/assignments")} />
                 <StatCard icon={Award} label="Exams" value={exams?.length || 0} onClick={() => navigate("/exams")} />
               </div>
+
+              {/* Progress Dashboard — GPA trend, study streaks, assignment completion */}
+              <AcademicChartsDashboard
+                grades={grades || []}
+                sessions={sessions || []}
+              />
 
               <button
                 onClick={() => navigate("/academics/files")}
