@@ -82,6 +82,9 @@ export const SYNC_REGISTRY = {
   // ── Tutor ──
   TutorProfile: { prefixes: ["tutors", "tutor"], domains: ["academic"] },
   TutorBooking: { prefixes: ["tutor-bookings", "bookings"], domains: ["academic", "notifications"] },
+
+  // ── External Content (provenance-tracked) ──
+  ExternalContent: { prefixes: ["external-content", "integration-transition"], domains: ["social", "search", "bud"] },
 };
 
 /**
