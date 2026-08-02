@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
-import { ChevronLeft, Bookmark, ExternalLink, Trash2, Folder, Share2 } from "lucide-react";
+import { ChevronLeft, Bookmark, ExternalLink, Trash2, Folder, Share2, UserPlus } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import ShareFolderSheet from "@/components/highlights/ShareFolderSheet";
 import CommunityCollections from "@/components/highlights/CommunityCollections";
+import CollaboratorBar from "@/components/highlights/CollaboratorBar";
+import InviteCollaboratorsSheet from "@/components/highlights/InviteCollaboratorsSheet";
+import { useCollaboration } from "@/hooks/useCollaboration";
 
 const EASE = [0.16, 1, 0.3, 1];
 const DEFAULT_FOLDERS = [
@@ -25,11 +28,17 @@ export default function Highlights() {
   const [activeFolder, setActiveFolder] = useState("All");
   const [tab, setTab] = useState("mine");
   const [showShareSheet, setShowShareSheet] = useState(false);
+  const [showCollabSheet, setShowCollabSheet] = useState(false);
 
   const { data: highlights = [], isLoading } = useQuery({
     queryKey: ["highlights"],
     queryFn: () => base44.entities.Highlight.list("-created_date", 200),
     staleTime: 30000,
+  });
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => base44.auth.me(),
+    staleTime: 120000,
   });
 
   const shareMutation = useMutation({
@@ -49,6 +58,13 @@ export default function Highlights() {
   const userFolders = [...new Set(highlights.map((h) => h.folder).filter(Boolean))];
   const folders = ["All", ...userFolders];
   const filtered = activeFolder === "All" ? highlights : highlights.filter((h) => h.folder === activeFolder);
+
+  const collaboration = useCollaboration(
+    activeFolder,
+    highlights,
+    user?.id,
+    user?.full_name || user?.email
+  );
 
   return (
     <div className="min-h-screen pb-32 safe-area-pt">
@@ -93,14 +109,31 @@ export default function Highlights() {
           ))}
         </div>
 
-        {/* Share button when a specific folder is active */}
+        {/* Collaborator bar + Share/Invite buttons when a specific folder is active */}
         {activeFolder !== "All" && filtered.length > 0 && (
-          <button
-            onClick={() => setShowShareSheet(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold spring-tap mb-3"
-          >
-            <Share2 className="w-3.5 h-3.5" /> Share "{activeFolder}"
-          </button>
+          <>
+            {collaboration.collaborators.length > 0 && (
+              <CollaboratorBar
+                collaborators={collaboration.collaborators}
+                ownerName={user?.full_name || user?.email}
+                onInvite={() => setShowCollabSheet(true)}
+              />
+            )}
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => setShowShareSheet(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-[11px] font-semibold spring-tap"
+              >
+                <Share2 className="w-3.5 h-3.5" /> Share
+              </button>
+              <button
+                onClick={() => setShowCollabSheet(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-foreground text-background text-[11px] font-semibold spring-tap"
+              >
+                <UserPlus className="w-3.5 h-3.5" /> Invite Collaborators
+              </button>
+            </div>
+          </>
         )}
 
         {/* Suggested folders when user has none */}
@@ -197,6 +230,20 @@ export default function Highlights() {
             const items = highlights.filter((h) => h.folder === activeFolder);
             await shareMutation.mutateAsync({ items });
           }}
+        />
+
+        <InviteCollaboratorsSheet
+          open={showCollabSheet}
+          onOpenChange={setShowCollabSheet}
+          folder={activeFolder}
+          collaborators={collaboration.collaborators}
+          activity={collaboration.activity}
+          comments={collaboration.comments}
+          onInvite={collaboration.inviteCollaborator}
+          onRemove={collaboration.removeCollaborator}
+          onRoleChange={collaboration.updateRole}
+          onAddComment={collaboration.addComment}
+          canComment={true}
         />
         </>
         )}
