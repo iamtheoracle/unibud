@@ -10,6 +10,7 @@ import {
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
 import DeadlineAlertsBanner from "@/components/academics/DeadlineAlertsBanner";
+import AcademicProgressCard from "@/components/academics/AcademicProgressCard";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const CATEGORIES = [
@@ -55,7 +56,31 @@ export default function AcademicsTab() {
 
   const { data: grades, isLoading: gradesLoading } = useQuery({
     queryKey: ["academics", "grades"],
-    queryFn: () => base44.entities.Grade.list("-created_date", 5),
+    queryFn: () => base44.entities.Grade.list("-created_date", 50),
+    enabled: isOnline && activeCategory === "dashboard",
+  });
+
+  const { data: sessions } = useQuery({
+    queryKey: ["academics", "sessions"],
+    queryFn: () => base44.entities.StudySession.list("-created_date", 20),
+    enabled: isOnline && activeCategory === "dashboard",
+  });
+
+  const { data: achievements } = useQuery({
+    queryKey: ["academics", "achievements"],
+    queryFn: () => base44.entities.StudentAchievement.list("-date_earned", 10),
+    enabled: isOnline && activeCategory === "dashboard",
+  });
+
+  const { data: studyGroups } = useQuery({
+    queryKey: ["academics", "studyGroups"],
+    queryFn: () => base44.entities.StudyGroup.list("-created_date", 10),
+    enabled: isOnline && activeCategory === "dashboard",
+  });
+
+  const { data: allProjects } = useQuery({
+    queryKey: ["academics", "allProjects"],
+    queryFn: () => base44.entities.Project.list("-created_date", 20),
     enabled: isOnline && activeCategory === "dashboard",
   });
 
@@ -168,6 +193,18 @@ export default function AcademicsTab() {
                 </div>
                 <ChevronRight className="w-4 h-4 text-primary" strokeWidth={2.2} />
               </button>
+
+              {/* Academic Progress Card — real student data */}
+              <AcademicProgressCard
+                assignments={assignments || []}
+                exams={exams || []}
+                projects={allProjects || []}
+                grades={grades || []}
+                courses={courses || []}
+                sessions={sessions || []}
+                achievements={achievements || []}
+                studyGroups={studyGroups || []}
+              />
 
               <div className="grid grid-cols-3 gap-2">
                 <StatCard icon={BookOpen} label="Courses" value={courses?.length || 0} onClick={() => navigate("/courses")} />

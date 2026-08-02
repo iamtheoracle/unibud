@@ -9,6 +9,9 @@ import {
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/use-toast";
+import CreatorAnalytics from "@/components/creator/CreatorAnalytics";
+import CreatorTemplates from "@/components/creator/CreatorTemplates";
+import CreatorScheduler from "@/components/creator/CreatorScheduler";
 
 const EASE = [0.16, 1, 0.3, 1];
 const ENTITY = { posts: "QuadPost", shorts: "ShortVideo", stories: "Story", podcasts: "PodcastEpisode", listings: "MarketplaceListing" };
@@ -30,8 +33,10 @@ export default function CreatorStudio() {
   const { data: stories } = useQuery({ queryKey: ["myStories"], queryFn: () => base44.entities.Story.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
   const { data: episodes } = useQuery({ queryKey: ["myEpisodes"], queryFn: () => base44.entities.PodcastEpisode.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
   const { data: listings } = useQuery({ queryKey: ["myListings"], queryFn: () => base44.entities.MarketplaceListing.filter({ created_by_id: user.id }, "-created_date", 100), enabled });
+  const { data: myPodcasts } = useQuery({ queryKey: ["myPodcasts"], queryFn: () => base44.entities.Podcast.filter({ created_by_id: user.id }, "-created_date", 50), enabled });
 
   const p = posts || [], s = shorts || [], st = stories || [], e = episodes || [], l = listings || [];
+  const pods = myPodcasts || [];
   const reactions = useMemo(() => [...p, ...s, ...st].reduce((a, x) => a + (x.likes_count || 0), 0), [p, s, st]);
   const comments = useMemo(() => [...p, ...s].reduce((a, x) => a + (x.comments_count || 0), 0), [p, s]);
   const shares = useMemo(() => [...p, ...s].reduce((a, x) => a + (x.shares_count || 0), 0), [p, s]);
@@ -54,6 +59,9 @@ export default function CreatorStudio() {
   const loading = postsLoading && enabled;
   const TABS = [
     { key: "overview", label: "Overview" },
+    { key: "analytics", label: "Analytics" },
+    { key: "templates", label: "Templates" },
+    { key: "schedule", label: "Schedule" },
     { key: "posts", label: `Posts · ${p.length}` },
     { key: "stories", label: `Stories · ${st.length}` },
     { key: "shorts", label: `Shorts · ${s.length}` },
@@ -134,6 +142,18 @@ export default function CreatorStudio() {
               </button>
             ))}
           </div>
+
+          {tab === "analytics" && (
+            <CreatorAnalytics posts={p} shorts={s} stories={st} episodes={e} podcasts={pods} />
+          )}
+
+          {tab === "templates" && (
+            <CreatorTemplates user={user} />
+          )}
+
+          {tab === "schedule" && (
+            <CreatorScheduler user={user} posts={p} shorts={s} stories={st} episodes={e} listings={l} />
+          )}
 
           {tab === "overview" && (
             <div className="space-y-3">
