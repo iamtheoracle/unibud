@@ -240,6 +240,7 @@ function App() {
                     <Route path="/community/:communityId" element={<CommunityDetail />} />
                     <Route path="/clubs" element={<Clubs />} />
                     <Route path="/marketplace" element={<Marketplace />} />
+                    <Route path="/wallet" element={<Wallet />} />
                     <Route path="/lost-found" element={<LostFound />} />
                     <Route path="/discover" element={<Discover />} />
                     <Route path="/lens" element={<Lens />} />
