@@ -6,6 +6,7 @@ import { getCardsForWorkspace } from "@/lib/workspace/cardRegistry";
 import { rankCards, buildContext } from "@/lib/workspace/cardRanker";
 import WorkspaceRenderer from "@/components/workspace/WorkspaceRenderer";
 import BudBriefingBar from "@/components/bud/home/BudBriefingBar";
+import SocialTopNav from "@/components/social/SocialTopNav";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -41,6 +42,9 @@ export default function SocialHub() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-5 pt-6 pb-32 safe-area-pt">
+      {/* Top navigation — Discover · Communities · Create · Messages · Events */}
+      <SocialTopNav />
+
       {/* Bud presence — contextual briefing */}
       <BudBriefingBar />
 

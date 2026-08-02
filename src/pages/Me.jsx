@@ -10,7 +10,7 @@ import EditProfileModal from "@/components/me/EditProfileModal";
 import QRShareSheet from "@/components/shared/QRShareSheet";
 import MeSocial from "@/components/me/MeSocial";
 import MeAcademic from "@/components/me/MeAcademic";
-import { Settings, QrCode, Share2, Edit3 } from "lucide-react";
+import { Settings, QrCode, Share2, Edit3, Bookmark, Shield, Heart, FolderOpen, Link2 } from "lucide-react";
 
 const CHIPS = ["Student", "Creator", "Computer Science", "300 Level", "Verified", "Class Rep"];
 const STATS = [
@@ -19,6 +19,15 @@ const STATS = [
   { label: "Following", value: 0 },
 ];
 const CONNECTED = ["GitHub", "LinkedIn", "Portfolio", "Instagram", "TikTok", "X"];
+
+const QUICK_ACCESS = [
+  { id: "highlights",  label: "Highlights",  to: "/highlights",                icon: Bookmark },
+  { id: "saved",       label: "Saved",       to: "/highlights",                icon: Heart },
+  { id: "collections", label: "Collections", to: "/highlights",                icon: FolderOpen },
+  { id: "settings",    label: "Settings",    to: "/settings",                  icon: Settings },
+  { id: "privacy",     label: "Privacy",     to: "/settings",                  icon: Shield },
+  { id: "accounts",    label: "Connected",  to: "/settings/connected-accounts", icon: Link2 },
+];
 
 /**
  * Me — premium content-first student profile.
@@ -112,6 +121,28 @@ export default function Me() {
             <span key={c} className="px-3 py-1.5 rounded-full bg-muted/40 border border-border text-[12px] font-medium text-muted-foreground">{c}</span>
           ))}
           <button onClick={goSettings} className="px-3 py-1.5 rounded-full bg-muted/40 border border-border text-[12px] font-medium text-muted-foreground spring-tap">+5</button>
+        </div>
+      </div>
+
+      {/* Quick Access — personal destinations */}
+      <div className="px-6 mt-8">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3 block">Quick Access</span>
+        <div className="grid grid-cols-2 gap-3">
+          {QUICK_ACCESS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => navigate(item.to)}
+                className="flex items-center gap-2.5 p-3.5 rounded-2xl bg-card border border-border spring-tap hover:bg-muted/30 transition-colors text-left"
+              >
+                <div className="w-9 h-9 rounded-xl glass-card grid place-items-center shrink-0">
+                  <Icon className="w-4 h-4 text-foreground" strokeWidth={1.8} />
+                </div>
+                <span className="text-[13px] font-medium text-foreground truncate">{item.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

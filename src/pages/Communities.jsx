@@ -10,12 +10,15 @@ import InterestSelection from "@/components/communities/InterestSelection";
 import HubCard from "@/components/hubs/HubCard";
 import { getHubsForInterests, getOtherHubs } from "@/data/hubRegistry";
 import { useInterests } from "@/hooks/useInterests";
+import CategoryTabs from "@/components/discovery/CategoryTabs";
+import { DISCOVERY_TABS, matchesCategory } from "@/data/contentCategories";
 
 const FILTER_KEYS = ["all", ...Object.keys(COMMUNITY_TYPES).slice(0, 8)];
 
 export default function Communities() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("foryou");
   const { interests, loading: interestsLoading, hasInterests } = useInterests();
   const userHubs = getHubsForInterests(interests);
   const exploreHubs = getOtherHubs(interests);
@@ -40,13 +43,22 @@ export default function Communities() {
 
   const filtered = useMemo(() => {
     return communities.filter((c) => {
+      const matchesCat = activeCategory === "foryou" || matchesCategory(c, activeCategory);
       const matchesFilter = filter === "all" || c.type === filter;
       const matchesSearch = !search ||
         c.name?.toLowerCase().includes(search.toLowerCase()) ||
         c.description?.toLowerCase().includes(search.toLowerCase());
-      return matchesFilter && matchesSearch;
+      return matchesCat && matchesFilter && matchesSearch;
     });
-  }, [communities, filter, search]);
+  }, [communities, filter, search, activeCategory]);
+
+  // Category tabs — hide categories with no communities
+  const availableCategoryTabs = useMemo(() => {
+    return DISCOVERY_TABS.filter((tab) => {
+      if (tab.id === "foryou") return true;
+      return communities.some((c) => matchesCategory(c, tab.id));
+    });
+  }, [communities]);
 
   // ── Interest selection gate ── first-time visitors pick interests before seeing communities
   if (!interestsLoading && !hasInterests) {
@@ -73,6 +85,11 @@ export default function Communities() {
 
   return (
     <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
+
+      {/* ── Category tabs ── universal content categories */}
+      <div className="pb-4">
+        <CategoryTabs tabs={availableCategoryTabs} activeTab={activeCategory} onChange={setActiveCategory} />
+      </div>
 
       {/* ── Your Hubs ── specialized community workspaces based on interests */}
       {userHubs.length > 0 && (
