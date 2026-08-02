@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Sun, GraduationCap, Building2, Heart, Zap, Sparkles,
-  CheckSquare, Brain, Users, ShieldCheck, Flame,
+  CheckSquare, Brain, Users, ShieldCheck,
 } from "lucide-react";
 import { AUTOMATIONS, AUTOMATION_CATEGORIES } from "@/lib/autonomous/automations";
 import { loadPreferences, toggleAutomation } from "@/lib/autonomous/preferences";
@@ -19,7 +19,6 @@ const CATEGORY_ICONS = {
   learning: Brain,
   social: Users,
   safety: ShieldCheck,
-  living: Flame,
 };
 
 const EASE = [0.16, 1, 0.3, 1];

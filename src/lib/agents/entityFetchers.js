@@ -49,7 +49,8 @@ const FETCHERS = {
       base44.entities.Community?.list?.("-created_date", 3).catch(() => []),
     ]);
     const parts = [];
-    const p = posts.value || [];
+    // Authenticity guard — only show real (non-seed) content to Bud
+    const p = (posts.value || []).filter(x => !x.is_seed_content);
     if (p.length) parts.push("Recent posts: " + p.map(x => `${x.author_name}: "${(x.content || "").slice(0, 60)}"`).join("; "));
     const cm = communities.value || [];
     if (cm.length) parts.push("Communities: " + cm.map(x => x.name).join(", "));

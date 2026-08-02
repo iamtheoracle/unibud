@@ -204,6 +204,7 @@ const Accessibility = lazy(() => import("@/pages/Accessibility"));
 const LaunchReadiness = lazy(() => import("@/pages/admin/LaunchReadiness"));
 const AutomationSettings = lazy(() => import("@/pages/AutomationSettings"));
 const SelfHealing = lazy(() => import("@/pages/SelfHealing"));
+const DemoContentManager = lazy(() => import("@/pages/DemoContentManager"));
 
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
@@ -366,6 +367,7 @@ function App() {
                     <Route path="/launch-readiness" element={<LaunchReadiness />} />
                     <Route path="/automation-settings" element={<AutomationSettings />} />
                     <Route path="/self-healing" element={<OracleWorkspaceGuard><SelfHealing /></OracleWorkspaceGuard>} />
+                    <Route path="/demo-content" element={<OracleWorkspaceGuard><DemoContentManager /></OracleWorkspaceGuard>} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>

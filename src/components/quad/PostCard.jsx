@@ -12,6 +12,7 @@ import PostMediaGallery from "./PostMediaGallery";
 import PostMenu from "./PostMenu";
 import ShareSheet from "./ShareSheet";
 import CommentSection from "./CommentSection";
+import LaunchBadge from "@/components/authentic/LaunchBadge";
 import {
   timeAgo, formatCount, getPostType,
   getUserReaction, setUserReaction,
@@ -195,6 +196,7 @@ export default function PostCard({ post, user, index = 0 }) {
             <div className="flex items-center gap-1">
               <span className="font-semibold text-[14px] text-foreground truncate">{authorName}</span>
               {post.is_verified && <BadgeCheck className="w-3.5 h-3.5 text-foreground/50 flex-shrink-0" strokeWidth={2} />}
+              {post.is_seed_content && <LaunchBadge />}
               {postType && (
                 <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wide">
                   {postType.label}

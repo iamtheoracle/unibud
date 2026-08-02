@@ -22,7 +22,6 @@ import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import { useBudPush } from "@/lib/notifications/useBudPush";
 import { useAutonomousEngine } from "@/hooks/useAutonomousEngine";
 import { useSelfHealingEngine } from "@/hooks/useSelfHealingEngine";
-import { useLivingCampus } from "@/hooks/useLivingCampus";
 import { ClassroomModeProvider } from "@/lib/classroom/ClassroomModeContext";
 
 function UniversalSearchOverlayWithContext() {
@@ -44,7 +43,6 @@ export default function AppShell() {
   useBudPush();
   useAutonomousEngine();
   useSelfHealingEngine();
-  useLivingCampus();
 
   // Track recently viewed pages for "Continue where you left off"
   useEffect(() => {
