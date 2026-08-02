@@ -192,7 +192,7 @@ function GroupForm({ onClose }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[14px] font-semibold truncate" style={{ color: CREAM }}>{g.name || g.title}</p>
-              <p className="text-[12px]" style={{ color: CREAM_MUTED }}>{g.member_count || 0} members</p>
+              <p className="text-[12px]" style={{ color: CREAM_MUTED }}>{g.members_count || 0} members</p>
             </div>
             <button onClick={() => { onClose(); navigate(`/study-groups/${g.id}`); }} className="px-4 h-9 rounded-full text-[13px] font-bold spring-tap" style={{ background: ORANGE, color: "#1A1006" }}>Join</button>
           </div>

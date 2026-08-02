@@ -5,6 +5,7 @@ import { BadgeCheck, MessageCircle, Share2, Bookmark } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { timeAgo, formatCount } from "@/components/quad/quadConstants";
+import { Image } from "@/components/ui/image";
 
 const CREAM = "#F7F0E8";
 const CREAM_MUTED = "rgba(247, 240, 232, 0.50)";
@@ -64,7 +65,7 @@ function FeedCard({ post, index }) {
       <div className="flex items-center gap-3 p-4">
         <div className="w-11 h-11 rounded-full overflow-hidden shrink-0 grid place-items-center text-[16px] font-bold" style={{ background: "rgba(255,138,42,0.12)", color: ORANGE }}>
           {post.author_image ? (
-            <img src={post.author_image} alt="" className="w-full h-full object-cover" />
+            <Image src={post.author_image} alt="" className="w-full h-full object-cover" />
           ) : (
             (post.author_name || "?").charAt(0).toUpperCase()
           )}
@@ -75,11 +76,7 @@ function FeedCard({ post, index }) {
             {post.is_verified && <BadgeCheck className="w-[14px] h-[14px] shrink-0" style={{ color: ORANGE }} fill={ORANGE} />}
           </div>
           <p className="text-[12px] truncate" style={{ color: CREAM_MUTED }}>
-            {post.author_handle || post.university || ""}
-            {post.author_handle && post.university ? " · " : ""}
-            {post.university ? post.university : ""}
-            {" · "}
-            {timeAgo(post.created_date)}
+            {[post.author_handle, post.university, timeAgo(post.created_date)].filter(Boolean).join(" · ")}
           </p>
         </div>
       </div>
@@ -94,7 +91,7 @@ function FeedCard({ post, index }) {
         <div className={post.media_urls.length === 1 ? "" : "grid grid-cols-2 gap-0.5"}>
           {post.media_urls.slice(0, 4).map((url, idx) => (
             <div key={idx} className={post.media_urls.length === 1 ? "aspect-[4/3] overflow-hidden" : "aspect-square overflow-hidden"}>
-              <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
+              <Image src={url} alt="" className="w-full h-full object-cover" />
             </div>
           ))}
         </div>

@@ -14,36 +14,36 @@ const ORANGE = "#FF8A2A";
 export default function PinnedSection() {
   const { data: assignments } = useQuery({
     queryKey: ["home-pinned-assignments"],
-    queryFn: () => base44.entities.Assignment.filter({ is_pinned: true }, "-due_date", 3),
+    queryFn: () => base44.entities.Assignment.list("-due_date", 3),
     staleTime: 60000,
   });
   const { data: groups } = useQuery({
     queryKey: ["home-pinned-groups"],
-    queryFn: () => base44.entities.StudyGroup.filter({ is_pinned: true }, "-created_date", 3),
+    queryFn: () => base44.entities.StudyGroup.filter({ status: "active" }, "-created_date", 3),
     staleTime: 60000,
   });
   const { data: events } = useQuery({
     queryKey: ["home-pinned-events"],
-    queryFn: () => base44.entities.CampusEvent.filter({ is_pinned: true }, "-created_date", 3),
+    queryFn: () => base44.entities.CampusEvent.filter({ status: "upcoming" }, "date", 3),
     staleTime: 60000,
   });
   const { data: goals } = useQuery({
     queryKey: ["home-pinned-goals"],
-    queryFn: () => base44.entities.StudentGoal.filter({ is_pinned: true }, "-created_date", 3),
+    queryFn: () => base44.entities.StudentGoal.filter({ is_completed: false }, "-created_date", 3),
     staleTime: 60000,
   });
   const { data: projects } = useQuery({
     queryKey: ["home-pinned-projects"],
-    queryFn: () => base44.entities.Project.filter({ is_pinned: true }, "-created_date", 3),
+    queryFn: () => base44.entities.Project.filter({ status: "in_progress" }, "-created_date", 3),
     staleTime: 60000,
   });
 
   const pinned = [
     ...((assignments || []).map((a) => ({ id: a.id, type: "Assignment", title: a.title, sub: a.course_code || "", icon: ClipboardList, to: "/assignments" }))),
-    ...((groups || []).map((g) => ({ id: g.id, type: "Study Group", title: g.name || g.title || "Group", sub: `${g.member_count || 0} members`, icon: Users, to: `/study-groups/${g.id}` }))),
-    ...((events || []).map((e) => ({ id: e.id, type: "Event", title: e.title || e.name || "Event", sub: e.start_date || e.date || "", icon: CalendarDays, to: "/events" }))),
+    ...((groups || []).map((g) => ({ id: g.id, type: "Study Group", title: g.name || g.title || "Group", sub: `${g.members_count || 0} members`, icon: Users, to: `/study-groups/${g.id}` }))),
+    ...((events || []).map((e) => ({ id: e.id, type: "Event", title: e.title || e.name || "Event", sub: e.date || "", icon: CalendarDays, to: "/events" }))),
     ...((goals || []).map((g) => ({ id: g.id, type: "Goal", title: g.title || g.name || "Goal", sub: g.category || "", icon: Target, to: "/study/planner" }))),
-    ...((projects || []).map((p) => ({ id: p.id, type: "Project", title: p.title || p.name || "Project", sub: p.course_code || "", icon: FolderKanban, to: "/projects" }))),
+    ...((projects || []).map((p) => ({ id: p.id, type: "Project", title: p.title || p.name || "Project", sub: p.status || "", icon: FolderKanban, to: "/projects" }))),
   ];
 
   if (pinned.length === 0) return null;
