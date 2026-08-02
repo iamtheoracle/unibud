@@ -1,0 +1,339 @@
+{
+  "name": "LiveStream",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "stream_type": {
+      "type": "string",
+      "enum": [
+        "lecture",
+        "study_session",
+        "campus_event",
+        "club_meeting",
+        "sports",
+        "graduation",
+        "hackathon",
+        "seminar",
+        "workshop",
+        "department_event",
+        "student_union",
+        "orientation",
+        "career_fair",
+        "startup_demo",
+        "concert",
+        "talent_show",
+        "debate",
+        "award_ceremony",
+        "cultural_night",
+        "voice_space",
+        "other"
+      ],
+      "default": "campus_event",
+      "description": "What type of live stream this is"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "live",
+        "ended"
+      ],
+      "default": "upcoming"
+    },
+    "host": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "is_verified": {
+          "type": "boolean",
+          "default": false
+        },
+        "is_creator": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "co_hosts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "stream_url": {
+      "type": "string",
+      "description": "Live stream URL (HLS/DASH)"
+    },
+    "recording_url": {
+      "type": "string",
+      "description": "Replay URL after stream ends"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "viewer_count": {
+      "type": "number",
+      "default": 0
+    },
+    "peak_viewers": {
+      "type": "number",
+      "default": 0
+    },
+    "max_viewers": {
+      "type": "number"
+    },
+    "registered_count": {
+      "type": "number",
+      "default": 0
+    },
+    "registered_users": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "registered_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "live_chat_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "questions_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Q&A queue for lectures and seminars"
+    },
+    "polls_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "recording_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "ai_features": {
+      "type": "object",
+      "description": "AI-powered features enabled for this stream",
+      "properties": {
+        "transcription": {
+          "type": "boolean",
+          "default": true
+        },
+        "summary": {
+          "type": "boolean",
+          "default": true
+        },
+        "chapters": {
+          "type": "boolean",
+          "default": true
+        },
+        "notes": {
+          "type": "boolean",
+          "default": true
+        },
+        "flashcards": {
+          "type": "boolean",
+          "default": false
+        },
+        "moderation": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "ai_summary": {
+      "type": "string",
+      "description": "Bud-generated summary after stream ends"
+    },
+    "ai_chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ai_notes": {
+      "type": "string",
+      "description": "Bud-generated notes from the stream"
+    },
+    "transcript_url": {
+      "type": "string"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Linked Course if this is a lecture"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Linked Community"
+    },
+    "club_id": {
+      "type": "string",
+      "description": "Linked Club"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Linked CampusEvent"
+    },
+    "scheduled_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actual_start": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "actual_end": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "default": 0
+    },
+    "requires_registration": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "university",
+        "faculty",
+        "department",
+        "course",
+        "community",
+        "private"
+      ],
+      "default": "university"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "category_label": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "stream_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.visibility": "public"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
