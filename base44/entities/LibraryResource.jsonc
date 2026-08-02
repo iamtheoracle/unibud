@@ -89,6 +89,18 @@
     },
     "accent_color": {
       "type": "string"
+    },
+    "available_copies": {
+      "type": "number",
+      "default": 1
+    },
+    "total_copies": {
+      "type": "number",
+      "default": 1
+    },
+    "shelf_location": {
+      "type": "string",
+      "description": "Physical location in library"
     }
   },
   "required": [
@@ -96,17 +108,28 @@
     "type"
   ],
   "rls": {
-    "read": {
-      "data.institution_id": "{{user.data.institution_id}}"
-    },
+    "read": {},
     "create": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "user_condition": {
+        "role": "admin"
+      }
     },
     "update": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
     },
     "delete": {
-      "data.institution_id": "{{user.data.institution_id}}"
+      "user_condition": {
+        "role": "admin"
+      }
     }
   }
 }
