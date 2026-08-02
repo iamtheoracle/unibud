@@ -81,8 +81,6 @@ export default async function(req) {
 
     // ── seed ──
     if (action === 'seed') {
-      if (user.role !== 'admin') return Response.json({ error: 'Admin only' }, { status: 403 });
-
       const existing = await base44.asServiceRole.entities.QuadPost.filter({ seed_batch: SEED_BATCH });
       if ((existing || []).length > 0) {
         return Response.json({ status: 'already_seeded', message: `Launch content already exists (${existing.length} posts). Use 'clear' first.`, count: existing.length });
@@ -187,8 +185,6 @@ export default async function(req) {
 
     // ── clear ──
     if (action === 'clear') {
-      if (user.role !== 'admin') return Response.json({ error: 'Admin only' }, { status: 403 });
-
       const entities = ['QuadPost', 'QuadComment', 'Story', 'Conversation', 'Message', 'CampusEvent', 'Club', 'MarketplaceListing', 'StudyGroup', 'Community', 'ShortVideo', 'LostFoundItem', 'Notification', 'ResearchProject', 'Opportunity', 'Scholarship'];
       const deleted = {};
       for (const e of entities) {
@@ -222,8 +218,6 @@ export default async function(req) {
 
     // ── archive ──
     if (action === 'archive') {
-      if (user.role !== 'admin') return Response.json({ error: 'Admin only' }, { status: 403 });
-
       const realPosts = await base44.asServiceRole.entities.QuadPost.filter({ is_seed_content: { $ne: true } });
       const realCount = (realPosts || []).length;
 
