@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, Eye, Rocket } from "lucide-react";
+import { ChevronLeft, Eye, Rocket, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import SettingsSection from "@/components/me/SettingsSection";
@@ -47,6 +47,15 @@ export default function Settings() {
             <div className="flex-1">
               <p className="text-[14px] font-semibold text-foreground">Launch Readiness</p>
               <p className="text-[12px] text-muted-foreground">Production status & system health</p>
+            </div>
+          </Link>
+          <Link to="/automation-settings" className="flex items-center gap-3 p-3.5 rounded-[16px] glass-card spring-tap">
+            <div className="w-9 h-9 rounded-full grid place-items-center bg-primary/10">
+              <Sparkles className="w-[18px] h-[18px] text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-[14px] font-semibold text-foreground">Autonomous Intelligence</p>
+              <p className="text-[12px] text-muted-foreground">Proactive automations & AI briefings</p>
             </div>
           </Link>
         </div>

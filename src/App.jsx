@@ -202,6 +202,7 @@ const SafetyCenter = lazy(() => import("@/pages/safety/SafetyCenter"));
 const DigitalId = lazy(() => import("@/pages/identity/DigitalId"));
 const Accessibility = lazy(() => import("@/pages/Accessibility"));
 const LaunchReadiness = lazy(() => import("@/pages/admin/LaunchReadiness"));
+const AutomationSettings = lazy(() => import("@/pages/AutomationSettings"));
 
 // Legal & Info — public standalone routes
 const Privacy = lazy(() => import("@/pages/legal/Privacy"));
@@ -362,6 +363,7 @@ function App() {
                     <Route path="/campus-map" element={<CampusNavigation />} />
                     <Route path="/accessibility" element={<Accessibility />} />
                     <Route path="/launch-readiness" element={<LaunchReadiness />} />
+                    <Route path="/automation-settings" element={<AutomationSettings />} />
                   </Route>
                   <Route path="*" element={<PageNotFound />} />
                 </Routes>

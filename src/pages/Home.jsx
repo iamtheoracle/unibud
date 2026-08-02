@@ -12,6 +12,7 @@ import DiscoverForYou from "@/components/home/DiscoverForYou";
 import StudyProgressWidget from "@/components/home/StudyProgressWidget";
 import ContinueStrip from "@/components/insights/ContinueStrip";
 import DailyInsights from "@/components/insights/DailyInsights";
+import DailyBriefing from "@/components/autonomous/DailyBriefing";
 
 const CREAM = "#F7F0E8";
 const CREAM_MUTED = "rgba(247, 240, 232, 0.50)";
@@ -46,6 +47,16 @@ export default function Home() {
           className="mt-6"
         >
           <QuickActionStrip />
+        </motion.section>
+
+        {/* Daily AI Briefing */}
+        <motion.section
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: EASE, delay: 0.11 }}
+          className="mt-6"
+        >
+          <DailyBriefing />
         </motion.section>
 
         {/* Continue where you left off */}
