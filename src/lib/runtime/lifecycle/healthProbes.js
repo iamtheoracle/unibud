@@ -81,6 +81,20 @@ export const HEALTH_PROBES = {
     healthy: svc?.ready ?? false,
     detail: svc?.ready ? 'Intelligence engine ready' : 'Intelligence engine not initialized',
   }),
+
+  // ── Student Intelligence Layer engines ──
+  academicPlanning: () => probeEntity('CourseCatalogEntry', 'CourseCatalogEntry'),
+  opportunityEngine: () => probeEntity('Opportunity', 'Opportunity'),
+  careerIntelligence: () => probeEntity('CompanyPage', 'CompanyPage'),
+  studentSuccessPrediction: () => probeEntity('StudentGrade', 'StudentGrade'),
+  campusDigitalTwin: () => probeEntity('CampusLocation', 'CampusLocation'),
+  crossSpaceIntelligence: () => probeEntity('Club', 'Club'),
+  autonomousTaskEngine: () => probeEntity('TaskManagement', 'TaskManagement'),
+  personalKnowledgeGraph: () => probeEntity('StudentGoal', 'StudentGoal'),
+  studentIntelligence: (svc) => ({
+    healthy: svc?.ready ?? false,
+    detail: svc?.ready ? 'Intelligence layer ready' : 'Intelligence layer not initialized',
+  }),
 };
 
 export default HEALTH_PROBES;

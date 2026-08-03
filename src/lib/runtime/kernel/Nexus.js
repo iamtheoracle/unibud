@@ -24,7 +24,7 @@ import { conversationService } from '../services/ConversationService';
 import { knowledgeService } from '../services/KnowledgeService';
 import { searchService } from '../services/SearchService';
 import { configurationService } from '../services/ConfigurationService';
-import { campusIntelligenceEngine } from '../services/CampusIntelligenceEngine';
+import { studentIntelligenceLayer } from '../services/StudentIntelligenceLayer';
 
 class Nexus {
   constructor() {
@@ -62,19 +62,24 @@ class Nexus {
       //    The routing engine discovers candidates (study groups, mentors),
       //    scores them, and returns structured recommendations that Spark
       //    composes into a natural language response.
-      if (campusIntelligenceEngine.ready && campusIntelligenceEngine.isAcademicRelated(message)) {
+      if (studentIntelligenceLayer.ready && studentIntelligenceLayer.isIntelligenceRelated(message)) {
         eventBus.publish({
-          type: 'intelligence.academic_request_detected',
+          type: 'intelligence.request_detected',
           category: 'intelligence',
           correlationId,
           payload: { userId: user?.id },
         });
 
-        const routingResult = await campusIntelligenceEngine.route({
+        const routingResult = await studentIntelligenceLayer.route({
           message,
           userId: user?.id,
           institutionId: user?.data?.institution_id,
-          context: { userHistory: context?.userHistory, department: user?.data?.department, level: user?.data?.level },
+          context: {
+            userHistory: context?.userHistory,
+            department: user?.data?.department,
+            level: user?.data?.level,
+            interests: user?.data?.interests,
+          },
         });
 
         // Delegate to Spark for natural language composition
@@ -87,9 +92,9 @@ class Nexus {
           context: {
             ...context,
             routingRecommendations: routingResult.recommendations,
-            workloadWarning: routingResult.workloadWarning,
-            proactiveSuggestions: routingResult.proactiveSuggestions,
-            classifiedTopic: routingResult.topic,
+            workloadWarning: routingResult.warnings?.[0] || null,
+            proactiveSuggestions: routingResult.insights,
+            classifiedTopic: routingResult.classification,
             isStudyHelp: true,
           },
           fileUrls,
@@ -118,8 +123,8 @@ class Nexus {
 
         return {
           answer: sparkResult.text,
-          agentsUsed: ['spark', 'campusIntelligence'],
-          capabilitiesUsed: ['academic.intelligence', ...capabilities.map((c) => c.cap_id)],
+          agentsUsed: ['spark', 'studentIntelligence'],
+          capabilitiesUsed: ['student.intelligence', ...capabilities.map((c) => c.cap_id)],
           latencyMs,
         };
       }

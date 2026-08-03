@@ -41,6 +41,15 @@ import { eventRecommendationService } from './EventRecommendationService';
 import { campusKnowledgeService } from './CampusKnowledgeService';
 import { presenceService } from './PresenceService';
 import { campusIntelligenceEngine } from './CampusIntelligenceEngine';
+import { academicPlanningService } from './AcademicPlanningService';
+import { opportunityEngineService } from './OpportunityEngineService';
+import { careerIntelligenceService } from './CareerIntelligenceService';
+import { studentSuccessPredictionService } from './StudentSuccessPredictionService';
+import { campusDigitalTwinService } from './CampusDigitalTwinService';
+import { crossSpaceIntelligenceService } from './CrossSpaceIntelligenceService';
+import { autonomousTaskEngine } from './AutonomousTaskEngine';
+import { personalKnowledgeGraphService } from './PersonalKnowledgeGraphService';
+import { studentIntelligenceLayer } from './StudentIntelligenceLayer';
 
 export const services = {
   memory: memoryService,
@@ -74,6 +83,15 @@ export const services = {
   campusKnowledge: campusKnowledgeService,
   presence: presenceService,
   campusIntelligence: campusIntelligenceEngine,
+  academicPlanning: academicPlanningService,
+  opportunityEngine: opportunityEngineService,
+  careerIntelligence: careerIntelligenceService,
+  studentSuccessPrediction: studentSuccessPredictionService,
+  campusDigitalTwin: campusDigitalTwinService,
+  crossSpaceIntelligence: crossSpaceIntelligenceService,
+  autonomousTaskEngine: autonomousTaskEngine,
+  personalKnowledgeGraph: personalKnowledgeGraphService,
+  studentIntelligence: studentIntelligenceLayer,
 };
 
 /**
@@ -113,6 +131,15 @@ export async function bootServices() {
     ['campusKnowledge', campusKnowledgeService],
     ['presence', presenceService],
     ['campusIntelligence', campusIntelligenceEngine],
+    ['academicPlanning', academicPlanningService],
+    ['opportunityEngine', opportunityEngineService],
+    ['careerIntelligence', careerIntelligenceService],
+    ['studentSuccessPrediction', studentSuccessPredictionService],
+    ['campusDigitalTwin', campusDigitalTwinService],
+    ['crossSpaceIntelligence', crossSpaceIntelligenceService],
+    ['autonomousTaskEngine', autonomousTaskEngine],
+    ['personalKnowledgeGraph', personalKnowledgeGraphService],
+    ['studentIntelligence', studentIntelligenceLayer],
   ];
 
   const results = {};

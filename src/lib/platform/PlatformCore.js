@@ -67,6 +67,15 @@ export const PlatformCore = {
   get campusKnowledge() { return services.campusKnowledge; },
   get presence() { return services.presence; },
   get campusIntelligence() { return services.campusIntelligence; },
+  get academicPlanning() { return services.academicPlanning; },
+  get opportunityEngine() { return services.opportunityEngine; },
+  get careerIntelligence() { return services.careerIntelligence; },
+  get studentSuccessPrediction() { return services.studentSuccessPrediction; },
+  get campusDigitalTwin() { return services.campusDigitalTwin; },
+  get crossSpaceIntelligence() { return services.crossSpaceIntelligence; },
+  get autonomousTaskEngine() { return services.autonomousTaskEngine; },
+  get personalKnowledgeGraph() { return services.personalKnowledgeGraph; },
+  get studentIntelligence() { return services.studentIntelligence; },
 };
 
 export default PlatformCore;

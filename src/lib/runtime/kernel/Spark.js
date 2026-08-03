@@ -94,6 +94,10 @@ class Spark {
           study_group: 'Study Group', mentor: 'Mentor', tutor: 'Tutor',
           classmate: 'Classmate', faculty: 'Faculty', resource: 'Resource',
           event: 'Event', knowledge: 'Info', presence: 'Online Now', session: 'Active Session',
+          course: 'Course', opportunity: 'Opportunity', scholarship: 'Scholarship',
+          space: 'Campus Space', club: 'Club', marketplace: 'Marketplace',
+          finance: 'Finance', wellness: 'Wellness', task: 'Task',
+          company: 'Company', certification: 'Certification',
         };
 
         const recLines = recs.map((r, i) => {
@@ -107,9 +111,9 @@ class Spark {
 
         const routingPrompt = `${personalityPrompt}
 
-You are Bud, UNIBUD's calm, supportive mentor companion. A student asked an academic question.
+You are Bud, UNIBUD's calm, supportive mentor companion. A student asked a question.
 
-The Campus Intelligence Engine found these options:
+The intelligence layer found these options:
 ${recLines || 'No specific matches found — provide general guidance.'}
 
 ${workloadWarning ? `WORKLOAD NOTE: ${workloadWarning.message}` : ''}
@@ -118,9 +122,10 @@ ${proactiveLines ? `PROACTIVE INSIGHTS:\n${proactiveLines}` : ''}
 
 ${topic?.course ? `Course: ${topic.course}` : ''}
 ${topic?.topic ? `Topic: ${topic.topic}` : ''}
+${topic?.domains ? `Areas: ${topic.domains.join(', ')}` : ''}
 
 Compose a warm, natural response that:
-- Presents the best options conversationally (never mention scores, routing logic, internal systems, or the engine name)
+- Presents the best options conversationally (never mention scores, routing logic, internal systems, engine names, or domain classifications)
 - If there's a workload note, gently advise accordingly
 - Recommends the single best option with a clear reason
 - Weaves in proactive insights naturally if relevant
