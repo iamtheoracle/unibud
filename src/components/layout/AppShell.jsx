@@ -24,6 +24,7 @@ import { realtimeEngine } from "@/lib/realtime/engine";
 import "@/lib/os/moduleRegistry";
 import "@/lib/os/experienceRegistry";
 import "@/lib/os/hiddenServiceRegistry";
+import "@/lib/os/experienceContract"; // Registers all 7 experience contracts
 import { VoiceProvider } from "@/lib/voice/VoiceProvider";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";

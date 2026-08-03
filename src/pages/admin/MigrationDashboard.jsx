@@ -1,0 +1,259 @@
+import React, { useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import {
+  CheckCircle2, Clock, Circle, AlertTriangle, Shield,
+  Zap, Radio, TrendingUp, Layers, Package, ArrowRight,
+} from "lucide-react";
+import { getMigrationReport } from "@/lib/os/migrationTracker";
+import { useRealtimeEngine } from "@/lib/realtime/useRealtimeChannel";
+import ScreenShell from "@/components/layout/ScreenShell";
+
+/**
+ * MigrationDashboard — internal dashboard tracking the Phase 5 experience
+ * migration from legacy architecture to the v4 Experience Runtime.
+ *
+ * Shows: experience completion, migrated modules, remaining legacy components,
+ * duplicate modules, constitutional violations, realtime health, and Platform Core
+ * dependency usage.
+ *
+ * Accessible only through Operations (OracleWorkspaceGuard).
+ */
+export default function MigrationDashboard() {
+  const report = useMemo(() => getMigrationReport(), []);
+  const realtime = useRealtimeEngine();
+  const [selectedExp, setSelectedExp] = useState(null);
+
+  const statusIcon = {
+    migrated: <CheckCircle2 className="w-4 h-4 text-success" strokeWidth={2.2} />,
+    "in-progress": <Clock className="w-4 h-4 text-warning" strokeWidth={2.2} />,
+    pending: <Circle className="w-4 h-4 text-muted-foreground" strokeWidth={2} />,
+  };
+
+  const statusColor = {
+    migrated: "text-success",
+    "in-progress": "text-warning",
+    pending: "text-muted-foreground",
+  };
+
+  return (
+    <ScreenShell title="Migration Dashboard" backTo="/admin">
+      <div className="max-w-[700px] mx-auto px-4 py-4 space-y-5">
+        {/* Overall Progress */}
+        <div className="crystal-card p-5">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-[18px] font-bold text-foreground">Overall Migration</h2>
+              <p className="text-[12px] text-muted-foreground">Phase 5 — Experience Runtime</p>
+            </div>
+            <div className="text-right">
+              <span className="text-[32px] font-bold text-primary tabular-nums">{report.overall.percentage}%</span>
+            </div>
+          </div>
+          <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${report.overall.percentage}%` }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="h-full rounded-full bg-gradient-to-r from-primary to-chocolate"
+            />
+          </div>
+          <div className="flex gap-4 mt-3">
+            <StatusBadge label="Migrated" value={report.overall.migrated} color="text-success" />
+            <StatusBadge label="In Progress" value={report.overall.inProgress} color="text-warning" />
+            <StatusBadge label="Pending" value={report.overall.pending} color="text-muted-foreground" />
+          </div>
+        </div>
+
+        {/* Constitutional Status */}
+        <div className={`crystal-card p-4 ${report.constitutional.valid ? "border-success/30" : "border-destructive/30"}`}>
+          <div className="flex items-center gap-2 mb-2">
+            <Shield className={`w-4 h-4 ${report.constitutional.valid ? "text-success" : "text-destructive"}`} strokeWidth={2.2} />
+            <span className="text-[14px] font-bold text-foreground">Constitutional Validator</span>
+            <span className={`text-[11px] font-bold ml-auto ${report.constitutional.valid ? "text-success" : "text-destructive"}`}>
+              {report.constitutional.valid ? "COMPLIANT" : "VIOLATIONS"}
+            </span>
+          </div>
+          {report.constitutional.errors.length > 0 && (
+            <div className="space-y-1 mt-2">
+              {report.constitutional.errors.slice(0, 5).map((err, i) => (
+                <div key={i} className="flex items-start gap-1.5 text-[11px] text-destructive">
+                  <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" strokeWidth={2.2} />
+                  <span>{err}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {report.constitutional.valid && (
+            <p className="text-[11px] text-muted-foreground mt-1">All experiences comply with the five constitutions.</p>
+          )}
+        </div>
+
+        {/* Experience Cards */}
+        <div>
+          <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Experiences
+          </h3>
+          <div className="space-y-2">
+            {report.experiences.map((exp) => (
+              <button
+                key={exp.id}
+                onClick={() => setSelectedExp(selectedExp === exp.id ? null : exp.id)}
+                className="w-full crystal-card p-3.5 text-left active:scale-[0.99] transition-transform"
+              >
+                <div className="flex items-center gap-3">
+                  {statusIcon[exp.status]}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-bold text-foreground capitalize">{exp.label}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {exp.modules.length} modules · {exp.legacyComponents.length} legacy
+                    </p>
+                  </div>
+                  <span className={`text-[10px] font-bold uppercase ${statusColor[exp.status]}`}>{exp.status}</span>
+                </div>
+
+                {selectedExp === exp.id && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    className="mt-3 pt-3 border-t border-border/40 space-y-2"
+                  >
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Consumed Modules</p>
+                      <div className="flex flex-wrap gap-1">
+                        {exp.modules.map((m) => (
+                          <span key={m} className="text-[9px] px-1.5 py-0.5 rounded-md bg-primary/10 text-primary">{m}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Legacy Components</p>
+                      <div className="flex flex-wrap gap-1">
+                        {exp.legacyComponents.map((c) => (
+                          <span key={c} className="text-[9px] px-1.5 py-0.5 rounded-md bg-muted text-muted-foreground">{c}</span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase">Platform Core Hooks:</p>
+                      {["bud", "orbit", "spark", "realtime"].map((h) => (
+                        <span key={h} className={`text-[9px] px-1.5 py-0.5 rounded-md ${exp.hooks[h] ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Module Consumption */}
+        <div>
+          <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <Package className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Shared Module Consumption
+          </h3>
+          <div className="crystal-card p-3 space-y-1.5">
+            {report.moduleConsumption
+              .sort((a, b) => b.consumerCount - a.consumerCount)
+              .slice(0, 8)
+              .map((m) => (
+                <div key={m.moduleId} className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-foreground">{m.moduleId}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground">{m.consumers.join(", ")}</span>
+                    {m.isRegistered ? (
+                      <CheckCircle2 className="w-3 h-3 text-success" strokeWidth={2.2} />
+                    ) : (
+                      <AlertTriangle className="w-3 h-3 text-destructive" strokeWidth={2.2} />
+                    )}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {/* Platform Core Usage */}
+        <div>
+          <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <Zap className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Platform Core Usage
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            <CoreUsageCard label="Bud" value={report.platformCore.hooks.bud} total={report.platformCore.totalExperiences} />
+            <CoreUsageCard label="Orbit" value={report.platformCore.hooks.orbit} total={report.platformCore.totalExperiences} />
+            <CoreUsageCard label="Spark" value={report.platformCore.hooks.spark} total={report.platformCore.totalExperiences} />
+            <CoreUsageCard label="Realtime" value={report.platformCore.hooks.realtime} total={report.platformCore.totalExperiences} />
+            <CoreUsageCard label="Context" value={report.platformCore.contextProvider} total={report.platformCore.totalExperiences} />
+            <CoreUsageCard label="Search" value={report.platformCore.search} total={report.platformCore.totalExperiences} />
+          </div>
+        </div>
+
+        {/* Realtime Health */}
+        <div>
+          <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <Radio className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Realtime Engine Health
+          </h3>
+          <div className="crystal-card p-4 grid grid-cols-3 gap-3">
+            <Metric label="Subscriptions" value={realtime.activeSubscriptions} />
+            <Metric label="Total Events" value={realtime.totalEvents} />
+            <Metric label="Throughput" value={`${realtime.throughput}/s`} />
+            <Metric label="Avg Latency" value={realtime.avgLatency > 0 ? `${realtime.avgLatency}ms` : "—"} />
+            <Metric label="Dropped" value={realtime.droppedEvents} warning={realtime.droppedEvents > 0} />
+            <Metric label="Reconnects" value={realtime.reconnectCount} />
+          </div>
+        </div>
+
+        {/* Registry Summary */}
+        <div className="crystal-card p-4">
+          <h3 className="text-[13px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Registry Summary
+          </h3>
+          <div className="grid grid-cols-3 gap-3">
+            <Metric label="Experiences" value={report.experiencesRegistered} />
+            <Metric label="Modules" value={report.modules.total} />
+            <Metric label="Services" value={report.services} />
+          </div>
+        </div>
+      </div>
+    </ScreenShell>
+  );
+}
+
+function StatusBadge({ label, value, color }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className={`text-[16px] font-bold tabular-nums ${color}`}>{value}</span>
+      <span className="text-[10px] text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
+function CoreUsageCard({ label, value, total }) {
+  const pct = total > 0 ? Math.round((value / total) * 100) : 0;
+  return (
+    <div className="crystal-card p-3">
+      <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</span>
+      <div className="flex items-center gap-1 mt-1">
+        <span className="text-[16px] font-bold text-foreground tabular-nums">{value}</span>
+        <span className="text-[10px] text-muted-foreground">/ {total}</span>
+      </div>
+      <div className="h-1 rounded-full bg-muted mt-1.5 overflow-hidden">
+        <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function Metric({ label, value, warning }) {
+  return (
+    <div className="text-center">
+      <span className={`text-[16px] font-bold tabular-nums ${warning ? "text-destructive" : "text-foreground"}`}>{value}</span>
+      <p className="text-[9px] text-muted-foreground mt-0.5">{label}</p>
+    </div>
+  );
+}

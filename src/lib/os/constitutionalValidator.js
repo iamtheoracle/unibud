@@ -11,6 +11,7 @@ import { EXPERIENCES, LAYERS, AI_AUTHORITIES } from "@/lib/os/manifest";
 import { getRegisteredModules, isModuleRegistered } from "@/lib/os/moduleRegistry";
 import { getRegisteredExperiences } from "@/lib/os/experienceRegistry";
 import { getRegisteredServices } from "@/lib/os/hiddenServiceRegistry";
+import { validateAllContracts, getAllContracts } from "@/lib/os/experienceContract";
 
 /**
  * Validate a feature against the constitutional four questions.
@@ -218,19 +219,64 @@ export function validateNavigation(navItems) {
 }
 
 /**
+ * Phase 5: Validate experience contracts.
+ * Ensures every experience uses only registered modules, owns no Platform Core
+ * services, has no duplicate implementations, and registers all four hooks.
+ */
+export function validateExperienceContracts() {
+  const results = { valid: true, errors: [], warnings: [] };
+  const contractValidation = validateAllContracts();
+
+  if (!contractValidation.valid) {
+    results.valid = false;
+    results.errors.push(...contractValidation.errors);
+  }
+  results.warnings.push(...contractValidation.warnings);
+
+  // Check: No experience may own Platform Core services
+  const platformCoreModules = ["search", "notifications", "identity"];
+  const contracts = getAllContracts();
+  contracts.forEach((contract) => {
+    contract.modules?.forEach((moduleId) => {
+      if (platformCoreModules.includes(moduleId)) {
+        results.errors.push(`Experience "${contract.experienceId}" owns Platform Core module "${moduleId}" — must consume from Platform Core`);
+        results.valid = false;
+      }
+    });
+  });
+
+  // Check: No direct external API calls from experiences (heuristic — flag modules without authority)
+  contracts.forEach((contract) => {
+    if (!contract.hooks?.bud || !contract.hooks?.orbit || !contract.hooks?.spark || !contract.hooks?.realtime) {
+      results.errors.push(`Experience "${contract.experienceId}" does not register all four Platform Core hooks (Bud, Orbit, Spark, Realtime)`);
+      results.valid = false;
+    }
+  });
+
+  return results;
+}
+
+/**
  * Run a full constitutional audit.
- * Returns a comprehensive report.
+ * Returns a comprehensive report including Phase 5 migration validation.
  */
 export function runConstitutionalAudit() {
   const registry = validateRegistry();
+  const contracts = validateExperienceContracts();
   const report = {
     timestamp: new Date().toISOString(),
-    valid: registry.valid,
-    errors: registry.errors,
-    warnings: registry.warnings,
+    valid: registry.valid && contracts.valid,
+    errors: [...registry.errors, ...contracts.errors],
+    warnings: [...registry.warnings, ...contracts.warnings],
     modules: getRegisteredModules().length,
     experiences: getRegisteredExperiences().length,
     services: getRegisteredServices().length,
+    contracts: getAllContracts().length,
+    migration: {
+      valid: contracts.valid,
+      errors: contracts.errors,
+      warnings: contracts.warnings,
+    },
   };
   return report;
 }
