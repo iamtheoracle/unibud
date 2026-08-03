@@ -206,50 +206,52 @@ No engineer, agent, or automated process may modify frozen contracts without sat
 
 ## Appendix — Frozen Components (Single Source of Truth)
 
-The following components are part of UNIBUD OS's stable foundation. They are expected to remain unchanged except under the amendment process defined above.
+The following components are part of UNIBUD OS's stable foundation. They are organized into three tiers to distinguish between immutable contracts (which define the rules), core platform components (which implement the rules), and extensible domain services (which evolve within the rules).
 
-### Governance Components
+> **Key distinction:** Contracts are frozen. Components are frozen in interface. Domain services continue to evolve within their contracts — "frozen" means the architecture is stable, not that capabilities cannot grow.
 
-1. Founder Authority
-2. Oracle
-3. Guardian
-4. Nexus
-5. Constitutional Validator
-6. Architecture Review Gate
+### Tier A — Immutable Contracts
 
-### Platform Core Components
+These are the platform's foundational rules. They define what the system is and how it behaves. They may only change under a MAJOR amendment.
 
-7. Bud (only user-facing AI)
-8. Student Intelligence Layer
-9. PlatformCore
-10. Spark
-11. Orbit
-12. EventBus
-13. Realtime Engine
-14. Service Registry
-15. Health Monitoring
-16. Audit Service
-17. Telemetry
+1. Bud as the sole user-facing AI
+2. Canonical runtime pipeline (User → Bud → Oracle → Guardian → Nexus → Student Intelligence Layer → PlatformCore → Spark → User)
+3. Student Intelligence Layer as the single intelligence orchestrator
+4. Shared recommendation schema
+5. Governance requirements (Architecture Review Gate criteria)
+6. Canonical runtime pipeline is the only routing path — no alternative paths may be introduced
 
-### Intelligence Engines (Frozen Set)
+### Tier B — Core Platform Components
 
-18. Campus Intelligence Engine (11 sub-services)
-19. Academic Planning Service
-20. Opportunity Engine Service
-21. Career Intelligence Service
-22. Student Success Prediction Service
-23. Campus Digital Twin Service
-24. Cross-Space Intelligence Service
-25. Autonomous Task Engine
-26. Personal Knowledge Graph Service
+These are the platform's infrastructure. Their interfaces and responsibilities are frozen. Internal implementation may change for performance, security, or correctness under PATCH or MINOR amendments.
 
-### Platform Contracts
+7. Oracle
+8. Guardian
+9. Nexus
+10. PlatformCore
+11. Spark
+12. Orbit
+13. EventBus
+14. Realtime Engine
+15. Service Registry
+16. Health Monitoring
+17. Audit Service
+18. Telemetry
+19. Constitutional Validator
 
-27. Shared Recommendation Contract
-28. Canonical Runtime Pipeline
-29. Service Lifecycle Contract
-30. Health Probe Contract
-31. Audit Trail Contract
+### Tier C — Extensible Domain Services
+
+These are the platform's intelligence engines. Their contracts (Tier A) are frozen, but the engines themselves are expected to grow in capability, accuracy, and scope. Extending these is the primary focus of Phase 2 — Product Intelligence.
+
+20. Campus Intelligence Engine (11 sub-services)
+21. Academic Planning Service
+22. Opportunity Engine Service
+23. Career Intelligence Service
+24. Student Success Prediction Service
+25. Campus Digital Twin Service
+26. Cross-Space Intelligence Service
+27. Autonomous Task Engine
+28. Personal Knowledge Graph Service
 
 ---
 
