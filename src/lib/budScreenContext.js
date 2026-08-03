@@ -22,14 +22,14 @@ const SCREEN_CONTEXTS = [
     name: "Campus",
     description: "the campus home dashboard with today's schedule, announcements, weather, and academic overview",
     actions: [
+      { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
       { label: "Today's Classes", prompt: "What classes do I have today? Give me a quick overview of my schedule.", icon: CalendarClock },
       { label: "Campus Events", prompt: "What campus events are happening today or this week?", icon: CalendarPlus },
-      { label: "Find Buildings", prompt: "Help me find my way around campus — where are the main buildings and lecture halls?", icon: MapPin },
       { label: "My Timetable", prompt: "Show me my full timetable for this week.", icon: CalendarClock },
     ],
     suggestedPrompts: [
+      "Help me organize my semester",
       "What should I focus on today?",
-      "Any campus events happening?",
       "How's my academic progress?",
     ],
   },
@@ -38,15 +38,15 @@ const SCREEN_CONTEXTS = [
     name: "Campus",
     description: "the academic workspace with today's timetable, assignment deadlines, GPA trends, upcoming exams, study streaks, research opportunities, and academic recommendations",
     actions: [
+      { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
       { label: "Overdue Assignments", prompt: "What assignments are overdue? Help me prioritize and catch up.", icon: ClipboardList },
       { label: "GPA Insights", prompt: "How is my GPA trending? What can I do to improve it?", icon: TrendingUp },
       { label: "Exam Prep", prompt: "Help me prepare for my upcoming exams. Create a revision plan.", icon: Brain },
-      { label: "Study Plan", prompt: "Build me a study plan for this week based on my timetable and deadlines.", icon: CalendarClock },
     ],
     suggestedPrompts: [
+      "Help me organize my semester",
       "What should I focus on today?",
       "Any overdue assignments?",
-      "How's my GPA trending?",
     ],
   },
   {
@@ -166,14 +166,14 @@ const SCREEN_CONTEXTS = [
     name: "Academics",
     description: "your academic dashboard with courses, assignments, grades, and study goals",
     actions: [
-      { label: "Build Study Plan", prompt: "Build me a study plan for this week based on my assignments and exams.", icon: CalendarClock },
+      { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
       { label: "Check Assignments", prompt: "What assignments are due soon? Help me prioritize.", icon: ClipboardList },
       { label: "Exam Prep", prompt: "Help me prepare for my upcoming exams. Create a revision plan.", icon: Brain },
       { label: "Track Grades", prompt: "Help me track my grades and project my GPA.", icon: BarChart3 },
     ],
     suggestedPrompts: [
+      "Help me organize my semester",
       "What's due this week?",
-      "Build me a study plan",
       "How's my GPA trending?",
     ],
   },
@@ -439,14 +439,14 @@ const DEFAULT_CONTEXT = {
   name: "UNIBUD",
   description: "the UNIBUD platform",
   actions: [
+    { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
     { label: "Study With Me", prompt: "Start a 25-minute Pomodoro focus session with me.", icon: Timer },
-    { label: "Create Flashcards", prompt: "Help me create flashcards for my current topic.", icon: Layers },
     { label: "Build Study Plan", prompt: "Build me a study plan for this week.", icon: CalendarClock },
     { label: "Find Opportunities", prompt: "Find scholarships and internships I might be eligible for.", icon: Compass },
   ],
   suggestedPrompts: [
+    "Help me organize my semester",
     "What should I focus on today?",
-    "Help me plan my week",
     "Find me opportunities",
   ],
 };

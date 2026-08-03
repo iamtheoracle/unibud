@@ -109,9 +109,13 @@ class Spark {
           ? proactiveSuggestions.map((s) => `- ${s.message}`).join('\n')
           : '';
 
+        const academicCtx = context?.academicContext || '';
+
         const routingPrompt = `${personalityPrompt}
 
 You are Bud, UNIBUD's calm, supportive mentor companion. A student asked a question.
+
+${academicCtx ? `STUDENT'S CURRENT ACADEMIC DATA:\n${academicCtx}\n` : ''}
 
 The intelligence layer found these options:
 ${recLines || 'No specific matches found — provide general guidance.'}
@@ -129,6 +133,7 @@ Compose a warm, natural response that:
 - If there's a workload note, gently advise accordingly
 - Recommends the single best option with a clear reason
 - Weaves in proactive insights naturally if relevant
+- Uses the student's real academic data to make recommendations specific and actionable
 - Keeps it concise, encouraging, and specific to what was found
 
 Student's message: ${message}`;
@@ -148,19 +153,30 @@ Student's message: ${message}`;
         };
       }
 
-      // ── Default flow: synthesize from memory + knowledge context ──
+      // ── Default flow: synthesize from memory + knowledge + academic context ──
+      // Academic context is real student data (assignments, exams, timetable, etc.)
+      // fetched by BudPanelContext and passed through the pipeline. This is what
+      // makes Bud's responses personalized and actionable.
+      const academicContextLine = context?.academicContext || '';
+
+      const fullContext = [
+        ctxLine,
+        memoryContext,
+        knowledgeContext,
+        academicContextLine,
+        reasoning ? `Reasoning: ${reasoning}` : '',
+      ].filter(Boolean).join('\n');
+
       const responsePrompt = promptService.render('bud.response', {
         userMessage: message,
-        context: [ctxLine, memoryContext, knowledgeContext, reasoning ? `Reasoning: ${reasoning}` : '']
-          .filter(Boolean)
-          .join('\n'),
+        context: fullContext,
       });
 
       let text;
       try {
         const fallback = personalityPrompt
-          ? `${personalityPrompt}\n\nStudent: ${message}\n\nRespond warmly and helpfully. Never mention internal agents or orchestration.`
-          : `You are Bud, UNIBUD's calm, supportive mentor companion.\n\nStudent: ${message}\n\nRespond warmly and helpfully. Never mention internal agents or orchestration.`;
+          ? `${personalityPrompt}\n\n${academicContextLine ? `STUDENT'S ACADEMIC DATA:\n${academicContextLine}\n\n` : ''}Student: ${message}\n\nRespond warmly and helpfully using the student's real data. Never mention internal agents or orchestration.`
+          : `You are Bud, UNIBUD's calm, supportive mentor companion.\n\n${academicContextLine ? `STUDENT'S ACADEMIC DATA:\n${academicContextLine}\n\n` : ''}Student: ${message}\n\nRespond warmly and helpfully using the student's real data. Never mention internal agents or orchestration.`;
         const params = {
           prompt: responsePrompt
             ? `${personalityPrompt ? personalityPrompt + '\n\n' : ''}${responsePrompt.system || ''}\n\n${responsePrompt.user}`

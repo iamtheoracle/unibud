@@ -79,6 +79,7 @@ class Nexus {
             department: user?.data?.department,
             level: user?.data?.level,
             interests: user?.data?.interests,
+            academicContext: context?.academicContext,
           },
         });
 

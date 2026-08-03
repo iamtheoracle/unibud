@@ -10,6 +10,9 @@ import BudPanel from "@/components/bud/BudPanel";
 import { useToast } from "@/components/ui/use-toast";
 import { ensureSeeded } from "@/lib/spark/agents/registry";
 import { runtime } from "@/lib/runtime";
+import { buildSystemPrompt } from "@/lib/bud/prompts/systemPrompt";
+import { createPersonality } from "@/lib/bud/personality";
+import { buildAcademicContext, formatAcademicContext } from "@/lib/bud/contextBuilder";
 
 const BudPanelContext = createContext(null);
 
@@ -27,6 +30,10 @@ export function BudPanelProvider({ children }) {
 
   // Seed the Spark agent registry once (admin-writable thereafter).
   useEffect(() => { ensureSeeded().catch(() => {}); }, []);
+
+  // Build Bud's personality system prompt once (constitution + voice).
+  const personality = createPersonality();
+  const systemPrompt = buildSystemPrompt(personality);
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -130,13 +137,27 @@ export function BudPanelProvider({ children }) {
     try {
       // ─── Single Execution Path ───────────────────────────────────────
       // Bud → Oracle → Guardian → Nexus → Platform Core → Spark → LLM
-      // There is no longer a parallel orchestration pipeline.
+      // Bud's personality (constitution + voice) is passed as systemPrompt
+      // so Spark composes responses in Bud's voice. Academic context is
+      // passed so Bud can reference real assignments, exams, timetable, etc.
       let answer;
       if (runtime.ready) {
+        // Fetch fresh academic context for this message (lightweight)
+        const freshContext = await buildAcademicContext(
+          user?.id,
+          user?.data?.institution_id
+        );
+        const academicSummary = formatAcademicContext(freshContext);
+
         const result = await runtime.process({
           message: trimmed,
           userId: user?.id,
-          context: { screen: screenContext, user },
+          context: {
+            screen: screenContext,
+            user,
+            systemPrompt,
+            academicContext: academicSummary,
+          },
           fileUrls,
         });
         answer = result.text;
