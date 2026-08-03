@@ -1,5 +1,5 @@
 {
-  "description": "Automatically synchronizes UNIBUD academic events with Google Calendar every 30 minutes. Normalizes assignments, exams, study sessions, and campus events into CalendarEvent records, pushes to Google, pulls changes from Google with conflict detection, and notifies users of any conflicts.",
+  "description": "One-way sync from UNIBUD to Google Calendar every 30 minutes. Normalizes classes, assignments, exams, presentations, timetable, academic events, and optional study sessions into CalendarEvent records, pushes to Google with color coding, deep links, and reminders. Deletes orphaned events when sources are removed. Logs conflicts and notifies users.",
   "name": "Google Calendar Background Sync",
   "definition": {
     "document": {
@@ -21,7 +21,7 @@
           "then": "end",
           "x-base44": {
             "title": "Run Google Calendar background sync",
-            "description": "Normalize, push, and pull with conflict detection"
+            "description": "One-way push from UNIBUD to Google Calendar with color coding, reminders, and delete detection"
           }
         }
       }

@@ -12,16 +12,16 @@
         "lms",
         "sis"
       ],
-      "default": "manual",
+      "default": "google_calendar",
       "description": "How the calendar is connected"
     },
     "source_name": {
       "type": "string",
-      "description": "Human-readable name (university name, LMS name, etc.)"
+      "description": "Human-readable name (e.g. 'Google Calendar')"
     },
     "source_url": {
       "type": "string",
-      "description": "URL for .ics feed or LMS/SIS endpoint"
+      "description": "URL for .ics feed or LMS endpoint"
     },
     "ics_content": {
       "type": "string",
@@ -33,9 +33,19 @@
         "active",
         "paused",
         "error",
-        "disconnected"
+        "disconnected",
+        "syncing"
       ],
       "default": "active"
+    },
+    "sync_direction": {
+      "type": "string",
+      "enum": [
+        "unibud_to_google",
+        "two_way"
+      ],
+      "default": "unibud_to_google",
+      "description": "Direction of sync \u2014 one-way push from UNIBUD to Google Calendar"
     },
     "last_synced_at": {
       "type": "string",
@@ -43,7 +53,7 @@
     },
     "sync_frequency_minutes": {
       "type": "number",
-      "default": 60,
+      "default": 30,
       "description": "How often to check for updates"
     },
     "auto_sync": {
@@ -54,7 +64,7 @@
     "authorized": {
       "type": "boolean",
       "default": false,
-      "description": "Explicit user authorization granted for this source"
+      "description": "Explicit user authorization granted for this sync"
     },
     "last_error": {
       "type": "string"
@@ -65,7 +75,94 @@
     },
     "last_sync_result": {
       "type": "object",
-      "description": "Summary of the last sync (created, updated, skipped)"
+      "description": "Summary of the last sync (created, updated, deleted, errors, conflicts)"
+    },
+    "sync_preferences": {
+      "type": "object",
+      "description": "Which academic event types to sync to Google Calendar",
+      "properties": {
+        "classes": {
+          "type": "boolean",
+          "default": true
+        },
+        "assignments": {
+          "type": "boolean",
+          "default": true
+        },
+        "exams": {
+          "type": "boolean",
+          "default": true
+        },
+        "presentations": {
+          "type": "boolean",
+          "default": true
+        },
+        "timetable": {
+          "type": "boolean",
+          "default": true
+        },
+        "academic_events": {
+          "type": "boolean",
+          "default": true
+        },
+        "study_sessions": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "reminder_minutes": {
+      "type": "number",
+      "default": 30,
+      "description": "Google Calendar reminder in minutes before the event (0 = no reminder)"
+    },
+    "google_calendar_id": {
+      "type": "string",
+      "default": "primary",
+      "description": "Destination Google Calendar ID"
+    },
+    "available_calendars": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "primary": {
+            "type": "boolean"
+          }
+        }
+      },
+      "description": "Cached list of user's Google Calendars for selection"
+    },
+    "conflict_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "event_title": {
+            "type": "string"
+          },
+          "source_entity": {
+            "type": "string"
+          },
+          "source_id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Recent sync conflicts for user review"
     },
     "metadata": {
       "type": "object",

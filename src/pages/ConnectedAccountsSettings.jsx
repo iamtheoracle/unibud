@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Calendar, ChevronRight } from "lucide-react";
 import ConnectedAccounts from "@/components/social/ConnectedAccounts";
 import FeedSourceControls from "@/components/social/FeedSourceControls";
 
@@ -28,9 +28,41 @@ export default function ConnectedAccountsSettings() {
       </header>
 
       <div className="max-w-[520px] mx-auto px-4 pt-4 space-y-6">
-        <ConnectedAccounts />
+        {/* Calendar Sync */}
+        <div>
+          <div className="flex items-center justify-between mb-1 px-1">
+            <h2 className="text-[15px] font-bold tracking-tight text-foreground">Calendar Sync</h2>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-3 px-1 leading-relaxed">
+            Sync academic events — classes, exams, assignments, and more — to your Google Calendar.
+          </p>
+          <button
+            onClick={() => navigate("/settings/calendar-sync")}
+            className="w-full flex items-center gap-3 p-3.5 rounded-[16px] glass-card hover-lift text-left"
+          >
+            <div className="w-10 h-10 rounded-[12px] bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Calendar className="w-5 h-5 text-primary" strokeWidth={2} />
+            </div>
+            <div className="flex-1">
+              <p className="text-[13px] font-bold text-foreground">Google Calendar</p>
+              <p className="text-[11px] text-muted-foreground">One-way sync with color coding & reminders</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </button>
+        </div>
 
-        {/* Feed source controls — quiet settings for the unified feed */}
+        {/* Social Accounts */}
+        <div>
+          <div className="flex items-center justify-between mb-1 px-1">
+            <h2 className="text-[15px] font-bold tracking-tight text-foreground">Social Accounts</h2>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-3 px-1 leading-relaxed">
+            Connect Instagram, LinkedIn, and other social platforms.
+          </p>
+          <ConnectedAccounts />
+        </div>
+
+        {/* Feed source controls */}
         <div>
           <div className="flex items-center justify-between mb-1 px-1">
             <h2 className="text-[15px] font-bold tracking-tight text-foreground">Feed Sources</h2>
