@@ -225,7 +225,75 @@ export const CONTEXT_MODULE_PRIORITY = {
       low: [],
     },
   },
+  // Quad workspace priority shifts — discovery workspace
+  quad: {
+    academic: {
+      high: ["communities", "events", "announcements"],
+      medium: ["posts", "recommendations", "notifications"],
+      low: [],
+    },
+    social: {
+      high: ["posts", "recommendations", "communities"],
+      medium: ["events", "announcements", "notifications"],
+      low: [],
+    },
+    hybrid: {
+      high: ["posts", "communities", "events", "recommendations"],
+      medium: ["announcements", "notifications"],
+      low: [],
+    },
+  },
+  // Lens workspace — command center, always surfaces search and recommendations
+  lens: {
+    academic: { high: ["search", "recommendations", "notifications"], medium: [], low: [] },
+    social: { high: ["search", "recommendations", "notifications"], medium: [], low: [] },
+    hybrid: { high: ["search", "recommendations", "notifications"], medium: [], low: [] },
+  },
+  // Services workspace — gateway to hidden products, minimal module priority
+  services: {
+    academic: { high: ["recommendations"], medium: ["notifications"], low: [] },
+    social: { high: ["recommendations"], medium: ["notifications"], low: [] },
+    hybrid: { high: ["recommendations"], medium: ["notifications"], low: [] },
+  },
+  // Me workspace — user profile
+  me: {
+    academic: {
+      high: ["student-profile", "notifications"],
+      medium: ["public-profiles", "recommendations"],
+      low: [],
+    },
+    social: {
+      high: ["public-profiles", "notifications"],
+      medium: ["student-profile", "recommendations"],
+      low: [],
+    },
+    hybrid: {
+      high: ["student-profile", "public-profiles", "notifications"],
+      medium: ["recommendations"],
+      low: [],
+    },
+  },
 };
+
+/**
+ * Final Freeze: Once all seven experiences are migrated, the Experience Runtime
+ * is frozen. No new experience may be created. Every future feature must be
+ * implemented as a Shared Module, Platform Core Service, External Integration,
+ * or an enhancement to an existing experience.
+ *
+ * This prevents the architecture from drifting back into a collection of
+ * independent apps. UNIBUD v4 is a true operating system, not a set of
+ * connected screens.
+ */
+export const EXPERIENCE_RUNTIME_FROZEN = true;
+
+/**
+ * The seven frozen experience IDs. Once the runtime is frozen, no experience
+ * outside this set may be registered or appear in navigation.
+ */
+export const FROZEN_EXPERIENCE_IDS = new Set([
+  "campus", "square", "connect", "quad", "lens", "services", "me",
+]);
 
 // ─── Adaptive Services by Context ─────────────────────────────────────────
 // Services hub surfaces different capabilities based on context and time.

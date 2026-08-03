@@ -302,6 +302,71 @@ export default function MigrationDashboard() {
           </div>
         </div>
 
+        {/* Remaining Experiences — Quad, Lens, Services, Me (Phases 9-12) */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Package className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            <h3 className="text-[14px] font-bold text-foreground">Remaining Experiences</h3>
+            <span className="text-[10px] text-muted-foreground ml-auto">Phases 9-12 · Composing Platform Core</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { key: "quad", label: "Quad", phase: "Phase 9", desc: "Discovery" },
+              { key: "lens", label: "Lens", phase: "Phase 10", desc: "Command Center" },
+              { key: "services", label: "Services", phase: "Phase 11", desc: "Services Gateway" },
+              { key: "me", label: "Me", phase: "Phase 12", desc: "Operating Profile" },
+            ].map((exp) => {
+              const data = report[exp.key];
+              return (
+                <div key={exp.key} className={`crystal-card p-3 ${data?.migrated ? "border-success/30" : "border-warning/30"}`}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[13px] font-bold text-foreground">{exp.label}</span>
+                    {data?.migrated ? (
+                      <CheckCircle2 className="w-3.5 h-3.5 text-success" strokeWidth={2.2} />
+                    ) : (
+                      <Clock className="w-3.5 h-3.5 text-warning" strokeWidth={2.2} />
+                    )}
+                  </div>
+                  <p className="text-[9px] text-muted-foreground mb-2">{exp.phase} · {exp.desc}</p>
+                  <div className="flex items-center gap-1 mb-1.5">
+                    <span className="text-[8px] text-muted-foreground">Modules:</span>
+                    <span className="text-[9px] font-bold text-foreground tabular-nums">{data?.moduleCount || 0}</span>
+                  </div>
+                  <div className="flex items-center gap-1 mb-1.5">
+                    <span className="text-[8px] text-muted-foreground">Hooks:</span>
+                    {["bud", "orbit", "spark", "realtime"].map((h) => (
+                      <span key={h} className={`text-[7px] px-1 py-0.5 rounded ${data?.hooks[h] ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>{h}</span>
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Shield className={`w-2.5 h-2.5 ${data?.constitutional?.valid ? "text-success" : "text-destructive"}`} strokeWidth={2.2} />
+                    <span className={`text-[8px] font-bold ${data?.constitutional?.valid ? "text-success" : "text-destructive"}`}>
+                      {data?.constitutional?.valid ? "Compliant" : "Violations"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Experience Runtime Freeze Status */}
+        {report.experienceRuntimeFrozen && (
+          <div className="crystal-card p-3 border-success/30">
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-success" strokeWidth={2.2} />
+              <div className="flex-1">
+                <span className="text-[13px] font-bold text-success">Experience Runtime Frozen</span>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  All seven experiences migrated. No new experiences may be created.
+                  Future features must be Shared Modules, Platform Core Services,
+                  External Integrations, or enhancements to existing experiences.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Duplicate Academic Modules */}
         <div>
           <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">

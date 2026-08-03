@@ -295,26 +295,55 @@ registerExperienceContract({
   isCanonicalCommunicationImplementation: true,
 });
 
-// ─── Quad Experience Contract ──────────────────────────────────────────────
+// ─── Quad Experience Contract (Phase 9 — MIGRATED) ────────────────────────
+// Quad is the canonical discovery implementation — the universal discovery
+// workspace. It composes Platform Core only: Orbit, Search, Recommendation
+// Engine, and Realtime Engine. Quad never owns feeds, communities, media,
+// search, identity, or realtime.
+//
+// Bud simply explains discovery results.
+
 registerExperienceContract({
   experienceId: "quad",
-  modules: ["search", "recommendations", "events", "communities", "posts", "announcements"],
+  modules: [
+    // Discovery modules (consumed from Platform Core — Quad owns none)
+    "search", "recommendations", "notifications",
+    // Content modules (consumed from Module Registry)
+    "posts", "communities", "events", "announcements",
+    // Community modules (shared)
+    "clubs", "members",
+  ],
   permissions: ["read:all"],
   contextRules: {
-    academic: "Prioritize academic opportunities and campus events",
-    social: "Prioritize trending content and community activity",
+    academic: "Prioritize academic discovery: study groups, research, scholarships, internships",
+    social: "Prioritize trending content, campus traditions, and community activity",
     hybrid: "Balanced discovery across all content",
   },
   hiddenServices: ["marketplace", "wallet", "tutors"],
-  hooks: { bud: true, orbit: true, spark: true, realtime: true },
-  migrationStatus: "pending",
-  legacyComponents: ["Quad", "Discover", "DiscoverFeed"],
+  hooks: {
+    bud: true,       // Simply explains discovery results
+    orbit: true,      // Supplies trending topics, campus highlights, recommendations
+    spark: true,      // Search indexing, cache invalidation
+    realtime: true,   // Discovery results update instantly
+  },
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
+  isCanonicalDiscoveryImplementation: true,
 });
 
-// ─── Lens Experience Contract ──────────────────────────────────────────────
+// ─── Lens Experience Contract (Phase 10 — MIGRATED) ───────────────────────
+// Lens is the canonical command center implementation — the OS command center.
+// It owns: Universal Search UI, Command Palette, AI Actions, Cross-workspace
+// Search, Filters, Saved Searches, Recent Activity, Recommendations.
+// Lens never owns data — everything comes from Platform Core.
+
 registerExperienceContract({
   experienceId: "lens",
-  modules: ["search", "recommendations", "notifications"],
+  modules: [
+    // Discovery modules (consumed from Platform Core — Lens owns none)
+    "search", "recommendations", "notifications",
+  ],
   permissions: ["read:all"],
   contextRules: {
     academic: "Surface academic search and quick actions",
@@ -322,15 +351,34 @@ registerExperienceContract({
     hybrid: "Surface all search and quick actions",
   },
   hiddenServices: ["marketplace", "wallet", "student-id", "printing", "transport", "food", "healthcare"],
-  hooks: { bud: true, orbit: true, spark: true, realtime: true },
-  migrationStatus: "pending",
-  legacyComponents: ["Lens", "UniversalSearchOverlay"],
+  hooks: {
+    bud: true,       // AI actions and suggestions flow through Bud
+    orbit: true,      // Cross-workspace search and recommendations
+    spark: true,      // Search indexing and cache invalidation
+    realtime: true,   // Search results and recent activity update instantly
+  },
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
+  isCanonicalCommandCenterImplementation: true,
 });
 
-// ─── Services Experience Contract ──────────────────────────────────────────
+// ─── Services Experience Contract (Phase 11 — MIGRATED) ───────────────────
+// Services is the canonical services gateway implementation — the gateway to
+// hidden products. It exposes workflows for Marketplace, Wallet, Housing,
+// Tutors, Printing, Food, Transport, Healthcare, Campus Services, Student ID,
+// and Payments.
+//
+// Marketplace and Wallet remain hidden products — launched through Services
+// or by user intent, never as permanent navigation destinations.
+
 registerExperienceContract({
   experienceId: "services",
-  modules: [],
+  modules: [
+    // Services composes hidden products and platform services.
+    // No owned modules — everything is consumed from Platform Core.
+    "recommendations", "notifications",
+  ],
   permissions: ["read:services"],
   contextRules: {
     academic: "Surface academic services (printing, library, study rooms)",
@@ -338,23 +386,48 @@ registerExperienceContract({
     hybrid: "Surface all available services",
   },
   hiddenServices: ["marketplace", "wallet", "student-id", "housing", "printing", "transport", "food", "healthcare", "campus-services", "campus-utilities", "payments", "ticketing", "student-jobs", "tutors"],
-  hooks: { bud: true, orbit: true, spark: true, realtime: true },
-  migrationStatus: "pending",
-  legacyComponents: ["Services"],
+  hooks: {
+    bud: true,       // Personalized service recommendations
+    orbit: true,      // Context-aware service surfacing
+    spark: true,      // Workflow automation for service requests
+    realtime: true,   // Service availability updates instantly
+  },
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
+  isCanonicalServicesGatewayImplementation: true,
 });
 
-// ─── Me Experience Contract ───────────────────────────────────────────────
+// ─── Me Experience Contract (Phase 12 — MIGRATED) ─────────────────────────
+// Me is the canonical operating profile implementation — the user's operating
+// profile. It owns: Identity, Preferences, Settings, Privacy, Security, Devices,
+// Notifications, Achievements, Portfolio, Academic Profile, Social Profile,
+// and Wallet Profile.
+// Me consumes Platform Core — it owns no infrastructure.
+
 registerExperienceContract({
   experienceId: "me",
-  modules: ["student-profile", "public-profiles", "notifications", "recommendations"],
+  modules: [
+    // Identity modules (consumed from Module Registry)
+    "student-profile", "public-profiles", "creator-profiles",
+    // Discovery modules (consumed from Platform Core)
+    "notifications", "recommendations",
+  ],
   permissions: ["read:own-profile", "update:own-profile"],
   contextRules: {
-    academic: "Prioritize academic identity and achievements",
-    social: "Prioritize social identity and activity",
+    academic: "Prioritize academic identity, achievements, and academic profile",
+    social: "Prioritize social identity, activity, and social profile",
     hybrid: "Balanced identity presentation",
   },
   hiddenServices: ["wallet", "student-id"],
-  hooks: { bud: true, orbit: true, spark: true, realtime: true },
-  migrationStatus: "pending",
-  legacyComponents: ["Me", "MeTab", "ProfileHeader"],
+  hooks: {
+    bud: true,       // Academic insights, smart reminders, achievement recommendations
+    orbit: true,      // Context-aware profile recommendations
+    spark: true,      // Background indexing of portfolio and achievements
+    realtime: true,   // Profile data, achievements, wallet updates sync instantly
+  },
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
+  isCanonicalProfileImplementation: true,
 });

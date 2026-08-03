@@ -41,9 +41,9 @@ const Me = lazy(() => import("@/pages/Me"));
 const Settings = lazy(() => import("@/pages/Settings"));
 
 // Social Ecosystem
-const Quad = lazy(() => import("@/pages/Quad"));
+const QuadExperience = lazy(() => import("@/components/quad/QuadExperience"));
 const ConnectExperience = lazy(() => import("@/components/connect/ConnectExperience"));
-const Services = lazy(() => import("@/pages/Services"));
+const ServicesExperience = lazy(() => import("@/components/services/ServicesExperience"));
 const Shorts = lazy(() => import("@/pages/Shorts"));
 const Podcasts = lazy(() => import("@/pages/podcasts/Podcasts"));
 const PodcastShow = lazy(() => import("@/pages/podcasts/PodcastShow"));
@@ -56,7 +56,7 @@ const Clubs = lazy(() => import("@/pages/Clubs"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const LostFound = lazy(() => import("@/pages/LostFound"));
 const Discover = lazy(() => import("@/pages/Discover"));
-const Lens = lazy(() => import("@/pages/Lens"));
+const LensExperience = lazy(() => import("@/components/lens/LensExperience"));
 const SquareExperience = lazy(() => import("@/components/square/SquareExperience"));
 const Scholar = lazy(() => import("@/pages/Scholar"));
 const FootballHub = lazy(() => import("@/pages/football/FootballHub"));
@@ -70,7 +70,7 @@ const WalletScreen = lazy(() => import("@/pages/wallet/WalletScreen"));
 const BudTab = lazy(() => import("@/pages/tabs/BudTab"));
 const SocialTab = lazy(() => import("@/pages/tabs/SocialTab"));
 const AcademicsTab = lazy(() => import("@/pages/tabs/AcademicsTab"));
-const MeTab = lazy(() => import("@/pages/tabs/MeTab"));
+const MeExperience = lazy(() => import("@/components/me/MeExperience"));
 const MainShell = lazy(() => import("@/components/layout/MainShell"));
 const AcademicHub = lazy(() => import("@/pages/academics/AcademicHub"));
 const AcademicInsights = lazy(() => import("@/pages/academics/AcademicInsights"));
@@ -283,11 +283,11 @@ function App() {
                     <Route element={<MainShell />}>
                       <Route path="/square" element={<SquareExperience />} />
                       <Route path="/campus" element={<CampusExperience />} />
-                      <Route path="/quad" element={<Quad />} />
+                      <Route path="/quad" element={<QuadExperience />} />
                       <Route path="/connect" element={<ConnectExperience />} />
-                      <Route path="/lens" element={<Lens />} />
-                      <Route path="/services" element={<Services />} />
-                      <Route path="/me" element={<MeTab />} />
+                      <Route path="/lens" element={<LensExperience />} />
+                      <Route path="/services" element={<ServicesExperience />} />
+                      <Route path="/me" element={<MeExperience />} />
                     </Route>
                     <Route path="/home" element={<BudHome />} />
                     <Route path="/briefing" element={<BudDailyBriefing />} />

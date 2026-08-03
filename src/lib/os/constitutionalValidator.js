@@ -7,7 +7,7 @@
  * References: All five constitutional documents.
  */
 
-import { EXPERIENCES, LAYERS, AI_AUTHORITIES } from "@/lib/os/manifest";
+import { EXPERIENCES, LAYERS, AI_AUTHORITIES, EXPERIENCE_RUNTIME_FROZEN, FROZEN_EXPERIENCE_IDS } from "@/lib/os/manifest";
 import { getRegisteredModules, isModuleRegistered, getModule, getModulesByCategory } from "@/lib/os/moduleRegistry";
 import { getRegisteredExperiences } from "@/lib/os/experienceRegistry";
 import { getRegisteredServices } from "@/lib/os/hiddenServiceRegistry";
@@ -160,6 +160,18 @@ export function validateRegistry() {
       });
     }
   });
+
+  // Final Freeze: Once the Experience Runtime is frozen, no experience outside
+  // the seven frozen IDs may be registered. Every future feature must be a
+  // Shared Module, Platform Core Service, External Integration, or enhancement
+  // to an existing experience — never a new experience.
+  if (EXPERIENCE_RUNTIME_FROZEN) {
+    const extraExperiences = registeredExperiences.filter((e) => !FROZEN_EXPERIENCE_IDS.has(e.id));
+    if (extraExperiences.length > 0) {
+      results.errors.push(`Experience Runtime is frozen — no new experiences allowed. Found: ${extraExperiences.map((e) => e.id).join(", ")}`);
+      results.valid = false;
+    }
+  }
 
   return results;
 }
@@ -531,6 +543,84 @@ export function validateConnectMigration() {
 }
 
 /**
+ * Phases 9-12: Generic experience migration validator.
+ * Used for Quad, Lens, Services, and Me — the four progressively simpler
+ * migrations that compose Platform Core without owning infrastructure.
+ *
+ * Checks:
+ *   • Experience consumes only registered modules
+ *   • Experience owns no Platform Core services
+ *   • No direct provider calls
+ *   • Experience satisfies its Experience Contract
+ *   • All four Platform Core hooks are registered
+ */
+export function validateExperienceMigration(experienceId) {
+  const contract = getContract(experienceId);
+  if (!contract) {
+    return { valid: false, errors: [`No ${experienceId} contract registered`], warnings: [] };
+  }
+
+  const errors = [];
+  const warnings = [];
+
+  // Uses only registered modules
+  contract.modules.forEach((moduleId) => {
+    if (!isModuleRegistered(moduleId)) {
+      errors.push(`${experienceId} uses unregistered module "${moduleId}"`);
+    }
+  });
+
+  // Owns no Platform Core services
+  const platformCoreModules = ["search", "notifications", "identity", "ai", "realtime", "integrations"];
+  contract.modules.forEach((moduleId) => {
+    if (platformCoreModules.includes(moduleId)) {
+      errors.push(`${experienceId} owns Platform Core service "${moduleId}" — must consume from Platform Core`);
+    }
+    const mod = getModule(moduleId);
+    if (mod && mod.category === "platform-core") {
+      errors.push(`${experienceId} owns Platform Core module "${moduleId}"`);
+    }
+  });
+
+  // No direct provider calls
+  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
+    directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
+  );
+  if (hasDirectProviderCalls) {
+    errors.push(`${experienceId} makes direct provider calls — must use Platform Core integrations`);
+  }
+
+  // Contract is valid
+  const contractValidation = validateContract(experienceId);
+  if (!contractValidation.valid) {
+    errors.push(...contractValidation.errors);
+  }
+  warnings.push(...contractValidation.warnings);
+
+  // Migration status
+  if (contract.migrationStatus !== "migrated") {
+    warnings.push(`${experienceId} migration status is "${contract.migrationStatus}" — expected "migrated"`);
+  }
+
+  // All four hooks registered
+  const requiredHooks = ["bud", "orbit", "spark", "realtime"];
+  requiredHooks.forEach((hook) => {
+    if (!contract.hooks?.[hook]) {
+      errors.push(`${experienceId} does not register Platform Core hook "${hook}"`);
+    }
+  });
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+// ── Thin wrappers for Phases 9-12 ──
+export function validateQuadMigration() { return validateExperienceMigration("quad"); }
+export function validateLensMigration() { return validateExperienceMigration("lens"); }
+export function validateServicesMigration() { return validateExperienceMigration("services"); }
+export function validateMeMigration() { return validateExperienceMigration("me"); }
+
+/**
  * Run a full constitutional audit.
  * Returns a comprehensive report including Phase 5 migration validation.
  */
@@ -540,11 +630,16 @@ export function runConstitutionalAudit() {
   const campus = validateCampusMigration();
   const square = validateSquareMigration();
   const connect = validateConnectMigration();
+  const quad = validateQuadMigration();
+  const lens = validateLensMigration();
+  const services = validateServicesMigration();
+  const me = validateMeMigration();
+  const allMigrated = campus.valid && square.valid && connect.valid && quad.valid && lens.valid && services.valid && me.valid;
   const report = {
     timestamp: new Date().toISOString(),
-    valid: registry.valid && contracts.valid && campus.valid && square.valid && connect.valid,
-    errors: [...registry.errors, ...contracts.errors, ...campus.errors, ...square.errors, ...connect.errors],
-    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings, ...square.warnings, ...connect.warnings],
+    valid: registry.valid && contracts.valid && allMigrated,
+    errors: [...registry.errors, ...contracts.errors, ...campus.errors, ...square.errors, ...connect.errors, ...quad.errors, ...lens.errors, ...services.errors, ...me.errors],
+    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings, ...square.warnings, ...connect.warnings, ...quad.warnings, ...lens.warnings, ...services.warnings, ...me.warnings],
     modules: getRegisteredModules().length,
     experiences: getRegisteredExperiences().length,
     services: getRegisteredServices().length,
@@ -572,6 +667,33 @@ export function runConstitutionalAudit() {
       warnings: connect.warnings,
       migrated: connect.valid && getContract("connect")?.migrationStatus === "migrated",
     },
+    quad: {
+      valid: quad.valid,
+      errors: quad.errors,
+      warnings: quad.warnings,
+      migrated: quad.valid && getContract("quad")?.migrationStatus === "migrated",
+    },
+    lens: {
+      valid: lens.valid,
+      errors: lens.errors,
+      warnings: lens.warnings,
+      migrated: lens.valid && getContract("lens")?.migrationStatus === "migrated",
+    },
+    services: {
+      valid: services.valid,
+      errors: services.errors,
+      warnings: services.warnings,
+      migrated: services.valid && getContract("services")?.migrationStatus === "migrated",
+    },
+    me: {
+      valid: me.valid,
+      errors: me.errors,
+      warnings: me.warnings,
+      migrated: me.valid && getContract("me")?.migrationStatus === "migrated",
+    },
+    // Final Freeze: Experience Runtime is frozen once all seven are migrated.
+    // No new experience may be created after this point.
+    experienceRuntimeFrozen: allMigrated,
   };
   return report;
 }

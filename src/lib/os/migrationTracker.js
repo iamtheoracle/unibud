@@ -11,7 +11,7 @@ import { getAllContracts, validateAllContracts, getContract } from "./experience
 import { getRegisteredModules, getModulesByCategory } from "./moduleRegistry";
 import { getRegisteredExperiences } from "./experienceRegistry";
 import { getRegisteredServices } from "./hiddenServiceRegistry";
-import { validateCampusMigration, validateSquareMigration, validateConnectMigration } from "./constitutionalValidator";
+import { validateCampusMigration, validateSquareMigration, validateConnectMigration, validateQuadMigration, validateLensMigration, validateServicesMigration, validateMeMigration } from "./constitutionalValidator";
 import { SYNC_REGISTRY } from "@/lib/realtime/entitySyncRegistry";
 import { EXPERIENCES } from "./manifest";
 
@@ -309,6 +309,59 @@ export function getConnectMigrationReport() {
 }
 
 /**
+ * Generic experience migration report for Phases 9-12.
+ * Used by Quad, Lens, Services, and Me — the four progressively simpler
+ * migrations that compose Platform Core without owning infrastructure.
+ */
+export function getExperienceMigrationReport(experienceId) {
+  const contract = getContract(experienceId);
+  const validation = validateExperienceMigrationById(experienceId);
+
+  return {
+    migrated: contract?.migrationStatus === "migrated",
+    isReferenceImplementation: contract?.isReferenceImplementation || false,
+    modulesConsumed: contract?.modules || [],
+    moduleCount: (contract?.modules || []).length,
+    legacyComponents: contract?.legacyComponents || [],
+    legacyRemaining: (contract?.legacyComponents || []).length,
+    hooks: contract?.hooks || {},
+    permissions: contract?.permissions || [],
+    hiddenServices: contract?.hiddenServices || [],
+    constitutional: {
+      valid: validation.valid,
+      errors: validation.errors,
+      warnings: validation.warnings,
+    },
+    platformCoreAdoption: {
+      contextProvider: true,
+      realtimeEngine: contract?.hooks?.realtime || false,
+      bud: contract?.hooks?.bud || false,
+      orbit: contract?.hooks?.orbit || false,
+      spark: contract?.hooks?.spark || false,
+      moduleRegistry: (contract?.modules || []).length === 0 || (contract?.modules || []).every((id) => getRegisteredModules().some((m) => m.id === id)),
+      experienceContract: !!contract,
+    },
+    realtimeCoverage: getRealtimeEntityCoverage(),
+  };
+}
+
+// Thin wrappers for Phases 9-12
+function validateExperienceMigrationById(experienceId) {
+  switch (experienceId) {
+    case "quad": return validateQuadMigration();
+    case "lens": return validateLensMigration();
+    case "services": return validateServicesMigration();
+    case "me": return validateMeMigration();
+    default: return { valid: false, errors: [`Unknown experience: ${experienceId}`], warnings: [] };
+  }
+}
+
+export function getQuadMigrationReport() { return getExperienceMigrationReport("quad"); }
+export function getLensMigrationReport() { return getExperienceMigrationReport("lens"); }
+export function getServicesMigrationReport() { return getExperienceMigrationReport("services"); }
+export function getMeMigrationReport() { return getExperienceMigrationReport("me"); }
+
+/**
  * Get a comprehensive migration report for the dashboard.
  */
 export function getMigrationReport() {
@@ -322,6 +375,10 @@ export function getMigrationReport() {
     campus: getCampusMigrationReport(),
     square: getSquareMigrationReport(),
     connect: getConnectMigrationReport(),
+    quad: getQuadMigrationReport(),
+    lens: getLensMigrationReport(),
+    services: getServicesMigrationReport(),
+    me: getMeMigrationReport(),
     modules: {
       total: getRegisteredModules().length,
       byCategory: {
