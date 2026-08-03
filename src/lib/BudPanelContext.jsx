@@ -3,16 +3,11 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { routeAgents, recordAgentActivity } from "@/lib/agentRegistry";
 import { getScreenContext } from "@/lib/budScreenContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
 import { useToast } from "@/components/ui/use-toast";
-import { ensureSeeded } from "@/lib/spark/agents/registry";
-import { runtime } from "@/lib/runtime";
-import { buildSystemPrompt } from "@/lib/bud/prompts/systemPrompt";
-import { createPersonality } from "@/lib/bud/personality";
-import { buildAcademicContext, formatAcademicContext } from "@/lib/bud/contextBuilder";
+import { processSuperAgent } from "@/lib/bud/superAgent/orchestrator";
 
 const BudPanelContext = createContext(null);
 
@@ -28,22 +23,19 @@ export function BudPanelProvider({ children }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Seed the Spark agent registry once (admin-writable thereafter).
-  useEffect(() => { ensureSeeded().catch(() => {}); }, []);
-
-  // Build Bud's personality system prompt once (constitution + voice).
-  const personality = createPersonality();
-  const systemPrompt = buildSystemPrompt(personality);
-
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [activeAgents, setActiveAgents] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [pendingPrompt, setPendingPrompt] = useState(null);
   const isSendingRef = useRef(false);
+
+  // ─── Super Agent State ───
+  const [mode, setMode] = useState("auto");
+  const [activeSpecialists, setActiveSpecialists] = useState([]);
+  const [statusMessage, setStatusMessage] = useState("Bud is thinking...");
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -121,67 +113,54 @@ export function BudPanelProvider({ children }) {
     const trimmed = text.trim();
     isSendingRef.current = true;
 
-    const agents = routeAgents(trimmed);
-    const agentIds = agents.map((a) => a.id);
-    recordAgentActivity(agentIds);
-
-    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: agentIds };
     const fileUrls = attachments.map((a) => a.url).filter(Boolean);
+    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: [] };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
     setAttachments([]);
-    setActiveAgents(agents);
     setIsTyping(true);
 
     try {
-      // ─── Single Execution Path ───────────────────────────────────────
-      // Bud → Oracle → Guardian → Nexus → Platform Core → Spark → LLM
-      // Bud's personality (constitution + voice) is passed as systemPrompt
-      // so Spark composes responses in Bud's voice. Academic context is
-      // passed so Bud can reference real assignments, exams, timetable, etc.
-      let answer;
-      if (runtime.ready) {
-        // Fetch fresh academic context for this message (lightweight)
-        const freshContext = await buildAcademicContext(
-          user?.id,
-          user?.data?.institution_id
-        );
-        const academicSummary = formatAcademicContext(freshContext);
+      // ─── Super Agent Pipeline ────────────────────────────────────────
+      // Bud routes to specialist(s) → builds cognitive lens → calls LLM
+      // → combines results into one natural Bud response
+      const result = await processSuperAgent({
+        message: trimmed,
+        userId: user?.id,
+        user,
+        screenContext: screenContext?.name,
+        mode,
+        fileUrls,
+        conversationHistory: messages.map((m) => ({ role: m.role, content: m.content })),
+      });
 
-        const result = await runtime.process({
-          message: trimmed,
-          userId: user?.id,
-          context: {
-            screen: screenContext,
-            user,
-            systemPrompt,
-            academicContext: academicSummary,
-          },
-          fileUrls,
-        });
-        answer = result.text;
-      } else {
-        answer = "I'm still waking up — give me just a moment!";
-      }
+      // Update specialist indicators
+      setActiveSpecialists(result.specialists);
+      setStatusMessage(result.statusMessage);
 
-      const budMsg = { role: "bud", content: answer, time: new Date(), agents: agentIds };
+      const budMsg = {
+        role: "bud",
+        content: result.text,
+        time: new Date(),
+        agents: result.specialists,
+      };
       const finalMessages = [...newMessages, budMsg];
       setMessages(finalMessages);
-      await saveConversation(finalMessages, agentIds);
+      await saveConversation(finalMessages, result.specialists);
     } catch {
       const errorMsg = {
         role: "bud",
         content: "I'm having trouble connecting right now. Let's try again in a moment!",
         time: new Date(),
-        agents: agentIds,
+        agents: [],
       };
       setMessages([...newMessages, errorMsg]);
     }
     setIsTyping(false);
-    setActiveAgents([]);
+    setActiveSpecialists([]);
     isSendingRef.current = false;
-  }, [isTyping, attachments, messages, screenContext, user, saveConversation]);
+  }, [isTyping, attachments, messages, screenContext, user, saveConversation, mode]);
 
   // Auto-send pending prompt when panel opens
   useEffect(() => {
@@ -227,7 +206,6 @@ export function BudPanelProvider({ children }) {
   const newConversation = useCallback(() => {
     setMessages([]);
     setActiveConversationId(null);
-    setActiveAgents([]);
     setAttachments([]);
   }, []);
 
@@ -240,7 +218,7 @@ export function BudPanelProvider({ children }) {
     setInput,
     sendMessage,
     isTyping,
-    activeAgents,
+    activeAgents: activeSpecialists.map((id) => ({ id, name: id })),
     attachments,
     handleFileUpload,
     removeAttachment,
@@ -250,6 +228,10 @@ export function BudPanelProvider({ children }) {
     openConversation,
     newConversation,
     isDemoMode,
+    mode,
+    setMode,
+    activeSpecialists,
+    statusMessage,
   };
 
   return (
