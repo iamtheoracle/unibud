@@ -255,4 +255,24 @@ These are the platform's intelligence engines. Their contracts (Tier A) are froz
 
 ---
 
+## Decision Matrix — Quick Reference for Contributors
+
+Before writing code, classify the proposed change:
+
+| Proposed Change | Tier | Review Required |
+|---|---|---|
+| Documentation clarification | PATCH | No architecture review |
+| Improve an existing engine (Tier C) | Tier C | Normal engineering review |
+| Add capability to a Tier B component (no interface change) | Tier B | Normal engineering review |
+| Add capability to a Tier B component (interface change) | Tier B | Architecture review |
+| Change the canonical runtime pipeline | Tier A | Major architecture review (MAJOR amendment) |
+| Introduce a second orchestrator or alternative routing path | Tier A | Major architecture review (MAJOR amendment) |
+| Change Bud's role as sole user-facing AI | Tier A | Major architecture review (MAJOR amendment) |
+| Modify the shared recommendation contract | Tier A | Major architecture review (MAJOR amendment) |
+| Introduce a new domain engine | Tier C | Architecture Review Gate (all five criteria) |
+
+**Rule of thumb:** If the change touches Tier A, it requires a MAJOR amendment. If it touches Tier B interfaces, it requires architecture review. If it extends a Tier C engine within its existing contract, it is normal engineering work.
+
+---
+
 *This document is the single source of truth for UNIBUD OS architectural governance. All engineering decisions must be consistent with this declaration. Version: v1. Status: FROZEN.*
