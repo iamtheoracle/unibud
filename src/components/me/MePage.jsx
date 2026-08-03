@@ -3,9 +3,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
-import MeProfileHeader from "@/components/me/MeProfileHeader";
+import MeDashboardHeader from "@/components/me/MeDashboardHeader";
+import MeStatsGrid from "@/components/me/MeStatsGrid";
+import MeBudPanel from "@/components/me/MeBudPanel";
+import MeAcademicOverview from "@/components/me/MeAcademicOverview";
+import MeShortcutGrid from "@/components/me/MeShortcutGrid";
 import MeSectionCard from "@/components/me/MeSectionCard";
-import MeBudCard from "@/components/me/MeBudCard";
 
 import {
   GraduationCap, BookOpen, Calendar, FileText, TrendingUp,
@@ -94,13 +97,19 @@ export default function MePage({ isOwnProfile = true, profileUser }) {
     <div className="max-w-[520px] mx-auto pb-28 px-4 pt-3">
       <ProductionState state={state} onRefresh={handleRefresh} skeleton={<MeSkeleton />}>
         <div className="space-y-4">
-          <MeProfileHeader user={displayUser} />
-          <MeBudCard user={displayUser} />
-          <MeSectionCard title="Academics" icon={GraduationCap} color="#10B981" items={ACADEMIC_ITEMS} delay={0.15} />
-          <MeSectionCard title="Social" icon={Users} color="#3B82F6" items={SOCIAL_ITEMS} delay={0.2} />
-          <MeSectionCard title="Professional" icon={Briefcase} color="#8B5CF6" items={PROFESSIONAL_ITEMS} delay={0.25} />
-          <MeSectionCard title="Wallet" icon={Wallet} color="#FACC15" items={WALLET_ITEMS} delay={0.3} />
-          <MeSectionCard title="Settings" icon={Settings} color="#9CA3AF" items={SETTINGS_ITEMS} delay={0.35} />
+          {/* Dashboard */}
+          <MeDashboardHeader user={displayUser} />
+          <MeStatsGrid user={displayUser} />
+          <MeBudPanel user={displayUser} />
+          <MeAcademicOverview user={displayUser} />
+          <MeShortcutGrid />
+
+          {/* Settings sections */}
+          <MeSectionCard title="Academics" icon={GraduationCap} color="#10B981" items={ACADEMIC_ITEMS} delay={0.25} />
+          <MeSectionCard title="Social" icon={Users} color="#3B82F6" items={SOCIAL_ITEMS} delay={0.3} />
+          <MeSectionCard title="Professional" icon={Briefcase} color="#8B5CF6" items={PROFESSIONAL_ITEMS} delay={0.35} />
+          <MeSectionCard title="Wallet" icon={Wallet} color="#FACC15" items={WALLET_ITEMS} delay={0.4} />
+          <MeSectionCard title="Settings" icon={Settings} color="#9CA3AF" items={SETTINGS_ITEMS} delay={0.45} />
         </div>
       </ProductionState>
     </div>
@@ -110,10 +119,14 @@ export default function MePage({ isOwnProfile = true, profileUser }) {
 function MeSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="rounded-[24px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 220 }} />
+      <div className="rounded-[24px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 180 }} />
+      <div className="grid grid-cols-3 gap-2">
+        {[1,2,3,4,5,6].map(i => (
+          <div key={i} className="rounded-[16px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 72 }} />
+        ))}
+      </div>
       <div className="rounded-[24px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 160 }} />
-      <div className="rounded-[24px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 340 }} />
-      <div className="rounded-[24px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 260 }} />
+      <div className="rounded-[24px] animate-pulse" style={{ background: "rgba(255,255,255,0.025)", height: 120 }} />
     </div>
   );
 }
