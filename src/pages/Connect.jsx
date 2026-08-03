@@ -6,6 +6,7 @@ import ConnectMessages from "@/components/connect/ConnectMessages";
 import ConnectCalls from "@/components/connect/ConnectCalls";
 import ConnectCollaboration from "@/components/connect/ConnectCollaboration";
 import StudyGroupDirectory from "@/components/study/StudyGroupDirectory";
+import { useConnectPlatformCore } from "@/lib/os/useConnectPlatformCore";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -27,7 +28,17 @@ const QUICK = [
 
 export default function Connect() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("messages");
+  const { orderedTabs } = useConnectPlatformCore();
+  const [activeTab, setActiveTab] = useState(orderedTabs[0] || "messages");
+
+  // Context-prioritized tab ordering — tabs are reordered by Platform Core
+  // based on the active context (social/academic/hybrid).
+  // Social: messages, calls prioritized.
+  // Academic: groups, collaboration prioritized.
+  // Navigation never changes — only tab priority shifts.
+  const orderedTabDefs = orderedTabs
+    .map((key) => TABS.find((t) => t.key === key))
+    .filter(Boolean);
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-6 pt-6 pb-28 safe-area-pt">
@@ -35,7 +46,7 @@ export default function Connect() {
 
       {/* Tabs — underline style */}
       <div className="flex gap-6 border-b border-border">
-        {TABS.map((t) => {
+        {orderedTabDefs.map((t) => {
           const on = t.key === activeTab;
           const Icon = t.icon;
           return (

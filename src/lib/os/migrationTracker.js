@@ -11,7 +11,7 @@ import { getAllContracts, validateAllContracts, getContract } from "./experience
 import { getRegisteredModules, getModulesByCategory } from "./moduleRegistry";
 import { getRegisteredExperiences } from "./experienceRegistry";
 import { getRegisteredServices } from "./hiddenServiceRegistry";
-import { validateCampusMigration, validateSquareMigration } from "./constitutionalValidator";
+import { validateCampusMigration, validateSquareMigration, validateConnectMigration } from "./constitutionalValidator";
 import { SYNC_REGISTRY } from "@/lib/realtime/entitySyncRegistry";
 import { EXPERIENCES } from "./manifest";
 
@@ -165,6 +165,16 @@ export function getDuplicateSocialModules() {
 }
 
 /**
+ * Detect duplicate communication module IDs in the registry.
+ * Duplicate modules violate the Shared Module Constitution.
+ */
+export function getDuplicateCommunicationModules() {
+  const commModules = getModulesByCategory("communication");
+  const ids = commModules.map((m) => m.id);
+  return ids.filter((id, index) => ids.indexOf(id) !== index);
+}
+
+/**
  * Verify realtime entity sync coverage for all academic modules.
  * Every academic entity must be in SYNC_REGISTRY so Campus updates
  * instantly with no manual refresh.
@@ -261,6 +271,44 @@ export function getSquareMigrationReport() {
 }
 
 /**
+ * Get Connect-specific migration metrics.
+ * Connect is the canonical communication implementation — its metrics set the
+ * template for all subsequent communication experience migrations.
+ */
+export function getConnectMigrationReport() {
+  const contract = getContract("connect");
+  const connectValidation = validateConnectMigration();
+
+  return {
+    migrated: contract?.migrationStatus === "migrated",
+    isReferenceImplementation: contract?.isCanonicalCommunicationImplementation || false,
+    modulesConsumed: contract?.modules || [],
+    communicationModuleCount: getModulesByCategory("communication").length,
+    legacyComponents: contract?.legacyComponents || [],
+    legacyRemaining: (contract?.legacyComponents || []).length,
+    hooks: contract?.hooks || {},
+    permissions: contract?.permissions || [],
+    hiddenServices: contract?.hiddenServices || [],
+    constitutional: {
+      valid: connectValidation.valid,
+      errors: connectValidation.errors,
+      warnings: connectValidation.warnings,
+    },
+    platformCoreAdoption: {
+      contextProvider: true,
+      realtimeEngine: contract?.hooks?.realtime || false,
+      bud: contract?.hooks?.bud || false,
+      orbit: contract?.hooks?.orbit || false,
+      spark: contract?.hooks?.spark || false,
+      moduleRegistry: (contract?.modules || []).every((id) => getRegisteredModules().some((m) => m.id === id)),
+      experienceContract: !!contract,
+    },
+    duplicateModules: getDuplicateCommunicationModules(),
+    realtimeCoverage: getRealtimeEntityCoverage(),
+  };
+}
+
+/**
  * Get a comprehensive migration report for the dashboard.
  */
 export function getMigrationReport() {
@@ -273,6 +321,7 @@ export function getMigrationReport() {
     constitutional: getConstitutionalStatus(),
     campus: getCampusMigrationReport(),
     square: getSquareMigrationReport(),
+    connect: getConnectMigrationReport(),
     modules: {
       total: getRegisteredModules().length,
       byCategory: {
@@ -286,6 +335,7 @@ export function getMigrationReport() {
     },
     duplicateModules: getDuplicateAcademicModules(),
     duplicateSocialModules: getDuplicateSocialModules(),
+    duplicateCommunicationModules: getDuplicateCommunicationModules(),
     realtimeCoverage: getRealtimeEntityCoverage(),
     services: getRegisteredServices().length,
     experiencesRegistered: getRegisteredExperiences().length,

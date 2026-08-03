@@ -42,7 +42,7 @@ const Settings = lazy(() => import("@/pages/Settings"));
 
 // Social Ecosystem
 const Quad = lazy(() => import("@/pages/Quad"));
-const Connect = lazy(() => import("@/pages/Connect"));
+const ConnectExperience = lazy(() => import("@/components/connect/ConnectExperience"));
 const Services = lazy(() => import("@/pages/Services"));
 const Shorts = lazy(() => import("@/pages/Shorts"));
 const Podcasts = lazy(() => import("@/pages/podcasts/Podcasts"));
@@ -284,7 +284,7 @@ function App() {
                       <Route path="/square" element={<SquareExperience />} />
                       <Route path="/campus" element={<CampusExperience />} />
                       <Route path="/quad" element={<Quad />} />
-                      <Route path="/connect" element={<Connect />} />
+                      <Route path="/connect" element={<ConnectExperience />} />
                       <Route path="/lens" element={<Lens />} />
                       <Route path="/services" element={<Services />} />
                       <Route path="/me" element={<MeTab />} />

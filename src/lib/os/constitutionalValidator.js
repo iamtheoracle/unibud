@@ -437,6 +437,100 @@ export function validateSquareMigration() {
 }
 
 /**
+ * Phase 8: Validate Connect migration compliance.
+ * Ensures Connect uses only registered modules, owns no Platform Core services,
+ * has no duplicate communication implementations, all realtime flows use the
+ * Realtime Engine, and shared modules (Messages, Conversations, Calls) are
+ * registered implementations.
+ */
+export function validateConnectMigration() {
+  const contract = getContract("connect");
+  if (!contract) {
+    return { valid: false, errors: ["No Connect contract registered"], warnings: [] };
+  }
+
+  const errors = [];
+  const warnings = [];
+
+  // Connect uses only registered modules
+  contract.modules.forEach((moduleId) => {
+    if (!isModuleRegistered(moduleId)) {
+      errors.push(`Connect uses unregistered module "${moduleId}"`);
+    }
+  });
+
+  // Connect owns no Platform Core services
+  const platformCoreModules = ["search", "notifications", "identity", "ai", "realtime", "integrations"];
+  contract.modules.forEach((moduleId) => {
+    if (platformCoreModules.includes(moduleId)) {
+      errors.push(`Connect owns Platform Core service "${moduleId}" — must consume from Platform Core`);
+    }
+    const mod = getModule(moduleId);
+    if (mod && mod.category === "platform-core") {
+      errors.push(`Connect owns Platform Core module "${moduleId}"`);
+    }
+  });
+
+  // No duplicate communication implementations — verify communication modules are unique
+  const commModules = getModulesByCategory("communication");
+  const commModuleIds = commModules.map((m) => m.id);
+  const duplicates = commModuleIds.filter((id, index) => commModuleIds.indexOf(id) !== index);
+  if (duplicates.length > 0) {
+    errors.push(`Duplicate communication modules detected: ${duplicates.join(", ")}`);
+  }
+
+  // Required shared communication modules must be registered
+  const requiredSharedModules = ["messages", "conversations", "calls"];
+  requiredSharedModules.forEach((moduleId) => {
+    if (!isModuleRegistered(moduleId)) {
+      errors.push(`Required shared module "${moduleId}" is not registered — Connect cannot consume it`);
+    }
+    const mod = getModule(moduleId);
+    if (mod && mod.consumers && !mod.consumers.includes("connect")) {
+      warnings.push(`Shared module "${moduleId}" does not list Connect as a consumer`);
+    }
+  });
+
+  // All realtime flows use the Realtime Engine — verify entity sync coverage
+  const commEntities = [...new Set(commModules.map((m) => m.entity).filter(Boolean))];
+  const unsyncedEntities = commEntities.filter((e) => !SYNC_REGISTRY[e]);
+  if (unsyncedEntities.length > 0) {
+    errors.push(`Communication entities not synced by Realtime Engine: ${unsyncedEntities.join(", ")}`);
+  }
+
+  // No direct provider calls exist inside Connect
+  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
+    directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
+  );
+  if (hasDirectProviderCalls) {
+    errors.push("Connect makes direct provider calls — must use Platform Core integrations");
+  }
+
+  // Connect fully satisfies its Experience Contract
+  const contractValidation = validateContract("connect");
+  if (!contractValidation.valid) {
+    errors.push(...contractValidation.errors);
+  }
+  warnings.push(...contractValidation.warnings);
+
+  // Connect must be marked as migrated
+  if (contract.migrationStatus !== "migrated") {
+    warnings.push(`Connect migration status is "${contract.migrationStatus}" — expected "migrated"`);
+  }
+
+  // Connect must register all four Platform Core hooks
+  const requiredHooks = ["bud", "orbit", "spark", "realtime"];
+  requiredHooks.forEach((hook) => {
+    if (!contract.hooks?.[hook]) {
+      errors.push(`Connect does not register Platform Core hook "${hook}"`);
+    }
+  });
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
  * Run a full constitutional audit.
  * Returns a comprehensive report including Phase 5 migration validation.
  */
@@ -445,11 +539,12 @@ export function runConstitutionalAudit() {
   const contracts = validateExperienceContracts();
   const campus = validateCampusMigration();
   const square = validateSquareMigration();
+  const connect = validateConnectMigration();
   const report = {
     timestamp: new Date().toISOString(),
-    valid: registry.valid && contracts.valid && campus.valid && square.valid,
-    errors: [...registry.errors, ...contracts.errors, ...campus.errors, ...square.errors],
-    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings, ...square.warnings],
+    valid: registry.valid && contracts.valid && campus.valid && square.valid && connect.valid,
+    errors: [...registry.errors, ...contracts.errors, ...campus.errors, ...square.errors, ...connect.errors],
+    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings, ...square.warnings, ...connect.warnings],
     modules: getRegisteredModules().length,
     experiences: getRegisteredExperiences().length,
     services: getRegisteredServices().length,
@@ -470,6 +565,12 @@ export function runConstitutionalAudit() {
       errors: square.errors,
       warnings: square.warnings,
       migrated: square.valid && getContract("square")?.migrationStatus === "migrated",
+    },
+    connect: {
+      valid: connect.valid,
+      errors: connect.errors,
+      warnings: connect.warnings,
+      migrated: connect.valid && getContract("connect")?.migrationStatus === "migrated",
     },
   };
   return report;

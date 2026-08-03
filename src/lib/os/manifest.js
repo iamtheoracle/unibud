@@ -207,6 +207,24 @@ export const CONTEXT_MODULE_PRIORITY = {
       low: [],
     },
   },
+  // Connect workspace priority shifts — uses registered module IDs
+  connect: {
+    academic: {
+      high: ["communities", "members", "conversations"],
+      medium: ["messages", "calls"],
+      low: [],
+    },
+    social: {
+      high: ["messages", "calls", "conversations"],
+      medium: ["communities", "members", "presence"],
+      low: [],
+    },
+    hybrid: {
+      high: ["messages", "communities", "conversations"],
+      medium: ["calls", "members", "presence"],
+      low: [],
+    },
+  },
 };
 
 // ─── Adaptive Services by Context ─────────────────────────────────────────

@@ -84,17 +84,17 @@ const SCREEN_CONTEXTS = [
   {
     match: "/connect",
     name: "Connect",
-    description: "the social hub for finding classmates, mentors, study partners, and building your network",
+    description: "the communication workspace with messages, calls, team collaboration, study groups, and presence",
     actions: [
-      { label: "Find Classmates", prompt: "Help me find classmates in my courses and suggest how to connect.", icon: Users },
-      { label: "Find Mentor", prompt: "Recommend mentors that match my academic and career goals.", icon: HeartHandshake },
-      { label: "Study Partner", prompt: "Find me a study partner with similar courses and schedule.", icon: GraduationCap },
-      { label: "Professional Profile", prompt: "Help me build my professional profile and stand out to recruiters.", icon: Briefcase },
+      { label: "Summarize Chats", prompt: "Summarize my recent conversations and highlight what needs my attention.", icon: FileText },
+      { label: "Draft Reply", prompt: "Help me draft a reply to my most recent conversation.", icon: PenLine },
+      { label: "Unread Priorities", prompt: "Which unread messages are most important right now?", icon: ClipboardList },
+      { label: "Find Study Group", prompt: "Find study groups that match my courses and schedule.", icon: Users },
     ],
     suggestedPrompts: [
-      "Find me a study partner",
-      "Recommend mentors for me",
-      "How can I grow my network?",
+      "Summarize my conversations",
+      "What needs my attention?",
+      "Find me a study group",
     ],
   },
   {

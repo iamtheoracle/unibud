@@ -246,20 +246,53 @@ registerExperienceContract({
   isCanonicalSocialImplementation: true,
 });
 
-// ─── Connect Experience Contract ───────────────────────────────────────────
+// ─── Connect Experience Contract (Phase 8 — MIGRATED) ─────────────────────
+// Connect is the canonical communication implementation — the reference for
+// every communication experience. It owns communication workflows only.
+// Everything else comes from Platform Core.
+//
+// Connect does NOT own: authentication, search, notifications, identity,
+// realtime, or external integrations — these come from Platform Core.
+//
+// Realtime: Message, Conversation, Presence, Follow, FriendRequest are synced
+// by RealtimeSyncProvider. Messages, presence, typing, read receipts, meeting
+// state, shared files, and whiteboard changes update instantly.
+// Bud: Summarize conversations, highlight action items, draft replies, surface unread priorities.
+// Orbit: Recommend communities, collaborators, study partners, networking opportunities.
+// Spark: Background uploads, media processing, OCR, meeting recordings, search indexing.
+
 registerExperienceContract({
   experienceId: "connect",
-  modules: ["messages", "conversations", "calls", "communities", "members"],
-  permissions: ["read:messages", "create:messages", "read:conversations"],
+  modules: [
+    // Communication modules (registered in moduleRegistry + communicationModules)
+    "messages", "conversations", "calls",
+    "group-chats", "voice-calls", "video-calls", "meetings",
+    "whiteboards", "screen-sharing", "presence", "contacts", "file-sharing",
+    // Community modules (shared with other experiences)
+    "communities", "members",
+    // Discovery modules (consumed from Platform Core, not owned)
+    "notifications", "recommendations",
+  ],
+  permissions: [
+    "read:messages", "create:messages", "read:conversations", "create:conversations",
+    "read:calls", "create:calls", "read:presence",
+  ],
   contextRules: {
-    academic: "Prioritize academic group discussions",
-    social: "Prioritize social messages and calls",
-    hybrid: "Balanced communication",
+    academic: "Prioritize academic group discussions and study groups; messages lower priority",
+    social: "Prioritize messages, calls, and conversations",
+    hybrid: "Balanced communication across all channels",
   },
   hiddenServices: [],
-  hooks: { bud: true, orbit: true, spark: true, realtime: true },
-  migrationStatus: "pending",
-  legacyComponents: ["Connect", "Messages", "ConversationList"],
+  hooks: {
+    bud: true,       // Summarize conversations, highlight action items, draft replies, surface unread priorities
+    orbit: true,      // Recommend communities, collaborators, study partners, networking opportunities
+    spark: true,      // Background uploads, media processing, OCR, meeting recordings, search indexing
+    realtime: true,   // Messages, calls, presence, typing, read receipts, meeting state, shared files, whiteboard changes
+  },
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
+  isCanonicalCommunicationImplementation: true,
 });
 
 // ─── Quad Experience Contract ──────────────────────────────────────────────

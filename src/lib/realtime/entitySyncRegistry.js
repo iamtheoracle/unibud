@@ -51,6 +51,7 @@ export const SYNC_REGISTRY = {
   Conversation: { prefixes: ["conversations", "messages"], domains: ["connect"] },
   Follow: { prefixes: ["follows", "following", "friends"], domains: ["connect", "social"] },
   FriendRequest: { prefixes: ["friend-requests", "friends"], domains: ["connect"] },
+  Presence: { prefixes: ["presence", "connect"], domains: ["connect", "social"] },
 
   // ── Notifications ──
   Notification: { prefixes: ["notifications", "notification-center", "unread", "notification"], domains: ["all"] },
