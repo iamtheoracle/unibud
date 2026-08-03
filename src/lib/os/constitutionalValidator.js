@@ -12,6 +12,7 @@ import { getRegisteredModules, isModuleRegistered, getModule, getModulesByCatego
 import { getRegisteredExperiences } from "@/lib/os/experienceRegistry";
 import { getRegisteredServices } from "@/lib/os/hiddenServiceRegistry";
 import { validateAllContracts, getAllContracts, getContract, validateContract } from "@/lib/os/experienceContract";
+import { SYNC_REGISTRY } from "@/lib/realtime/entitySyncRegistry";
 
 /**
  * Validate a feature against the constitutional four questions.
@@ -296,6 +297,26 @@ export function validateCampusMigration() {
   const duplicates = moduleIds.filter((id, index) => moduleIds.indexOf(id) !== index);
   if (duplicates.length > 0) {
     errors.push(`Duplicate academic modules detected: ${duplicates.join(", ")}`);
+  }
+
+  // All realtime flows use the Realtime Engine — verify entity sync coverage
+  // Every academic entity must be in SYNC_REGISTRY so Campus updates instantly
+  // with no manual refresh. Missing entities are a constitutional violation.
+  const academicEntities = [...new Set(academicModules.map((m) => m.entity).filter(Boolean))];
+  const unsyncedEntities = academicEntities.filter((e) => !SYNC_REGISTRY[e]);
+  if (unsyncedEntities.length > 0) {
+    errors.push(`Academic entities not synced by Realtime Engine: ${unsyncedEntities.join(", ")}`);
+  }
+
+  // No direct provider calls exist inside Campus
+  // Campus must not make direct API calls to external providers — all
+  // integrations flow through Platform Core (Bud, Orbit, Spark, Realtime).
+  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
+    directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
+  );
+  if (hasDirectProviderCalls) {
+    errors.push("Campus makes direct provider calls — must use Platform Core integrations");
   }
 
   // Campus fully satisfies its Experience Contract

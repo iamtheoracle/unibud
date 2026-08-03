@@ -34,6 +34,22 @@ const SCREEN_CONTEXTS = [
     ],
   },
   {
+    match: "/campus",
+    name: "Campus",
+    description: "the academic workspace with today's timetable, assignment deadlines, GPA trends, upcoming exams, study streaks, research opportunities, and academic recommendations",
+    actions: [
+      { label: "Overdue Assignments", prompt: "What assignments are overdue? Help me prioritize and catch up.", icon: ClipboardList },
+      { label: "GPA Insights", prompt: "How is my GPA trending? What can I do to improve it?", icon: TrendingUp },
+      { label: "Exam Prep", prompt: "Help me prepare for my upcoming exams. Create a revision plan.", icon: Brain },
+      { label: "Study Plan", prompt: "Build me a study plan for this week based on my timetable and deadlines.", icon: CalendarClock },
+    ],
+    suggestedPrompts: [
+      "What should I focus on today?",
+      "Any overdue assignments?",
+      "How's my GPA trending?",
+    ],
+  },
+  {
     match: "/quad",
     name: "Quad",
     description: "the campus social feed where students share posts, stories, and discussions",

@@ -12,6 +12,7 @@ import { getRegisteredModules, getModulesByCategory } from "./moduleRegistry";
 import { getRegisteredExperiences } from "./experienceRegistry";
 import { getRegisteredServices } from "./hiddenServiceRegistry";
 import { validateCampusMigration } from "./constitutionalValidator";
+import { SYNC_REGISTRY } from "@/lib/realtime/entitySyncRegistry";
 import { EXPERIENCES } from "./manifest";
 
 const STATUS_WEIGHTS = { pending: 0, "in-progress": 0.5, migrated: 1 };
@@ -144,6 +145,34 @@ export function getConstitutionalStatus() {
 }
 
 /**
+ * Detect duplicate academic module IDs in the registry.
+ * Duplicate modules violate the Shared Module Constitution.
+ */
+export function getDuplicateAcademicModules() {
+  const academicModules = getModulesByCategory("academic");
+  const ids = academicModules.map((m) => m.id);
+  return ids.filter((id, index) => ids.indexOf(id) !== index);
+}
+
+/**
+ * Verify realtime entity sync coverage for all academic modules.
+ * Every academic entity must be in SYNC_REGISTRY so Campus updates
+ * instantly with no manual refresh.
+ */
+export function getRealtimeEntityCoverage() {
+  const academicModules = getModulesByCategory("academic");
+  const entities = [...new Set(academicModules.map((m) => m.entity).filter(Boolean))];
+  const synced = entities.filter((e) => SYNC_REGISTRY[e]);
+  const unsynced = entities.filter((e) => !SYNC_REGISTRY[e]);
+  return {
+    total: entities.length,
+    synced: synced.length,
+    unsynced,
+    coverage: entities.length > 0 ? Math.round((synced.length / entities.length) * 100) : 0,
+  };
+}
+
+/**
  * Get Campus-specific migration metrics.
  * Campus is the reference implementation — its metrics set the template
  * for all subsequent experience migrations.
@@ -178,6 +207,8 @@ export function getCampusMigrationReport() {
       hiddenServiceRegistry: (contract?.hiddenServices || []).length > 0,
       experienceContract: !!contract,
     },
+    duplicateModules: getDuplicateAcademicModules(),
+    realtimeCoverage: getRealtimeEntityCoverage(),
   };
 }
 
@@ -204,6 +235,8 @@ export function getMigrationReport() {
         academic: getModulesByCategory("academic").length,
       },
     },
+    duplicateModules: getDuplicateAcademicModules(),
+    realtimeCoverage: getRealtimeEntityCoverage(),
     services: getRegisteredServices().length,
     experiencesRegistered: getRegisteredExperiences().length,
   };

@@ -9,6 +9,7 @@ import {
   DepartmentAnnouncements, ResearchOpportunities,
   CampusScholarships, CourseDiscussions, DepartmentHighlights,
 } from "@/components/campus/AcademicFeedModules";
+import { useCampusPlatformCore } from "@/lib/os/useCampusPlatformCore";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -28,8 +29,36 @@ export default function CampusHome() {
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { nextClass, nextDeadline, gpa, today, loading } = useAcademicData();
   const { setOpen: setBudOpen } = useBudLauncher();
+  const { orderedSections } = useCampusPlatformCore();
 
   const firstName = (user?.full_name || "Scholar").split(" ")[0];
+
+  // Context-prioritized section renderer — sections are ordered by the
+  // ContextProvider based on the active context (academic/social/hybrid).
+  // Academic context: timetable, assignments, research, scholarships first.
+  // Navigation is never changed — only module priority shifts.
+  const renderSection = (sectionId) => {
+    switch (sectionId) {
+      case "academic-summary":
+        return <AcademicSummary nextClass={nextClass} nextDeadline={nextDeadline} gpa={gpa} loading={loading} />;
+      case "announcements":
+        return <DepartmentAnnouncements />;
+      case "upcoming-classes":
+        return <UpcomingClasses classes={today} loading={loading} />;
+      case "course-discussions":
+        return <CourseDiscussions />;
+      case "assignments-due":
+        return <AssignmentsDue loading={loading} />;
+      case "research-opportunities":
+        return <ResearchOpportunities />;
+      case "department-highlights":
+        return <DepartmentHighlights />;
+      case "campus-scholarships":
+        return <CampusScholarships />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen pb-32 safe-area-pt relative">
@@ -62,29 +91,14 @@ export default function CampusHome() {
 
       {/* ── Academic Community Feed ── */}
       <div className="max-w-2xl mx-auto px-4 pt-4 relative z-10 space-y-5">
-        {/* Today's Academic Summary */}
-        <AcademicSummary nextClass={nextClass} nextDeadline={nextDeadline} gpa={gpa} loading={loading} />
-
-        {/* Announcements — the heart of the community */}
-        <DepartmentAnnouncements />
-
-        {/* Upcoming Classes */}
-        <UpcomingClasses classes={today} loading={loading} />
-
-        {/* Course Discussions — community activity */}
-        <CourseDiscussions />
-
-        {/* Assignments Due */}
-        <AssignmentsDue loading={loading} />
-
-        {/* Research Opportunities */}
-        <ResearchOpportunities />
-
-        {/* Department Highlights */}
-        <DepartmentHighlights />
-
-        {/* Scholarships */}
-        <CampusScholarships />
+        {/* Context-prioritized Academic Community Feed */}
+        {/* Sections are reordered by Platform Core based on the active context. */}
+        {/* Academic: timetable, assignments, research, scholarships prioritized. */}
+        {orderedSections.map((sectionId) => (
+          <React.Fragment key={sectionId}>
+            {renderSection(sectionId)}
+          </React.Fragment>
+        ))}
 
         {/* Bottom spacing */}
         <div className="h-4" />

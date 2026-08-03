@@ -136,6 +136,65 @@ export default function MigrationDashboard() {
           </div>
         </div>
 
+        {/* Duplicate Academic Modules */}
+        <div>
+          <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Duplicate Academic Modules
+          </h3>
+          <div className={`crystal-card p-4 ${report.duplicateModules?.length === 0 ? "border-success/30" : "border-destructive/30"}`}>
+            {report.duplicateModules?.length === 0 ? (
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-success" strokeWidth={2.2} />
+                <span className="text-[12px] text-muted-foreground">No duplicate academic modules detected.</span>
+              </div>
+            ) : (
+              <div className="space-y-1">
+                {report.duplicateModules?.map((mod) => (
+                  <div key={mod} className="flex items-center gap-1.5 text-[11px] text-destructive">
+                    <AlertTriangle className="w-3 h-3" strokeWidth={2.2} />
+                    <span>{mod}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Realtime Entity Coverage */}
+        <div>
+          <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
+            <Radio className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            Realtime Entity Coverage
+          </h3>
+          <div className={`crystal-card p-4 ${report.realtimeCoverage?.coverage === 100 ? "border-success/30" : "border-warning/30"}`}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[20px] font-bold text-foreground tabular-nums">{report.realtimeCoverage?.coverage || 0}%</span>
+              <span className="text-[10px] text-muted-foreground">
+                {report.realtimeCoverage?.synced || 0} / {report.realtimeCoverage?.total || 0} entities synced
+              </span>
+            </div>
+            <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${report.realtimeCoverage?.coverage || 0}%` }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="h-full rounded-full bg-gradient-to-r from-primary to-chocolate"
+              />
+            </div>
+            {report.realtimeCoverage?.unsynced?.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {report.realtimeCoverage.unsynced.map((entity) => (
+                  <div key={entity} className="flex items-center gap-1.5 text-[11px] text-warning">
+                    <AlertTriangle className="w-3 h-3" strokeWidth={2.2} />
+                    <span>{entity} — not in Realtime Engine</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Constitutional Status */}
         <div className={`crystal-card p-4 ${report.constitutional.valid ? "border-success/30" : "border-destructive/30"}`}>
           <div className="flex items-center gap-2 mb-2">
