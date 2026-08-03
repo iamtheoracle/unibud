@@ -279,9 +279,12 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route element={<AppShell />}>
                     <Route element={<MainShell />}>
-                      <Route path="/bud" element={<BudTab />} />
-                      <Route path="/social" element={<SocialTab />} />
-                      <Route path="/academics" element={<AcademicsTab />} />
+                      <Route path="/square" element={<Square />} />
+                      <Route path="/campus" element={<CampusHome />} />
+                      <Route path="/quad" element={<Quad />} />
+                      <Route path="/connect" element={<Connect />} />
+                      <Route path="/lens" element={<Lens />} />
+                      <Route path="/services" element={<Services />} />
                       <Route path="/me" element={<MeTab />} />
                     </Route>
                     <Route path="/home" element={<BudHome />} />
@@ -289,10 +292,7 @@ function App() {
                     <Route path="/social" element={<SocialHub />} />
                     <Route path="/discover/people" element={<ForYou />} />
                     <Route path="/profile/:profileId" element={<ProfileView />} />
-                    <Route path="/quad" element={<Quad />} />
-                    <Route path="/connect" element={<Connect />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/me" element={<Me />} />
+                    {/* Quad, Connect, Services, Me are in MainShell — registry-driven navigation */}
                     <Route path="/settings" element={<Settings />} />
                     <Route path="/settings/connected-accounts" element={<ConnectedAccountsSettings />} />
                     <Route path="/university" element={<UniversityProfile />} />
@@ -317,11 +317,10 @@ function App() {
                     <Route path="/wallet-v2" element={<WalletScreen />} />
                     <Route path="/lost-found" element={<LostFound />} />
                     <Route path="/discover" element={<Discover />} />
-                    <Route path="/lens" element={<Lens />} />
-                    <Route path="/square" element={<Square />} />
+                    {/* Lens and Square are in MainShell — registry-driven navigation */}
                     <Route path="/scholar" element={<Scholar />} />
                     <Route path="/football" element={<FootballHub />} />
-                    <Route path="/campus" element={<CampusHome />} />
+                    {/* Campus is in MainShell — registry-driven navigation */}
                     <Route path="/campus-v2" element={<CampusHomeScreen />} />
                     <Route path="/academics" element={<AcademicHub />} />
                     <Route path="/academics/insights" element={<AcademicInsights />} />

@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { realtimeEngine } from "./engine";
 // Side-effect import: registers Spark, Orbit, Bud integration hooks
 import "./integrations";
-import { useContextSystem } from "@/lib/os/ContextProvider";
 import RealtimeInspector from "./RealtimeInspector";
 
 /**
@@ -19,22 +18,15 @@ import RealtimeInspector from "./RealtimeInspector";
  */
 export default function RealtimeSyncProvider({ children }) {
   const queryClient = useQueryClient();
-  const { contextId } = useContextSystem();
 
   // Initialize the engine once
   useEffect(() => {
-    realtimeEngine.init({ queryClient, contextId });
+    realtimeEngine.init({ queryClient });
     return () => {
       // Engine is a singleton — don't destroy on unmount in dev (HMR)
-      // Only update context
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryClient]);
-
-  // Update context on the engine whenever context changes
-  useEffect(() => {
-    realtimeEngine.setContext(contextId);
-  }, [contextId]);
 
   return (
     <>

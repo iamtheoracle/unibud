@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useMotion } from "@/lib/motion/useMotion";
 
 /**
- * MainShell — layout for the four primary tab routes (Bud · Social · Academics · Me).
+ * MainShell — layout for the seven permanent experiences (Square · Campus · Quad · Connect · Lens · Services · Me).
  * Wraps the Outlet in a subtle fade + slide transition so tab switches
  * feel continuous like iOS, never abrupt.
  * Transition config resolved from the Motion Engine (not hardcoded).

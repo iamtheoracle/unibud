@@ -18,7 +18,8 @@ import { useRecentViews } from "@/lib/resilience/useRecentViews";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
-import { ContextProvider as OSContextProvider } from "@/lib/os/ContextProvider";
+import { ContextProvider as OSContextProvider, useContextSystem } from "@/lib/os/ContextProvider";
+import { realtimeEngine } from "@/lib/realtime/engine";
 // Initialize v4 registries (side-effect import registers all core modules/experiences/services)
 import "@/lib/os/moduleRegistry";
 import "@/lib/os/experienceRegistry";
@@ -35,6 +36,18 @@ import { CreateProvider } from "@/lib/CreateContext";
 function UniversalSearchOverlayWithContext() {
   const { searchOpen, closeSearch } = useSearch();
   return <UniversalSearchOverlay open={searchOpen} onClose={closeSearch} />;
+}
+
+/**
+ * RealtimeContextSync — bridges OS context to the Realtime Engine.
+ * Must live inside OSContextProvider so it can read the current context.
+ */
+function RealtimeContextSync() {
+  const { contextId } = useContextSystem();
+  useEffect(() => {
+    realtimeEngine.setContext(contextId);
+  }, [contextId]);
+  return null;
 }
 
 /**
@@ -79,6 +92,7 @@ export default function AppShell() {
       <SearchProvider>
       <UnibudContextProvider>
       <OSContextProvider>
+      <RealtimeContextSync />
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />

@@ -114,32 +114,105 @@ export function validateRegistry() {
     if (!service.isHidden) {
       results.warnings.push(`Service "${service.id}" should be marked as hidden`);
     }
+    // Hidden services must not appear in permanent navigation (EXPERIENCES)
+    if (EXPERIENCES.find((e) => e.id === service.id)) {
+      results.errors.push(`Hidden service "${service.id}" must not appear in permanent navigation`);
+      results.valid = false;
+    }
+  });
+
+  // Phase 4: Every experience in the manifest must be registered in the Experience Registry
+  const registeredExperiences = getRegisteredExperiences();
+  const registeredIds = new Set(registeredExperiences.map((e) => e.id));
+  EXPERIENCES.forEach((manifestExp) => {
+    if (!registeredIds.has(manifestExp.id)) {
+      results.errors.push(`Experience "${manifestExp.id}" is in the manifest but not registered in the Experience Registry`);
+      results.valid = false;
+    }
+  });
+
+  // Phase 4: Bud must never be registered as an experience
+  if (registeredIds.has("bud")) {
+    results.errors.push("Bud must never be registered as a permanent experience — Bud is omnipresent, not a destination");
+    results.valid = false;
+  }
+
+  // Phase 4: Marketplace and Wallet must never be registered as experiences
+  if (registeredIds.has("marketplace")) {
+    results.errors.push("Marketplace must be a hidden service, not a permanent experience");
+    results.valid = false;
+  }
+  if (registeredIds.has("wallet")) {
+    results.errors.push("Wallet must be a hidden service, not a permanent experience");
+    results.valid = false;
+  }
+
+  // Phase 4: Every experience must consume modules from the Module Registry
+  registeredExperiences.forEach((exp) => {
+    if (exp.modules && exp.modules.length > 0) {
+      exp.modules.forEach((moduleId) => {
+        if (moduleId !== "none" && !isModuleRegistered(moduleId)) {
+          results.errors.push(`Experience "${exp.id}" consumes unregistered module "${moduleId}" — every module must come from the Module Registry`);
+          results.valid = false;
+        }
+      });
+    }
   });
 
   return results;
 }
 
 /**
- * Validate a route configuration.
- * Ensures only the seven permanent experiences appear in navigation.
+ * Validate a navigation configuration against the Phase 4 Experience Runtime.
+ *
+ * Ensures:
+ *   - No duplicate navigation definitions
+ *   - No hidden service appears in permanent navigation
+ *   - Every navigation item is a registered experience
+ *   - Bud is not registered as an experience or navigation item
+ *   - Marketplace and Wallet are not permanent navigation items
  */
 export function validateNavigation(navItems) {
   const errors = [];
   const validExperienceIds = EXPERIENCES.map((e) => e.id);
+  const seen = new Set();
+
+  // Get all hidden service IDs to check for leaks
+  const services = getRegisteredServices();
+  const hiddenServiceIds = services.map((s) => s.id);
 
   navItems.forEach((item) => {
-    if (item.id && !validExperienceIds.includes(item.id) && !["bud"].includes(item.id)) {
+    // Check for duplicates
+    if (item.id) {
+      if (seen.has(item.id)) {
+        errors.push(`Duplicate navigation definition: "${item.id}" appears more than once`);
+      }
+      seen.add(item.id);
+    }
+
+    // Check it's a valid permanent experience
+    if (item.id && !validExperienceIds.includes(item.id)) {
       errors.push(`Navigation item "${item.id}" is not a valid permanent experience`);
     }
+
     // Bud must be floating, not in navigation
     if (item.id === "bud") {
       errors.push("Bud must be floating and globally available, not in permanent navigation");
     }
-    // Marketplace and Wallet must be hidden
+
+    // Marketplace, Wallet, and all hidden services must not be in navigation
     if (["marketplace", "wallet"].includes(item.id)) {
       errors.push(`"${item.id}" must be a hidden service, not permanent navigation`);
     }
+    if (hiddenServiceIds.includes(item.id)) {
+      errors.push(`Hidden service "${item.id}" must not appear in permanent navigation`);
+    }
   });
+
+  // Check exactly 7 permanent experiences are registered
+  if (navItems.length !== 7) {
+    errors.push(`Expected exactly 7 permanent experiences in navigation, found ${navItems.length}`);
+  }
 
   return { valid: errors.length === 0, errors };
 }
