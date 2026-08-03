@@ -16,6 +16,7 @@ import {
   EventsNearby, MarketplaceDeals, PodcastsForYou,
   CreatorsToFollow, ScholarshipsForYou, LiveNow,
 } from "@/components/square/DiscoveryModules";
+import { useSquarePlatformCore } from "@/lib/os/useSquarePlatformCore";
 
 const EASE = [0.16, 1, 0.3, 1];
 const SCROLL_KEY = "square_scroll_position";
@@ -158,6 +159,68 @@ export default function Square() {
     });
   }
 
+  const { orderedSections } = useSquarePlatformCore();
+
+  // Context-prioritized section renderer — sections are ordered by the
+  // ContextProvider based on the active context (social/academic/hybrid).
+  // Social context: feed, stories, live prioritized.
+  // Academic context: social modules remain available but lower priority.
+  // Navigation never changes — only module priority shifts.
+  const renderSection = (sectionId) => {
+    switch (sectionId) {
+      case "stories":
+        return <StoryBar user={user} isDemoMode={isDemoMode || !user} />;
+      case "live":
+        return <LiveNow />;
+      case "feed":
+        return (
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="relative"
+          >
+            {pullDistance > 0 && (
+              <div className="flex items-center justify-center overflow-hidden" style={{ height: pullDistance }}>
+                <RefreshCw className={`w-5 h-5 text-foreground ${pullDistance > 60 ? "animate-spin" : ""}`} style={{ transform: `rotate(${pullDistance * 3}deg)` }} />
+              </div>
+            )}
+            <NewPostsBanner count={newPostsCount} visible={bannerVisible} onClick={handleRefresh} />
+            <div className="max-w-2xl mx-auto space-y-4 pb-8 pt-2">
+              {isLoading && displayPosts.length === 0 ? (
+                [0, 1, 2].map((i) => <PostSkeleton key={i} />)
+              ) : displayPosts.length === 0 && !isDemoMode ? (
+                <div className="glass rounded-[20px]">
+                  <EmptyState icon={Inbox} title="No posts yet" description="Be the first to share something with your campus" />
+                </div>
+              ) : (
+                <>
+                  {feedItems.map((item, i) => {
+                    if (item.type === "module") {
+                      const { Module } = item;
+                      return <Module key={`mod-${i}`} />;
+                    }
+                    return <PostCard key={item.post.id} post={item.post} user={user} index={item.index} />;
+                  })}
+                  {hasNextPage && (
+                    <div ref={sentinelRef} className="py-4"><PostSkeleton /></div>
+                  )}
+                  {!hasNextPage && displayPosts.length > 0 && (
+                    <div className="flex flex-col items-center gap-1 py-6 text-center">
+                      <ChevronUp className="w-5 h-5 text-muted-foreground/40" />
+                      <p className="text-[11px] text-muted-foreground/60 font-medium">You're all caught up</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen pb-32 safe-area-pt">
       {/* ── Header ── */}
@@ -183,58 +246,15 @@ export default function Square() {
         </div>
       </header>
 
-      {/* ── Stories ── */}
-      <StoryBar user={user} isDemoMode={isDemoMode || !user} />
-
-      {/* ── Live Now ── */}
-      <LiveNow />
-
-      {/* ── Discovery Feed ── */}
-      <div
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className="relative"
-      >
-        {pullDistance > 0 && (
-          <div className="flex items-center justify-center overflow-hidden" style={{ height: pullDistance }}>
-            <RefreshCw className={`w-5 h-5 text-foreground ${pullDistance > 60 ? "animate-spin" : ""}`} style={{ transform: `rotate(${pullDistance * 3}deg)` }} />
-          </div>
-        )}
-
-        <NewPostsBanner count={newPostsCount} visible={bannerVisible} onClick={handleRefresh} />
-
-        <div className="max-w-2xl mx-auto space-y-4 pb-8 pt-2">
-          {isLoading && displayPosts.length === 0 ? (
-            [0, 1, 2].map((i) => <PostSkeleton key={i} />)
-          ) : displayPosts.length === 0 && !isDemoMode ? (
-            <div className="glass rounded-[20px]">
-              <EmptyState icon={Inbox} title="No posts yet" description="Be the first to share something with your campus" />
-            </div>
-          ) : (
-            <>
-              {feedItems.map((item, i) => {
-                if (item.type === "module") {
-                  const { Module } = item;
-                  return <Module key={`mod-${i}`} />;
-                }
-                return <PostCard key={item.post.id} post={item.post} user={user} index={item.index} />;
-              })}
-
-              {hasNextPage && (
-                <div ref={sentinelRef} className="py-4"><PostSkeleton /></div>
-              )}
-
-              {!hasNextPage && displayPosts.length > 0 && (
-                <div className="flex flex-col items-center gap-1 py-6 text-center">
-                  <ChevronUp className="w-5 h-5 text-muted-foreground/40" />
-                  <p className="text-[11px] text-muted-foreground/60 font-medium">You're all caught up</p>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </div>
+      {/* Context-prioritized Social Feed */}
+      {/* Sections are reordered by Platform Core based on the active context. */}
+      {/* Social: feed, stories, live prioritized. */}
+      {/* Academic: social modules remain available but lower priority. */}
+      {orderedSections.map((sectionId) => (
+        <React.Fragment key={sectionId}>
+          {renderSection(sectionId)}
+        </React.Fragment>
+      ))}
 
       {/* ── Compose FAB ── */}
       <button

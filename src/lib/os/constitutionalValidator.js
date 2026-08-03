@@ -343,6 +343,100 @@ export function validateCampusMigration() {
 }
 
 /**
+ * Phase 7: Validate Square migration compliance.
+ * Ensures Square uses only registered modules, owns no Platform Core services,
+ * has no duplicate social implementations, all realtime flows use the
+ * Realtime Engine, and shared modules (Feed, Community, Stories, Live,
+ * Podcast) are registered implementations.
+ */
+export function validateSquareMigration() {
+  const contract = getContract("square");
+  if (!contract) {
+    return { valid: false, errors: ["No Square contract registered"], warnings: [] };
+  }
+
+  const errors = [];
+  const warnings = [];
+
+  // Square uses only registered modules
+  contract.modules.forEach((moduleId) => {
+    if (!isModuleRegistered(moduleId)) {
+      errors.push(`Square uses unregistered module "${moduleId}"`);
+    }
+  });
+
+  // Square owns no Platform Core services
+  const platformCoreModules = ["search", "notifications", "identity", "ai", "realtime", "integrations"];
+  contract.modules.forEach((moduleId) => {
+    if (platformCoreModules.includes(moduleId)) {
+      errors.push(`Square owns Platform Core service "${moduleId}" — must consume from Platform Core`);
+    }
+    const mod = getModule(moduleId);
+    if (mod && mod.category === "platform-core") {
+      errors.push(`Square owns Platform Core module "${moduleId}"`);
+    }
+  });
+
+  // No duplicate social implementations — verify content modules are unique
+  const contentModules = getModulesByCategory("content");
+  const contentModuleIds = contentModules.map((m) => m.id);
+  const duplicates = contentModuleIds.filter((id, index) => contentModuleIds.indexOf(id) !== index);
+  if (duplicates.length > 0) {
+    errors.push(`Duplicate social modules detected: ${duplicates.join(", ")}`);
+  }
+
+  // Feed, Community, Stories, Live, and Podcast must be shared implementations
+  const requiredSharedModules = ["posts", "communities", "stories", "live", "podcasts"];
+  requiredSharedModules.forEach((moduleId) => {
+    if (!isModuleRegistered(moduleId)) {
+      errors.push(`Required shared module "${moduleId}" is not registered — Square cannot consume it`);
+    }
+    const mod = getModule(moduleId);
+    if (mod && mod.consumers && !mod.consumers.includes("square")) {
+      warnings.push(`Shared module "${moduleId}" does not list Square as a consumer`);
+    }
+  });
+
+  // All realtime flows use the Realtime Engine — verify entity sync coverage
+  const contentEntities = [...new Set(contentModules.map((m) => m.entity).filter(Boolean))];
+  const unsyncedEntities = contentEntities.filter((e) => !SYNC_REGISTRY[e]);
+  if (unsyncedEntities.length > 0) {
+    errors.push(`Social entities not synced by Realtime Engine: ${unsyncedEntities.join(", ")}`);
+  }
+
+  // No direct provider calls exist inside Square
+  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
+    directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
+  );
+  if (hasDirectProviderCalls) {
+    errors.push("Square makes direct provider calls — must use Platform Core integrations");
+  }
+
+  // Square fully satisfies its Experience Contract
+  const contractValidation = validateContract("square");
+  if (!contractValidation.valid) {
+    errors.push(...contractValidation.errors);
+  }
+  warnings.push(...contractValidation.warnings);
+
+  // Square must be marked as migrated
+  if (contract.migrationStatus !== "migrated") {
+    warnings.push(`Square migration status is "${contract.migrationStatus}" — expected "migrated"`);
+  }
+
+  // Square must register all four Platform Core hooks
+  const requiredHooks = ["bud", "orbit", "spark", "realtime"];
+  requiredHooks.forEach((hook) => {
+    if (!contract.hooks?.[hook]) {
+      errors.push(`Square does not register Platform Core hook "${hook}"`);
+    }
+  });
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
  * Run a full constitutional audit.
  * Returns a comprehensive report including Phase 5 migration validation.
  */
@@ -350,11 +444,12 @@ export function runConstitutionalAudit() {
   const registry = validateRegistry();
   const contracts = validateExperienceContracts();
   const campus = validateCampusMigration();
+  const square = validateSquareMigration();
   const report = {
     timestamp: new Date().toISOString(),
-    valid: registry.valid && contracts.valid && campus.valid,
-    errors: [...registry.errors, ...contracts.errors, ...campus.errors],
-    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings],
+    valid: registry.valid && contracts.valid && campus.valid && square.valid,
+    errors: [...registry.errors, ...contracts.errors, ...campus.errors, ...square.errors],
+    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings, ...square.warnings],
     modules: getRegisteredModules().length,
     experiences: getRegisteredExperiences().length,
     services: getRegisteredServices().length,
@@ -369,6 +464,12 @@ export function runConstitutionalAudit() {
       errors: campus.errors,
       warnings: campus.warnings,
       migrated: campus.valid && getContract("campus")?.migrationStatus === "migrated",
+    },
+    square: {
+      valid: square.valid,
+      errors: square.errors,
+      warnings: square.warnings,
+      migrated: square.valid && getContract("square")?.migrationStatus === "migrated",
     },
   };
   return report;

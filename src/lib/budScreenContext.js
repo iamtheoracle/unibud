@@ -50,6 +50,22 @@ const SCREEN_CONTEXTS = [
     ],
   },
   {
+    match: "/square",
+    name: "Square",
+    description: "the social workspace with feed, stories, communities, live streams, podcasts, events, and creator content",
+    actions: [
+      { label: "Summarize Feed", prompt: "Summarize what's trending on the Square right now.", icon: FileText },
+      { label: "Recommend Communities", prompt: "Recommend communities I should join based on my interests.", icon: Users },
+      { label: "Create a Post", prompt: "Help me write an engaging post for the Square. What should I share?", icon: PenLine },
+      { label: "Trending Topics", prompt: "What are the trending topics on campus right now?", icon: TrendingUp },
+    ],
+    suggestedPrompts: [
+      "What's trending on campus?",
+      "Help me write a post",
+      "Which communities should I join?",
+    ],
+  },
+  {
     match: "/quad",
     name: "Quad",
     description: "the campus social feed where students share posts, stories, and discussions",

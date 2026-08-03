@@ -197,20 +197,53 @@ registerExperienceContract({
   isReferenceImplementation: true,
 });
 
-// ─── Square Experience Contract ───────────────────────────────────────────
+// ─── Square Experience Contract (Phase 7 — MIGRATED) ──────────────────────
+// Square is the canonical social implementation — the reference for every
+// social experience. It owns presentation only and consumes registered
+// modules from the Module Registry. All Platform Core hooks are registered.
+//
+// Square does NOT own: search, notifications, identity, AI, realtime, or
+// integrations — these come from Platform Core.
+//
+// Realtime: QuadPost, Story, ShortVideo, Community, Podcast, LiveStream,
+// CampusEvent, QuadComment are synced by RealtimeSyncProvider.
+// Bud: Receives social context for proactive assistance.
+// Orbit: Supplies trending topics, university news, campus events, recommendations.
+// Spark: Handles indexing, OCR, reminders, workflow execution, cache invalidation.
+
 registerExperienceContract({
   experienceId: "square",
-  modules: ["posts", "stories", "communities", "podcasts", "live", "videos", "media", "events", "announcements"],
-  permissions: ["read:posts", "create:posts", "read:communities"],
+  modules: [
+    // Content modules (registered in moduleRegistry + socialModules)
+    "posts", "stories", "podcasts", "live", "videos", "media",
+    "comments", "reactions", "media-viewer",
+    // Community modules (shared with other experiences)
+    "communities", "events", "announcements", "members",
+    // Identity modules
+    "creator-profiles",
+    // Discovery modules (consumed from Platform Core, not owned)
+    "notifications", "recommendations",
+  ],
+  permissions: [
+    "read:posts", "create:posts", "read:communities", "create:comments",
+    "read:stories", "create:stories", "read:live", "read:podcasts",
+  ],
   contextRules: {
-    academic: "Prioritize academic communities and campus events",
-    social: "Prioritize feed, stories, and media",
-    hybrid: "Balanced presentation",
+    academic: "Prioritize academic communities and campus events; social modules lower priority",
+    social: "Prioritize feed, stories, live, podcasts, and communities",
+    hybrid: "Balanced presentation of social and academic content",
   },
   hiddenServices: ["marketplace"],
-  hooks: { bud: true, orbit: true, spark: true, realtime: true },
-  migrationStatus: "pending",
-  legacyComponents: ["SocialHub", "SocialTab", "QuadFeed"],
+  hooks: {
+    bud: true,       // Summarize discussions, recommend communities, surface posts, assist content creation
+    orbit: true,      // Trending topics, university news, campus events, verified announcements, recommendations
+    spark: true,      // Background indexing, document processing, OCR, reminder automation, cache invalidation
+    realtime: true,   // Feed updates, stories, comments, reactions, community activity, live viewer counts, notifications
+  },
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
+  isCanonicalSocialImplementation: true,
 });
 
 // ─── Connect Experience Contract ───────────────────────────────────────────

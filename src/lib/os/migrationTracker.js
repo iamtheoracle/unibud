@@ -11,7 +11,7 @@ import { getAllContracts, validateAllContracts, getContract } from "./experience
 import { getRegisteredModules, getModulesByCategory } from "./moduleRegistry";
 import { getRegisteredExperiences } from "./experienceRegistry";
 import { getRegisteredServices } from "./hiddenServiceRegistry";
-import { validateCampusMigration } from "./constitutionalValidator";
+import { validateCampusMigration, validateSquareMigration } from "./constitutionalValidator";
 import { SYNC_REGISTRY } from "@/lib/realtime/entitySyncRegistry";
 import { EXPERIENCES } from "./manifest";
 
@@ -155,6 +155,16 @@ export function getDuplicateAcademicModules() {
 }
 
 /**
+ * Detect duplicate social (content) module IDs in the registry.
+ * Duplicate modules violate the Shared Module Constitution.
+ */
+export function getDuplicateSocialModules() {
+  const contentModules = getModulesByCategory("content");
+  const ids = contentModules.map((m) => m.id);
+  return ids.filter((id, index) => ids.indexOf(id) !== index);
+}
+
+/**
  * Verify realtime entity sync coverage for all academic modules.
  * Every academic entity must be in SYNC_REGISTRY so Campus updates
  * instantly with no manual refresh.
@@ -213,6 +223,44 @@ export function getCampusMigrationReport() {
 }
 
 /**
+ * Get Square-specific migration metrics.
+ * Square is the canonical social implementation — its metrics set the
+ * template for all subsequent social experience migrations.
+ */
+export function getSquareMigrationReport() {
+  const contract = getContract("square");
+  const squareValidation = validateSquareMigration();
+
+  return {
+    migrated: contract?.migrationStatus === "migrated",
+    isReferenceImplementation: contract?.isCanonicalSocialImplementation || false,
+    modulesConsumed: contract?.modules || [],
+    socialModuleCount: getModulesByCategory("content").length,
+    legacyComponents: contract?.legacyComponents || [],
+    legacyRemaining: (contract?.legacyComponents || []).length,
+    hooks: contract?.hooks || {},
+    permissions: contract?.permissions || [],
+    hiddenServices: contract?.hiddenServices || [],
+    constitutional: {
+      valid: squareValidation.valid,
+      errors: squareValidation.errors,
+      warnings: squareValidation.warnings,
+    },
+    platformCoreAdoption: {
+      contextProvider: true,
+      realtimeEngine: contract?.hooks?.realtime || false,
+      bud: contract?.hooks?.bud || false,
+      orbit: contract?.hooks?.orbit || false,
+      spark: contract?.hooks?.spark || false,
+      moduleRegistry: (contract?.modules || []).every((id) => getRegisteredModules().some((m) => m.id === id)),
+      experienceContract: !!contract,
+    },
+    duplicateModules: getDuplicateSocialModules(),
+    realtimeCoverage: getRealtimeEntityCoverage(),
+  };
+}
+
+/**
  * Get a comprehensive migration report for the dashboard.
  */
 export function getMigrationReport() {
@@ -224,6 +272,7 @@ export function getMigrationReport() {
     platformCore: getPlatformCoreUsage(),
     constitutional: getConstitutionalStatus(),
     campus: getCampusMigrationReport(),
+    square: getSquareMigrationReport(),
     modules: {
       total: getRegisteredModules().length,
       byCategory: {
@@ -236,6 +285,7 @@ export function getMigrationReport() {
       },
     },
     duplicateModules: getDuplicateAcademicModules(),
+    duplicateSocialModules: getDuplicateSocialModules(),
     realtimeCoverage: getRealtimeEntityCoverage(),
     services: getRegisteredServices().length,
     experiencesRegistered: getRegisteredExperiences().length,

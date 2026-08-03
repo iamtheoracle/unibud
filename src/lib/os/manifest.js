@@ -189,21 +189,21 @@ export const CONTEXT_MODULE_PRIORITY = {
       low: [],
     },
   },
-  // Square workspace priority shifts
+  // Square workspace priority shifts — uses registered module IDs
   square: {
     academic: {
-      high: ["academic-communities", "study-feed", "campus-events"],
-      medium: ["communities", "events"],
-      low: ["stories", "live", "music", "podcasts"],
+      high: ["communities", "events", "announcements"],
+      medium: ["posts", "stories", "live", "podcasts"],
+      low: ["videos", "media"],
     },
     social: {
-      high: ["feed", "stories", "podcasts", "live", "communities"],
-      medium: ["events", "creators"],
-      low: ["academic-communities", "study-feed"],
+      high: ["posts", "stories", "live", "podcasts", "communities"],
+      medium: ["events", "creator-profiles", "comments", "reactions"],
+      low: [],
     },
     hybrid: {
-      high: ["feed", "communities", "events"],
-      medium: ["stories", "podcasts", "campus-events"],
+      high: ["posts", "communities", "events"],
+      medium: ["stories", "podcasts", "live"],
       low: [],
     },
   },

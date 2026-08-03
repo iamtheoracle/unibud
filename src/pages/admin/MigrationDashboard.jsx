@@ -136,6 +136,89 @@ export default function MigrationDashboard() {
           </div>
         </div>
 
+        {/* Square Migration — Canonical Social Implementation */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Layers className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            <h3 className="text-[14px] font-bold text-foreground">Square Migration</h3>
+            <span className="text-[10px] text-muted-foreground ml-auto">Canonical Social Implementation</span>
+          </div>
+          <div className={`crystal-card p-4 ${report.square?.migrated ? "border-success/30" : "border-warning/30"}`}>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className={`text-[20px] font-bold ${report.square?.migrated ? "text-success" : "text-warning"}`}>
+                  {report.square?.migrated ? "MIGRATED" : "IN PROGRESS"}
+                </span>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {report.square?.socialModuleCount || 0} social modules · {report.square?.modulesConsumed?.length || 0} total consumed
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-[20px] font-bold text-foreground tabular-nums">
+                  {report.square?.legacyRemaining === 0 ? "100" : Math.round((1 - report.square.legacyRemaining / Math.max(report.square.legacyRemaining, 1)) * 100)}%
+                </span>
+                <p className="text-[9px] text-muted-foreground">complete</p>
+              </div>
+            </div>
+
+            {/* Platform Core Adoption */}
+            <div className="grid grid-cols-4 gap-2 mt-3">
+              {Object.entries(report.square?.platformCoreAdoption || {}).map(([key, adopted]) => (
+                <div key={key} className="flex flex-col items-center gap-1">
+                  {adopted ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-success" strokeWidth={2.2} />
+                  ) : (
+                    <Circle className="w-3.5 h-3.5 text-destructive" strokeWidth={2} />
+                  )}
+                  <span className="text-[8px] text-muted-foreground text-center capitalize">{key.replace(/([A-Z])/g, " $1").trim()}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Hook Status */}
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/40">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Hooks:</span>
+              {["bud", "orbit", "spark", "realtime"].map((h) => (
+                <span key={h} className={`text-[9px] px-1.5 py-0.5 rounded-md ${report.square?.hooks[h] ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>
+                  {h}
+                </span>
+              ))}
+            </div>
+
+            {/* Constitutional Compliance */}
+            <div className="flex items-center gap-1.5 mt-2">
+              <Shield className={`w-3 h-3 ${report.square?.constitutional?.valid ? "text-success" : "text-destructive"}`} strokeWidth={2.2} />
+              <span className={`text-[10px] font-bold ${report.square?.constitutional?.valid ? "text-success" : "text-destructive"}`}>
+                {report.square?.constitutional?.valid ? "Constitutionally Compliant" : "Violations Detected"}
+              </span>
+            </div>
+
+            {/* Duplicate Social Modules */}
+            {report.duplicateSocialModules?.length > 0 && (
+              <div className="mt-2">
+                <span className="text-[10px] font-bold text-destructive uppercase">Duplicate Social Modules:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {report.duplicateSocialModules.map((c) => (
+                    <span key={c} className="text-[9px] px-1.5 py-0.5 rounded-md bg-destructive/10 text-destructive">{c}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Legacy Components */}
+            {report.square?.legacyComponents?.length > 0 && (
+              <div className="mt-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Legacy Components:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {report.square.legacyComponents.map((c) => (
+                    <span key={c} className="text-[9px] px-1.5 py-0.5 rounded-md bg-warning/10 text-warning">{c}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* Duplicate Academic Modules */}
         <div>
           <h3 className="text-[14px] font-bold text-foreground mb-3 flex items-center gap-2">
@@ -143,7 +226,7 @@ export default function MigrationDashboard() {
             Duplicate Academic Modules
           </h3>
           <div className={`crystal-card p-4 ${report.duplicateModules?.length === 0 ? "border-success/30" : "border-destructive/30"}`}>
-            {report.duplicateModules?.length === 0 ? (
+            {(!report.duplicateModules || report.duplicateModules.length === 0) ? (
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-success" strokeWidth={2.2} />
                 <span className="text-[12px] text-muted-foreground">No duplicate academic modules detected.</span>

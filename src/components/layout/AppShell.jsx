@@ -26,6 +26,7 @@ import "@/lib/os/experienceRegistry";
 import "@/lib/os/hiddenServiceRegistry";
 import "@/lib/os/experienceContract"; // Registers all 7 experience contracts
 import "@/lib/os/academicModules"; // Registers 15 academic modules consumed by Campus
+import "@/lib/os/socialModules"; // Registers social modules consumed by Square
 import { VoiceProvider } from "@/lib/voice/VoiceProvider";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
