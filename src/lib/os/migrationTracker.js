@@ -7,10 +7,11 @@
  * References: Phase 5 Migration Framework.
  */
 
-import { getAllContracts, validateAllContracts } from "./experienceContract";
+import { getAllContracts, validateAllContracts, getContract } from "./experienceContract";
 import { getRegisteredModules, getModulesByCategory } from "./moduleRegistry";
 import { getRegisteredExperiences } from "./experienceRegistry";
 import { getRegisteredServices } from "./hiddenServiceRegistry";
+import { validateCampusMigration } from "./constitutionalValidator";
 import { EXPERIENCES } from "./manifest";
 
 const STATUS_WEIGHTS = { pending: 0, "in-progress": 0.5, migrated: 1 };
@@ -143,6 +144,44 @@ export function getConstitutionalStatus() {
 }
 
 /**
+ * Get Campus-specific migration metrics.
+ * Campus is the reference implementation — its metrics set the template
+ * for all subsequent experience migrations.
+ */
+export function getCampusMigrationReport() {
+  const contract = getContract("campus");
+  const validation = validateCampusMigration();
+  const academicModules = getModulesByCategory("academic");
+
+  return {
+    migrated: contract?.migrationStatus === "migrated",
+    isReferenceImplementation: contract?.isReferenceImplementation || false,
+    modulesConsumed: contract?.modules || [],
+    academicModuleCount: academicModules.length,
+    legacyComponents: contract?.legacyComponents || [],
+    legacyRemaining: (contract?.legacyComponents || []).length,
+    hooks: contract?.hooks || {},
+    permissions: contract?.permissions || [],
+    hiddenServices: contract?.hiddenServices || [],
+    constitutional: {
+      valid: validation.valid,
+      errors: validation.errors,
+      warnings: validation.warnings,
+    },
+    platformCoreAdoption: {
+      contextProvider: true,
+      realtimeEngine: contract?.hooks?.realtime || false,
+      bud: contract?.hooks?.bud || false,
+      orbit: contract?.hooks?.orbit || false,
+      spark: contract?.hooks?.spark || false,
+      moduleRegistry: (contract?.modules || []).every((id) => getRegisteredModules().some((m) => m.id === id)),
+      hiddenServiceRegistry: (contract?.hiddenServices || []).length > 0,
+      experienceContract: !!contract,
+    },
+  };
+}
+
+/**
  * Get a comprehensive migration report for the dashboard.
  */
 export function getMigrationReport() {
@@ -153,6 +192,7 @@ export function getMigrationReport() {
     moduleConsumption: getModuleConsumption(),
     platformCore: getPlatformCoreUsage(),
     constitutional: getConstitutionalStatus(),
+    campus: getCampusMigrationReport(),
     modules: {
       total: getRegisteredModules().length,
       byCategory: {
@@ -161,6 +201,7 @@ export function getMigrationReport() {
         communication: getModulesByCategory("communication").length,
         identity: getModulesByCategory("identity").length,
         discovery: getModulesByCategory("discovery").length,
+        academic: getModulesByCategory("academic").length,
       },
     },
     services: getRegisteredServices().length,

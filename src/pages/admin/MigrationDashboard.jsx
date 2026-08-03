@@ -2,11 +2,11 @@ import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Clock, Circle, AlertTriangle, Shield,
-  Zap, Radio, TrendingUp, Layers, Package, ArrowRight,
+  Zap, Radio, TrendingUp, Layers, Package, ArrowRight, GraduationCap,
 } from "lucide-react";
 import { getMigrationReport } from "@/lib/os/migrationTracker";
 import { useRealtimeEngine } from "@/lib/realtime/useRealtimeChannel";
-import ScreenShell from "@/components/layout/ScreenShell";
+import ScreenHeader from "@/components/layout/ScreenHeader";
 
 /**
  * MigrationDashboard — internal dashboard tracking the Phase 5 experience
@@ -36,8 +36,9 @@ export default function MigrationDashboard() {
   };
 
   return (
-    <ScreenShell title="Migration Dashboard" backTo="/admin">
-      <div className="max-w-[700px] mx-auto px-4 py-4 space-y-5">
+    <div className="w-full max-w-[700px] mx-auto px-4 pt-6 pb-36 safe-area-pt">
+      <ScreenHeader title="Migration Dashboard" backTo="/admin" />
+      <div className="mt-4 space-y-5">
         {/* Overall Progress */}
         <div className="crystal-card p-5">
           <div className="flex items-center justify-between mb-3">
@@ -61,6 +62,77 @@ export default function MigrationDashboard() {
             <StatusBadge label="Migrated" value={report.overall.migrated} color="text-success" />
             <StatusBadge label="In Progress" value={report.overall.inProgress} color="text-warning" />
             <StatusBadge label="Pending" value={report.overall.pending} color="text-muted-foreground" />
+          </div>
+        </div>
+
+        {/* Campus Migration — Reference Implementation */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <GraduationCap className="w-4 h-4 text-primary" strokeWidth={2.2} />
+            <h3 className="text-[14px] font-bold text-foreground">Campus Migration</h3>
+            <span className="text-[10px] text-muted-foreground ml-auto">Reference Implementation</span>
+          </div>
+          <div className={`crystal-card p-4 ${report.campus.migrated ? "border-success/30" : "border-warning/30"}`}>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <span className={`text-[20px] font-bold ${report.campus.migrated ? "text-success" : "text-warning"}`}>
+                  {report.campus.migrated ? "MIGRATED" : "IN PROGRESS"}
+                </span>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {report.campus.academicModuleCount} academic modules · {report.campus.modulesConsumed.length} total consumed
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-[20px] font-bold text-foreground tabular-nums">
+                  {report.campus.legacyRemaining === 0 ? "100" : Math.round((1 - report.campus.legacyRemaining / Math.max(report.campus.legacyRemaining, 1)) * 100)}%
+                </span>
+                <p className="text-[9px] text-muted-foreground">complete</p>
+              </div>
+            </div>
+
+            {/* Platform Core Adoption */}
+            <div className="grid grid-cols-4 gap-2 mt-3">
+              {Object.entries(report.campus.platformCoreAdoption).map(([key, adopted]) => (
+                <div key={key} className="flex flex-col items-center gap-1">
+                  {adopted ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-success" strokeWidth={2.2} />
+                  ) : (
+                    <Circle className="w-3.5 h-3.5 text-destructive" strokeWidth={2} />
+                  )}
+                  <span className="text-[8px] text-muted-foreground text-center capitalize">{key.replace(/([A-Z])/g, " $1").trim()}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Hook Status */}
+            <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/40">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Hooks:</span>
+              {["bud", "orbit", "spark", "realtime"].map((h) => (
+                <span key={h} className={`text-[9px] px-1.5 py-0.5 rounded-md ${report.campus.hooks[h] ? "bg-success/10 text-success" : "bg-destructive/10 text-destructive"}`}>
+                  {h}
+                </span>
+              ))}
+            </div>
+
+            {/* Constitutional Compliance */}
+            <div className="flex items-center gap-1.5 mt-2">
+              <Shield className={`w-3 h-3 ${report.campus.constitutional.valid ? "text-success" : "text-destructive"}`} strokeWidth={2.2} />
+              <span className={`text-[10px] font-bold ${report.campus.constitutional.valid ? "text-success" : "text-destructive"}`}>
+                {report.campus.constitutional.valid ? "Constitutionally Compliant" : "Violations Detected"}
+              </span>
+            </div>
+
+            {/* Legacy Components */}
+            {report.campus.legacyComponents.length > 0 && (
+              <div className="mt-2">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">Legacy Components:</span>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {report.campus.legacyComponents.map((c) => (
+                    <span key={c} className="text-[9px] px-1.5 py-0.5 rounded-md bg-warning/10 text-warning">{c}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -200,7 +272,7 @@ export default function MigrationDashboard() {
           <div className="crystal-card p-4 grid grid-cols-3 gap-3">
             <Metric label="Subscriptions" value={realtime.activeSubscriptions} />
             <Metric label="Total Events" value={realtime.totalEvents} />
-            <Metric label="Throughput" value={`${realtime.throughput}/s`} />
+            <Metric label="Batches" value={realtime.batchesFlushed} />
             <Metric label="Avg Latency" value={realtime.avgLatency > 0 ? `${realtime.avgLatency}ms` : "—"} />
             <Metric label="Dropped" value={realtime.droppedEvents} warning={realtime.droppedEvents > 0} />
             <Metric label="Reconnects" value={realtime.reconnectCount} />
@@ -217,10 +289,11 @@ export default function MigrationDashboard() {
             <Metric label="Experiences" value={report.experiencesRegistered} />
             <Metric label="Modules" value={report.modules.total} />
             <Metric label="Services" value={report.services} />
+            <Metric label="Academic" value={report.modules.byCategory.academic || 0} />
           </div>
         </div>
       </div>
-    </ScreenShell>
+    </div>
   );
 }
 

@@ -62,6 +62,7 @@ const Scholar = lazy(() => import("@/pages/Scholar"));
 const FootballHub = lazy(() => import("@/pages/football/FootballHub"));
 const CampusHub = lazy(() => import("@/pages/campus/CampusHub"));
 const CampusHome = lazy(() => import("@/pages/campus/CampusHome"));
+const CampusExperience = lazy(() => import("@/components/campus/CampusExperience"));
 const CampusHomeScreen = lazy(() => import("@/pages/campus/CampusHomeScreen"));
 const WalletScreen = lazy(() => import("@/pages/wallet/WalletScreen"));
 
@@ -281,7 +282,7 @@ function App() {
                   <Route element={<AppShell />}>
                     <Route element={<MainShell />}>
                       <Route path="/square" element={<Square />} />
-                      <Route path="/campus" element={<CampusHome />} />
+                      <Route path="/campus" element={<CampusExperience />} />
                       <Route path="/quad" element={<Quad />} />
                       <Route path="/connect" element={<Connect />} />
                       <Route path="/lens" element={<Lens />} />

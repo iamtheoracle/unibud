@@ -8,10 +8,10 @@
  */
 
 import { EXPERIENCES, LAYERS, AI_AUTHORITIES } from "@/lib/os/manifest";
-import { getRegisteredModules, isModuleRegistered } from "@/lib/os/moduleRegistry";
+import { getRegisteredModules, isModuleRegistered, getModule, getModulesByCategory } from "@/lib/os/moduleRegistry";
 import { getRegisteredExperiences } from "@/lib/os/experienceRegistry";
 import { getRegisteredServices } from "@/lib/os/hiddenServiceRegistry";
-import { validateAllContracts, getAllContracts } from "@/lib/os/experienceContract";
+import { validateAllContracts, getAllContracts, getContract, validateContract } from "@/lib/os/experienceContract";
 
 /**
  * Validate a feature against the constitutional four questions.
@@ -257,17 +257,83 @@ export function validateExperienceContracts() {
 }
 
 /**
+ * Phase 6: Validate Campus migration compliance.
+ * Ensures Campus uses only registered modules, owns no Platform Core services,
+ * has no duplicate academic implementations, and fully satisfies its contract.
+ */
+export function validateCampusMigration() {
+  const contract = getContract("campus");
+  if (!contract) {
+    return { valid: false, errors: ["No Campus contract registered"], warnings: [] };
+  }
+
+  const errors = [];
+  const warnings = [];
+
+  // Campus uses only registered modules
+  contract.modules.forEach((moduleId) => {
+    if (!isModuleRegistered(moduleId)) {
+      errors.push(`Campus uses unregistered module "${moduleId}"`);
+    }
+  });
+
+  // Campus owns no Platform Core services
+  const platformCoreCategories = ["platform-core"];
+  const platformCoreModules = ["search", "notifications", "identity", "ai", "realtime", "integrations"];
+  contract.modules.forEach((moduleId) => {
+    if (platformCoreModules.includes(moduleId)) {
+      errors.push(`Campus owns Platform Core service "${moduleId}" — must consume from Platform Core`);
+    }
+    const mod = getModule(moduleId);
+    if (mod && platformCoreCategories.includes(mod.category)) {
+      errors.push(`Campus owns Platform Core module "${moduleId}"`);
+    }
+  });
+
+  // No duplicate academic implementations
+  const academicModules = getModulesByCategory("academic");
+  const moduleIds = academicModules.map((m) => m.id);
+  const duplicates = moduleIds.filter((id, index) => moduleIds.indexOf(id) !== index);
+  if (duplicates.length > 0) {
+    errors.push(`Duplicate academic modules detected: ${duplicates.join(", ")}`);
+  }
+
+  // Campus fully satisfies its Experience Contract
+  const contractValidation = validateContract("campus");
+  if (!contractValidation.valid) {
+    errors.push(...contractValidation.errors);
+  }
+  warnings.push(...contractValidation.warnings);
+
+  // Campus must be marked as migrated
+  if (contract.migrationStatus !== "migrated") {
+    warnings.push(`Campus migration status is "${contract.migrationStatus}" — expected "migrated"`);
+  }
+
+  // Campus must register all four Platform Core hooks
+  const requiredHooks = ["bud", "orbit", "spark", "realtime"];
+  requiredHooks.forEach((hook) => {
+    if (!contract.hooks?.[hook]) {
+      errors.push(`Campus does not register Platform Core hook "${hook}"`);
+    }
+  });
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
  * Run a full constitutional audit.
  * Returns a comprehensive report including Phase 5 migration validation.
  */
 export function runConstitutionalAudit() {
   const registry = validateRegistry();
   const contracts = validateExperienceContracts();
+  const campus = validateCampusMigration();
   const report = {
     timestamp: new Date().toISOString(),
-    valid: registry.valid && contracts.valid,
-    errors: [...registry.errors, ...contracts.errors],
-    warnings: [...registry.warnings, ...contracts.warnings],
+    valid: registry.valid && contracts.valid && campus.valid,
+    errors: [...registry.errors, ...contracts.errors, ...campus.errors],
+    warnings: [...registry.warnings, ...contracts.warnings, ...campus.warnings],
     modules: getRegisteredModules().length,
     experiences: getRegisteredExperiences().length,
     services: getRegisteredServices().length,
@@ -276,6 +342,12 @@ export function runConstitutionalAudit() {
       valid: contracts.valid,
       errors: contracts.errors,
       warnings: contracts.warnings,
+    },
+    campus: {
+      valid: campus.valid,
+      errors: campus.errors,
+      warnings: campus.warnings,
+      migrated: campus.valid && getContract("campus")?.migrationStatus === "migrated",
     },
   };
   return report;

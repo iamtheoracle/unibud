@@ -151,28 +151,50 @@ export function validateAllContracts() {
   return results;
 }
 
-// ─── Campus Experience Contract (first migration) ──────────────────────────
-// Campus owns presentation only. It consumes academic modules from the
-// Module Registry and registers all four Platform Core hooks.
+// ─── Campus Experience Contract (Phase 6 — MIGRATED) ───────────────────────
+// Campus is the reference implementation for experience migration.
+// It owns presentation only and consumes 15 academic modules + 6 community
+// modules from the Module Registry. All Platform Core hooks are registered.
+//
+// Campus does NOT own: search, notifications, identity, AI, realtime, or
+// integrations — these come from Platform Core.
+//
+// Realtime: Grade, Assignment, TimetableEntry, AttendanceRecord, CalendarEvent,
+// StudentGrade are synced by RealtimeSyncProvider → entitySyncRegistry.
+// Bud: Receives academic context for proactive assistance.
+// Orbit: Surfaces scholarships, research, announcements, competitions.
+// Spark: Handles indexing, OCR, reminders, workflow execution.
 
 registerExperienceContract({
   experienceId: "campus",
-  modules: ["files", "resources", "events", "announcements", "discussions", "members"],
-  permissions: ["read:courses", "read:assignments", "read:grades", "read:attendance"],
+  modules: [
+    // Academic modules (registered in academicModules.js)
+    "timetable", "courses", "assignments", "gpa", "grades", "results",
+    "attendance", "notes", "flashcards", "projects", "research",
+    "scholarships", "exams", "study-sessions", "calendar",
+    // Community modules (shared with other experiences)
+    "files", "resources", "events", "announcements", "discussions", "members",
+  ],
+  permissions: [
+    "read:courses", "read:assignments", "read:grades", "read:attendance",
+    "read:timetable", "read:exams", "read:notes", "read:scholarships",
+    "read:research", "read:calendar",
+  ],
   contextRules: {
-    academic: "Prioritize timetable, assignments, notes, exams, research",
-    social: "Prioritize upcoming classes and deadlines",
-    hybrid: "Balanced academic overview",
+    academic: "Prioritize today's timetable, assignment deadlines, GPA trends, upcoming exams, study streak, research, academic recommendations",
+    social: "Prioritize upcoming classes, deadlines, and campus events",
+    hybrid: "Balanced academic overview with community activity",
   },
-  hiddenServices: ["marketplace", "wallet", "student-id", "printing", "tutors"],
+  hiddenServices: ["marketplace", "wallet", "student-id", "printing", "tutors", "campus-services"],
   hooks: {
-    bud: true,      // Bud reacts to grade changes, overdue assignments, exam reminders
-    orbit: true,     // Orbit receives announcements, exam schedules, calendar events
-    spark: true,    // Spark triggers deadline reminders, task automation, achievement checks
-    realtime: true,  // Realtime syncs grades, assignments, timetable changes
+    bud: true,       // Overdue assignments, GPA changes, exam prep, study recommendations, scholarship opportunities
+    orbit: true,      // Scholarships, research papers, university announcements, conferences, competitions
+    spark: true,      // Background indexing, document processing, OCR, reminder automation, cache invalidation
+    realtime: true,   // GPA changes, assignment status, new grades, attendance, timetable changes, calendar updates
   },
-  migrationStatus: "in-progress",
-  legacyComponents: ["AcademicHub", "AcademicsTab", "AcademicChartsDashboard"],
+  migrationStatus: "migrated",
+  legacyComponents: [],
+  isReferenceImplementation: true,
 });
 
 // ─── Square Experience Contract ───────────────────────────────────────────
