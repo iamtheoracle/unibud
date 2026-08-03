@@ -56,7 +56,7 @@ const CommunityDetail = lazy(() => import("@/pages/CommunityDetail"));
 const Clubs = lazy(() => import("@/pages/Clubs"));
 const Marketplace = lazy(() => import("@/pages/Marketplace"));
 const LostFound = lazy(() => import("@/pages/LostFound"));
-const Discover = lazy(() => import("@/pages/Discover"));
+const DiscoveryExperience = lazy(() => import("@/components/discovery/DiscoveryExperience"));
 const LensExperience = lazy(() => import("@/components/lens/LensExperience"));
 const SquareExperience = lazy(() => import("@/components/square/SquareExperience"));
 const Scholar = lazy(() => import("@/pages/Scholar"));
@@ -285,6 +285,7 @@ function App() {
                   <Route path="/about" element={<About />} />
                   <Route element={<AppShell />}>
                     <Route element={<MainShell />}>
+                      <Route path="/discover" element={<DiscoveryExperience />} />
                       <Route path="/square" element={<SquareExperience />} />
                       <Route path="/campus" element={<CampusExperience />} />
                       <Route path="/quad" element={<QuadExperience />} />
@@ -322,7 +323,7 @@ function App() {
                     <Route path="/wallet" element={<Wallet />} />
                     <Route path="/wallet-v2" element={<WalletScreen />} />
                     <Route path="/lost-found" element={<LostFound />} />
-                    <Route path="/discover" element={<Discover />} />
+
                     {/* Lens and Square are in MainShell — registry-driven navigation */}
                     <Route path="/scholar" element={<Scholar />} />
                     <Route path="/football" element={<FootballHub />} />

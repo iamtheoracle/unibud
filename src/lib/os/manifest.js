@@ -8,32 +8,24 @@
  * This manifest replaces all prior navigation/platform configurations.
  */
 
-// ─── The Seven Experiences (permanent navigation) ─────────────────────────
+// ─── The Five Experiences (permanent navigation) ──────────────────────────
 // These never change. Everything else belongs inside them.
 export const EXPERIENCES = [
+  {
+    id: "discovery",
+    label: "Discovery",
+    to: "/discover",
+    icon: "Compass",
+    layer: "experiences",
+    description: "Discover the ecosystem — people, communities, clubs, events, opportunities, trending, search",
+  },
   {
     id: "square",
     label: "Square",
     to: "/square",
     icon: "LayoutGrid",
     layer: "experiences",
-    description: "Social workspace — feed, stories, friends, communities, media",
-  },
-  {
-    id: "campus",
-    label: "Campus",
-    to: "/campus",
-    icon: "GraduationCap",
-    layer: "experiences",
-    description: "Academic workspace — courses, timetable, assignments, notes, research",
-  },
-  {
-    id: "quad",
-    label: "Quad",
-    to: "/quad",
-    icon: "Compass",
-    layer: "experiences",
-    description: "Discovery — recommendations, trending, explore, opportunities",
+    description: "Social timeline — feed, stories, posts, photos, videos, comments, reactions, creator content",
   },
   {
     id: "connect",
@@ -41,23 +33,15 @@ export const EXPERIENCES = [
     to: "/connect",
     icon: "MessageCircle",
     layer: "experiences",
-    description: "Communication — messages, calls, meetings, collaboration",
+    description: "Communication — messages, group chats, study groups, calls, collaboration, notifications",
   },
   {
-    id: "lens",
-    label: "Lens",
-    to: "/lens",
-    icon: "Search",
+    id: "campus",
+    label: "Campus",
+    to: "/campus",
+    icon: "GraduationCap",
     layer: "experiences",
-    description: "Command center — universal search, actions, AI commands, shortcuts",
-  },
-  {
-    id: "services",
-    label: "Services",
-    to: "/services",
-    icon: "Grid3x3",
-    layer: "experiences",
-    description: "Adaptive service hub — surfaces capabilities based on context",
+    description: "Academic life — courses, GPA, timetable, assignments, exams, attendance, projects, study AI",
   },
   {
     id: "me",
@@ -65,25 +49,25 @@ export const EXPERIENCES = [
     to: "/me",
     icon: "User",
     layer: "experiences",
-    description: "Personal identity — profile, preferences, collections, activity",
+    description: "Identity — profile, academics, social, achievements, portfolio, activity, analytics, settings",
   },
 ];
 
 // ─── Hidden Product Services ──────────────────────────────────────────────
 // Marketplace and Wallet are OS services, not primary destinations.
-// Accessed through Services, Lens, Bud, context-aware actions, and workflows.
+// Accessed through Discovery, Bud, context-aware actions, and workflows.
 export const HIDDEN_SERVICES = [
   {
     id: "marketplace",
     label: "Marketplace",
-    to: "/services/marketplace",
+    to: "/marketplace",
     icon: "ShoppingBag",
     description: "Listings, housing, tutors, campus commerce, orders",
   },
   {
     id: "wallet",
     label: "Wallet",
-    to: "/services/wallet",
+    to: "/wallet",
     icon: "Wallet",
     description: "Payments, tuition, scholarships, student ID, tickets",
   },
@@ -140,7 +124,7 @@ export const HIDDEN_SERVICES = [
 
 // ─── Excluded from Navigation ─────────────────────────────────────────────
 // These are infrastructure or contextual capabilities, not destinations.
-export const EXCLUDED_FROM_NAV = ["bud", "orbit", "spark", "wallet", "marketplace"];
+export const EXCLUDED_FROM_NAV = ["bud", "orbit", "spark", "wallet", "marketplace", "quad", "lens", "services"];
 
 // ─── Context System ────────────────────────────────────────────────────────
 // Contexts do NOT change navigation. They only reprioritize modules.
@@ -171,25 +155,25 @@ export const DEFAULT_CONTEXT = "hybrid";
 // Each experience defines which modules are high/medium priority per context.
 // Low-priority modules remain accessible — nothing disappears.
 export const CONTEXT_MODULE_PRIORITY = {
-  // Campus workspace priority shifts
-  campus: {
+  // Discovery workspace priority shifts
+  discovery: {
     academic: {
-      high: ["timetable", "assignments", "notes", "research", "scholarships"],
-      medium: ["courses", "grades", "exams", "attendance"],
-      low: ["campus-events", "social-communities"],
+      high: ["communities", "events", "opportunities", "announcements"],
+      medium: ["people", "recommendations", "notifications"],
+      low: [],
     },
     social: {
-      high: ["upcoming-classes", "deadlines"],
-      medium: ["timetable", "assignments"],
-      low: ["notes", "research", "scholarships"],
+      high: ["people", "trending", "recommendations", "communities"],
+      medium: ["events", "opportunities", "notifications"],
+      low: [],
     },
     hybrid: {
-      high: ["timetable", "assignments", "courses"],
-      medium: ["notes", "research", "scholarships", "campus-events"],
+      high: ["people", "communities", "events", "recommendations"],
+      medium: ["trending", "opportunities", "announcements", "notifications"],
       low: [],
     },
   },
-  // Square workspace priority shifts — uses registered module IDs
+  // Square workspace — social timeline
   square: {
     academic: {
       high: ["communities", "events", "announcements"],
@@ -198,7 +182,7 @@ export const CONTEXT_MODULE_PRIORITY = {
     },
     social: {
       high: ["posts", "stories", "live", "podcasts", "communities"],
-      medium: ["events", "creator-profiles", "comments", "reactions"],
+      medium: ["events", "creator-content", "comments", "reactions"],
       low: [],
     },
     hybrid: {
@@ -207,7 +191,7 @@ export const CONTEXT_MODULE_PRIORITY = {
       low: [],
     },
   },
-  // Connect workspace priority shifts — uses registered module IDs
+  // Connect workspace — communication
   connect: {
     academic: {
       high: ["communities", "members", "conversations"],
@@ -225,37 +209,25 @@ export const CONTEXT_MODULE_PRIORITY = {
       low: [],
     },
   },
-  // Quad workspace priority shifts — discovery workspace
-  quad: {
+  // Campus workspace — academic life
+  campus: {
     academic: {
-      high: ["communities", "events", "announcements"],
-      medium: ["posts", "recommendations", "notifications"],
-      low: [],
+      high: ["timetable", "assignments", "notes", "research", "scholarships"],
+      medium: ["courses", "grades", "exams", "attendance"],
+      low: ["campus-events", "social-communities"],
     },
     social: {
-      high: ["posts", "recommendations", "communities"],
-      medium: ["events", "announcements", "notifications"],
-      low: [],
+      high: ["upcoming-classes", "deadlines"],
+      medium: ["timetable", "assignments"],
+      low: ["notes", "research", "scholarships"],
     },
     hybrid: {
-      high: ["posts", "communities", "events", "recommendations"],
-      medium: ["announcements", "notifications"],
+      high: ["timetable", "assignments", "courses"],
+      medium: ["notes", "research", "scholarships", "campus-events"],
       low: [],
     },
   },
-  // Lens workspace — command center, always surfaces search and recommendations
-  lens: {
-    academic: { high: ["search", "recommendations", "notifications"], medium: [], low: [] },
-    social: { high: ["search", "recommendations", "notifications"], medium: [], low: [] },
-    hybrid: { high: ["search", "recommendations", "notifications"], medium: [], low: [] },
-  },
-  // Services workspace — gateway to hidden products, minimal module priority
-  services: {
-    academic: { high: ["recommendations"], medium: ["notifications"], low: [] },
-    social: { high: ["recommendations"], medium: ["notifications"], low: [] },
-    hybrid: { high: ["recommendations"], medium: ["notifications"], low: [] },
-  },
-  // Me workspace — user profile
+  // Me workspace — user identity
   me: {
     academic: {
       high: ["student-profile", "notifications"],
@@ -276,10 +248,10 @@ export const CONTEXT_MODULE_PRIORITY = {
 };
 
 /**
- * Final Freeze: Once all seven experiences are migrated, the Experience Runtime
- * is frozen. No new experience may be created. Every future feature must be
- * implemented as a Shared Module, Platform Core Service, External Integration,
- * or an enhancement to an existing experience.
+ * Final Freeze: The five experiences are the permanent navigation. No new
+ * experience may be created. Every future feature must be implemented as a
+ * Shared Module, Platform Core Service, External Integration, or an
+ * enhancement to an existing experience.
  *
  * This prevents the architecture from drifting back into a collection of
  * independent apps. UNIBUD v4 is a true operating system, not a set of
@@ -288,11 +260,11 @@ export const CONTEXT_MODULE_PRIORITY = {
 export const EXPERIENCE_RUNTIME_FROZEN = true;
 
 /**
- * The seven frozen experience IDs. Once the runtime is frozen, no experience
+ * The five frozen experience IDs. Once the runtime is frozen, no experience
  * outside this set may be registered or appear in navigation.
  */
 export const FROZEN_EXPERIENCE_IDS = new Set([
-  "campus", "square", "connect", "quad", "lens", "services", "me",
+  "discovery", "square", "connect", "campus", "me",
 ]);
 
 // ─── Adaptive Services by Context ─────────────────────────────────────────
@@ -321,7 +293,7 @@ export const LAYERS = [
   { id: "governance", name: "Governance", description: "Internal operating authorities" },
   { id: "platform-core", name: "Platform Core", description: "Bud, Orbit, Spark, shared OS services" },
   { id: "integrations", name: "Integrations", description: "External provider gateway" },
-  { id: "experiences", name: "Experiences", description: "The seven permanent workspaces" },
+  { id: "experiences", name: "Experiences", description: "The five permanent workspaces" },
   { id: "shared-modules", name: "Shared Modules", description: "Reusable capabilities" },
 ];
 

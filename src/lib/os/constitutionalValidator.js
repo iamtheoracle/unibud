@@ -162,7 +162,7 @@ export function validateRegistry() {
   });
 
   // Final Freeze: Once the Experience Runtime is frozen, no experience outside
-  // the seven frozen IDs may be registered. Every future feature must be a
+  // the five frozen IDs may be registered. Every future feature must be a
   // Shared Module, Platform Core Service, External Integration, or enhancement
   // to an existing experience — never a new experience.
   if (EXPERIENCE_RUNTIME_FROZEN) {
@@ -223,9 +223,9 @@ export function validateNavigation(navItems) {
     }
   });
 
-  // Check exactly 7 permanent experiences are registered
-  if (navItems.length !== 7) {
-    errors.push(`Expected exactly 7 permanent experiences in navigation, found ${navItems.length}`);
+  // Check exactly 5 permanent experiences are registered
+  if (navItems.length !== 5) {
+    errors.push(`Expected exactly 5 permanent experiences in navigation, found ${navItems.length}`);
   }
 
   return { valid: errors.length === 0, errors };
@@ -544,8 +544,9 @@ export function validateConnectMigration() {
 
 /**
  * Phases 9-12: Generic experience migration validator.
- * Used for Quad, Lens, Services, and Me — the four progressively simpler
- * migrations that compose Platform Core without owning infrastructure.
+ * Used for Me — the identity workspace that composes Platform Core
+ * without owning infrastructure. Quad, Lens, and Services are no longer
+ * permanent navigation destinations.
  *
  * Checks:
  *   • Experience consumes only registered modules
@@ -691,7 +692,7 @@ export function runConstitutionalAudit() {
       warnings: me.warnings,
       migrated: me.valid && getContract("me")?.migrationStatus === "migrated",
     },
-    // Final Freeze: Experience Runtime is frozen once all seven are migrated.
+    // Final Freeze: Experience Runtime is frozen once all five are migrated.
     // No new experience may be created after this point.
     experienceRuntimeFrozen: allMigrated,
   };

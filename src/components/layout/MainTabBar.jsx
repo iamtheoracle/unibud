@@ -19,7 +19,7 @@ const ICON_MAP = {
 /**
  * MainTabBar — the single, unified bottom navigation for UNIBUD OS v4.
  *
- * Entirely registry-driven: consumes the seven permanent experiences from
+ * Entirely registry-driven: consumes the five permanent experiences from
  * the Platform Manifest. No hard-coded navigation logic.
  *
  * Bud is omnipresent (FloatingBudButton) and never appears as a tab.
