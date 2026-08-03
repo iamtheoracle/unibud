@@ -14,6 +14,7 @@
 import { base44 } from "@/api/base44Client";
 import { routeMessage, getStatusMessage } from "./router";
 import { SPECIALISTS, buildSpecialistLens, isDestructiveAction } from "./personas";
+import { buildExperienceContext } from "./packManager";
 import { buildSystemPrompt } from "@/lib/bud/prompts/systemPrompt";
 import { createPersonality } from "@/lib/bud/personality";
 import { retrieveRelevant, store as storeMemory, markAccessed } from "@/lib/bud/memoryBank";
@@ -32,6 +33,7 @@ const personality = createPersonality();
  * @param {"auto"|"spark"|"oracle"|"orbit"} params.mode — Routing mode
  * @param {string[]} params.fileUrls — Attached file URLs
  * @param {object} params.conversationHistory — Prior messages for context
+ * @param {string[]} params.activePacks — Active Experience Pack IDs (e.g. ["student", "health"])
  * @returns {Promise<{ text: string, specialists: string[], statusMessage: string, isDestructive: boolean, confidence: number, memoryUsed: number }>}
  */
 export async function processSuperAgent({
@@ -42,6 +44,7 @@ export async function processSuperAgent({
   mode = "auto",
   fileUrls = [],
   conversationHistory = [],
+  activePacks = ["student"],
 }) {
   // 1. Route to specialist(s)
   const routing = routeMessage(message, mode);
@@ -62,6 +65,7 @@ export async function processSuperAgent({
   // 4. Build the combined system prompt
   const baseSystemPrompt = buildSystemPrompt(personality);
   const specialistLens = buildSpecialistLens(routing.specialists);
+  const experienceCtx = buildExperienceContext(activePacks);
   const statusMessage = getStatusMessage(routing.specialists);
 
   // 5. Build conversation context from history (last 6 messages)
@@ -73,6 +77,10 @@ export async function processSuperAgent({
   const fullPrompt = [
     baseSystemPrompt,
     specialistLens,
+    "\n# EXPERIENCE CONTEXT",
+    experienceCtx.knowledgeBlock,
+    `\nCommunication style: ${experienceCtx.styleNote}`,
+    `\nAvailable tools: ${experienceCtx.tools.join(", ")}`,
     "\n# CONTEXT",
     `Screen: ${screenContext || "general"}`,
     academicContext ? `\n## Academic Data\n${academicContext}` : "",

@@ -8,6 +8,7 @@ import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
 import { useToast } from "@/components/ui/use-toast";
 import { processSuperAgent } from "@/lib/bud/superAgent/orchestrator";
+import { getDefaultPacks } from "@/lib/bud/superAgent/packManager";
 
 const BudPanelContext = createContext(null);
 
@@ -36,6 +37,7 @@ export function BudPanelProvider({ children }) {
   const [mode, setMode] = useState("auto");
   const [activeSpecialists, setActiveSpecialists] = useState([]);
   const [statusMessage, setStatusMessage] = useState("Bud is thinking...");
+  const [activePacks, setActivePacks] = useState(getDefaultPacks());
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -133,6 +135,7 @@ export function BudPanelProvider({ children }) {
         mode,
         fileUrls,
         conversationHistory: messages.map((m) => ({ role: m.role, content: m.content })),
+        activePacks,
       });
 
       // Update specialist indicators
@@ -232,6 +235,17 @@ export function BudPanelProvider({ children }) {
     setMode,
     activeSpecialists,
     statusMessage,
+    activePacks,
+    togglePack: (packId) => {
+      setActivePacks((prev) => {
+        if (prev.includes(packId)) {
+          // Don't allow removing the last pack
+          if (prev.length === 1) return prev;
+          return prev.filter((p) => p !== packId);
+        }
+        return [...prev, packId];
+      });
+    },
   };
 
   return (

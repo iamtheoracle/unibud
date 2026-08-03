@@ -8,6 +8,7 @@ import { useVoiceInput } from "@/hooks/useVoiceInput";
 import ChatMessage from "@/components/bud/ChatMessage";
 import SpecialistStatus from "@/components/bud/SpecialistStatus";
 import SuperModeSelector from "@/components/bud/SuperModeSelector";
+import ExperiencePackSelector from "@/components/bud/ExperiencePackSelector";
 import ConversationHistory from "@/components/bud/ConversationHistory";
 
 export default function BudPanel() {
@@ -16,6 +17,7 @@ export default function BudPanel() {
     attachments, handleFileUpload, removeAttachment,
     screenContext, conversations, openConversation, newConversation,
     mode, setMode, activeSpecialists, statusMessage,
+    activePacks, togglePack,
   } = useBudPanel();
 
   const scrollRef = useRef(null);
@@ -125,6 +127,7 @@ export default function BudPanel() {
             </div>
           </div>
           <SuperModeSelector mode={mode} onModeChange={setMode} disabled={isTyping} />
+          <ExperiencePackSelector activePacks={activePacks} onTogglePack={togglePack} disabled={isTyping} />
           <button
             onClick={handleSummarize}
             disabled={isTyping}

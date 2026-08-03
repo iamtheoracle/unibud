@@ -23,3 +23,5 @@
 export { processSuperAgent, getSpecialistInfo } from "./orchestrator";
 export { routeMessage, getStatusMessage } from "./router";
 export { SPECIALISTS, SPECIALIST_IDS, buildSpecialistLens, isDestructiveAction } from "./personas";
+export { EXPERIENCE_PACKS, PACK_IDS, getPack, getDefaultPack, isValidPack } from "./experiencePacks";
+export { buildExperienceContext, getAvailablePacks, getDefaultPacks, isToolAvailable } from "./packManager";
