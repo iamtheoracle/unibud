@@ -46,6 +46,7 @@ import { analyticsService } from './services/AnalyticsService';
 import { permissionsService } from './services/PermissionsService';
 import { integrationsService } from './services/IntegrationsService';
 import { storageService } from './services/StorageService';
+import { lifecycleManager } from './lifecycle/ServiceLifecycleManager';
 
 class RuntimeBoot {
   constructor() {
@@ -201,6 +202,10 @@ class RuntimeBoot {
           .map(([k]) => k),
       });
     }
+
+    // Start the Service Lifecycle Manager for ongoing real health monitoring + recovery
+    lifecycleManager.start();
+    this._bootResults.lifecycle = 'started';
   }
 
   /** Graceful shutdown. */
@@ -208,6 +213,7 @@ class RuntimeBoot {
     logger.info('═══ UNIBUD Runtime Shutdown ═══');
     this._stage = 'shutdown';
 
+    lifecycleManager.stop();
     orbit.shutdown();
     await shutdownServices();
     eventBus.shutdown();

@@ -14,6 +14,7 @@
 import { oracle, nexus, guardian, spark, orbit } from '@/lib/runtime/kernel';
 import { services } from '@/lib/runtime/services';
 import { runtimeBoot } from '@/lib/runtime/boot';
+import { lifecycleManager } from '@/lib/runtime/lifecycle/ServiceLifecycleManager';
 
 export const PlatformCore = {
   // ── Kernel ──
@@ -39,21 +40,18 @@ export const PlatformCore = {
   getStage: () => runtimeBoot.stage,
   getBootResults: () => runtimeBoot.results,
 
-  // ── Health ──
-  async checkHealth() {
-    if (!services.health) return { healthy: false, checks: {} };
-    return services.health.checkAll();
-  },
-  getHealthStatus() {
-    return services.health?.getStatus() || {};
-  },
+  // ── Lifecycle Manager ──
+  get lifecycle() { return lifecycleManager; },
 
-  // ── Service Catalog (for observability) ──
+  // ── Health (real probes via lifecycle manager) ──
+  async checkHealth() {
+    return lifecycleManager.checkAll();
+  },
   getServiceCatalog() {
-    return Object.entries(services).map(([id, service]) => ({
-      id,
-      ready: service?.ready || false,
-    }));
+    return lifecycleManager.getCatalog();
+  },
+  getRecoveryLog() {
+    return lifecycleManager.getRecoveryLog();
   },
 };
 

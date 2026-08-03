@@ -9,16 +9,26 @@
 import { base44 } from '@/api/base44Client';
 import { logger } from '../logger';
 import { eventBus } from '../eventBus';
+import { BaseService } from './BaseService';
 
-class AnalyticsService {
+class AnalyticsService extends BaseService {
   constructor() {
-    this._ready = false;
+    super({
+      id: 'analytics',
+      version: '1.0.0',
+      dependencies: [],
+      capabilities: ['track_event'],
+    });
     this._eventCount = 0;
   }
 
-  async init() {
-    this._ready = true;
+  async _onInit() {
     logger.info('AnalyticsService initialized');
+  }
+
+  async _onHealth() {
+    const available = typeof base44.analytics?.track === 'function';
+    return { healthy: available, detail: available ? `${this._eventCount} events tracked` : 'Analytics SDK missing' };
   }
 
   /** Track a custom event with optional properties. */
@@ -30,6 +40,7 @@ class AnalyticsService {
     }
 
     this._eventCount++;
+    this._recordRequest(0);
     eventBus.publish({
       type: 'analytics.tracked',
       category: 'monitoring',
@@ -37,10 +48,7 @@ class AnalyticsService {
     });
   }
 
-  /** Get total events tracked in this session. */
   get eventCount() { return this._eventCount; }
-
-  get ready() { return this._ready; }
 }
 
 export const analyticsService = new AnalyticsService();
