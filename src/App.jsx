@@ -7,6 +7,7 @@ import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
 import { MotionProvider } from '@/lib/motion/MotionProvider';
 import { PlatformProvider } from '@/lib/platform/PlatformProvider';
+import { RuntimeBootProvider } from '@/lib/runtime/RuntimeBootProvider';
 
 import { ExperienceProvider } from '@/lib/ExperienceContext';
 import { SearchProvider } from '@/lib/SearchContext';
@@ -215,6 +216,7 @@ const SecurityCenter = lazy(() => import("@/pages/SecurityCenter"));
 const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 const MigrationDashboard = lazy(() => import("@/pages/admin/MigrationDashboard"));
 const ConsolidationDashboard = lazy(() => import("@/pages/admin/ConsolidationDashboard"));
+const PlatformCoreDashboard = lazy(() => import("@/pages/admin/PlatformCoreDashboard"));
 
 // Directory & Help Center
 const DirectoryHub = lazy(() => import("@/pages/directory/DirectoryHub"));
@@ -257,6 +259,7 @@ function App() {
       <ThemeProvider>
         <MotionProvider>
         <PlatformProvider>
+        <RuntimeBootProvider>
         <QueryClientProvider client={queryClientInstance}>
             <RealtimeSyncProvider>
             <ExperienceProvider>
@@ -434,6 +437,7 @@ function App() {
                     <Route path="/admin" element={<OracleWorkspaceGuard><AdminHub /></OracleWorkspaceGuard>} />
                     <Route path="/migration" element={<OracleWorkspaceGuard><MigrationDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/consolidation" element={<OracleWorkspaceGuard><ConsolidationDashboard /></OracleWorkspaceGuard>} />
+                    <Route path="/platform-core" element={<OracleWorkspaceGuard><PlatformCoreDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/launch-readiness" element={<OracleWorkspaceGuard><LaunchReadiness /></OracleWorkspaceGuard>} />
                     <Route path="/automation-settings" element={<OracleWorkspaceGuard><AutomationSettings /></OracleWorkspaceGuard>} />
                     <Route path="/self-healing" element={<OracleWorkspaceGuard><SelfHealing /></OracleWorkspaceGuard>} />
@@ -457,6 +461,7 @@ function App() {
           </ExperienceProvider>
           </RealtimeSyncProvider>
         </QueryClientProvider>
+        </RuntimeBootProvider>
         </PlatformProvider>
         </MotionProvider>
       </ThemeProvider>

@@ -24,6 +24,11 @@ import { configurationService } from './ConfigurationService';
 import { metricsService } from './MetricsService';
 import { telemetryService } from './TelemetryService';
 import { healthService } from './HealthService';
+import { mediaService } from './MediaService';
+import { analyticsService } from './AnalyticsService';
+import { permissionsService } from './PermissionsService';
+import { integrationsService } from './IntegrationsService';
+import { storageService } from './StorageService';
 
 export const services = {
   memory: memoryService,
@@ -40,6 +45,11 @@ export const services = {
   metrics: metricsService,
   telemetry: telemetryService,
   health: healthService,
+  media: mediaService,
+  analytics: analyticsService,
+  permissions: permissionsService,
+  integrations: integrationsService,
+  storage: storageService,
 };
 
 /**
@@ -62,6 +72,11 @@ export async function bootServices() {
     ['metrics', metricsService],
     ['telemetry', telemetryService],
     ['health', healthService],
+    ['media', mediaService],
+    ['analytics', analyticsService],
+    ['permissions', permissionsService],
+    ['integrations', integrationsService],
+    ['storage', storageService],
   ];
 
   const results = {};

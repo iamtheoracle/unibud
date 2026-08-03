@@ -41,6 +41,11 @@ import { sessionService } from './services/SessionService';
 import { metricsService } from './services/MetricsService';
 import { telemetryService } from './services/TelemetryService';
 import { promptService } from './services/PromptService';
+import { mediaService } from './services/MediaService';
+import { analyticsService } from './services/AnalyticsService';
+import { permissionsService } from './services/PermissionsService';
+import { integrationsService } from './services/IntegrationsService';
+import { storageService } from './services/StorageService';
 
 class RuntimeBoot {
   constructor() {
@@ -149,6 +154,11 @@ class RuntimeBoot {
       metrics: () => ({ healthy: metricsService.ready, detail: 'Metrics service' }),
       telemetry: () => ({ healthy: telemetryService.ready, detail: 'Telemetry service' }),
       health: () => ({ healthy: healthService.ready, detail: 'Health service' }),
+      media: () => ({ healthy: mediaService.ready, detail: 'Media service' }),
+      analytics: () => ({ healthy: analyticsService.ready, detail: 'Analytics service' }),
+      permissions: () => ({ healthy: permissionsService.ready, detail: 'Permissions service' }),
+      integrations: () => ({ healthy: integrationsService.ready, detail: 'Integrations service' }),
+      storage: () => ({ healthy: storageService.ready, detail: 'Storage service' }),
     };
     for (const [name, fn] of Object.entries(checks)) healthService.registerCheck(name, fn);
   }
