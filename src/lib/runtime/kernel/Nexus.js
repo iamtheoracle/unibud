@@ -24,6 +24,7 @@ import { conversationService } from '../services/ConversationService';
 import { knowledgeService } from '../services/KnowledgeService';
 import { searchService } from '../services/SearchService';
 import { configurationService } from '../services/ConfigurationService';
+import { studentRoutingService } from '../services/StudentRoutingService';
 
 class Nexus {
   constructor() {
@@ -56,13 +57,79 @@ class Nexus {
         payload: { count: capabilities.length, capIds: capabilities.map((c) => c.cap_id) },
       });
 
-      // 2. Gather context from services (not from Spark — Spark doesn't own storage)
+      // 2. Check if this is a study help request — route through the
+      //    Student Routing Engine instead of the default flow.
+      //    The routing engine discovers candidates (study groups, mentors),
+      //    scores them, and returns structured recommendations that Spark
+      //    composes into a natural language response.
+      if (studentRoutingService.ready && studentRoutingService.isStudyRelated(message)) {
+        eventBus.publish({
+          type: 'routing.study_help_detected',
+          category: 'routing',
+          correlationId,
+          payload: { userId: user?.id },
+        });
+
+        const routingResult = await studentRoutingService.route({
+          message,
+          userId: user?.id,
+          institutionId: user?.data?.institution_id,
+          context: { userHistory: context?.userHistory },
+        });
+
+        // Delegate to Spark for natural language composition
+        // Spark receives the structured recommendations and composes
+        // a natural Bud response — Bud never exposes routing logic.
+        const sparkResult = await this._spark.process({
+          message,
+          memory: [],
+          knowledge: [],
+          context: {
+            ...context,
+            routingRecommendations: routingResult.recommendations,
+            workloadWarning: routingResult.workloadWarning,
+            classifiedTopic: routingResult.topic,
+            isStudyHelp: true,
+          },
+          fileUrls,
+          correlationId,
+        });
+
+        if (userId) {
+          await memoryService.store({
+            userId,
+            sessionId: correlationId,
+            type: 'episodic',
+            content: message,
+            metadata: { response: sparkResult.text?.slice(0, 500), routed: true },
+          });
+        }
+
+        const latencyMs = Date.now() - started;
+        eventBus.publish({
+          type: 'capability.executed',
+          category: 'capability',
+          correlationId,
+          payload: { latencyMs, capabilities: capabilities.length, routed: true },
+        });
+
+        telemetryService.endSpan(span, 'ok');
+
+        return {
+          answer: sparkResult.text,
+          agentsUsed: ['spark', 'studentRouting'],
+          capabilitiesUsed: ['study.help', ...capabilities.map((c) => c.cap_id)],
+          latencyMs,
+        };
+      }
+
+      // 3. Default flow: gather context from services, delegate to Spark
       const [memoryRecords, knowledgeResults] = await Promise.all([
         userId ? memoryService.recall({ userId, limit: 5 }) : Promise.resolve([]),
         knowledgeService.search({ query: message, limit: 5 }),
       ]);
 
-      // 3. Delegate to Spark for reasoning + synthesis
+      // 4. Delegate to Spark for reasoning + synthesis
       const sparkResult = await this._spark.process({
         message,
         memory: memoryRecords,
@@ -72,7 +139,7 @@ class Nexus {
         correlationId,
       });
 
-      // 4. Store interaction via services (not via Spark)
+      // 5. Store interaction via services (not via Spark)
       if (userId) {
         await memoryService.store({
           userId,

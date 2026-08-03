@@ -53,6 +53,13 @@ export const PlatformCore = {
   getRecoveryLog() {
     return lifecycleManager.getRecoveryLog();
   },
+
+  // ── Student Routing Engine ──
+  get studentRouting() { return services.studentRouting; },
+  get courseLoad() { return services.courseLoad; },
+  get mentorship() { return services.mentorship; },
+  get studyGroup() { return services.studyGroup; },
+  get recommendation() { return services.recommendation; },
 };
 
 export default PlatformCore;

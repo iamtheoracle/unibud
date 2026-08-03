@@ -29,6 +29,11 @@ import { analyticsService } from './AnalyticsService';
 import { permissionsService } from './PermissionsService';
 import { integrationsService } from './IntegrationsService';
 import { storageService } from './StorageService';
+import { courseLoadService } from './CourseLoadService';
+import { mentorshipService } from './MentorshipService';
+import { studyGroupService } from './StudyGroupService';
+import { recommendationService } from './RecommendationService';
+import { studentRoutingService } from './StudentRoutingService';
 
 export const services = {
   memory: memoryService,
@@ -50,6 +55,11 @@ export const services = {
   permissions: permissionsService,
   integrations: integrationsService,
   storage: storageService,
+  courseLoad: courseLoadService,
+  mentorship: mentorshipService,
+  studyGroup: studyGroupService,
+  recommendation: recommendationService,
+  studentRouting: studentRoutingService,
 };
 
 /**
@@ -77,6 +87,11 @@ export async function bootServices() {
     ['permissions', permissionsService],
     ['integrations', integrationsService],
     ['storage', storageService],
+    ['courseLoad', courseLoadService],
+    ['mentorship', mentorshipService],
+    ['studyGroup', studyGroupService],
+    ['recommendation', recommendationService],
+    ['studentRouting', studentRoutingService],
   ];
 
   const results = {};

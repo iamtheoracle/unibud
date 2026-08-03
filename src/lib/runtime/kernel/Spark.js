@@ -80,7 +80,56 @@ class Spark {
       // Bud owns the voice; Spark owns the LLM invocation.
       const personalityPrompt = context?.systemPrompt || '';
 
-      // Synthesize the final Bud-facing response
+      // ── Study Help Routing: compose natural language from structured recommendations ──
+      // When the Student Routing Engine has found candidates, Spark composes
+      // a natural Bud response from the structured data — never exposing
+      // internal routing logic, scores, or agent names.
+      if (context?.isStudyHelp && context?.routingRecommendations) {
+        const recs = context.routingRecommendations;
+        const workloadWarning = context.workloadWarning;
+        const topic = context.classifiedTopic;
+
+        const recLines = recs.map((r, i) => {
+          const icon = r.type === 'study_group' ? 'Group' : r.type === 'tutor' ? 'Tutor' : 'Mentor';
+          return `${i + 1}. ${icon}: ${r.name} — ${r.detail} (${r.reason})`;
+        }).join('\n');
+
+        const routingPrompt = `${personalityPrompt}
+
+You are Bud, UNIBUD's calm, supportive mentor companion. A student asked for study help.
+
+The routing engine found these recommendations:
+${recLines || 'No specific matches found — provide general guidance.'}
+
+${workloadWarning ? `WORKLOAD WARNING: ${workloadWarning.message}` : ''}
+
+${topic?.course ? `Course: ${topic.course}` : ''}
+${topic?.topic ? `Topic: ${topic.topic}` : ''}
+
+Compose a warm, natural response that:
+- Presents the best options conversationally (never mention scores, routing logic, or internal systems)
+- If there's a workload warning, gently advise accordingly
+- Recommends the single best option with a clear reason
+- Keeps it concise and encouraging
+
+Student's message: ${message}`;
+
+        try {
+          text = await modelService.invoke({ prompt: routingPrompt, taskTier: 'standard' });
+        } catch (e) {
+          logger.error('Spark routing composition failed', { error: e.message });
+          text = "I found some study options for you, but I'm having trouble formatting them right now. Please try again in a moment!";
+        }
+
+        telemetryService.endSpan(span, 'ok');
+        return {
+          text,
+          agentsUsed: ['spark', 'studentRouting'],
+          reasoningProvided: false,
+        };
+      }
+
+      // ── Default flow: synthesize from memory + knowledge context ──
       const responsePrompt = promptService.render('bud.response', {
         userMessage: message,
         context: [ctxLine, memoryContext, knowledgeContext, reasoning ? `Reasoning: ${reasoning}` : '']

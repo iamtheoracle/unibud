@@ -59,6 +59,16 @@ export const HEALTH_PROBES = {
     healthy: typeof base44.analytics?.track === 'function',
     detail: `${svc?._eventCount || 0} events tracked`,
   }),
+
+  // ── Student Routing Engine services ──
+  courseLoad: () => probeEntity('Course', 'Course'),
+  mentorship: () => probeEntity('Mentor', 'Mentor'),
+  studyGroup: () => probeEntity('StudyGroup', 'StudyGroup'),
+  recommendation: () => ({ healthy: true, detail: 'In-memory scoring engine' }),
+  studentRouting: (svc) => ({
+    healthy: svc?.ready ?? false,
+    detail: svc?.ready ? 'Routing engine ready' : 'Routing engine not initialized',
+  }),
 };
 
 export default HEALTH_PROBES;
