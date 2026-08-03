@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import {
-  Brain, Mic, Sparkles, Package, Zap, Link, History, Bell, ChevronRight,
+  Brain, Mic, Sparkles, Package, Zap, Link, History, Bell,
+  ChevronRight, Settings,
 } from "lucide-react";
 import MeIcon from "@/components/me/MeIcon";
 
@@ -13,18 +14,18 @@ const EASE = [0.16, 1, 0.3, 1];
 const BUD_ITEMS = [
   { icon: Brain, label: "Memory", to: "/memory" },
   { icon: Mic, label: "Voice", to: "/bud/notifications" },
-  { icon: Sparkles, label: "Personality", to: "/bud-vision" },
   { icon: Package, label: "Experience Packs", to: "/settings" },
   { icon: Zap, label: "Automations", to: "/automation" },
-  { icon: Link, label: "Connected Apps", to: "/settings/connected-accounts" },
+  { icon: Sparkles, label: "Personality", to: "/bud-vision" },
   { icon: History, label: "History", to: "/memory" },
-  { icon: Bell, label: "Notifications", to: "/notifications" },
+  { icon: Link, label: "Connected Services", to: "/settings/connected-accounts" },
+  { icon: Settings, label: "Preferences", to: "/settings" },
 ];
 
 /**
  * MeBudCard — Bud's home inside Me.
- * Not a settings list — a living companion card.
- * Displays the Bud orb (pulsing), status chips, and Bud settings below.
+ * Living companion card with pulsing orb, status chips, and settings.
+ * Orange glow is exclusive to Bud — no other card uses it.
  */
 export default function MeBudCard({ user }) {
   const navigate = useNavigate();
@@ -47,8 +48,8 @@ export default function MeBudCard({ user }) {
       transition={{ duration: 0.4, ease: EASE, delay: 0.1 }}
       className="rounded-[24px] overflow-hidden"
       style={{
-        background: "rgba(255,138,0,0.03)",
-        border: "1px solid rgba(255,138,0,0.12)",
+        background: "linear-gradient(180deg, rgba(255,138,0,0.06), rgba(17,17,17,0.3))",
+        border: "1px solid rgba(255,138,0,0.15)",
       }}
     >
       {/* Bud orb + companion text */}
@@ -86,7 +87,7 @@ export default function MeBudCard({ user }) {
       {/* Divider */}
       <div className="h-px mx-5" style={{ background: "rgba(255,138,0,0.10)" }} />
 
-      {/* Bud settings items */}
+      {/* Bud settings */}
       <div className="px-5 py-2">
         {BUD_ITEMS.map((item, index) => (
           <React.Fragment key={item.label}>

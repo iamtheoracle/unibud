@@ -7,9 +7,9 @@ import MeIcon from "@/components/me/MeIcon";
 const EASE = [0.16, 1, 0.3, 1];
 
 /**
- * MeSectionCard — a floating card containing a titled list of navigation items.
- * Each item has a premium colored icon, label, and chevron.
- * Cards gently lift on touch with a spring animation.
+ * MeSectionCard — floating card with semantic-colored glow.
+ * Each section uses its own color for the card tint and border.
+ * Bud section uses orange; other sections use their semantic color.
  */
 export default function MeSectionCard({ title, icon, color, items, headerExtra, delay = 0 }) {
   const navigate = useNavigate();
@@ -21,8 +21,8 @@ export default function MeSectionCard({ title, icon, color, items, headerExtra, 
       transition={{ duration: 0.4, ease: EASE, delay }}
       className="rounded-[24px] overflow-hidden"
       style={{
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        background: `linear-gradient(180deg, ${color}0A, rgba(17,17,17,0.3))`,
+        border: `1px solid ${color}12`,
       }}
     >
       {/* Header */}
@@ -31,7 +31,7 @@ export default function MeSectionCard({ title, icon, color, items, headerExtra, 
         <h3 className="text-[16px] font-bold text-white tracking-tight">{title}</h3>
       </div>
 
-      {/* Optional header extra (for Bud card) */}
+      {/* Optional header extra */}
       {headerExtra}
 
       {/* Items */}
