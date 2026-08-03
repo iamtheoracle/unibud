@@ -18,6 +18,11 @@ import { useRecentViews } from "@/lib/resilience/useRecentViews";
 import AmbientBackground from "@/components/layout/AmbientBackground";
 import ContextPulse from "@/components/layout/ContextPulse";
 import { UnibudContextProvider } from "@/lib/UnibudContext";
+import { ContextProvider as OSContextProvider } from "@/lib/os/ContextProvider";
+// Initialize v4 registries (side-effect import registers all core modules/experiences/services)
+import "@/lib/os/moduleRegistry";
+import "@/lib/os/experienceRegistry";
+import "@/lib/os/hiddenServiceRegistry";
 import { VoiceProvider } from "@/lib/voice/VoiceProvider";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
@@ -73,6 +78,7 @@ export default function AppShell() {
       <VoiceProvider>
       <SearchProvider>
       <UnibudContextProvider>
+      <OSContextProvider>
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
@@ -102,6 +108,7 @@ export default function AppShell() {
           <ConsentBanner />
         </div>
       </ClassroomModeProvider>
+      </OSContextProvider>
       </UnibudContextProvider>
       </SearchProvider>
       </VoiceProvider>
