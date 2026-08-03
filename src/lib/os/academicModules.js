@@ -26,6 +26,8 @@ const ACADEMIC_MODULES = [
   { id: "exams", name: "Exams", category: "academic", authority: "Scribe", entity: "ExamSchedule", requiresContext: true },
   { id: "study-sessions", name: "Study Sessions", category: "academic", authority: "Scribe", entity: "StudySession", requiresContext: false },
   { id: "calendar", name: "Calendar", category: "academic", authority: "Scribe", entity: "CalendarEvent", requiresContext: true },
+  { id: "quizzes", name: "Quizzes", category: "academic", authority: "Scribe", entity: "QuizAttempt", requiresContext: false },
+  { id: "career", name: "Career", category: "academic", authority: "Scholar", entity: "Opportunity", requiresContext: true },
 ];
 
 // Register each academic module with Campus as the primary consumer

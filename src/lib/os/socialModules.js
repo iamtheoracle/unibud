@@ -18,6 +18,12 @@ const SOCIAL_MODULES = [
 
   // Identity modules
   { id: "creator-profiles", name: "Creator Profiles", category: "identity", authority: "Scribe", requiresContext: false },
+
+  // Engagement modules — shared social actions consumed by every social experience
+  { id: "polls", name: "Polls", category: "content", authority: "CommunityBuilder", requiresContext: false },
+  { id: "bookmarks", name: "Bookmarks", category: "content", authority: "Scribe", requiresContext: false },
+  { id: "share", name: "Share", category: "content", authority: "Creator", requiresContext: false },
+  { id: "reports", name: "Content Reports", category: "content", authority: "Sentinel", entity: "ContentReport", requiresContext: false },
 ];
 
 // Register each social module with Square as the primary consumer

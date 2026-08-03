@@ -214,6 +214,7 @@ const SecurityCenter = lazy(() => import("@/pages/SecurityCenter"));
 // Milestone 34 — Intelligent Admin Platform
 const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 const MigrationDashboard = lazy(() => import("@/pages/admin/MigrationDashboard"));
+const ConsolidationDashboard = lazy(() => import("@/pages/admin/ConsolidationDashboard"));
 
 // Directory & Help Center
 const DirectoryHub = lazy(() => import("@/pages/directory/DirectoryHub"));
@@ -432,6 +433,7 @@ function App() {
                     <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
                     <Route path="/admin" element={<OracleWorkspaceGuard><AdminHub /></OracleWorkspaceGuard>} />
                     <Route path="/migration" element={<OracleWorkspaceGuard><MigrationDashboard /></OracleWorkspaceGuard>} />
+                    <Route path="/consolidation" element={<OracleWorkspaceGuard><ConsolidationDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/launch-readiness" element={<OracleWorkspaceGuard><LaunchReadiness /></OracleWorkspaceGuard>} />
                     <Route path="/automation-settings" element={<OracleWorkspaceGuard><AutomationSettings /></OracleWorkspaceGuard>} />
                     <Route path="/self-healing" element={<OracleWorkspaceGuard><SelfHealing /></OracleWorkspaceGuard>} />
