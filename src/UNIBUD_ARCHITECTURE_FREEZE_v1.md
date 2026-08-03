@@ -275,4 +275,52 @@ Before writing code, classify the proposed change:
 
 ---
 
+## Phase 2 Standing Directive
+
+**UNIBUD Architecture Status: FROZEN (v1)**
+
+The architectural foundation is complete. Future engineering extends existing capabilities within the established contracts. New architectural components are introduced only after passing the Architecture Review Gate and demonstrating that no existing component can reasonably own the responsibility.
+
+| Track | Focus |
+|---|---|
+| Architecture | Stable — no redesigns unless governance-approved |
+| Governance | Controls all architectural change |
+| Engineering | Expands capabilities within existing components |
+| Data | Improves intelligence through richer datasets |
+| UX | Improves the student experience |
+| Operations | Improves reliability and resilience |
+
+### Pre-Implementation Checklist
+
+Before every feature, ask:
+
+1. **Can an existing component own this responsibility?** If yes, extend it.
+2. **Does the change touch a Tier A contract?** If yes, stop — MAJOR amendment required.
+3. **Does the change alter a Tier B interface?** If yes, architecture review required.
+4. **Is this a Tier C extension within an existing contract?** If yes, proceed with normal engineering review.
+
+### Long-Term Vision
+
+UNIBUD should evolve by becoming:
+- Smarter, not more fragmented.
+- More capable, not more complex.
+- More personalized, not more layered.
+
+The external experience remains simple (Bud), while internal intelligence deepens within a stable architectural foundation.
+
+---
+
+## Companion Documents
+
+The Architecture Freeze is the constitutional document. The following governance artifacts complement it and may be developed independently. They define implementation practices and operational procedures — they do not modify the Architecture Freeze.
+
+| Document | Scope |
+|---|---|
+| `ENGINEERING_STANDARDS.md` | Coding conventions, project structure, testing, logging, review requirements |
+| `AI_BEHAVIOR_SPEC.md` | Bud personality, conversation policies, memory usage, safety, response guidelines |
+| `SYSTEM_OPERATIONS.md` | Deployment, monitoring, health probes, incident response, backups, recovery |
+| `CONTRIBUTOR_GUIDE.md` | How to add features, extend services, submit changes, satisfy governance |
+
+---
+
 *This document is the single source of truth for UNIBUD OS architectural governance. All engineering decisions must be consistent with this declaration. Version: v1. Status: FROZEN.*
