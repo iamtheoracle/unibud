@@ -8,7 +8,6 @@ import { getScreenContext } from "@/lib/budScreenContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
 import { useToast } from "@/components/ui/use-toast";
-import { orchestrate as legacyOrchestrate } from "@/lib/spark/orchestrator";
 import { ensureSeeded } from "@/lib/spark/agents/registry";
 import { runtime } from "@/lib/runtime";
 
@@ -129,9 +128,9 @@ export function BudPanelProvider({ children }) {
     setIsTyping(true);
 
     try {
-      // ─── Runtime Pipeline ───────────────────────────────────────────
-      // Bud → Oracle → Guardian → Nexus → Spark → Services → Oracle → Bud
-      // Falls back to legacy orchestrator if runtime isn't ready yet.
+      // ─── Single Execution Path ───────────────────────────────────────
+      // Bud → Oracle → Guardian → Nexus → Platform Core → Spark → LLM
+      // There is no longer a parallel orchestration pipeline.
       let answer;
       if (runtime.ready) {
         const result = await runtime.process({
@@ -142,8 +141,7 @@ export function BudPanelProvider({ children }) {
         });
         answer = result.text;
       } else {
-        const legacy = await legacyOrchestrate(trimmed, { screen: screenContext, user }, fileUrls);
-        answer = legacy.answer;
+        answer = "I'm still waking up — give me just a moment!";
       }
 
       const budMsg = { role: "bud", content: answer, time: new Date(), agents: agentIds };

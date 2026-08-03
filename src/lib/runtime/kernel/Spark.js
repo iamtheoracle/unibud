@@ -76,6 +76,10 @@ class Spark {
         }
       }
 
+      // Personality system prompt — provided by Bud via Oracle context.
+      // Bud owns the voice; Spark owns the LLM invocation.
+      const personalityPrompt = context?.systemPrompt || '';
+
       // Synthesize the final Bud-facing response
       const responsePrompt = promptService.render('bud.response', {
         userMessage: message,
@@ -86,10 +90,13 @@ class Spark {
 
       let text;
       try {
+        const fallback = personalityPrompt
+          ? `${personalityPrompt}\n\nStudent: ${message}\n\nRespond warmly and helpfully. Never mention internal agents or orchestration.`
+          : `You are Bud, UNIBUD's calm, supportive mentor companion.\n\nStudent: ${message}\n\nRespond warmly and helpfully. Never mention internal agents or orchestration.`;
         const params = {
           prompt: responsePrompt
-            ? `${responsePrompt.system || ''}\n\n${responsePrompt.user}`
-            : `You are Bud, UNIBUD's calm, supportive mentor companion.\n\nStudent: ${message}\n\nRespond warmly and helpfully. Never mention internal agents or orchestration.`,
+            ? `${personalityPrompt ? personalityPrompt + '\n\n' : ''}${responsePrompt.system || ''}\n\n${responsePrompt.user}`
+            : fallback,
           taskTier: 'standard',
         };
         if (fileUrls?.length) params.fileUrls = fileUrls;
