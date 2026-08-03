@@ -1,9 +1,12 @@
 # UNIBUD OS v4 — Architecture Freeze Declaration
 
-**Status:** Active
-**Effective Date:** 2026-08-03
-**Authority:** Founder
-**Supersedes:** All prior architectural design phase directives
+| Field | Value |
+|---|---|
+| Architecture Status | FROZEN |
+| Version | v1 |
+| Effective Date | 2026-08-03 |
+| Supersedes | None (initial declaration) |
+| Approval | Founder |
 
 ---
 
@@ -171,14 +174,83 @@ The operating system is expected to stay stable for years, while capabilities, d
 
 ## Amendment Process
 
-This declaration may only be amended by:
+This declaration is versioned. Amendments are classified into three tiers:
 
-1. **Founder Authority** — The founder may amend this declaration directly.
-2. **Architecture Review Gate** — Any proposed amendment must satisfy all five gate criteria.
-3. **Audit Trail** — All amendments are recorded in the Audit Service with full context.
+### PATCH — Documentation Clarifications
 
-No engineer, agent, or automated process may modify these contracts without satisfying the amendment process.
+* Typo fixes, formatting, non-functional wording changes.
+* Does not alter any frozen contract, pipeline, or gate criterion.
+* May be applied by any engineer with founder notification.
+* Example: fixing a table formatting issue.
+
+### MINOR — Governance Refinements
+
+* Refinements that do not alter any frozen contract, the canonical runtime pipeline, or the Architecture Review Gate criteria.
+* May add clarification, new examples, or non-binding guidance.
+* Requires founder approval.
+* Example: adding a new example to the Engine Extension Policy table.
+
+### MAJOR — Changes to Frozen Contracts
+
+* Any change to a frozen component, the canonical runtime pipeline, the shared response contract, or the Architecture Review Gate criteria.
+* Requires Architecture Review Gate approval — all five criteria must be satisfied.
+* Should be treated as exceptional and rare.
+* Requires founder authority and full audit trail.
+* Example: introducing a new orchestration engine that passes the gate.
+
+All amendments (PATCH, MINOR, MAJOR) are recorded in the Audit Service with full context, including the amendment tier, the diff, and the approver.
+
+No engineer, agent, or automated process may modify frozen contracts without satisfying the MAJOR amendment process.
 
 ---
 
-*This document is the single source of truth for UNIBUD OS architectural governance. All engineering decisions must be consistent with this declaration.*
+## Appendix — Frozen Components (Single Source of Truth)
+
+The following components are part of UNIBUD OS's stable foundation. They are expected to remain unchanged except under the amendment process defined above.
+
+### Governance Components
+
+1. Founder Authority
+2. Oracle
+3. Guardian
+4. Nexus
+5. Constitutional Validator
+6. Architecture Review Gate
+
+### Platform Core Components
+
+7. Bud (only user-facing AI)
+8. Student Intelligence Layer
+9. PlatformCore
+10. Spark
+11. Orbit
+12. EventBus
+13. Realtime Engine
+14. Service Registry
+15. Health Monitoring
+16. Audit Service
+17. Telemetry
+
+### Intelligence Engines (Frozen Set)
+
+18. Campus Intelligence Engine (11 sub-services)
+19. Academic Planning Service
+20. Opportunity Engine Service
+21. Career Intelligence Service
+22. Student Success Prediction Service
+23. Campus Digital Twin Service
+24. Cross-Space Intelligence Service
+25. Autonomous Task Engine
+26. Personal Knowledge Graph Service
+
+### Platform Contracts
+
+27. Shared Recommendation Contract
+28. Canonical Runtime Pipeline
+29. Service Lifecycle Contract
+30. Health Probe Contract
+31. Audit Trail Contract
+
+---
+
+*This document is the single source of truth for UNIBUD OS architectural governance. All engineering decisions must be consistent with this declaration. Version: v1. Status: FROZEN.*
