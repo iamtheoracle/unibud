@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { PenLine, Search, Heart, Send, ChevronUp, RefreshCw, Inbox } from "lucide-react";
+import { PenLine, Search, Heart, Send, ChevronUp, RefreshCw, Inbox, Newspaper, Circle, Video, Image, Users } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useInfiniteFeed, getCachedFeed } from "@/hooks/useInfiniteFeed";
@@ -245,6 +245,36 @@ export default function Square() {
           </div>
         </div>
       </header>
+
+      {/* ── Top Navigation Chips ── */}
+      <div className="sticky top-[57px] z-20 bg-background/80 backdrop-blur-xl border-b border-border/20">
+        <div className="max-w-2xl mx-auto px-4 py-2 flex gap-1.5 overflow-x-auto no-scrollbar">
+          {[
+            { label: "Feed", to: null, icon: Newspaper },
+            { label: "Stories", to: null, icon: Circle },
+            { label: "Videos", to: "/shorts", icon: Video },
+            { label: "Photos", to: null, icon: Image },
+            { label: "Communities", to: "/communities", icon: Users },
+          ].map((chip) => {
+            const Icon = chip.icon;
+            const isActive = chip.label === "Feed";
+            return (
+              <button
+                key={chip.label}
+                onClick={() => chip.to && navigate(chip.to)}
+                className={`flex items-center gap-1.5 px-3 h-8 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap transition-all ${
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/40 border border-border/40 text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Context-prioritized Social Feed */}
       {/* Sections are reordered by Platform Core based on the active context. */}

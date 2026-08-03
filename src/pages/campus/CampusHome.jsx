@@ -1,6 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Sparkles } from "lucide-react";
+import { Sparkles, BookOpen, ClipboardList, FileText, FolderKanban, GraduationCap, FlaskConical, BarChart3 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useAcademicData } from "@/lib/academic/useAcademicData";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
@@ -10,6 +11,16 @@ import {
   CampusScholarships, CourseDiscussions, DepartmentHighlights,
 } from "@/components/campus/AcademicFeedModules";
 import { useCampusPlatformCore } from "@/lib/os/useCampusPlatformCore";
+
+const NAV_CHIPS = [
+  { label: "Courses", to: "/courses", icon: BookOpen },
+  { label: "Assignments", to: "/assignments", icon: ClipboardList },
+  { label: "Exams", to: "/exams", icon: FileText },
+  { label: "Projects", to: "/projects", icon: FolderKanban },
+  { label: "Study", to: "/study", icon: GraduationCap },
+  { label: "Research", to: "/research", icon: FlaskConical },
+  { label: "GPA", to: "/gpa-calculator", icon: BarChart3 },
+];
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -26,6 +37,7 @@ function greeting() {
  * announcements, discussions, opportunities, and community activity.
  */
 export default function CampusHome() {
+  const navigate = useNavigate();
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { nextClass, nextDeadline, gpa, today, loading } = useAcademicData();
   const { setOpen: setBudOpen } = useBudLauncher();
@@ -88,6 +100,25 @@ export default function CampusHome() {
           </div>
         </div>
       </header>
+
+      {/* ── Top Navigation Chips ── */}
+      <div className="sticky top-[57px] z-20 bg-background/80 backdrop-blur-xl border-b border-border/20">
+        <div className="max-w-2xl mx-auto px-4 py-2 flex gap-1.5 overflow-x-auto no-scrollbar">
+          {NAV_CHIPS.map((chip) => {
+            const Icon = chip.icon;
+            return (
+              <button
+                key={chip.to}
+                onClick={() => navigate(chip.to)}
+                className="flex items-center gap-1.5 px-3 h-8 rounded-full bg-muted/40 border border-border/40 text-[12px] font-semibold whitespace-nowrap spring-tap text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Icon className="w-3.5 h-3.5" strokeWidth={2} />
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ── Academic Community Feed ── */}
       <div className="max-w-2xl mx-auto px-4 pt-4 relative z-10 space-y-5">

@@ -1,29 +1,23 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MessageSquare, Phone, Users, ChevronRight, BookOpen } from "lucide-react";
+import { MessageSquare, Phone, Users, ChevronRight, BookOpen, UserPlus, Bell } from "lucide-react";
 import ConnectMessages from "@/components/connect/ConnectMessages";
 import ConnectCalls from "@/components/connect/ConnectCalls";
 import ConnectCollaboration from "@/components/connect/ConnectCollaboration";
 import StudyGroupDirectory from "@/components/study/StudyGroupDirectory";
+import { ConnectRequests, ConnectNotifications } from "@/components/connect/ConnectRequests";
 import { useConnectPlatformCore } from "@/lib/os/useConnectPlatformCore";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 const TABS = [
-  { key: "messages", label: "Messages", icon: MessageSquare },
-  { key: "calls", label: "Calls", icon: Phone },
-  { key: "collaboration", label: "Teams", icon: Users },
+  { key: "messages", label: "Chats", icon: MessageSquare },
   { key: "groups", label: "Groups", icon: BookOpen },
-];
-
-const QUICK = [
-  { label: "Messages", to: "/messages" },
-  { label: "Organizations", to: "/clubs" },
-  { label: "Groups", to: "/study-groups" },
-  { label: "Files", to: "/knowledge" },
-  { label: "Calendar", to: "/calendar" },
-  { label: "Tasks", to: "/tasks" },
+  { key: "requests", label: "Requests", icon: UserPlus },
+  { key: "calls", label: "Calls", icon: Phone },
+  { key: "notifications", label: "Alerts", icon: Bell },
+  { key: "collaboration", label: "Teams", icon: Users },
 ];
 
 export default function Connect() {
@@ -68,19 +62,8 @@ export default function Connect() {
         {activeTab === "calls" && <ConnectCalls />}
         {activeTab === "collaboration" && <ConnectCollaboration />}
         {activeTab === "groups" && <StudyGroupDirectory />}
-      </div>
-
-      {/* Quick actions */}
-      <div className="flex gap-2 overflow-x-auto no-scrollbar pt-6 pb-2">
-        {QUICK.map((q) => (
-          <button
-            key={q.label}
-            onClick={() => q.to && navigate(q.to)}
-            className="px-3.5 py-2 rounded-full bg-muted/40 border border-border text-[12px] font-medium whitespace-nowrap spring-tap text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {q.label}
-          </button>
-        ))}
+        {activeTab === "requests" && <ConnectRequests />}
+        {activeTab === "notifications" && <ConnectNotifications />}
       </div>
     </div>
   );
