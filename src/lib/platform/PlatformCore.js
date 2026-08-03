@@ -60,6 +60,13 @@ export const PlatformCore = {
   get mentorship() { return services.mentorship; },
   get studyGroup() { return services.studyGroup; },
   get recommendation() { return services.recommendation; },
+  get classmateDiscovery() { return services.classmateDiscovery; },
+  get facultyDirectory() { return services.facultyDirectory; },
+  get resourceRecommendation() { return services.resourceRecommendation; },
+  get eventRecommendation() { return services.eventRecommendation; },
+  get campusKnowledge() { return services.campusKnowledge; },
+  get presence() { return services.presence; },
+  get campusIntelligence() { return services.campusIntelligence; },
 };
 
 export default PlatformCore;

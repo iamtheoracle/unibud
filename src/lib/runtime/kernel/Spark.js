@@ -87,30 +87,44 @@ class Spark {
       if (context?.isStudyHelp && context?.routingRecommendations) {
         const recs = context.routingRecommendations;
         const workloadWarning = context.workloadWarning;
+        const proactiveSuggestions = context.proactiveSuggestions;
         const topic = context.classifiedTopic;
 
+        const typeLabels = {
+          study_group: 'Study Group', mentor: 'Mentor', tutor: 'Tutor',
+          classmate: 'Classmate', faculty: 'Faculty', resource: 'Resource',
+          event: 'Event', knowledge: 'Info', presence: 'Online Now', session: 'Active Session',
+        };
+
         const recLines = recs.map((r, i) => {
-          const icon = r.type === 'study_group' ? 'Group' : r.type === 'tutor' ? 'Tutor' : 'Mentor';
-          return `${i + 1}. ${icon}: ${r.name} — ${r.detail} (${r.reason})`;
+          const label = typeLabels[r.type] || r.type;
+          return `${i + 1}. ${label}: ${r.name} — ${r.detail}`;
         }).join('\n');
+
+        const proactiveLines = proactiveSuggestions?.length
+          ? proactiveSuggestions.map((s) => `- ${s.message}`).join('\n')
+          : '';
 
         const routingPrompt = `${personalityPrompt}
 
-You are Bud, UNIBUD's calm, supportive mentor companion. A student asked for study help.
+You are Bud, UNIBUD's calm, supportive mentor companion. A student asked an academic question.
 
-The routing engine found these recommendations:
+The Campus Intelligence Engine found these options:
 ${recLines || 'No specific matches found — provide general guidance.'}
 
-${workloadWarning ? `WORKLOAD WARNING: ${workloadWarning.message}` : ''}
+${workloadWarning ? `WORKLOAD NOTE: ${workloadWarning.message}` : ''}
+
+${proactiveLines ? `PROACTIVE INSIGHTS:\n${proactiveLines}` : ''}
 
 ${topic?.course ? `Course: ${topic.course}` : ''}
 ${topic?.topic ? `Topic: ${topic.topic}` : ''}
 
 Compose a warm, natural response that:
-- Presents the best options conversationally (never mention scores, routing logic, or internal systems)
-- If there's a workload warning, gently advise accordingly
+- Presents the best options conversationally (never mention scores, routing logic, internal systems, or the engine name)
+- If there's a workload note, gently advise accordingly
 - Recommends the single best option with a clear reason
-- Keeps it concise and encouraging
+- Weaves in proactive insights naturally if relevant
+- Keeps it concise, encouraging, and specific to what was found
 
 Student's message: ${message}`;
 

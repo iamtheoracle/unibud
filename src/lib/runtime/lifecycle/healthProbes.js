@@ -69,6 +69,18 @@ export const HEALTH_PROBES = {
     healthy: svc?.ready ?? false,
     detail: svc?.ready ? 'Routing engine ready' : 'Routing engine not initialized',
   }),
+
+  // ── Campus Intelligence Engine services ──
+  classmateDiscovery: () => probeEntity('StudentRecord', 'StudentRecord'),
+  facultyDirectory: () => probeEntity('Staff', 'Staff'),
+  resourceRecommendation: () => probeEntity('LibraryResource', 'LibraryResource'),
+  eventRecommendation: () => probeEntity('CampusEvent', 'CampusEvent'),
+  campusKnowledge: () => probeEntity('CampusLocation', 'CampusLocation'),
+  presence: () => probeEntity('Presence', 'Presence'),
+  campusIntelligence: (svc) => ({
+    healthy: svc?.ready ?? false,
+    detail: svc?.ready ? 'Intelligence engine ready' : 'Intelligence engine not initialized',
+  }),
 };
 
 export default HEALTH_PROBES;

@@ -34,6 +34,13 @@ import { mentorshipService } from './MentorshipService';
 import { studyGroupService } from './StudyGroupService';
 import { recommendationService } from './RecommendationService';
 import { studentRoutingService } from './StudentRoutingService';
+import { classmateDiscoveryService } from './ClassmateDiscoveryService';
+import { facultyDirectoryService } from './FacultyDirectoryService';
+import { resourceRecommendationService } from './ResourceRecommendationService';
+import { eventRecommendationService } from './EventRecommendationService';
+import { campusKnowledgeService } from './CampusKnowledgeService';
+import { presenceService } from './PresenceService';
+import { campusIntelligenceEngine } from './CampusIntelligenceEngine';
 
 export const services = {
   memory: memoryService,
@@ -60,6 +67,13 @@ export const services = {
   studyGroup: studyGroupService,
   recommendation: recommendationService,
   studentRouting: studentRoutingService,
+  classmateDiscovery: classmateDiscoveryService,
+  facultyDirectory: facultyDirectoryService,
+  resourceRecommendation: resourceRecommendationService,
+  eventRecommendation: eventRecommendationService,
+  campusKnowledge: campusKnowledgeService,
+  presence: presenceService,
+  campusIntelligence: campusIntelligenceEngine,
 };
 
 /**
@@ -92,6 +106,13 @@ export async function bootServices() {
     ['studyGroup', studyGroupService],
     ['recommendation', recommendationService],
     ['studentRouting', studentRoutingService],
+    ['classmateDiscovery', classmateDiscoveryService],
+    ['facultyDirectory', facultyDirectoryService],
+    ['resourceRecommendation', resourceRecommendationService],
+    ['eventRecommendation', eventRecommendationService],
+    ['campusKnowledge', campusKnowledgeService],
+    ['presence', presenceService],
+    ['campusIntelligence', campusIntelligenceEngine],
   ];
 
   const results = {};
