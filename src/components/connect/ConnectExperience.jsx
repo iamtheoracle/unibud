@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useContextSystem } from "@/lib/os/ContextProvider";
+import { useNavigation } from "@/lib/os/NavigationContext";
 import { getContract } from "@/lib/os/experienceContract";
 import Connect from "@/pages/Connect";
 
@@ -49,16 +50,17 @@ import Connect from "@/pages/Connect";
  */
 export default function ConnectExperience() {
   const { setContext } = useContextSystem();
+  const { isSocial } = useNavigation();
   const contract = getContract("connect");
 
-  // ContextProvider — set social context when Connect is the active experience.
-  // This signals Platform Core (Bud, Orbit, Spark, Realtime) to prioritize
-  // communication modules: messages, calls, conversations, presence.
-  // Academic modules remain available but at lower priority.
-  // Navigation never changes — only module priority shifts.
+  // ContextProvider — adapt context to the active navigation world.
+  // Social world: prioritize social communication (DMs, groups, communities).
+  // Academics world: prioritize academic communication (study groups, course
+  // chats, faculty, project teams, class discussions).
+  // Users should not notice the transition — content adapts seamlessly.
   useEffect(() => {
-    setContext("social");
-  }, [setContext]);
+    setContext(isSocial ? "social" : "academic");
+  }, [isSocial, setContext]);
 
   // Render the existing Connect page — no functional changes.
   // All Platform Core integration is handled by the OS runtime layers

@@ -1,45 +1,45 @@
 import React, { useMemo } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutGrid, GraduationCap, Compass, MessageCircle,
-  Search, Grid3x3, User,
+  Grid3x3, User,
 } from "lucide-react";
 import { hapticSelect } from "@/lib/haptics";
 import { useMotion } from "@/lib/motion/useMotion";
-import { EXPERIENCES } from "@/lib/os/manifest";
+import { useNavigation } from "@/lib/os/NavigationContext";
 import { validateNavigation } from "@/lib/os/constitutionalValidator";
 
-// Icon string → lucide component mapping (manifest stores icon names as strings)
 const ICON_MAP = {
-  LayoutGrid, GraduationCap, Compass, MessageCircle,
-  Search, Grid3x3, User,
+  LayoutGrid, GraduationCap, Compass, MessageCircle, Grid3x3, User,
 };
 
 /**
- * MainTabBar — the single, unified bottom navigation for UNIBUD OS v4.
+ * MainTabBar — the context-aware bottom navigation for UNIBUD OS.
  *
- * Entirely registry-driven: consumes the five permanent experiences from
- * the Platform Manifest. No hard-coded navigation logic.
+ * Renders different tabs based on the active world:
+ *   Social:    Square · Discover · Connect · Me
+ *   Academics: Campus · Quad · Connect · Me
  *
+ * Me is permanently fixed (bottom-right in both worlds).
+ * Connect exists in both worlds — its content adapts.
  * Bud is omnipresent (FloatingBudButton) and never appears as a tab.
- * Marketplace, Wallet, and all hidden services are reachable only through
- * Services, Lens, Bud, or contextual workflows — never as permanent tabs.
  *
- * References: OS Constitution, Experience Registry, Constitutional Validator.
+ * Visual: dark glass bar with white active icons, orange glow + underline.
+ * Inactive tabs are gray with no fill. Rounded, floating, minimal blur.
  */
 export default function MainTabBar() {
   const location = useLocation();
   const motionEngine = useMotion();
+  const { tabs, worldId } = useNavigation();
   const SPRING = motionEngine.spring('navigation');
 
-  // Dev-time constitutional validation — ensures no hidden service leaks into nav
   const navItems = useMemo(() => {
-    const items = EXPERIENCES.map((exp) => ({
-      id: exp.id,
-      to: exp.to,
-      label: exp.label,
-      icon: ICON_MAP[exp.icon] || LayoutGrid,
+    const items = tabs.map((tab) => ({
+      id: tab.id,
+      to: tab.to,
+      label: tab.label,
+      icon: ICON_MAP[tab.icon] || LayoutGrid,
     }));
 
     if (import.meta.env?.DEV) {
@@ -50,7 +50,7 @@ export default function MainTabBar() {
     }
 
     return items;
-  }, []);
+  }, [tabs]);
 
   return (
     <div
@@ -61,46 +61,72 @@ export default function MainTabBar() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={SPRING}
-        className="liquid-mirror pointer-events-auto flex items-center gap-0 mx-2 px-1 h-[54px] rounded-[24px] max-w-[440px] w-full"
+        className="pointer-events-auto relative flex items-center mx-2 px-1 h-[54px] rounded-[24px] max-w-[440px] w-full overflow-hidden"
+        style={{
+          background: "rgba(11, 11, 11, 0.82)",
+          backdropFilter: "blur(20px) saturate(1.5)",
+          WebkitBackdropFilter: "blur(20px) saturate(1.5)",
+          border: "1px solid rgba(255, 255, 255, 0.06)",
+          boxShadow: "0 6px 20px rgba(0,0,0,0.30), 0 20px 60px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
         aria-label="Primary navigation"
       >
-        {navItems.map((tab) => {
-          const isActive = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
-          const Icon = tab.icon;
-          return (
-            <NavLink
-              key={tab.to}
-              to={tab.to}
-              onClick={() => { if (!isActive) hapticSelect(); }}
-              aria-current={isActive ? "page" : undefined}
-              className="relative flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-[18px] spring-tap"
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="tab-active-pill"
-                  transition={SPRING}
-                  className="absolute inset-0 rounded-[18px] bg-primary/12"
-                />
-              )}
-              <div className="relative z-10 flex flex-col items-center gap-0.5">
-                <motion.div
-                  animate={{ scale: isActive ? 1.1 : 1, y: isActive ? -1 : 0 }}
-                  transition={SPRING}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={worldId}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="flex items-center w-full h-full"
+          >
+            {navItems.map((tab) => {
+              const isActive = location.pathname === tab.to || location.pathname.startsWith(tab.to + "/");
+              const Icon = tab.icon;
+              return (
+                <NavLink
+                  key={tab.to}
+                  to={tab.to}
+                  onClick={() => { if (!isActive) hapticSelect(); }}
+                  aria-current={isActive ? "page" : undefined}
+                  className="relative flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-[18px] spring-tap"
                 >
-                  <Icon
-                    className={`w-[18px] h-[18px] transition-colors duration-300 ${isActive ? "text-primary" : "text-muted-foreground"}`}
-                    strokeWidth={isActive ? 2.4 : 2}
-                  />
-                </motion.div>
-                <span
-                  className={`text-[9px] font-bold tracking-tight transition-colors duration-300 ${isActive ? "text-primary" : "text-muted-foreground"}`}
-                >
-                  {tab.label}
-                </span>
-              </div>
-            </NavLink>
-          );
-        })}
+                  {/* Orange underline for active tab */}
+                  {isActive && (
+                    <motion.div
+                      layoutId={`tab-underline-${worldId}`}
+                      className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full"
+                      style={{
+                        background: "hsl(var(--primary))",
+                        boxShadow: "0 0 8px hsl(var(--primary) / 0.6)",
+                      }}
+                    />
+                  )}
+                  {/* Subtle orange glow for active */}
+                  {isActive && (
+                    <div
+                      className="absolute inset-0 rounded-[18px] pointer-events-none"
+                      style={{ boxShadow: "inset 0 0 16px hsl(var(--primary) / 0.08)" }}
+                    />
+                  )}
+                  <div className="relative z-10 flex flex-col items-center gap-0.5">
+                    <Icon
+                      className="w-[18px] h-[18px]"
+                      strokeWidth={isActive ? 2.4 : 2}
+                      style={{ color: isActive ? "rgb(255, 255, 255)" : "rgba(255, 255, 255, 0.40)" }}
+                    />
+                    <span
+                      className="text-[9px] font-bold tracking-tight"
+                      style={{ color: isActive ? "rgb(255, 255, 255)" : "rgba(255, 255, 255, 0.40)" }}
+                    >
+                      {tab.label}
+                    </span>
+                  </div>
+                </NavLink>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
       </motion.nav>
     </div>
   );

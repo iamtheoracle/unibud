@@ -7,6 +7,8 @@ import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import { BudPresenceProvider } from "@/lib/bud/BudPresenceContext";
 import { SearchProvider, useSearch } from "@/lib/search/SearchContext";
 import MainTabBar from "@/components/layout/MainTabBar";
+import ContextSwitcher from "@/components/layout/ContextSwitcher";
+import { NavigationProvider, useNavigation } from "@/lib/os/NavigationContext";
 import FloatingBudButton from "@/components/bud/FloatingBudButton";
 import BudPresenceReactor from "@/components/bud/BudPresenceReactor";
 import BudSheet from "@/components/bud/BudSheet";
@@ -55,6 +57,20 @@ function RealtimeContextSync() {
 }
 
 /**
+ * NavigationContextSync — syncs the navigation world with the OS context.
+ * When the user switches worlds (Social ↔ Academics), the OS context is
+ * updated so Platform Core modules reprioritize accordingly.
+ */
+function NavigationContextSync() {
+  const { worldId } = useNavigation();
+  const { setContext } = useContextSystem();
+  useEffect(() => {
+    setContext(worldId === "social" ? "social" : "academic");
+  }, [worldId]);
+  return null;
+}
+
+/**
  * AppShell — the authenticated student shell: page content + floating
  * Bud Orb + bottom navigation. Guards auth for all tab routes.
  */
@@ -96,13 +112,16 @@ export default function AppShell() {
       <SearchProvider>
       <UnibudContextProvider>
       <OSContextProvider>
+      <NavigationProvider>
+      <NavigationContextSync />
       <RealtimeContextSync />
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
           <ContextPulse />
+          <ContextSwitcher />
           <OfflineSyncBanner />
-          <div className="relative z-10 max-w-[520px] mx-auto px-4 pt-2 safe-area-pt">
+          <div className="relative z-10 max-w-[520px] mx-auto px-4 pt-2">
             <AnnouncementBanner />
           </div>
           <EdgeContextSwipe />
@@ -110,7 +129,7 @@ export default function AppShell() {
           <Suspense fallback={<RouteLoading />}>
             <motion.div
               key={location.pathname}
-              className="app-content safe-area-pt pb-28"
+              className="app-content pb-28"
               initial={reduceMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 38, mass: 0.8 }}
@@ -126,6 +145,7 @@ export default function AppShell() {
           <ConsentBanner />
         </div>
       </ClassroomModeProvider>
+      </NavigationProvider>
       </OSContextProvider>
       </UnibudContextProvider>
       </SearchProvider>

@@ -53,6 +53,34 @@ export const EXPERIENCES = [
   },
 ];
 
+// ─── Context-Specific Navigation (OS v5) ──────────────────────────────────
+// The bottom navigation changes based on the active world (Social/Academics).
+// Me is permanently fixed in both worlds. Connect exists in both, content adapts.
+export const CONTEXT_NAVIGATION = {
+  social: {
+    id: "social",
+    label: "Social",
+    home: "/square",
+    tabs: [
+      { id: "square", label: "Square", to: "/square", icon: "LayoutGrid" },
+      { id: "discover", label: "Discover", to: "/discover", icon: "Compass" },
+      { id: "connect", label: "Connect", to: "/connect", icon: "MessageCircle" },
+      { id: "me", label: "Me", to: "/me", icon: "User" },
+    ],
+  },
+  academics: {
+    id: "academics",
+    label: "Academics",
+    home: "/campus",
+    tabs: [
+      { id: "campus", label: "Campus", to: "/campus", icon: "GraduationCap" },
+      { id: "quad", label: "Quad", to: "/quad", icon: "Grid3x3" },
+      { id: "connect", label: "Connect", to: "/connect", icon: "MessageCircle" },
+      { id: "me", label: "Me", to: "/me", icon: "User" },
+    ],
+  },
+};
+
 // ─── Hidden Product Services ──────────────────────────────────────────────
 // Marketplace and Wallet are OS services, not primary destinations.
 // Accessed through Discovery, Bud, context-aware actions, and workflows.
