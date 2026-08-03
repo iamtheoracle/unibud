@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useContextSystem } from "@/lib/os/ContextProvider";
-import MeTab from "@/pages/tabs/MeTab";
+import MePage from "@/components/me/MePage";
 
 /**
  * MeExperience — the migrated Me operating profile on the v4 OS runtime.
@@ -28,5 +28,5 @@ export default function MeExperience() {
     setContext("hybrid");
   }, [setContext]);
 
-  return <MeTab />;
+  return <MePage />;
 }

@@ -9,54 +9,37 @@ import {
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import EmptyState from "@/components/ui/EmptyState";
-import { useDemoMode } from "@/lib/DemoModeContext";
-
-const DEMO_STATS = [
-  { icon: Users, label: "Clubs Joined", value: 3, color: "text-info", bg: "bg-info/10", path: "/connect" },
-  { icon: Calendar, label: "Events", value: 12, color: "text-success", bg: "bg-success/10", path: "/campus-traditions" },
-  { icon: PartyPopper, label: "Traditions", value: 5, color: "text-primary", bg: "bg-primary/10", path: "/campus-traditions" },
-  { icon: Briefcase, label: "Opportunities", value: 2, color: "text-warning", bg: "bg-warning/10", path: "/opportunities" },
-];
 
 export default function CampusLifeSection() {
-  const { isDemoMode } = useDemoMode();
-
   const { data: traditions } = useQuery({
     queryKey: ["meTraditions"],
     queryFn: () => base44.entities.CampusTradition.list("-created_date", 50),
-    enabled: !isDemoMode,
   });
   const { data: opportunities } = useQuery({
     queryKey: ["meOpps"],
     queryFn: () => base44.entities.Opportunity.list("-created_date", 50),
-    enabled: !isDemoMode,
   });
   const { data: achievements } = useQuery({
     queryKey: ["meAchievements"],
     queryFn: () => base44.entities.StudentAchievement.list("-created_date", 50),
-    enabled: !isDemoMode,
   });
   const { data: groups } = useQuery({
     queryKey: ["meGroups"],
     queryFn: () => base44.entities.StudyGroup.list("-created_date", 50),
-    enabled: !isDemoMode,
   });
   const { data: fyp } = useQuery({
     queryKey: ["meFyp"],
     queryFn: () => base44.entities.FYPProject.list("-created_date", 5),
-    enabled: !isDemoMode,
   });
 
-  const stats = isDemoMode
-    ? DEMO_STATS
-    : [
-        { icon: Users, label: "Study Groups", value: groups?.length || 0, color: "text-info", bg: "bg-info/10", path: "/study-groups" },
-        { icon: Calendar, label: "Traditions", value: traditions?.length || 0, color: "text-success", bg: "bg-success/10", path: "/campus-traditions" },
-        { icon: Briefcase, label: "Opportunities", value: opportunities?.length || 0, color: "text-warning", bg: "bg-warning/10", path: "/opportunities" },
-        { icon: Award, label: "Achievements", value: achievements?.length || 0, color: "text-primary", bg: "bg-primary/10", path: "/achievements" },
-      ];
+  const stats = [
+    { icon: Users, label: "Study Groups", value: groups?.length || 0, color: "text-information", bg: "bg-information/10", path: "/study-groups" },
+    { icon: Calendar, label: "Traditions", value: traditions?.length || 0, color: "text-success", bg: "bg-success/10", path: "/campus-traditions" },
+    { icon: Briefcase, label: "Opportunities", value: opportunities?.length || 0, color: "text-warning", bg: "bg-warning/10", path: "/opportunities" },
+    { icon: Award, label: "Achievements", value: achievements?.length || 0, color: "text-primary", bg: "bg-primary/10", path: "/achievements" },
+  ];
 
-  const hasData = isDemoMode || (groups?.length > 0 || traditions?.length > 0 || opportunities?.length > 0 || achievements?.length > 0 || fyp?.length > 0);
+  const hasData = groups?.length > 0 || traditions?.length > 0 || opportunities?.length > 0 || achievements?.length > 0 || fyp?.length > 0;
 
   return (
     <div className="space-y-4">
@@ -85,7 +68,7 @@ export default function CampusLifeSection() {
       </div>
 
       {/* FYP Progress */}
-      {(isDemoMode || (fyp && fyp.length > 0)) && (
+      {fyp && fyp.length > 0 && (
         <Link to="/fyp-hub">
           <GlassCard variant="solid" className="p-4 card-hover" delay={0.35}>
             <div className="flex items-center justify-between mb-2.5">
@@ -97,19 +80,7 @@ export default function CampusLifeSection() {
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </div>
-            {isDemoMode ? (
-              <>
-                <div className="flex items-center gap-2 mb-1.5">
-                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <motion.div initial={{ width: 0 }} animate={{ width: "65%" }} transition={{ duration: 1, delay: 0.4 }} className="h-full rounded-full bg-gradient-to-r from-primary to-primary/70" />
-                  </div>
-                  <span className="text-[11px] font-bold text-primary">65%</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground">Smart Campus Navigation System</p>
-              </>
-            ) : (
-              <p className="text-[11px] text-muted-foreground">{fyp?.[0]?.title || "No project yet"}</p>
-            )}
+            <p className="text-[11px] text-muted-foreground">{fyp?.[0]?.title || "No project yet"}</p>
           </GlassCard>
         </Link>
       )}
@@ -122,13 +93,13 @@ export default function CampusLifeSection() {
           </div>
           <div className="flex-1">
             <p className="text-[12px] font-semibold text-foreground">Achievements Timeline</p>
-            <p className="text-[10px] text-muted-foreground">{isDemoMode ? "11 milestones earned" : (achievements?.length || 0) + " milestones"}</p>
+            <p className="text-[10px] text-muted-foreground">{(achievements?.length || 0) + " milestones"}</p>
           </div>
           <ChevronRight className="w-4 h-4 text-muted-foreground" />
         </GlassCard>
       </Link>
 
-      {!hasData && !isDemoMode && (
+      {!hasData && (
         <GlassCard variant="solid" className="p-6" delay={0.5}>
           <EmptyState
             icon={PartyPopper}
