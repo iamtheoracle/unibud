@@ -254,6 +254,34 @@ export interface ArtistAssetPayload {
   generatedAt: string;
 }
 
+// ── Specialist — shared payload types ────────────────────────────────────────
+
+/**
+ * Generic query dispatched by Spark to any specialist intelligence.
+ * The `domain` field identifies the specialist; the `query` field carries
+ * the natural-language or structured request.
+ */
+export interface SpecialistQueryPayload {
+  requestId: string;
+  domain: string;
+  query: string;
+  context?: Record<string, unknown>;
+  userId?: string;
+  sessionId?: string;
+}
+
+/**
+ * Generic result returned by any specialist intelligence to Spark.
+ */
+export interface SpecialistResultPayload {
+  requestId: string;
+  domain: string;
+  result: string;
+  structured?: Record<string, unknown>;
+  confidence?: number;
+  durationMs?: number;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Event Map — all events the bus carries
 // ─────────────────────────────────────────────────────────────────────────────
@@ -285,6 +313,119 @@ export interface IntelligenceBusEventMap {
   // Artist
   "artist:create": ArtistCreatePayload;
   "artist:asset": ArtistAssetPayload;
+
+  // ── Specialist Intelligence Events ─────────────────────────────────────────
+  // Spark dispatches these to the appropriate specialist; specialists return
+  // typed result events. All payloads share a common requestId for tracing.
+
+  // Campus AI
+  "campus_ai:query": SpecialistQueryPayload;
+  "campus_ai:result": SpecialistResultPayload;
+
+  // Community AI
+  "community_ai:query": SpecialistQueryPayload;
+  "community_ai:result": SpecialistResultPayload;
+
+  // Marketplace AI
+  "marketplace_ai:query": SpecialistQueryPayload;
+  "marketplace_ai:result": SpecialistResultPayload;
+
+  // Event AI
+  "event_ai:query": SpecialistQueryPayload;
+  "event_ai:result": SpecialistResultPayload;
+
+  // Challenge AI
+  "challenge_ai:query": SpecialistQueryPayload;
+  "challenge_ai:result": SpecialistResultPayload;
+
+  // News AI
+  "news_ai:query": SpecialistQueryPayload;
+  "news_ai:result": SpecialistResultPayload;
+
+  // Podcast AI
+  "podcast_ai:query": SpecialistQueryPayload;
+  "podcast_ai:result": SpecialistResultPayload;
+
+  // Movies AI
+  "movies_ai:query": SpecialistQueryPayload;
+  "movies_ai:result": SpecialistResultPayload;
+
+  // Anime AI
+  "anime_ai:query": SpecialistQueryPayload;
+  "anime_ai:result": SpecialistResultPayload;
+
+  // Sports AI
+  "sports_ai:query": SpecialistQueryPayload;
+  "sports_ai:result": SpecialistResultPayload;
+
+  // Library AI
+  "library_ai:query": SpecialistQueryPayload;
+  "library_ai:result": SpecialistResultPayload;
+
+  // Learning AI
+  "learning_ai:query": SpecialistQueryPayload;
+  "learning_ai:result": SpecialistResultPayload;
+
+  // Assignment AI
+  "assignment_ai:query": SpecialistQueryPayload;
+  "assignment_ai:result": SpecialistResultPayload;
+
+  // Quiz AI
+  "quiz_ai:query": SpecialistQueryPayload;
+  "quiz_ai:result": SpecialistResultPayload;
+
+  // Career AI
+  "career_ai:query": SpecialistQueryPayload;
+  "career_ai:result": SpecialistResultPayload;
+
+  // Scholarship AI
+  "scholarship_ai:query": SpecialistQueryPayload;
+  "scholarship_ai:result": SpecialistResultPayload;
+
+  // Creator AI
+  "creator_ai:query": SpecialistQueryPayload;
+  "creator_ai:result": SpecialistResultPayload;
+
+  // Camera AI
+  "camera_ai:query": SpecialistQueryPayload;
+  "camera_ai:result": SpecialistResultPayload;
+
+  // Voice AI
+  "voice_ai:query": SpecialistQueryPayload;
+  "voice_ai:result": SpecialistResultPayload;
+
+  // Language AI
+  "language_ai:query": SpecialistQueryPayload;
+  "language_ai:result": SpecialistResultPayload;
+
+  // Wellness AI
+  "wellness_ai:query": SpecialistQueryPayload;
+  "wellness_ai:result": SpecialistResultPayload;
+
+  // Gamification AI
+  "gamification_ai:query": SpecialistQueryPayload;
+  "gamification_ai:result": SpecialistResultPayload;
+
+  // Architect
+  "architect:query": SpecialistQueryPayload;
+  "architect:result": SpecialistResultPayload;
+
+  // ── Platform-level events ───────────────────────────────────────────────────
+  // Published by any intelligence; consumed by authorised platform services.
+
+  "platform:assignment_created": { userId: string; assignmentId: string; courseId: string; dueAt: string };
+  "platform:assignment_submitted": { userId: string; assignmentId: string; submittedAt: string };
+  "platform:course_completed": { userId: string; courseId: string; completedAt: string };
+  "platform:community_joined": { userId: string; communityId: string; joinedAt: string };
+  "platform:friend_added": { userId: string; friendId: string; addedAt: string };
+  "platform:story_published": { userId: string; storyId: string; publishedAt: string };
+  "platform:video_uploaded": { userId: string; videoId: string; uploadedAt: string };
+  "platform:scholarship_discovered": { userId: string; scholarshipId: string; discoveredAt: string };
+  "platform:marketplace_order_created": { buyerId: string; sellerId: string; orderId: string; createdAt: string };
+  "platform:message_sent": { senderId: string; recipientId: string; messageId: string; sentAt: string };
+  "platform:exam_scheduled": { userId: string; examId: string; scheduledAt: string };
+  "platform:profile_updated": { userId: string; updatedFields: string[]; updatedAt: string };
+  "platform:learning_progress_updated": { userId: string; courseId: string; progress: number; updatedAt: string };
 }
 
 export type IntelligenceBusEvent = keyof IntelligenceBusEventMap;
