@@ -29,9 +29,10 @@ export default function ContextSwitcher() {
               width: "calc(50% - 4px)",
               left: 4,
               background: "rgb(11, 11, 11)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.06)",
             }}
             animate={{ x: isSocial ? 0 : "calc(100% + 0px)" }}
-            transition={{ type: "spring", stiffness: 380, damping: 38, mass: 0.8 }}
+            transition={{ type: "spring", stiffness: 420, damping: 32, mass: 0.7 }}
           />
 
           {/* Social */}
@@ -39,9 +40,13 @@ export default function ContextSwitcher() {
             onClick={() => { if (!isSocial) { hapticSelect(); switchWorld("social"); } }}
             className="relative z-10 flex-1 py-2 text-center text-[13px] font-bold tracking-tight transition-opacity duration-300"
           >
-            <span style={{ color: isSocial ? "rgb(255, 255, 255)" : "hsl(var(--muted-foreground))" }}>
+            <motion.span
+              style={{ color: isSocial ? "rgb(255, 255, 255)" : "hsl(var(--muted-foreground))", display: "inline-block" }}
+              animate={{ scale: isSocial ? 1.03 : 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            >
               Social
-            </span>
+            </motion.span>
           </button>
 
           {/* Academics */}
@@ -49,9 +54,13 @@ export default function ContextSwitcher() {
             onClick={() => { if (!isAcademics) { hapticSelect(); switchWorld("academics"); } }}
             className="relative z-10 flex-1 py-2 text-center text-[13px] font-bold tracking-tight transition-opacity duration-300"
           >
-            <span style={{ color: isAcademics ? "rgb(255, 255, 255)" : "hsl(var(--muted-foreground))" }}>
+            <motion.span
+              style={{ color: isAcademics ? "rgb(255, 255, 255)" : "hsl(var(--muted-foreground))", display: "inline-block" }}
+              animate={{ scale: isAcademics ? 1.03 : 1 }}
+              transition={{ type: "spring", stiffness: 400, damping: 22 }}
+            >
               Academics
-            </span>
+            </motion.span>
           </button>
         </div>
       </div>

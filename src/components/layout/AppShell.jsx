@@ -33,6 +33,7 @@ import "@/lib/os/communicationModules"; // Registers communication modules consu
 import { VoiceProvider } from "@/lib/voice/VoiceProvider";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
 import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
+import WorldTransitionOverlay from "@/components/layout/WorldTransitionOverlay";
 import { useBudPush } from "@/lib/notifications/useBudPush";
 import { useAutonomousEngine } from "@/hooks/useAutonomousEngine";
 import { useSelfHealingEngine } from "@/hooks/useSelfHealingEngine";
@@ -120,6 +121,7 @@ export default function AppShell() {
           <AmbientBackground />
           <ContextPulse />
           <ContextSwitcher />
+          <WorldTransitionOverlay />
           <OfflineSyncBanner />
           <div className="relative z-10 max-w-[520px] mx-auto px-4 pt-2">
             <AnnouncementBanner />
