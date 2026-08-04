@@ -3,27 +3,14 @@ import { eventBus } from "@/lib/runtime/eventBus";
 import { bootRegistries, registries } from "@/lib/runtime/registries";
 import { bootServices, services } from "@/lib/runtime/services";
 import { bootKernel } from "@/lib/runtime/kernel";
+import { AI_AGENT_DEFINITIONS } from "./agentDefinitions";
+import { agentBus } from "./agentBus";
+import { eventRouter } from "./eventRouter";
+import { aiContextManager } from "./contextManager";
+import { aiPermissions } from "./permissions";
+import { aiMonitor } from "./monitor";
 
-const COMPONENT_REGISTRY = [
-	{
-		id: "bud",
-		name: "Bud",
-		category: "companion",
-		version: "1.0.0",
-		dependencies: ["oracle", "memory", "knowledge", "telemetry"],
-		capabilities: ["conversation", "personality", "transcript"],
-		permissions: ["model:invoke"],
-	},
-	{
-		id: "spark",
-		name: "Spark",
-		category: "intelligence",
-		version: "1.0.0",
-		dependencies: ["model", "prompt", "memory", "knowledge", "telemetry"],
-		capabilities: ["reasoning", "knowledge", "summaries", "writing"],
-		permissions: ["model:invoke"],
-	},
-];
+const COMPONENT_REGISTRY = AI_AGENT_DEFINITIONS;
 
 function cloneMetadata(definition) {
 	return {
@@ -31,6 +18,7 @@ function cloneMetadata(definition) {
 		capabilities: [...(definition.capabilities || [])],
 		dependencies: [...(definition.dependencies || [])],
 		permissions: [...(definition.permissions || [])],
+		communicatesWith: [...(definition.communicatesWith || [])],
 	};
 }
 
@@ -68,6 +56,22 @@ class AIKernel {
 		return eventBus;
 	}
 
+	get agentBus() {
+		return agentBus;
+	}
+
+	get contextManager() {
+		return aiContextManager;
+	}
+
+	get permissions() {
+		return aiPermissions;
+	}
+
+	get monitor() {
+		return aiMonitor;
+	}
+
 	get logger() {
 		return this._logger;
 	}
@@ -95,6 +99,11 @@ class AIKernel {
 			await bootRegistries();
 			await bootServices();
 			this._integrations = await bootKernel();
+
+			// Boot AI infrastructure
+			aiPermissions.seed();
+			eventRouter.init();
+			aiMonitor.start();
 
 			for (const definition of COMPONENT_REGISTRY) {
 				this.register(cloneMetadata(definition));
