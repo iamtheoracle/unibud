@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useUnibudContext } from "@/lib/UnibudContext";
-import OsTopBar from "@/components/layout/OsTopBar";
 import ServiceCategory from "@/components/services/ServiceCategory";
 import {
   Calendar, Clock, BookOpen, Award, TrendingUp, ClipboardList,
@@ -130,7 +129,6 @@ export default function Services() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
-      <OsTopBar user={ctx.user} />
 
       {/* Smart Recommendations */}
       <div className="pt-4">

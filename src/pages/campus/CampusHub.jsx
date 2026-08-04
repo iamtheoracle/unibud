@@ -6,7 +6,6 @@ import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
 import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useUnibudContext } from "@/lib/UnibudContext";
-import OsTopBar from "@/components/layout/OsTopBar";
 import { useSpark } from "@/hooks/useSpark";
 
 const TABS = [
@@ -97,7 +96,6 @@ export default function CampusHub() {
 
   return (
     <div className="w-full max-w-[520px] mx-auto px-4 pt-3 pb-28 safe-area-pt">
-      <OsTopBar user={ctx?.user} />
 
       {/* Content nav */}
       <div className="flex gap-5 px-1 pb-3 border-b border-border/20">

@@ -7,7 +7,7 @@ import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import { BudPresenceProvider } from "@/lib/bud/BudPresenceContext";
 import { SearchProvider, useSearch } from "@/lib/search/SearchContext";
 import PrimaryNavBar from "@/components/layout/PrimaryNavBar";
-import ContextSwitcher from "@/components/layout/ContextSwitcher";
+import GlobalTopBar from "@/components/layout/GlobalTopBar";
 import { NavigationProvider, useNavigation } from "@/lib/os/NavigationContext";
 import { NavigationAnalyticsProvider } from "@/lib/navigation/navigationAnalytics";
 import { CommandBarProvider, useCommandBar } from "@/components/navigation/CommandBar";
@@ -138,7 +138,7 @@ export default function AppShell() {
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
           <ContextPulse />
-          <ContextSwitcher />
+          <GlobalTopBar />
           <WorldTransitionOverlay />
           <OfflineSyncBanner />
           <div className="relative z-10 max-w-[520px] mx-auto px-4 pt-2">
