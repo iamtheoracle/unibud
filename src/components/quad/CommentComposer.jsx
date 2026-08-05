@@ -16,10 +16,15 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
   const [recording, setRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionPos, setMentionPos] = useState(-1);
+  const [mentionResults, setMentionResults] = useState([]);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const composerRef = useRef(null);
+  const mentionTimeoutRef = useRef(null);
   const qc = useQueryClient();
 
   useEffect(() => {
@@ -28,6 +33,41 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
   }, [text]);
+
+  useEffect(() => {
+    if (!mentionQuery) {
+      setMentionResults([]);
+      if (mentionTimeoutRef.current) clearTimeout(mentionTimeoutRef.current);
+      return;
+    }
+
+    if (mentionTimeoutRef.current) clearTimeout(mentionTimeoutRef.current);
+    mentionTimeoutRef.current = setTimeout(async () => {
+      try {
+        const users = await base44.entities.User.filter({ full_name__icontains: mentionQuery }, "full_name", 5);
+        setMentionResults(Array.isArray(users) ? users.slice(0, 5) : []);
+      } catch {
+        setMentionResults([]);
+      }
+    }, 300);
+
+    return () => {
+      if (mentionTimeoutRef.current) clearTimeout(mentionTimeoutRef.current);
+    };
+  }, [mentionQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!composerRef.current?.contains(event.target)) {
+        setMentionQuery("");
+        setMentionPos(-1);
+        setMentionResults([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const authorName = user?.full_name || user?.email?.split("@")[0] || "Student";
   const authorImage = user?.avatar_url || user?.image || "";
@@ -74,6 +114,30 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
     }
   };
 
+  const resetMentions = () => {
+    setMentionQuery("");
+    setMentionPos(-1);
+    setMentionResults([]);
+  };
+
+  const handleMentionSelect = (selectedUser) => {
+    const username = selectedUser?.username || selectedUser?.full_name || "";
+    if (!username || mentionPos < 0) return;
+
+    const end = mentionPos + mentionQuery.length + 1;
+    const nextText = `${text.slice(0, mentionPos)}@${username} ${text.slice(end)}`;
+    setText(nextText);
+    resetMentions();
+
+    requestAnimationFrame(() => {
+      if (textareaRef.current) {
+        const cursorPos = mentionPos + username.length + 2;
+        textareaRef.current.focus();
+        textareaRef.current.setSelectionRange(cursorPos, cursorPos);
+      }
+    });
+  };
+
   const handleSubmit = async () => {
     if (!text.trim() && mediaUrls.length === 0 && !audioBlob) return;
     setSubmitting(true);
@@ -109,6 +173,7 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
       setMediaUrls([]);
       setAudioBlob(null);
       setShowEmoji(false);
+      resetMentions();
       if (onCancelReply) onCancelReply();
       qc.invalidateQueries({ queryKey: ["quadComments", postId] });
       qc.invalidateQueries({ queryKey: ["quadFeed"] });
@@ -147,7 +212,7 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
   };
 
   return (
-    <div className="bg-card rounded-[16px] border border-border/30 p-2.5">
+    <div ref={composerRef} className="bg-card rounded-[16px] border border-border/30 p-2.5 relative">
       {parentComment && (
         <div className="flex items-center gap-2 mb-2 px-1">
           <span className="text-[10px] text-muted-foreground">
@@ -196,11 +261,58 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
         </div>
       )}
 
+      {mentionResults.length > 0 && mentionQuery && (
+        <div className="absolute left-2.5 right-2.5 bottom-full mb-2 glass-card rounded-[12px] border border-border/30 overflow-hidden z-20">
+          {mentionResults.map((result) => {
+            const avatar = result?.avatar_url || result?.image || "";
+            return (
+              <button
+                key={result.id || result.username || result.full_name}
+                type="button"
+                onClick={() => handleMentionSelect(result)}
+                className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted/60 transition-colors"
+              >
+                {avatar ? (
+                  <img src={avatar} alt="" className="w-6 h-6 rounded-full object-cover" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[10px] font-semibold text-muted-foreground">
+                    {(result?.full_name || "U").charAt(0)}
+                  </div>
+                )}
+                <span className="text-[12px] text-foreground">{result?.full_name || result?.username || "Unknown user"}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       <div className="flex items-end gap-2">
         <textarea
           ref={textareaRef}
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+            setText(value);
+
+            const cursorPos = e.target.selectionStart ?? value.length;
+            const beforeCursor = value.slice(0, cursorPos);
+            const match = beforeCursor.match(/(^|\s)@([\w.]*)$/);
+
+            if (match) {
+              const query = match[2] || "";
+              const start = cursorPos - query.length - 1;
+              setMentionPos(start);
+              setMentionQuery(query);
+              if (!query) setMentionResults([]);
+            } else {
+              resetMentions();
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              resetMentions();
+            }
+          }}
           placeholder="Write a comment..."
           rows={1}
           className="flex-1 bg-transparent text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none resize-none max-h-24 py-1.5"

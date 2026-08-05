@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import SellerRatingBadge from "@/components/marketplace/SellerRatingBadge";
+import CheckoutModal from "@/components/marketplace/CheckoutModal";
 import {
   X, Heart, MessageCircle, Flag, Star, Shield, MapPin, Tag, Copy, Sparkles, Loader2,
 } from "lucide-react";
@@ -23,6 +24,7 @@ export default function ListingDetailSheet({ listing, user, rating, onClose, onR
   const [imgIndex, setImgIndex] = useState(0);
   const [messaging, setMessaging] = useState(false);
   const [faving, setFaving] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   const images = listing.images || [];
   const isFavorited = (listing.favorited_by || []).includes(user?.id);
@@ -188,14 +190,22 @@ export default function ListingDetailSheet({ listing, user, rating, onClose, onR
           {/* Actions */}
           {!isOwnListing ? (
             <div className="space-y-2">
-              <button
-                onClick={handleMessageSeller}
-                disabled={messaging}
-                className="w-full py-3 rounded-[16px] bg-primary text-primary-foreground font-semibold text-[14px] spring-tap flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                {messaging ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
-                Message Seller
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCheckoutOpen(true)}
+                  className="flex-1 py-3 rounded-[16px] bg-primary text-primary-foreground font-semibold text-[14px] spring-tap flex items-center justify-center gap-2"
+                >
+                  Buy Now
+                </button>
+                <button
+                  onClick={handleMessageSeller}
+                  disabled={messaging}
+                  className="flex-1 py-3 rounded-[16px] glass-card text-foreground font-semibold text-[14px] spring-tap flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {messaging ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageCircle className="w-4 h-4" />}
+                  Message Seller
+                </button>
+              </div>
               <div className="flex gap-2">
                 <button
                   onClick={toggleFavorite}
@@ -222,6 +232,7 @@ export default function ListingDetailSheet({ listing, user, rating, onClose, onR
           </p>
         </div>
       </motion.div>
+      <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} listing={listing} user={user} />
     </motion.div>
   );
 }

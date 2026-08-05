@@ -213,7 +213,7 @@ export default function CommunityDetail() {
               <CommunityMedia posts={posts} accentColor={accentColor} />
             )}
             {activeTab === "announcements" && (
-              <CommunityAnnouncements community={community} accentColor={accentColor} />
+              <CommunityAnnouncements community={community} accentColor={accentColor} currentUser={user} />
             )}
             {activeTab === "settings" && (
               <CommunitySettings

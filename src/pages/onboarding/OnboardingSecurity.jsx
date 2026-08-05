@@ -172,6 +172,27 @@ export default function OnboardingSecurity() {
                 </button>
               }
             />
+            {/* Password strength indicator */}
+            {password.length > 0 && (() => {
+              const hasUpper = /[A-Z]/.test(password);
+              const hasNum = /\d/.test(password);
+              const hasSpecial = /[^A-Za-z0-9]/.test(password);
+              const len = password.length;
+              const score = [len >= 8, hasUpper, hasNum, hasSpecial].filter(Boolean).length;
+              const labels = ["", "Weak", "Fair", "Good", "Strong"];
+              const colors = ["", "bg-error", "bg-warning", "bg-primary/70", "bg-success"];
+              const textColors = ["", "text-error", "text-warning", "text-primary/70", "text-success"];
+              return (
+                <div className="mt-1.5 px-0.5">
+                  <div className="flex gap-1 mb-1">
+                    {[1,2,3,4].map((i) => (
+                      <div key={i} className={`flex-1 h-1 rounded-full transition-all ${i <= score ? colors[score] : "bg-muted"}`} />
+                    ))}
+                  </div>
+                  <p className={`text-[11px] font-medium ${textColors[score]}`}>{labels[score] || "Too short"}</p>
+                </div>
+              );
+            })()}
             <GlassInput
               label="Confirm Password"
               type={showPw ? "text" : "password"}

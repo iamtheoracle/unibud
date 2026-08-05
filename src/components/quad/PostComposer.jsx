@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  X, Image as ImageIcon, FileText, Smile, MapPin, Globe,
+  X, Image as ImageIcon, FileText, Smile, MapPin, Globe, BarChart3,
   Send, Loader2, Eye, EyeOff, Trash2, Save,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -26,6 +26,9 @@ export default function PostComposer({ open, onClose, user }) {
   const [uploading, setUploading] = useState(false);
   const [location, setLocation] = useState("");
   const [showLocation, setShowLocation] = useState(false);
+  const [showPoll, setShowPoll] = useState(false);
+  const [pollOptions, setPollOptions] = useState(["", ""]);
+  const [pollDuration, setPollDuration] = useState("1d");
   const [submitting, setSubmitting] = useState(false);
   const [saveDraft, setSaveDraft] = useState(null);
   const fileInputRef = useRef(null);
@@ -78,7 +81,8 @@ export default function PostComposer({ open, onClose, user }) {
   const university = user?.university || "";
   const charCount = content.length;
   const charLimit = MAX_POST_LENGTH;
-  const canPost = content.trim().length > 0 || media.length > 0;
+  const validPollOptions = pollOptions.map((option) => option.trim()).filter(Boolean);
+  const canPost = content.trim().length > 0 || media.length > 0 || (showPoll && validPollOptions.length >= 2);
 
   const handleFileSelect = async (e) => {
     const files = Array.from(e.target.files || []);
@@ -113,7 +117,7 @@ export default function PostComposer({ open, onClose, user }) {
         author_role: "student",
         author_handle: isAnonymous ? "" : (user?.department || university),
         is_verified: false,
-        type: media.length > 0 ? media[0].type : postType,
+        type: showPoll ? "poll" : (media.length > 0 ? media[0].type : postType),
         media_urls: media.map((m) => m.url),
         media_types: media.map((m) => m.type),
         hashtags: extractHashtags(content),
@@ -128,6 +132,7 @@ export default function PostComposer({ open, onClose, user }) {
         is_pinned: false,
         is_anonymous: isAnonymous,
         draft_status: "published",
+        ...(showPoll ? { poll_options: validPollOptions, poll_duration: pollDuration, type: "poll" } : {}),
       };
 
       // Optimistic: add to cache immediately
@@ -164,6 +169,9 @@ export default function PostComposer({ open, onClose, user }) {
       setVisibility("campus");
       setIsAnonymous(false);
       setShowEmoji(false);
+      setShowPoll(false);
+      setPollOptions(["", ""]);
+      setPollDuration("1d");
       onClose();
     } catch {
       // Revert optimistic update on error
@@ -190,6 +198,9 @@ export default function PostComposer({ open, onClose, user }) {
     setPostType("text");
     setVisibility("campus");
     setIsAnonymous(false);
+    setShowPoll(false);
+    setPollOptions(["", ""]);
+    setPollDuration("1d");
   };
 
   return (
@@ -308,6 +319,70 @@ export default function PostComposer({ open, onClose, user }) {
                 rows={3}
                 className="w-full bg-transparent text-[14px] leading-relaxed text-foreground placeholder:text-muted-foreground focus:outline-none resize-none min-h-[80px]"
               />
+
+              {/* Poll composer */}
+              <AnimatePresence>
+                {showPoll && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden mb-3"
+                  >
+                    <div className="rounded-[16px] border border-border/30 bg-muted/30 p-3 space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[12px] font-semibold text-foreground">Poll Options</span>
+                        <div className="flex items-center gap-1">
+                          {["1d", "3d", "7d"].map((duration) => (
+                            <button
+                              key={duration}
+                              type="button"
+                              onClick={() => setPollDuration(duration)}
+                              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition-colors ${
+                                pollDuration === duration ? "bg-primary text-primary-foreground" : "bg-background/80 text-muted-foreground"
+                              }`}
+                            >
+                              {duration}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        {pollOptions.map((option, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <input
+                              value={option}
+                              onChange={(e) => setPollOptions((prev) => prev.map((item, itemIndex) => itemIndex === index ? e.target.value : item))}
+                              placeholder={`Option ${index + 1}`}
+                              className="flex-1 px-3 py-2 rounded-[12px] bg-background/80 border border-border/30 text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                            {pollOptions.length > 2 && (
+                              <button
+                                type="button"
+                                onClick={() => setPollOptions((prev) => prev.filter((_, itemIndex) => itemIndex !== index))}
+                                className="w-8 h-8 rounded-[12px] hover:bg-background/80 flex items-center justify-center text-muted-foreground"
+                                title="Remove option"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setPollOptions((prev) => [...prev, ""])}
+                        disabled={pollOptions.length >= 4}
+                        className="text-[12px] font-medium text-primary disabled:text-muted-foreground disabled:opacity-60"
+                      >
+                        Add option
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Emoji picker */}
               <AnimatePresence>

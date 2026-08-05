@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, X, MessageCircle, Sparkles, Star, Flag, Bell, Package, Store, ChevronRight, TrendingUp } from "lucide-react";
+import { Search, Plus, X, MessageCircle, Sparkles, Star, Flag, Bell, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import { useUnibudContext } from "@/lib/UnibudContext";
 import ListingComposer from "@/components/marketplace/ListingComposer";
 import SellerRatingBadge from "@/components/marketplace/SellerRatingBadge";
 import ReviewComposer from "@/components/marketplace/ReviewComposer";
+import OrderHistory from "@/components/marketplace/OrderHistory";
 import ReportModal from "@/components/ecosystem/ReportModal";
 import MarketplaceCard from "@/components/marketplace/MarketplaceCard";
 import ListingRow from "@/components/marketplace/ListingRow";
@@ -32,6 +33,7 @@ const CAT_TILES = [
 
 const FILTERS = ["Nearby", "My Institution", "Department", "Verified", "Recently Added"];
 const SERVICE_CATS = ["tutoring", "services", "freelancers"];
+const PAGE_TABS = ["Browse", "Orders"];
 
 const DEMO_LISTINGS = [
   { id: "d1", title: "Data Structures & Algorithms", price: 15500, category: "textbooks", is_verified: true, location: "2 km", seller_name: "Femi A.", contact: "0801 234 5678", description: "Gently used. Covers CSC402 syllabus.", image_url: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500&q=80" },
@@ -69,6 +71,7 @@ export default function Marketplace() {
   const navigate = useNavigate();
   const ctx = useUnibudContext();
   const [activeCat, setActiveCat] = useState("All");
+  const [activeTab, setActiveTab] = useState("Browse");
   const [scope, setScope] = useState("Nearby");
   const [search, setSearch] = useState("");
   const [composerOpen, setComposerOpen] = useState(false);
@@ -130,7 +133,6 @@ export default function Marketplace() {
     toast({ title: "Contact copied", description: "Reach out to the seller directly." });
   };
 
-  const name = ctx?.user?.full_name || "Scholar";
   const rec = featured[0] || housing[0];
 
   return (
@@ -149,54 +151,77 @@ export default function Marketplace() {
         </div>
       </div>
 
-      {/* Search — flat, no card wrapper */}
-      <div className="flex items-center gap-3 px-4 h-[48px] rounded-2xl bg-muted/30 border border-border/20 mb-3">
-        <Search className="w-[18px] h-[18px] text-muted-foreground/60 flex-shrink-0" strokeWidth={1.8} />
-        <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search books, hostels, services..." className="flex-1 bg-transparent border-none outline-none text-[15px] text-foreground placeholder:text-muted-foreground/50" />
-      </div>
-
-      {/* Filter chips — sticky */}
+      {/* Page tabs */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar mb-3">
-        {FILTERS.map((f) => (
+        {PAGE_TABS.map((tab) => (
           <button
-            key={f}
-            onClick={() => setScope(f)}
-            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap spring-tap transition-colors ${
-              scope === f ? "bg-foreground text-background" : "bg-muted/30 text-muted-foreground border border-border/20"
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap ${
+              activeTab === tab ? "bg-foreground text-background" : "bg-muted/30 text-muted-foreground border border-border/20"
             }`}
           >
-            {f}
+            {tab}
           </button>
         ))}
       </div>
 
-      {/* Category tiles */}
-      <div className="grid grid-cols-4 gap-1.5 mb-6">
-        {CAT_TILES.map((t) => {
-          const on = activeCat === t.cat;
-          return (
-            <button
-              key={t.cat}
-              onClick={() => setActiveCat(on ? "All" : t.cat)}
-              className={`flex flex-col items-center gap-1 py-3 rounded-xl spring-tap transition-colors ${on ? "bg-foreground/5" : ""}`}
-            >
-              <span className="text-[22px] leading-none">{t.emoji}</span>
-              <span className={`text-[10px] font-medium text-center leading-tight ${on ? "text-foreground" : "text-muted-foreground"}`}>{t.label}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Search — flat, no card wrapper */}
+      {activeTab === "Browse" && (
+        <>
+          <div className="flex items-center gap-3 px-4 h-[48px] rounded-2xl bg-muted/30 border border-border/20 mb-3">
+            <Search className="w-[18px] h-[18px] text-muted-foreground/60 flex-shrink-0" strokeWidth={1.8} />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search books, hostels, services..." className="flex-1 bg-transparent border-none outline-none text-[15px] text-foreground placeholder:text-muted-foreground/50" />
+          </div>
+
+          {/* Filter chips — sticky */}
+          <div className="flex gap-2 overflow-x-auto no-scrollbar mb-3">
+            {FILTERS.map((f) => (
+              <button
+                key={f}
+                onClick={() => setScope(f)}
+                className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium whitespace-nowrap spring-tap transition-colors ${
+                  scope === f ? "bg-foreground text-background" : "bg-muted/30 text-muted-foreground border border-border/20"
+                }`}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+
+          {/* Category tiles */}
+          <div className="grid grid-cols-4 gap-1.5 mb-6">
+            {CAT_TILES.map((t) => {
+              const on = activeCat === t.cat;
+              return (
+                <button
+                  key={t.cat}
+                  onClick={() => setActiveCat(on ? "All" : t.cat)}
+                  className={`flex flex-col items-center gap-1 py-3 rounded-xl spring-tap transition-colors ${on ? "bg-foreground/5" : ""}`}
+                >
+                  <span className="text-[22px] leading-none">{t.emoji}</span>
+                  <span className={`text-[10px] font-medium text-center leading-tight ${on ? "text-foreground" : "text-muted-foreground"}`}>{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
 
       {/* Content */}
       <div className="flex flex-col gap-4">
-        {isLoading && !isDemoMode ? (
-          <div className="grid grid-cols-2 gap-2.5">{[1, 2, 3, 4].map((i) => <div key={i} className="aspect-[3/4] rounded-2xl shimmer" />)}</div>
-        ) : isEmpty ? (
-          <div className="bg-card border border-border rounded-2xl p-4">
-            <EmptyState icon={Package} title="No listings found" description="Try a different filter, or be the first to list something — it's free." action={<button onClick={() => setComposerOpen(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap"><Plus className="w-3.5 h-3.5" /> List an item</button>} />
-          </div>
+        {activeTab === "Orders" ? (
+          <OrderHistory user={currentUser || ctx?.user} />
         ) : (
           <>
+            {isLoading && !isDemoMode ? (
+              <div className="grid grid-cols-2 gap-2.5">{[1, 2, 3, 4].map((i) => <div key={i} className="aspect-[3/4] rounded-2xl shimmer" />)}</div>
+            ) : isEmpty ? (
+              <div className="bg-card border border-border rounded-2xl p-4">
+                <EmptyState icon={Package} title="No listings found" description="Try a different filter, or be the first to list something — it's free." action={<button onClick={() => setComposerOpen(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-[14px] bg-primary text-primary-foreground text-[12px] font-semibold spring-tap"><Plus className="w-3.5 h-3.5" /> List an item</button>} />
+              </div>
+            ) : (
+              <>
             {/* Shopify-style featured stores */}
             <section>
               <div className="flex items-center justify-between mb-4">
@@ -282,18 +307,20 @@ export default function Marketplace() {
                 </div>
               </section>
             )}
-          </>
-        )}
+              </>
+            )}
 
-        {/* Bud AI recommendation */}
-        {rec && (
-          <div className="flex items-center gap-3 py-4 border-t border-border/20">
-            <div className="w-9 h-9 rounded-full bg-muted/40 grid place-items-center text-[14px] text-muted-foreground flex-shrink-0 border border-border/20">✦</div>
-            <p className="flex-1 text-[13px] text-muted-foreground leading-snug">
-              <span className="text-foreground font-medium">Bud recommends</span> "{rec.title}" — ₦{(rec.price || 0).toLocaleString()} from a verified seller nearby.
-            </p>
-            <button onClick={() => setContactListing(rec)} className="text-[12px] font-medium text-foreground/60 spring-tap whitespace-nowrap hover:text-foreground transition-colors">View →</button>
-          </div>
+            {/* Bud AI recommendation */}
+            {rec && (
+              <div className="flex items-center gap-3 py-4 border-t border-border/20">
+                <div className="w-9 h-9 rounded-full bg-muted/40 grid place-items-center text-[14px] text-muted-foreground flex-shrink-0 border border-border/20">✦</div>
+                <p className="flex-1 text-[13px] text-muted-foreground leading-snug">
+                  <span className="text-foreground font-medium">Bud recommends</span> "{rec.title}" — ₦{(rec.price || 0).toLocaleString()} from a verified seller nearby.
+                </p>
+                <button onClick={() => setContactListing(rec)} className="text-[12px] font-medium text-foreground/60 spring-tap whitespace-nowrap hover:text-foreground transition-colors">View →</button>
+              </div>
+            )}
+          </>
         )}
       </div>
 

@@ -1,15 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, Share2, MessageCircle, UserPlus, BadgeCheck, Pencil,
-  GraduationCap, MapPin,
+  ArrowLeft, Share2, MessageCircle, UserPlus, BadgeCheck, Pencil, CheckCircle,
+  GraduationCap,
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];
 
 export default function ProfileHeader({
-  user, stats = {}, isOwnProfile, onBack, onFollow, onAddFriend, onMessage, onShare,
+  user, stats = {}, isOwnProfile, onBack, onFollow, onAddFriend, onMessage, onShare, isFollowing,
 }) {
   const data = user?.data || {};
   const coverUrl = data.cover_url || data.banner_url;
@@ -82,6 +82,8 @@ export default function ProfileHeader({
         {/* Stats */}
         <div className="flex items-center gap-5 mt-4">
           <Stat label="Posts" value={stats.posts || 0} />
+          <Stat label="Followers" value={stats.followers || 0} />
+          <Stat label="Following" value={stats.following || 0} />
           <Stat label="Collections" value={stats.collections || 0} />
           <Stat label="Achievements" value={stats.achievements || 0} />
         </div>
@@ -97,8 +99,14 @@ export default function ProfileHeader({
               <button onClick={onAddFriend} className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-full bg-foreground text-background text-[12px] font-semibold spring-tap">
                 <UserPlus className="w-3.5 h-3.5" /> Add Friend
               </button>
-              <button onClick={onFollow} className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full glass-card text-[12px] font-semibold text-foreground spring-tap">
-                Follow
+              <button
+                onClick={onFollow}
+                className={`flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full text-[12px] font-semibold spring-tap ${
+                  isFollowing ? "glass-card text-muted-foreground" : "bg-primary text-primary-foreground"
+                }`}
+              >
+                {isFollowing ? <CheckCircle className="w-3.5 h-3.5" /> : <UserPlus className="w-3.5 h-3.5" />}
+                {isFollowing ? "Following" : "Follow"}
               </button>
               <button onClick={onMessage} className="w-10 h-10 rounded-full glass-card grid place-items-center spring-tap">
                 <MessageCircle className="w-4 h-4 text-foreground" />

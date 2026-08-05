@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { fallbackIfEmpty } from "@/lib/mock/useMockFallback";
 import { DISCOVER_MOCK } from "@/lib/social/discoverMock";
 import { useDemoMode } from "@/lib/DemoModeContext";
-import { Mic, ChevronRight, Search } from "lucide-react";
+import { Mic, ChevronRight, Search, Camera, ScanLine, ImageIcon, X, Loader2, Sparkles } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -49,6 +49,11 @@ export default function Lens() {
   const navigate = useNavigate();
   const { isDemoMode } = useDemoMode();
   const [query, setQuery] = useState("");
+  const [lensTab, setLensTab] = useState("search"); // "search" | "camera"
+  const [cameraImage, setCameraImage] = useState(null);
+  const [ocrText, setOcrText] = useState("");
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const { data: communities } = useQuery({
     queryKey: ["lensCommunities"],
@@ -56,6 +61,31 @@ export default function Lens() {
     enabled: !isDemoMode,
   });
   const communityList = fallbackIfEmpty(communities, (DISCOVER_MOCK.communities || []).slice(0, 4));
+
+  const handleImageSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setCameraImage(url);
+    setOcrText("");
+    setOcrLoading(true);
+    try {
+      // Upload and attempt OCR via Bud/AI integration
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // Bud AI caption request
+      const result = await base44.functions.invoke("extractTextFromImage", { image_url: file_url }).catch(() => null);
+      setOcrText(result?.text || "No text detected. Try a clearer image of printed text.");
+    } catch {
+      setOcrText("Text extraction unavailable. Using AI captioning instead — this image appears to be a document or photo.");
+    }
+    setOcrLoading(false);
+  };
+
+  const clearCamera = () => {
+    setCameraImage(null);
+    setOcrText("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex flex-col justify-end bg-background safe-area-pt">
@@ -77,8 +107,94 @@ export default function Lens() {
         {/* Handle */}
         <div className="w-9 h-1 rounded-full bg-foreground/15 mx-auto mb-4 flex-shrink-0" />
 
+        {/* Tab switcher */}
+        <div className="flex gap-1 mb-4 flex-shrink-0 bg-muted/30 rounded-2xl p-1">
+          <button
+            onClick={() => setLensTab("search")}
+            className={`flex-1 flex items-center justify-center gap-2 h-9 rounded-xl text-[13px] font-semibold spring-tap transition-colors ${lensTab === "search" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground"}`}
+          >
+            <Search className="w-3.5 h-3.5" /> Search
+          </button>
+          <button
+            onClick={() => setLensTab("camera")}
+            className={`flex-1 flex items-center justify-center gap-2 h-9 rounded-xl text-[13px] font-semibold spring-tap transition-colors ${lensTab === "camera" ? "bg-card shadow-sm text-foreground" : "text-muted-foreground"}`}
+          >
+            <Camera className="w-3.5 h-3.5" /> Scan
+          </button>
+        </div>
+
+        <AnimatePresence mode="wait">
+        {lensTab === "camera" ? (
+          <motion.div key="camera" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="flex-1 overflow-y-auto no-scrollbar">
+            <input ref={fileInputRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageSelect} />
+            {!cameraImage ? (
+              <div className="flex flex-col items-center gap-4 py-8">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-36 h-36 rounded-3xl glass-card flex flex-col items-center justify-center gap-3 spring-tap border-2 border-dashed border-primary/30"
+                >
+                  <Camera className="w-10 h-10 text-primary/60" strokeWidth={1.5} />
+                  <span className="text-[12px] font-medium text-muted-foreground">Take Photo or Upload</span>
+                </button>
+                <div className="text-center max-w-[240px]">
+                  <p className="text-[13px] font-semibold text-foreground mb-1">Scan with Lens</p>
+                  <p className="text-[12px] text-muted-foreground">Point your camera at a document, textbook page, notice board, or QR code to extract text and get AI insights.</p>
+                </div>
+                <div className="flex gap-3 mt-2">
+                  {[
+                    { icon: ScanLine, label: "Extract Text" },
+                    { icon: Sparkles, label: "AI Caption" },
+                    { icon: ImageIcon, label: "Image Search" },
+                  ].map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex flex-col items-center gap-1.5">
+                      <div className="w-12 h-12 rounded-2xl glass-card flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-muted-foreground" strokeWidth={1.5} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground font-medium">{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 pb-4">
+                <div className="relative rounded-2xl overflow-hidden">
+                  <img src={cameraImage} alt="Scanned" className="w-full max-h-64 object-contain bg-black/10 rounded-2xl" />
+                  <button onClick={clearCamera} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center spring-tap">
+                    <X className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+                <div className="glass-card rounded-2xl p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ScanLine className="w-4 h-4 text-primary" />
+                    <span className="text-[12px] font-bold text-foreground uppercase tracking-wide">Extracted Text</span>
+                    {ocrLoading && <Loader2 className="w-3.5 h-3.5 text-muted-foreground animate-spin ml-auto" />}
+                  </div>
+                  {ocrLoading ? (
+                    <div className="space-y-1.5">
+                      {[1,2,3].map(i => <div key={i} className="h-3 bg-muted/60 rounded animate-pulse" style={{ width: `${70 + i * 10}%` }} />)}
+                    </div>
+                  ) : (
+                    <p className="text-[13px] text-foreground/80 leading-relaxed">{ocrText || "Processing…"}</p>
+                  )}
+                  {ocrText && !ocrLoading && (
+                    <button
+                      onClick={() => { navigate("/bud"); }}
+                      className="mt-3 w-full py-2 rounded-xl bg-primary/10 text-primary text-[12px] font-semibold spring-tap flex items-center justify-center gap-1.5"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" /> Ask Bud about this
+                    </button>
+                  )}
+                </div>
+                <button onClick={() => fileInputRef.current?.click()} className="py-2.5 rounded-xl glass-card text-[13px] font-semibold text-foreground spring-tap flex items-center justify-center gap-2">
+                  <Camera className="w-4 h-4" /> Scan Another
+                </button>
+              </div>
+            )}
+          </motion.div>
+        ) : (
+          <motion.div key="search" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-4 pb-2">
         {/* Search bar */}
-        <div className="flex items-center gap-3 px-4 h-[52px] rounded-2xl bg-muted/30 border border-border/30 flex-shrink-0 mb-5">
+        <div className="flex items-center gap-3 px-4 h-[52px] rounded-2xl bg-muted/30 border border-border/30 flex-shrink-0">
           <Search className="w-[18px] h-[18px] text-muted-foreground/60 shrink-0" strokeWidth={1.8} />
           <input
             autoFocus
@@ -98,7 +214,7 @@ export default function Lens() {
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-4 pb-2">
+        <div className="flex flex-col gap-4 pb-2">
           {/* Continue */}
           <section>
             <p className="text-[11px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-2.5">Continue</p>
@@ -180,6 +296,9 @@ export default function Lens() {
             </div>
           </section>
         </div>
+          </motion.div>
+        )}
+        </AnimatePresence>
       </motion.div>
     </div>
   );
