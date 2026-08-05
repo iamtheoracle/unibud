@@ -25,6 +25,18 @@ export default function OnboardingSecurity() {
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(60);
 
+  // Password strength
+  const pwScore = (() => {
+    if (!password) return 0;
+    const hasUpper = /[A-Z]/.test(password);
+    const hasNum = /\d/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+    return [password.length >= 8, hasUpper, hasNum, hasSpecial].filter(Boolean).length;
+  })();
+  const pwLabels = ["", "Weak", "Fair", "Good", "Strong"];
+  const pwColors = ["", "bg-error", "bg-warning", "bg-primary/70", "bg-success"];
+  const pwTextColors = ["", "text-error", "text-warning", "text-primary/70", "text-success"];
+
   useEffect(() => {
     if (stage !== "otp" || countdown <= 0) return;
     const t = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -173,26 +185,16 @@ export default function OnboardingSecurity() {
               }
             />
             {/* Password strength indicator */}
-            {password.length > 0 && (() => {
-              const hasUpper = /[A-Z]/.test(password);
-              const hasNum = /\d/.test(password);
-              const hasSpecial = /[^A-Za-z0-9]/.test(password);
-              const len = password.length;
-              const score = [len >= 8, hasUpper, hasNum, hasSpecial].filter(Boolean).length;
-              const labels = ["", "Weak", "Fair", "Good", "Strong"];
-              const colors = ["", "bg-error", "bg-warning", "bg-primary/70", "bg-success"];
-              const textColors = ["", "text-error", "text-warning", "text-primary/70", "text-success"];
-              return (
-                <div className="mt-1.5 px-0.5">
-                  <div className="flex gap-1 mb-1">
-                    {[1,2,3,4].map((i) => (
-                      <div key={i} className={`flex-1 h-1 rounded-full transition-all ${i <= score ? colors[score] : "bg-muted"}`} />
-                    ))}
-                  </div>
-                  <p className={`text-[11px] font-medium ${textColors[score]}`}>{labels[score] || "Too short"}</p>
+            {password.length > 0 && (
+              <div className="mt-1.5 px-0.5">
+                <div className="flex gap-1 mb-1">
+                  {[1,2,3,4].map((i) => (
+                    <div key={i} className={`flex-1 h-1 rounded-full transition-all ${i <= pwScore ? pwColors[pwScore] : "bg-muted"}`} />
+                  ))}
                 </div>
-              );
-            })()}
+                <p className={`text-[11px] font-medium ${pwTextColors[pwScore]}`}>{pwLabels[pwScore] || "Too short"}</p>
+              </div>
+            )}
             <GlassInput
               label="Confirm Password"
               type={showPw ? "text" : "password"}
