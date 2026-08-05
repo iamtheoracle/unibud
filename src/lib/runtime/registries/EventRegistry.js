@@ -48,6 +48,89 @@ const DEFAULT_EVENTS = [
   { event_type: 'conversation.created', category: 'lifecycle', version: 1, description: 'A conversation was created' },
   { event_type: 'conversation.message_appended', category: 'lifecycle', version: 1, description: 'A message was appended to a conversation' },
   { event_type: 'notification.dispatched', category: 'lifecycle', version: 1, description: 'A notification was dispatched' },
+
+  // ── OS AI Activation Protocol events ────────────────────────────────────
+  // OS AI Kernel lifecycle
+  { event_type: 'os.ai.kernel.ready', category: 'lifecycle', version: 1, description: 'OS AI Kernel booted and all OS AIs are ready' },
+  { event_type: 'os.ai.ready', category: 'lifecycle', version: 1, description: 'An OS AI agent registered and is ready' },
+  { event_type: 'os.ai.result', category: 'response', version: 1, description: 'An OS AI produced a result' },
+  { event_type: 'bud.os_ai.response', category: 'response', version: 1, description: 'An OS AI result routed to Bud' },
+
+  // Context AI
+  { event_type: 'os.context.updated', category: 'lifecycle', version: 1, description: 'Context AI updated the current platform context' },
+  { event_type: 'os.screen.changed', category: 'os', version: 1, description: 'Active screen changed — triggers Navigator AI and Context AI' },
+  { event_type: 'os.institution.changed', category: 'os', version: 1, description: 'Active institution changed — triggers Context AI' },
+  { event_type: 'os.course.changed', category: 'os', version: 1, description: 'Active course changed — triggers Context AI' },
+  { event_type: 'os.community.changed', category: 'os', version: 1, description: 'Active community changed — triggers Context AI' },
+  { event_type: 'os.task.changed', category: 'os', version: 1, description: 'Active task changed — triggers Context AI' },
+  { event_type: 'os.location.updated', category: 'os', version: 1, description: 'Location updated (with permission) — triggers Context AI' },
+
+  // Navigator AI
+  { event_type: 'os.navigation.started', category: 'os', version: 1, description: 'Navigation started — triggers Navigator AI' },
+  { event_type: 'os.navigation.context_switch', category: 'os', version: 1, description: 'Context switch — triggers Navigator AI' },
+  { event_type: 'os.navigation.deep_link', category: 'os', version: 1, description: 'Deep link opened — triggers Navigator AI' },
+  { event_type: 'os.session.started', category: 'os', version: 1, description: 'New session started — triggers Navigator AI and Context AI' },
+  { event_type: 'os.session.restored', category: 'os', version: 1, description: 'Session restored — triggers Navigator AI, Memory AI' },
+  { event_type: 'os.navigation.quick_action', category: 'os', version: 1, description: 'Quick action triggered — triggers Navigator AI' },
+
+  // Memory AI
+  { event_type: 'os.conversation.started', category: 'os', version: 1, description: 'Conversation started — triggers Memory AI' },
+  { event_type: 'os.conversation.message', category: 'os', version: 1, description: 'Conversation message — triggers Memory AI' },
+  { event_type: 'os.learning.completed', category: 'os', version: 1, description: 'Learning unit completed — triggers Memory AI' },
+  { event_type: 'os.bookmark.added', category: 'os', version: 1, description: 'Bookmark added — triggers Memory AI' },
+  { event_type: 'os.preference.changed', category: 'os', version: 1, description: 'Preference changed — triggers Memory AI' },
+  { event_type: 'os.item.saved', category: 'os', version: 1, description: 'Item saved — triggers Memory AI' },
+  { event_type: 'os.history.accessed', category: 'os', version: 1, description: 'History accessed — triggers Memory AI' },
+
+  // Recommendation AI
+  { event_type: 'os.feed.loading', category: 'os', version: 1, description: 'Feed loading — triggers Recommendation AI' },
+  { event_type: 'os.discovery.opened', category: 'os', version: 1, description: 'Discovery screen opened — triggers Recommendation AI' },
+  { event_type: 'os.community.browsing', category: 'os', version: 1, description: 'Community browsing — triggers Recommendation AI' },
+  { event_type: 'os.marketplace.opened', category: 'os', version: 1, description: 'Marketplace opened — triggers Recommendation AI' },
+  { event_type: 'os.courses.browsing', category: 'os', version: 1, description: 'Courses browsing — triggers Recommendation AI' },
+  { event_type: 'os.events.browsing', category: 'os', version: 1, description: 'Events browsing — triggers Recommendation AI' },
+  { event_type: 'os.people.suggestions', category: 'os', version: 1, description: 'People suggestions requested — triggers Recommendation AI' },
+  { event_type: 'os.recommendations.ready', category: 'response', version: 1, description: 'Recommendation AI generated recommendations' },
+
+  // Oracle AI
+  { event_type: 'os.reasoning.requested', category: 'os', version: 1, description: 'Reasoning requested — triggers Oracle AI' },
+  { event_type: 'os.academic.assistance', category: 'os', version: 1, description: 'Academic assistance requested — triggers Oracle AI' },
+  { event_type: 'os.planning.started', category: 'os', version: 1, description: 'Planning workflow started — triggers Oracle AI' },
+  { event_type: 'os.question.complex', category: 'os', version: 1, description: 'Complex question detected — triggers Oracle AI' },
+  { event_type: 'os.decision.support', category: 'os', version: 1, description: 'Decision support requested — triggers Oracle AI' },
+
+  // Lens
+  { event_type: 'os.camera.opened', category: 'os', version: 1, description: 'Camera opened — triggers Lens' },
+  { event_type: 'os.media.uploading', category: 'os', version: 1, description: 'Media upload started — triggers Lens' },
+  { event_type: 'os.ocr.requested', category: 'os', version: 1, description: 'OCR requested — triggers Lens' },
+  { event_type: 'os.scan.started', category: 'os', version: 1, description: 'Scan started — triggers Lens' },
+  { event_type: 'os.image.search', category: 'os', version: 1, description: 'Image search requested — triggers Lens' },
+  { event_type: 'os.media.editing', category: 'os', version: 1, description: 'Media editing started — triggers Lens' },
+  { event_type: 'os.color.correction', category: 'os', version: 1, description: 'Color correction requested — triggers Lens' },
+  { event_type: 'os.media.analysis', category: 'os', version: 1, description: 'Media analysis requested — triggers Lens' },
+
+  // Artist
+  { event_type: 'os.image.generate', category: 'os', version: 1, description: 'Image generation requested — triggers Artist' },
+  { event_type: 'os.content.create', category: 'os', version: 1, description: 'Content creation requested — triggers Artist' },
+  { event_type: 'os.story.cover', category: 'os', version: 1, description: 'Story cover requested — triggers Artist' },
+  { event_type: 'os.highlight.cover', category: 'os', version: 1, description: 'Highlight cover requested — triggers Artist' },
+  { event_type: 'os.graphics.requested', category: 'os', version: 1, description: 'Graphics requested — triggers Artist' },
+
+  // Orbit AI
+  { event_type: 'os.automation.triggered', category: 'os', version: 1, description: 'Automation triggered — triggers Orbit AI' },
+  { event_type: 'os.task.background', category: 'os', version: 1, description: 'Background task queued — triggers Orbit AI' },
+  { event_type: 'os.schedule.created', category: 'os', version: 1, description: 'Schedule created — triggers Orbit AI' },
+  { event_type: 'os.workflow.execute', category: 'os', version: 1, description: 'Workflow execution requested — triggers Orbit AI' },
+  { event_type: 'os.notification.schedule', category: 'os', version: 1, description: 'Notification scheduling — triggers Orbit AI' },
+
+  // OS AI delegation channel (used for inter-AI collaboration)
+  { event_type: 'os.delegate.context_ai_os', category: 'os', version: 1, description: 'Delegation to Context AI' },
+  { event_type: 'os.delegate.memory_ai_os', category: 'os', version: 1, description: 'Delegation to Memory AI' },
+  { event_type: 'os.delegate.recommendation_ai_os', category: 'os', version: 1, description: 'Delegation to Recommendation AI' },
+  { event_type: 'os.delegate.oracle_ai_os', category: 'os', version: 1, description: 'Delegation to Oracle AI' },
+  { event_type: 'os.delegate.lens_ai_os', category: 'os', version: 1, description: 'Delegation to Lens' },
+  { event_type: 'os.delegate.artist_ai_os', category: 'os', version: 1, description: 'Delegation to Artist' },
+  { event_type: 'os.delegate.orbit_ai_os', category: 'os', version: 1, description: 'Delegation to Orbit AI' },
 ];
 
 class EventRegistry {
