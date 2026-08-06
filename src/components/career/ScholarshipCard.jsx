@@ -24,13 +24,13 @@ export default function ScholarshipCard({ scholarship, index = 0, onBookmark }) 
     >
       {scholarship.banner_url && (
         <div className="h-20 overflow-hidden">
-          <img src={scholarship.banner_url} alt={scholarship.title} className="w-full h-full object-cover" />
+          <img src={scholarship.banner_url} alt={scholarship.title} className="w-full h-full object-cover" loading="lazy" />
         </div>
       )}
       <div className="p-4">
         <div className="flex items-start gap-3">
           {scholarship.logo_url ? (
-            <img src={scholarship.logo_url} alt={scholarship.provider} className="w-11 h-11 rounded-[14px] object-cover flex-shrink-0" />
+            <img src={scholarship.logo_url} alt={scholarship.provider} className="w-11 h-11 rounded-[14px] object-cover flex-shrink-0" loading="lazy" />
           ) : (
             <div className={"w-11 h-11 rounded-[14px] flex items-center justify-center flex-shrink-0 " + typeMeta.bg}>
               <Icon className={"w-5 h-5 " + typeMeta.color} strokeWidth={2} />

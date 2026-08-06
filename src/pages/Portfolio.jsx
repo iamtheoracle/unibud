@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, Plus, FolderOpen } from "lucide-react";
+import { Search, Plus, FolderOpen } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import PortfolioCard from "@/components/career/PortfolioCard";
+import ScreenShell from "@/components/layout/ScreenShell";
 import { PORTFOLIO_TYPES } from "@/components/career/careerConstants";
 
 const DEMO_ITEMS = [
@@ -21,7 +21,6 @@ const FILTER_KEYS = Object.keys(PORTFOLIO_TYPES);
 
 export default function Portfolio() {
   const { isDemoMode } = useDemoMode();
-  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -43,34 +42,28 @@ export default function Portfolio() {
   });
 
   return (
-    <div className="min-h-screen pb-8">
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Portfolio</h1>
-          <p className="text-[12px] text-muted-foreground">Projects · Designs · Certificates</p>
-        </div>
-        <button className="w-10 h-10 rounded-full bg-primary flex items-center justify-center spring-tap gold-glow">
+    <ScreenShell
+      title="Portfolio"
+      subtitle="Projects · Designs · Certificates"
+      back
+      actions={
+        <button className="w-10 h-10 rounded-full bg-primary flex items-center justify-center spring-tap ice-glow" aria-label="Add portfolio item">
           <Plus className="w-5 h-5 text-primary-foreground" strokeWidth={2.2} />
         </button>
+      }
+    >
+      <div className="relative mt-4 mb-4">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search portfolio..."
+          className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 soft-shadow"
+        />
       </div>
 
-      <div className="px-4 mb-4">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search portfolio..."
-            className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 soft-shadow"
-          />
-        </div>
-      </div>
-
-      <div className="px-4 mb-5">
+      <div className="mb-5">
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
           <button
             onClick={() => setActiveFilter("all")}
@@ -94,22 +87,20 @@ export default function Portfolio() {
       </div>
 
       {isLoading && !isDemoMode ? (
-        <div className="px-4 grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => <div key={i} className="h-[260px] rounded-[20px] shimmer" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="px-4">
-          <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
-            <EmptyState icon={FolderOpen} title="No portfolio items" description="Showcase your projects, research, designs, and achievements to build your professional identity" />
-          </div>
+        <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+          <EmptyState icon={FolderOpen} title="No portfolio items" description="Showcase your projects, research, designs, and achievements to build your professional identity" />
         </div>
       ) : (
-        <div className="px-4 grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {filtered.map((item, i) => (
             <PortfolioCard key={item.id || i} item={item} index={i} />
           ))}
         </div>
       )}
-    </div>
+    </ScreenShell>
   );
 }

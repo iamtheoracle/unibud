@@ -1,0 +1,97 @@
+{
+  "name": "CollaborationActivity",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "actor_name": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "created",
+        "updated",
+        "completed",
+        "blocked",
+        "commented",
+        "mentioned",
+        "approved",
+        "joined",
+        "left",
+        "assigned",
+        "version_restored"
+      ],
+      "default": "updated"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "workspace",
+        "item",
+        "comment",
+        "member",
+        "version"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_title": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "member_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "workspace_id",
+    "action"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

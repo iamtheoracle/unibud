@@ -1,0 +1,113 @@
+{
+  "name": "ProviderConnection",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Adapter id"
+    },
+    "name": {
+      "type": "string"
+    },
+    "group": {
+      "type": "string",
+      "enum": [
+        "banking",
+        "kyc",
+        "wallet_card",
+        "notification",
+        "storage",
+        "ai"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "sandbox",
+        "production"
+      ],
+      "default": "sandbox"
+    },
+    "version": {
+      "type": "string",
+      "default": "1.0.0"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "connected",
+        "disabled",
+        "error",
+        "needs_config"
+      ],
+      "default": "needs_config"
+    },
+    "auth_status": {
+      "type": "string",
+      "enum": [
+        "authenticated",
+        "pending",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Active provider for its group"
+    },
+    "last_health_check": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_sync": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "api_usage": {
+      "type": "number",
+      "default": 0
+    },
+    "error_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Percent"
+    },
+    "webhook_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "key",
+    "name",
+    "group"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

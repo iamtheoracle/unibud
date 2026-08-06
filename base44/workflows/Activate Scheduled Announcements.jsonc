@@ -1,0 +1,44 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "activate_announcements",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "activate": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "activateAnnouncements"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Activate announcements",
+            "description": "Publish due & archive expired"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Publishes scheduled announcements at their publish time and archives expired ones. Closes the scheduling loop opened by the institution announcement composer.",
+  "name": "Activate Scheduled Announcements",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/5 * * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

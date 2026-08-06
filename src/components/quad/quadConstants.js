@@ -3,6 +3,7 @@ import {
   PenLine, Image, Video, FileText, StickyNote, BarChart3, Calendar,
   HelpCircle, ShoppingBag, Search, Trophy, Users, FlaskConical, BookOpen,
   Building2, Layers, User, Globe, MessageSquare, Bookmark, Link,
+  FileCode, Music, BookMarked, Repeat2, GraduationCap,
 } from "lucide-react";
 
 export const REACTIONS = [
@@ -29,6 +30,11 @@ export const POST_TYPES = [
   { id: "club_update", label: "Club Update", icon: Users, color: "hsl(var(--unibud-blue))" },
   { id: "research", label: "Research", icon: FlaskConical, color: "hsl(var(--unibud-purple))" },
   { id: "study_resource", label: "Study Resource", icon: BookOpen, color: "hsl(var(--unibud-green))" },
+  { id: "article", label: "Article", icon: BookMarked, color: "hsl(var(--unibud-blue))" },
+  { id: "audio", label: "Audio", icon: Music, color: "hsl(var(--unibud-purple))" },
+  { id: "code", label: "Code", icon: FileCode, color: "hsl(var(--foreground))" },
+  { id: "repost", label: "Repost", icon: Repeat2, color: "hsl(var(--unibud-green))" },
+  { id: "course_update", label: "Course Update", icon: GraduationCap, color: "hsl(var(--unibud-blue))" },
 ];
 
 export const VISIBILITY_OPTIONS = [
@@ -51,6 +57,17 @@ export const SHARE_TARGETS = [
   { id: "messages", label: "Messages", icon: MessageSquare },
   { id: "bookmarks", label: "Bookmarks", icon: Bookmark },
   { id: "copy_link", label: "Copy Link", icon: Link },
+];
+
+// External share platforms — quiet monochrome, uses native URL schemes or Web Share API.
+// No brand logos; text labels only. UNIBUD remains the primary brand.
+export const EXTERNAL_SHARE_TARGETS = [
+  { id: "whatsapp", label: "WhatsApp", url: (text, url) => `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`.trim())}` },
+  { id: "telegram", label: "Telegram", url: (text, url) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}` },
+  { id: "x", label: "X", url: (text, url) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}` },
+  { id: "instagram", label: "Instagram", url: null },
+  { id: "threads", label: "Threads", url: null },
+  { id: "tiktok", label: "TikTok", url: null },
 ];
 
 export const MAX_POST_LENGTH = 2000;

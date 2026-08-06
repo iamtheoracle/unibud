@@ -1,0 +1,110 @@
+{
+  "name": "CampusBooking",
+  "type": "object",
+  "properties": {
+    "booking_type": {
+      "type": "string",
+      "enum": [
+        "study_room",
+        "equipment",
+        "laboratory",
+        "studio",
+        "sports_facility",
+        "other"
+      ],
+      "default": "study_room"
+    },
+    "resource_name": {
+      "type": "string",
+      "description": "Name of the room/equipment/lab being booked"
+    },
+    "resource_id": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "HH:MM"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "HH:MM"
+    },
+    "location": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "checked_in",
+        "completed",
+        "cancelled",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "booking_code": {
+      "type": "string",
+      "description": "Human-readable confirmation code"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "booking_type",
+    "resource_name",
+    "date",
+    "start_time",
+    "end_time"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

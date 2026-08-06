@@ -17,6 +17,8 @@ const STICKER_TYPES = [
   { id: "link", label: "Link", icon: LinkIcon },
 ];
 
+const DRAFT_KEY = "story_draft";
+
 export default function StoryComposer({ open, onClose, onPublish, user }) {
   const [step, setStep] = useState("select");
   const [storyType, setStoryType] = useState("photo");
@@ -29,8 +31,47 @@ export default function StoryComposer({ open, onClose, onPublish, user }) {
   const [activeStickerEditor, setActiveStickerEditor] = useState(null);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState(null);
+  const [hasDraft, setHasDraft] = useState(false);
   const fileInputRef = useRef(null);
   const { uploadMedia, isUploading } = useMediaUpload();
+
+  // Load draft on open
+  React.useEffect(() => {
+    if (!open) return;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.storyType === "text" && d.textContent) {
+          setStoryType(d.storyType);
+          setTextContent(d.textContent || "");
+          setBgColor(d.bgColor || TEXT_BACKGROUNDS[0]);
+          setCaption(d.caption || "");
+          setStickers(d.stickers || []);
+          setStep("edit");
+          setHasDraft(true);
+        }
+      }
+    } catch {}
+  }, [open]);
+
+  // Auto-save draft for text stories
+  React.useEffect(() => {
+    if (!open || step !== "edit" || storyType !== "text") return;
+    if (!textContent.trim()) return;
+    const t = setTimeout(() => {
+      try {
+        localStorage.setItem(DRAFT_KEY, JSON.stringify({ storyType, textContent, bgColor, caption, stickers }));
+        setHasDraft(true);
+      } catch {}
+    }, 1000);
+    return () => clearTimeout(t);
+  }, [open, step, storyType, textContent, bgColor, caption, stickers]);
+
+  const clearDraft = () => {
+    localStorage.removeItem(DRAFT_KEY);
+    setHasDraft(false);
+  };
 
   const reset = () => {
     setStep("select");
@@ -43,6 +84,7 @@ export default function StoryComposer({ open, onClose, onPublish, user }) {
     setStickers([]);
     setActiveStickerEditor(null);
     setError(null);
+    clearDraft();
   };
 
   const handleClose = () => {
@@ -145,6 +187,7 @@ export default function StoryComposer({ open, onClose, onPublish, user }) {
       });
 
       setPublishing(false);
+      clearDraft();
       onPublish();
       reset();
     } catch {
@@ -178,9 +221,14 @@ export default function StoryComposer({ open, onClose, onPublish, user }) {
               <button onClick={handleClose} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center spring-tap" aria-label="Close">
                 <X className="w-5 h-5 text-white" />
               </button>
-              <h2 className="text-white font-heading font-bold text-[15px]">
-                {step === "select" ? "New Story" : "Edit Story"}
-              </h2>
+              <div className="flex flex-col items-center">
+                <h2 className="text-white font-heading font-bold text-[15px]">
+                  {step === "select" ? "New Story" : "Edit Story"}
+                </h2>
+                {hasDraft && step === "select" && (
+                  <span className="text-[9px] text-white/50 mt-0.5">Draft saved</span>
+                )}
+              </div>
               <div className="w-9" />
             </div>
 
@@ -240,7 +288,7 @@ export default function StoryComposer({ open, onClose, onPublish, user }) {
                   ) : storyType === "video" ? (
                     <video src={mediaPreview} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                   ) : (
-                    <img src={mediaPreview} className="w-full h-full object-cover" alt="Story preview" />
+                    <img src={mediaPreview} className="w-full h-full object-cover" alt="Story preview" loading="lazy" />
                   )}
 
                   {/* Sticker overlays */}

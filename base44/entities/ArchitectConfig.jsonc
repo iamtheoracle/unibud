@@ -1,0 +1,86 @@
+{
+  "name": "ArchitectConfig",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "key": {
+      "type": "string",
+      "description": "Slug key for the configuration artifact"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "page",
+        "form",
+        "workflow",
+        "dashboard",
+        "report",
+        "menu",
+        "theme",
+        "notification",
+        "ai",
+        "permission",
+        "component",
+        "entity",
+        "role",
+        "automation",
+        "api"
+      ],
+      "default": "form",
+      "description": "Which Architect builder produced this config"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "config": {
+      "type": "object",
+      "description": "Full JSON definition of the builder artifact (blocks, components, steps, widgets, menus, templates, etc.)"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Incremented on each publish"
+    },
+    "description": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Optional ArchitectProject grouping"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

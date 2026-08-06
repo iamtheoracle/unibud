@@ -1,0 +1,92 @@
+{
+  "name": "HelpArticle",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string",
+      "description": "Markdown body"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "getting_started",
+        "academic",
+        "social",
+        "account",
+        "billing",
+        "technical",
+        "campus_life",
+        "accessibility",
+        "other"
+      ],
+      "default": "other"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    },
+    "helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "not_helpful_count": {
+      "type": "number",
+      "default": 0
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title",
+    "content",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.is_published": true
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

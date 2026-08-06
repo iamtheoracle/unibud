@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ClipboardList, Megaphone, CalendarX, FileQuestion, CheckCircle2 } from "lucide-react";
+import { Loader2, ClipboardList, Megaphone, CalendarX, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 

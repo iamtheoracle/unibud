@@ -1,0 +1,124 @@
+{
+  "name": "TutorBooking",
+  "type": "object",
+  "properties": {
+    "tutor_profile_id": {
+      "type": "string",
+      "description": "Reference to the TutorProfile"
+    },
+    "tutor_id": {
+      "type": "string",
+      "description": "User ID of the tutor"
+    },
+    "tutor_name": {
+      "type": "string"
+    },
+    "student_id": {
+      "type": "string",
+      "description": "User ID of the booking student"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Related course code if applicable"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Specific topic for the session"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "session_time": {
+      "type": "string",
+      "description": "Start time HH:MM"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "price": {
+      "type": "number",
+      "default": 0
+    },
+    "is_paid": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "meeting_link": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "tutor_profile_id",
+    "student_id",
+    "student_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "data.tutor_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "data.tutor_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

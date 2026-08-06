@@ -1,0 +1,95 @@
+{
+  "name": "AnnouncementRead",
+  "type": "object",
+  "properties": {
+    "announcement_id": {
+      "type": "string",
+      "description": "StaffAnnouncement id this read belongs to"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User who read the announcement (denormalized from created_by_id for fast filtering)"
+    },
+    "read_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "announcement_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "institution_owner"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "university_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "registrar"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "dean"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "head_of_department"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "staff"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "platform_admin"
+      }
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    }
+  }
+}

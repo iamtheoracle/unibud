@@ -1,0 +1,139 @@
+{
+  "name": "SparkAgent",
+  "type": "object",
+  "properties": {
+    "agent_id": {
+      "type": "string",
+      "description": "Unique slug identifier (e.g. 'forge', 'frontend')"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name"
+    },
+    "division": {
+      "type": "string",
+      "enum": [
+        "Vision",
+        "Engineering",
+        "Intelligence",
+        "Trust",
+        "Operations",
+        "Governance"
+      ],
+      "description": "Agent division"
+    },
+    "role": {
+      "type": "string",
+      "description": "Short role title"
+    },
+    "responsibilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Platform services / capabilities this agent may invoke"
+    },
+    "context_scope": {
+      "type": "string",
+      "description": "What context this agent is allowed to read"
+    },
+    "memory_scope": {
+      "type": "string",
+      "description": "What this agent remembers between runs"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Entity / operation permissions granted to this agent"
+    },
+    "input_schema": {
+      "type": "object",
+      "description": "JSON schema fragment describing expected input"
+    },
+    "output_schema": {
+      "type": "object",
+      "description": "JSON schema fragment describing expected output"
+    },
+    "validation_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failure_handling": {
+      "type": "string"
+    },
+    "retry_max": {
+      "type": "number",
+      "default": 2
+    },
+    "handoff_rules": {
+      "type": "string",
+      "description": "When/how this agent hands off to another"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Other agent_ids this agent depends on"
+    },
+    "integration_rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "focus": {
+      "type": "string",
+      "description": "Specialist system-prompt focus line used by the runner"
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "agent_id",
+    "name",
+    "division",
+    "role",
+    "focus"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

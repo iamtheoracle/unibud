@@ -1,0 +1,176 @@
+{
+  "name": "PodcastEpisode",
+  "type": "object",
+  "properties": {
+    "podcast_id": {
+      "type": "string"
+    },
+    "podcast_title": {
+      "type": "string",
+      "description": "Denormalized show title for fast rendering"
+    },
+    "cover_url": {
+      "type": "string",
+      "description": "Denormalized show cover"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "audio_url": {
+      "type": "string"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "default": 0
+    },
+    "episode_number": {
+      "type": "number",
+      "default": 1
+    },
+    "season_number": {
+      "type": "number",
+      "default": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "scheduled",
+        "published"
+      ],
+      "default": "published"
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When a scheduled episode should auto-publish"
+    },
+    "transcript": {
+      "type": "string",
+      "description": "Bud-generated full transcript (audio \u2192 text)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Bud-generated concise summary shown to listeners"
+    },
+    "show_notes": {
+      "type": "string",
+      "description": "Detailed show notes \u2014 Bud can assist with generation"
+    },
+    "takeaways": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Bud-extracted key takeaways"
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "start_seconds": {
+            "type": "number"
+          },
+          "end_seconds": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Episode chapters for navigation \u2014 Bud can auto-generate from transcript"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "host_id": {
+      "type": "string",
+      "description": "Creator id (denormalized for RLS convenience)"
+    },
+    "institution_id": {
+      "type": "string"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "shares_count": {
+      "type": "number",
+      "default": 0
+    },
+    "downloads_count": {
+      "type": "number",
+      "default": 0
+    },
+    "liked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who liked this episode"
+    }
+  },
+  "required": [
+    "podcast_id",
+    "title",
+    "audio_url"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

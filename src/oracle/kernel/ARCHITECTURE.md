@@ -1,43 +1,42 @@
-# Oracle Kernel Architecture (TASK-001)
+# Oracle Kernel Architecture
 
-## Goal
+## Purpose
 
-Provide a lightweight, domain-agnostic infrastructure kernel that other modules can register with.
+Oracle Kernel provides reusable infrastructure primitives only. It does not model business entities or workflows.
 
-## Components
+## One-Way Dependency Rule
 
-1. Bootstrap (`bootstrap.js`)
-2. Configuration Manager (`configurationManager.js`)
-3. Environment Manager (`environmentManager.js`)
-4. Dependency Injection (`dependencyInjector.js`)
-5. Module Registry (`moduleRegistry.js`)
-6. Service Registry (`serviceRegistry.js`)
-7. Capability Registry (`capabilityRegistry.js`)
-8. Lifecycle Manager (`lifecycleManager.js`)
-9. Health Manager (`healthManager.js`)
-10. Logging (`logging.js`)
-11. Error Boundary (`errorBoundary.js`)
-12. Plugin Registration (`pluginRegistrar.js`)
-13. Version Manager (`versionManager.js`)
+- Oracle Kernel has no imports from business modules.
+- Business modules can register themselves with Oracle Kernel.
 
-## Design Notes
+## Component Reference
 
-- Kernel is independent from education, university, marketplace, community, and AI domain logic.
-- Registries are generic and metadata-friendly.
-- Lifecycle order is deterministic (init in registration order, shutdown in reverse order).
-- Plugins and modules compose through bootstrap context instead of hardcoded cross-links.
+1. **Bootstrap**: creates a kernel instance and wires infrastructure managers.
+2. **Configuration Manager**: runtime key/value configuration access.
+3. **Environment Manager**: typed environment variable access.
+4. **Dependency Injector**: generic dependency registration and resolution.
+5. **Module Registry**: generic module registration and discovery.
+6. **Capability Registry**: generic capability registration and discovery.
+7. **Lifecycle Manager**: ordered initialize/shutdown execution.
+8. **Health Manager**: check registration and aggregated health snapshots.
+9. **Logger**: in-memory structured logging interface.
+10. **Error Boundary**: consistent operation wrapping and error logging.
+11. **Plugin Registrar**: plugin registration and lifecycle orchestration.
+12. **Version Manager**: kernel/module version tracking and compatibility checks.
 
-## Assumptions
+## Integration Guide
 
-- Higher-level domain modules will register services/capabilities/modules at runtime.
-- Routes/UI/API concerns remain outside kernel.
+```ts
+import { bootstrap } from "@/oracle/kernel";
 
-## Risks
+const oracle = bootstrap({ version: "1.0.0" });
+oracle.registerModule({ name: "module-a", version: "1.0.0" });
+await oracle.initialize();
+await oracle.shutdown();
+```
 
-- Current logger defaults to console JSON sink; production systems may require pluggable sinks.
-- Service and capability registries are separate; naming/merge conventions should be finalized before large module growth.
+## Guardrail Compliance
 
-## TASK-002 Recommendations
-
-- Build command routing as a separate module that depends on `DependencyInjector`, `ServiceRegistry`, and `ErrorBoundary`.
-- Emit command lifecycle events through a dedicated event bus module instead of embedding it in the kernel core.
+- No business-domain imports in `/src/oracle/kernel`.
+- Generic metadata extension points exist for modules to define domain meaning.
+- Tests use only generic names and generic payload data.

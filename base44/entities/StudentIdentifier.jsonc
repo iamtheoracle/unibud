@@ -26,25 +26,21 @@
       "default": "student_id"
     },
     "identifier_label": {
-      "type": "string",
-      "description": "Institution-specific label for this identifier type"
+      "type": "string"
     },
     "identifier_value": {
-      "type": "string",
-      "description": "The actual identifier value"
+      "type": "string"
     },
     "is_verified": {
       "type": "boolean",
-      "default": false,
-      "description": "Whether this identifier has been verified by the institution"
+      "default": false
     },
     "verified_at": {
       "type": "string",
       "format": "date-time"
     },
     "verified_by_id": {
-      "type": "string",
-      "description": "User ID of the admin who verified this identifier"
+      "type": "string"
     },
     "verification_method": {
       "type": "string",
@@ -59,18 +55,15 @@
     },
     "is_primary": {
       "type": "boolean",
-      "default": false,
-      "description": "Whether this is the student's primary identifier for display"
+      "default": false
     },
     "is_permanent": {
       "type": "boolean",
-      "default": false,
-      "description": "Whether this is the institution's permanent identifier (vs temporary)"
+      "default": false
     },
     "issued_at": {
       "type": "string",
-      "format": "date-time",
-      "description": "When the institution issued this identifier to the student"
+      "format": "date-time"
     },
     "notes": {
       "type": "string"
@@ -81,5 +74,52 @@
     "institution_name",
     "identifier_type",
     "identifier_value"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

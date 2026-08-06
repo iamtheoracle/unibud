@@ -1,43 +1,38 @@
 # Oracle Kernel
 
-Oracle Kernel is the domain-agnostic infrastructure layer for UNIBUD.
+Oracle Kernel is generic infrastructure. It provides bootstrap, configuration, environment access, dependency injection, registries, lifecycle controls, health checks, logging, error boundaries, plugin registration, and version tracking.
 
-## Scope
+## Architecture
 
-This package provides infrastructure primitives only:
+Dependency direction is one-way:
+
+`Modules -> Oracle Kernel`
+
+Oracle Kernel does not import business modules or interpret module metadata.
+
+## Components
 
 - Bootstrap
 - Configuration Manager
 - Environment Manager
-- Dependency Injection
+- Dependency Injector
 - Module Registry
-- Service Registry
-- Capability Registry
+- Capability Registry (Service Registry alias available for compatibility)
 - Lifecycle Manager
 - Health Manager
-- Logging
+- Logger
 - Error Boundary
-- Plugin Registration
+- Plugin Registrar
 - Version Manager
 
-## Non-Scope
+## Integration Guide
 
-Oracle Kernel does not include business-domain logic, workflows, routes, or UI.
-Domain modules register themselves with the kernel through registries and plugins.
+1. Create an Oracle instance via `bootstrap`.
+2. Register modules and capabilities.
+3. Optionally register dependencies and plugins.
+4. Call `initialize`.
+5. Call `shutdown` during teardown.
 
-## Usage
+## Generic Extension Pattern
 
-```js
-import { bootstrap } from "@/oracle/kernel";
-
-const kernel = bootstrap({
-  kernelVersion: "1.0.0",
-  environmentSchema: [{ key: "NODE_ENV", defaultValue: "development" }],
-});
-
-await kernel.initialize();
-```
-
-## Testing
-
-Kernel tests are isolated and run with Node's built-in test runner.
+Oracle types include `type`, `roles`, and `metadata` fields so modules can attach domain meaning without changing kernel internals.

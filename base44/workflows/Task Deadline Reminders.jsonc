@@ -1,0 +1,45 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "task_deadline_reminders",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "send_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "taskReminders",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Send task reminders",
+            "description": "Notify assignees of due/overdue tasks"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Task Deadline Reminders",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Scans Spark tasks daily and notifies assignees of due-soon and overdue tasks."
+}

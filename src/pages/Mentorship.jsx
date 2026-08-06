@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Search, Star, MessageCircle, Video, Phone, Calendar,
-  BookOpen, Users, GraduationCap, Briefcase, BadgeCheck, Sparkles,
-  ChevronRight, Clock, Globe, Heart, Send, Loader2, Brain,
+  Search, Star, MessageCircle, Video,
+  BookOpen, Users, GraduationCap, Briefcase, BadgeCheck, Send, Loader2, Brain,
 } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const roleLabels = {
   senior_student: "Senior Student", alumni: "Alumni", lecturer: "Lecturer",
@@ -16,9 +16,9 @@ const roleLabels = {
 };
 
 const roleColors = {
-  senior_student: "hsl(var(--unibud-blue))", alumni: "hsl(var(--unibud-purple))",
-  lecturer: "hsl(var(--unibud-gold))", researcher: "hsl(var(--unibud-green))",
-  industry_professional: "hsl(var(--unibud-orange))",
+  senior_student: "hsl(var(--primary))", alumni: "hsl(var(--accent))",
+  lecturer: "hsl(var(--gold))", researcher: "hsl(var(--success))",
+  industry_professional: "hsl(var(--warning))",
 };
 
 const roleIcons = {
@@ -37,7 +37,6 @@ export default function Mentorship() {
   const [requestMessage, setRequestMessage] = useState("");
   const [requestType, setRequestType] = useState("mentorship");
   const [submitting, setSubmitting] = useState(false);
-  const navigate = useNavigate();
   const qc = useQueryClient();
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
@@ -104,23 +103,11 @@ export default function Mentorship() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Mentorship</h1>
-          <p className="text-[12px] text-muted-foreground">Find your guide</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Users className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <ScreenShell title="Mentorship" subtitle="Find your guide" back
+      actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Users className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Search */}
-      <div className="px-4 pb-3">
+      <div className="pb-3">
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input type="text" value={search} onChange={e => setSearch(e.target.value)}
@@ -130,7 +117,7 @@ export default function Mentorship() {
       </div>
 
       {/* Filters */}
-      <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="pb-3 flex gap-2 overflow-x-auto no-scrollbar">
         {FILTERS.map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap ${filter === f ? "bg-foreground text-background soft-shadow" : "bg-card border border-border/40 text-muted-foreground"}`}>
@@ -141,7 +128,7 @@ export default function Mentorship() {
 
       {/* Bud Recommendations */}
       {!search && filter === "All" && topRecommendations.length > 0 && (
-        <div className="px-4 mb-4">
+        <div className="mb-4">
           <div className="flex items-center gap-2 mb-2.5 px-1">
             <Brain className="w-4 h-4 text-primary" />
             <h3 className="font-heading font-bold text-[14px] text-foreground">Bud's Recommendations</h3>
@@ -155,7 +142,7 @@ export default function Mentorship() {
       )}
 
       {/* Mentors List */}
-      <div className="px-4 space-y-3">
+      <div className="space-y-3">
         {isLoading ? (
           [1,2,3,4].map(i => <div key={i} className="h-[120px] rounded-[20px] shimmer" />)
         ) : filtered.length === 0 ? (
@@ -187,7 +174,7 @@ export default function Mentorship() {
           >
             <div className="flex items-center gap-3 mb-4">
               {requestMentor.avatar_url ? (
-                <img src={requestMentor.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+                <img src={requestMentor.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover" loading="lazy" />
               ) : (
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                   <span className="font-heading font-bold text-primary">{requestMentor.name?.charAt(0) || "M"}</span>
@@ -232,14 +219,14 @@ export default function Mentorship() {
           </motion.div>
         </motion.div>
       )}
-    </div>
+    </ScreenShell>
   );
 }
 
 function MentorMiniCard({ mentor, onConnect, delay }) {
   const navigate = useNavigate();
   const RoleIcon = roleIcons[mentor.role] || Users;
-  const color = roleColors[mentor.role] || "hsl(var(--unibud-gold))";
+  const color = roleColors[mentor.role] || "hsl(var(--gold))";
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -250,7 +237,7 @@ function MentorMiniCard({ mentor, onConnect, delay }) {
     >
       <div className="flex items-center gap-2.5 mb-2">
         {mentor.avatar_url ? (
-          <img src={mentor.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+          <img src={mentor.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover" loading="lazy" />
         ) : (
           <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: withAlpha(color) }}>
             <span className="font-heading font-bold text-[14px]" style={{ color }}>{mentor.name?.charAt(0) || "M"}</span>
@@ -291,7 +278,7 @@ function MentorMiniCard({ mentor, onConnect, delay }) {
 function MentorCard({ mentor, onConnect, delay }) {
   const navigate = useNavigate();
   const RoleIcon = roleIcons[mentor.role] || Users;
-  const color = roleColors[mentor.role] || "hsl(var(--unibud-gold))";
+  const color = roleColors[mentor.role] || "hsl(var(--gold))";
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -302,7 +289,7 @@ function MentorCard({ mentor, onConnect, delay }) {
     >
       <div className="flex items-start gap-3">
         {mentor.avatar_url ? (
-          <img src={mentor.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" />
+          <img src={mentor.avatar_url} alt="" className="w-12 h-12 rounded-full object-cover flex-shrink-0" loading="lazy" />
         ) : (
           <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: withAlpha(color) }}>
             <span className="font-heading font-bold text-[16px]" style={{ color }}>{mentor.name?.charAt(0) || "M"}</span>

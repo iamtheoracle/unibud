@@ -1,0 +1,62 @@
+{
+  "name": "ExamCertificate",
+  "type": "object",
+  "properties": {
+    "attempt_id": {
+      "type": "string"
+    },
+    "paper_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "paper_title": {
+      "type": "string"
+    },
+    "exam_type": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "score_percent": {
+      "type": "number",
+      "default": 0
+    },
+    "certificate_code": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "attempt_id",
+    "paper_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

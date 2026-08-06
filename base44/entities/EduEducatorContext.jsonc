@@ -1,0 +1,23 @@
+{
+  "name": "EduEducatorContext",
+  "type": "object",
+  "properties": {
+    "educator_id": {
+      "type": "string",
+      "description": "Reference to EduEducator"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": ["university", "learning_organization"]
+    },
+    "context_id": {
+      "type": "string",
+      "description": "University ID or Learning Organisation ID"
+    },
+    "assigned_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["educator_id", "context_type", "context_id"]
+}

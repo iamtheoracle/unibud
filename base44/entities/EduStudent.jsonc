@@ -1,0 +1,29 @@
+{
+  "name": "EduStudent",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Oracle User ID — links to the platform User entity"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "inactive", "graduated", "withdrawn"],
+      "default": "active"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Extensible key-value store for domain-specific data"
+    }
+  },
+  "required": ["user_id", "first_name", "last_name", "email"]
+}
