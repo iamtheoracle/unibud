@@ -1,0 +1,32 @@
+{
+  "name": "EduStudentContext",
+  "type": "object",
+  "properties": {
+    "student_id": {
+      "type": "string",
+      "description": "Reference to EduStudent"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": ["university", "learning_organization"],
+      "description": "Which kind of organisation this context belongs to"
+    },
+    "context_id": {
+      "type": "string",
+      "description": "University ID or Learning Organisation ID"
+    },
+    "enrollment_number": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "graduated", "withdrawn"],
+      "default": "active"
+    },
+    "enrolled_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["student_id", "context_type", "context_id"]
+}

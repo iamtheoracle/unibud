@@ -47,6 +47,7 @@ import { permissionsService } from './services/PermissionsService';
 import { integrationsService } from './services/IntegrationsService';
 import { storageService } from './services/StorageService';
 import { lifecycleManager } from './lifecycle/ServiceLifecycleManager';
+import { osAIKernel } from '@/lib/ai/osAIKernel';
 
 class RuntimeBoot {
   constructor() {
@@ -171,6 +172,15 @@ class RuntimeBoot {
 
     const kernelResult = await bootKernel();
     this._bootResults.kernel = { oracle: 'ready', nexus: 'ready', guardian: 'ready', spark: 'ready', orbit: 'ready' };
+
+    // Boot the OS AI Activation Protocol — registers all 8 OS-level AIs,
+    // wires them to their platform event triggers, and starts the
+    // inter-AI collaboration pipeline (Lens → Context → Memory → Recommendation → Oracle → Bud).
+    await osAIKernel.boot();
+    this._bootResults.osAI = {
+      status: osAIKernel.ready ? 'ready' : 'failed',
+      agents: osAIKernel.list().map((a) => a.id),
+    };
   }
 
   /** Stage 6: Application Boot — app-specific initialization. */
@@ -183,6 +193,12 @@ class RuntimeBoot {
       const recovered = orbit.recover();
       if (recovered > 0) logger.warn('Orbit recovered stuck jobs', { count: recovered });
     }, 60000);
+
+    // Register OS AI health check so it participates in platform health monitoring.
+    healthService.registerCheck('os_ai', () => {
+      const h = osAIKernel.health();
+      return { healthy: h.status === 'healthy', detail: `OS AI Kernel: ${h.status} (${h.agents?.length ?? 0} agents)` };
+    });
 
     this._bootResults.application = 'ok';
   }
@@ -214,6 +230,7 @@ class RuntimeBoot {
     this._stage = 'shutdown';
 
     lifecycleManager.stop();
+    osAIKernel.shutdown();
     orbit.shutdown();
     await shutdownServices();
     eventBus.shutdown();

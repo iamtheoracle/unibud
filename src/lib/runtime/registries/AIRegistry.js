@@ -24,6 +24,18 @@ const DEFAULT_AGENTS = [
   { agent_id: 'search', name: 'Search', division: 'Intelligence', role: 'Information Retrieval', focus: 'Information retrieval across entities.', enabled: true, order: 16 },
   { agent_id: 'security', name: 'Security', division: 'Trust', role: 'Security Monitor', focus: 'Security monitoring and incident response.', enabled: true, order: 17 },
   { agent_id: 'notification', name: 'Notification', division: 'Operations', role: 'Notification Dispatcher', focus: 'Notification dispatch and scheduling.', enabled: true, order: 18 },
+
+  // ── OS AI Activation Protocol ─────────────────────────────────────────────
+  // These 8 OS-level AIs are activated by platform events and collaborate
+  // through Spark, with all responses returning through Bud.
+  { agent_id: 'context_ai_os', name: 'Context AI', division: 'OS', role: 'Context Tracking', focus: 'Continuously tracks current screen, institution, course, community, task, time, and location. Always active.', enabled: true, order: 20 },
+  { agent_id: 'navigator_ai_os', name: 'Navigator AI', division: 'OS', role: 'Navigation Intelligence', focus: 'Navigation, context switching, deep links, session restore, and quick actions.', enabled: true, order: 21 },
+  { agent_id: 'memory_ai_os', name: 'Memory AI', division: 'OS', role: 'Memory Management', focus: 'Conversations, learning history, bookmarks, preferences, saved items, and session memory.', enabled: true, order: 22 },
+  { agent_id: 'recommendation_ai_os', name: 'Recommendation AI', division: 'OS', role: 'Recommendations', focus: 'Feed, discovery, communities, marketplace, courses, events, and people suggestions.', enabled: true, order: 23 },
+  { agent_id: 'oracle_ai_os', name: 'Oracle AI', division: 'OS', role: 'Reasoning & Academic', focus: 'Reasoning, academic assistance, planning, complex questions, and decision support.', enabled: true, order: 24 },
+  { agent_id: 'lens_ai_os', name: 'Lens', division: 'OS', role: 'Media Intelligence', focus: 'Camera, media upload, OCR, scanning, image search, AI editing, color correction, and media analysis.', enabled: true, order: 25 },
+  { agent_id: 'artist_ai_os', name: 'Artist', division: 'OS', role: 'Creative Intelligence', focus: 'Image generation, content creation, story covers, highlight covers, and graphics.', enabled: true, order: 26 },
+  { agent_id: 'orbit_ai_os', name: 'Orbit AI', division: 'OS', role: 'Automation & Scheduling', focus: 'Automation, background tasks, scheduling, workflow execution, and notifications.', enabled: true, order: 27 },
 ];
 
 class AIRegistry {

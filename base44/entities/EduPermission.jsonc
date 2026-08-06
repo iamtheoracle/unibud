@@ -1,0 +1,21 @@
+{
+  "name": "EduPermission",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "e.g. student.view_class"
+    },
+    "description": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string",
+      "enum": ["global", "organization", "class"]
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": ["name", "scope"]
+}

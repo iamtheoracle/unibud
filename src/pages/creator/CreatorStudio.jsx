@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import {
   BarChart3, FileText, Video, Mic, ShoppingBag, Heart, Eye, MessageCircle,
   Share2, Trash2, CalendarClock, Sparkles, TrendingUp, Bookmark, Radio, Users,
+  BookMarked, Zap,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
@@ -67,6 +68,7 @@ export default function CreatorStudio() {
     { key: "shorts", label: `Shorts · ${s.length}` },
     { key: "podcasts", label: `Episodes · ${e.length}` },
     { key: "listings", label: `Listings · ${l.length}` },
+    { key: "highlights", label: "Highlights" },
   ];
 
   const creates = [
@@ -74,6 +76,8 @@ export default function CreatorStudio() {
     { to: "/shorts", icon: Video, label: "Short", color: "bg-accent/10", ic: "text-accent" },
     { to: "/podcasts", icon: Mic, label: "Podcast", color: "bg-success/10", ic: "text-success" },
     { to: "/marketplace", icon: ShoppingBag, label: "Listing", color: "bg-warning/10", ic: "text-warning" },
+    { to: "/quad?type=article", icon: BookMarked, label: "Article", color: "bg-blue-500/10", ic: "text-blue-400" },
+    { to: "/live", icon: Zap, label: "Go Live", color: "bg-red-500/10", ic: "text-red-400" },
   ];
 
   return (
@@ -90,7 +94,7 @@ export default function CreatorStudio() {
       ) : (
         <>
           {/* Quick create */}
-          <div className="grid grid-cols-4 gap-2.5 mb-5">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2.5 mb-5">
             {creates.map((c, i) => (
               <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.04, duration: 0.3, ease: EASE }}>
                 <Link to={c.to} className="flex flex-col items-center gap-1.5 p-3 rounded-[18px] glass-card spring-tap">
@@ -174,6 +178,34 @@ export default function CreatorStudio() {
           {tab === "shorts" && <ContentList items={s} type="shorts" qk="myShorts" del={del} render={(x) => x.title} metrics={(x) => <Metrics likes={x.likes_count} comments={x.comments_count} shares={x.shares_count} views={x.views_count} />} empty="No shorts uploaded yet." />}
           {tab === "podcasts" && <ContentList items={e} type="podcasts" qk="myEpisodes" del={del} render={(x) => x.title} metrics={(x) => <Metrics likes={x.likes_count || 0} comments={x.comments_count || 0} shares={x.shares_count || 0} />} empty="No podcast episodes published yet." />}
           {tab === "listings" && <ContentList items={l} type="listings" qk="myListings" del={del} render={(x) => x.title} metrics={(x) => <span className="text-[10px] font-semibold text-primary">{x.is_free ? "Free" : `₦${x.price}`}</span>} empty="No marketplace listings yet." />}
+
+          {tab === "highlights" && (
+            <div className="space-y-4">
+              <div className="glass-card p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bookmark className="w-4 h-4 text-primary" />
+                  <p className="text-[13px] font-semibold text-foreground">Story Highlights</p>
+                </div>
+                <p className="text-[12px] text-muted-foreground leading-relaxed">
+                  Highlights are permanent collections of stories saved to your profile.
+                  Manage them directly from your profile page.
+                </p>
+                <Link
+                  to="/profile"
+                  className="mt-3 flex items-center gap-2 text-[12px] font-semibold text-primary spring-tap"
+                >
+                  <Bookmark className="w-3.5 h-3.5" /> Manage highlights on profile
+                </Link>
+              </div>
+              <div className="glass-card p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-primary shrink-0" />
+                  <p className="text-[12px] font-semibold text-foreground">Bud tip</p>
+                </div>
+                <p className="text-[12px] text-foreground/80 leading-relaxed">Pinned highlights with custom covers get up to 2× more profile visits. Use academic highlights to showcase your best work.</p>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

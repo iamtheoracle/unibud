@@ -1,0 +1,26 @@
+{
+  "name": "EduCourse",
+  "type": "object",
+  "properties": {
+    "department_id": {
+      "type": "string",
+      "description": "Reference to EduDepartment"
+    },
+    "code": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "credits": {
+      "type": "number"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": ["department_id", "code", "name"]
+}

@@ -28,7 +28,6 @@ export function useAdaptiveContext() {
       return () => clearTimeout(t);
     }
     setPhase("settled");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   // Settle back to the compact chip on first genuine interaction.

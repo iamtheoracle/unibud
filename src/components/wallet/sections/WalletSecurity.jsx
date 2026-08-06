@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ShieldCheck, Fingerprint, KeyRound, Smartphone, CreditCard, Radar, History, Laptop } from "lucide-react";
 import { SectionCard } from "../WalletShared";
 import { Switch } from "@/components/ui/switch";
+import PINSetupModal from "../PINSetupModal";
 
 const CONTROLS = [
   { key: "biometric", label: "Biometric Authentication", desc: "Unlock Wallet with Face ID or fingerprint", icon: Fingerprint },
@@ -15,6 +16,7 @@ const CONTROLS = [
 const KEY = "wallet.security";
 
 export default function WalletSecurity() {
+  const [pinOpen, setPinOpen] = useState(false);
   const [prefs, setPrefs] = useState(() => {
     try { return { biometric: true, pin: true, fraud: true, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch { return { biometric: true, pin: true, fraud: true }; }
   });
@@ -41,7 +43,13 @@ export default function WalletSecurity() {
               <p className="text-[12px] font-semibold text-foreground">{c.label}</p>
               <p className="text-[10px] text-muted-foreground">{c.desc}</p>
             </div>
-            <Switch checked={!!prefs[c.key]} onCheckedChange={() => toggle(c.key)} />
+            <Switch
+              checked={!!prefs[c.key]}
+              onCheckedChange={() => {
+                if (c.key === "pin") setPinOpen(true);
+                toggle(c.key);
+              }}
+            />
           </div>
         ))}
       </SectionCard>
@@ -63,6 +71,7 @@ export default function WalletSecurity() {
           </div>
         ))}
       </SectionCard>
+      <PINSetupModal open={pinOpen} onClose={() => setPinOpen(false)} />
     </div>
   );
 }

@@ -6,10 +6,11 @@ import RouteLoading from "@/components/RouteLoading";
 import { BudLauncherProvider } from "@/lib/BudLauncherContext";
 import { BudPresenceProvider } from "@/lib/bud/BudPresenceContext";
 import { SearchProvider, useSearch } from "@/lib/search/SearchContext";
-import MainTabBar from "@/components/layout/MainTabBar";
-import ContextSwitcher from "@/components/layout/ContextSwitcher";
+import PrimaryNavBar from "@/components/layout/PrimaryNavBar";
+import GlobalTopBar from "@/components/layout/GlobalTopBar";
 import { NavigationProvider, useNavigation } from "@/lib/os/NavigationContext";
-import FloatingBudButton from "@/components/bud/FloatingBudButton";
+import { NavigationAnalyticsProvider } from "@/lib/navigation/navigationAnalytics";
+import { CommandBarProvider, useCommandBar } from "@/components/navigation/CommandBar";
 import BudPresenceReactor from "@/components/bud/BudPresenceReactor";
 import BudSheet from "@/components/bud/BudSheet";
 import UniversalSearchOverlay from "@/components/search/UniversalSearchOverlay";
@@ -32,16 +33,24 @@ import "@/lib/os/socialModules"; // Registers social modules consumed by Square
 import "@/lib/os/communicationModules"; // Registers communication modules consumed by Connect
 import { VoiceProvider } from "@/lib/voice/VoiceProvider";
 import LiveReflectionProvider from "@/components/realtime/LiveReflectionProvider";
-import EdgeContextSwipe from "@/components/layout/EdgeContextSwipe";
 import WorldTransitionOverlay from "@/components/layout/WorldTransitionOverlay";
 import { useBudPush } from "@/lib/notifications/useBudPush";
 import { useAutonomousEngine } from "@/hooks/useAutonomousEngine";
 import { useSelfHealingEngine } from "@/hooks/useSelfHealingEngine";
 import { ClassroomModeProvider } from "@/lib/classroom/ClassroomModeContext";
 import { CreateProvider } from "@/lib/CreateContext";
+import { useNavigationState } from "@/hooks/useNavigationState";
 
 function UniversalSearchOverlayWithContext() {
   const { searchOpen, closeSearch } = useSearch();
+  const { openCommandBar } = useCommandBar();
+
+  // Open the Command Bar when the search trigger fires
+  useEffect(() => {
+    if (searchOpen) openCommandBar();
+  }, [searchOpen, openCommandBar]);
+
+  // Keep the old overlay for backward compat during transition
   return <UniversalSearchOverlay open={searchOpen} onClose={closeSearch} />;
 }
 
@@ -58,22 +67,28 @@ function RealtimeContextSync() {
 }
 
 /**
- * NavigationContextSync — syncs the navigation world with the OS context.
- * When the user switches worlds (Social ↔ Academics), the OS context is
- * updated so Platform Core modules reprioritize accordingly.
+ * NavigationContextSync — syncs the navigation destination with the OS context.
+ * The OS context module-priority adapts based on the active tab.
  */
 function NavigationContextSync() {
-  const { worldId } = useNavigation();
+  const { activeDestId } = useNavigation();
   const { setContext } = useContextSystem();
   useEffect(() => {
-    setContext(worldId === "social" ? "social" : "academic");
-  }, [worldId]);
+    setContext(activeDestId === "quad" ? "academic" : "social");
+  }, [activeDestId]); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
+/** Wires the navigation state tracker — must be inside Router. */
+function NavigationStateTracker() {
+  useNavigationState();
   return null;
 }
 
 /**
- * AppShell — the authenticated student shell: page content + floating
- * Bud Orb + bottom navigation. Guards auth for all tab routes.
+ * AppShell — the authenticated student shell.
+ * Uses PrimaryNavBar (4 tabs: Square, Quad, Connect, Me).
+ * FloatingBudButton is removed — Bud lives in Me and the Command Bar.
  */
 export default function AppShell() {
   const navigate = useNavigate();
@@ -114,19 +129,21 @@ export default function AppShell() {
       <UnibudContextProvider>
       <OSContextProvider>
       <NavigationProvider>
+      <NavigationAnalyticsProvider>
+      <CommandBarProvider>
+      <NavigationStateTracker />
       <NavigationContextSync />
       <RealtimeContextSync />
       <ClassroomModeProvider>
         <div className="min-h-screen w-full relative z-10">
           <AmbientBackground />
           <ContextPulse />
-          <ContextSwitcher />
+          <GlobalTopBar />
           <WorldTransitionOverlay />
           <OfflineSyncBanner />
           <div className="relative z-10 max-w-[520px] mx-auto px-4 pt-2">
             <AnnouncementBanner />
           </div>
-          <EdgeContextSwipe />
           <LiveReflectionProvider />
           <Suspense fallback={<RouteLoading />}>
             <motion.div
@@ -139,14 +156,16 @@ export default function AppShell() {
               {outlet}
             </motion.div>
           </Suspense>
-          <MainTabBar />
-          <FloatingBudButton />
+          {/* Single canonical navigation bar — no floating Bud button */}
+          <PrimaryNavBar />
           <BudPresenceReactor />
           <BudSheet />
           <UniversalSearchOverlayWithContext />
           <ConsentBanner />
         </div>
       </ClassroomModeProvider>
+      </CommandBarProvider>
+      </NavigationAnalyticsProvider>
       </NavigationProvider>
       </OSContextProvider>
       </UnibudContextProvider>

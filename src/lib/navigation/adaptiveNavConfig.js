@@ -1,29 +1,26 @@
-import {
-  Users as SocialIcon,
-  BookOpen as AcademicIcon,
-} from "lucide-react";
-
 /**
- * Adaptive Navigation configuration — simplified to 3 primary destinations.
+ * Adaptive Navigation configuration — four primary destinations.
  *
- * UNIBUD is no longer a collection of separate apps. Users navigate between
- * only three high-level areas:
- *   - Social    → everything student life (feed, friends, events, marketplace)
- *   - Academic  → the complete academic workspace (classes, assignments, exams)
- *   - Me        → personal space (profile, settings, achievements)
+ * UNIBUD Navigation OS: users navigate between four visible tabs.
+ * Bud is NOT a tab — it is accessible through Me, the Command Bar,
+ * voice, and quick actions.
  *
- * Bud is NOT a navigation item — it's permanently available across the app
- * through the persistent input and conversational interface.
+ *   Square  → Global discovery
+ *   Quad    → Campus Operating System (Academic + Social)
+ *   Connect → Communication
+ *   Me      → Personal Operating System (includes Bud Home)
  */
+import { PRIMARY_DESTINATIONS } from "@/lib/navigation/registry";
 
-export const PRIMARY_NAV = [
-  { key: "social", label: "Social", to: "/social", icon: SocialIcon },
-  { key: "academic", label: "Academic", to: "/academics", icon: AcademicIcon },
-  { key: "me", label: "Me", to: "/me", icon: null }, // icon handled separately as a circular profile button
-];
+export const PRIMARY_NAV = PRIMARY_DESTINATIONS.map(({ id, label, to }) => ({
+  key: id,
+  label,
+  to,
+  icon: null, // Icons are resolved in PrimaryNavBar from the icon string in PRIMARY_DESTINATIONS
+}));
 
 /** Legacy compat — kept for any code still referencing MODE_HOME */
 export const MODE_HOME = {
-  academic: "/academics",
-  social: "/social",
+  academic: "/quad",
+  social: "/square",
 };

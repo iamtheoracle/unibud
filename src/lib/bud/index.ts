@@ -15,6 +15,7 @@
  */
 
 import { oracle } from "@/lib/runtime/kernel";
+import { aiKernel } from "@/lib/ai/kernel";
 import { buildSystemPrompt } from "./prompts/systemPrompt";
 import { createPersonality, type BudPersonality } from "./personality";
 import { resolveLimits, type BudLimits } from "./config";
@@ -26,6 +27,12 @@ export interface BudConfig {
 }
 
 export interface Bud {
+  initialize(session?: BudSession): Promise<void>;
+  start(session?: BudSession): Promise<void>;
+  stop(): Promise<void>;
+  restart(session?: BudSession): Promise<void>;
+  health(): ReturnType<typeof aiKernel.health>;
+  metadata(): ReturnType<typeof aiKernel.describe>;
   respond(message: string, session: BudSession): Promise<BudResponse>;
   transcript(sessionId: string, limit?: number): ConversationTurn[];
   readonly personality: BudPersonality;
@@ -38,17 +45,77 @@ export interface Bud {
  */
 export function createBud(config: BudConfig = {}): Bud {
   const personality = createPersonality(config.personality);
-  resolveLimits(config.limits); // resolved for API compat; Oracle manages limits internally
+  const limits = resolveLimits(config.limits); // resolved for API compat; Oracle manages limits internally
 
   // Local transcript cache — populated as conversations happen.
   // Oracle/Nexus stores interactions via memoryService; this cache
   // provides sync access for the transcript() interface.
   const transcriptCache = new Map<string, ConversationTurn[]>();
+  let initialized = false;
+
+  const ensureInitialized = async (session?: BudSession) => {
+    await aiKernel.initializeComponent("bud", {
+      config: {
+        personality: personality.name,
+        tone: personality.tone,
+        limits,
+      },
+      context: session
+        ? {
+            sessionId: session.sessionId,
+            userId: session.userId,
+            product: session.product,
+            locale: session.locale,
+            timezone: session.timezone,
+          }
+        : undefined,
+    });
+    initialized = true;
+  };
 
   return {
     personality,
 
+    async initialize(session?: BudSession): Promise<void> {
+      await ensureInitialized(session);
+    },
+
+    async start(session?: BudSession): Promise<void> {
+      await ensureInitialized(session);
+    },
+
+    async stop(): Promise<void> {
+      if (!initialized) return;
+      await aiKernel.stopComponent("bud");
+      initialized = false;
+    },
+
+    async restart(session?: BudSession): Promise<void> {
+      await aiKernel.restartComponent("bud", {
+        context: session
+          ? {
+              sessionId: session.sessionId,
+              userId: session.userId,
+              product: session.product,
+              locale: session.locale,
+              timezone: session.timezone,
+            }
+          : undefined,
+      });
+      initialized = true;
+    },
+
+    health() {
+      return aiKernel.health("bud");
+    },
+
+    metadata() {
+      return aiKernel.describe("bud");
+    },
+
     async respond(message: string, session: BudSession): Promise<BudResponse> {
+      await ensureInitialized(session);
+
       // Guard: if Oracle isn't ready (boot not complete), return gracefully
       if (!oracle.ready) {
         return {
@@ -90,6 +157,15 @@ export function createBud(config: BudConfig = {}): Bud {
         bud: { role: "bud", content: result.text, timestamp: now },
       });
       transcriptCache.set(session.sessionId, turns);
+
+      aiKernel.updateContext("bud", {
+        sessionId: session.sessionId,
+        userId: session.userId,
+        product: session.product,
+        locale: session.locale,
+        timezone: session.timezone,
+        lastMessageAt: now,
+      });
 
       return {
         message: result.text,
