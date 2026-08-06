@@ -1,8 +1,16 @@
 import { useState, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { modelService } from "@/lib/runtime/services/ModelService";
+import { promptService } from "@/lib/runtime/services/PromptService";
+
+function coerceBudText(result) {
+  if (typeof result === "string") return result;
+  if (result && typeof result.response === "string") return result.response;
+  if (result && typeof result.text === "string") return result.text;
+  return "I'm here to help.";
+}
 
 /**
- * useBudInvoke — shared hook for invoking Bud (LLM) with auto-dismiss.
+ * useBudInvoke — shared hook for invoking Bud with runtime services.
  * Used by both the academic study companion and the non-academic @Bud invite bar.
  *
  * After Bud responds, the response auto-dismisses after `autoDismiss` ms,
@@ -12,19 +20,36 @@ export function useBudInvoke() {
   const [processing, setProcessing] = useState(false);
   const [response, setResponse] = useState(null);
 
-  const invoke = useCallback(async (prompt, autoDismiss = 10000) => {
+  const invoke = useCallback(async ({ templateId = "bud.response", variables = {}, fallbackPrompt, autoDismiss = 10000, taskTier = "standard", fileUrls } = {}) => {
     setProcessing(true);
     setResponse(null);
+
     try {
-      const result = await base44.integrations.Core.InvokeLLM({
+      const rendered = promptService.render(templateId, variables);
+      const prompt = rendered
+        ? `${rendered.system ? `${rendered.system}
+
+` : ""}${rendered.user}`
+        : fallbackPrompt;
+
+      if (!prompt) {
+        throw new Error(`Unable to render Bud prompt for template: ${templateId}`);
+      }
+
+      const result = await modelService.invoke({
         prompt,
-        response_json_schema: { type: "object", properties: { response: { type: "string" } } },
+        taskTier,
+        model: rendered?.model || undefined,
+        fileUrls,
       });
-      setResponse(result.response || "I'm here to help.");
+
+      setResponse(coerceBudText(result));
     } catch {
       setResponse("I couldn't process that right now. Try again in a moment.");
+    } finally {
+      setProcessing(false);
     }
-    setProcessing(false);
+
     if (autoDismiss > 0) {
       setTimeout(() => setResponse(null), autoDismiss);
     }

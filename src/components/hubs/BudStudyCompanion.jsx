@@ -31,12 +31,24 @@ export default function BudStudyCompanion({ hub }) {
 
   const handleAction = (actionId) => {
     if (actionId === "ask") { setShowInput(!showInput); return; }
-    invoke(`You are Bud, a teaching assistant in the ${hub.label} (${hub.description}). ${PROMPTS[actionId]}`);
+    invoke({
+      templateId: "bud.response",
+      variables: {
+        userMessage: PROMPTS[actionId],
+        context: `Academic hub: ${hub.label}. Description: ${hub.description}. Answer like Bud the study companion with practical academic guidance.`,
+      },
+    });
   };
 
   const handleAsk = () => {
     if (!question.trim()) return;
-    invoke(`You are Bud, a teaching assistant in the ${hub.label} (${hub.description}). A student asked: "${question}". Provide a helpful, educational response.`);
+    invoke({
+      templateId: "bud.response",
+      variables: {
+        userMessage: question,
+        context: `Academic hub: ${hub.label}. Description: ${hub.description}. Provide a helpful, educational response as Bud the study companion.`,
+      },
+    });
     setQuestion("");
     setShowInput(false);
   };

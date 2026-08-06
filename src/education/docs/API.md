@@ -1,85 +1,162 @@
-# Education API Reference
+# Education Module — API Reference
 
-## Shared Resources
+## Base URL
+All Education Module API endpoints are prefixed: `/api/education`
 
-- `POST /api/education/students`
-- `GET /api/education/students`
-- `GET /api/education/students/:id`
-- `PUT /api/education/students/:id`
-- `POST /api/education/students/:id/activate`
-- `POST /api/education/students/:id/deactivate`
-- `GET /api/education/students/:id/contexts`
-- `POST /api/education/educators`
-- `GET /api/education/educators`
-- `GET /api/education/educators/:id`
-- `PUT /api/education/educators/:id`
-- `POST /api/education/educators/:id/context`
-- `DELETE /api/education/educators/:id/context`
-- `GET /api/education/educators/:id/contexts`
-- `POST /api/education/programs`
-- `GET /api/education/programs`
-- `GET /api/education/programs/:id`
-- `PUT /api/education/programs/:id`
-- `DELETE /api/education/programs/:id`
-- `POST /api/education/programs/:id/subjects`
-- `DELETE /api/education/programs/:id/subjects/:subjectId`
-- `POST /api/education/subjects`
-- `GET /api/education/subjects`
-- `GET /api/education/subjects/:id`
-- `PUT /api/education/subjects/:id`
-- `DELETE /api/education/subjects/:id`
-- `POST /api/education/classes`
-- `GET /api/education/classes`
-- `GET /api/education/classes/:id`
-- `PUT /api/education/classes/:id`
-- `DELETE /api/education/classes/:id`
-- `POST /api/education/classes/:id/students`
-- `DELETE /api/education/classes/:id/students/:studentId`
-- `POST /api/education/enrollments`
-- `GET /api/education/enrollments`
-- `GET /api/education/enrollments/:id`
-- `POST /api/education/enrollments/:id/approve`
-- `POST /api/education/enrollments/withdraw`
-- `POST /api/education/permissions`
-- `POST /api/education/permissions/grant`
-- `POST /api/education/permissions/revoke`
-- `GET /api/education/permissions/check`
-- `POST /api/education/invitations`
-- `POST /api/education/invitations/accept`
-- `POST /api/education/invitations/reject`
+---
 
-## University Resources
+## Domain 1: Identity
 
-- `POST /api/education/universities`
-- `GET /api/education/universities`
-- `GET /api/education/universities/:id`
-- `PUT /api/education/universities/:id`
-- `DELETE /api/education/universities/:id`
-- `POST /api/education/faculties`
-- `GET /api/education/faculties`
-- `GET /api/education/faculties/:id`
-- `PUT /api/education/faculties/:id`
-- `DELETE /api/education/faculties/:id`
-- `POST /api/education/departments`
-- `GET /api/education/departments`
-- `GET /api/education/departments/:id`
-- `PUT /api/education/departments/:id`
-- `DELETE /api/education/departments/:id`
-- `POST /api/education/courses`
-- `GET /api/education/courses`
-- `GET /api/education/courses/:id`
-- `PUT /api/education/courses/:id`
-- `DELETE /api/education/courses/:id`
+### Students
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/students` | Register a student |
+| `GET` | `/students` | List students |
+| `GET` | `/students/:id` | Get student |
+| `PATCH` | `/students/:id` | Update student |
+| `POST` | `/students/:id/activate` | Activate student |
+| `POST` | `/students/:id/deactivate` | Deactivate student |
+| `GET` | `/students/:id/contexts` | Get student's org contexts |
+| `POST` | `/students/:id/contexts` | Add student to context |
+| `DELETE` | `/students/:id/contexts/:contextId` | Remove context |
 
-## Learning Organization Resources
+### Educators
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/educators` | Register an educator |
+| `GET` | `/educators` | List educators |
+| `GET` | `/educators/:id` | Get educator |
+| `PATCH` | `/educators/:id` | Update educator |
+| `GET` | `/educators/:id/contexts` | Get educator's contexts |
+| `POST` | `/educators/:id/contexts` | Assign educator to context |
+| `DELETE` | `/educators/:id/contexts/:contextId` | Remove context |
 
-- `POST /api/education/organizations`
-- `GET /api/education/organizations`
-- `GET /api/education/organizations/:id`
-- `PUT /api/education/organizations/:id`
-- `DELETE /api/education/organizations/:id`
-- `POST /api/education/learning-programs`
-- `GET /api/education/learning-programs`
-- `GET /api/education/learning-programs/:id`
-- `PUT /api/education/learning-programs/:id`
-- `DELETE /api/education/learning-programs/:id`
+---
+
+## Domain 2: Academic
+
+### Programs
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/programs` | Create program |
+| `GET` | `/programs` | List programs (filter: `?type=waec`) |
+| `GET` | `/programs/:id` | Get program |
+| `PATCH` | `/programs/:id` | Update program |
+| `DELETE` | `/programs/:id` | Delete program |
+| `POST` | `/programs/:id/subjects` | Add subject to program |
+| `DELETE` | `/programs/:id/subjects/:subjectId` | Remove subject |
+
+### Subjects
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/subjects` | Create subject |
+| `GET` | `/subjects` | List subjects (filter: `?programId=...`) |
+| `GET` | `/subjects/:id` | Get subject |
+| `PATCH` | `/subjects/:id` | Update subject |
+| `DELETE` | `/subjects/:id` | Delete subject |
+
+### Classes
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/classes` | Create class |
+| `GET` | `/classes` | List classes (filter: `?programId`, `?educatorId`, `?organizationId`) |
+| `GET` | `/classes/:id` | Get class |
+| `PATCH` | `/classes/:id` | Update class |
+| `DELETE` | `/classes/:id` | Delete class |
+| `POST` | `/classes/:id/students` | Add student |
+| `DELETE` | `/classes/:id/students/:studentId` | Remove student |
+
+### Enrollments
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/enrollments` | Enroll student in class |
+| `GET` | `/enrollments` | List enrollments (filter: `?studentId`, `?classId`) |
+| `GET` | `/enrollments/:id` | Get enrollment |
+| `POST` | `/enrollments/:id/approve` | Approve enrollment |
+| `POST` | `/enrollments/:id/reject` | Reject enrollment |
+| `POST` | `/enrollments/withdraw` | Withdraw from class |
+
+---
+
+## Domain 3: University
+
+### Universities
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/universities` | Create university |
+| `GET` | `/universities` | List universities |
+| `GET` | `/universities/:id` | Get university |
+| `PATCH` | `/universities/:id` | Update university |
+| `DELETE` | `/universities/:id` | Delete university |
+
+### Faculties
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/faculties` | Create faculty |
+| `GET` | `/faculties` | List faculties (filter: `?universityId`) |
+| `GET` | `/faculties/:id` | Get faculty |
+| `PATCH` | `/faculties/:id` | Update faculty |
+| `DELETE` | `/faculties/:id` | Delete faculty |
+
+### Departments
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/departments` | Create department |
+| `GET` | `/departments` | List departments (filter: `?facultyId`) |
+| `GET` | `/departments/:id` | Get department |
+| `PATCH` | `/departments/:id` | Update department |
+| `DELETE` | `/departments/:id` | Delete department |
+
+### Courses (University)
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/courses` | Create course |
+| `GET` | `/courses` | List courses (filter: `?departmentId`) |
+| `GET` | `/courses/:id` | Get course |
+| `PATCH` | `/courses/:id` | Update course |
+| `DELETE` | `/courses/:id` | Delete course |
+
+---
+
+## Domain 4: Learning Organization
+
+### Organizations
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/organizations` | Create organization |
+| `GET` | `/organizations` | List organizations (filter: `?type`) |
+| `GET` | `/organizations/:id` | Get organization |
+| `PATCH` | `/organizations/:id` | Update organization |
+| `DELETE` | `/organizations/:id` | Delete organization |
+
+### Learning Programs
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/learning-programs` | Create learning program |
+| `GET` | `/learning-programs` | List (filter: `?organizationId`) |
+| `GET` | `/learning-programs/:id` | Get learning program |
+| `PATCH` | `/learning-programs/:id` | Update learning program |
+| `DELETE` | `/learning-programs/:id` | Delete learning program |
+
+---
+
+## Domain 5: Shared Infrastructure
+
+### Permissions
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/permissions` | Define a permission |
+| `POST` | `/permissions/grant` | Grant permission to user |
+| `POST` | `/permissions/revoke` | Revoke permission from user |
+| `GET` | `/permissions/check` | Check if user has permission |
+| `GET` | `/permissions/:userId` | List permissions for user |
+
+### Invitations
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/invitations` | Send invitation |
+| `GET` | `/invitations` | List invitations (filter: `?organizationId`) |
+| `GET` | `/invitations/:token` | Get invitation by token |
+| `POST` | `/invitations/:token/accept` | Accept invitation |
+| `POST` | `/invitations/:token/reject` | Reject invitation |
+| `POST` | `/invitations/:id/revoke` | Revoke invitation |

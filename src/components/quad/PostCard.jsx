@@ -1,12 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MessageCircle, Share2, Bookmark, BadgeCheck, MapPin, Pin, Loader2,
+  MessageCircle, Share2, Bookmark, BadgeCheck, MapPin, Pin, Loader2, Repeat2, X,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
+import { useBudLauncher } from "@/lib/BudLauncherContext";
 import ReactionBar from "./ReactionBar";
 import PostMediaGallery from "./PostMediaGallery";
 import PostMenu from "./PostMenu";
@@ -23,8 +24,13 @@ import {
 export default function PostCard({ post, user, index = 0 }) {
   const qc = useQueryClient();
   const { toast } = useToast();
+  const { openWithPrompt } = useBudLauncher();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editContent, setEditContent] = useState(post.content || "");
+  const [editSaving, setEditSaving] = useState(false);
+  const [reposted, setReposted] = useState(false);
   const [bookmarked, setBookmarked] = useState(() => isBookmarked(post.id));
   const [isPinned, setIsPinned] = useState(post.is_pinned || false);
   const [localLikes, setLocalLikes] = useState(post.likes_count || 0);
@@ -117,12 +123,51 @@ export default function PostCard({ post, user, index = 0 }) {
         setIsPinned(!isPinned);
         try { base44.entities.QuadPost.update(post.id, { is_pinned: !isPinned }); } catch {}
         break;
+      case "edit":
+        setEditContent(post.content || "");
+        setEditOpen(true);
+        break;
+      case "repost":
+        if (reposted) { toast({ title: "Already reposted" }); return; }
+        base44.entities.QuadPost.create({
+          type: "repost",
+          content: "",
+          original_post_id: post.id,
+          author_name: user?.full_name || user?.email?.split("@")[0] || "Anonymous",
+          author_handle: user?.email?.split("@")[0] || "",
+          author_image: user?.profile_picture || null,
+        }).then(() => {
+          setReposted(true);
+          setLocalShares((s) => s + 1);
+          base44.entities.QuadPost.update(post.id, { shares_count: (post.shares_count || 0) + 1 }).catch(() => {});
+          toast({ title: "Reposted" });
+          qc.invalidateQueries({ queryKey: ["quadFeed"] });
+        }).catch(() => {
+          toast({ title: "Failed to repost", variant: "destructive" });
+        });
+        break;
+      case "quote_repost":
+        // Opens share sheet pre-seeded with quote mode — use composer via URL
+        window.location.href = `/quad/compose?quote=${post.id}`;
+        break;
       case "bookmark":
         handleBookmark();
         break;
+      case "copy_link": {
+        const postUrl = `${window.location.origin}/quad/post/${post.id}`;
+        navigator.clipboard?.writeText(postUrl).then(() => {
+          toast({ title: "Link copied to clipboard" });
+        }).catch(() => {
+          toast({ title: "Could not copy link", variant: "destructive" });
+        });
+        break;
+      }
       case "copy":
         navigator.clipboard?.writeText(post.content);
         toast({ title: "Copied to clipboard" });
+        break;
+      case "explain_bud":
+        openWithPrompt(`Explain this post for me:\n\n"${post.content}"\n\nPosted by ${post.author_name || "someone"} on UNIBUD.`);
         break;
       case "delete":
         base44.entities.QuadPost.delete(post.id).then(() => {
@@ -163,6 +208,25 @@ export default function PostCard({ post, user, index = 0 }) {
         break;
       default:
         break;
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editContent.trim() || editSaving) return;
+    setEditSaving(true);
+    try {
+      await base44.entities.QuadPost.update(post.id, {
+        content: editContent.trim(),
+        is_edited: true,
+        edited_at: new Date().toISOString(),
+      });
+      qc.invalidateQueries({ queryKey: ["quadFeed"] });
+      toast({ title: "Post updated" });
+      setEditOpen(false);
+    } catch {
+      toast({ title: "Failed to update post", variant: "destructive" });
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -322,9 +386,71 @@ export default function PostCard({ post, user, index = 0 }) {
       <ShareSheet
         open={shareOpen}
         onClose={() => setShareOpen(false)}
-        postUrl={`${window.location.origin}/quad`}
+        postUrl={`${window.location.origin}/quad/post/${post.id}`}
         onShare={handleShareComplete}
       />
+
+      {/* Edit post modal */}
+      <AnimatePresence>
+        {editOpen && (
+          <motion.div
+            className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setEditOpen(false)} aria-hidden />
+            <motion.div
+              className="relative w-full max-w-lg glass-strong rounded-[20px] p-5 shadow-xl"
+              initial={{ y: 32, scale: 0.97 }}
+              animate={{ y: 0, scale: 1 }}
+              exit={{ y: 32, scale: 0.97 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              role="dialog"
+              aria-label="Edit post"
+              aria-modal="true"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[15px] font-semibold text-foreground">Edit Post</h2>
+                <button
+                  onClick={() => setEditOpen(false)}
+                  className="w-7 h-7 rounded-full hover:bg-muted flex items-center justify-center"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4 text-muted-foreground" />
+                </button>
+              </div>
+              <textarea
+                className="w-full min-h-[120px] resize-none bg-muted/40 rounded-[12px] p-3 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                maxLength={2000}
+                aria-label="Edit post content"
+                autoFocus
+              />
+              <div className="flex items-center justify-between mt-3">
+                <span className="text-[11px] text-muted-foreground">{editContent.length}/2000</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditOpen(false)}
+                    className="px-4 py-2 rounded-[10px] text-[12px] font-medium text-muted-foreground hover:bg-muted transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={!editContent.trim() || editSaving}
+                    className="px-4 py-2 rounded-[10px] text-[12px] font-semibold bg-primary text-primary-foreground disabled:opacity-50 flex items-center gap-1.5 transition-opacity"
+                  >
+                    {editSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    Save
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.article>
   );
 }

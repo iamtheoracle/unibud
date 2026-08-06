@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
@@ -6,9 +6,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { hapticImpact } from "@/lib/haptics";
 import EventUpdatesFeed from "./EventUpdatesFeed";
 import EventCheckInSheet from "./EventCheckInSheet";
+import EventComposer from "./EventComposer";
 import {
   X, MapPin, Clock, Calendar, Users, Star, Navigation, QrCode,
-  Bookmark, CheckCircle2, Ticket, Loader2, Shield,
+  Bookmark, CheckCircle2, Ticket, Loader2, Shield, Bell, Pencil, Ban, Link2, MessageCircle,
 } from "lucide-react";
 import { EVENT_TYPES, getIcon, formatEventDate, formatEventTime } from "@/components/campus/campusConstants";
 
@@ -16,6 +17,8 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
   const qc = useQueryClient();
   const { toast } = useToast();
   const [showCheckIn, setShowCheckIn] = useState(false);
+  const [showComposer, setShowComposer] = useState(false);
+  const [showInviteSheet, setShowInviteSheet] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
 
   const { data: freshEvent } = useQuery({
@@ -25,14 +28,20 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
   });
 
   const event = freshEvent || initialEvent;
-  const typeMeta = EVENT_TYPES[event.type] || EVENT_TYPES.other;
+  const typeMeta = EVENT_TYPES[event.event_type || event.type] || EVENT_TYPES.other;
   const Icon = getIcon(typeMeta.icon);
 
-  const isOrganizer = event.created_by_id === user?.id;
-  const isPaid = !event.is_free && event.price > 0;
+  const isOrganizer = user?.id && (event.organizer_id === user.id || event.created_by_id === user.id);
+  const isPaid = !event.is_free && (event.ticket_price > 0 || event.price > 0);
   const rsvpEntry = event.rsvp_list?.find((r) => r.user_id === user?.id);
   const hasTicket = !!rsvpEntry;
   const isCheckedIn = event.checked_in?.includes(user?.id);
+  const eventLink = useMemo(
+    () => `${window.location.origin}/events?highlight=${event.id}`,
+    [event.id]
+  );
+
+  const ticketPrice = event.ticket_price ?? event.price ?? 0;
 
   const handleRSVP = async (status) => {
     if (!user) return;
@@ -73,6 +82,40 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
       toast({ title: "Checkout failed", description: err.message, variant: "destructive" });
     }
     setPurchasing(false);
+  };
+
+  const handleCancelEvent = async () => {
+    if (!window.confirm(`Cancel "${event.title}"?`)) return;
+    try {
+      await base44.entities.CampusEvent.update(event.id, { status: "cancelled" });
+      qc.invalidateQueries({ queryKey: ["eventDetail", event.id] });
+      qc.invalidateQueries({ queryKey: ["campusEvents"] });
+      toast({ title: "Event cancelled" });
+    } catch (error) {
+      toast({ title: "Couldn't cancel event", description: error?.message, variant: "destructive" });
+    }
+  };
+
+  const handleSetReminder = () => {
+    try {
+      const existing = JSON.parse(localStorage.getItem("event_reminders") || "[]");
+      const next = [
+        ...existing.filter((item) => item.eventId !== event.id),
+        { eventId: event.id, title: event.title, date: event.date },
+      ];
+      localStorage.setItem("event_reminders", JSON.stringify(next));
+    } catch {}
+    toast({ title: `Reminder set for ${event.title}` });
+  };
+
+  const shareToPlatform = (platform) => {
+    const encodedTitle = encodeURIComponent(`Join me at ${event.title}`);
+    const encodedUrl = encodeURIComponent(eventLink);
+    const links = {
+      whatsapp: `https://wa.me/?text=${encodedTitle}%20${encodedUrl}`,
+      telegram: `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`,
+    };
+    window.open(links[platform], "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -150,7 +193,7 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
             )}
             <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {event.attendees_count || 0}{event.capacity ? ` / ${event.capacity}` : ""}</span>
-              {isPaid && <span className="flex items-center gap-1 text-primary font-bold"><Ticket className="w-3 h-3" /> ${event.price}</span>}
+              {isPaid && <span className="flex items-center gap-1 text-primary font-bold"><Ticket className="w-3 h-3" /> ${ticketPrice}</span>}
               {event.is_free && <span className="flex items-center gap-1 text-success font-bold">Free</span>}
             </div>
           </div>
@@ -196,7 +239,16 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
               className="w-full py-3 rounded-[14px] bg-primary text-primary-foreground text-[14px] font-bold flex items-center justify-center gap-2 spring-tap disabled:opacity-50 mb-4"
             >
               {purchasing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Ticket className="w-4 h-4" />}
-              Buy Ticket · ${event.price}
+              Buy Ticket · ${ticketPrice}
+            </button>
+          )}
+
+          {!isOrganizer && hasTicket && (
+            <button
+              onClick={handleSetReminder}
+              className="w-full py-2.5 rounded-[12px] glass-card text-foreground text-[12px] font-semibold flex items-center justify-center gap-1.5 spring-tap mb-4"
+            >
+              <Bell className="w-4 h-4" /> Set Reminder
             </button>
           )}
 
@@ -204,7 +256,7 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
           {isOrganizer && (
             <div className="mb-4">
               <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Organizer Tools</p>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setShowCheckIn(true)}
                   className="flex-1 py-2.5 rounded-[12px] bg-primary/10 text-primary text-[12px] font-semibold flex items-center justify-center gap-1.5 spring-tap"
@@ -212,10 +264,22 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
                   <QrCode className="w-4 h-4" /> QR Check-in
                 </button>
                 <button
-                  onClick={onShare}
+                  onClick={() => setShowComposer(true)}
                   className="flex-1 py-2.5 rounded-[12px] glass-card text-foreground text-[12px] font-semibold flex items-center justify-center gap-1.5 spring-tap"
                 >
-                  <Navigation className="w-4 h-4" /> Share
+                  <Pencil className="w-4 h-4" /> Edit
+                </button>
+                <button
+                  onClick={handleCancelEvent}
+                  className="flex-1 py-2.5 rounded-[12px] bg-destructive/10 text-destructive text-[12px] font-semibold flex items-center justify-center gap-1.5 spring-tap"
+                >
+                  <Ban className="w-4 h-4" /> Cancel Event
+                </button>
+                <button
+                  onClick={() => setShowInviteSheet(true)}
+                  className="flex-1 py-2.5 rounded-[12px] glass-card text-foreground text-[12px] font-semibold flex items-center justify-center gap-1.5 spring-tap"
+                >
+                  <Navigation className="w-4 h-4" /> Invite Friends
                 </button>
               </div>
             </div>
@@ -226,8 +290,8 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
             <button onClick={() => onAddToCalendar?.(event)} className="flex-1 py-2 rounded-[12px] glass-card text-muted-foreground text-[11px] font-semibold flex items-center justify-center gap-1.5 spring-tap">
               <Calendar className="w-3.5 h-3.5" /> Add to Calendar
             </button>
-            <button onClick={onShare} className="flex-1 py-2 rounded-[12px] glass-card text-muted-foreground text-[11px] font-semibold flex items-center justify-center gap-1.5 spring-tap">
-              <Bookmark className="w-3.5 h-3.5" /> Share
+            <button onClick={() => setShowInviteSheet(true)} className="flex-1 py-2 rounded-[12px] glass-card text-muted-foreground text-[11px] font-semibold flex items-center justify-center gap-1.5 spring-tap">
+              <Bookmark className="w-3.5 h-3.5" /> Invite Friends
             </button>
           </div>
 
@@ -239,6 +303,54 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
         <AnimatePresence>
           {showCheckIn && (
             <EventCheckInSheet event={event} user={user} onClose={() => setShowCheckIn(false)} />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showComposer && (
+            <EventComposer
+              open={showComposer}
+              onClose={() => setShowComposer(false)}
+              user={user}
+              event={event}
+            />
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showInviteSheet && (
+            <motion.div className="fixed inset-0 z-[3000] flex items-end justify-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowInviteSheet(false)} />
+              <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", stiffness: 360, damping: 36 }} className="relative w-full max-w-[520px] glass-strong rounded-t-[28px] p-5 pb-7 safe-area-pb">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="font-heading font-bold text-[16px] text-foreground">Invite to {event.title}</p>
+                  <button onClick={() => setShowInviteSheet(false)} className="w-8 h-8 rounded-full glass flex items-center justify-center spring-tap" aria-label="Close"><X className="w-4 h-4" /></button>
+                </div>
+                <div className="glass-card rounded-[16px] p-3 mb-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">Share link</p>
+                  <div className="flex items-center gap-2">
+                    <input readOnly value={eventLink} className="flex-1 h-10 px-3 rounded-[12px] bg-background/60 text-[11px] text-foreground outline-none" />
+                    <button
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(eventLink);
+                          toast({ title: "Link copied" });
+                        } catch {}
+                      }}
+                      className="h-10 px-3 rounded-[12px] bg-primary text-primary-foreground text-[11px] font-semibold spring-tap flex items-center gap-1.5"
+                    >
+                      <Link2 className="w-3.5 h-3.5" /> Copy
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <button onClick={() => shareToPlatform("whatsapp")} className="h-12 rounded-[16px] bg-[#25D366] text-white font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap">
+                    <MessageCircle className="w-4 h-4" /> WhatsApp
+                  </button>
+                  <button onClick={() => shareToPlatform("telegram")} className="h-12 rounded-[16px] bg-[#229ED9] text-white font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap">
+                    <Navigation className="w-4 h-4" /> Telegram
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
           )}
         </AnimatePresence>
       </motion.div>

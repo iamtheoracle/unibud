@@ -1,0 +1,74 @@
+{
+  "name": "AcademicClass",
+  "type": "object",
+  "description": "A learning group or class. Links an educator, a subject, a set of students, and a schedule. Used in both university and learning organization ecosystems.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Class name or identifier (e.g. MTH101 Group A, SS3 Mathematics)"
+    },
+    "subject_id": {
+      "type": "string",
+      "description": "Reference to Subject entity"
+    },
+    "subject_name": {
+      "type": "string",
+      "description": "Denormalised subject name"
+    },
+    "educator_id": {
+      "type": "string",
+      "description": "Reference to Educator entity"
+    },
+    "educator_name": {
+      "type": "string",
+      "description": "Denormalised educator name"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": ["university", "learning_organization"],
+      "description": "Which ecosystem this class belongs to"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution (university) or LearningOrganization"
+    },
+    "academic_program_id": {
+      "type": "string",
+      "description": "Reference to AcademicProgram"
+    },
+    "department_id": {
+      "type": "string",
+      "description": "Reference to Department (university context)"
+    },
+    "semester": {
+      "type": "string",
+      "description": "Academic term/semester (e.g. 2024/1, First Semester)"
+    },
+    "academic_year": {
+      "type": "string",
+      "description": "Academic year (e.g. 2024/2025)"
+    },
+    "schedule": {
+      "type": "string",
+      "description": "Class schedule description (e.g. Mon/Wed 10:00-12:00)"
+    },
+    "location": {
+      "type": "string",
+      "description": "Venue or online link"
+    },
+    "max_students": {
+      "type": "number",
+      "description": "Maximum class size"
+    },
+    "enrolled_count": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": ["scheduled", "active", "completed", "cancelled"],
+      "default": "scheduled"
+    }
+  },
+  "required": ["name"]
+}
