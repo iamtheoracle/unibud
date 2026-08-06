@@ -1,0 +1,47 @@
+{
+  "description": "Hourly proactive reminder engine \u2014 assignment deadlines (multi-lead + overdue), exam countdown, timetable, campus events, study streaks (daily/milestone/recovery/weekly), and Bud smart nudges. Respects per-user preferences, quiet hours, and de-duplicates by batch_key.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "bud_notification_engine",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_engine": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "budNotificationEngine",
+            "args": {
+              "mode": "hourly"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Bud notification engine",
+            "description": "Hourly proactive reminders"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Bud Notification Engine",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 * * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

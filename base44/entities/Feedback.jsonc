@@ -1,0 +1,90 @@
+{
+  "name": "Feedback",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "feature_request",
+        "bug_report",
+        "general",
+        "compliment",
+        "complaint",
+        "suggestion"
+      ],
+      "default": "general"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number",
+      "default": 0,
+      "description": "1-5 star rating"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "reviewing",
+        "acknowledged",
+        "implemented",
+        "closed"
+      ],
+      "default": "submitted"
+    },
+    "screen_context": {
+      "type": "string",
+      "description": "Page/route where feedback was submitted"
+    },
+    "admin_response": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "category",
+    "message"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { CloudSun, Droplets, Wind, MapPin, CloudRain } from "lucide-react";
 
 const WEATHER_CODES = {
@@ -93,6 +94,7 @@ export default function WeatherCard() {
   }
 
   return (
+    <Link to="/weather" className="block">
     <motion.div
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
@@ -134,5 +136,6 @@ export default function WeatherCard() {
         </div>
       </div>
     </motion.div>
+    </Link>
   );
 }

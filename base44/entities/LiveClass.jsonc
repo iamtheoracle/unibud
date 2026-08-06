@@ -14,8 +14,15 @@
     "lecturer_name": {
       "type": "string"
     },
+    "lecturer_id": {
+      "type": "string"
+    },
     "university": {
       "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope"
     },
     "status": {
       "type": "string",
@@ -35,6 +42,11 @@
     },
     "end_time": {
       "type": "string"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the lecturer started the live class"
     },
     "duration_minutes": {
       "type": "number"
@@ -70,11 +82,102 @@
     },
     "accent_color": {
       "type": "string"
+    },
+    "strict_exam_mode": {
+      "type": "boolean",
+      "default": false,
+      "description": "Strict exam mode disables Bud, AI assistance and free interactions"
+    },
+    "bud_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether Bud is visible to students during this class"
+    },
+    "ai_assistance_enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether AI assistance is allowed during tests/exams"
+    },
+    "allow_chat": {
+      "type": "boolean",
+      "default": true
+    },
+    "allow_reactions": {
+      "type": "boolean",
+      "default": true
+    },
+    "allow_screen_share": {
+      "type": "boolean",
+      "default": true
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Shared materials [{title, url, type}]"
+    },
+    "late_after_minutes": {
+      "type": "number",
+      "default": 10
+    },
+    "min_attendance_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Below this duration counts as early exit; 0 disables"
+    },
+    "summary": {
+      "type": "object",
+      "description": "Post-class attendance summary"
     }
   },
   "required": [
     "title",
     "course_code",
     "lecturer_name"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": {
+            "$exists": false
+          }
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

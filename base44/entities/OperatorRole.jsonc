@@ -1,0 +1,43 @@
+{
+  "name": "OperatorRole",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name, e.g. Campus Support"
+    },
+    "key": {
+      "type": "string",
+      "description": "Slug key used to tag assignments"
+    },
+    "description": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Permission scope tags for this operator category"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "created_by_id": {
+      "type": "string",
+      "description": "Management user who created the role"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "key"
+  ]
+}

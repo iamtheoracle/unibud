@@ -2,24 +2,19 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Clock, Flame, BookOpen, Zap, Trophy, TrendingUp,
+  Clock, Flame, BookOpen, Zap, Trophy,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import CircularProgressRing from "@/components/academics/CircularProgressRing";
-import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function StudyStatsSection() {
-  const { isDemoMode } = useDemoMode();
-
   const { data: sessions } = useQuery({
     queryKey: ["studySessions"],
     queryFn: () => base44.entities.StudySession.list("-session_date", 50),
-    enabled: !isDemoMode,
   });
   const { data: goals } = useQuery({
     queryKey: ["studyGoals"],
     queryFn: () => base44.entities.StudyGoal.list("-created_date", 10),
-    enabled: !isDemoMode,
   });
 
   const totalHours = (sessions || []).reduce((sum, s) => sum + (s.duration_minutes || 0), 0) / 60;
@@ -33,32 +28,25 @@ export default function StudyStatsSection() {
   let streak = 0;
   const today = new Date().toISOString().split("T")[0];
   let checkDate = today;
-  for (let i = 0; i < uniqueDates.length; i++) {
-    if (uniqueDates[i] === checkDate) {
+  for (const d of uniqueDates) {
+    if (d === checkDate) {
       streak++;
-      const d = new Date(checkDate);
-      d.setDate(d.getDate() - 1);
-      checkDate = d.toISOString().split("T")[0];
-    } else if (uniqueDates[i] < checkDate) {
+      const dt = new Date(checkDate);
+      dt.setDate(dt.getDate() - 1);
+      checkDate = dt.toISOString().split("T")[0];
+    } else if (d < checkDate) {
       break;
     }
   }
 
-  const xp = isDemoMode ? 240 : (goals?.[0]?.experience_points || 0);
+  const xp = goals?.[0]?.experience_points || 0;
 
-  const stats = isDemoMode
-    ? [
-        { icon: Clock, label: "Study Hours", value: "29h", color: "text-info", bg: "bg-info/10", delay: 0.1 },
-        { icon: Flame, label: "Day Streak", value: 12, color: "text-warning", bg: "bg-warning/10", delay: 0.15 },
-        { icon: BookOpen, label: "Sessions", value: 48, color: "text-success", bg: "bg-success/10", delay: 0.2 },
-        { icon: Zap, label: "Avg Score", value: 75, color: "text-primary", bg: "bg-primary/10", delay: 0.25 },
-      ]
-    : [
-        { icon: Clock, label: "Study Hours", value: totalHours.toFixed(1) + "h", color: "text-info", bg: "bg-info/10", delay: 0.1 },
-        { icon: Flame, label: "Day Streak", value: streak, color: "text-warning", bg: "bg-warning/10", delay: 0.15 },
-        { icon: BookOpen, label: "Sessions", value: totalSessions, color: "text-success", bg: "bg-success/10", delay: 0.2 },
-        { icon: Zap, label: "Avg Score", value: avgProductivity, color: "text-primary", bg: "bg-primary/10", delay: 0.25 },
-      ];
+  const stats = [
+    { icon: Clock, label: "Study Hours", value: totalHours.toFixed(1) + "h", color: "text-information", bg: "bg-information/10", delay: 0.1 },
+    { icon: Flame, label: "Day Streak", value: streak, color: "text-warning", bg: "bg-warning/10", delay: 0.15 },
+    { icon: BookOpen, label: "Sessions", value: totalSessions, color: "text-success", bg: "bg-success/10", delay: 0.2 },
+    { icon: Zap, label: "Avg Score", value: avgProductivity, color: "text-primary", bg: "bg-primary/10", delay: 0.25 },
+  ];
 
   return (
     <div className="space-y-4">
@@ -84,12 +72,6 @@ export default function StudyStatsSection() {
             </div>
             <p className="font-heading font-bold text-[14px] text-foreground">Level {Math.floor(xp / 100) + 1}</p>
             <p className="text-[10px] text-muted-foreground">{100 - (xp % 100)} XP to next level</p>
-            {isDemoMode && (
-              <div className="flex items-center gap-1 mt-1.5">
-                <TrendingUp className="w-3 h-3 text-success" />
-                <span className="text-[10px] font-semibold text-success">Top 15% of students</span>
-              </div>
-            )}
           </div>
         </div>
       </GlassCard>

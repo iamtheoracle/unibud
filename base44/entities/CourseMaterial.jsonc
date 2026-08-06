@@ -1,0 +1,114 @@
+{
+  "name": "CourseMaterial",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Course this material belongs to"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "lesson",
+        "reading",
+        "video",
+        "document",
+        "slides",
+        "external",
+        "assignment"
+      ],
+      "default": "lesson",
+      "description": "Kind of learning content"
+    },
+    "module": {
+      "type": "string",
+      "description": "Grouping label (e.g. 'Week 1', 'Module 3 \u2014 Linear Algebra')"
+    },
+    "content": {
+      "type": "string",
+      "description": "Markdown body for lessons and readings"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded file (PDF, slides, video) for document/video/slides types"
+    },
+    "external_url": {
+      "type": "string",
+      "description": "External link for 'external' type"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 0,
+      "description": "Estimated time to complete"
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "published"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "course_id",
+    "title",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

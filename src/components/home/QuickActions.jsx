@@ -1,40 +1,50 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Calendar, BookOpen, FileText, ClipboardList, NotebookPen, Library, ShoppingBag, Compass } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useBudLauncher } from "@/lib/BudLauncherContext";
 
-const actions = [
-  { icon: Calendar, label: "Timetable", path: "/academics", color: "text-success" },
-  { icon: BookOpen, label: "Courses", path: "/academics", color: "text-info" },
-  { icon: FileText, label: "Assignments", path: "/academics", color: "text-warning" },
-  { icon: ClipboardList, label: "Exams", path: "/academics", color: "text-destructive" },
-  { icon: NotebookPen, label: "Notes", path: "/academics", color: "text-purple" },
-  { icon: Library, label: "Library", path: "/academics", color: "text-success" },
-  { icon: ShoppingBag, label: "Market", path: "/marketplace", color: "text-warning" },
-  { icon: Compass, label: "Discover", path: "/discover", color: "text-primary" },
+const EASE = [0.16, 1, 0.3, 1];
+
+const ACTIONS = [
+  { label: "Ask Bud", action: "bud" },
+  { label: "Courses", to: "/courses" },
+  { label: "Timetable", to: "/timetable" },
+  { label: "Calendar", to: "/calendar" },
+  { label: "Assignments", to: "/assignments" },
+  { label: "Projects", to: "/projects" },
+  { label: "Exams", to: "/exams" },
+  { label: "Attendance", to: "/attendance" },
+  { label: "Notes", to: "/notes" },
+  { label: "Study", to: "/study-sessions" },
+  { label: "Security", to: "/security" },
+  { label: "Study Suite", to: "/study" },
 ];
 
+/**
+ * QuickActions — shortcuts to Bud and every academic module.
+ */
 export default function QuickActions() {
+  const navigate = useNavigate();
+  const { setOpen } = useBudLauncher();
+  const handle = (a) => {
+    if (a.action === "bud") setOpen(true);
+    else if (a.to) navigate(a.to);
+  };
+
   return (
-    <div>
-      <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1">Quick Actions</h3>
-      <div className="flex gap-3 overflow-x-auto no-scrollbar">
-        {actions.map((action, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.03, type: "spring", stiffness: 300, damping: 24 }}
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE, delay: 0.05 }}>
+      <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/50 mb-4">Quick Actions</h2>
+      <div className="grid grid-cols-4 gap-x-3 gap-y-1">
+        {ACTIONS.map((a) => (
+          <button
+            key={a.label}
+            onClick={() => handle(a)}
+            className="flex flex-col items-center justify-center py-3 spring-tap min-h-[56px]"
           >
-            <Link to={action.path} className="flex flex-col items-center gap-2 flex-shrink-0 spring-tap">
-              <div className="w-12 h-12 rounded-[18px] bg-card soft-shadow border border-border/20 flex items-center justify-center">
-                <action.icon className={`w-5 h-5 ${action.color}`} strokeWidth={2.2} />
-              </div>
-              <span className="text-[10px] font-medium text-foreground">{action.label}</span>
-            </Link>
-          </motion.div>
+            <span className="text-[11px] font-medium text-muted-foreground text-center leading-tight hover:text-foreground transition-colors">{a.label}</span>
+          </button>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

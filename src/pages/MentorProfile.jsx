@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Star, BadgeCheck, MessageCircle, Video, Phone, Calendar,
+  ArrowLeft, Star, BadgeCheck, Video, Phone, Calendar,
   BookOpen, Users, GraduationCap, Briefcase, Brain, Globe, Clock,
-  Send, Loader2, Sparkles, CheckCircle2, AlertCircle, Heart, Award, Building,
+  Send, Loader2, CheckCircle2, AlertCircle, Heart, Award, Building,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 
@@ -144,7 +144,7 @@ export default function MentorProfile() {
       >
         <div className="bg-card rounded-[20px] p-5 soft-shadow border border-border/40 text-center">
           {mentor.avatar_url ? (
-            <img src={mentor.avatar_url} alt="" className="w-20 h-20 rounded-full object-cover mx-auto mb-3" />
+            <img src={mentor.avatar_url} alt="" className="w-20 h-20 rounded-full object-cover mx-auto mb-3" loading="lazy" />
           ) : (
             <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: withAlpha(color) }}>
               <span className="font-heading font-bold text-[28px]" style={{ color }}>{mentor.name?.charAt(0) || "M"}</span>

@@ -22,7 +22,7 @@ function timeAgo(dateStr) {
   return Math.floor(diff / 86400000) + "d";
 }
 
-export default function MessagesPreview() {
+export default function MessagesPreview({ title = "Messages" }) {
   const { isDemoMode } = useDemoMode();
 
   const { data: user } = useQuery({
@@ -64,7 +64,7 @@ export default function MessagesPreview() {
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-1.5">
           <MessageCircle className="w-4 h-4 text-primary" />
-          <h3 className="font-heading font-bold text-[16px] text-foreground">Messages</h3>
+          <h3 className="font-heading font-bold text-[16px] text-foreground">{title}</h3>
         </div>
       </div>
       {isLoading && !isDemoMode ? (
@@ -87,7 +87,7 @@ export default function MessagesPreview() {
             >
               <div className="relative flex-shrink-0">
                 {c.avatar_url ? (
-                  <img src={c.avatar_url} alt={c.name} className="w-11 h-11 rounded-full object-cover" />
+                  <img src={c.avatar_url} alt={c.name} className="w-11 h-11 rounded-full object-cover" loading="lazy" />
                 ) : (
                   <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-sm">{(c.name || "U").charAt(0)}</div>
                 )}

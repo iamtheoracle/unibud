@@ -7,7 +7,7 @@ import UnibudMark from "./UnibudMark";
  * Variants:
  *   light — black on light backgrounds
  *   dark  — white on dark backgrounds
- *   gold  — purple mark + purple-gradient "UNIBUD" for premium / splash
+ *   gold  — midnight-blue mark + brand-gradient "UNIBUD" for premium / splash
  *
  * Do not recreate, reinterpret, or modify proportions.
  */
@@ -41,7 +41,7 @@ export default function UnibudLogo({
       </span>
       <span
         className={`${s.main} font-heading font-extrabold tracking-tight leading-none ${
-          v.gradient ? "text-gold-gradient" : v.main
+          v.gradient ? "text-ice-gradient" : v.main
         }`}
       >
         UNIBUD

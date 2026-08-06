@@ -1,0 +1,128 @@
+{
+  "name": "FootballMatch",
+  "type": "object",
+  "properties": {
+    "home_team": {
+      "type": "string",
+      "description": "Home team name"
+    },
+    "away_team": {
+      "type": "string",
+      "description": "Away team name"
+    },
+    "home_short": {
+      "type": "string",
+      "description": "3-letter code e.g. MUN"
+    },
+    "away_short": {
+      "type": "string",
+      "description": "3-letter code e.g. LIV"
+    },
+    "home_score": {
+      "type": "number",
+      "default": 0
+    },
+    "away_score": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "live",
+        "halftime",
+        "finished",
+        "postponed"
+      ],
+      "default": "scheduled",
+      "description": "Match status. 'live' shows in the live ticker."
+    },
+    "minute": {
+      "type": "number",
+      "default": 0,
+      "description": "Current minute when live"
+    },
+    "competition": {
+      "type": "string",
+      "description": "e.g. Premier League, Champions League"
+    },
+    "venue": {
+      "type": "string"
+    },
+    "kickoff": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "home_color": {
+      "type": "string",
+      "description": "Team accent (HSL channels) for monochrome badge"
+    },
+    "away_color": {
+      "type": "string"
+    },
+    "events": {
+      "type": "array",
+      "description": "Match events timeline",
+      "items": {
+        "type": "object",
+        "properties": {
+          "minute": {
+            "type": "number"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "goal",
+              "yellow_card",
+              "red_card",
+              "substitution",
+              "var",
+              "penalty"
+            ]
+          },
+          "team": {
+            "type": "string",
+            "enum": [
+              "home",
+              "away"
+            ]
+          },
+          "player": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope (optional \u2014 football is global)"
+    }
+  },
+  "required": [
+    "home_team",
+    "away_team",
+    "status"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
