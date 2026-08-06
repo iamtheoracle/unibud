@@ -1,0 +1,106 @@
+{
+  "name": "StudentGrade",
+  "type": "object",
+  "properties": {
+    "course_code": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "student_identifier": {
+      "type": "string",
+      "description": "Matriculation or student ID"
+    },
+    "assessment_type": {
+      "type": "string",
+      "enum": [
+        "assignment",
+        "quiz",
+        "test",
+        "lab",
+        "project",
+        "midterm",
+        "exam"
+      ],
+      "default": "assignment"
+    },
+    "score": {
+      "type": "number"
+    },
+    "max_score": {
+      "type": "number",
+      "default": 100
+    },
+    "weight": {
+      "type": "number",
+      "default": 10
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "semester": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "course_code",
+    "student_name",
+    "assessment_type",
+    "score",
+    "max_score"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

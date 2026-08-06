@@ -59,7 +59,7 @@ export default function MentorshipSection() {
                 <div className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex-shrink-0 w-[205px] card-hover">
                   <div className="flex items-center gap-2.5 mb-2.5">
                     {m.avatar_url ? (
-                      <img src={m.avatar_url} alt={m.name} className="w-11 h-11 rounded-full object-cover" />
+                      <img src={m.avatar_url} alt={m.name} className="w-11 h-11 rounded-full object-cover" loading="lazy" />
                     ) : (
                       <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-sm">{(m.name || "M").charAt(0)}</div>
                     )}

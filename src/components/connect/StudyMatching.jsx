@@ -57,7 +57,7 @@ export default function StudyMatching() {
             >
               <div className="relative">
                 {m.avatar_url ? (
-                  <img src={m.avatar_url} alt={m.name} className="w-full h-20 rounded-[14px] object-cover mb-2.5" />
+                  <img src={m.avatar_url} alt={m.name} className="w-full h-20 rounded-[14px] object-cover mb-2.5" loading="lazy" />
                 ) : (
                   <div className="w-full h-20 rounded-[14px] bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mb-2.5">
                     <Users className="w-8 h-8 text-primary/50" />

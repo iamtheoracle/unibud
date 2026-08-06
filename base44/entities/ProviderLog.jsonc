@@ -1,0 +1,62 @@
+{
+  "name": "ProviderLog",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "Adapter id"
+    },
+    "endpoint": {
+      "type": "string"
+    },
+    "method": {
+      "type": "string",
+      "default": "GET"
+    },
+    "latency_ms": {
+      "type": "number",
+      "default": 0
+    },
+    "status_code": {
+      "type": "number",
+      "default": 200
+    },
+    "ok": {
+      "type": "boolean",
+      "default": true
+    },
+    "error": {
+      "type": "string"
+    },
+    "cost": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "provider",
+    "endpoint"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

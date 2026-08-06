@@ -109,7 +109,7 @@ export default function HighlightShelf() {
                   <div className="p-[2px] rounded-full bg-gradient-to-br from-primary to-primary/50">
                     <div className="p-[2px] rounded-full bg-card">
                       {coverStory?.media_url ? (
-                        <img src={coverStory.media_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+                        <img src={coverStory.media_url} alt="" className="w-12 h-12 rounded-full object-cover" loading="lazy" />
                       ) : coverStory?.background_color ? (
                         <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: coverStory.background_color }}>
                           <Icon className="w-5 h-5 text-white" />

@@ -1,0 +1,85 @@
+{
+  "name": "AIServiceRecommendation",
+  "type": "object",
+  "properties": {
+    "service": {
+      "type": "string",
+      "description": "Service recommended for responsibility split (e.g. Spark)"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why the split is needed \u2014 which thresholds were breached"
+    },
+    "responsibilities_to_move": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Which responsibilities should move to a specialized service"
+    },
+    "expected_improvements": {
+      "type": "string"
+    },
+    "migration_impact": {
+      "type": "string"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium"
+    },
+    "risk_assessment": {
+      "type": "string"
+    },
+    "threshold_breaches": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "dismissed"
+      ],
+      "default": "pending"
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "service",
+    "reason",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

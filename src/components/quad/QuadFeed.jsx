@@ -1,16 +1,41 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Inbox, ChevronUp, RefreshCw } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useInfiniteFeed, getCachedFeed } from "@/hooks/useInfiniteFeed";
 import { base44 } from "@/api/base44Client";
 import PostCard from "./PostCard";
 import PostSkeleton from "./PostSkeleton";
 import NewPostsBanner from "./NewPostsBanner";
 import EmptyState from "@/components/ui/EmptyState";
+import OfficialPinnedBar from "./OfficialPinnedBar";
+import { prioritizeAuthenticContent } from "@/lib/authentic/contentFilter";
+
+/**
+ * Sorts feed posts by priority: pinned → official announcements →
+ * official events → lecturer posts → club posts → regular posts.
+ * Within each tier, most recent first.
+ */
+function sortByPriority(posts) {
+  const tier = (p) => {
+    if (p.is_pinned) return 0;
+    if (p.author_role === "admin" || p.type === "news") return 1;
+    if (p.type === "event" || p.event_data) return 2;
+    if (p.author_role === "lecturer") return 3;
+    if (p.author_role === "club") return 4;
+    return 5;
+  };
+  return [...posts].sort((a, b) => {
+    const ta = tier(a), tb = tier(b);
+    if (ta !== tb) return ta - tb;
+    return new Date(b.created_date || 0) - new Date(a.created_date || 0);
+  });
+}
 
 const SCROLL_KEY = "quad_scroll_position";
 const SCROLL_TIMEOUT = 30000; // 30s threshold for "new posts" banner
 
 export default function QuadFeed({ user, university }) {
+  const qc = useQueryClient();
   const [newPostsCount, setNewPostsCount] = useState(0);
   const [bannerVisible, setBannerVisible] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
@@ -74,7 +99,9 @@ export default function QuadFeed({ user, university }) {
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Realtime subscription for new posts
+  // Realtime subscription — new posts (banner) + live updates to visible posts
+  // (likes/reactions/shares/pin) + removals, routed through one feed-level
+  // subscription so cards re-render with fresh counts without a full refetch.
   useEffect(() => {
     const unsubscribe = base44.entities.QuadPost.subscribe((event) => {
       if (event.type === "create") {
@@ -83,10 +110,36 @@ export default function QuadFeed({ user, university }) {
           setNewPostsCount((prev) => prev + 1);
           setBannerVisible(true);
         }
+        return;
+      }
+      if (event.type === "update") {
+        qc.setQueryData(["quadFeed"], (oldData) => {
+          if (!oldData?.pages) return oldData;
+          let changed = false;
+          const pages = oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.map((p) => {
+              if (p.id === event.data.id) { changed = true; return { ...p, ...event.data }; }
+              return p;
+            }),
+          }));
+          return changed ? { ...oldData, pages } : oldData;
+        });
+        return;
+      }
+      if (event.type === "delete") {
+        qc.setQueryData(["quadFeed"], (oldData) => {
+          if (!oldData?.pages) return oldData;
+          const pages = oldData.pages.map((page) => ({
+            ...page,
+            items: page.items.filter((p) => p.id !== event.data.id),
+          }));
+          return { ...oldData, pages };
+        });
       }
     });
     return unsubscribe;
-  }, []);
+  }, [qc]);
 
   const handleRefresh = useCallback(async () => {
     setBannerVisible(false);
@@ -119,8 +172,9 @@ export default function QuadFeed({ user, university }) {
     setIsPulling(false);
   };
 
-  // Show cached posts while loading
-  const displayPosts = isLoading ? getCachedFeed() : posts;
+  // Filter out simulated content and prioritize official posts
+  const rawPosts = isLoading ? getCachedFeed() : posts;
+  const displayPosts = sortByPriority(prioritizeAuthenticContent(rawPosts));
 
   return (
     <div
@@ -149,6 +203,9 @@ export default function QuadFeed({ user, university }) {
         visible={bannerVisible}
         onClick={handleRefresh}
       />
+
+      {/* Pinned official announcement / event */}
+      {!isLoading && <OfficialPinnedBar university={university} />}
 
       {/* Feed */}
       <div className="px-4 space-y-3 pb-8 max-w-2xl mx-auto">

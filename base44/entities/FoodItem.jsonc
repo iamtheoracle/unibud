@@ -1,0 +1,99 @@
+{
+  "name": "FoodItem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number",
+      "description": "Price in local currency"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "restaurant": {
+      "type": "string",
+      "description": "Restaurant / vendor name"
+    },
+    "restaurant_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "meals",
+        "snacks",
+        "drinks",
+        "desserts",
+        "combos"
+      ],
+      "default": "meals"
+    },
+    "available": {
+      "type": "boolean",
+      "default": true
+    },
+    "prep_time_minutes": {
+      "type": "number",
+      "default": 15
+    },
+    "rating": {
+      "type": "number",
+      "default": 0
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "price",
+    "category"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.available": true
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

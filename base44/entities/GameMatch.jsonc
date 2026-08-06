@@ -1,0 +1,159 @@
+{
+  "name": "GameMatch",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "room_id": {
+      "type": "string",
+      "description": "GameRoom this match belongs to"
+    },
+    "tournament_id": {
+      "type": "string",
+      "description": "Tournament this match belongs to, if any"
+    },
+    "game_type": {
+      "type": "string",
+      "enum": [
+        "chess",
+        "checkers",
+        "ludo",
+        "scrabble",
+        "sudoku",
+        "word_games",
+        "trivia",
+        "quiz",
+        "coding",
+        "math",
+        "science",
+        "typing",
+        "memory",
+        "puzzle",
+        "esports",
+        "other"
+      ],
+      "default": "other"
+    },
+    "title": {
+      "type": "string"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number",
+            "default": 0
+          },
+          "result": {
+            "type": "string",
+            "enum": [
+              "win",
+              "loss",
+              "draw",
+              "pending"
+            ],
+            "default": "pending"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    },
+    "winner_id": {
+      "type": "string"
+    },
+    "scores": {
+      "type": "object",
+      "description": "{ user_id: score }"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "default": 0
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "spectators_count": {
+      "type": "number",
+      "default": 0
+    },
+    "match_data": {
+      "type": "object",
+      "description": "Game-specific match data (moves, answers, etc.)"
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "game_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

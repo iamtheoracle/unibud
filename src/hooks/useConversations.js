@@ -1,7 +1,17 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { hasUnreadMessages } from "@/components/messaging/messagingConstants";
+import { hasUnreadMessages, deriveCategory } from "@/components/messaging/messagingConstants";
+
+export const ORBIT_TABS = [
+  { key: "all", label: "All" },
+  { key: "friends", label: "Friends" },
+  { key: "communities", label: "Communities" },
+  { key: "academic", label: "Academic" },
+  { key: "marketplace", label: "Marketplace" },
+  { key: "requests", label: "Requests" },
+  { key: "archived", label: "Archived" },
+];
 
 export function useConversations(user) {
   const queryClient = useQueryClient();
@@ -15,6 +25,7 @@ export function useConversations(user) {
       return all.filter(
         (c) =>
           !c.is_archived &&
+          !c.is_request &&
           c.participants?.some((p) => p.user_id === user.id)
       );
     },
@@ -37,27 +48,45 @@ export function useConversations(user) {
     refetchInterval: 30000,
   });
 
+  const { data: requests } = useQuery({
+    queryKey: ["conversations-requests", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const all = await base44.entities.Conversation.list("-last_message_at", 200);
+      return all.filter(
+        (c) =>
+          c.is_request &&
+          c.participants?.some((p) => p.user_id === user.id)
+      );
+    },
+    enabled: !!user && filter === "requests",
+    refetchInterval: 30000,
+  });
+
   useEffect(() => {
-    const unsubscribe = base44.entities.Conversation.subscribe((event) => {
+    const unsubscribe = base44.entities.Conversation.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
       queryClient.invalidateQueries({ queryKey: ["conversations-archived"] });
+      queryClient.invalidateQueries({ queryKey: ["conversations-requests"] });
     });
     return unsubscribe;
   }, [queryClient]);
 
   useEffect(() => {
-    const unsubscribe = base44.entities.Message.subscribe((event) => {
+    const unsubscribe = base44.entities.Message.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     });
     return unsubscribe;
   }, [queryClient]);
 
-  const list = (filter === "archived" ? archived : conversations) || [];
+  const baseList = filter === "archived" ? (archived || []) : filter === "requests" ? (requests || []) : (conversations || []);
 
-  const filtered = list.filter((c) => {
-    if (filter === "unread") return hasUnreadMessages(c, user?.id);
-    if (filter === "groups") return c.type !== "direct";
-    if (filter === "direct") return c.type === "direct";
+  const filtered = baseList.filter((c) => {
+    if (filter === "archived" || filter === "requests") return true;
+    if (filter === "friends") return deriveCategory(c) === "friend";
+    if (filter === "communities") return deriveCategory(c) === "community";
+    if (filter === "academic") return deriveCategory(c) === "academic";
+    if (filter === "marketplace") return deriveCategory(c) === "marketplace";
     return true;
   });
 
@@ -90,6 +119,11 @@ export function useConversations(user) {
     [updateConversation]
   );
 
+  const acceptRequest = useCallback(
+    (id) => updateConversation(id, { is_request: false }),
+    [updateConversation]
+  );
+
   return {
     conversations: sorted,
     isLoading,
@@ -99,5 +133,6 @@ export function useConversations(user) {
     togglePin,
     toggleMute,
     toggleArchive,
+    acceptRequest,
   };
 }

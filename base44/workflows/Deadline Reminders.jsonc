@@ -1,0 +1,45 @@
+{
+  "description": "Every weekday morning, scans pending assignments due within 24h (or overdue) and posts academic reminder notifications.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * 1-5",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Deadline Reminders",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "deadline_reminders",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "scan_deadlines": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "deadlineReminders",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Scan due assignments",
+            "description": "Pending \u2192 due within 24h"
+          }
+        }
+      }
+    ]
+  }
+}

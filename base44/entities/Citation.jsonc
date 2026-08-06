@@ -1,0 +1,98 @@
+{
+  "name": "Citation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "authors": {
+      "type": "string"
+    },
+    "year": {
+      "type": "string"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": [
+        "book",
+        "journal",
+        "website",
+        "conference",
+        "thesis",
+        "report",
+        "other"
+      ],
+      "default": "journal"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "citation_style": {
+      "type": "string",
+      "enum": [
+        "APA 7",
+        "MLA",
+        "Chicago",
+        "Harvard",
+        "IEEE"
+      ],
+      "default": "APA 7"
+    },
+    "formatted": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "formatted"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

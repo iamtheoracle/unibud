@@ -1,0 +1,92 @@
+{
+  "name": "SparkExecutionLog",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Correlation id for one orchestration run"
+    },
+    "user_prompt": {
+      "type": "string"
+    },
+    "plan": {
+      "type": "object",
+      "description": "{ reasoning, tasks: [{ id, agent_id, depends_on [], input_summary }] }"
+    },
+    "agents_selected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "agent_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "[{ agent_id, status, output, latency_ms, retries }]"
+    },
+    "validation": {
+      "type": "object",
+      "description": "{ passed, conflicts, notes }"
+    },
+    "merged_output": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "executing",
+        "validating",
+        "complete",
+        "failed"
+      ],
+      "default": "planning"
+    },
+    "total_latency_ms": {
+      "type": "number",
+      "default": 0
+    },
+    "error": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "user_prompt",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

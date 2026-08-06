@@ -1,0 +1,131 @@
+{
+  "name": "Highlight",
+  "type": "object",
+  "properties": {
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "movie",
+        "tv_show",
+        "music",
+        "playlist",
+        "sports_team",
+        "match",
+        "news_article",
+        "book",
+        "podcast",
+        "youtube_video",
+        "scholarship",
+        "internship",
+        "event",
+        "community",
+        "course",
+        "note",
+        "research_paper",
+        "post",
+        "discussion",
+        "other"
+      ],
+      "default": "other",
+      "description": "What type of content was saved"
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Short description or subtitle of the saved item"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Original URL where the content lives"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Platform name (e.g. YouTube, Spotify, Netflix, BBC Sport)"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "folder": {
+      "type": "string",
+      "description": "Custom folder name (e.g. Watch Later, Study Later, Favorites, Reading List)"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "friends",
+        "community",
+        "public"
+      ],
+      "default": "private",
+      "description": "Who can see this saved item"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional content-specific data (rating, score, artist, collaboration info, etc.)"
+    },
+    "hub_id": {
+      "type": "string",
+      "description": "Which hub this was saved from"
+    }
+  },
+  "required": [
+    "content_type",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.visibility": "public"
+        },
+        {
+          "data.metadata.collaboration.collaborators.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

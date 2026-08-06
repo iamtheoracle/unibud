@@ -1,0 +1,196 @@
+{
+  "name": "GameTournament",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "title": {
+      "type": "string"
+    },
+    "game_type": {
+      "type": "string",
+      "enum": [
+        "chess",
+        "checkers",
+        "ludo",
+        "scrabble",
+        "sudoku",
+        "word_games",
+        "trivia",
+        "quiz",
+        "coding",
+        "math",
+        "science",
+        "typing",
+        "memory",
+        "puzzle",
+        "esports",
+        "other"
+      ],
+      "default": "other"
+    },
+    "description": {
+      "type": "string"
+    },
+    "organizer_type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "faculty",
+        "department",
+        "community",
+        "club",
+        "sug",
+        "external"
+      ],
+      "default": "community"
+    },
+    "community_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "registration",
+        "ongoing",
+        "completed",
+        "cancelled"
+      ],
+      "default": "registration"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "single_elimination",
+        "double_elimination",
+        "round_robin",
+        "swiss",
+        "group_stage"
+      ],
+      "default": "single_elimination"
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 16
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "seed": {
+            "type": "number"
+          },
+          "eliminated": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "brackets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Bracket structure with rounds and matches"
+    },
+    "registration_deadline": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "winner_id": {
+      "type": "string"
+    },
+    "runner_up_id": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "prizes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Non-monetary prizes (badges, recognition, etc.)"
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "game_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

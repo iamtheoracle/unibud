@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Users, X, Lock, Mic, Video } from "lucide-react";
+import { Users, X } from "lucide-react";
 
 const BREAKOUT_ROOMS = [
   { id: 1, name: "Group A — Binary Trees", members: 4, max: 6 },

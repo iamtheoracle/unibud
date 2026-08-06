@@ -22,15 +22,47 @@ const SCREEN_CONTEXTS = [
     name: "Campus",
     description: "the campus home dashboard with today's schedule, announcements, weather, and academic overview",
     actions: [
+      { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
       { label: "Today's Classes", prompt: "What classes do I have today? Give me a quick overview of my schedule.", icon: CalendarClock },
       { label: "Campus Events", prompt: "What campus events are happening today or this week?", icon: CalendarPlus },
-      { label: "Find Buildings", prompt: "Help me find my way around campus — where are the main buildings and lecture halls?", icon: MapPin },
       { label: "My Timetable", prompt: "Show me my full timetable for this week.", icon: CalendarClock },
     ],
     suggestedPrompts: [
+      "Help me organize my semester",
       "What should I focus on today?",
-      "Any campus events happening?",
       "How's my academic progress?",
+    ],
+  },
+  {
+    match: "/campus",
+    name: "Campus",
+    description: "the academic workspace with today's timetable, assignment deadlines, GPA trends, upcoming exams, study streaks, research opportunities, and academic recommendations",
+    actions: [
+      { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
+      { label: "Overdue Assignments", prompt: "What assignments are overdue? Help me prioritize and catch up.", icon: ClipboardList },
+      { label: "GPA Insights", prompt: "How is my GPA trending? What can I do to improve it?", icon: TrendingUp },
+      { label: "Exam Prep", prompt: "Help me prepare for my upcoming exams. Create a revision plan.", icon: Brain },
+    ],
+    suggestedPrompts: [
+      "Help me organize my semester",
+      "What should I focus on today?",
+      "Any overdue assignments?",
+    ],
+  },
+  {
+    match: "/square",
+    name: "Square",
+    description: "the social workspace with feed, stories, communities, live streams, podcasts, events, and creator content",
+    actions: [
+      { label: "Summarize Feed", prompt: "Summarize what's trending on the Square right now.", icon: FileText },
+      { label: "Recommend Communities", prompt: "Recommend communities I should join based on my interests.", icon: Users },
+      { label: "Create a Post", prompt: "Help me write an engaging post for the Square. What should I share?", icon: PenLine },
+      { label: "Trending Topics", prompt: "What are the trending topics on campus right now?", icon: TrendingUp },
+    ],
+    suggestedPrompts: [
+      "What's trending on campus?",
+      "Help me write a post",
+      "Which communities should I join?",
     ],
   },
   {
@@ -52,17 +84,17 @@ const SCREEN_CONTEXTS = [
   {
     match: "/connect",
     name: "Connect",
-    description: "the social hub for finding classmates, mentors, study partners, and building your network",
+    description: "the communication workspace with messages, calls, team collaboration, study groups, and presence",
     actions: [
-      { label: "Find Classmates", prompt: "Help me find classmates in my courses and suggest how to connect.", icon: Users },
-      { label: "Find Mentor", prompt: "Recommend mentors that match my academic and career goals.", icon: HeartHandshake },
-      { label: "Study Partner", prompt: "Find me a study partner with similar courses and schedule.", icon: GraduationCap },
-      { label: "Professional Profile", prompt: "Help me build my professional profile and stand out to recruiters.", icon: Briefcase },
+      { label: "Summarize Chats", prompt: "Summarize my recent conversations and highlight what needs my attention.", icon: FileText },
+      { label: "Draft Reply", prompt: "Help me draft a reply to my most recent conversation.", icon: PenLine },
+      { label: "Unread Priorities", prompt: "Which unread messages are most important right now?", icon: ClipboardList },
+      { label: "Find Study Group", prompt: "Find study groups that match my courses and schedule.", icon: Users },
     ],
     suggestedPrompts: [
-      "Find me a study partner",
-      "Recommend mentors for me",
-      "How can I grow my network?",
+      "Summarize my conversations",
+      "What needs my attention?",
+      "Find me a study group",
     ],
   },
   {
@@ -114,18 +146,34 @@ const SCREEN_CONTEXTS = [
     ],
   },
   {
+    match: "/academics/report",
+    name: "Academics Summary Report",
+    description: "the Academics Summary Report — a full semester report of GPA, study streaks, attendance, assignment completion, goals, deadlines, strengths and areas needing improvement, all computed from the student's real academic records",
+    actions: [
+      { label: "What improved my GPA?", prompt: "Based on my Academics Summary Report, what improved my GPA this semester?", icon: TrendingUp },
+      { label: "Why streak reset", prompt: "Based on my report, why did my study streak reset?", icon: Timer },
+      { label: "What to study next", prompt: "Based on my report, what should I study next?", icon: Brain },
+      { label: "Reach 4.5 GPA", prompt: "Based on my report, how can I reach a 4.5 GPA?", icon: Target },
+    ],
+    suggestedPrompts: [
+      "What improved my GPA?",
+      "What should I study next?",
+      "How can I reach a 4.5 GPA?",
+    ],
+  },
+  {
     match: "/academics",
     name: "Academics",
     description: "your academic dashboard with courses, assignments, grades, and study goals",
     actions: [
-      { label: "Build Study Plan", prompt: "Build me a study plan for this week based on my assignments and exams.", icon: CalendarClock },
+      { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
       { label: "Check Assignments", prompt: "What assignments are due soon? Help me prioritize.", icon: ClipboardList },
       { label: "Exam Prep", prompt: "Help me prepare for my upcoming exams. Create a revision plan.", icon: Brain },
       { label: "Track Grades", prompt: "Help me track my grades and project my GPA.", icon: BarChart3 },
     ],
     suggestedPrompts: [
+      "Help me organize my semester",
       "What's due this week?",
-      "Build me a study plan",
       "How's my GPA trending?",
     ],
   },
@@ -391,14 +439,14 @@ const DEFAULT_CONTEXT = {
   name: "UNIBUD",
   description: "the UNIBUD platform",
   actions: [
+    { label: "Organize Semester", prompt: "Help me organize my semester. Look at my timetable, assignments, exams, CGPA, opportunities, campus events, and study groups — then give me a complete personalized action plan.", icon: CalendarClock },
     { label: "Study With Me", prompt: "Start a 25-minute Pomodoro focus session with me.", icon: Timer },
-    { label: "Create Flashcards", prompt: "Help me create flashcards for my current topic.", icon: Layers },
     { label: "Build Study Plan", prompt: "Build me a study plan for this week.", icon: CalendarClock },
     { label: "Find Opportunities", prompt: "Find scholarships and internships I might be eligible for.", icon: Compass },
   ],
   suggestedPrompts: [
+    "Help me organize my semester",
     "What should I focus on today?",
-    "Help me plan my week",
     "Find me opportunities",
   ],
 };

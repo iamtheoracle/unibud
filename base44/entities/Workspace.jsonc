@@ -1,0 +1,145 @@
+{
+  "name": "Workspace",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "study_group",
+        "project",
+        "research",
+        "club",
+        "community",
+        "department",
+        "course",
+        "leadership",
+        "personal",
+        "team"
+      ],
+      "default": "study_group"
+    },
+    "linked_module": {
+      "type": "string",
+      "enum": [
+        "academics",
+        "connect",
+        "communities",
+        "clubs",
+        "marketplace",
+        "research",
+        "leadership",
+        "knowledge",
+        "none"
+      ],
+      "default": "none"
+    },
+    "linked_entity_id": {
+      "type": "string"
+    },
+    "linked_entity_name": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "cover_url": {
+      "type": "string"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "[{user_id, name, role: owner|editor|commenter|viewer, joined_at, avatar_url}]"
+    },
+    "member_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Flat user ids for RLS \u2014 kept in sync with members[].user_id"
+    },
+    "settings": {
+      "type": "object",
+      "description": "{default_role, allow_member_invite, require_approval_to_join, require_approval_to_publish}"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "archived",
+        "completed"
+      ],
+      "default": "active"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

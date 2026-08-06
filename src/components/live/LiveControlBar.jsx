@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mic, MicOff, Video, VideoOff, Share2, PenTool, Hand, Smile, MessageSquare, Users, Sparkles, LayoutGrid, MoreHorizontal, LogOut, FileText, Presentation, Eraser, Crosshair, Image, Lock, Maximize2, Minimize2 } from "lucide-react";
+import { Mic, MicOff, Video, VideoOff, Share2, PenTool, Hand, Smile, MessageSquare, Users, Sparkles, LayoutGrid, MoreHorizontal, LogOut, FileText, Presentation, Crosshair, Image, Lock, Maximize2, Minimize2 } from "lucide-react";
 import ControlButton from "./ControlButton";
 
 const REACTIONS = ["👍", "❤️", "😂", "👏", "🎉", "🔥"];

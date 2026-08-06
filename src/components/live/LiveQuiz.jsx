@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FileQuestion, CheckCircle2, X, Clock, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { FileQuestion, CheckCircle2, X, Sparkles } from "lucide-react";
 
 export default function LiveQuiz({ quiz, onClose }) {
   const [current, setCurrent] = useState(0);

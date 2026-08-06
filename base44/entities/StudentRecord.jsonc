@@ -18,12 +18,10 @@
       "type": "string"
     },
     "matriculation_number": {
-      "type": "string",
-      "description": "University-specific matriculation number, unique within each university. Format is university-defined."
+      "type": "string"
     },
     "student_id": {
-      "type": "string",
-      "description": "University-issued student ID, where different from matriculation number"
+      "type": "string"
     },
     "university": {
       "type": "string",
@@ -40,8 +38,7 @@
       "description": "e.g. 100, 200, 300, 400, 500"
     },
     "course_code": {
-      "type": "string",
-      "description": "Primary course/programme code if applicable"
+      "type": "string"
     },
     "matric_privacy": {
       "type": "string",
@@ -51,21 +48,18 @@
         "connections_only",
         "private"
       ],
-      "default": "university_only",
-      "description": "Who can view the full matriculation number: public = same university peers, university_only = staff + connections, connections_only = only connections, private = only self and authorized staff"
+      "default": "university_only"
     },
     "is_verified": {
       "type": "boolean",
-      "default": false,
-      "description": "Whether the matriculation number has been verified against university records"
+      "default": false
     },
     "verified_at": {
       "type": "string",
       "format": "date-time"
     },
     "enrollment_year": {
-      "type": "number",
-      "description": "Year of admission/enrollment"
+      "type": "number"
     },
     "expected_graduation": {
       "type": "number"
@@ -82,13 +76,44 @@
     },
     "last_active_at": {
       "type": "string",
-      "format": "date-time",
-      "description": "Last activity timestamp for Recently Active filtering"
+      "format": "date-time"
     }
   },
   "required": [
     "user_id",
     "full_name",
     "university"
-  ]
+  ],
+  "rls": {
+    "update": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

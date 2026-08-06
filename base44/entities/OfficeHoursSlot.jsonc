@@ -1,0 +1,111 @@
+{
+  "name": "OfficeHoursSlot",
+  "type": "object",
+  "properties": {
+    "lecturer_id": {
+      "type": "string",
+      "description": "Lecturer offering the slot (denormalized from created_by_id)"
+    },
+    "lecturer_name": {
+      "type": "string"
+    },
+    "lecturer_image": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Optional course this office hour relates to"
+    },
+    "title": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "HH:MM"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "HH:MM"
+    },
+    "location": {
+      "type": "string",
+      "description": "Physical room or video link"
+    },
+    "is_virtual": {
+      "type": "boolean",
+      "default": false
+    },
+    "capacity": {
+      "type": "number",
+      "default": 1,
+      "description": "Max bookings. 0 = unlimited (group office hours)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Topic guidance / what to bring"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "cancelled"
+      ],
+      "default": "open"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "date",
+    "start_time",
+    "end_time"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "open"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

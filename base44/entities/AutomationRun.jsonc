@@ -1,0 +1,81 @@
+{
+  "name": "AutomationRun",
+  "type": "object",
+  "properties": {
+    "automation_id": {
+      "type": "string"
+    },
+    "automation_name": {
+      "type": "string"
+    },
+    "owner_id": {
+      "type": "string",
+      "description": "Owner of the automation (for RLS scoping)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failed",
+        "running"
+      ],
+      "default": "success"
+    },
+    "trigger_source": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "scheduled",
+        "event"
+      ],
+      "default": "manual"
+    },
+    "log": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "error": {
+      "type": "string"
+    },
+    "actions_executed": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "automation_id",
+    "owner_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.owner_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

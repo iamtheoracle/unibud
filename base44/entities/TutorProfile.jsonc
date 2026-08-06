@@ -1,0 +1,171 @@
+{
+  "name": "TutorProfile",
+  "type": "object",
+  "properties": {
+    "tutor_name": {
+      "type": "string",
+      "description": "Display name of the tutor"
+    },
+    "tutor_image": {
+      "type": "string"
+    },
+    "tutor_id": {
+      "type": "string",
+      "description": "User ID of the tutor"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "ta"
+      ],
+      "default": "student",
+      "description": "Whether the tutor is a student, lecturer, or teaching assistant"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verified by institution or platform admin"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short bio describing the tutor's expertise and teaching approach"
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Subjects offered e.g. Mathematics, Organic Chemistry"
+    },
+    "course_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Specific course codes the tutor can help with e.g. MTH101, CSC201"
+    },
+    "department": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "hourly_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Price per hour in local currency"
+    },
+    "currency": {
+      "type": "string",
+      "default": "NGN"
+    },
+    "is_free": {
+      "type": "boolean",
+      "default": false,
+      "description": "Tutor offers free sessions"
+    },
+    "availability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "description": "Day of week e.g. Monday"
+          },
+          "start": {
+            "type": "string",
+            "description": "Start time HH:MM"
+          },
+          "end": {
+            "type": "string",
+            "description": "End time HH:MM"
+          }
+        }
+      },
+      "description": "Recurring weekly availability slots"
+    },
+    "teaching_style": {
+      "type": "string",
+      "description": "e.g. One-on-one, group, online, in-person"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Denormalized average rating"
+    },
+    "reviews_count": {
+      "type": "number",
+      "default": 0
+    },
+    "sessions_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "tutor_name",
+    "role"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

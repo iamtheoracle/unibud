@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { PAGE_SIZE } from "@/components/quad/quadConstants";
+import { filterUserFacing } from "@/lib/constitution/contentArchitectureValidator";
 
 /**
  * Infinite feed hook with cursor-based pagination via created_date.
@@ -22,7 +23,9 @@ export function useInfiniteFeed({ queryKey, query = {}, pageSize = PAGE_SIZE, en
       if (pageParam) {
         filter.created_date = { $lt: pageParam };
       }
-      const items = await base44.entities.QuadPost.filter(filter, "-created_date", pageSize);
+      const rawItems = await base44.entities.QuadPost.filter(filter, "-created_date", pageSize);
+      // Enforce content architecture: filter system documents + restricted visibility from user-facing feed
+      const items = filterUserFacing(rawItems, { space: "square" });
 
       // Cache to localStorage for offline support
       try {
