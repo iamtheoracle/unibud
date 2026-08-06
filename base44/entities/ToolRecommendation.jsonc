@@ -1,0 +1,100 @@
+{
+  "name": "ToolRecommendation",
+  "type": "object",
+  "properties": {
+    "recommendation_type": {
+      "type": "string",
+      "description": "Slug identifying which recommendation was shown"
+    },
+    "surface": {
+      "type": "string",
+      "description": "Where the recommendation appeared (home, collaboration, study, ...)"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "suggested_tool": {
+      "type": "string"
+    },
+    "suggested_route": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "description": "Snapshot of the trigger context at the time of the suggestion"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "accepted",
+        "dismissed",
+        "disabled"
+      ],
+      "default": "accepted"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0
+    },
+    "confidence": {
+      "type": "number",
+      "default": 0
+    },
+    "helpfulness": {
+      "type": "number",
+      "default": 1,
+      "description": "Learned weight applied at the time of the suggestion"
+    },
+    "dismissed_reason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "recommendation_type",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

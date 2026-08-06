@@ -15,6 +15,11 @@
       "type": "string",
       "default": "NGN"
     },
+    "is_free": {
+      "type": "boolean",
+      "default": false,
+      "description": "When true the item is a free giveaway \u2014 no price expected."
+    },
     "category": {
       "type": "string",
       "enum": [
@@ -51,6 +56,10 @@
     "seller_image": {
       "type": "string"
     },
+    "contact": {
+      "type": "string",
+      "description": "Phone, WhatsApp, or handle so buyers reach the seller directly \u2014 no payment integration required."
+    },
     "status": {
       "type": "string",
       "enum": [
@@ -71,5 +80,31 @@
   "required": [
     "title",
     "price"
-  ]
+  ],
+  "rls": {
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

@@ -53,6 +53,17 @@ export const SHARE_TARGETS = [
   { id: "copy_link", label: "Copy Link", icon: Link },
 ];
 
+// External share platforms — quiet monochrome, uses native URL schemes or Web Share API.
+// No brand logos; text labels only. UNIBUD remains the primary brand.
+export const EXTERNAL_SHARE_TARGETS = [
+  { id: "whatsapp", label: "WhatsApp", url: (text, url) => `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`.trim())}` },
+  { id: "telegram", label: "Telegram", url: (text, url) => `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}` },
+  { id: "x", label: "X", url: (text, url) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}` },
+  { id: "instagram", label: "Instagram", url: null },
+  { id: "threads", label: "Threads", url: null },
+  { id: "tiktok", label: "TikTok", url: null },
+];
+
 export const MAX_POST_LENGTH = 2000;
 export const PAGE_SIZE = 8;
 

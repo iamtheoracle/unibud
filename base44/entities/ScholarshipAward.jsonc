@@ -1,0 +1,96 @@
+{
+  "name": "ScholarshipAward",
+  "type": "object",
+  "properties": {
+    "provider_name": {
+      "type": "string"
+    },
+    "beneficiary_name": {
+      "type": "string"
+    },
+    "beneficiary_id": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "awarded",
+        "disbursed"
+      ],
+      "default": "pending"
+    },
+    "disbursed_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "balance": {
+      "type": "number",
+      "default": 0
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "provider_name",
+    "beneficiary_name",
+    "amount",
+    "institution_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

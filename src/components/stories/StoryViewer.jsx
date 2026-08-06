@@ -268,7 +268,7 @@ export default function StoryViewer({
             onEnded={() => advanceRef.current()}
           />
         ) : (
-          <img src={currentStory.media_url || currentStory.thumbnail_url} className="absolute inset-0 w-full h-full object-cover" alt="" />
+          <img src={currentStory.media_url || currentStory.thumbnail_url} className="absolute inset-0 w-full h-full object-cover" alt="" loading="lazy" />
         )}
 
         {/* Caption overlay for media stories */}
@@ -347,7 +347,7 @@ export default function StoryViewer({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {currentGroup?.authorImage ? (
-              <img src={currentGroup.authorImage} alt="" className="w-8 h-8 rounded-full object-cover border border-white/20" />
+              <img src={currentGroup.authorImage} alt="" className="w-8 h-8 rounded-full object-cover border border-white/20" loading="lazy" />
             ) : (
               <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
                 <span className="text-white text-[12px] font-bold">{(currentGroup?.authorName || "U").charAt(0)}</span>

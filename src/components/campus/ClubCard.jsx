@@ -55,7 +55,7 @@ export default function ClubCard({ club, user, index = 0, onView }) {
         style={{ background: `hsl(${club.accent_color || catMeta.color} / 0.08)` }}
       >
         {club.banner_url ? (
-          <img src={club.banner_url} alt="" className="w-full h-full object-cover absolute inset-0" />
+          <img src={club.banner_url} alt="" className="w-full h-full object-cover absolute inset-0" loading="lazy" />
         ) : null}
         <div
           className="w-12 h-12 rounded-[16px] flex items-center justify-center relative z-10 bg-card soft-shadow"

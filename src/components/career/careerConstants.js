@@ -1,128 +1,107 @@
 import {
-  Briefcase, GraduationCap, Building2, HeartHandshake, FlaskConical,
-  Code2, Trophy, Rocket, Users, Calendar, MapPin, Clock, DollarSign,
-  Bookmark, CheckCircle2, ExternalLink, Award, BookOpen, FileText,
-  Microscope, Beaker, PenTool, Camera, Video, FileCode, BadgeCheck,
-  Globe, Building, Landmark, Heart, Sparkles, Star,
+  Briefcase, Trophy, GraduationCap, Globe, Award, Heart, Users, Code, FlaskConical, Building2,
+  Presentation, FileText,
 } from "lucide-react";
 
+export const TYPE_META = {
+  scholarship: { icon: GraduationCap, color: "success", label: "Scholarship" },
+  internship: { icon: Briefcase, color: "information", label: "Internship" },
+  job: { icon: Briefcase, color: "error", label: "Job" },
+  graduate_job: { icon: Briefcase, color: "error", label: "Graduate Job" },
+  campus_job: { icon: Building2, color: "warning", label: "Campus Job" },
+  competition: { icon: Trophy, color: "gold", label: "Competition" },
+  hackathon: { icon: Code, color: "gold", label: "Hackathon" },
+  exchange: { icon: Globe, color: "information", label: "Exchange" },
+  research: { icon: FlaskConical, color: "accent", label: "Research" },
+  grant: { icon: Award, color: "success", label: "Grant" },
+  fellowship: { icon: Award, color: "warning", label: "Fellowship" },
+  volunteering: { icon: Heart, color: "success", label: "Volunteering" },
+  mentorship: { icon: Users, color: "accent", label: "Mentorship" },
+};
+
+export const CATEGORIES = [
+  { key: "all", label: "All", types: [] },
+  { key: "internships", label: "Internships", types: ["internship"] },
+  { key: "jobs", label: "Jobs", types: ["job", "graduate_job", "campus_job"] },
+  { key: "scholarships", label: "Scholarships", types: ["scholarship", "grant", "fellowship"] },
+  { key: "competitions", label: "Competitions", types: ["competition", "hackathon"] },
+  { key: "volunteering", label: "Volunteering", types: ["volunteering"] },
+  { key: "research", label: "Research", types: ["research"] },
+];
+
 export const CAREER_TYPES = {
-  internship: { label: "Internship", icon: Briefcase, color: "text-info", bg: "bg-info/10" },
-  graduate_job: { label: "Graduate Job", icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-  campus_job: { label: "Campus Job", icon: Building2, color: "text-success", bg: "bg-success/10" },
-  volunteer: { label: "Volunteer", icon: HeartHandshake, color: "text-error", bg: "bg-error/10" },
-  research_assistant: { label: "Research Assistant", icon: FlaskConical, color: "text-purple", bg: "bg-purple/10" },
-  industrial_training: { label: "Industrial Training", icon: Building2, color: "text-warning", bg: "bg-warning/10" },
-  freelance: { label: "Freelance", icon: Code2, color: "text-info", bg: "bg-info/10" },
-  competition: { label: "Competition", icon: Trophy, color: "text-primary", bg: "bg-primary/10" },
-  startup: { label: "Startup", icon: Rocket, color: "text-warning", bg: "bg-warning/10" },
-  career_fair: { label: "Career Fair", icon: Users, color: "text-success", bg: "bg-success/10" },
+  internship: { icon: Briefcase, label: "Internships", bg: "bg-information/10", color: "text-information" },
+  graduate_job: { icon: Briefcase, label: "Graduate Jobs", bg: "bg-error/10", color: "text-error" },
+  campus_job: { icon: Building2, label: "Campus Jobs", bg: "bg-warning/10", color: "text-warning" },
+  research_assistant: { icon: FlaskConical, label: "Research", bg: "bg-accent/10", color: "text-accent" },
+  industrial_training: { icon: Briefcase, label: "Industrial Training", bg: "bg-information/10", color: "text-information" },
+  freelance: { icon: Briefcase, label: "Freelance", bg: "bg-accent/10", color: "text-accent" },
+  startup: { icon: Briefcase, label: "Startup", bg: "bg-primary/10", color: "text-primary" },
+  competition: { icon: Trophy, label: "Competitions", bg: "bg-gold/10", color: "text-gold" },
+  volunteer: { icon: Heart, label: "Volunteering", bg: "bg-success/10", color: "text-success" },
+  job: { icon: Briefcase, label: "Jobs", bg: "bg-error/10", color: "text-error" },
+  hackathon: { icon: Code, label: "Hackathons", bg: "bg-gold/10", color: "text-gold" },
 };
 
 export const SCHOLARSHIP_TYPES = {
-  university: { label: "University", icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-  government: { label: "Government", icon: Landmark, color: "text-info", bg: "bg-info/10" },
-  ngo: { label: "NGO", icon: Heart, color: "text-success", bg: "bg-success/10" },
-  international: { label: "International", icon: Globe, color: "text-purple", bg: "bg-purple/10" },
-  research_grant: { label: "Research Grant", icon: FlaskConical, color: "text-warning", bg: "bg-warning/10" },
-  travel_grant: { label: "Travel Grant", icon: MapPin, color: "text-info", bg: "bg-info/10" },
-  innovation_grant: { label: "Innovation Grant", icon: Sparkles, color: "text-primary", bg: "bg-primary/10" },
-  merit: { label: "Merit", icon: Award, color: "text-primary", bg: "bg-primary/10" },
-  need_based: { label: "Need-Based", icon: HeartHandshake, color: "text-error", bg: "bg-error/10" },
-  athletic: { label: "Athletic", icon: Trophy, color: "text-success", bg: "bg-success/10" },
-  departmental: { label: "Departmental", icon: BookOpen, color: "text-info", bg: "bg-info/10" },
+  merit: { icon: Award, label: "Merit", bg: "bg-success/10", color: "text-success" },
+  need: { icon: Award, label: "Need-Based", bg: "bg-warning/10", color: "text-warning" },
+  research: { icon: FlaskConical, label: "Research", bg: "bg-accent/10", color: "text-accent" },
+  international: { icon: Globe, label: "International", bg: "bg-information/10", color: "text-information" },
+  athletic: { icon: Trophy, label: "Athletic", bg: "bg-gold/10", color: "text-gold" },
 };
+
+export function formatRelativeTime(deadline) {
+  if (!deadline) return null;
+  const diff = new Date(deadline) - new Date();
+  if (diff < 0) return "Closed";
+  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+  if (days === 0) return "Today";
+  if (days === 1) return "1 day left";
+  if (days <= 7) return `${days} days left`;
+  if (days <= 30) return `${Math.ceil(days / 7)}w left`;
+  return `${Math.ceil(days / 30)}mo left`;
+}
 
 export const RESEARCH_TYPES = {
-  research_group: { label: "Research Group", icon: Users, color: "text-primary", bg: "bg-primary/10" },
-  publication: { label: "Publication", icon: FileText, color: "text-info", bg: "bg-info/10" },
-  project: { label: "Project", icon: Beaker, color: "text-purple", bg: "bg-purple/10" },
-  collaboration: { label: "Collaboration", icon: HeartHandshake, color: "text-success", bg: "bg-success/10" },
-  laboratory: { label: "Laboratory", icon: Microscope, color: "text-warning", bg: "bg-warning/10" },
-  funding: { label: "Funding", icon: DollarSign, color: "text-primary", bg: "bg-primary/10" },
-  event: { label: "Event", icon: Calendar, color: "text-info", bg: "bg-info/10" },
-  competition: { label: "Competition", icon: Trophy, color: "text-primary", bg: "bg-primary/10" },
-  thesis: { label: "Thesis", icon: BookOpen, color: "text-purple", bg: "bg-purple/10" },
-  dissertation: { label: "Dissertation", icon: GraduationCap, color: "text-info", bg: "bg-info/10" },
+  project: { icon: FlaskConical, label: "Project", bg: "bg-accent/10", color: "text-accent" },
+  thesis: { icon: GraduationCap, label: "Thesis", bg: "bg-success/10", color: "text-success" },
+  publication: { icon: FileText, label: "Publication", bg: "bg-information/10", color: "text-information" },
+  grant: { icon: Award, label: "Grant", bg: "bg-warning/10", color: "text-warning" },
+  collaboration: { icon: Users, label: "Collaboration", bg: "bg-primary/10", color: "text-primary" },
 };
 
+export function formatNumber(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return String(n);
+}
+
 export const COMPANY_TYPES = {
-  tech: { label: "Technology", icon: Code2, color: "text-info", bg: "bg-info/10" },
-  finance: { label: "Finance", icon: DollarSign, color: "text-success", bg: "bg-success/10" },
-  healthcare: { label: "Healthcare", icon: Heart, color: "text-error", bg: "bg-error/10" },
-  education: { label: "Education", icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-  manufacturing: { label: "Manufacturing", icon: Building, color: "text-warning", bg: "bg-warning/10" },
-  consulting: { label: "Consulting", icon: Briefcase, color: "text-purple", bg: "bg-purple/10" },
-  media: { label: "Media", icon: Video, color: "text-info", bg: "bg-info/10" },
-  telecommunications: { label: "Telecom", icon: Globe, color: "text-primary", bg: "bg-primary/10" },
-  agriculture: { label: "Agriculture", icon: Beaker, color: "text-success", bg: "bg-success/10" },
-  energy: { label: "Energy", icon: Sparkles, color: "text-warning", bg: "bg-warning/10" },
-  government: { label: "Government", icon: Landmark, color: "text-info", bg: "bg-info/10" },
-  ngo: { label: "NGO", icon: Heart, color: "text-error", bg: "bg-error/10" },
-  startup: { label: "Startup", icon: Rocket, color: "text-primary", bg: "bg-primary/10" },
-  research_lab: { label: "Research Lab", icon: FlaskConical, color: "text-purple", bg: "bg-purple/10" },
-  university: { label: "University", icon: GraduationCap, color: "text-primary", bg: "bg-primary/10" },
-  other: { label: "Other", icon: Building2, color: "text-muted-foreground", bg: "bg-muted" },
+  tech: { icon: Code, label: "Technology", bg: "bg-information/10", color: "text-information" },
+  finance: { icon: Briefcase, label: "Finance", bg: "bg-success/10", color: "text-success" },
+  healthcare: { icon: Heart, label: "Healthcare", bg: "bg-error/10", color: "text-error" },
+  education: { icon: GraduationCap, label: "Education", bg: "bg-accent/10", color: "text-accent" },
+  manufacturing: { icon: Building2, label: "Manufacturing", bg: "bg-warning/10", color: "text-warning" },
+  consulting: { icon: Briefcase, label: "Consulting", bg: "bg-primary/10", color: "text-primary" },
+  other: { icon: Building2, label: "Company", bg: "bg-muted/30", color: "text-muted-foreground" },
 };
 
 export const PORTFOLIO_TYPES = {
-  project: { label: "Project", icon: Beaker, color: "text-primary", bg: "bg-primary/10" },
-  research: { label: "Research", icon: FlaskConical, color: "text-purple", bg: "bg-purple/10" },
-  design: { label: "Design", icon: PenTool, color: "text-info", bg: "bg-info/10" },
-  programming: { label: "Programming", icon: FileCode, color: "text-success", bg: "bg-success/10" },
-  photography: { label: "Photography", icon: Camera, color: "text-warning", bg: "bg-warning/10" },
-  writing: { label: "Writing", icon: FileText, color: "text-info", bg: "bg-info/10" },
-  video: { label: "Video", icon: Video, color: "text-error", bg: "bg-error/10" },
-  document: { label: "Document", icon: FileText, color: "text-muted-foreground", bg: "bg-muted" },
-  certificate: { label: "Certificate", icon: Award, color: "text-primary", bg: "bg-primary/10" },
-  achievement: { label: "Achievement", icon: Trophy, color: "text-primary", bg: "bg-primary/10" },
-  presentation: { label: "Presentation", icon: Users, color: "text-info", bg: "bg-info/10" },
-  other: { label: "Other", icon: Sparkles, color: "text-muted-foreground", bg: "bg-muted" },
+  project: { icon: Briefcase, label: "Project", bg: "bg-accent/10", color: "text-accent" },
+  research: { icon: FlaskConical, label: "Research", bg: "bg-information/10", color: "text-information" },
+  presentation: { icon: Presentation, label: "Presentation", bg: "bg-success/10", color: "text-success" },
+  publication: { icon: FileText, label: "Publication", bg: "bg-warning/10", color: "text-warning" },
+  design: { icon: Award, label: "Design", bg: "bg-primary/10", color: "text-primary" },
+  video: { icon: Users, label: "Video", bg: "bg-accent/10", color: "text-accent" },
 };
 
-export const COMPANY_SIZES = {
-  startup: "Startup (1-10)",
-  small: "Small (11-50)",
-  medium: "Medium (51-200)",
-  large: "Large (201-1000)",
-  enterprise: "Enterprise (1000+)",
-};
-
-export function getIcon(iconName) {
-  const icons = {
-    Briefcase, GraduationCap, Building2, HeartHandshake, FlaskConical,
-    Code2, Trophy, Rocket, Users, Calendar, MapPin, Clock, DollarSign,
-    Bookmark, CheckCircle2, ExternalLink, Award, BookOpen, FileText,
-    Microscope, Beaker, PenTool, Camera, Video, FileCode, BadgeCheck,
-    Globe, Building, Landmark, Heart, Sparkles, Star,
-  };
-  return icons[iconName] || Sparkles;
-}
-
-export function formatRelativeTime(dateStr) {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = date - now;
-  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays < 0) return "Closed";
-  if (diffDays === 0) return "Closes today";
-  if (diffDays === 1) return "Closes tomorrow";
-  if (diffDays <= 7) return `${diffDays} days left`;
-  if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks left`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-export function getDaysUntil(dateStr) {
-  if (!dateStr) return null;
-  const date = new Date(dateStr);
-  const now = new Date();
-  return Math.ceil((date - now) / (1000 * 60 * 60 * 24));
-}
-
-export function formatNumber(num) {
-  if (!num) return "0";
-  if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
-  if (num >= 1000) return (num / 1000).toFixed(1) + "K";
-  return num.toString();
-}
+export const TRACKER_STATUSES = [
+  { key: "interested", label: "Interested", color: "muted-foreground" },
+  { key: "preparing", label: "Preparing", color: "warning" },
+  { key: "applied", label: "Applied", color: "information" },
+  { key: "interview", label: "Interview", color: "accent" },
+  { key: "offered", label: "Offered", color: "success" },
+  { key: "rejected", label: "Rejected", color: "error" },
+  { key: "withdrawn", label: "Withdrawn", color: "muted-foreground" },
+];

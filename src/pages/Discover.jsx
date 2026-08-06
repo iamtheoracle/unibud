@@ -1,308 +1,345 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, TrendingUp, Globe, Flame, Trophy, Sparkles,
-  ChevronRight, Users, Award, Briefcase, ShoppingBag,
-  Lightbulb, Rocket, Music, Dumbbell, Cpu,
-  Building2, Calendar, Package, FlaskConical, FileText, GraduationCap,
+  Search, Sparkles, Users, Calendar, Briefcase, Award,
+  ShoppingBag, Building2, TrendingUp, MapPin, Music, SlidersHorizontal,
 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useDemoMode } from "@/lib/DemoModeContext";
+import ScreenShell from "@/components/layout/ScreenShell";
+import DiscoverySection from "@/components/discovery/DiscoverySection";
+import DiscoveryEmptyState from "@/components/discovery/DiscoveryEmptyState";
+import { useInterests } from "@/hooks/useInterests";
+import RecentSearches, { saveRecentSearch } from "@/components/discovery/RecentSearches";
+import PullToRefresh from "@/components/ui/PullToRefresh";
+import FilterSheet from "@/components/discovery/FilterSheet";
+import CategoryTabs from "@/components/discovery/CategoryTabs";
+import { DISCOVERY_TABS, matchesCategory } from "@/data/contentCategories";
 
-const SCOPES = [
-  { key: "campus", label: "Campus", icon: Users, desc: "Trending at your university" },
-  { key: "national", label: "National", icon: TrendingUp, desc: "Across the country" },
-  { key: "global", label: "Global", icon: Globe, desc: "Worldwide trends" },
+const EASE = [0.16, 1, 0.3, 1];
+
+const FILTERS = [
+  { id: "all", label: "All", icon: Sparkles },
+  { id: "communities", label: "Communities", icon: Users },
+  { id: "clubs", label: "Clubs", icon: Building2 },
+  { id: "events", label: "Events", icon: Calendar },
+  { id: "opportunities", label: "Opportunities", icon: Briefcase },
+  { id: "scholarships", label: "Scholarships", icon: Award },
+  { id: "marketplace", label: "Marketplace", icon: ShoppingBag },
+  { id: "people", label: "People", icon: Users },
 ];
 
-const CATEGORIES = [
-  { icon: Trophy, label: "Challenges", path: "/challenges", color: "text-primary", bg: "bg-primary/10" },
-  { icon: Award, label: "Scholarships", path: "/opportunities", color: "text-success", bg: "bg-success/10" },
-  { icon: Briefcase, label: "Internships", path: "/opportunities", color: "text-info", bg: "bg-info/10" },
-  { icon: Rocket, label: "Startups", path: "/marketplace", color: "text-warning", bg: "bg-warning/10" },
-  { icon: Lightbulb, label: "Innovation", path: "/challenges", color: "text-purple", bg: "bg-purple/10" },
-  { icon: Music, label: "Music", path: "/discover", color: "text-primary", bg: "bg-primary/10" },
-  { icon: Dumbbell, label: "Sports", path: "/challenges", color: "text-error", bg: "bg-error/10" },
-  { icon: Cpu, label: "Tech", path: "/challenges", color: "text-info", bg: "bg-info/10" },
-];
+const ACADEMIC_TYPES = ["course", "department", "faculty", "study_group", "research_group", "programme"];
 
-const DEMO_TRENDS = [
-  { title: "Students from Engineering built a solar vehicle", tag: "Engineering", count: 342, type: "challenge" },
-  { title: "Photography Club started a Sunset Challenge", tag: "Photography", count: 128, type: "challenge" },
-  { title: "30 students from your faculty joined today's Coding Challenge", tag: "Coding", count: 30, type: "challenge" },
-  { title: "Business students are hosting a Pitch Competition", tag: "Startup", count: 89, type: "challenge" },
-];
+const LIFESTYLE_CATEGORIES = ["sports", "music", "drama", "dance", "art", "photography", "gaming", "literary", "debate", "journalism", "volunteer", "entrepreneurship"];
 
+const CATEGORY_STORAGE_KEY = "discover_active_category";
+
+/**
+ * Discover — the Orbit Discovery Feed.
+ *
+ * Production-first: fetches real data from entities with zero mock
+ * fallbacks. Shows beautiful empty states when no data exists.
+ * Sections are built from real communities, events, clubs,
+ * opportunities, scholarships, and marketplace listings.
+ */
 export default function Discover() {
-  const { isDemoMode } = useDemoMode();
-  const [scope, setScope] = useState("campus");
-  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("all");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState({ verifiedOnly: false, myFaculty: false, myDepartment: false });
+  const [activeCategory, setActiveCategory] = useState(() => {
+    try { return localStorage.getItem(CATEGORY_STORAGE_KEY) || "foryou"; } catch { return "foryou"; }
+  });
+  const scrollPositions = useRef({});
+  const { interests } = useInterests();
 
-  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me(), enabled: !isDemoMode });
-  const { data: challenges } = useQuery({ queryKey: ["challenges"], queryFn: () => base44.entities.Challenge.list("-created_date", 5), enabled: !isDemoMode });
-  const { data: opportunities } = useQuery({ queryKey: ["opportunities"], queryFn: () => base44.entities.Opportunity.list("-created_date", 5), enabled: !isDemoMode });
-  const { data: listings } = useQuery({ queryKey: ["marketplace"], queryFn: () => base44.entities.MarketplaceListing.filter({ status: "active" }), enabled: !isDemoMode });
+  const handleCategoryChange = (catId) => {
+    scrollPositions.current[activeCategory] = window.scrollY;
+    setActiveCategory(catId);
+    try { localStorage.setItem(CATEGORY_STORAGE_KEY, catId); } catch {}
+    if (catId !== "foryou") setFilter("all");
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: scrollPositions.current[catId] || 0, behavior: "instant" });
+    });
+  };
 
-  const trendingListings = (listings || []).slice(0, 4);
-  const activeChallenges = (challenges || []).filter((c) => c.status === "active").slice(0, 5);
+  const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
+  const uni = user?.university || "";
 
-  const campusTrends = isDemoMode
-    ? DEMO_TRENDS
-    : activeChallenges.map((c) => ({
-        title: c.title,
-        tag: c.type || "Challenge",
-        count: c.participants_count || 0,
-        type: "challenge",
-      }));
+  // ── Real data queries — zero mock fallbacks ──
+  const communitiesQ = useQuery({
+    queryKey: ["discover-communities", uni],
+    queryFn: () => base44.entities.Community.filter(uni ? { university: uni } : {}, "-members_count", 30),
+  });
+  const eventsQ = useQuery({
+    queryKey: ["discover-events"],
+    queryFn: () => base44.entities.CampusEvent.filter({ status: "upcoming" }, "date", 20),
+  });
+  const clubsQ = useQuery({
+    queryKey: ["discover-clubs", uni],
+    queryFn: () => base44.entities.Club.filter(uni ? { university: uni } : {}, "-members_count", 20),
+  });
+  const oppsQ = useQuery({
+    queryKey: ["discover-opps"],
+    queryFn: () => base44.entities.Opportunity.list("-created_date", 10),
+  });
+  const scholarshipsQ = useQuery({
+    queryKey: ["discover-scholarships"],
+    queryFn: () => base44.entities.Scholarship.list("-created_date", 10),
+  });
+  const listingsQ = useQuery({
+    queryKey: ["discover-listings"],
+    queryFn: () => base44.entities.MarketplaceListing.list("-created_date", 8),
+  });
+
+  // ── People search — uses smartUserSearch backend function ──
+  const peopleQ = useQuery({
+    queryKey: ["discover-people", query],
+    queryFn: async () => {
+      const res = await base44.functions.invoke("smartUserSearch", { query, limit: 10 });
+      return res.data?.results || [];
+    },
+    enabled: query.trim().length >= 2,
+  });
+
+  const people = peopleQ.data || [];
+
+  // ── Save recent searches (debounced) ──
+  useEffect(() => {
+    if (query.trim().length >= 3) {
+      const timer = setTimeout(() => saveRecentSearch(query.trim()), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [query]);
+
+  const refetchAll = async () => {
+    await Promise.all([
+      communitiesQ.refetch(),
+      eventsQ.refetch(),
+      clubsQ.refetch(),
+      oppsQ.refetch(),
+      scholarshipsQ.refetch(),
+      listingsQ.refetch(),
+    ]);
+  };
+
+  const communities = communitiesQ.data || [];
+  const events = eventsQ.data || [];
+  const clubs = clubsQ.data || [];
+  const opportunities = oppsQ.data || [];
+  const scholarships = scholarshipsQ.data || [];
+  const listings = listingsQ.data || [];
+  const isLoading = communitiesQ.isLoading || eventsQ.isLoading;
+
+  // ── Search + advanced filter ──
+  const q = query.toLowerCase();
+  const filterFn = (item) => {
+    if (activeCategory !== "foryou" && !matchesCategory(item, activeCategory)) return false;
+    if (q && !JSON.stringify(item).toLowerCase().includes(q)) return false;
+    if (advancedFilters.verifiedOnly && !item.is_verified) return false;
+    if (advancedFilters.myFaculty && user?.faculty && item.faculty && item.faculty !== user.faculty) return false;
+    if (advancedFilters.myDepartment && user?.department && item.department && item.department !== user.department) return false;
+    return true;
+  };
+
+  // ── "For You" — communities matching user interests ──
+  const interestTags = (interests || []).map((i) => (typeof i === "string" ? i : i?.id || i?.label || "").toLowerCase());
+  const forYou = interestTags.length > 0
+    ? communities.filter((c) => {
+        const tags = (c.tags || []).map((t) => t.toLowerCase());
+        return tags.some((t) => interestTags.includes(t)) || interestTags.includes(c.type?.toLowerCase());
+      })
+    : [];
+
+  // ── "Trending" — communities with most real members ──
+  const trending = [...communities]
+    .sort((a, b) => (b.members_count || 0) - (a.members_count || 0))
+    .slice(0, 8);
+
+  // ── "Academics" — academic-type communities ──
+  const academic = communities.filter((c) => ACADEMIC_TYPES.includes(c.type));
+
+  // ── "Nearby" — communities from the student's faculty ──
+  const nearby = user?.faculty ? communities.filter((c) => c.faculty === user.faculty) : [];
+
+  // ── "Campus Life" — lifestyle-oriented clubs ──
+  const campusLife = clubs.filter((c) => LIFESTYLE_CATEGORIES.includes(c.category));
+
+  // ── Build sections ──
+  const sections = useMemo(() => {
+    const result = [];
+    const showAll = filter === "all";
+
+    if (showAll && forYou.length > 0) {
+      result.push({ id: "foryou", title: "For You", icon: Sparkles, to: "/communities", items: forYou.slice(0, 8).filter(filterFn), type: "community" });
+    }
+    if (showAll && academic.length > 0) {
+      result.push({ id: "academic", title: "Academic Communities", icon: Briefcase, to: "/communities", items: academic.slice(0, 8).filter(filterFn), type: "community" });
+    }
+    if (showAll && nearby.length > 0) {
+      result.push({ id: "nearby", title: "Nearby", icon: MapPin, to: "/communities", items: nearby.slice(0, 8).filter(filterFn), type: "community" });
+    }
+    if (showAll && campusLife.length > 0) {
+      result.push({ id: "campuslife", title: "Campus Life", icon: Music, to: "/clubs", items: campusLife.filter(filterFn), type: "club" });
+    }
+    if ((showAll || filter === "communities") && trending.length > 0) {
+      result.push({ id: "trending", title: "Trending Communities", icon: TrendingUp, to: "/communities", items: trending.filter(filterFn), type: "community" });
+    }
+    if ((showAll || filter === "clubs") && clubs.length > 0) {
+      result.push({ id: "clubs", title: "Clubs & Societies", icon: Building2, to: "/clubs", items: clubs.filter(filterFn), type: "club" });
+    }
+    if ((showAll || filter === "events") && events.length > 0) {
+      result.push({ id: "events", title: "Upcoming Events", icon: Calendar, to: "/events", items: events.filter(filterFn), type: "event" });
+    }
+    if (showAll || filter === "opportunities") {
+      const oppItems = opportunities.filter(filterFn);
+      if (oppItems.length > 0) {
+        result.push({ id: "opportunities", title: "Opportunities", icon: Briefcase, to: "/opportunities", items: oppItems, type: "opportunity" });
+      }
+    }
+    if ((showAll || filter === "scholarships") && scholarships.length > 0) {
+      result.push({ id: "scholarships", title: "Scholarships", icon: Award, to: "/scholarships", items: scholarships.filter(filterFn), type: "scholarship" });
+    }
+    if ((showAll || filter === "marketplace") && listings.length > 0) {
+      result.push({ id: "marketplace", title: "Marketplace", icon: ShoppingBag, to: "/marketplace", items: listings.filter(filterFn), type: "listing" });
+    }
+    if ((showAll || filter === "people") && people.length > 0) {
+      result.push({ id: "people", title: "People", icon: Users, to: "/connect", items: people, type: "people" });
+    }
+
+    return result.filter((s) => s.items.length > 0);
+  }, [filter, query, forYou, academic, trending, clubs, events, opportunities, scholarships, listings, people, nearby, campusLife, advancedFilters, activeCategory]);
+
+  // Compute which category tabs have content — hide empty ones
+  const availableTabs = useMemo(() => {
+    const allItems = [...communities, ...clubs, ...events, ...opportunities, ...scholarships, ...listings];
+    return DISCOVERY_TABS.filter((tab) => {
+      if (tab.id === "foryou") return true;
+      return allItems.some((item) => matchesCategory(item, tab.id));
+    });
+  }, [communities, clubs, events, opportunities, scholarships, listings]);
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
+    <ScreenShell title="Discover" subtitle="Explore communities, events, opportunities, and everything campus." sticky={false}>
+      {/* Search + Filter */}
+      <div className="flex gap-2 mb-4 mt-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground z-10" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+            placeholder="Search communities, events, people…"
+            className="w-full pl-10 pr-4 py-3 rounded-[18px] glass text-[14px] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/40 spring-tap transition-all duration-300"
+          />
+        </div>
+        <button
+          onClick={() => setShowFilters(true)}
+          className={`w-12 h-12 rounded-[18px] grid place-items-center spring-tap transition-all shrink-0 ${
+            advancedFilters.verifiedOnly || advancedFilters.myFaculty || advancedFilters.myDepartment
+              ? "bg-foreground text-background"
+              : "glass text-foreground/70"
+          }`}
+          aria-label="Filters"
+        >
+          <SlidersHorizontal className="w-4 h-4" />
         </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Discover</h1>
-          <p className="text-[12px] text-muted-foreground">{isDemoMode ? "Your Campus" : (user?.university || "Your Campus")} · What's happening</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Sparkles className="w-5 h-5 text-primary-foreground" />
-        </div>
       </div>
 
-      {/* Scope selector */}
-      <div className="px-4 mb-4">
-        <div className="bg-card rounded-[20px] p-1.5 soft-shadow border border-border/40 flex">
-          {SCOPES.map((s) => (
-            <button key={s.key} onClick={() => setScope(s.key)}
-              className={"flex-1 py-2.5 rounded-[16px] text-[11px] font-semibold transition-all flex flex-col items-center gap-0.5 " + (scope === s.key ? "bg-primary text-primary-foreground soft-shadow" : "text-muted-foreground")}>
-              <s.icon className="w-4 h-4" />
-              {s.label}
+      {/* Recent searches — shown when focused and no query */}
+      {searchFocused && !query && (
+        <RecentSearches onSelect={(term) => setQuery(term)} />
+      )}
+
+      {/* Category tabs — horizontally scrollable, animated */}
+      <div className="mb-3">
+        <CategoryTabs tabs={availableTabs} activeTab={activeCategory} onChange={handleCategoryChange} />
+      </div>
+
+      {/* Filter chips */}
+      <div className="flex gap-2 overflow-x-auto no-scrollbar mb-5 -mx-1 px-1">
+        {FILTERS.map((f) => {
+          const Icon = f.icon;
+          const active = filter === f.id;
+          return (
+            <button
+              key={f.id}
+              onClick={() => setFilter(f.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[12px] font-semibold whitespace-nowrap spring-tap transition-all duration-300 ${
+                active ? "bg-foreground text-background" : "glass text-foreground/70"
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {f.label}
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {/* Campus Spaces */}
-      <div className="px-4 mb-5">
-        <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
-          <Building2 className="w-4 h-4 text-primary" /> Campus Spaces
-        </h3>
-        <div className="grid grid-cols-2 gap-2.5">
-          {[
-            { icon: Building2, label: "Communities", path: "/communities", desc: "Your digital campus", color: "text-primary", bg: "bg-primary/10" },
-            { icon: Users, label: "Clubs", path: "/clubs", desc: "Verified societies", color: "text-warning", bg: "bg-warning/10" },
-            { icon: Calendar, label: "Events", path: "/events", desc: "What's happening", color: "text-success", bg: "bg-success/10" },
-            { icon: Package, label: "Lost & Found", path: "/lost-found", desc: "Report & search", color: "text-error", bg: "bg-error/10" },
-          ].map((space, i) => (
-            <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.04 }}>
-              <Link to={space.path} className="flex items-center gap-2.5 p-3 rounded-[18px] bg-card soft-shadow border border-border/40 spring-tap card-hover">
-                <div className={"w-9 h-9 rounded-[12px] " + space.bg + " flex items-center justify-center flex-shrink-0"}>
-                  <space.icon className={"w-4 h-4 " + space.color} strokeWidth={2.2} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-semibold text-foreground">{space.label}</p>
-                  <p className="text-[9px] text-muted-foreground truncate">{space.desc}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      {/* Advanced filter sheet */}
+      <FilterSheet
+        open={showFilters}
+        onOpenChange={setShowFilters}
+        filters={advancedFilters}
+        onChange={setAdvancedFilters}
+        user={user}
+      />
 
-      {/* Professional Hub */}
-      <div className="px-4 mb-5">
-        <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
-          <Briefcase className="w-4 h-4 text-primary" /> Professional
-        </h3>
-        <div className="grid grid-cols-2 gap-2.5">
-          {[
-            { icon: Briefcase, label: "Career Hub", path: "/career", desc: "Jobs & internships", color: "text-info", bg: "bg-info/10" },
-            { icon: Award, label: "Scholarships", path: "/scholarships", desc: "Funding & grants", color: "text-success", bg: "bg-success/10" },
-            { icon: FlaskConical, label: "Research", path: "/research", desc: "Groups & labs", color: "text-purple", bg: "bg-purple/10" },
-            { icon: Building2, label: "Companies", path: "/companies", desc: "Hiring & sponsors", color: "text-warning", bg: "bg-warning/10" },
-            { icon: FileText, label: "Portfolio", path: "/portfolio", desc: "Showcase work", color: "text-primary", bg: "bg-primary/10" },
-            { icon: GraduationCap, label: "CV Builder", path: "/cv-builder", desc: "Professional CV", color: "text-info", bg: "bg-info/10" },
-          ].map((item, i) => (
-            <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.04 }}>
-              <Link to={item.path} className="flex items-center gap-2.5 p-3 rounded-[18px] bg-card soft-shadow border border-border/40 spring-tap card-hover">
-                <div className={"w-9 h-9 rounded-[12px] " + item.bg + " flex items-center justify-center flex-shrink-0"}>
-                  <item.icon className={"w-4 h-4 " + item.color} strokeWidth={2.2} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] font-semibold text-foreground">{item.label}</p>
-                  <p className="text-[9px] text-muted-foreground truncate">{item.desc}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
+      {/* Content */}
+      <PullToRefresh onRefresh={refetchAll}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: EASE }}
+          >
+            {isLoading ? (
+              <DiscoverySkeleton />
+            ) : sections.length === 0 ? (
+              <DiscoveryEmptyState query={query} />
+            ) : (
+              <div className="space-y-6">
+                {sections.map((section, i) => (
+                  <motion.div
+                    key={section.id}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                  >
+                    <DiscoverySection {...section} />
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </PullToRefresh>
+    </ScreenShell>
+  );
+}
 
-      {/* Categories */}
-      <div className="px-4 mb-5">
-        <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
-          <Sparkles className="w-4 h-4 text-primary" /> Discover
-        </h3>
-        <div className="grid grid-cols-4 gap-2.5">
-          {CATEGORIES.map((cat, i) => (
-            <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }}>
-              <Link to={cat.path} className="flex flex-col items-center gap-2 spring-tap">
-                <div className={"w-12 h-12 rounded-[18px] " + cat.bg + " soft-shadow border border-border/30 flex items-center justify-center"}>
-                  <cat.icon className={"w-5 h-5 " + cat.color} strokeWidth={2.2} />
-                </div>
-                <span className="text-[10px] font-medium text-foreground">{cat.label}</span>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* Campus Trends */}
-      {campusTrends.length > 0 && (
-        <div className="px-4 mb-5">
-          <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
-            <Flame className="w-4 h-4 text-primary" /> Campus Trends
-          </h3>
-          <div className="space-y-2.5">
-            {campusTrends.map((trend, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover"
-              >
-                <div className="w-10 h-10 rounded-[14px] bg-muted flex items-center justify-center text-xl flex-shrink-0">
-                  {trend.type === "challenge" ? "🏆" : "🔥"}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[12px] text-foreground leading-snug">{trend.title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="px-2 py-0.5 rounded-full bg-primary/8 text-primary text-[9px] font-semibold">{trend.tag}</span>
-                    <span className="text-[10px] text-muted-foreground">{trend.count} students</span>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              </motion.div>
+function DiscoverySkeleton() {
+  return (
+    <div className="space-y-6">
+      {Array.from({ length: 3 }).map((_, s) => (
+        <div key={s}>
+          <div className="h-4 w-32 shimmer rounded-full mb-3" />
+          <div className="flex gap-3 overflow-hidden">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="flex-shrink-0 w-[200px] crystal-card p-3.5">
+                <div className="w-full h-24 rounded-[12px] shimmer mb-2.5" />
+                <div className="h-3 w-3/4 shimmer rounded-full mb-2" />
+                <div className="h-2 w-1/2 shimmer rounded-full" />
+              </div>
             ))}
           </div>
         </div>
-      )}
-
-      {/* Active Challenges */}
-      {!isDemoMode && activeChallenges.length > 0 && (
-        <div className="mb-5">
-          <div className="flex items-center justify-between px-5 mb-3">
-            <h3 className="font-heading font-bold text-[16px] text-foreground flex items-center gap-1.5">
-              <Trophy className="w-4 h-4 text-primary" /> Active Challenges
-            </h3>
-            <Link to="/challenges" className="text-[11px] font-semibold text-primary flex items-center gap-0.5">See all <ChevronRight className="w-3 h-3" /></Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
-            {activeChallenges.map((c, i) => (
-              <motion.div
-                key={c.id}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3.5 flex-shrink-0 w-[200px] card-hover"
-              >
-                <div className="w-10 h-10 rounded-[14px] bg-primary/10 flex items-center justify-center mb-2.5">
-                  <Trophy className="w-5 h-5 text-primary" />
-                </div>
-                <p className="font-heading font-semibold text-[12px] text-foreground leading-snug mb-1 line-clamp-2">{c.title}</p>
-                <p className="text-[10px] text-muted-foreground mb-2">{c.participants_count || 0} joined</p>
-                {c.prize && <span className="text-[10px] font-semibold text-primary">{c.prize}</span>}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Trending Opportunities */}
-      {!isDemoMode && opportunities && opportunities.length > 0 && (
-        <div className="px-4 mb-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-heading font-bold text-[16px] text-foreground px-1 flex items-center gap-1.5">
-              <Award className="w-4 h-4 text-success" /> Opportunities
-            </h3>
-            <Link to="/opportunities" className="text-[11px] font-semibold text-primary flex items-center gap-0.5">See all <ChevronRight className="w-3 h-3" /></Link>
-          </div>
-          <div className="space-y-2.5">
-            {opportunities.slice(0, 3).map((opp, i) => (
-              <motion.div
-                key={opp.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex items-center gap-3 card-hover"
-              >
-                <div className="w-10 h-10 rounded-[14px] bg-success/10 flex items-center justify-center flex-shrink-0">
-                  <Award className="w-5 h-5 text-success" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-[12px] text-foreground truncate">{opp.title}</p>
-                  <p className="text-[10px] text-muted-foreground">{opp.organization}</p>
-                </div>
-                {opp.amount && <span className="text-[11px] font-bold text-primary">{opp.amount}</span>}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Student Businesses */}
-      {!isDemoMode && trendingListings.length > 0 && (
-        <div className="mb-5">
-          <div className="flex items-center justify-between px-5 mb-3">
-            <h3 className="font-heading font-bold text-[16px] text-foreground flex items-center gap-1.5">
-              <ShoppingBag className="w-4 h-4 text-warning" /> Student Businesses
-            </h3>
-            <Link to="/marketplace" className="text-[11px] font-semibold text-primary flex items-center gap-0.5">See all <ChevronRight className="w-3 h-3" /></Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto no-scrollbar px-4">
-            {trendingListings.map((item, i) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="bg-card rounded-[20px] soft-shadow border border-border/40 p-3 flex-shrink-0 w-[160px] card-hover"
-              >
-                {item.images?.[0] ? (
-                  <img src={item.images[0]} alt={item.title} className="w-full h-20 rounded-[14px] object-cover mb-2" />
-                ) : (
-                  <div className="w-full h-20 rounded-[14px] bg-muted flex items-center justify-center mb-2">
-                    <ShoppingBag className="w-6 h-6 text-muted-foreground" />
-                  </div>
-                )}
-                <p className="font-heading font-semibold text-[12px] text-foreground truncate">{item.title}</p>
-                <p className="text-[11px] font-bold text-primary mt-0.5">₦{(item.price || 0).toLocaleString()}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Global Mode banner */}
-      {scope === "global" && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-4">
-          <div className="bg-card rounded-[20px] p-4 soft-shadow border border-primary/20">
-            <div className="flex items-center gap-2 mb-2">
-              <Globe className="w-4 h-4 text-primary" />
-              <p className="font-heading font-semibold text-[13px] text-foreground">Global Mode</p>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              You're now exploring beyond your university. Inter-University competitions, global scholarships, exchange programmes, and worldwide communities are visible. Your campus data remains private.
-            </p>
-          </div>
-        </motion.div>
-      )}
+      ))}
     </div>
   );
 }

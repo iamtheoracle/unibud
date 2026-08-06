@@ -1,0 +1,111 @@
+{
+  "name": "FootballNews",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Short snippet shown in the feed"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full article body (markdown)"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "description": "e.g. BBC Sport, Sky Sports"
+    },
+    "author": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "transfer",
+        "match_report",
+        "preview",
+        "analysis",
+        "injury",
+        "general"
+      ],
+      "default": "general"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "read_time_minutes": {
+      "type": "number",
+      "default": 3
+    },
+    "published_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "published"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "summary",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

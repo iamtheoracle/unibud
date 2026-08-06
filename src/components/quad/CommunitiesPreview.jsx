@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
-import EmptyState from "@/components/ui/EmptyState";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const DEMO_COMMUNITIES = [

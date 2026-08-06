@@ -1,5 +1,5 @@
 import React from "react";
-import { Flame, TrendingUp, MessageCircle, Trophy, Inbox } from "lucide-react";
+import { Flame, TrendingUp, MessageCircle, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";

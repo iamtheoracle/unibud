@@ -1,0 +1,197 @@
+{
+  "name": "AcademicFile",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Display name for the file or resource"
+    },
+    "description": {
+      "type": "string"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "lecture_slides",
+        "pdf",
+        "past_questions",
+        "notes",
+        "assignments",
+        "research_paper",
+        "image",
+        "audio_recording",
+        "video",
+        "spreadsheet",
+        "presentation",
+        "external_link"
+      ],
+      "default": "pdf",
+      "description": "What kind of academic material this is"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded file URL (via UploadFile integration)"
+    },
+    "external_url": {
+      "type": "string",
+      "description": "External cloud link (Google Drive, Dropbox, etc.) when file_type is external_link"
+    },
+    "source_name": {
+      "type": "string",
+      "description": "Where the file came from (Google Drive, Upload, etc.)"
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "file_size_bytes": {
+      "type": "number",
+      "default": 0
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Related course code"
+    },
+    "course_id": {
+      "type": "string"
+    },
+    "semester": {
+      "type": "string",
+      "description": "e.g. '2024/2025 First Semester'"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "collection": {
+      "type": "string",
+      "description": "Custom folder/collection name for grouping"
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_offline_available": {
+      "type": "boolean",
+      "default": false,
+      "description": "Student marked this for offline access"
+    },
+    "is_shared": {
+      "type": "boolean",
+      "default": false
+    },
+    "shared_with": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "shared_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Current version number for version history"
+    },
+    "previous_versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "History of previous file versions"
+    },
+    "ai_summary": {
+      "type": "string",
+      "description": "Bud-generated summary (only when student requests it)"
+    },
+    "ai_flashcards_count": {
+      "type": "number",
+      "default": 0
+    },
+    "ai_notes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "title",
+    "file_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.shared_with.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

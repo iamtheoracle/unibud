@@ -1,0 +1,47 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": 2,
+      "interval_unit": "hours",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "launch_simulation_engine",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "simulate_activity": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "launchSimulation",
+            "args": {
+              "intensity": "normal"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Generate campus activity",
+            "description": "New posts, comments, stories & notifications"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Automatically generates realistic campus activity \u2014 new posts, comments, reactions, stories, and notifications \u2014 so the platform always feels alive and active, even in a demo environment.",
+  "name": "Launch Simulation Engine"
+}

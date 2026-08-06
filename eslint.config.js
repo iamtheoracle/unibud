@@ -7,6 +7,17 @@ import pluginUnusedImports from "eslint-plugin-unused-imports";
 export default [
   {
     files: [
+      "src/hooks/useAdaptiveContext.js",
+      "src/lib/institution/useInstitutionStats.js",
+      "src/lib/notifications/useSmartNotifications.js",
+      "src/lib/realtime/useSyncEvent.js",
+    ],
+    plugins: {
+      "react-hooks": pluginReactHooks,
+    },
+  },
+  {
+    files: [
       "src/components/**/*.{js,mjs,cjs,jsx}",
       "src/pages/**/*.{js,mjs,cjs,jsx}",
       "src/Layout.jsx",

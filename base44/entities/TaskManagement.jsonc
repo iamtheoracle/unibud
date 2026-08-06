@@ -1,0 +1,339 @@
+{
+  "name": "TaskManagement",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Task title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Rich description / brief"
+    },
+    "task_type": {
+      "type": "string",
+      "enum": [
+        "assignment",
+        "group_project",
+        "research_project",
+        "thesis",
+        "dissertation",
+        "presentation",
+        "laboratory_work",
+        "department_task",
+        "administrative_task",
+        "club_activity",
+        "event_planning",
+        "meeting_action_item",
+        "marketplace_order_task",
+        "finance_approval",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Kind of collaborative task"
+    },
+    "category": {
+      "type": "string",
+      "description": "Free-form category label"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "assigned",
+        "accepted",
+        "in_progress",
+        "waiting",
+        "under_review",
+        "blocked",
+        "completed",
+        "approved",
+        "rejected",
+        "archived"
+      ],
+      "default": "draft"
+    },
+    "assignee_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User ids assigned to this task"
+    },
+    "assignee_names": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Denormalized display names for fast rendering"
+    },
+    "team": {
+      "type": "string",
+      "description": "Team / group name"
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Optional Spark collaboration workspace this task belongs to"
+    },
+    "department": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "estimated_duration_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "attachments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Uploaded deliverables / files"
+    },
+    "linked_file_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "linked_conversation_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "related_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "related_calendar_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_approvals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "approver_id": {
+            "type": "string"
+          },
+          "approver_name": {
+            "type": "string"
+          },
+          "approved": {
+            "type": "boolean",
+            "default": false
+          },
+          "approved_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Approval workflow gate"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Task ids this task depends on"
+    },
+    "checklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "done": {
+            "type": "boolean",
+            "default": false
+          },
+          "done_by_id": {
+            "type": "string"
+          },
+          "done_by_name": {
+            "type": "string"
+          },
+          "done_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "done": {
+            "type": "boolean",
+            "default": false
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "progress_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Stored completion % derived from checklist + status"
+    },
+    "time_spent_minutes": {
+      "type": "number",
+      "default": 0
+    },
+    "creator_name": {
+      "type": "string",
+      "description": "Denormalized creator display name"
+    },
+    "creator_image": {
+      "type": "string"
+    },
+    "member_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Synced: creator + assignees + approvers \u2014 drives RLS visibility"
+    },
+    "last_updated_by_id": {
+      "type": "string"
+    },
+    "last_updated_by_name": {
+      "type": "string"
+    },
+    "approved_by_id": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rejection_reason": {
+      "type": "string"
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "task_type",
+    "status",
+    "member_ids"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.member_ids": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}
