@@ -3,14 +3,14 @@ import { PaymentProvider } from "./providers";
 import { PaymentService } from "./paymentService";
 
 /**
- * stripeCheckout — the single frontend entry point for real card payments.
+ * cardPayment — the single frontend entry point for real card payments.
  * Flow: create a pending FinancialTransaction + PaymentAttempt, ask the active
- * banking provider (Stripe) for a hosted Checkout URL, then redirect. The
- * Stripe webhook completes the ledger asynchronously; the success_url return
+ * banking provider for a hosted Checkout URL, then redirect. The provider
+ * webhook completes the ledger asynchronously; the success_url return
  * polls the transaction until it reflects the webhook result.
  */
 
-/** Stripe Checkout must not run inside the builder iframe — only on a published app. */
+/** Card checkout must not run inside the builder iframe — only on a published app. */
 export function isInIframe() {
   try {
     return window.self !== window.top;
@@ -24,9 +24,9 @@ export function isInIframe() {
  * @param {object} opts — amount (number, major units), currency, description, type,
  *   to_wallet_id (destination), from_wallet_id (source, optional), institution_id,
  *   fee_id (optional).
- * Redirects the browser to Stripe on success. Throws on iframe or provider error.
+ * Redirects the browser to the payment provider on success. Throws on iframe or provider error.
  */
-export async function startStripeCheckout(opts) {
+export async function startCardCheckout(opts) {
   const {
     amount,
     currency = "NGN",
@@ -75,7 +75,7 @@ export async function startStripeCheckout(opts) {
   });
 
   const checkoutUrl = res?.checkout_url;
-  if (!checkoutUrl) throw new Error(res.data?.error || "Could not start Stripe checkout.");
+  if (!checkoutUrl) throw new Error(res.data?.error || "Could not start card checkout.");
 
   // 3. Redirect — the webhook ledgers the wallet on completion.
   window.location.href = checkoutUrl;

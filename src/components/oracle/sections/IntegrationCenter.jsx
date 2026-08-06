@@ -4,7 +4,7 @@ import { SectionHeader, Panel, StatusPill, Btn, SearchInput } from "@/components
 import { Plug, CreditCard, Landmark, BadgeCheck, Mail, MessageSquare, BellRing, Cloud, BarChart3, Bot } from "lucide-react";
 
 const CATEGORIES = [
-  { key: "payments", label: "Payment Providers", icon: CreditCard, items: ["Stripe", "Paystack", "Flutterwave"] },
+  { key: "payments", label: "Payment Providers", icon: CreditCard, items: ["Paystack", "Flutterwave"] },
   { key: "banking", label: "Banking APIs", icon: Landmark, items: ["Mono", "Okra", "Sterling Open Banking"] },
   { key: "cards", label: "Card Providers", icon: CreditCard, items: ["Verve", "Visa Direct", "Mastercard Send"] },
   { key: "kyc", label: "KYC Providers", icon: BadgeCheck, items: ["Smile ID", "VerifyMe", "Youverify"] },

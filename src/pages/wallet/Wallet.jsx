@@ -17,7 +17,7 @@ import WalletSecurity from "@/components/wallet/sections/WalletSecurity";
 import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
 import WalletActivation from "@/components/wallet/WalletActivation";
 import { useToast } from "@/components/ui/use-toast";
-import { pollTransactionStatus } from "@/lib/finance/stripeCheckout";
+import { pollTransactionStatus } from "@/lib/finance/cardPayment";
 import { queryClientInstance } from "@/lib/query-client";
 
 const SECTION = {
