@@ -149,7 +149,7 @@ function ChatMessage({ message, onReact, onPin, onReply }) {
       onPointerLeave={() => setShowActions(false)}
     >
       {message.author_image ? (
-        <img src={message.author_image} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-0.5" />
+        <img src={message.author_image} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0 mt-0.5" loading="lazy" />
       ) : (
         <div className="w-6 h-6 rounded-full bg-primary/15 flex items-center justify-center flex-shrink-0 mt-0.5">
           <span className="text-[9px] font-bold text-primary">{message.author_name?.[0]?.toUpperCase()}</span>

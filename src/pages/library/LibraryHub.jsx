@@ -96,7 +96,7 @@ function ResourceCard({ resource, index, onClick }) {
   return (
     <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.04, ease: EASE }} onClick={onClick} className="glass-card p-4 flex items-center gap-3 text-left spring-tap">
       <div className="w-12 h-16 rounded-[8px] overflow-hidden shrink-0 grid place-items-center" style={{ background: resource.cover_url ? "transparent" : "rgba(255,138,42,0.10)" }}>
-        {resource.cover_url ? <img src={resource.cover_url} className="w-full h-full object-cover" /> : <Icon className="w-6 h-6" style={{ color: ORANGE }} />}
+        {resource.cover_url ? <img src={resource.cover_url} className="w-full h-full object-cover" loading="lazy" /> : <Icon className="w-6 h-6" style={{ color: ORANGE }} />}
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-[14px] font-semibold truncate" style={{ color: CREAM }}>{resource.title}</p>
@@ -150,7 +150,7 @@ function ResourceDetail({ resource, onClose }) {
 
         <div className="flex gap-4 mb-5">
           <div className="w-20 h-28 rounded-[10px] overflow-hidden shrink-0 grid place-items-center" style={{ background: resource.cover_url ? "transparent" : "rgba(255,138,42,0.10)" }}>
-            {resource.cover_url ? <img src={resource.cover_url} className="w-full h-full object-cover" /> : <Icon className="w-8 h-8" style={{ color: ORANGE }} />}
+            {resource.cover_url ? <img src={resource.cover_url} className="w-full h-full object-cover" loading="lazy" /> : <Icon className="w-8 h-8" style={{ color: ORANGE }} />}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[16px] font-bold mb-1" style={{ color: CREAM }}>{resource.title}</p>

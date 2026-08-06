@@ -76,9 +76,8 @@ export default function PremiumShell() {
       <BudFloatingAssistant
         open={budOpen}
         onClose={() => setBudOpen(false)}
-        onSend={(message, mode) => {
+        onSend={(_message, _mode) => {
           // Route to Bud handler
-          console.log("Bud message:", { message, mode, context: location.pathname });
         }}
         context={location.pathname}
       />

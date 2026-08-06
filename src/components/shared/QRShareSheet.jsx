@@ -89,7 +89,7 @@ export default function QRShareSheet({ open, onClose, to, title, subtitle }) {
 
             <div className="flex flex-col items-center mb-5">
               <div className="p-3 rounded-[22px] bg-white ice-glow">
-                <img src={qrUrl} alt="UNIBUD QR code" width={236} height={236} className="rounded-[14px] block" />
+                <img src={qrUrl} alt="UNIBUD QR code" width={236} height={236} className="rounded-[14px] block" loading="lazy" />
               </div>
               {title && <p className="text-[14px] font-semibold text-foreground mt-3 text-center truncate max-w-full">{title}</p>}
               {subtitle && <p className="text-[11px] text-muted-foreground text-center truncate max-w-full">{subtitle}</p>}

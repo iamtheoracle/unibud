@@ -130,7 +130,7 @@ export default function DiscussionComposer({ onSubmit, collaborators = [], place
         <div className="flex gap-2 mb-2">
           {mediaUrls.map((url) => (
             <div key={url} className="relative w-14 h-14 rounded-xl overflow-hidden">
-              <img src={url} className="w-full h-full object-cover" alt="" />
+              <img src={url} className="w-full h-full object-cover" alt="" loading="lazy" />
               <button
                 onClick={() => setMediaUrls((prev) => prev.filter((u) => u !== url))}
                 className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/60 grid place-items-center"

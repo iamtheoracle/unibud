@@ -66,7 +66,7 @@ export default function SocialLiveActivity() {
               className="flex items-center gap-2.5"
             >
               {a.actor_image ? (
-                <img src={a.actor_image} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                <img src={a.actor_image} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" loading="lazy" />
               ) : (
                 <div className="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center text-[11px] font-bold text-primary flex-shrink-0">
                   {a.actor_name?.charAt(0)}

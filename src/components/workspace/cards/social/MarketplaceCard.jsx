@@ -34,7 +34,7 @@ export default function MarketplaceCard() {
         <Link key={l.id} to="/marketplace" className="flex items-center gap-3 spring-tap">
           <div className="w-8 h-8 rounded-lg bg-foreground/[0.08] grid place-items-center shrink-0 overflow-hidden">
             {l.image_url ? (
-              <img src={l.image_url} alt="" className="w-full h-full object-cover" />
+              <img src={l.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
             ) : (
               <Tag className="w-4 h-4 text-foreground" />
             )}

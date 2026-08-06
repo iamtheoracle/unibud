@@ -157,7 +157,7 @@ export default function SmartCreationPanel({
               <video src={media.url} className="w-full h-full object-cover" autoPlay muted loop playsInline
                 style={{ filter: filterCss, transform: `rotate(${rotation}deg)` }} />
             ) : (
-              <img src={media.url} className="w-full h-full object-cover" alt="Capture"
+              <img src={media.url} className="w-full h-full object-cover" alt="Capture" loading="lazy"
                 style={{ filter: filterCss, transform: `rotate(${rotation}deg)` }} />
             )}
             <button onClick={onClose} className="absolute top-4 right-4 w-9 h-9 rounded-full glass-strong grid place-items-center spring-tap z-10">

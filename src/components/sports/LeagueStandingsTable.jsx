@@ -80,7 +80,7 @@ export default function LeagueStandingsTable({ standings = [], highlightTeamId, 
               {/* Team */}
               <div className="flex-1 flex items-center gap-2 min-w-0">
                 {row.team?.logo_url && (
-                  <img src={row.team.logo_url} alt="" className="w-5 h-5 object-contain flex-shrink-0" />
+                  <img src={row.team.logo_url} alt="" className="w-5 h-5 object-contain flex-shrink-0" loading="lazy" />
                 )}
                 {row.team?.color && !row.team?.logo_url && (
                   <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ background: row.team.color }} />

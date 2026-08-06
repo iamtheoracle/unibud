@@ -17,7 +17,7 @@ export default function TutorCard({ tutor, index = 0, onOpen }) {
         <div className="flex items-start gap-2.5 mb-2.5">
           <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
             {tutor.tutor_image ? (
-              <img src={tutor.tutor_image} alt="" className="w-full h-full object-cover" />
+              <img src={tutor.tutor_image} alt="" className="w-full h-full object-cover" loading="lazy" />
             ) : (
               <span className="text-[14px] font-bold text-primary">{(tutor.tutor_name || "?").charAt(0)}</span>
             )}

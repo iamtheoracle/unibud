@@ -186,7 +186,7 @@ export default function PostCard({ post, user, index = 0 }) {
       <div className="px-5 pt-3 pb-2">
         <div className="flex items-center gap-2.5">
           {avatar ? (
-            <img src={avatar} alt={authorName} className="w-9 h-9 rounded-full object-cover" />
+            <img src={avatar} alt={authorName} className="w-9 h-9 rounded-full object-cover" loading="lazy" />
           ) : (
             <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-foreground font-semibold text-[14px]">
               {authorName.charAt(0)}

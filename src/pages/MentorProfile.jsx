@@ -144,7 +144,7 @@ export default function MentorProfile() {
       >
         <div className="bg-card rounded-[20px] p-5 soft-shadow border border-border/40 text-center">
           {mentor.avatar_url ? (
-            <img src={mentor.avatar_url} alt="" className="w-20 h-20 rounded-full object-cover mx-auto mb-3" />
+            <img src={mentor.avatar_url} alt="" className="w-20 h-20 rounded-full object-cover mx-auto mb-3" loading="lazy" />
           ) : (
             <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: withAlpha(color) }}>
               <span className="font-heading font-bold text-[28px]" style={{ color }}>{mentor.name?.charAt(0) || "M"}</span>

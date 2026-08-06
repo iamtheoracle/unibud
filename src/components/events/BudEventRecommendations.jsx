@@ -88,7 +88,7 @@ export default function BudEventRecommendations({ user, onOpenEvent }) {
             >
               {rec.event.banner_url ? (
                 <div className="h-16 overflow-hidden relative">
-                  <img src={rec.event.banner_url} alt="" className="w-full h-full object-cover" />
+                  <img src={rec.event.banner_url} alt="" className="w-full h-full object-cover" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 </div>
               ) : (

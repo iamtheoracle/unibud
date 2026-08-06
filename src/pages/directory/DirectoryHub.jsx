@@ -138,7 +138,7 @@ function StudentList({ students, loading }) {
           className="glass-card p-4 flex items-center gap-3"
         >
           <div className="w-12 h-12 rounded-full grid place-items-center shrink-0 overflow-hidden" style={{ background: "rgba(255,138,42,0.12)" }}>
-            {s.avatar_url ? <img src={s.avatar_url} className="w-full h-full object-cover" /> : <Users className="w-5 h-5" style={{ color: ORANGE }} />}
+            {s.avatar_url ? <img src={s.avatar_url} className="w-full h-full object-cover" loading="lazy" /> : <Users className="w-5 h-5" style={{ color: ORANGE }} />}
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-[15px] font-semibold truncate" style={{ color: CREAM }}>{s.full_name}</p>

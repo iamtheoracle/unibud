@@ -159,7 +159,7 @@ export default function CampusTraditionsGallery() {
               {/* Cover */}
               <div className="relative h-[110px] overflow-hidden">
                 {tradition.banner_url ? (
-                  <img src={tradition.banner_url} alt={tradition.title} className="w-full h-full object-cover" />
+                  <img src={tradition.banner_url} alt={tradition.title} className="w-full h-full object-cover" loading="lazy" />
                 ) : (
                   <div
                     className="w-full h-full flex items-center justify-center"

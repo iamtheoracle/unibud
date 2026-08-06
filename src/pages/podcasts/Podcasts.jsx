@@ -101,7 +101,7 @@ export default function Podcasts() {
                       <button key={p.id} onClick={() => { navigate(`/podcasts/${p.id}`); setSearchQuery(""); }}
                         className="text-left glass-card p-3 spring-tap">
                         <div className="aspect-square rounded-[14px] bg-muted/40 overflow-hidden mb-2 flex items-center justify-center">
-                          {p.cover_url ? <img src={p.cover_url} alt="" className="w-full h-full object-cover" /> : <Mic className="w-8 h-8 text-muted-foreground" />}
+                          {p.cover_url ? <img src={p.cover_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : <Mic className="w-8 h-8 text-muted-foreground" />}
                         </div>
                         <p className="text-[13px] font-semibold text-foreground leading-tight line-clamp-2">{p.title}</p>
                         <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.host_name || "Unknown host"}</p>
@@ -159,7 +159,7 @@ export default function Podcasts() {
                   <motion.button key={p.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
                     onClick={() => navigate(`/podcasts/${p.id}`)} className="text-left glass-card p-3 spring-tap">
                     <div className="aspect-square rounded-[14px] bg-muted/40 overflow-hidden mb-2 flex items-center justify-center">
-                      {p.cover_url ? <img src={p.cover_url} alt="" className="w-full h-full object-cover" /> : <Mic className="w-8 h-8 text-muted-foreground" />}
+                      {p.cover_url ? <img src={p.cover_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : <Mic className="w-8 h-8 text-muted-foreground" />}
                     </div>
                     <p className="text-[13px] font-semibold text-foreground leading-tight line-clamp-2">{p.title}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.host_name || "Unknown host"}</p>
@@ -179,7 +179,7 @@ export default function Podcasts() {
                   <button key={listen.id} onClick={() => navigate(`/podcasts/${episode.podcast_id}`)}
                     className="w-full text-left glass-card p-3.5 flex items-center gap-3 spring-tap">
                     <div className="w-12 h-12 rounded-[12px] bg-muted/40 overflow-hidden flex items-center justify-center shrink-0">
-                      {episode.cover_url ? <img src={episode.cover_url} alt="" className="w-full h-full object-cover" /> : <Mic className="w-5 h-5 text-muted-foreground" />}
+                      {episode.cover_url ? <img src={episode.cover_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : <Mic className="w-5 h-5 text-muted-foreground" />}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-[13px] font-semibold text-foreground truncate">{episode.title}</p>
@@ -209,7 +209,7 @@ export default function Podcasts() {
                   {myShows.map((p) => (
                     <button key={p.id} onClick={() => navigate(`/podcasts/${p.id}`)} className="w-full text-left glass-card p-3.5 flex items-center gap-3 spring-tap">
                       <div className="w-12 h-12 rounded-[12px] bg-muted/40 overflow-hidden flex items-center justify-center shrink-0">
-                        {p.cover_url ? <img src={p.cover_url} alt="" className="w-full h-full object-cover" /> : <Mic className="w-5 h-5 text-muted-foreground" />}
+                        {p.cover_url ? <img src={p.cover_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : <Mic className="w-5 h-5 text-muted-foreground" />}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-[13px] font-semibold text-foreground truncate">{p.title}</p>

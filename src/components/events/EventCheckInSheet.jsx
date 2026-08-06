@@ -74,7 +74,7 @@ export default function EventCheckInSheet({ event, user, onClose }) {
         {/* QR Code */}
         <div className="flex flex-col items-center mb-5">
           <div className="p-3 rounded-[22px] bg-white ice-glow">
-            <img src={qrUrl} alt="Event check-in QR" width={220} height={220} className="rounded-[14px] block" />
+            <img src={qrUrl} alt="Event check-in QR" width={220} height={220} className="rounded-[14px] block" loading="lazy" />
           </div>
           <p className="text-[11px] text-muted-foreground mt-2 text-center max-w-[260px]">
             Display this QR code at the entrance. Students scan it to check in automatically.

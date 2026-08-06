@@ -330,7 +330,7 @@ function MediaCommentItem({ comment, user, isPinned, onReply, postAuthor }) {
       className="flex gap-2.5"
     >
       {avatar ? (
-        <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+        <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover flex-shrink-0" loading="lazy" />
       ) : (
         <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0">
           {displayName.charAt(0)}
@@ -386,7 +386,7 @@ function MediaCommentItem({ comment, user, isPinned, onReply, postAuthor }) {
             {replies.map((reply) => (
               <div key={reply.id} className="flex gap-2">
                 {reply.author_image ? (
-                  <img src={reply.author_image} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0" />
+                  <img src={reply.author_image} alt="" className="w-6 h-6 rounded-full object-cover flex-shrink-0" loading="lazy" />
                 ) : (
                   <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                     {(reply.author_name || "?").charAt(0)}
