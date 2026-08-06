@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Plus, X, BookOpen, GraduationCap, Trash2, Calculator,
+  Plus, X, BookOpen, GraduationCap, Calculator,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import CircularProgressRing from "@/components/academics/CircularProgressRing";

@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, Plus, Package } from "lucide-react";
+import { Search, Plus, Package } from "lucide-react";
+import ScreenShell from "@/components/layout/ScreenShell";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import LostFoundCard from "@/components/campus/LostFoundCard";
@@ -48,7 +48,6 @@ const DEMO_ITEMS = [
 ];
 
 export default function LostFound() {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isDemoMode } = useDemoMode();
   const [search, setSearch] = useState("");
@@ -97,26 +96,11 @@ export default function LostFound() {
   const CATEGORY_KEYS = ["all", ...Object.keys(LOST_FOUND_CATEGORIES)];
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3 sticky top-0 z-20 glass border-b border-border/20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">Lost & Found</h1>
-          <p className="text-[11px] text-muted-foreground">Help reunite items with owners</p>
-        </div>
-        <button
-          onClick={() => isDemoMode ? null : setReportOpen(true)}
-          className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow spring-tap"
-        >
-          <Plus className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
-        </button>
-      </div>
+    <ScreenShell title="Lost & Found" subtitle="Help reunite items with owners" back
+      actions={<button onClick={() => isDemoMode ? null : setReportOpen(true)} className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow spring-tap" aria-label="Report item"><Plus className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} /></button>}>
 
       {/* Search */}
-      <div className="px-4 py-3">
+      <div className="py-3">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -129,7 +113,7 @@ export default function LostFound() {
       </div>
 
       {/* Lost / Found Toggle */}
-      <div className="px-4 mb-3">
+      <div className="mb-3">
         <div className="bg-muted/50 rounded-[14px] p-1 flex">
           <button
             onClick={() => setTab("lost")}
@@ -147,7 +131,7 @@ export default function LostFound() {
       </div>
 
       {/* Category Filter */}
-      <div className="px-4 pb-3 overflow-x-auto no-scrollbar">
+      <div className="pb-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {CATEGORY_KEYS.map((key) => {
             const meta = key === "all" ? { label: "All" } : LOST_FOUND_CATEGORIES[key];
@@ -172,7 +156,7 @@ export default function LostFound() {
       </div>
 
       {/* Items List */}
-      <div className="px-4 space-y-3">
+      <div className="space-y-3">
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] p-3.5 soft-shadow border border-border/40 flex gap-3">
@@ -213,6 +197,6 @@ export default function LostFound() {
           onCreated={handleCreated}
         />
       )}
-    </div>
+    </ScreenShell>
   );
 }

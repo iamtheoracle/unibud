@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Target, Clock, BookOpen, Brain, CheckCircle2, Flame,
-  Plus, X, Sparkles, Trophy, Zap, Award,
+  Target, CheckCircle2, Flame, X, Sparkles, Trophy, Zap, Award,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import CircularProgressRing from "@/components/academics/CircularProgressRing";

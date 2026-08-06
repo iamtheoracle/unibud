@@ -22,14 +22,14 @@ export default function CompanyCard({ company, index = 0, onFollow }) {
     >
       {company.banner_url && (
         <div className="h-16 overflow-hidden relative">
-          <img src={company.banner_url} alt={company.name} className="w-full h-full object-cover" />
+          <img src={company.banner_url} alt={company.name} className="w-full h-full object-cover" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         </div>
       )}
       <div className="p-4">
         <div className="flex items-start gap-3">
           {company.logo_url ? (
-            <img src={company.logo_url} alt={company.name} className="w-12 h-12 rounded-[14px] object-cover flex-shrink-0 border-2 border-card -mt-6" />
+            <img src={company.logo_url} alt={company.name} className="w-12 h-12 rounded-[14px] object-cover flex-shrink-0 border-2 border-card -mt-6" loading="lazy" />
           ) : (
             <div className={"w-12 h-12 rounded-[14px] flex items-center justify-center flex-shrink-0 border-2 border-card -mt-6 " + typeMeta.bg}>
               <Icon className={"w-6 h-6 " + typeMeta.color} strokeWidth={2} />

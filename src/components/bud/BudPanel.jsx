@@ -6,14 +6,18 @@ import {
 import { useBudPanel } from "@/lib/BudPanelContext";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 import ChatMessage from "@/components/bud/ChatMessage";
-import AgentActivityIndicator from "@/components/bud/AgentActivityIndicator";
+import SpecialistStatus from "@/components/bud/SpecialistStatus";
+import SuperModeSelector from "@/components/bud/SuperModeSelector";
+import ExperiencePackSelector from "@/components/bud/ExperiencePackSelector";
 import ConversationHistory from "@/components/bud/ConversationHistory";
 
 export default function BudPanel() {
   const {
     closeBud, messages, input, setInput, sendMessage, isTyping,
-    activeAgents, attachments, handleFileUpload, removeAttachment,
+    attachments, handleFileUpload, removeAttachment,
     screenContext, conversations, openConversation, newConversation,
+    mode, setMode, activeSpecialists, statusMessage,
+    activePacks, togglePack,
   } = useBudPanel();
 
   const scrollRef = useRef(null);
@@ -122,13 +126,15 @@ export default function BudPanel() {
               </p>
             </div>
           </div>
+          <SuperModeSelector mode={mode} onModeChange={setMode} disabled={isTyping} />
+          <ExperiencePackSelector activePacks={activePacks} onTogglePack={togglePack} disabled={isTyping} />
           <button
             onClick={handleSummarize}
             disabled={isTyping}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-[10px] bg-primary/10 text-primary text-[10px] font-semibold spring-tap disabled:opacity-50"
+            title="Summarize this page"
+            className="w-8 h-8 rounded-[10px] bg-primary/10 flex items-center justify-center spring-tap disabled:opacity-50 flex-shrink-0"
           >
-            <FileText className="w-3 h-3" strokeWidth={2} />
-            Summarize
+            <FileText className="w-3.5 h-3.5 text-primary" strokeWidth={2} />
           </button>
           <button
             onClick={() => setShowHistory(true)}
@@ -212,7 +218,7 @@ export default function BudPanel() {
               <ChatMessage key={i} message={msg} />
             ))}
             <AnimatePresence>
-              {isTyping && <AgentActivityIndicator agents={activeAgents} />}
+              {isTyping && <SpecialistStatus specialists={activeSpecialists} statusMessage={statusMessage} />}
             </AnimatePresence>
           </div>
         )}

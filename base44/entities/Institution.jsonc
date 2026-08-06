@@ -14,11 +14,25 @@
       "type": "string",
       "enum": [
         "university",
+        "private_university",
         "polytechnic",
         "college_of_education",
-        "technical_institute",
-        "higher_college",
-        "community_college",
+        "monotechnic",
+        "nursing_school",
+        "health_technology_school",
+        "medical_college",
+        "law_school",
+        "technical_college",
+        "vocational_school",
+        "professional_training_institute",
+        "research_institute",
+        "secondary_school",
+        "primary_school",
+        "examination_body",
+        "examination_center",
+        "independent_learning_center",
+        "online_academy",
+        "corporate_training",
         "other"
       ],
       "default": "university",
@@ -46,6 +60,12 @@
       "type": "string",
       "description": "Official institution description"
     },
+    "motto": {
+      "type": "string"
+    },
+    "timezone": {
+      "type": "string"
+    },
     "is_verified": {
       "type": "boolean",
       "default": false,
@@ -60,7 +80,7 @@
         "not_onboarded"
       ],
       "default": "not_onboarded",
-      "description": "Institution onboarding status: verified = officially joined and manages data; community_supported = students active but institution not joined; awaiting_verification = invited and in onboarding; not_onboarded = not yet invited"
+      "description": "Institution onboarding status"
     },
     "verified_at": {
       "type": "string",
@@ -78,7 +98,7 @@
     },
     "academic_structure": {
       "type": "object",
-      "description": "Configurable academic hierarchy. Contains: organizational_units (faculties/schools/colleges with names and codes), departments, programmes, levels, semester_or_term (whether the institution uses semesters or terms)"
+      "description": "Configurable academic hierarchy: organizational_units, departments, programmes, levels, semester_or_term"
     },
     "identifier_types": {
       "type": "array",
@@ -110,8 +130,7 @@
             }
           },
           "issued_timing": {
-            "type": "string",
-            "description": "When this identifier is issued: at_admission, at_registration, at_matriculation, at_enrollment, varies"
+            "type": "string"
           }
         }
       },
@@ -119,15 +138,15 @@
     },
     "academic_calendar": {
       "type": "object",
-      "description": "Configurable calendar: sessions, semesters or terms with start/end dates, registration periods, exam periods, holidays, orientation week, matriculation date, convocation date"
+      "description": "Sessions, semesters/terms with dates, registration, exam periods, holidays, orientation, matriculation, convocation"
     },
     "admission_process": {
       "type": "object",
-      "description": "Admission workflow configuration: application methods, entry requirements, admission timeline"
+      "description": "Application methods, entry requirements, admission timeline"
     },
     "registration_process": {
       "type": "object",
-      "description": "Course registration workflow: registration periods, add/drop deadlines"
+      "description": "Registration periods, add/drop deadlines"
     },
     "orientation_process": {
       "type": "object",
@@ -135,7 +154,7 @@
     },
     "matriculation_process": {
       "type": "object",
-      "description": "When and how matriculation happens (if applicable). Includes: matriculation_timing (before_lectures, after_lectures, weeks_after_start, first_semester, second_semester, not_applicable), ceremony_details"
+      "description": "Matriculation timing and ceremony details"
     },
     "convocation_process": {
       "type": "object"
@@ -153,7 +172,7 @@
     },
     "terminology": {
       "type": "object",
-      "description": "Institution-specific term mappings. e.g. { faculty: 'School', department: 'Programme', semester: 'Term', matriculation: 'Matric', course: 'Module' }"
+      "description": "Institution-specific term mappings"
     },
     "traditions": {
       "type": "array",
@@ -209,7 +228,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Where institution data comes from: verified_institution, official_sync, public_info, student_contributions, community_reports"
+      "description": "Where institution data comes from"
     },
     "estimated_student_count": {
       "type": "number"
@@ -227,5 +246,104 @@
   "required": [
     "name",
     "type"
-  ]
+  ],
+  "rls": {
+    "read": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "dean"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "dean"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
 }

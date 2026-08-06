@@ -21,6 +21,18 @@
       ],
       "default": "direct"
     },
+    "category": {
+      "type": "string",
+      "enum": [
+        "friend",
+        "community",
+        "academic",
+        "marketplace",
+        "event",
+        "project"
+      ],
+      "description": "Orbit tab category for filtering \u2014 derived from type if not set"
+    },
     "title": {
       "type": "string",
       "description": "Display title for group conversations; for direct chats, derived from the other participant"
@@ -60,6 +72,19 @@
           "handle": {
             "type": "string"
           },
+          "university": {
+            "type": "string"
+          },
+          "faculty": {
+            "type": "string"
+          },
+          "department": {
+            "type": "string"
+          },
+          "is_verified": {
+            "type": "boolean",
+            "default": false
+          },
           "is_admin": {
             "type": "boolean",
             "default": false
@@ -95,6 +120,11 @@
       "type": "boolean",
       "default": false
     },
+    "is_request": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pending message request \u2014 not yet accepted by the recipient"
+    },
     "university": {
       "type": "string"
     },
@@ -106,6 +136,10 @@
     },
     "course_code": {
       "type": "string"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Linked Community entity for community chats"
     },
     "accent_color": {
       "type": "string"

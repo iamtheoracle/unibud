@@ -3,10 +3,12 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
 import { getScreenContext } from "@/lib/budScreenContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudPanel from "@/components/bud/BudPanel";
+import { useToast } from "@/components/ui/use-toast";
+import { processSuperAgent } from "@/lib/bud/superAgent/orchestrator";
+import { getDefaultPacks } from "@/lib/bud/superAgent/packManager";
 
 const BudPanelContext = createContext(null);
 
@@ -20,16 +22,22 @@ export function BudPanelProvider({ children }) {
   const location = useLocation();
   const { isDemoMode } = useDemoMode();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [activeAgents, setActiveAgents] = useState([]);
   const [attachments, setAttachments] = useState([]);
   const [activeConversationId, setActiveConversationId] = useState(null);
   const [pendingPrompt, setPendingPrompt] = useState(null);
   const isSendingRef = useRef(false);
+
+  // ─── Super Agent State ───
+  const [mode, setMode] = useState("auto");
+  const [activeSpecialists, setActiveSpecialists] = useState([]);
+  const [statusMessage, setStatusMessage] = useState("Bud is thinking...");
+  const [activePacks, setActivePacks] = useState(getDefaultPacks());
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -92,52 +100,70 @@ export function BudPanelProvider({ children }) {
         setActiveConversationId(conv.id);
       }
       queryClient.invalidateQueries({ queryKey: ["budConversations"] });
-    } catch {}
-  }, [isDemoMode, activeConversationId, queryClient]);
+    } catch (err) {
+      console.error("BudPanel: failed to save conversation", err);
+      toast({
+        title: "Conversation not saved",
+        description: "We couldn't save this chat. Your messages are still visible, but won't persist across sessions.",
+        variant: "destructive",
+      });
+    }
+  }, [isDemoMode, activeConversationId, queryClient, toast]);
 
   const sendMessage = useCallback(async (text) => {
     if (!text || !text.trim() || isTyping || isSendingRef.current) return;
     const trimmed = text.trim();
     isSendingRef.current = true;
 
-    const agents = routeAgents(trimmed);
-    const agentIds = agents.map((a) => a.id);
-    recordAgentActivity(agentIds);
-
-    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: agentIds };
     const fileUrls = attachments.map((a) => a.url).filter(Boolean);
+    const userMsg = { role: "user", content: trimmed, time: new Date(), agents: [] };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
     setAttachments([]);
-    setActiveAgents(agents);
     setIsTyping(true);
 
     try {
-      const contextPrefix = `The student is currently on the ${screenContext.name} page — ${screenContext.description}.\n\n`;
-      const prompt = contextPrefix + buildBudPrompt(trimmed, agents, user);
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        ...(fileUrls.length > 0 ? { file_urls: fileUrls } : {}),
+      // ─── Super Agent Pipeline ────────────────────────────────────────
+      // Bud routes to specialist(s) → builds cognitive lens → calls LLM
+      // → combines results into one natural Bud response
+      const result = await processSuperAgent({
+        message: trimmed,
+        userId: user?.id,
+        user,
+        screenContext: screenContext?.name,
+        mode,
+        fileUrls,
+        conversationHistory: messages.map((m) => ({ role: m.role, content: m.content })),
+        activePacks,
       });
 
-      const budMsg = { role: "bud", content: response, time: new Date(), agents: agentIds };
+      // Update specialist indicators
+      setActiveSpecialists(result.specialists);
+      setStatusMessage(result.statusMessage);
+
+      const budMsg = {
+        role: "bud",
+        content: result.text,
+        time: new Date(),
+        agents: result.specialists,
+      };
       const finalMessages = [...newMessages, budMsg];
       setMessages(finalMessages);
-      await saveConversation(finalMessages, agentIds);
+      await saveConversation(finalMessages, result.specialists);
     } catch {
       const errorMsg = {
         role: "bud",
         content: "I'm having trouble connecting right now. Let's try again in a moment!",
         time: new Date(),
-        agents: agentIds,
+        agents: [],
       };
       setMessages([...newMessages, errorMsg]);
     }
     setIsTyping(false);
-    setActiveAgents([]);
+    setActiveSpecialists([]);
     isSendingRef.current = false;
-  }, [isTyping, attachments, messages, screenContext, user, saveConversation]);
+  }, [isTyping, attachments, messages, screenContext, user, saveConversation, mode]);
 
   // Auto-send pending prompt when panel opens
   useEffect(() => {
@@ -155,8 +181,15 @@ export function BudPanelProvider({ children }) {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setAttachments((prev) => [...prev, { url: file_url, name: file.name }]);
-    } catch {}
-  }, []);
+    } catch (err) {
+      console.error("BudPanel: file upload failed", err);
+      toast({
+        title: "Attachment failed",
+        description: `"${file.name}" couldn't be attached. Please try again.`,
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   const removeAttachment = useCallback((index) => {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
@@ -176,7 +209,6 @@ export function BudPanelProvider({ children }) {
   const newConversation = useCallback(() => {
     setMessages([]);
     setActiveConversationId(null);
-    setActiveAgents([]);
     setAttachments([]);
   }, []);
 
@@ -189,7 +221,7 @@ export function BudPanelProvider({ children }) {
     setInput,
     sendMessage,
     isTyping,
-    activeAgents,
+    activeAgents: activeSpecialists.map((id) => ({ id, name: id })),
     attachments,
     handleFileUpload,
     removeAttachment,
@@ -199,6 +231,21 @@ export function BudPanelProvider({ children }) {
     openConversation,
     newConversation,
     isDemoMode,
+    mode,
+    setMode,
+    activeSpecialists,
+    statusMessage,
+    activePacks,
+    togglePack: (packId) => {
+      setActivePacks((prev) => {
+        if (prev.includes(packId)) {
+          // Don't allow removing the last pack
+          if (prev.length === 1) return prev;
+          return prev.filter((p) => p !== packId);
+        }
+        return [...prev, packId];
+      });
+    },
   };
 
   return (

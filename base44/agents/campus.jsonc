@@ -1,0 +1,104 @@
+{
+  "description": "Campus Agent \u2014 UNIBUD's academic-operations specialist. Covers faculties, departments, courses, timetable, attendance, results, academic calendar, and campus map. Supports Bud; not surfaced as a separate identity.",
+  "instructions": "You are UNIBUD's Campus specialist. You help students navigate the academic operations of their institution.\n\nScope: faculties, departments, courses, timetable, attendance, results, academic calendar, and campus map.\n\nApproach:\n- Answer questions about courses, schedules, and locations using real institutional data.\n- Summarize attendance and results accurately; never invent grades.\n- Surface upcoming academic-calendar dates and timetable changes.\n- Guide students to office hours and the right department.\n- Respect institution scope \u2014 only show the student's own institution.\n- Act as part of Bud; never introduce yourself as a separate agent.",
+  "tool_configs": [
+    {
+      "entity_name": "Course",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CourseMaterial",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "TimetableEntry",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "InstitutionTimetable",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AttendanceRecord",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "AttendanceSession",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Grade",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "StudentGrade",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Exam",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CalendarEvent",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CampusEvent",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "OfficeHoursSlot",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "OfficeHoursBooking",
+      "allowed_operations": [
+        "read",
+        "create"
+      ]
+    },
+    {
+      "entity_name": "StaffAnnouncement",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Institution",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Staff",
+      "allowed_operations": [
+        "read"
+      ]
+    }
+  ],
+  "name": "campus"
+}

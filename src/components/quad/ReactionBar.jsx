@@ -94,6 +94,11 @@ export default function ReactionBar({ postId, reactions = {}, likesCount = 0, on
         onTouchEnd={handlePressEnd}
         className="flex items-center gap-1.5 py-1.5 px-2.5 rounded-lg hover:bg-muted transition-colors spring-tap relative"
       >
+        {showBurst && (
+          <span className="absolute inset-0 grid place-items-center pointer-events-none">
+            <span className="w-6 h-6 rounded-full border-2 border-primary/50 heart-burst" />
+          </span>
+        )}
         <motion.div
           animate={showBurst ? { scale: [1, 1.3, 1] } : { scale: 1 }}
           transition={{ duration: 0.4 }}

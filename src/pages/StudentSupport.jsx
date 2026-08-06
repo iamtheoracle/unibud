@@ -4,19 +4,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Heart, Brain, Home, Clock, Users, BookOpen,
-  AlertCircle, MessageCircle, Send, Lock, CheckCircle2,
+  Heart, Brain, Home, Clock, Users, BookOpen,
+  AlertCircle, Send, Lock, CheckCircle2,
   Loader2, ChevronRight, Phone, LifeBuoy, Sparkles,
 } from "lucide-react";
 
+import ScreenShell from "@/components/layout/ScreenShell";
+
 const CATEGORIES = [
-  { key: "academic_stress", label: "Academic Stress", icon: BookOpen, color: "text-info", bg: "bg-info/10" },
+  { key: "academic_stress", label: "Academic Stress", icon: BookOpen, color: "text-information", bg: "bg-information/10" },
   { key: "homesickness", label: "Homesickness", icon: Home, color: "text-warning", bg: "bg-warning/10" },
-  { key: "loneliness", label: "Loneliness", icon: Users, color: "text-purple", bg: "bg-purple/10" },
+  { key: "loneliness", label: "Loneliness", icon: Users, color: "text-accent", bg: "bg-accent/10" },
   { key: "exam_anxiety", label: "Exam Anxiety", icon: Brain, color: "text-error", bg: "bg-error/10" },
   { key: "burnout", label: "Burnout", icon: AlertCircle, color: "text-error", bg: "bg-error/10" },
   { key: "motivation", label: "Motivation", icon: Sparkles, color: "text-primary", bg: "bg-primary/10" },
-  { key: "time_management", label: "Time Management", icon: Clock, color: "text-info", bg: "bg-info/10" },
+  { key: "time_management", label: "Time Management", icon: Clock, color: "text-information", bg: "bg-information/10" },
   { key: "financial_concerns", label: "Financial", icon: Heart, color: "text-success", bg: "bg-success/10" },
   { key: "relationship_challenges", label: "Relationships", icon: Heart, color: "text-warning", bg: "bg-warning/10" },
   { key: "general", label: "General Support", icon: LifeBuoy, color: "text-muted-foreground", bg: "bg-muted" },
@@ -75,23 +77,11 @@ export default function StudentSupport() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Student Support</h1>
-          <p className="text-[12px] text-muted-foreground">You're not alone. We're here.</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Heart className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <ScreenShell title="Student Support" subtitle="You're not alone. We're here." back
+      actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Heart className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Encouragement banner */}
-      <div className="px-4 mb-4">
+      <div className="mb-4">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -108,7 +98,7 @@ export default function StudentSupport() {
       </div>
 
       {/* Wellbeing quick link */}
-      <div className="px-4 mb-5">
+      <div className="mb-5">
         <button
           onClick={() => navigate("/wellbeing")}
           className="w-full flex items-center gap-3 p-3.5 rounded-[16px] bg-card border border-border/40 spring-tap hover:bg-muted/30 transition-colors"
@@ -131,7 +121,6 @@ export default function StudentSupport() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="px-4"
           >
             <div className="bg-card rounded-[24px] p-6 soft-shadow border border-border/40 text-center">
               <div className="w-16 h-16 rounded-[24px] bg-success/10 flex items-center justify-center mx-auto mb-4">
@@ -150,7 +139,7 @@ export default function StudentSupport() {
         ) : (
           <motion.div key="form" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             {/* Category selection */}
-            <div className="px-4 mb-5">
+            <div className="mb-5">
               <h3 className="font-heading font-bold text-[15px] text-foreground mb-3 px-1">How can we help?</h3>
               <div className="grid grid-cols-3 gap-2.5">
                 {CATEGORIES.map((cat) => (
@@ -178,7 +167,7 @@ export default function StudentSupport() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="px-4 mb-5"
+                className="mb-5"
               >
                 <div className="bg-card rounded-[24px] p-4 soft-shadow border border-border/40 space-y-3">
                   <div>
@@ -226,7 +215,7 @@ export default function StudentSupport() {
 
             {/* My conversations */}
             {myTickets.length > 0 && (
-              <div className="px-4 mb-5">
+              <div className="mb-5">
                 <h3 className="font-heading font-bold text-[15px] text-foreground mb-3 px-1">My Conversations</h3>
                 <div className="space-y-2.5">
                   {myTickets.map((ticket, i) => (
@@ -241,7 +230,7 @@ export default function StudentSupport() {
                         <p className="font-semibold text-[13px] text-foreground flex-1">{ticket.subject}</p>
                         <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold ${
                           ticket.status === "resolved" ? "bg-success/10 text-success" :
-                          ticket.status === "in_progress" ? "bg-info/10 text-info" :
+                          ticket.status === "in_progress" ? "bg-information/10 text-information" :
                           "bg-warning/10 text-warning"
                         }`}>
                           {ticket.status.replace("_", " ")}
@@ -255,7 +244,7 @@ export default function StudentSupport() {
             )}
 
             {/* Counselling resources */}
-            <div className="px-4">
+            <div>
               <div className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40">
                 <div className="flex items-center gap-2 mb-3">
                   <Phone className="w-4 h-4 text-primary" />
@@ -266,7 +255,7 @@ export default function StudentSupport() {
                 </p>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-muted/30">
-                    <LifeBuoy className="w-4 h-4 text-info flex-shrink-0" />
+                    <LifeBuoy className="w-4 h-4 text-information flex-shrink-0" />
                     <div className="flex-1">
                       <p className="text-[12px] font-semibold text-foreground">University Counselling Centre</p>
                       <p className="text-[10px] text-muted-foreground">Available Monday–Friday, 8am–5pm</p>
@@ -279,6 +268,6 @@ export default function StudentSupport() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </ScreenShell>
   );
 }

@@ -1,0 +1,48 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "google_calendar_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "sync_calendar": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "googleCalendarSync",
+            "args": {
+              "sync_direction": "bidirectional",
+              "conflict_resolution": "safe"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Sync Google Calendar",
+            "description": "Bidirectional sync of timetable, deadlines, exams, and events"
+          }
+        }
+      }
+    ]
+  },
+  "name": "Google Calendar Sync",
+  "description": "Automatically synchronizes class timetable, study blocks, assignment deadlines, exams, and campus events with Google Calendar every 30 minutes. Bidirectional sync with safe conflict resolution.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "interval",
+      "cron_expression": null,
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": 30,
+      "interval_unit": "minutes",
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}
