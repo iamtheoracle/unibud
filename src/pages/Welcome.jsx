@@ -20,7 +20,7 @@ export default function Welcome() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
-      if (authed) navigate("/academics", { replace: true });
+      if (authed) navigate("/square", { replace: true });
     });
     const t = setTimeout(() => setShowWhiteFade(false), 50);
     return () => clearTimeout(t);
