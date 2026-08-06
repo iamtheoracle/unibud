@@ -30,6 +30,10 @@
       "type": "string",
       "description": "User ID of the HOD"
     },
+    "hod_educator_id": {
+      "type": "string",
+      "description": "Reference to Educator entity for the HoD"
+    },
     "hod_image": {
       "type": "string"
     },

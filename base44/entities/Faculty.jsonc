@@ -22,6 +22,10 @@
       "type": "string",
       "description": "User ID of the dean"
     },
+    "dean_educator_id": {
+      "type": "string",
+      "description": "Reference to Educator entity for the dean"
+    },
     "dean_image": {
       "type": "string"
     },

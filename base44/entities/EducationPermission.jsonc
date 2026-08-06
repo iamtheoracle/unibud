@@ -1,0 +1,70 @@
+{
+  "name": "EducationPermission",
+  "type": "object",
+  "description": "Education-specific permission grant. Controls who can do what within the education module.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Reference to User entity who holds this permission"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "permission": {
+      "type": "string",
+      "enum": [
+        "identity.manage_students",
+        "identity.view_students",
+        "identity.manage_educators",
+        "identity.view_educators",
+        "identity.manage_contexts",
+        "academic.manage_programs",
+        "academic.view_programs",
+        "academic.manage_subjects",
+        "academic.manage_classes",
+        "academic.manage_enrollments",
+        "academic.view_enrollments",
+        "university.manage_university",
+        "university.manage_faculties",
+        "university.manage_departments",
+        "university.manage_courses",
+        "university.view_structure",
+        "learning_org.manage_organizations",
+        "learning_org.manage_programs",
+        "learning_org.view_programs",
+        "shared.manage_permissions",
+        "shared.manage_invitations",
+        "shared.view_invitations"
+      ],
+      "description": "The specific permission being granted"
+    },
+    "scope": {
+      "type": "string",
+      "enum": ["platform", "institution", "faculty", "department", "class"],
+      "default": "institution",
+      "description": "Scope at which this permission applies"
+    },
+    "scope_id": {
+      "type": "string",
+      "description": "ID of the scoped entity (e.g. institution_id, faculty_id)"
+    },
+    "granted_by_id": {
+      "type": "string",
+      "description": "User ID of the admin who granted this permission"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this permission expires (null = permanent)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "reason": {
+      "type": "string",
+      "description": "Reason for granting this permission"
+    }
+  },
+  "required": ["user_id", "permission", "scope"]
+}
