@@ -1,183 +1,103 @@
-# Education Module — Architecture
+# Education Module Architecture
 
 ## Overview
 
-The Education Module is organized by **5 Domains** instead of flat services.
-This provides clear ownership, scalability, and testability.
+The Education Module is a first-class module that registers with the Oracle Kernel. It owns all education business logic. Oracle remains domain-agnostic infrastructure.
 
-Each domain is self-contained with its own services, models, types, and API definitions.
+## Module Dependency Flow
 
----
+```
+UNIBUD
+  │
+  ├── Oracle Kernel  (src/oracle/kernel/)
+  │     Domain-agnostic infrastructure:
+  │     Bootstrap · Config · DI · Logger · Health ·
+  │     Lifecycle · Error Boundary · Module Registry ·
+  │     Capability Registry · Resource Registry
+  │
+  └── Education Module  (src/education/)
+        Registers with Oracle:
+        Programs · Organizations · Students · Educators ·
+        Classes · Subjects · Enrollments · Permissions · Invitations
+```
 
-## Module Registration
+## Architectural Principles
 
-The Education Module registers with the Oracle Kernel on bootstrap:
+| Principle | Implementation |
+|---|---|
+| **One-way dependency** | Education Module depends on Oracle. Oracle knows nothing about Education. |
+| **Module registration** | Education registers itself with `oracle.modules.register(educationModule)` |
+| **DI for services** | All 9 services are registered with `oracle.dependencies` and resolved by token |
+| **Capability declaration** | Every operation surface is declared as an Oracle Capability |
+| **Resource tracking** | All data collections are registered as Oracle Resources |
+| **Health reporting** | Module registers a health check with Oracle's Health Manager |
 
-```ts
-import { bootstrap } from '@/oracle/kernel';
+## Module Registration Flow
+
+```typescript
+import { oracle } from '@/oracle/kernel';
 import { educationModule } from '@/education';
 
-await bootstrap({ modules: [educationModule] });
+// Register module
+await oracle.modules.register(educationModule);
+
+// Bootstrap Oracle (initializes all registered modules)
+await oracle.bootstrap();
+
+// Resolve a service via DI
+const programs = oracle.dependencies.resolve('ProgramService');
 ```
 
----
-
-## Domain Structure
+## Source Structure
 
 ```
-Education Module
-    │
-    ├── Domain 1: Identity
-    │   ├── StudentService
-    │   └── EducatorService
-    │
-    ├── Domain 2: Academic
-    │   ├── ProgramService
-    │   ├── SubjectService
-    │   ├── ClassService
-    │   └── EnrollmentService
-    │
-    ├── Domain 3: University
-    │   ├── UniversityService
-    │   ├── FacultyService
-    │   ├── DepartmentService
-    │   └── CourseService
-    │
-    ├── Domain 4: Learning Organization
-    │   ├── LearningOrganizationService
-    │   └── LearningProgramService
-    │
-    └── Domain 5: Shared Infrastructure
-        ├── PermissionService
-        └── InvitationService
+src/
+  oracle/
+    kernel/
+      types.ts                  # All Oracle interfaces (IOracle, IModule, etc.)
+      logger.ts                 # OracleLogger
+      config.ts                 # OracleConfigManager
+      di.ts                     # OracleDependencyInjector
+      health.ts                 # OracleHealthManager
+      error-boundary.ts         # OracleErrorBoundary
+      lifecycle.ts              # OracleLifecycleManager
+      module-registry.ts        # OracleModuleRegistry
+      capability-registry.ts    # OracleCapabilityRegistry
+      resource-registry.ts      # OracleResourceRegistry
+      oracle-kernel.ts          # OracleKernel (composes all above)
+      index.ts                  # Public re-exports
+
+  education/
+    types/
+      index.ts                  # All Education TypeScript interfaces
+    services/
+      program.service.ts
+      organization.service.ts
+      student.service.ts
+      educator.service.ts
+      class.service.ts
+      subject.service.ts
+      enrollment.service.ts
+      permission.service.ts
+      invitation.service.ts
+    utils.ts                    # generateId(), generateToken()
+    module.ts                   # EducationModule (IEducationModule impl)
+    index.ts                    # Public re-exports
+    __tests__/
+      *.service.test.ts         # Unit tests (one per service)
+      integration.test.ts       # Oracle ↔ Education integration
+    docs/
+      ARCHITECTURE.md           # This file
+      SERVICES.md
+      API.md
+      DATA_MODELS.md
 ```
 
----
+## Next Steps
 
-## Folder Structure
-
-```
-src/education/
-  index.ts                          # Module entry point + Oracle registration
-  module.ts                         # IEducationModule interface
-
-  domains/
-    identity/
-      services/
-        student.service.ts
-        educator.service.ts
-      models/
-        student.model.ts
-        educator.model.ts
-      types/
-        student.types.ts
-        educator.types.ts
-        index.ts
-      index.ts
-
-    academic/
-      services/
-        program.service.ts
-        subject.service.ts
-        class.service.ts
-        enrollment.service.ts
-      models/
-        academic.models.ts
-      types/
-        program.types.ts
-        subject.types.ts
-        class.types.ts
-        enrollment.types.ts
-        index.ts
-      index.ts
-
-    university/
-      services/
-        university.service.ts
-        faculty.service.ts
-        department.service.ts
-        course.service.ts
-      models/
-        university.models.ts
-      types/
-        index.ts
-      index.ts
-
-    learning-organization/
-      services/
-        organization.service.ts
-        learning-program.service.ts
-      models/
-        learning-org.models.ts
-      types/
-        index.ts
-      index.ts
-
-    shared/
-      services/
-        permission.service.ts
-        invitation.service.ts
-      models/
-        shared.models.ts
-      types/
-        index.ts
-      index.ts
-
-  types/
-    index.ts                        # Re-exports all domain types
-
-  docs/
-    ARCHITECTURE.md                 # This file
-    DOMAINS.md
-    API.md
-```
-
----
-
-## Base44 Entities (17 tables)
-
-### Domain 1: Identity
-| Entity | Description |
+| Task | Scope |
 |---|---|
-| `EduStudent` | Student identity record |
-| `EduStudentContext` | Student membership in a university or learning org |
-| `EduEducator` | Educator identity record |
-| `EduEducatorContext` | Educator assignment to a university or learning org |
-
-### Domain 2: Academic
-| Entity | Description |
-|---|---|
-| `EduAcademicProgram` | Academic programs (WAEC, NECO, BSc, etc.) |
-| `EduSubject` | Subjects within a program |
-| `EduClass` | Learning groups run by an educator |
-| `EduEnrollment` | Student enrollment in a class |
-
-### Domain 3: University
-| Entity | Description |
-|---|---|
-| `EduUniversity` | University container |
-| `EduFaculty` | Faculty within a university |
-| `EduDepartment` | Department within a faculty |
-| `EduCourse` | Course within a department |
-
-### Domain 4: Learning Organization
-| Entity | Description |
-|---|---|
-| `EduLearningOrganization` | Learning org (Exam Centre, Academy, etc.) |
-| `EduLearningProgram` | Offering of an academic program by a learning org |
-
-### Domain 5: Shared Infrastructure
-| Entity | Description |
-|---|---|
-| `EduPermission` | Permission definition |
-| `EduPermissionGrant` | Permission granted to a user |
-| `EduInvitation` | Invitation to join a program |
-
----
-
-## Design Principles
-
-1. **Zero duplication** – Services use the Base44 SDK; no business logic is duplicated.
-2. **Unified identity** – Students and Educators are single entities with multiple contexts.
-3. **Domain isolation** – Each domain can be developed, tested, and extended independently.
-4. **Oracle registration** – The module registers capabilities with the kernel on boot.
+| TASK-003 | Campus Module (Student Dashboard UI) |
+| TASK-004 | Command System (command routing through Oracle) |
+| TASK-005 | Event System (event coordination through Oracle) |
+| TASK-006 | Bud Intelligence integration |

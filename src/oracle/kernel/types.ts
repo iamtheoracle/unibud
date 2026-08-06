@@ -1,220 +1,174 @@
 /**
  * Oracle Kernel — Core Type Definitions
  *
- * Infrastructure-only types. Zero business knowledge.
- * All domain-specific logic lives in registered modules.
+ * Domain-agnostic interfaces for the Oracle infrastructure layer.
+ * No business domains (education, commerce, etc.) live here.
  */
 
-// ─── Generic Infrastructure Types ────────────────────────────────────────────
+// ─── Lifecycle ───────────────────────────────────────────────────────────────
 
-export interface IMetadata {
-  [key: string]: unknown;
+export type LifecycleStatus =
+  | 'uninitialized'
+  | 'initializing'
+  | 'running'
+  | 'shutting_down'
+  | 'stopped'
+  | 'error';
+
+// ─── Logger ──────────────────────────────────────────────────────────────────
+
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+export interface ILogger {
+  debug(message: string, meta?: Record<string, unknown>): void;
+  info(message: string, meta?: Record<string, unknown>): void;
+  warn(message: string, meta?: Record<string, unknown>): void;
+  error(message: string, error?: Error | unknown, meta?: Record<string, unknown>): void;
+  child(context: string): ILogger;
 }
 
-export interface ITimestamped {
-  createdAt: Date;
-  updatedAt: Date;
+// ─── Config Manager ──────────────────────────────────────────────────────────
+
+export interface IConfigManager {
+  get<T = unknown>(key: string, defaultValue?: T): T;
+  set(key: string, value: unknown): void;
+  has(key: string): boolean;
+  getAll(): Record<string, unknown>;
 }
 
-export interface IEntity extends ITimestamped {
-  id: string;
+// ─── Dependency Injector ─────────────────────────────────────────────────────
+
+export interface IDependencyInjector {
+  register<T>(token: string, instance: T): void;
+  resolve<T>(token: string): T;
+  has(token: string): boolean;
+  unregister(token: string): void;
 }
 
-// ─── Health ───────────────────────────────────────────────────────────────────
+// ─── Health Manager ──────────────────────────────────────────────────────────
 
 export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
 
-export interface IHealthStatus {
+export interface IHealthCheck {
+  name: string;
   status: HealthStatus;
-  details?: string;
-  timestamp: Date;
+  message?: string;
+  checkedAt: Date;
+  metadata?: Record<string, unknown>;
 }
 
-// ─── Commands ─────────────────────────────────────────────────────────────────
+export interface IHealthManager {
+  register(name: string, check: () => Promise<IHealthCheck> | IHealthCheck): void;
+  unregister(name: string): void;
+  check(name: string): Promise<IHealthCheck>;
+  checkAll(): Promise<IHealthCheck[]>;
+  getStatus(): Promise<HealthStatus>;
+}
 
-export interface ICommand {
+// ─── Error Boundary ──────────────────────────────────────────────────────────
+
+export interface IOracleError {
+  code: string;
+  message: string;
+  module?: string;
+  cause?: unknown;
+  metadata?: Record<string, unknown>;
+}
+
+export interface IErrorBoundary {
+  wrap<T>(fn: () => T | Promise<T>, context?: string): Promise<T>;
+  createError(code: string, message: string, cause?: unknown): IOracleError;
+}
+
+// ─── Capability Registry ─────────────────────────────────────────────────────
+
+export interface ICapability {
   name: string;
-  description: string;
-  schema?: Record<string, unknown>;
-}
-
-export type CommandHandler = (payload: unknown) => Promise<unknown>;
-
-// ─── Events ───────────────────────────────────────────────────────────────────
-
-export interface IEvent {
-  name: string;
-  description: string;
-  schema?: Record<string, unknown>;
-}
-
-export interface IPublishedEvent {
-  id: string;
-  name: string;
-  payload: unknown;
-  timestamp: Date;
-  source: string;
-}
-
-export type EventHandler = (event: IPublishedEvent) => void | Promise<void>;
-
-// ─── Service ──────────────────────────────────────────────────────────────────
-
-export interface IService {
-  getCommands(): ICommand[];
-  getEvents(): IEvent[];
-  getHealth(): IHealthStatus;
-}
-
-// ─── Module Lifecycle ─────────────────────────────────────────────────────────
-
-export type ModuleStatus = 'registered' | 'initializing' | 'active' | 'stopping' | 'stopped' | 'error';
-
-export interface IModuleConfig {
-  name: string;
+  provider: string;
   version: string;
   description?: string;
-  dependencies?: string[];
-  metadata?: IMetadata;
+  metadata?: Record<string, unknown>;
 }
 
-export interface IModuleMetadata {
-  name: string;
-  version: string;
-  description: string;
-  author?: string;
+export interface ICapabilityRegistry {
+  register(capability: ICapability): void;
+  unregister(name: string): void;
+  has(name: string): boolean;
+  get(name: string): ICapability | undefined;
+  listByProvider(provider: string): ICapability[];
+  listAll(): ICapability[];
 }
+
+// ─── Resource Registry ───────────────────────────────────────────────────────
+
+export interface IResource {
+  id: string;
+  type: string;
+  provider: string;
+  name: string;
+  metadata?: Record<string, unknown>;
+  registeredAt: Date;
+}
+
+export interface IResourceRegistry {
+  register(resource: Omit<IResource, 'registeredAt'>): void;
+  unregister(id: string): void;
+  has(id: string): boolean;
+  get(id: string): IResource | undefined;
+  listByType(type: string): IResource[];
+  listByProvider(provider: string): IResource[];
+  listAll(): IResource[];
+}
+
+// ─── Module Registry ─────────────────────────────────────────────────────────
 
 export interface IModule {
   readonly name: string;
   readonly version: string;
+  readonly description?: string;
   initialize(oracle: IOracle): Promise<void>;
   shutdown(): Promise<void>;
 }
 
-// ─── Capability Registry ──────────────────────────────────────────────────────
-
-export interface ICapability {
-  name: string;
-  description?: string;
-  scope: 'global' | 'module';
-  moduleOwner: string;
+export interface IModuleRegistry {
+  register(module: IModule): Promise<void>;
+  unregister(name: string): Promise<void>;
+  has(name: string): boolean;
+  get(name: string): IModule | undefined;
+  listAll(): IModule[];
+  initializeAll(oracle: IOracle): Promise<void>;
+  shutdownAll(): Promise<void>;
 }
 
-// ─── Identity ─────────────────────────────────────────────────────────────────
+// ─── Lifecycle Manager ───────────────────────────────────────────────────────
 
-export interface IOracleUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  metadata?: Record<string, unknown>;
+export interface ILifecycleManager {
+  getStatus(): LifecycleStatus;
+  onStart(handler: () => Promise<void> | void): void;
+  onStop(handler: () => Promise<void> | void): void;
+  start(): Promise<void>;
+  stop(): Promise<void>;
 }
 
-// ─── Permission ───────────────────────────────────────────────────────────────
-
-export interface IPermission {
-  id: string;
-  name: string;
-  description?: string;
-  scope: 'platform' | 'module' | 'resource';
-  createdAt: Date;
-}
-
-export interface IPermissionGrant {
-  id: string;
-  userId: string;
-  permissionId: string;
-  resourceId?: string;
-  grantedAt: Date;
-  expiresAt?: Date;
-}
-
-// ─── Oracle Services Interfaces ───────────────────────────────────────────────
-
-export interface IIdentityService {
-  createUser(email: string, firstName: string, lastName: string, role?: string): Promise<IOracleUser>;
-  getUser(id: string): Promise<IOracleUser | undefined>;
-  updateUser(id: string, data: Partial<IOracleUser>): Promise<IOracleUser>;
-  listUsers(): Promise<IOracleUser[]>;
-  activateUser(id: string): Promise<void>;
-  deactivateUser(id: string): Promise<void>;
-}
-
-export interface IAuthSession {
-  token: string;
-  userId: string;
-  expiresAt: Date;
-}
-
-export interface IAuthenticationService {
-  login(email: string, password: string): Promise<IAuthSession>;
-  logout(token: string): Promise<void>;
-  validateToken(token: string): Promise<IOracleUser | undefined>;
-}
-
-export interface IAuthorizationService {
-  checkPermission(userId: string, permission: string, resourceId?: string): Promise<boolean>;
-  assignRole(userId: string, role: string): Promise<void>;
-  revokeRole(userId: string, role: string): Promise<void>;
-}
-
-export interface IPermissionService {
-  definePermission(name: string, description: string, scope: IPermission['scope']): IPermission;
-  getPermission(name: string): IPermission | undefined;
-  listPermissions(): IPermission[];
-  grantPermission(userId: string, permissionName: string, resourceId?: string): IPermissionGrant;
-  revokePermission(userId: string, permissionName: string, resourceId?: string): void;
-  checkPermission(userId: string, permissionName: string, resourceId?: string): boolean;
-  getHealth(): IHealthStatus;
-}
-
-export interface IEventBus {
-  publish(event: IPublishedEvent): void;
-  subscribe(eventName: string, handler: EventHandler): () => void;
-  unsubscribe(eventName: string, handler: EventHandler): void;
-}
-
-// ─── DI Container ─────────────────────────────────────────────────────────────
-
-export interface IDIContainer {
-  register<T>(token: string, instance: T): void;
-  resolve<T>(token: string): T;
-  has(token: string): boolean;
-}
-
-// ─── Oracle Kernel Interface ──────────────────────────────────────────────────
+// ─── Oracle Kernel ───────────────────────────────────────────────────────────
 
 export interface IOracle {
-  /** Register a module with the kernel */
-  registerModule(module: IModule): Promise<void>;
+  readonly version: string;
 
-  /** Retrieve a registered module by name */
-  getModule<T extends IModule>(name: string): T | undefined;
+  // Core services
+  readonly logger: ILogger;
+  readonly config: IConfigManager;
+  readonly dependencies: IDependencyInjector;
+  readonly health: IHealthManager;
+  readonly errors: IErrorBoundary;
+  readonly lifecycle: ILifecycleManager;
 
-  /** List all registered module names */
-  listModules(): string[];
+  // Registries
+  readonly modules: IModuleRegistry;
+  readonly capabilities: ICapabilityRegistry;
+  readonly resources: IResourceRegistry;
 
-  /** Register a capability provided by a module */
-  registerCapability(capability: ICapability): void;
-
-  /** Check if a capability is available */
-  hasCapability(name: string): boolean;
-
-  /** Emit a lifecycle event */
-  emit(event: string, payload?: unknown): void;
-
-  /** Subscribe to lifecycle events */
-  on(event: string, handler: (payload?: unknown) => void): void;
-}
-
-// ─── Bootstrap Options ────────────────────────────────────────────────────────
-
-export interface IBootstrapOptions {
-  modules?: IModule[];
-  config?: IMetadata;
+  // Bootstrap
+  bootstrap(config?: Record<string, unknown>): Promise<void>;
+  shutdown(): Promise<void>;
 }

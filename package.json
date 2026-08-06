@@ -9,11 +9,11 @@
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
+    "typecheck:oracle": "tsc -p src/oracle/kernel/tsconfig.json --noEmit",
     "preview": "vite preview",
     "test": "vitest run --config src/oracle/kernel/vitest.config.ts",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage --config src/oracle/kernel/vitest.config.ts",
-    "typecheck:oracle": "tsc -p src/oracle/kernel/tsconfig.json --noEmit"
+    "test:coverage": "vitest run --coverage --config src/oracle/kernel/vitest.config.ts"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.41",
