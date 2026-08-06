@@ -170,7 +170,7 @@ ResponsiveImage.displayName = "ResponsiveImage"
  * static.wixstatic.com are served resized to the rendered container (per
  * device pixel ratio) and re-encoded to WebP; `fittingType="fill"` crops
  * server-side, optionally anchored at a focal point. Other URLs render as a
- * plain <img>. Failed loads swap to a fallback image.
+ * plain <img loading="lazy">. Failed loads swap to a fallback image.
  */
 const Image = React.forwardRef(
   (
@@ -198,21 +198,21 @@ const Image = React.forwardRef(
     }
 
     if (!src) {
-      // Renders as a real <img> (not a <div>) — the visual editor's
+      // Renders as a real <img loading="lazy"> (not a <div>) — the visual editor's
       // click-to-edit toolbar keys its "Replace Image" action off the DOM
       // tag being `img`, so a placeholder div would be unrecoverable in the
       // editor. FALLBACK_IMAGE_URL doubles as the "no image chosen" graphic.
-      return <img ref={ref} src={FALLBACK_IMAGE_URL} {...imageProps} data-empty-image />
+      return <img ref={ref} src={FALLBACK_IMAGE_URL} {...imageProps} data-empty-image loading="lazy" />
     }
 
-    // The fallback renders as a plain <img> so a broken upload can't cascade
+    // The fallback renders as a plain <img loading="lazy"> so a broken upload can't cascade
     // into a second (transformed) failing request.
     const parsed = imgSrc === FALLBACK_IMAGE_URL ? null : parseWixMediaUrl(imgSrc)
 
     if (!parsed) {
       const isErrorUrl = imgSrc === FALLBACK_IMAGE_URL
       return (
-        <img ref={ref} src={imgSrc} {...imageProps} data-error-image={isErrorUrl || undefined} />
+        <img ref={ref} src={imgSrc} {...imageProps} data-error-image={isErrorUrl || undefined} loading="lazy" />
       )
     }
 

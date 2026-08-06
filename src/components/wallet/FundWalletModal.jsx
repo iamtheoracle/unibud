@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, ArrowDownLeft, ShieldCheck, AlertCircle } from "lucide-react";
 import { formatMoney } from "./WalletShared";
-import { startStripeCheckout } from "@/lib/finance/stripeCheckout";
+import { startCardCheckout } from "@/lib/finance/cardPayment";
 import { useToast } from "@/components/ui/use-toast";
 
 const QUICK = [1000, 5000, 10000, 25000];
 
 /**
- * FundWalletModal — add money to your own wallet via real Stripe card checkout.
+ * FundWalletModal — add money to your own wallet via card checkout.
  * The webhook credits the student wallet; the redirect polls until reconciled.
  */
 export default function FundWalletModal({ open, onClose, wallet, institutionId }) {
@@ -24,7 +24,7 @@ export default function FundWalletModal({ open, onClose, wallet, institutionId }
     if (!wallet?.id) return setErr("No wallet found to fund.");
     setPaying(true);
     try {
-      await startStripeCheckout({
+      await startCardCheckout({
         amount: amt,
         currency: "NGN",
         description: "Add money to UNIBUD wallet",
@@ -115,10 +115,10 @@ export default function FundWalletModal({ open, onClose, wallet, institutionId }
               className="w-full mt-4 py-3.5 rounded-[18px] bg-primary text-primary-foreground font-semibold text-[14px] spring-tap disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {paying ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-              {paying ? "Redirecting to Stripe…" : `Add ${amount ? formatMoney(amount) : "Money"}`}
+              {paying ? "Processing payment…" : `Add ${amount ? formatMoney(amount) : "Money"}`}
             </button>
             <p className="text-[10px] text-muted-foreground text-center mt-2.5 flex items-center justify-center gap-1">
-              <ShieldCheck className="w-3 h-3" /> Secured by Stripe · Test mode
+              <ShieldCheck className="w-3 h-3" /> Secured payment
             </p>
           </motion.div>
         </motion.div>

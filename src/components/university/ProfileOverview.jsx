@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Megaphone, Siren, CalendarDays, ClipboardList, GraduationCap, Building2, Users, BookOpen, ChevronRight } from "lucide-react";
+import { Megaphone, Siren, CalendarDays, ClipboardList, GraduationCap, Building2, BookOpen, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";

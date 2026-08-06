@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, Wrench, Bus, Plus, Clock, MapPin, X, Send } from "lucide-react";
+import { ArrowLeft, Calendar, Wrench, Bus, Plus, Clock, MapPin, Send } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Calendar, Users, AlertTriangle, Clock } from "lucide-react";
+import { Calendar, Users, AlertTriangle } from "lucide-react";
 import { typeMeta, statusMeta, priorityMeta, TONE_CLASS, isOverdue, daysUntilDue } from "@/lib/tasks/constants";
 
 export default function TaskCard({ task }) {

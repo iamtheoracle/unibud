@@ -70,7 +70,7 @@ export default function TutorDetailSheet({ tutor, user, onBook, onClose }) {
           <div className="flex items-center gap-3 mb-4">
             <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
               {tutor.tutor_image ? (
-                <img src={tutor.tutor_image} alt="" className="w-full h-full object-cover" />
+                <img src={tutor.tutor_image} alt="" className="w-full h-full object-cover" loading="lazy" />
               ) : (
                 <span className="text-[18px] font-bold text-primary">{(tutor.tutor_name || "?").charAt(0)}</span>
               )}

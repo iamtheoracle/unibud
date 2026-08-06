@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   ClipboardList, Award, FolderKanban, TrendingUp, BookOpen, Flame,
-  Trophy, BadgeCheck, Users, Sparkles, ChevronRight, CheckCircle2,
+  Trophy, Users, Sparkles, ChevronRight, CheckCircle2,
 } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];

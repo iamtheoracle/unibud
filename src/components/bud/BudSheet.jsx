@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { getScreenContext } from "@/lib/budScreenContext";
-import { base44 } from "@/api/base44Client";
 import { useVoice } from "@/lib/voice/VoiceProvider";
 import { routeAndRespond } from "@/lib/agents/oracleRouter";
 
@@ -50,7 +49,7 @@ export default function BudSheet() {
       send(pendingPrompt);
       clearPrompt();
     }
-  }, [open, pendingPrompt]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [open, pendingPrompt]);  
 
   // Auto-focus input when opened in voice mode
   useEffect(() => {

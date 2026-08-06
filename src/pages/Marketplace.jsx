@@ -14,7 +14,6 @@ import ReviewComposer from "@/components/marketplace/ReviewComposer";
 import OrderHistory from "@/components/marketplace/OrderHistory";
 import ReportModal from "@/components/ecosystem/ReportModal";
 import MarketplaceCard from "@/components/marketplace/MarketplaceCard";
-import ListingRow from "@/components/marketplace/ListingRow";
 import ServiceRow from "@/components/marketplace/ServiceRow";
 import ListingImageCard from "@/components/marketplace/ListingImageCard";
 
@@ -340,7 +339,7 @@ export default function Marketplace() {
               <div className="flex gap-3 mb-3">
                 <div className="w-16 h-16 rounded-[16px] overflow-hidden bg-muted flex-shrink-0">
                   {(contactListing.image_urls?.[0] || contactListing.image_url) ? (
-                    <img src={(contactListing.image_urls?.[0] || contactListing.image_url)} alt="" className="w-full h-full object-cover" />
+                    <img src={(contactListing.image_urls?.[0] || contactListing.image_url)} alt="" className="w-full h-full object-cover" loading="lazy" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-2xl">{catIcons[contactListing.category] || "📦"}</div>
                   )}

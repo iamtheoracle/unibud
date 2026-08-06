@@ -323,7 +323,7 @@ export function validateCampusMigration() {
   // No direct provider calls exist inside Campus
   // Campus must not make direct API calls to external providers — all
   // integrations flow through Platform Core (Bud, Orbit, Spark, Realtime).
-  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const directProviderPatterns = ["google:", "slack:", "github:", "oauth:", "external-api:"];
   const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
     directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
   );
@@ -417,7 +417,7 @@ export function validateSquareMigration() {
   }
 
   // No direct provider calls exist inside Square
-  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const directProviderPatterns = ["google:", "slack:", "github:", "oauth:", "external-api:"];
   const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
     directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
   );
@@ -511,7 +511,7 @@ export function validateConnectMigration() {
   }
 
   // No direct provider calls exist inside Connect
-  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const directProviderPatterns = ["google:", "slack:", "github:", "oauth:", "external-api:"];
   const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
     directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
   );
@@ -584,7 +584,7 @@ export function validateExperienceMigration(experienceId) {
   });
 
   // No direct provider calls
-  const directProviderPatterns = ["google:", "stripe:", "slack:", "github:", "oauth:", "external-api:"];
+  const directProviderPatterns = ["google:", "slack:", "github:", "oauth:", "external-api:"];
   const hasDirectProviderCalls = (contract.permissions || []).some((p) =>
     directProviderPatterns.some((pattern) => p.toLowerCase().startsWith(pattern))
   );

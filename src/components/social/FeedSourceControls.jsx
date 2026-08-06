@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import {
-  Eye, EyeOff, BellOff, Bell, GripVertical, RefreshCw,
+import { BellOff, Bell, GripVertical, RefreshCw,
   Building2, Users, Globe, Music, Video, Newspaper, Calendar, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";

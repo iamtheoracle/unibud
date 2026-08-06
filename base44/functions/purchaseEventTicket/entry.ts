@@ -16,7 +16,9 @@ export default async function(req) {
     if (event.is_free || !event.price) return Response.json({ error: 'This is a free event' }, { status: 400 });
 
     const origin = new URL(req.url).origin;
-    const apiKey = secrets.get('STRIPE_SECRET_KEY');
+    const providerUrl = secrets.get('PAYMENT_PROVIDER_URL');
+    const providerKey = secrets.get('PAYMENT_PROVIDER_SECRET_KEY');
+    if (!providerUrl || !providerKey) return Response.json({ error: 'Payment provider not configured.' }, { status: 503 });
 
     const params = new URLSearchParams();
     params.append('payment_method_types[]', 'card');
@@ -30,14 +32,13 @@ export default async function(req) {
     params.append('mode', 'payment');
     params.append('success_url', `${origin}/events?purchased=${event_id}`);
     params.append('cancel_url', `${origin}/events?cancelled=${event_id}`);
-    params.append('metadata[base44_app_id]', Deno.env.get('BASE44_APP_ID') || '');
     params.append('metadata[event_id]', event_id);
     params.append('metadata[user_id]', user.id);
 
-    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    const response = await fetch(providerUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': 'Bearer ' + providerKey,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: params,
@@ -46,7 +47,7 @@ export default async function(req) {
     const session = await response.json();
 
     if (session.error) {
-      console.error('[purchaseEventTicket] Stripe error:', session.error.message);
+      console.error('[purchaseEventTicket] Payment error:', session.error.message);
       return Response.json({ error: session.error.message }, { status: 400 });
     }
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Clock, AlertCircle, TrendingUp, MapPin, CheckCircle2 } from "lucide-react";
+import { Clock, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react";
 import { useAcademicData } from "@/lib/academic/useAcademicData";
 
 const EASE = [0.16, 1, 0.3, 1];
@@ -40,7 +40,7 @@ export default function AcademicPulse() {
         sub={nextDeadline ? dueLabel(nextDeadline.dueInDays, nextDeadline.code) : "No deadlines"}
       />
       <PulseTile
-        to="/results"
+        to="/academics/results"
         icon={TrendingUp}
         accent="221 83% 50%"
         label="GPA"

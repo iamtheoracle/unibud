@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { ArrowUpRight, ArrowDownLeft, GraduationCap, ArrowLeftRight, Sparkles, QrCode } from "lucide-react";
 import { SectionCard, Pill, formatMoney, WalletEmpty } from "./WalletShared";
-import { useToast } from "@/components/ui/use-toast";
 import FundWalletModal from "./FundWalletModal";
 import PayFeesModal from "./PayFeesModal";
 import TransferModal from "./TransferModal";

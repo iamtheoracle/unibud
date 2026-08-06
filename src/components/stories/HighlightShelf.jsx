@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Plus, Bookmark, Settings, Trash2, PenLine, Lock, Globe, X, Check, Loader2 } from "lucide-react";
+import { Plus, Bookmark, Settings, PenLine, X, Check, Loader2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { HIGHLIGHT_CATEGORIES, getHighlightCategory } from "./storyConstants";
@@ -177,7 +177,7 @@ export default function HighlightShelf() {
                     <div className="p-[2px] rounded-full bg-gradient-to-br from-primary to-primary/50">
                       <div className="p-[2px] rounded-full bg-card">
                         {coverStory?.media_url ? (
-                          <img src={coverStory.media_url} alt="" className="w-12 h-12 rounded-full object-cover" />
+                          <img src={coverStory.media_url} alt="" className="w-12 h-12 rounded-full object-cover" loading="lazy" />
                         ) : coverStory?.background_color ? (
                           <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: coverStory.background_color }}>
                             {Icon && <Icon className="w-5 h-5 text-white" />}

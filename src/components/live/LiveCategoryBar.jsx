@@ -2,7 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Radio, Clock, UserCheck, Building2, Users, Heart, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EASE } from "@/lib/motion/motionPresets";
 
 const CATEGORIES = [
   { id: "live_now", label: "Live Now", icon: Radio, hasLiveDot: true },

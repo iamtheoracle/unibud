@@ -17,7 +17,7 @@ import WalletSecurity from "@/components/wallet/sections/WalletSecurity";
 import { useWalletAccess } from "@/lib/wallet/useWalletAccess";
 import WalletActivation from "@/components/wallet/WalletActivation";
 import { useToast } from "@/components/ui/use-toast";
-import { pollTransactionStatus } from "@/lib/finance/stripeCheckout";
+import { pollTransactionStatus } from "@/lib/finance/cardPayment";
 import { queryClientInstance } from "@/lib/query-client";
 
 const SECTION = {
@@ -84,7 +84,7 @@ export default function Wallet() {
       base44.entities.FinancialTransaction.update(txId, { status: "cancelled" }).catch(() => {});
       window.history.replaceState({}, "", "/wallet");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   if (accessLoading) {

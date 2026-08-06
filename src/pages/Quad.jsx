@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Search, PenLine, Users, FlaskConical, Award, Briefcase, Headphones } from "lucide-react";
 import { base44 } from "@/api/base44Client";
@@ -133,7 +132,7 @@ export default function Quad() {
             className="w-full flex items-center gap-3 px-4 py-3 rounded-[20px] bg-card soft-shadow border border-border/40 spring-tap text-left card-hover"
           >
             {user?.avatar_url || user?.image ? (
-              <img src={user.avatar_url || user.image} alt="" className="w-9 h-9 rounded-full object-cover" />
+              <img src={user.avatar_url || user.image} alt="" className="w-9 h-9 rounded-full object-cover" loading="lazy" />
             ) : (
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-[12px]">
                 {(user?.full_name || user?.email || "U").charAt(0)}

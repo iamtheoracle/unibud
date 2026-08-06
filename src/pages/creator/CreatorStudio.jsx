@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   BarChart3, FileText, Video, Mic, ShoppingBag, Heart, Eye, MessageCircle,
-  Share2, Trash2, Plus, CalendarClock, Sparkles, Loader2, TrendingUp, Bookmark, Radio, Users,
+  Share2, Trash2, CalendarClock, Sparkles, TrendingUp, Bookmark, Radio, Users,
   BookMarked, Zap,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";

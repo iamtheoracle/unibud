@@ -8,7 +8,6 @@ import {
   Plus as CreateIcon,
 } from "lucide-react";
 import { hapticTap } from "@/lib/haptics";
-import { PRIMARY_NAV } from "@/lib/navigation/adaptiveNavConfig";
 import { useCreate } from "@/lib/CreateContext";
 import BudHead from "@/components/bud/BudHead";
 

@@ -4,8 +4,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import {
-  Search, Bookmark, BookmarkCheck, Briefcase, FileCheck, Clock, Upload, ChevronRight,
-  TrendingUp, Calendar, Building2, MapPin, Award, ExternalLink, FileText,
+  Search, Bookmark, BookmarkCheck, Briefcase, FileCheck, Clock, ChevronRight,
+  TrendingUp, Calendar, MapPin, Award, ExternalLink, FileText,
 } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import BudCareerRecommendations from "@/components/career/BudCareerRecommendations";

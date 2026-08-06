@@ -288,7 +288,7 @@ export default function StoryComposer({ open, onClose, onPublish, user }) {
                   ) : storyType === "video" ? (
                     <video src={mediaPreview} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                   ) : (
-                    <img src={mediaPreview} className="w-full h-full object-cover" alt="Story preview" />
+                    <img src={mediaPreview} className="w-full h-full object-cover" alt="Story preview" loading="lazy" />
                   )}
 
                   {/* Sticker overlays */}

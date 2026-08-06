@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   Activity, AlertTriangle, CheckCircle2, Wrench, Gauge, Shield,
   Database, Server, Brain, Bell, Cloud, RefreshCw, ChevronDown, ChevronRight,
-  Zap, TrendingUp, TrendingDown,
+  Zap,
 } from "lucide-react";
 import { ISSUE_CATEGORIES } from "@/lib/selfhealing/issueRegistry";
 

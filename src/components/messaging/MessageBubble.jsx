@@ -40,7 +40,7 @@ export default function MessageBubble({
         {/* Avatar */}
         {showAvatar && !isOwn && (
           message.author_image ? (
-            <img src={message.author_image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+            <img src={message.author_image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
           ) : (
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-[10px] font-bold text-primary-foreground shrink-0">
               {(message.author_name || "?").charAt(0)}
@@ -142,7 +142,7 @@ export default function MessageBubble({
             className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
             onClick={() => setImageOpen(false)}
           >
-            <img src={message.media_url} alt="" className="max-w-full max-h-full object-contain" />
+            <img src={message.media_url} alt="" className="max-w-full max-h-full object-contain" loading="lazy" />
           </motion.div>
         )}
       </AnimatePresence>

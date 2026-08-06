@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { AuthProvider } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
@@ -217,6 +217,7 @@ const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 const MigrationDashboard = lazy(() => import("@/pages/admin/MigrationDashboard"));
 const ConsolidationDashboard = lazy(() => import("@/pages/admin/ConsolidationDashboard"));
 const PlatformCoreDashboard = lazy(() => import("@/pages/admin/PlatformCoreDashboard"));
+const IntelligenceCenter = lazy(() => import("@/pages/admin/IntelligenceCenter"));
 
 // Directory & Help Center
 const DirectoryHub = lazy(() => import("@/pages/directory/DirectoryHub"));
@@ -295,6 +296,7 @@ function App() {
                       <Route path="/me" element={<MeExperience />} />
                     </Route>
                     <Route path="/home" element={<BudHome />} />
+                    <Route path="/bud" element={<BudTab />} />
                     <Route path="/briefing" element={<BudDailyBriefing />} />
                     <Route path="/social" element={<SocialHub />} />
                     <Route path="/discover/people" element={<ForYou />} />
@@ -334,6 +336,7 @@ function App() {
                     <Route path="/settings/calendar-sync" element={<CalendarSyncSettings />} />
                     <Route path="/academics/files" element={<AcademicFiles />} />
                     <Route path="/academics/results" element={<Results />} />
+                    <Route path="/results" element={<Navigate to="/academics/results" replace />} />
                     <Route path="/academics/report" element={<SummaryReport />} />
                     <Route path="/communication" element={<CommunicationHub />} />
                     <Route path="/smart-attendance" element={<SmartAttendance />} />
@@ -436,6 +439,7 @@ function App() {
                     <Route path="/automation/builder/:id" element={<OracleWorkspaceGuard><WorkflowBuilder /></OracleWorkspaceGuard>} />
                     <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
                     <Route path="/admin" element={<OracleWorkspaceGuard><AdminHub /></OracleWorkspaceGuard>} />
+                    <Route path="/admin/intelligence" element={<OracleWorkspaceGuard><IntelligenceCenter /></OracleWorkspaceGuard>} />
                     <Route path="/migration" element={<OracleWorkspaceGuard><MigrationDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/consolidation" element={<OracleWorkspaceGuard><ConsolidationDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/platform-core" element={<OracleWorkspaceGuard><PlatformCoreDashboard /></OracleWorkspaceGuard>} />

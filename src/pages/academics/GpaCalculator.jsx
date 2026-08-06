@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Plus, Trash2, Calculator, TrendingUp, Award, ChevronDown, X } from "lucide-react";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, QrCode, Shield, CheckCircle2, GraduationCap, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, QrCode, Shield, CheckCircle2, GraduationCap } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
@@ -69,7 +69,7 @@ export default function DigitalId() {
 
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-20 h-20 rounded-[18px] overflow-hidden shrink-0 grid place-items-center" style={{ background: "rgba(255,138,42,0.10)" }}>
-                    {record?.avatar_url || user?.data?.avatar_url ? <img src={record?.avatar_url || user?.data?.avatar_url} className="w-full h-full object-cover" /> : <span className="text-[28px] font-bold" style={{ color: ORANGE }}>{displayName.charAt(0)}</span>}
+                    {record?.avatar_url || user?.data?.avatar_url ? <img src={record?.avatar_url || user?.data?.avatar_url} className="w-full h-full object-cover" loading="lazy" /> : <span className="text-[28px] font-bold" style={{ color: ORANGE }}>{displayName.charAt(0)}</span>}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-[18px] font-bold leading-tight truncate" style={{ color: CREAM }}>{displayName}</p>
@@ -107,7 +107,7 @@ export default function DigitalId() {
             <div className="glass-card p-6 mb-6 flex flex-col items-center">
               <p className="text-[13px] mb-4" style={{ color: CREAM_MUTED }}>Scan for verification</p>
               <div className="w-64 h-64 rounded-[20px] overflow-hidden grid place-items-center" style={{ background: CREAM }}>
-                <img src={qrUrl} alt="Student QR Code" className="w-full h-full object-contain" />
+                <img src={qrUrl} alt="Student QR Code" className="w-full h-full object-contain" loading="lazy" />
               </div>
               <p className="text-[16px] font-bold mt-4" style={{ color: CREAM }}>{displayName}</p>
               <p className="text-[12px]" style={{ color: CREAM_MUTED }}>{matric}</p>

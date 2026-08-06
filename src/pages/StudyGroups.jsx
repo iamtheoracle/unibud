@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import {
-  ArrowLeft, Search, Plus, Users, BookOpen, Lock, Globe,
+import { Search, Plus, Users, BookOpen, Lock, Globe,
   ChevronRight, Hash, GraduationCap,
   Sparkles, X, Check,
 } from "lucide-react";

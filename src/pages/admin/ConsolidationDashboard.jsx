@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2, XCircle, AlertTriangle, Shield, Package, Layers,
-  Zap, Database, Globe, Eye, Snowflake, ChevronRight, Activity,
+  CheckCircle2, XCircle, AlertTriangle, Shield, Package, Layers, Database, Globe, Eye, Snowflake, ChevronRight, Activity,
 } from "lucide-react";
 import { runConsolidationAudit } from "@/lib/os/consolidationValidator";
 import ScreenHeader from "@/components/layout/ScreenHeader";
@@ -264,7 +263,7 @@ export default function ConsolidationDashboard() {
             <span className="text-[10px] text-muted-foreground ml-auto">No exceptions</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            {["Experience", "Platform Core", "Integrator", "Google", "Microsoft", "Stripe", "Spotify", "Apple", "Maps", "University APIs", "OCR", "Translation", "Weather"].map((node, i, arr) => (
+            {["Experience", "Platform Core", "Integrator", "Google", "Microsoft", "Spotify", "Apple", "Maps", "University APIs", "OCR", "Translation", "Weather"].map((node, i, arr) => (
               <React.Fragment key={node}>
                 <span className={`text-[10px] font-bold px-2.5 py-1.5 rounded-lg ${i <= 2 ? "bg-primary/10 text-primary" : "bg-muted/40 text-muted-foreground"}`}>
                   {node}

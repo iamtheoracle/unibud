@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ClipboardList, Users, CalendarDays, Target, FolderKanban, ChevronRight,
+  ClipboardList, Users, CalendarDays, Target, FolderKanban,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";

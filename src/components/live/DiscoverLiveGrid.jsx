@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { TrendingUp, Radio, Building2, MapPin, Users, Calendar, Bookmark } from "lucide-react";
+import { TrendingUp, Radio, Calendar, Bookmark } from "lucide-react";
 import LiveStreamCard from "./LiveStreamCard";
 import EmptyState from "@/components/ui/EmptyState";
 import { EASE } from "@/lib/motion/motionPresets";

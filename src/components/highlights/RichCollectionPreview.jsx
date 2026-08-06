@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Lock, Mail, Users, Building2, Globe, ChevronRight } from "lucide-react";
+import { Lock, Mail, Users, Building2, Globe } from "lucide-react";
 import CollectionCover from "./CollectionCover";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 
@@ -78,7 +78,7 @@ export default function RichCollectionPreview({
           <div className="flex items-center gap-2 mb-2">
             <div className="w-5 h-5 rounded-full bg-card grid place-items-center shrink-0 overflow-hidden">
               {owner.image ? (
-                <img src={owner.image} alt="" className="w-full h-full object-cover" />
+                <img src={owner.image} alt="" className="w-full h-full object-cover" loading="lazy" />
               ) : (
                 <span className="text-[8px] font-bold">{(owner.name || "U").charAt(0).toUpperCase()}</span>
               )}
@@ -98,7 +98,7 @@ export default function RichCollectionPreview({
               {displayCollabs.map((c) => (
                 <div key={c.user_id} className="w-5 h-5 rounded-full border border-card bg-card grid place-items-center overflow-hidden">
                   {c.image ? (
-                    <img src={c.image} alt="" className="w-full h-full object-cover" />
+                    <img src={c.image} alt="" className="w-full h-full object-cover" loading="lazy" />
                   ) : (
                     <span className="text-[7px] font-bold">{(c.name || "U").charAt(0).toUpperCase()}</span>
                   )}

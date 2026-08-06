@@ -11,8 +11,7 @@ import MeShortcutGrid from "@/components/me/MeShortcutGrid";
 import MeSectionCard from "@/components/me/MeSectionCard";
 
 import {
-  GraduationCap, BookOpen, Calendar, FileText, TrendingUp,
-  CheckCircle2, Award, Trophy, FlaskConical, FolderOpen, UserCircle, Library,
+  GraduationCap, BookOpen, Calendar, FileText, TrendingUp, Award, Trophy, FlaskConical, FolderOpen, UserCircle, Library,
   UserPlus, Building2, Users, Images, Bookmark, BookmarkCheck, CalendarDays,
   Rocket, Briefcase, Wrench, Code2, Clapperboard, Building, BarChart3,
   Wallet, ArrowLeftRight, RefreshCw, ShoppingBag, Package, Gift,

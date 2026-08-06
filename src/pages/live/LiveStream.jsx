@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Send, Heart, ArrowLeft, Share2, Radio } from "lucide-react";
+import { Eye, Send, Heart, ArrowLeft, Radio } from "lucide-react";
 
 const DEMO_HOST = {
   name: "Dr. Ibrahim",
@@ -56,7 +56,7 @@ export default function LiveStream() {
     <div className="min-h-screen bg-black flex flex-col safe-area-pt">
       {/* Video stage */}
       <div className="relative aspect-video bg-gradient-to-br from-secondary to-background overflow-hidden">
-        <img src={DEMO_HOST.poster} alt="" className="w-full h-full object-cover opacity-30" />
+        <img src={DEMO_HOST.poster} alt="" className="w-full h-full object-cover opacity-30" loading="lazy" />
         <button onClick={() => navigate(-1)} className="absolute top-3 left-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur flex items-center justify-center spring-tap">
           <ArrowLeft className="w-4 h-4 text-white" />
         </button>
@@ -67,7 +67,7 @@ export default function LiveStream() {
           <Eye className="w-3 h-3" /> {viewers.toLocaleString()}
         </div>
         <div className="absolute bottom-3 left-3 flex items-center gap-2">
-          <img src={DEMO_HOST.avatar} alt="" className="w-9 h-9 rounded-full object-cover ring-2 ring-white/30" />
+          <img src={DEMO_HOST.avatar} alt="" className="w-9 h-9 rounded-full object-cover ring-2 ring-white/30" loading="lazy" />
           <div>
             <p className="text-[12px] font-bold text-white">{DEMO_HOST.name}</p>
             <p className="text-[10px] text-white/70">{DEMO_HOST.handle}</p>

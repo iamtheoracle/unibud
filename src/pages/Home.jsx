@@ -2,7 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { queryClientInstance } from "@/lib/query-client";
 import PullToRefresh from "@/components/ui/PullToRefresh";
-import { useBudLauncher } from "@/lib/BudLauncherContext";
 import HomeHeader from "@/components/home/HomeHeader";
 import QuickActionStrip from "@/components/home/QuickActionStrip";
 import PersonalHighlights from "@/components/home/PersonalHighlights";

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText, Bell, BellOff } from "lucide-react";
+import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import PodcastPlayer from "@/components/podcast/PodcastPlayer";
@@ -87,7 +87,7 @@ export default function PodcastShow() {
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: EASE }} className="glass-card p-5 mb-4">
         <div className="flex items-start gap-3">
           <div className="w-20 h-20 rounded-[18px] bg-muted/40 overflow-hidden flex items-center justify-center shrink-0">
-            {podcast.cover_url ? <img src={podcast.cover_url} alt="" className="w-full h-full object-cover" /> : <Mic className="w-8 h-8 text-muted-foreground" />}
+            {podcast.cover_url ? <img src={podcast.cover_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : <Mic className="w-8 h-8 text-muted-foreground" />}
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="font-heading font-extrabold text-[20px] text-foreground leading-tight">{podcast.title}</h1>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GraduationCap, Building2, ChevronDown, ChevronRight, MapPin, Mail, Globe, Users } from "lucide-react";
+import { GraduationCap, Building2, ChevronDown, ChevronRight, MapPin, Mail } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";

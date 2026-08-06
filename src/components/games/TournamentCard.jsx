@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Trophy, Calendar, Users } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 import { getGameType, TOURNAMENT_STATUS } from "./gamesConstants";
 
 const EASE = [0.16, 1, 0.3, 1];

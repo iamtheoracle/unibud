@@ -164,7 +164,7 @@ export default function CampusHub() {
               <p className="text-[14px] leading-[1.5] text-foreground/85 mb-2.5">{post.content || post.body || "📢 New update posted."}</p>
               {media && (
                 <div className="rounded-2xl overflow-hidden mb-3 aspect-video bg-muted/20 border border-border/20">
-                  <img src={media} alt="" className="w-full h-full object-cover" />
+                  <img src={media} alt="" className="w-full h-full object-cover" loading="lazy" />
                 </div>
               )}
               <div className="flex gap-4 pt-2 border-t border-border/20 text-[12px] font-medium text-muted-foreground">

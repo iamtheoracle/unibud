@@ -6,7 +6,6 @@ import {
 import { Image } from "@/components/ui/image";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
 import { cn } from "@/lib/utils";
-import { EASE } from "@/lib/motion/motionPresets";
 
 /**
  * PremiumProfileHero — large hero image profile header.

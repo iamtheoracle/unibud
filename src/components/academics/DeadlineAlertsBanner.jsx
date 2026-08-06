@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   AlertCircle, Bell, X, CheckCircle, Clock, BookOpen,
-  ChevronRight, BellOff, Calendar,
+  ChevronRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";

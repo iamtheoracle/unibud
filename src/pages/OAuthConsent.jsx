@@ -20,6 +20,20 @@ export default function OAuthConsent() {
   const [error, setError] = useState("");
   const [reconnect, setReconnect] = useState("");
 
+  const isSafeRedirectTarget = (target) => {
+    if (typeof target !== "string") return false;
+    const trimmed = target.trim();
+    if (!trimmed || trimmed.length > 2048) return false;
+    if (trimmed.startsWith("/")) {
+      return trimmed.startsWith("/") && !trimmed.startsWith("//") && !trimmed.includes("\\");
+    }
+    const lowered = trimmed.toLowerCase();
+    if (lowered.startsWith("javascript:") || lowered.startsWith("data:") || lowered.startsWith("vbscript:") || lowered.startsWith("file:")) {
+      return false;
+    }
+    return true;
+  };
+
   useEffect(() => {
     (async () => {
       let redirecting = false;
@@ -120,6 +134,9 @@ export default function OAuthConsent() {
         throw new Error("Could not complete authorization. Please try again.");
       }
       const data = await res.json();
+      if (!isSafeRedirectTarget(data.redirect_url)) {
+        throw new Error("Invalid redirect target from authorization service.");
+      }
       window.location.href = data.redirect_url;
       if (!/^https?:/i.test(data.redirect_url)) {
         // Custom-scheme redirect (native AI clients, e.g. cursor://): browsers
@@ -129,7 +146,7 @@ export default function OAuthConsent() {
         setSubmitting(false);
       }
     } catch (e) {
-      setError(e.message);
+      setError("Could not complete authorization. Please try again.");
       setSubmitting(false);
     }
   };

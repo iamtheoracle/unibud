@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
 import { resolveDisplayName } from "@/lib/userDisplayName";
 import { toast } from "@/components/ui/use-toast";

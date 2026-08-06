@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  Clock, MapPin, User, Bell, BellOff, ChevronRight,
-  CalendarClock, Navigation, MessageSquare, Sparkles,
+  Clock, MapPin, User, Bell, BellOff,
+  CalendarClock, Navigation, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";

@@ -59,7 +59,7 @@ export default function DigitalIdCard({ user, primaryId, isVerified, institution
           <p className="text-[9px] opacity-55 mt-2">Issued {primaryId?.issued_at ? new Date(primaryId.issued_at).toLocaleDateString() : "—"}</p>
         </div>
         <div className="rounded-[14px] bg-white p-1.5 ice-glow">
-          <img src={qrSrc} alt="QR profile" className="w-[72px] h-[72px] rounded-[8px]" />
+          <img src={qrSrc} alt="QR profile" className="w-[72px] h-[72px] rounded-[8px]" loading="lazy" />
           <p className="text-[8px] text-center text-slate-500 font-semibold mt-0.5 flex items-center justify-center gap-0.5">
             <QrCode className="w-2.5 h-2.5" /> Scan
           </p>

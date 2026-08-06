@@ -148,7 +148,7 @@ export default function StoryBar({ user, isDemoMode: demoOverride }) {
               ) : (
                 <div className="w-14 h-14 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
                   {user?.avatar_url ? (
-                    <img src={user.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                    <img src={user.avatar_url} alt="" className="w-full h-full rounded-full object-cover" loading="lazy" />
                   ) : (
                     <span className="text-[16px] font-bold text-muted-foreground">
                       {(myName || "U").charAt(0)}

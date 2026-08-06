@@ -1,6 +1,6 @@
 import React, { useState, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, RefreshCw, AlertCircle } from "lucide-react";
+import { ChevronDown, RefreshCw } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 

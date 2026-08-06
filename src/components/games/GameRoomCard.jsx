@@ -57,7 +57,7 @@ export default function GameRoomCard({ room, user, onJoin }) {
         <div className="flex -space-x-1.5">
           {participants.slice(0, 5).map((p, i) => (
             <div key={p.user_id || i} className="w-5 h-5 rounded-full ring-1 ring-background overflow-hidden bg-muted grid place-items-center">
-              {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> : <span className="text-[8px] font-bold text-muted-foreground">{p.name?.[0]?.toUpperCase()}</span>}
+              {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" loading="lazy" /> : <span className="text-[8px] font-bold text-muted-foreground">{p.name?.[0]?.toUpperCase()}</span>}
             </div>
           ))}
         </div>

@@ -3,8 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  Users, Store, Home, MessageCircle, CalendarDays, Compass,
-  TrendingUp, Briefcase, Star, Newspaper, ChevronRight,
+  Users, Store, Home, MessageCircle, CalendarDays,
+  TrendingUp, Briefcase, Star, ChevronRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";

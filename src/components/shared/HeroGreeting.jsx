@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon, Cloud, CloudRain, CloudSun } from "lucide-react";
+import { Sun, Moon, CloudRain, CloudSun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 

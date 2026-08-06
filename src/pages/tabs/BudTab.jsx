@@ -115,7 +115,7 @@ export default function BudTab() {
         {activeCategory === "chat" && (
           <div className="space-y-3">
             <button
-              onClick={() => navigate("/search")}
+              onClick={() => navigate("/discover")}
               className="w-full flex items-center gap-2.5 px-4 h-12 rounded-[18px] bg-card shadow-sm text-left"
             >
               <Search className="w-4.5 h-4.5 text-muted-foreground" strokeWidth={2} />
@@ -152,7 +152,7 @@ export default function BudTab() {
         {activeCategory === "search" && (
           <div className="space-y-3">
             <button
-              onClick={() => navigate("/search")}
+              onClick={() => navigate("/discover")}
               className="w-full flex items-center gap-2.5 px-4 h-12 rounded-[18px] bg-card shadow-sm text-left"
             >
               <Search className="w-4.5 h-4.5 text-primary" strokeWidth={2} />

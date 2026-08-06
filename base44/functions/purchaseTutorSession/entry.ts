@@ -19,7 +19,9 @@ export default async function(req) {
     const unitAmount = Math.round((tutor.hourly_rate * duration / 60) * 100);
 
     const origin = new URL(req.url).origin;
-    const apiKey = secrets.get('STRIPE_SECRET_KEY');
+    const providerUrl = secrets.get('PAYMENT_PROVIDER_URL');
+    const providerKey = secrets.get('PAYMENT_PROVIDER_SECRET_KEY');
+    if (!providerUrl || !providerKey) return Response.json({ error: 'Payment provider not configured.' }, { status: 503 });
 
     const params = new URLSearchParams();
     params.append('payment_method_types[]', 'card');
@@ -31,17 +33,16 @@ export default async function(req) {
     params.append('mode', 'payment');
     params.append('success_url', `${origin}/tutor-hub?paid=${tutor_profile_id}&date=${session_date}&time=${session_time}&duration=${duration}`);
     params.append('cancel_url', `${origin}/tutor-hub?cancelled=1`);
-    params.append('metadata[base44_app_id]', Deno.env.get('BASE44_APP_ID') || '');
     params.append('metadata[tutor_profile_id]', tutor_profile_id);
     params.append('metadata[user_id]', user.id);
     params.append('metadata[session_date]', session_date || '');
     params.append('metadata[session_time]', session_time || '');
     params.append('metadata[duration_minutes]', duration.toString());
 
-    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    const response = await fetch(providerUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'Authorization': 'Bearer ' + providerKey,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: params,
@@ -50,7 +51,7 @@ export default async function(req) {
     const session = await response.json();
 
     if (session.error) {
-      console.error('[purchaseTutorSession] Stripe error:', session.error.message);
+      console.error('[purchaseTutorSession] Payment error:', session.error.message);
       return Response.json({ error: session.error.message }, { status: 400 });
     }
 

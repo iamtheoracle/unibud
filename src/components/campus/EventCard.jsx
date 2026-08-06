@@ -75,7 +75,7 @@ export default function EventCard({ event, user, index = 0, onAddToCalendar, onO
     >
       {event.banner_url ? (
         <div className="relative h-28 overflow-hidden">
-          <img src={event.banner_url} alt={event.title} className="w-full h-full object-cover" />
+          <img src={event.banner_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           {event.is_featured && (
             <span className="absolute top-2.5 left-2.5 px-2 py-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center gap-1">

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useInfiniteFeed, getCachedFeed } from "@/hooks/useInfiniteFeed";
+import { useInfiniteFeed } from "@/hooks/useInfiniteFeed";
 import { ListSkeleton } from "@/components/resilience/SkeletonKit";
 
 export default function FeedCard() {
@@ -24,7 +24,7 @@ export default function FeedCard() {
           <div className="flex items-start gap-2.5">
             <div className="w-8 h-8 rounded-full bg-foreground/[0.08] grid place-items-center shrink-0 overflow-hidden">
               {post.author_image ? (
-                <img src={post.author_image} alt="" className="w-full h-full object-cover" />
+                <img src={post.author_image} alt="" className="w-full h-full object-cover" loading="lazy" />
               ) : (
                 <span className="text-[10px] font-bold text-foreground">{(post.author_name || "?")[0]}</span>
               )}

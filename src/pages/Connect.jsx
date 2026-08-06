@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { MessageSquare, Phone, Users, ChevronRight, BookOpen, UserPlus, Bell } from "lucide-react";
+import { MessageSquare, Phone, Users, BookOpen, UserPlus, Bell } from "lucide-react";
 import ConnectMessages from "@/components/connect/ConnectMessages";
 import ConnectCalls from "@/components/connect/ConnectCalls";
 import ConnectCollaboration from "@/components/connect/ConnectCollaboration";

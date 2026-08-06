@@ -26,7 +26,7 @@ export default function ChatHeader({ conversation, user, typingUser, onBack, onC
       <button onClick={onInfo} className="flex items-center gap-2.5 flex-1 min-w-0 text-left">
         <div className="relative shrink-0">
           {image ? (
-            <img src={image} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <img src={image} alt="" className="w-10 h-10 rounded-full object-cover" loading="lazy" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
               <Icon className="w-4 h-4 text-primary-foreground" strokeWidth={2} />

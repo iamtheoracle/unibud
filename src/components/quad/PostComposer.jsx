@@ -251,7 +251,7 @@ export default function PostComposer({ open, onClose, user }) {
                     <EyeOff className="w-5 h-5 text-muted-foreground" />
                   </div>
                 ) : authorImage ? (
-                  <img src={authorImage} alt="" className="w-10 h-10 rounded-full object-cover" />
+                  <img src={authorImage} alt="" className="w-10 h-10 rounded-full object-cover" loading="lazy" />
                 ) : (
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold">
                     {authorName.charAt(0)}
@@ -422,7 +422,7 @@ export default function PostComposer({ open, onClose, user }) {
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   {media.map((m, i) => (
                     <div key={i} className="relative rounded-[12px] overflow-hidden h-32 bg-muted">
-                      {m.type === "image" && <img src={m.url} alt="" className="w-full h-full object-cover" />}
+                      {m.type === "image" && <img src={m.url} alt="" className="w-full h-full object-cover" loading="lazy" />}
                       {m.type === "video" && (
                         <video src={m.url} className="w-full h-full object-cover" preload="metadata" />
                       )}

@@ -1,6 +1,5 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 /**
@@ -139,7 +138,7 @@ export function MatchScoreboard({ homeTeam, awayTeam, homeScore = 0, awayScore =
         <div className="flex-1 flex flex-col items-center gap-2">
           <div className="w-12 h-12 rounded-full glass-strong flex items-center justify-center overflow-hidden">
             {homeTeam?.logo_url ? (
-              <img src={homeTeam.logo_url} alt={homeTeam.name} className="w-8 h-8 object-contain" />
+              <img src={homeTeam.logo_url} alt={homeTeam.name} className="w-8 h-8 object-contain" loading="lazy" />
             ) : (
               <span className="text-[14px] font-bold text-foreground">{homeTeam?.name?.charAt(0) || "?"}</span>
             )}
@@ -158,7 +157,7 @@ export function MatchScoreboard({ homeTeam, awayTeam, homeScore = 0, awayScore =
         <div className="flex-1 flex flex-col items-center gap-2">
           <div className="w-12 h-12 rounded-full glass-strong flex items-center justify-center overflow-hidden">
             {awayTeam?.logo_url ? (
-              <img src={awayTeam.logo_url} alt={awayTeam.name} className="w-8 h-8 object-contain" />
+              <img src={awayTeam.logo_url} alt={awayTeam.name} className="w-8 h-8 object-contain" loading="lazy" />
             ) : (
               <span className="text-[14px] font-bold text-foreground">{awayTeam?.name?.charAt(0) || "?"}</span>
             )}

@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
-import { ClipboardCheck, Check, X, Clock, Plus, Calendar } from "lucide-react";
+import { ClipboardCheck, Check, X } from "lucide-react";
 import { ROLE_META, MEETING_TYPES, isOfficer, timeAgo } from "./orgConstants";
-import EmptyState from "@/components/ui/EmptyState";
 
 export default function OrgMembers({ club, user }) {
   const officer = isOfficer(club.members, user?.id);
