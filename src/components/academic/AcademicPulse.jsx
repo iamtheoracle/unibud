@@ -40,7 +40,7 @@ export default function AcademicPulse() {
         sub={nextDeadline ? dueLabel(nextDeadline.dueInDays, nextDeadline.code) : "No deadlines"}
       />
       <PulseTile
-        to="/results"
+        to="/academics/results"
         icon={TrendingUp}
         accent="221 83% 50%"
         label="GPA"

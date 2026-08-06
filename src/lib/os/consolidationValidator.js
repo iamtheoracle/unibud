@@ -96,7 +96,7 @@ export const PLATFORM_CORE_SERVICES = [
 // All external calls must flow through: Experience → Platform Core → Integrator → Provider
 
 export const INTEGRATION_PROVIDERS = [
-  "Google", "Microsoft", "Stripe", "Spotify", "Apple",
+  "Google", "Microsoft", "Spotify", "Apple",
   "Maps", "University APIs", "OCR", "Translation", "Weather",
 ];
 
@@ -250,7 +250,7 @@ export function auditExternalIntegrations() {
   const violations = [];
 
   const directProviderPatterns = [
-    "google:", "microsoft:", "stripe:", "spotify:", "apple:",
+    "google:", "microsoft:", "spotify:", "apple:",
     "slack:", "github:", "oauth:", "external-api:", "direct:",
   ];
 
