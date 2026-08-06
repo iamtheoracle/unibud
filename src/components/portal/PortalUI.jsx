@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 const accentMap = {
   primary: { bg: "bg-primary/10", text: "text-primary", grad: "from-primary/8 to-transparent" },

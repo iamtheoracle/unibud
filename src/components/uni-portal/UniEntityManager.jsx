@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import {
   UniPageHeader, UniFilterBar, UniTable, UniModal, UniField,
-  UniInput, UniTextarea, UniSelect, UniButton, UniEmptyState, UniBadge,
+  UniInput, UniTextarea, UniSelect, UniButton, UniEmptyState,
 } from "@/components/uni-portal/UniPortalUI";
 
 /**

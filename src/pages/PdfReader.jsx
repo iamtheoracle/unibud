@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ChevronLeft, Bookmark, Download, Highlighter, BookOpen, BookmarkCheck, Sparkles } from "lucide-react";

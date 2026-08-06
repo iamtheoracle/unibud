@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Filter, Plus, Package, Heart } from "lucide-react";
+import { Search, Plus, Package, Heart } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";

@@ -4,11 +4,10 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  ArrowLeft, Calendar, MapPin, ChevronLeft, ChevronRight,
-  Users, Heart, Share2, Bookmark, Bell, PartyPopper, Users as UsersIcon,
+  ArrowLeft, Calendar, MapPin, ChevronLeft, ChevronRight, Heart, Bookmark, PartyPopper, Users as UsersIcon,
   GraduationCap, Award, BookOpen, Briefcase, Trophy, Rocket,
   Lightbulb, Dumbbell, Flag, Globe, MessageCircle, Code, Palette,
-  Music, Star, Flame, Clock, Plus, Search,
+  Music, Star, Clock,
 } from "lucide-react";
 
 const typeIcons = {

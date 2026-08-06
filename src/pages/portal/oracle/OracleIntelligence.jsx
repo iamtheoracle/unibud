@@ -2,16 +2,13 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {
-  Crown, Sparkles, ChevronRight, Database, Search, BarChart3,
-  Brain, Globe, ShieldCheck, Layers, Settings, Zap, ArrowDown,
-  Network, Activity, BookOpen, Lock, Server,
+import { Sparkles, ChevronRight, Database, Search, BarChart3,
+  Brain, Globe, Zap, ArrowDown, Activity, Lock, Server,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { SectionCard, StatusPill, PortalPageHeader } from "@/components/portal/PortalUI";
 import {
-  ORACLE_CORE, BUD_INTERFACE, INTELLIGENCE_AGENTS, INTERNAL_SERVICES,
-  OPERATIONS_HIERARCHY, ORCHESTRATION_PROTOCOL, INTELLIGENCE_STACK,
+  ORACLE_CORE, BUD_INTERFACE, INTELLIGENCE_AGENTS, INTERNAL_SERVICES, ORCHESTRATION_PROTOCOL, INTELLIGENCE_STACK,
 } from "@/lib/oracleEcosystem";
 import { ORACLE_SYSTEMS } from "@/lib/oracleSystems";
 import { PLATFORM_ENGINES, ENGINE_FLOW_EXAMPLE } from "@/lib/platformEngines";

@@ -5,8 +5,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   ArrowLeft, Award, Trophy, Users, Heart, BookOpen, Cpu,
-  Star, Rocket, BadgeCheck, Briefcase, Palette, Eye, EyeOff,
-  Plus, ChevronRight, Sparkles,
+  Star, Rocket, BadgeCheck, Palette, Eye, EyeOff,
+  Plus,
 } from "lucide-react";
 
 const categoryIcons = {

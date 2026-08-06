@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import BudOrb from "@/components/brand/BudOrb";
-import { ChevronRight } from "lucide-react";
 import {
   STUDENT_JOURNEY, LECTURER_JOURNEY, INSTITUTION_ADMIN_JOURNEY,
   APPLICANT_JOURNEY, OPERATIONS_JOURNEY,

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Users, TrendingUp, Building, Activity, Globe, Server, Zap } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { DashboardCard, SectionCard, PortalPageHeader, StatusPill } from "@/components/portal/PortalUI";
+import { DashboardCard, SectionCard, PortalPageHeader } from "@/components/portal/PortalUI";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { useNavigate } from "react-router-dom";
 

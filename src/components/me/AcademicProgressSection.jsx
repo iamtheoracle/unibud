@@ -1,15 +1,12 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  TrendingUp, Flame, Clock, Brain, GraduationCap,
-  CheckCircle2, BookOpen, Award, Sparkles, ChevronRight,
+  TrendingUp, Flame, Clock, Brain, GraduationCap, Sparkles,
 } from "lucide-react";
 import { ResponsiveContainer, BarChart, Bar } from "recharts";
 import GlassCard from "@/components/ui/GlassCard";
-import CircularProgressRing from "@/components/academics/CircularProgressRing";
 import EmptyState from "@/components/ui/EmptyState";
 import { useDemoMode } from "@/lib/DemoModeContext";
 

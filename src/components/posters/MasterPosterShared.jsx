@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import UnibudMark from "@/components/brand/UnibudMark";
 import BudOrb from "@/components/brand/BudOrb";
-import { Crown, ChevronDown } from "lucide-react";
+import { Crown } from "lucide-react";
 import { SPRING, glassEntrance } from "@/lib/glassPresets";
 
 // ─── Premium Glass Sheen ────────────────────────────────────────────────────

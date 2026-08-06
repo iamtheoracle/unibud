@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
   Star, Rocket, Award, ChevronRight, Users, Calendar,
-  PartyPopper, Briefcase, BadgeCheck, Heart, BookOpen,
+  PartyPopper, Briefcase, BookOpen,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
 import EmptyState from "@/components/ui/EmptyState";

@@ -1,6 +1,5 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
 import { Users, BookOpen, Layers, BarChart3, GraduationCap } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { DashboardCard, SectionCard, PortalPageHeader, StatusPill, SmartList } from "@/components/portal/PortalUI";
