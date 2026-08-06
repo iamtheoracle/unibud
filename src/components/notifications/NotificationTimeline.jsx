@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Pin, Archive, CheckCheck, MoreHorizontal, ChevronRight } from "lucide-react";
+import { Pin, Archive, CheckCheck, MoreHorizontal } from "lucide-react";
 import { CATEGORY_META, PRIORITY_DOT } from "./icons";
 
 function timeAgo(d) {

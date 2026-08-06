@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Sparkles, Loader2, FileText, Bookmark, Image as ImageIcon, MessageCircle, ArrowRight } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
 
 const EASE = [0.16, 1, 0.3, 1];
 

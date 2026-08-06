@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
   ArrowLeft, Share2, MessageCircle, UserPlus, BadgeCheck, Pencil,
-  GraduationCap, MapPin,
+  GraduationCap,
 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 

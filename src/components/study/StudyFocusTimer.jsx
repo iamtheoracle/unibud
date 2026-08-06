@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -99,7 +99,7 @@ export default function StudyFocusTimer() {
       }
     }, 1000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-    // eslint-disable-next-line
+     
   }, [running, isStopwatch]);
 
   const switchMode = (k) => {

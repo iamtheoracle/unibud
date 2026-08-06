@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Send, Plus } from "lucide-react";
+import { MessageSquare, Send } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 
 /**

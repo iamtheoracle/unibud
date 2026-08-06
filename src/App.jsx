@@ -46,6 +46,7 @@ const QuadExperience = lazy(() => import("@/components/quad/QuadExperience"));
 const ConnectExperience = lazy(() => import("@/components/connect/ConnectExperience"));
 const ServicesExperience = lazy(() => import("@/components/services/ServicesExperience"));
 const Shorts = lazy(() => import("@/pages/Shorts"));
+const News = lazy(() => import("@/pages/News"));
 const Podcasts = lazy(() => import("@/pages/podcasts/Podcasts"));
 const PodcastShow = lazy(() => import("@/pages/podcasts/PodcastShow"));
 const CreatorStudio = lazy(() => import("@/pages/creator/CreatorStudio"));
@@ -310,6 +311,7 @@ function App() {
                     <Route path="/games" element={<GamesHub />} />
                   <Route path="/hero" element={<HeroSection6Page />} />
                     <Route path="/shorts" element={<Shorts />} />
+<Route path="/news" element={<News />} />
 <Route path="/podcasts" element={<Podcasts />} />
 <Route path="/podcasts/:showId" element={<PodcastShow />} />
 <Route path="/creator-studio" element={<CreatorStudio />} />

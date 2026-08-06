@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2, XCircle, Activity, Cpu, Database, Shield, Zap,
+  CheckCircle2, XCircle, Activity, Cpu, Shield, Zap,
   HardDrive, Globe, Eye, Bell, Search, Lock, BarChart3, FileText,
   Brain, MessageSquare, Settings, Clock, RefreshCw, AlertTriangle,
   RotateCw, TrendingUp,
 } from "lucide-react";
 import { PlatformCore } from "@/lib/platform/PlatformCore";
 import { runtimeBoot } from "@/lib/runtime/boot";
-import { lifecycleManager } from "@/lib/runtime/lifecycle/ServiceLifecycleManager";
 import ScreenHeader from "@/components/layout/ScreenHeader";
 
 const SERVICE_ICONS = {

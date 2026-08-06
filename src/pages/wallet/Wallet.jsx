@@ -84,7 +84,7 @@ export default function Wallet() {
       base44.entities.FinancialTransaction.update(txId, { status: "cancelled" }).catch(() => {});
       window.history.replaceState({}, "", "/wallet");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   if (accessLoading) {

@@ -7,7 +7,7 @@ import BudThinking from "@/components/study/BudThinking";
 import Sheet from "@/components/academics/Sheet";
 import EmptyState from "@/components/academics/EmptyState";
 import { toast } from "@/components/ui/use-toast";
-import { Sparkles, Plus, Check, ChevronLeft, BookOpen, Dumbbell, RefreshCw, HelpCircle, ClipboardCheck, FileText, Clock, Trophy } from "lucide-react";
+import { Sparkles, Plus, Check, BookOpen, Dumbbell, RefreshCw, HelpCircle, ClipboardCheck, FileText, Clock, Trophy } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 

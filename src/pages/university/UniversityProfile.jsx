@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, ShieldCheck, MapPin, Globe, Users, Building2, Megaphone, Siren, CalendarDays, ClipboardList } from "lucide-react";
+import { Search, ShieldCheck, MapPin, Globe, Building2 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import ScreenShell from "@/components/layout/ScreenShell";
-import { PROFILE_TABS, EMERGENCY_SEVERITY_META } from "@/components/university/universityConstants";
+import { PROFILE_TABS } from "@/components/university/universityConstants";
 import ProfileOverview from "@/components/university/ProfileOverview";
 import ProfileAnnouncements from "@/components/university/ProfileAnnouncements";
 import ProfileStructure from "@/components/university/ProfileStructure";

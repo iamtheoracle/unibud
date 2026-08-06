@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import {
-  Brain, Mic, Sparkles, Package, Zap, Link, History, Bell,
+  Brain, Mic, Sparkles, Package, Zap, Link, History,
   ChevronRight, Settings,
 } from "lucide-react";
 import MeIcon from "@/components/me/MeIcon";

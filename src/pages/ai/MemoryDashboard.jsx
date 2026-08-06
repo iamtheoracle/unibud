@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Brain, Trash2, Download, Search, Edit3, X, Check, ShieldCheck,
-  GraduationCap, Settings, MapPin, Briefcase, MessageCircle, Clock, Eye, EyeOff,
+  GraduationCap, Settings, MapPin, Briefcase, MessageCircle, Clock, EyeOff,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ScreenShell from "@/components/layout/ScreenShell";

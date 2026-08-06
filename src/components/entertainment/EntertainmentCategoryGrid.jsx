@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  Film, Tv, Clapperboard, Play, Headphones, Music, Radio,
+  Film, Tv, Clapperboard, Headphones, Music, Radio,
   Video, GraduationCap, Users, Trophy, Gamepad2, BookOpen,
-  Sparkles, Calendar, Megaphone, TrendingUp,
+  Sparkles, Calendar, TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";

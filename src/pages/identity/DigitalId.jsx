@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, QrCode, Shield, CheckCircle2, GraduationCap, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, QrCode, Shield, CheckCircle2, GraduationCap } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";

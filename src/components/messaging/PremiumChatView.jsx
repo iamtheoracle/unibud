@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Phone, User, Send, Check, CheckCheck } from "lucide-react";
+import { ArrowLeft, Phone, User, Send, CheckCheck } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];

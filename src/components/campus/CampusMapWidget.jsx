@@ -5,7 +5,6 @@ import {
   FlaskConical, CalendarDays, Users, Navigation, MapPin, Sparkles,
 } from "lucide-react";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 const BUILDING_TYPES = {

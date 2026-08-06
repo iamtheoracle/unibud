@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import AchievementBadge from "./AchievementBadge";
 import { Loader2, Trophy, Lock, Eye, EyeOff } from "lucide-react";
 
 const VISIBILITY_OPTIONS = [

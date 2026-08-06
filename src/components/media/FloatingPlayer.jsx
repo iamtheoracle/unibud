@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Play, Pause, SkipForward, SkipBack, X, ChevronDown, ChevronUp,
+  Play, Pause, SkipForward, SkipBack, X, ChevronDown,
   Shuffle, Repeat, Volume2, ListMusic, Maximize2,
 } from "lucide-react";
 import { Image } from "@/components/ui/image";

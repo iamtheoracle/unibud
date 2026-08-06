@@ -4,7 +4,6 @@ import {
   Users, CalendarDays, Video, Award, BadgeCheck, MapPin,
   GraduationCap, Building2, Sparkles,
 } from "lucide-react";
-import { Image } from "@/components/ui/image";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
 import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";

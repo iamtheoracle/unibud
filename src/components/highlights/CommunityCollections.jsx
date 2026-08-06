@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
-import { Folder, ChevronRight, Bookmark, ExternalLink, Globe } from "lucide-react";
+import { Bookmark, ExternalLink, Globe } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import SharedCollectionCard from "@/components/highlights/SharedCollectionCard";
 

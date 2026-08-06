@@ -5,7 +5,6 @@ import { useVoice } from "@/lib/voice/VoiceProvider";
 import {
   VOICE_PERSONALITIES,
   VOICE_MODES,
-  VOICE_MODE_LABELS,
 } from "@/lib/voice/voiceSettings";
 
 const MODE_OPTIONS = [

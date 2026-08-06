@@ -79,12 +79,12 @@ export default function OrbitCamera({ open, initialMode = "post", user, onClose 
     setShowPanel(false);
     startCamera();
     return () => stopCamera();
-    // eslint-disable-next-line
+     
   }, [open]);
 
   useEffect(() => {
     if (open) startCamera();
-    // eslint-disable-next-line
+     
   }, [facing, open]);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function OrbitCamera({ open, initialMode = "post", user, onClose 
       if (elapsed >= max) handleStopRecording();
     }, 100);
     return () => clearInterval(recordTimerRef.current);
-    // eslint-disable-next-line
+     
   }, [recording, mode]);
 
   const capturePhoto = () => {

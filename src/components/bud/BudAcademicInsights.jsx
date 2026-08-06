@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  TrendingUp, TrendingDown, Award, BookOpen, CalendarClock,
-  Target, Flame, CheckCircle, GraduationCap, ChevronDown,
+  TrendingUp, TrendingDown, Award, BookOpen,
+  Target, Flame, CheckCircle, ChevronDown,
   AlertCircle, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";

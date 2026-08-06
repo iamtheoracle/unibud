@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Award, ChevronRight, Trophy, BookOpen } from "lucide-react";
+import { Award, ChevronRight, Trophy } from "lucide-react";
 import BadgesSection from "@/components/me/BadgesSection";
 
 export default function AchievementsSection({ user, isOwnProfile }) {

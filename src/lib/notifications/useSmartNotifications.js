@@ -46,7 +46,6 @@ export function useSmartNotifications() {
 
   const { show, digest, delayed, muted, digestCount } = useMemo(
     () => prioritize(notifications, { now: now0, prefs }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [notifications, prefs.quiet_hours_start, prefs.quiet_hours_end, prefs.digest_mode, JSON.stringify(prefs.muted_categories)]
   );
   const quiet = inQuietHours(now0, prefs);

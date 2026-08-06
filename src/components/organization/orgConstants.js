@@ -1,5 +1,5 @@
 import {
-  Users, Calendar, Vote, Wallet, MessageSquare, LayoutDashboard, FileText, ClipboardCheck,
+  Users, Calendar, Vote, Wallet, MessageSquare, LayoutDashboard, FileText,
 } from "lucide-react";
 
 export const ORG_TABS = [

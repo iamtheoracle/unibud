@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EASE, staggerContainer, staggerItem } from "@/lib/motion/motionPresets";
+import { staggerContainer, staggerItem } from "@/lib/motion/motionPresets";
 
 /**
  * RelatedSection — standardized "related content" section for detail pages.

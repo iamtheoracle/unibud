@@ -1,9 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ClipboardList, MapPin, Clock, User } from "lucide-react";
+import { ClipboardList, MapPin, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { EXAM_TYPE_META, formatDateTime, timeUntil } from "@/components/university/universityConstants";
+import { EXAM_TYPE_META, timeUntil } from "@/components/university/universityConstants";
 import EmptyState from "@/components/ui/EmptyState";
 
 const EASE = [0.16, 1, 0.3, 1];

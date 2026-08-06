@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, CreditCard, TrendingUp, ArrowUpRight, ArrowDownLeft, Sparkles, ChevronRight } from "lucide-react";
+import { Eye, EyeOff, CreditCard, ArrowUpRight, ArrowDownLeft, Sparkles, ChevronRight } from "lucide-react";
 import { QuickActions } from "@/components/wallet/WalletModules";
 
 function naira(n) { return "₦" + (Number(n) || 0).toLocaleString(); }

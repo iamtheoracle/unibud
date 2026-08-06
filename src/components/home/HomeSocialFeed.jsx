@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BadgeCheck, MessageCircle, Share2, Bookmark } from "lucide-react";
 import { base44 } from "@/api/base44Client";

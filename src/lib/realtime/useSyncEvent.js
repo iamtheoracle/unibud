@@ -51,7 +51,6 @@ export function useSyncEvent(entityNames, callback) {
       if (typeof unsubGeneral === "function") unsubGeneral();
       unsubSpecifics.forEach((u) => { if (typeof u === "function") u(); });
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [names.join(",")]);
 }
 
