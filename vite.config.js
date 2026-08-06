@@ -15,5 +15,49 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // React core — most-shared, smallest chunk
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/scheduler/')) {
+            return 'vendor-react';
+          }
+          // React Router
+          if (id.includes('node_modules/react-router') || id.includes('node_modules/@remix-run/')) {
+            return 'vendor-router';
+          }
+          // Radix UI primitives
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'vendor-radix';
+          }
+          // Framer Motion
+          if (id.includes('node_modules/framer-motion')) {
+            return 'vendor-motion';
+          }
+          // TanStack Query
+          if (id.includes('node_modules/@tanstack/')) {
+            return 'vendor-query';
+          }
+          // Recharts (large — keep separate for lazy-loaded chart pages)
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/victory-vendor') || id.includes('node_modules/d3-')) {
+            return 'vendor-charts';
+          }
+          // Lucide icons
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-icons';
+          }
+          // date-fns
+          if (id.includes('node_modules/date-fns')) {
+            return 'vendor-datefns';
+          }
+          // DnD — only used in specific pages
+          if (id.includes('node_modules/@hello-pangea/dnd')) {
+            return 'vendor-dnd';
+          }
+        },
+      },
+    },
+  },
 });

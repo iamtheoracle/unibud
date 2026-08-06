@@ -7,13 +7,13 @@ import GlassCard from "@/components/ui/GlassCard";
 import SectionHeader from "@/components/ui/SectionHeader";
 import StatusBadge from "@/components/ui/StatusBadge";
 import EmptyState from "@/components/ui/EmptyState";
-import moment from "moment";
+import { addDays, formatDistanceToNow, differenceInDays } from "date-fns";
 import { useDemoMode } from "@/lib/DemoModeContext";
 
 const DEMO_DEADLINES = [
-  { id: "d1", title: "Data Structures Assignment 3", course_code: "CSC 301", due_date: moment().add(1, "day").toISOString(), status: "pending", priority: "high" },
-  { id: "d2", title: "Linear Algebra Problem Set", course_code: "MTH 201", due_date: moment().add(3, "days").toISOString(), status: "pending", priority: "medium" },
-  { id: "d3", title: "Physics Lab Report", course_code: "PHY 203", due_date: moment().add(5, "days").toISOString(), status: "pending", priority: "low" },
+  { id: "d1", title: "Data Structures Assignment 3", course_code: "CSC 301", due_date: addDays(new Date(), 1).toISOString(), status: "pending", priority: "high" },
+  { id: "d2", title: "Linear Algebra Problem Set", course_code: "MTH 201", due_date: addDays(new Date(), 3).toISOString(), status: "pending", priority: "medium" },
+  { id: "d3", title: "Physics Lab Report", course_code: "PHY 203", due_date: addDays(new Date(), 5).toISOString(), status: "pending", priority: "low" },
 ];
 
 export default function DeadlinesCard() {
@@ -73,8 +73,8 @@ export default function DeadlinesCard() {
                   {d.due_date && (
                     <>
                       <span className="text-[10px] text-muted-foreground">·</span>
-                      <span className={"text-[10px] font-medium " + (moment(d.due_date).diff(moment(), "days") <= 1 ? "text-destructive" : "text-muted-foreground")}>
-                        {moment(d.due_date).fromNow()}
+                      <span className={"text-[10px] font-medium " + (differenceInDays(new Date(d.due_date), new Date()) <= 1 ? "text-destructive" : "text-muted-foreground")}>
+                        {formatDistanceToNow(new Date(d.due_date), { addSuffix: true })}
                       </span>
                     </>
                   )}

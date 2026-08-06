@@ -153,7 +153,7 @@ export default function ShortComments({ open, onClose, video, user, isDemoMode }
                 return (
                   <div key={comment.id} className="flex gap-2.5">
                     {comment.author_image ? (
-                      <img src={comment.author_image} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+                      <img src={comment.author_image} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" loading="lazy" />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-[11px] shrink-0">
                         {comment.author_name?.charAt(0)}
@@ -191,7 +191,7 @@ export default function ShortComments({ open, onClose, video, user, isDemoMode }
             <div className="p-3 border-t border-border/30">
               <div className="flex items-center gap-2">
                 {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                  <img src={user.avatar_url} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
                 ) : (
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-[10px] shrink-0">
                     {(user?.full_name || "U").charAt(0)}

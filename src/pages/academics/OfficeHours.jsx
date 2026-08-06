@@ -199,7 +199,7 @@ export default function OfficeHours() {
                         {slotBookings.map((b) => (
                           <div key={b.id} className="flex items-center gap-2 p-2.5 rounded-[12px] bg-muted/30">
                             <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-[12px] font-semibold overflow-hidden shrink-0">
-                              {b.student_image ? <img src={b.student_image} alt="" className="w-full h-full object-cover" /> : (b.student_name || "?").charAt(0).toUpperCase()}
+                              {b.student_image ? <img src={b.student_image} alt="" className="w-full h-full object-cover" loading="lazy" /> : (b.student_name || "?").charAt(0).toUpperCase()}
                             </div>
                             <div className="min-w-0 flex-1">
                               <p className="text-[12px] font-semibold text-foreground truncate">{b.student_name}</p>

@@ -30,7 +30,7 @@ export default function KnowledgeItemCard({ item, onExtract, onBookmark }) {
     <div className="glass-card p-3.5 card-hover flex gap-3">
       <div className="relative shrink-0">
         {item.thumbnail ? (
-          <img src={item.thumbnail} alt="" className="w-14 h-14 rounded-xl object-cover" />
+          <img src={item.thumbnail} alt="" className="w-14 h-14 rounded-xl object-cover" loading="lazy" />
         ) : (
           <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
             <CatIcon className="w-6 h-6" />

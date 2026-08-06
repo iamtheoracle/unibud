@@ -36,7 +36,7 @@ export default function FootballNewsCard({ article, index = 0 }) {
       <Link to="/football" className="block rounded-2xl bg-card border border-border/30 overflow-hidden card-hover">
         {article.image_url && (
           <div className="aspect-[16/9] bg-muted overflow-hidden">
-            <img src={article.image_url} alt="" className="w-full h-full object-cover" />
+            <img src={article.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
           </div>
         )}
         <div className="p-3">

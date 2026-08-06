@@ -87,7 +87,7 @@ export default function MessagesPreview({ title = "Messages" }) {
             >
               <div className="relative flex-shrink-0">
                 {c.avatar_url ? (
-                  <img src={c.avatar_url} alt={c.name} className="w-11 h-11 rounded-full object-cover" />
+                  <img src={c.avatar_url} alt={c.name} className="w-11 h-11 rounded-full object-cover" loading="lazy" />
                 ) : (
                   <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-sm">{(c.name || "U").charAt(0)}</div>
                 )}

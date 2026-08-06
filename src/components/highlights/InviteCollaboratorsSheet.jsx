@@ -110,7 +110,7 @@ function CollaboratorsTab({ collaborators, onInvite, onRemove, onRoleChange }) {
                   >
                     <div className="w-9 h-9 rounded-full glass-card grid place-items-center shrink-0 overflow-hidden">
                       {u.image || u.data?.image ? (
-                        <img src={u.image || u.data?.image} alt="" className="w-full h-full object-cover" />
+                        <img src={u.image || u.data?.image} alt="" className="w-full h-full object-cover" loading="lazy" />
                       ) : (
                         <span className="text-[11px] font-bold">{(u.full_name || u.email || "U").charAt(0).toUpperCase()}</span>
                       )}
@@ -201,7 +201,7 @@ function CollaboratorsTab({ collaborators, onInvite, onRemove, onRoleChange }) {
                 >
                   <div className="w-9 h-9 rounded-full bg-card grid place-items-center shrink-0 overflow-hidden">
                     {c.image ? (
-                      <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
+                      <img src={c.image} alt={c.name} className="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <span className="text-[11px] font-bold">{c.name?.charAt(0)?.toUpperCase()}</span>
                     )}

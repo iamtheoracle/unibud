@@ -188,7 +188,7 @@ export default function OrbitMediaViewer({ post, user, initialIndex = 0, onClose
           >
             <div className="relative">
               {post.author_image ? (
-                <img src={post.author_image} alt="" className="w-7 h-7 rounded-full object-cover" />
+                <img src={post.author_image} alt="" className="w-7 h-7 rounded-full object-cover" loading="lazy" />
               ) : (
                 <div className="w-7 h-7 rounded-full bg-secondary flex items-center justify-center text-white text-[12px] font-bold">
                   {authorName.charAt(0)}

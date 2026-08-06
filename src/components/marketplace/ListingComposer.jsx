@@ -121,7 +121,7 @@ export default function ListingComposer({ open, onClose }) {
               <div className="flex items-center gap-3">
                 <div className="w-20 h-20 rounded-[18px] bg-muted/40 border border-border/40 flex items-center justify-center overflow-hidden">
                   {imageUrl ? (
-                    <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
+                    <img src={imageUrl} alt="preview" className="w-full h-full object-cover" loading="lazy" />
                   ) : uploading ? (
                     <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
                   ) : (

@@ -39,7 +39,7 @@ export default function CollaboratorBar({ collaborators, onInvite, ownerName }) 
             title={`${c.name} · ${c.role}`}
           >
             {c.image ? (
-              <img src={c.image} alt={c.name} className="w-full h-full rounded-full object-cover" />
+              <img src={c.image} alt={c.name} className="w-full h-full rounded-full object-cover" loading="lazy" />
             ) : (
               <span className="text-[10px] font-bold text-foreground">
                 {c.name?.charAt(0)?.toUpperCase()}

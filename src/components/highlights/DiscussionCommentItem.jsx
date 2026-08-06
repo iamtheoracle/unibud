@@ -83,7 +83,7 @@ export default function DiscussionCommentItem({
         <div className="flex items-center gap-2 mb-1">
           <div className="w-6 h-6 rounded-full bg-card grid place-items-center shrink-0 overflow-hidden">
             {comment.author_image ? (
-              <img src={comment.author_image} className="w-full h-full object-cover" alt="" />
+              <img src={comment.author_image} className="w-full h-full object-cover" alt="" loading="lazy" />
             ) : (
               <span className="text-[9px] font-bold">{comment.author_name?.charAt(0)?.toUpperCase()}</span>
             )}
@@ -125,7 +125,7 @@ export default function DiscussionCommentItem({
             {hasMedia && (
               <div className="flex gap-1.5 mt-2 flex-wrap">
                 {comment.media_urls.map((url) => (
-                  <img key={url} src={url} className="w-20 h-20 rounded-xl object-cover" alt="" />
+                  <img key={url} src={url} className="w-20 h-20 rounded-xl object-cover" alt="" loading="lazy" />
                 ))}
               </div>
             )}

@@ -36,7 +36,7 @@ export default function FriendsCard() {
           >
             <div className="w-11 h-11 rounded-full bg-foreground/[0.08] grid place-items-center overflow-hidden border border-border/30">
               {f.avatar_url ? (
-                <img src={f.avatar_url} alt="" className="w-full h-full object-cover" />
+                <img src={f.avatar_url} alt="" className="w-full h-full object-cover" loading="lazy" />
               ) : (
                 <span className="text-[12px] font-bold text-foreground">{(f.display_name || f.connected_user_name || "?")[0]}</span>
               )}
