@@ -16,7 +16,7 @@ export default function PortfolioCard({ item, index = 0 }) {
     >
       {item.cover_url ? (
         <div className="h-28 overflow-hidden">
-          <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" />
+          <img src={item.cover_url} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
         </div>
       ) : (
         <div className={"h-28 flex items-center justify-center " + typeMeta.bg}>

@@ -1,34 +1,51 @@
 {
   "name": "Faculty",
   "type": "object",
-  "description": "University faculty or school. Contains multiple departments. Part of the University domain.",
   "properties": {
-    "institution_id": {
-      "type": "string",
-      "description": "Reference to Institution entity"
-    },
-    "institution_name": {
-      "type": "string",
-      "description": "Denormalised institution name"
-    },
     "name": {
       "type": "string",
-      "description": "Faculty name (e.g. Faculty of Science, School of Engineering)"
+      "description": "Official faculty name"
     },
     "code": {
       "type": "string",
-      "description": "Faculty code (e.g. FSC, ENG)"
+      "description": "Faculty code or abbreviation"
     },
     "description": {
-      "type": "string"
+      "type": "string",
+      "description": "Official description of the faculty"
     },
     "dean_name": {
       "type": "string",
-      "description": "Current dean of the faculty"
+      "description": "Name of the faculty dean"
+    },
+    "dean_id": {
+      "type": "string",
+      "description": "User ID of the dean"
     },
     "dean_educator_id": {
       "type": "string",
       "description": "Reference to Educator entity for the dean"
+    },
+    "dean_image": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Faculty crest or logo"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string",
+      "description": "HSL color channels for the faculty accent"
+    },
+    "established_year": {
+      "type": "number"
+    },
+    "location": {
+      "type": "string",
+      "description": "Building or campus area"
     },
     "contact_email": {
       "type": "string"
@@ -36,21 +53,164 @@
     "contact_phone": {
       "type": "string"
     },
-    "location": {
-      "type": "string",
-      "description": "Physical location on campus"
-    },
     "website": {
       "type": "string"
     },
-    "department_count": {
+    "departments_count": {
       "type": "number",
       "default": 0
     },
     "is_active": {
       "type": "boolean",
       "default": true
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
     }
   },
-  "required": ["name", "institution_id"]
+  "required": [
+    "name",
+    "institution_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$and": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "$or": [
+            {
+              "user_condition": {
+                "role": "institution_owner"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "university_admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "registrar"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "platform_admin"
+              }
+            },
+            {
+              "user_condition": {
+                "role": "super_admin"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "registrar"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "platform_admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "super_admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            },
+            {
+              "$or": [
+                {
+                  "user_condition": {
+                    "role": "institution_owner"
+                  }
+                },
+                {
+                  "user_condition": {
+                    "role": "university_admin"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
 }

@@ -1,0 +1,69 @@
+{
+  "name": "Follow",
+  "type": "object",
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "person",
+        "club",
+        "department",
+        "university",
+        "business",
+        "interest",
+        "topic"
+      ],
+      "description": "What the student is following"
+    },
+    "target_id": {
+      "type": "string",
+      "description": "Stable id of the followed entity (or topic slug)"
+    },
+    "target_name": {
+      "type": "string",
+      "description": "Display name of the followed target"
+    },
+    "target_meta": {
+      "type": "object",
+      "description": "Optional snapshot (avatar_url, subtitle, route) for fast rendering"
+    }
+  },
+  "required": [
+    "target_type",
+    "target_id",
+    "target_name"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "$and": [
+            {
+              "data.target_type": "person"
+            },
+            {
+              "data.target_id": "{{user.id}}"
+            }
+          ]
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

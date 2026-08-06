@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import UnibudMark from "@/components/brand/UnibudMark";
+import { OFFICIAL_FULL_LOGO_URL } from "@/lib/brandAssets";
 
 /**
  * UNIBUD logo lockup for the Welcome screen.
@@ -20,9 +21,8 @@ import UnibudMark from "@/components/brand/UnibudMark";
  */
 const GOLD = "#C9A24B";
 
-// ── Replace with your official uploaded logo URL(s) when ready ──────────────
-const OFFICIAL_LOGO_URL = ""; // e.g. "https://media.base44.com/.../logo.png"
-// ───────────────────────────────────────────────────────────────────────────
+// Official uploaded logo image (full lockup: mountain + UNIBUD + tagline).
+const OFFICIAL_LOGO_URL = OFFICIAL_FULL_LOGO_URL;
 
 const TONE = {
   white: { color: "#ffffff", sub: "rgba(255,255,255,0.72)" },

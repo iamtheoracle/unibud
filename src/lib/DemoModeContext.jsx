@@ -1,39 +1,10 @@
-import React, { createContext, useContext, useState } from "react";
+import React from "react";
 
-const DemoModeContext = createContext(null);
-
+/** Neutralized — demo mode removed. Pass-through provider for compatibility. */
 export function DemoModeProvider({ children }) {
-  const [isDemoMode, setIsDemoMode] = useState(() => {
-    try {
-      return localStorage.getItem("unibud_demo_mode") === "true";
-    } catch {
-      return false;
-    }
-  });
-
-  const enterDemoMode = () => {
-    try {
-      localStorage.setItem("unibud_demo_mode", "true");
-    } catch {}
-    setIsDemoMode(true);
-  };
-
-  const exitDemoMode = () => {
-    try {
-      localStorage.removeItem("unibud_demo_mode");
-    } catch {}
-    setIsDemoMode(false);
-  };
-
-  return (
-    <DemoModeContext.Provider value={{ isDemoMode, enterDemoMode, exitDemoMode }}>
-      {children}
-    </DemoModeContext.Provider>
-  );
+  return children;
 }
 
 export function useDemoMode() {
-  const ctx = useContext(DemoModeContext);
-  if (!ctx) return { isDemoMode: false, enterDemoMode: () => {}, exitDemoMode: () => {} };
-  return ctx;
+  return { isDemoMode: false, enterDemoMode: () => {}, exitDemoMode: () => {} };
 }

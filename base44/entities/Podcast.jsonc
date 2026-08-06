@@ -1,0 +1,118 @@
+{
+  "name": "Podcast",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "cover_url": {
+      "type": "string"
+    },
+    "host_name": {
+      "type": "string"
+    },
+    "host_id": {
+      "type": "string"
+    },
+    "show_type": {
+      "type": "string",
+      "enum": [
+        "student",
+        "university",
+        "faculty",
+        "club",
+        "creator"
+      ],
+      "default": "student",
+      "description": "What kind of podcast show this is"
+    },
+    "category": {
+      "type": "string",
+      "description": "e.g. Technology, Academics, Student Life"
+    },
+    "language": {
+      "type": "string",
+      "default": "en"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published"
+      ],
+      "default": "published"
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "followed_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs following this show"
+    },
+    "total_listens": {
+      "type": "number",
+      "default": 0
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

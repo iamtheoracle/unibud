@@ -22,7 +22,7 @@ export default function ResearchCard({ project, index = 0, onJoin }) {
     >
       {project.image_url && (
         <div className="h-24 overflow-hidden">
-          <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
+          <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" loading="lazy" />
         </div>
       )}
       <div className="p-4">

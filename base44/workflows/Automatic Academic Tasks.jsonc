@@ -1,0 +1,47 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 8 * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "automatic_academic_tasks",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_auto_tasks": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoCreateAcademicTasks",
+            "args": {
+              "action": "monitor_deadlines"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Monitor deadlines and create academic tasks",
+            "description": "Checks approaching deadlines and auto-creates tasks with reminders"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Monitors assignment and study group task deadlines daily. When a deadline approaches the 7-day reminder window, automatically creates an Academics task linked to the original resource, assigns it to the student, and sends notifications. Supports recurring reminders at 3 days and 1 day before deadline until completed.",
+  "name": "Automatic Academic Tasks"
+}

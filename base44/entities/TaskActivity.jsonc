@@ -1,0 +1,95 @@
+{
+  "name": "TaskActivity",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "TaskManagement id this activity belongs to"
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "actor_name": {
+      "type": "string"
+    },
+    "actor_image": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "created",
+        "assigned",
+        "reassigned",
+        "accepted",
+        "status_changed",
+        "checklist_completed",
+        "checklist_added",
+        "milestone_reached",
+        "file_uploaded",
+        "commented",
+        "review_requested",
+        "approved",
+        "rejected",
+        "completed",
+        "archived"
+      ]
+    },
+    "detail": {
+      "type": "string",
+      "description": "Human-readable summary"
+    },
+    "meta": {
+      "type": "object",
+      "description": "Optional structured context"
+    },
+    "member_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Synced from task for RLS"
+    }
+  },
+  "required": [
+    "task_id",
+    "action",
+    "member_ids"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

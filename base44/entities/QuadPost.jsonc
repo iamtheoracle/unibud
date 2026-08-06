@@ -166,6 +166,15 @@
     },
     "community": {
       "type": "string"
+    },
+    "is_seed_content": {
+      "type": "boolean",
+      "default": false,
+      "description": "Marks launch seed content that Orbit gradually replaces as real user activity grows"
+    },
+    "seed_batch": {
+      "type": "string",
+      "description": "Batch identifier for seed content grouping (e.g. 'launch_v1')"
     }
   },
   "required": [

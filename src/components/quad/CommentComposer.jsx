@@ -120,6 +120,20 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
           base44.entities.QuadPost.update(postId, {
             comments_count: (post.comments_count || 0) + 1,
           });
+          // Notify the post author (skip if commenting on your own post)
+          const postAuthorId = post.created_by_id;
+          if (postAuthorId && postAuthorId !== user?.id) {
+            base44.entities.Notification.create({
+              title: `${authorName} commented on your post`,
+              message: text.trim().slice(0, 100) || "Left a comment",
+              type: "comment",
+              category: "social",
+              priority: "normal",
+              user_id: postAuthorId,
+              link: `/quad`,
+              icon: "MessageCircle",
+            }).catch(() => {});
+          }
         }
       }).catch(() => {});
 
@@ -159,7 +173,7 @@ export default function CommentComposer({ postId, user, parentComment, onSubmitt
         <div className="flex gap-2 mb-2 flex-wrap">
           {mediaUrls.map((url, i) => (
             <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden">
-              <img src={url} alt="" className="w-full h-full object-cover" />
+              <img src={url} alt="" className="w-full h-full object-cover" loading="lazy" />
               <button
                 onClick={() => setMediaUrls((prev) => prev.filter((_, idx) => idx !== i))}
                 className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-black/60 flex items-center justify-center"

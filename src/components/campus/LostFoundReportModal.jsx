@@ -202,7 +202,7 @@ export default function LostFoundReportModal({ open, onClose, user, onCreated })
                 <label className="text-[11px] font-semibold text-muted-foreground mb-1.5 block">Photo (optional)</label>
                 {imagePreview ? (
                   <div className="relative w-full h-32 rounded-[14px] overflow-hidden">
-                    <img src={imagePreview} alt="" className="w-full h-full object-cover" />
+                    <img src={imagePreview} alt="" className="w-full h-full object-cover" loading="lazy" />
                     <button
                       onClick={() => { setImagePreview(null); setImageUrl(null); }}
                       className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/50 backdrop-blur flex items-center justify-center"

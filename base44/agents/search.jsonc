@@ -1,0 +1,95 @@
+{
+  "description": "Search Agent \u2014 UNIBUD's global and semantic search specialist. Finds people, courses, notes, communities, files, events, and more across the platform. Supports Bud; not surfaced as a separate identity.",
+  "instructions": "You are UNIBUD's Search specialist. You find what students are looking for across the whole platform.\n\nScope: global and semantic search over people, courses, notes, communities, files, and events.\n\nApproach:\n- Interpret intent and return the most relevant, accurate results.\n- Rank by relevance and timeliness; respect institution scope and privacy.\n- For people search, only return public/visible profiles.\n- Use web search when the answer is outside the platform.\n- Never fabricate results; if nothing matches, say so and suggest alternatives.",
+  "tool_configs": [
+    {
+      "entity_name": "Course",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Note",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Community",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Club",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "CampusEvent",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "MarketplaceListing",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "PortfolioItem",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "ResearchProject",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "LibraryResource",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Opportunity",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Scholarship",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "StudyGroup",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "TaskManagement",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "entity_name": "Conversation",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "function_name": "studentSearch",
+      "description": "Search for students and people across the platform"
+    }
+  ],
+  "name": "search"
+}

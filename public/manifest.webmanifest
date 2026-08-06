@@ -1,0 +1,31 @@
+{
+  "name": "UNIBUD — The Future Starts Together",
+  "short_name": "UNIBUD",
+  "description": "UNIBUD — the premium university operating system. Learn smarter. Grow faster. Achieve more.",
+  "id": "/",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05080D",
+  "theme_color": "#05080D",
+  "icons": [
+    {
+      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/edcd57c09_7DF2130C-74AC-4A87-A01D-54AED74C5B0E.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/4bbf32bad_CDD3FA64-DDBD-4698-9C5B-A22A008F43E8.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://media.base44.com/images/public/6a4fb1dfadf0c26bef23ff57/4bbf32bad_CDD3FA64-DDBD-4698-9C5B-A22A008F43E8.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ]
+}

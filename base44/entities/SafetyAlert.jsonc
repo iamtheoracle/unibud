@@ -1,0 +1,84 @@
+{
+  "name": "SafetyAlert",
+  "type": "object",
+  "properties": {
+    "alert_type": {
+      "type": "string",
+      "enum": [
+        "sos",
+        "medical_emergency",
+        "security_threat",
+        "harassment",
+        "fire",
+        "accident",
+        "other"
+      ],
+      "default": "sos"
+    },
+    "location": {
+      "type": "string",
+      "description": "Where the user is or where the incident is"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "responding",
+        "resolved",
+        "false_alarm"
+      ],
+      "default": "active"
+    },
+    "responder_notes": {
+      "type": "string"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reporter_name": {
+      "type": "string"
+    },
+    "reporter_phone": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "alert_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
