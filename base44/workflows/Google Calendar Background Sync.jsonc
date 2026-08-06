@@ -1,0 +1,47 @@
+{
+  "description": "One-way sync from UNIBUD to Google Calendar every 30 minutes. Normalizes classes, assignments, exams, presentations, timetable, academic events, and optional study sessions into CalendarEvent records, pushes to Google with color coding, deep links, and reminders. Deletes orphaned events when sources are removed. Logs conflicts and notifies users.",
+  "name": "Google Calendar Background Sync",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "google_calendar_background_sync",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_sync": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "googleCalendarSync",
+            "args": {
+              "action": "background_sync"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Run Google Calendar background sync",
+            "description": "One-way push from UNIBUD to Google Calendar with color coding, reminders, and delete detection"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/30 * * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  }
+}

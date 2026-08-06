@@ -1,0 +1,88 @@
+{
+  "name": "WorkspacePresence",
+  "type": "object",
+  "properties": {
+    "workspace_id": {
+      "type": "string"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "viewing",
+        "editing",
+        "idle"
+      ],
+      "default": "active"
+    },
+    "current_item_id": {
+      "type": "string",
+      "description": "Item the collaborator currently has open"
+    },
+    "current_item_title": {
+      "type": "string"
+    },
+    "cursor": {
+      "type": "object",
+      "description": "{item_id, x, y, block_id} live cursor position"
+    },
+    "last_seen": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "member_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "workspace_id",
+    "user_id",
+    "user_name",
+    "last_seen",
+    "member_ids"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.member_ids": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.user_id": "{{user.id}}"
+    },
+    "update": {
+      "data.user_id": "{{user.id}}"
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

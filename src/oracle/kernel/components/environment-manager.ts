@@ -1,44 +1,51 @@
-import type { IEnvironmentManager } from "../types/index.js";
+import type { IEnvironmentManager } from '../types/index';
 
 export class EnvironmentManager implements IEnvironmentManager {
-  public constructor(private readonly source: Record<string, string | undefined> = process.env) {}
+  private env: Record<string, string | undefined>;
 
-  public get(key: string, fallback?: string): string | undefined {
-    const value = this.source[key];
-    return value === undefined || value === "" ? fallback : value;
+  constructor(env?: Record<string, string | undefined>) {
+    this.env = env ?? (typeof process !== 'undefined' ? { ...process.env } : {});
   }
 
-  public getRequired(key: string): string {
-    const value = this.get(key);
-    if (!value) {
-      throw new Error(`Missing required environment variable: ${key}`);
+  get(key: string, defaultValue?: string): string | undefined {
+    const value = this.env[key];
+    return value !== undefined ? value : defaultValue;
+  }
+
+  getRequired(key: string): string {
+    const value = this.env[key];
+    if (value === undefined || value === '') {
+      throw new Error(`Required environment variable not set: ${key}`);
     }
     return value;
   }
 
-  public getNumber(key: string, fallback?: number): number | undefined {
-    const value = this.get(key);
+  getBoolean(key: string, defaultValue?: boolean): boolean {
+    const value = this.env[key];
     if (value === undefined) {
-      return fallback;
+      return defaultValue ?? false;
+    }
+    return value.toLowerCase() === 'true' || value === '1';
+  }
+
+  getNumber(key: string, defaultValue?: number): number | undefined {
+    const value = this.env[key];
+    if (value === undefined) {
+      return defaultValue;
     }
     const parsed = Number(value);
-    if (Number.isNaN(parsed)) {
-      throw new Error(`Invalid number environment variable: ${key}`);
+    if (isNaN(parsed)) {
+      throw new Error(`Environment variable ${key} is not a valid number: ${value}`);
     }
     return parsed;
   }
 
-  public getBoolean(key: string, fallback?: boolean): boolean | undefined {
-    const value = this.get(key);
-    if (value === undefined) {
-      return fallback;
-    }
-    if (value === "true" || value === "1") {
-      return true;
-    }
-    if (value === "false" || value === "0") {
-      return false;
-    }
-    throw new Error(`Invalid boolean environment variable: ${key}`);
+  has(key: string): boolean {
+    const val = this.env[key];
+    return val !== undefined && val !== '';
+  }
+
+  getAll(): Record<string, string | undefined> {
+    return { ...this.env };
   }
 }

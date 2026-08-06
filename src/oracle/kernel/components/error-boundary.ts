@@ -1,15 +1,38 @@
-import type { IErrorBoundary, ILogger } from "../types/index.js";
+import type { IErrorBoundary } from '../types/index';
+
+type ErrorHandler = (error: Error, context?: Record<string, unknown>) => void;
 
 export class ErrorBoundary implements IErrorBoundary {
-  public constructor(private readonly logger: ILogger) {}
+  private handlers: ErrorHandler[] = [];
 
-  public async execute<T>(operation: () => Promise<T>, context?: Record<string, unknown>): Promise<T> {
+  async wrap<T>(fn: () => T | Promise<T>, context?: Record<string, unknown>): Promise<T> {
     try {
-      return await operation();
+      return await fn();
     } catch (error) {
-      const detail = error instanceof Error ? { name: error.name, message: error.message } : { error };
-      this.logger.error("Oracle kernel operation failed", { ...context, ...detail });
+      this.handle(error, context);
       throw error;
     }
+  }
+
+  handle(error: unknown, context?: Record<string, unknown>): void {
+    const err = error instanceof Error ? error : new Error(String(error));
+    this.handlers.forEach(h => {
+      try {
+        h(err, context);
+      } catch {
+        // Prevent handler errors from cascading
+      }
+    });
+  }
+
+  onError(handler: ErrorHandler): () => void {
+    this.handlers.push(handler);
+    return () => {
+      this.handlers = this.handlers.filter(h => h !== handler);
+    };
+  }
+
+  clearHandlers(): void {
+    this.handlers = [];
   }
 }

@@ -1,23 +1,26 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MoreHorizontal, Heart, Reply, Trash2, Flag, Copy, Pin, Pencil, BadgeCheck, Play,
+  MoreHorizontal, Heart, Reply, Trash2, Flag, Copy, Pin, Pencil, BadgeCheck, Play, Bot,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useBudLauncher } from "@/lib/BudLauncherContext";
 import { REACTIONS, getUserReaction, setUserReaction, timeAgo, formatCount } from "./quadConstants";
 
 const COMMENT_MENU = [
-  { id: "pin", label: "Pin", icon: Pin },
-  { id: "copy", label: "Copy", icon: Copy },
-  { id: "translate", label: "Translate", icon: Pencil },
-  { id: "edit", label: "Edit", icon: Pencil, ownerOnly: true },
-  { id: "report", label: "Report", icon: Flag },
-  { id: "delete", label: "Delete", icon: Trash2, ownerOnly: true, danger: true },
+  { id: "pin",          label: "Pin",              icon: Pin },
+  { id: "copy",         label: "Copy",             icon: Copy },
+  { id: "translate",    label: "Translate",        icon: Pencil },
+  { id: "explain_bud",  label: "Explain with Bud", icon: Bot },
+  { id: "edit",         label: "Edit",             icon: Pencil,  ownerOnly: true },
+  { id: "report",       label: "Report",           icon: Flag },
+  { id: "delete",       label: "Delete",           icon: Trash2,  ownerOnly: true, danger: true },
 ];
 
 export default function CommentItem({ comment, isOwner, onReply, depth = 0 }) {
   const qc = useQueryClient();
+  const { openWithPrompt } = useBudLauncher();
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editText, setEditText] = useState(comment.content);
@@ -125,6 +128,9 @@ export default function CommentItem({ comment, isOwner, onReply, depth = 0 }) {
       case "copy": handleCopy(); break;
       case "translate": handleTranslate(); break;
       case "pin": qc.invalidateQueries({ queryKey: ["quadComments", comment.post_id] }); break;
+      case "explain_bud":
+        openWithPrompt(`Explain this comment for me:\n\n"${comment.content}"\n\nPosted by ${comment.author_name || "someone"} on UNIBUD.`);
+        break;
       default: break;
     }
   };
@@ -143,7 +149,7 @@ export default function CommentItem({ comment, isOwner, onReply, depth = 0 }) {
     >
       {/* Avatar */}
       {avatar ? (
-        <img src={avatar} alt={displayName} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+        <img src={avatar} alt={displayName} className="w-8 h-8 rounded-full object-cover flex-shrink-0" loading="lazy" />
       ) : (
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-[11px] flex-shrink-0">
           {displayName.charAt(0)}
@@ -186,7 +192,7 @@ export default function CommentItem({ comment, isOwner, onReply, depth = 0 }) {
           {comment.media_urls && comment.media_urls.length > 0 && (
             <div className="flex gap-1 mt-2">
               {comment.media_urls.map((url, i) => (
-                <img key={i} src={url} alt="" className="w-20 h-20 rounded-lg object-cover" />
+                <img key={i} src={url} alt="" className="w-20 h-20 rounded-lg object-cover" loading="lazy" />
               ))}
             </div>
           )}

@@ -1,0 +1,125 @@
+{
+  "name": "LearningPath",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Path title"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject or course area"
+    },
+    "goal": {
+      "type": "string",
+      "description": "What the student wants to achieve"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "description": {
+      "type": "string"
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "lesson",
+              "reading",
+              "exercise",
+              "revision",
+              "practice",
+              "assessment"
+            ]
+          },
+          "summary": {
+            "type": "string"
+          },
+          "duration_minutes": {
+            "type": "number",
+            "default": 30
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "description": "Ordered learning modules \u2014 lessons, exercises, revision, practice, assessments"
+    },
+    "progress_percent": {
+      "type": "number",
+      "default": 0
+    },
+    "estimated_hours": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "completed"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

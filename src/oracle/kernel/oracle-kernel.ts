@@ -1,85 +1,94 @@
+import { ConfigManager } from './components/config-manager';
+import { EnvironmentManager } from './components/environment-manager';
+import { DependencyInjector } from './components/dependency-injector';
+import { ModuleRegistry } from './components/module-registry';
+import { CapabilityRegistry } from './components/capability-registry';
+import { LifecycleManager } from './components/lifecycle-manager';
+import { HealthManager } from './components/health-manager';
+import { Logger } from './components/logger';
+import { ErrorBoundary } from './components/error-boundary';
+import { PluginRegistrar } from './components/plugin-registrar';
+import { VersionManager } from './components/version-manager';
+
 import type {
-  ICapabilityRegistry,
-  IConfigManager,
-  IDependencyInjector,
-  IEnvironmentManager,
-  IErrorBoundary,
-  IHealthManager,
-  ILifecycleManager,
-  ILogger,
-  IModule,
-  IModuleRegistry,
   IOracle,
+  IConfigManager,
+  IEnvironmentManager,
+  IModuleRegistry,
+  ICapabilityRegistry,
+  IDependencyInjector,
+  ILifecycleManager,
+  IHealthManager,
+  ILogger,
+  IErrorBoundary,
   IPluginRegistrar,
   IVersionManager,
-} from "./types/index.js";
+  LogLevel,
+} from './types/index';
 
-export interface OracleKernelComponents {
-  logger: ILogger;
-  configManager: IConfigManager;
-  environmentManager: IEnvironmentManager;
-  dependencyInjector: IDependencyInjector;
-  moduleRegistry: IModuleRegistry;
-  capabilityRegistry: ICapabilityRegistry;
-  lifecycleManager: ILifecycleManager;
-  healthManager: IHealthManager;
-  errorBoundary: IErrorBoundary;
-  pluginRegistrar: IPluginRegistrar;
-  versionManager: IVersionManager;
+export interface OracleKernelOptions {
+  logLevel?: LogLevel;
+  kernelVersion?: string;
+  env?: Record<string, string | undefined>;
 }
 
 export class OracleKernel implements IOracle {
-  public readonly logger: ILogger;
-  public readonly configManager: IConfigManager;
-  public readonly environmentManager: IEnvironmentManager;
-  public readonly dependencyInjector: IDependencyInjector;
-  public readonly moduleRegistry: IModuleRegistry;
-  public readonly capabilityRegistry: ICapabilityRegistry;
-  public readonly lifecycleManager: ILifecycleManager;
-  public readonly healthManager: IHealthManager;
-  public readonly errorBoundary: IErrorBoundary;
-  public readonly pluginRegistrar: IPluginRegistrar;
-  public readonly versionManager: IVersionManager;
+  readonly config: IConfigManager;
+  readonly environment: IEnvironmentManager;
+  readonly modules: IModuleRegistry;
+  readonly capabilities: ICapabilityRegistry;
+  readonly dependencies: IDependencyInjector;
+  readonly lifecycle: ILifecycleManager;
+  readonly health: IHealthManager;
+  readonly logger: ILogger;
+  readonly errors: IErrorBoundary;
+  readonly plugins: IPluginRegistrar;
+  readonly version: IVersionManager;
 
-  public constructor(components: OracleKernelComponents) {
-    this.logger = components.logger;
-    this.configManager = components.configManager;
-    this.environmentManager = components.environmentManager;
-    this.dependencyInjector = components.dependencyInjector;
-    this.moduleRegistry = components.moduleRegistry;
-    this.capabilityRegistry = components.capabilityRegistry;
-    this.lifecycleManager = components.lifecycleManager;
-    this.healthManager = components.healthManager;
-    this.errorBoundary = components.errorBoundary;
-    this.pluginRegistrar = components.pluginRegistrar;
-    this.versionManager = components.versionManager;
+  constructor(options: OracleKernelOptions = {}) {
+    this.config = new ConfigManager();
+    this.environment = new EnvironmentManager(options.env);
+    this.modules = new ModuleRegistry();
+    this.capabilities = new CapabilityRegistry();
+    this.dependencies = new DependencyInjector();
+    this.lifecycle = new LifecycleManager();
+    this.health = new HealthManager();
+    this.logger = new Logger({}, options.logLevel ?? 'info');
+    this.errors = new ErrorBoundary();
+    this.version = new VersionManager(options.kernelVersion);
+    this.plugins = new PluginRegistrar(this.version, this);
+
+    this.lifecycle.addInitializer(
+      'oracle:logger',
+      async () => {
+        this.logger.info('Oracle Kernel initializing...', {
+          version: this.version.getKernelVersion().toString(),
+        });
+      },
+      100,
+    );
+
+    this.lifecycle.addShutdownHandler(
+      'oracle:logger',
+      async () => {
+        this.logger.info('Oracle Kernel shutting down...');
+      },
+      100,
+    );
   }
 
-  public registerModule(module: IModule): void {
-    this.moduleRegistry.register(module);
-    this.versionManager.registerModuleVersion(module.name, module.version);
-
-    if (module.initialize) {
-      this.lifecycleManager.registerInitializable(() => module.initialize!(this));
-    }
-    if (module.shutdown) {
-      this.lifecycleManager.registerShutdownable(() => module.shutdown!());
-    }
-  }
-
-  public async initialize(): Promise<void> {
-    await this.errorBoundary.execute(async () => {
-      await this.pluginRegistrar.initializeAll();
-      await this.lifecycleManager.initialize();
-      this.logger.info("Oracle kernel initialized");
+  async initialize(): Promise<void> {
+    await this.lifecycle.initialize();
+    this.logger.info('Oracle Kernel ready.', {
+      version: this.version.getKernelVersion().toString(),
     });
   }
 
-  public async shutdown(): Promise<void> {
-    await this.errorBoundary.execute(async () => {
-      await this.lifecycleManager.shutdown();
-      await this.pluginRegistrar.shutdownAll();
-      this.logger.info("Oracle kernel stopped");
-    });
+  async shutdown(): Promise<void> {
+    await this.lifecycle.shutdown();
+  }
+
+  isReady(): boolean {
+    return this.lifecycle.isReady();
   }
 }

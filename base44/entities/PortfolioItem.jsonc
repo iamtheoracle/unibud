@@ -45,12 +45,10 @@
       }
     },
     "file_url": {
-      "type": "string",
-      "description": "Attached document, PDF, or deliverable"
+      "type": "string"
     },
     "external_link": {
-      "type": "string",
-      "description": "GitHub repo, Behance, live demo, etc."
+      "type": "string"
     },
     "skills": {
       "type": "array",
@@ -110,5 +108,55 @@
     "title",
     "type",
     "author_name"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.is_public": true
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.author_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.author_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.author_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

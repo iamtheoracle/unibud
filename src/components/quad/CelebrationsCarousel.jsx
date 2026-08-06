@@ -4,9 +4,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import {
-  Heart, MessageCircle, Share2, PartyPopper, ChevronRight,
+  Heart, MessageCircle, PartyPopper, ChevronRight,
   Cake, GraduationCap, Trophy, Award, Rocket, Star, Users,
-  BadgeCheck, ShoppingBag, Sparkles, Lock, Globe, Sparkle, BookOpen,
+  BadgeCheck, ShoppingBag, Globe, BookOpen,
 } from "lucide-react";
 
 const milestoneIcons = {

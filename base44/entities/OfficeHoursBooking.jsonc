@@ -1,0 +1,83 @@
+{
+  "name": "OfficeHoursBooking",
+  "type": "object",
+  "properties": {
+    "slot_id": {
+      "type": "string"
+    },
+    "lecturer_id": {
+      "type": "string",
+      "description": "Lecturer offering the slot (denormalized for lecturer reads)"
+    },
+    "student_id": {
+      "type": "string",
+      "description": "Student who booked (denormalized for fast filtering)"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "student_image": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string",
+      "description": "What the student wants to discuss"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "confirmed",
+        "cancelled",
+        "completed"
+      ],
+      "default": "confirmed"
+    }
+  },
+  "required": [
+    "slot_id",
+    "student_id",
+    "student_name"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "data.student_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "data.lecturer_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "data.lecturer_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

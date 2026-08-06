@@ -1,0 +1,112 @@
+{
+  "name": "ConsentLink",
+  "type": "object",
+  "properties": {
+    "guardian_id": {
+      "type": "string",
+      "description": "Parent/guardian User id"
+    },
+    "guardian_name": {
+      "type": "string"
+    },
+    "student_email": {
+      "type": "string",
+      "description": "Email of the student being requested \u2014 used for discovery before approval"
+    },
+    "student_id": {
+      "type": "string",
+      "description": "Set when the student approves the link"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "relationship": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "declined",
+        "revoked"
+      ],
+      "default": "pending"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revoked_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "guardian_id",
+    "student_email"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.guardian_id": "{{user.id}}"
+        },
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.guardian_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.guardian_id": "{{user.id}}"
+        },
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.guardian_id": "{{user.id}}"
+        },
+        {
+          "data.student_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

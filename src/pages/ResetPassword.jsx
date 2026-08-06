@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Lock, Loader2, AlertTriangle } from "lucide-react";
-import AuthLayout from "@/components/AuthLayout";
+import { Loader2 } from "lucide-react";
+import BrandLogo from "@/components/foundation/BrandLogo";
+import SparkField from "@/components/foundation/SparkField";
+import CompanyFooter from "@/components/foundation/CompanyFooter";
+import GlassInput from "@/components/foundation/GlassInput";
+
+const EASE = [0.16, 1, 0.3, 1];
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -34,81 +37,75 @@ export default function ResetPassword() {
     }
   };
 
-  if (!resetToken) {
-    return (
-      <AuthLayout
-        icon={AlertTriangle}
-        title="Invalid reset link"
-        subtitle="This password reset link is missing or invalid"
-        footer={
-          <Link to="/forgot-password" className="text-primary font-medium hover:underline">
-            Request a new link
-          </Link>
-        }
-      >
-        <p className="text-sm text-foreground text-center">
-          The link you used appears to be incomplete. Please request a new password reset email.
-        </p>
-      </AuthLayout>
-    );
-  }
-
   return (
-    <AuthLayout
-      icon={Lock}
-      title="New password"
-      subtitle="Enter your new password below"
-    >
-      {error && (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-          {error}
-        </div>
-      )}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="password">New Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="password"
-              type="password"
-              autoComplete="new-password"
-              autoFocus
-              placeholder="••••••••"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-            <Input
-              id="confirm"
-              type="password"
-              autoComplete="new-password"
-              placeholder="••••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="pl-10 h-12"
-              required
-            />
-          </div>
-        </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Resetting...
-            </>
+    <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
+      <SparkField count={12} />
+      <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
+        <Link to="/login" className="text-muted-foreground mt-6 mb-7 spring-tap self-start">
+          <span className="text-[13px] font-medium">Back</span>
+        </Link>
+
+        <BrandLogo size="sm" />
+
+        <div className="flex-1 flex flex-col justify-center py-6">
+          {!resetToken ? (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: EASE }} className="glass-card p-6 text-center">
+              <h2 className="font-heading font-bold text-[20px] text-foreground mb-1.5">Invalid reset link</h2>
+              <p className="text-[13px] text-muted-foreground leading-relaxed mb-5">
+                This password reset link is missing or invalid. Please request a new one.
+              </p>
+              <Link to="/forgot-password" className="inline-block text-[13px] text-primary font-semibold hover:underline">
+                Request a new link
+              </Link>
+            </motion.div>
           ) : (
-            "Reset password"
+            <>
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: EASE }} className="mb-6">
+                <h2 className="font-heading font-bold text-[26px] tracking-tight text-foreground mb-1.5">New password</h2>
+                <p className="text-[14px] text-muted-foreground">Enter your new password below.</p>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, ease: EASE }} className="glass-card p-5">
+                {error && (
+                  <div className="mb-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-[13px]">{error}</div>
+                )}
+                <form onSubmit={handleSubmit} className="space-y-3.5">
+                  <GlassInput
+                    label="New Password"
+                    type="password"
+                    autoComplete="new-password"
+                    autoFocus
+                    placeholder="••••••••"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                  />
+                  <GlassInput
+                    label="Confirm Password"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 spring-tap disabled:opacity-50 ice-glow mt-2"
+                  >
+                    {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Resetting…</> : "Reset password"}
+                  </button>
+                </form>
+              </motion.div>
+            </>
           )}
-        </Button>
-      </form>
-    </AuthLayout>
+        </div>
+
+        <div className="pb-8 safe-area-pb">
+          <CompanyFooter />
+        </div>
+      </div>
+    </div>
   );
 }

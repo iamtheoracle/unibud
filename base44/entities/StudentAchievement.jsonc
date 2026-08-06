@@ -2,56 +2,169 @@
   "name": "StudentAchievement",
   "type": "object",
   "properties": {
+    "achievement_key": {
+      "type": "string",
+      "description": "Catalog key linking to the achievement definition"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "What the student achieved"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "study",
+        "assignments",
+        "exams",
+        "learning",
+        "collaboration",
+        "campus_life",
+        "milestone",
+        "gpa",
+        "streaks",
+        "course_completion",
+        "degree_progress",
+        "scholarships",
+        "certifications",
+        "leadership",
+        "clubs",
+        "community",
+        "volunteer",
+        "competitions",
+        "hackathon",
+        "research",
+        "events",
+        "mentor",
+        "creator",
+        "podcast"
+      ],
+      "default": "study",
+      "description": "Achievement category"
+    },
+    "date_earned": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the achievement was earned"
+    },
+    "related_course": {
+      "type": "string",
+      "description": "Course code if the achievement is course-specific"
+    },
+    "milestone_description": {
+      "type": "string",
+      "description": "Longer description for milestone achievements"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "private",
+        "friends",
+        "university",
+        "public"
+      ],
+      "default": "private",
+      "description": "Who can see this achievement \u2014 student controls visibility"
+    },
+    "bud_message": {
+      "type": "string",
+      "description": "Bud's personalized congratulation message"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name for this achievement"
+    },
+    "accent_color": {
+      "type": "string",
+      "description": "HSL color channels for the achievement badge"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional context (streak count, score, progress percentage, etc.)"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
     "student_name": {
       "type": "string"
     },
     "university": {
       "type": "string"
     },
-    "title": {
-      "type": "string"
-    },
-    "description": {
-      "type": "string"
-    },
-    "category": {
+    "verification_source": {
       "type": "string",
-      "enum": [
-        "academic",
-        "leadership",
-        "club",
-        "volunteer",
-        "competition",
-        "sports",
-        "research",
-        "certification",
-        "project",
-        "award",
-        "creative"
-      ],
-      "default": "academic"
+      "description": "How this achievement was verified (e.g. 'System verified', 'University registrar', 'Course completion system')"
     },
-    "date": {
+    "progress": {
+      "type": "number",
+      "default": 100,
+      "description": "Progress percentage (0-100) for in-progress achievements; 100 when fully earned"
+    },
+    "certificate_url": {
       "type": "string",
-      "format": "date"
-    },
-    "image_url": {
-      "type": "string"
-    },
-    "is_public": {
-      "type": "boolean",
-      "default": true
-    },
-    "issuer": {
-      "type": "string"
-    },
-    "accent_color": {
-      "type": "string"
+      "description": "File URL for the certificate or badge attachment, if available"
     }
   },
   "required": [
-    "student_name",
+    "achievement_key",
     "title",
     "category"
-  ]
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.visibility": "public"
+        },
+        {
+          "$and": [
+            {
+              "data.visibility": "university"
+            },
+            {
+              "data.institution_id": "{{user.data.institution_id}}"
+            }
+          ]
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
 }

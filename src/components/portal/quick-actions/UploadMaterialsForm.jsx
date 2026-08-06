@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Upload, FileText, Loader2, File, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { Upload, FileText, Loader2, X } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Field, inputClass, SubmitBar, SuccessState } from "@/components/portal/quick-actions/NewAssignmentForm";
 

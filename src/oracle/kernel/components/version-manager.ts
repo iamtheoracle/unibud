@@ -1,35 +1,60 @@
-import type { IVersionManager } from "../types/index.js";
+import type { IVersionManager, IVersionInfo } from '../types/index';
 
-const normalize = (value: string): [number, number, number] => {
-  const [major = "0", minor = "0", patch = "0"] = value.split(".");
-  return [Number(major), Number(minor), Number(patch)];
-};
+const KERNEL_VERSION = '1.0.0';
+
+class VersionInfo implements IVersionInfo {
+  constructor(
+    public readonly major: number,
+    public readonly minor: number,
+    public readonly patch: number,
+    public readonly prerelease?: string,
+  ) {}
+
+  toString(): string {
+    const base = `${this.major}.${this.minor}.${this.patch}`;
+    return this.prerelease ? `${base}-${this.prerelease}` : base;
+  }
+}
 
 export class VersionManager implements IVersionManager {
-  private readonly moduleVersions = new Map<string, string>();
+  private components = new Map<string, IVersionInfo>();
+  private kernelVersion: IVersionInfo;
 
-  public constructor(public readonly kernelVersion: string) {}
-
-  public registerModuleVersion(moduleName: string, version: string): void {
-    this.moduleVersions.set(moduleName, version);
+  constructor(kernelVersion = KERNEL_VERSION) {
+    this.kernelVersion = this.parseVersion(kernelVersion);
   }
 
-  public getModuleVersion(moduleName: string): string | undefined {
-    return this.moduleVersions.get(moduleName);
+  getKernelVersion(): IVersionInfo {
+    return this.kernelVersion;
   }
 
-  public isCompatible(version: string, requiredVersion: string): boolean {
-    const [major, minor, patch] = normalize(version);
-    const [requiredMajor, requiredMinor, requiredPatch] = normalize(requiredVersion);
-    if (major !== requiredMajor) {
+  getComponentVersion(component: string): IVersionInfo | undefined {
+    return this.components.get(component);
+  }
+
+  registerComponentVersion(component: string, version: string): void {
+    this.components.set(component, this.parseVersion(version));
+  }
+
+  isCompatible(version: string): boolean {
+    try {
+      const v = this.parseVersion(version);
+      return v.major === this.kernelVersion.major;
+    } catch {
       return false;
     }
-    if (minor > requiredMinor) {
-      return true;
+  }
+
+  parseVersion(version: string): IVersionInfo {
+    const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+    if (!match) {
+      throw new Error(`Invalid version string: ${version}`);
     }
-    if (minor < requiredMinor) {
-      return false;
-    }
-    return patch >= requiredPatch;
+    return new VersionInfo(
+      parseInt(match[1], 10),
+      parseInt(match[2], 10),
+      parseInt(match[3], 10),
+      match[4],
+    );
   }
 }

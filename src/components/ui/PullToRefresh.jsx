@@ -34,7 +34,7 @@ export default function PullToRefresh({ onRefresh, children, className = "" }) {
       const diff = currentY - startY.current;
       if (diff > 0) {
         if (e.cancelable) e.preventDefault();
-        const damped = Math.min(diff * 0.45, MAX_PULL);
+        const damped = Math.min(diff * 0.42, MAX_PULL);
         pullDistanceRef.current = damped;
         setPullDistance(damped);
       } else {
@@ -85,16 +85,16 @@ export default function PullToRefresh({ onRefresh, children, className = "" }) {
     >
       <motion.div
         animate={{ y: isRefreshing ? PULL_THRESHOLD : pullDistance }}
-        transition={{ type: "spring", stiffness: 500, damping: 40 }}
+        transition={{ type: "spring", stiffness: 420, damping: 34, mass: 0.7 }}
       >
         <div
           className="flex items-center justify-center overflow-hidden"
           style={{ height: indicatorHeight }}
         >
           <motion.div
-            animate={{ opacity: pullDistance > 0 || isRefreshing ? 1 : 0 }}
-            transition={{ duration: 0.2 }}
-            className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center"
+            animate={{ opacity: pullDistance > 0 || isRefreshing ? 1 : 0, scale: pullDistance > 0 || isRefreshing ? 1 : 0.8 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center"
           >
             {isRefreshing ? (
               <Loader2 className="w-4 h-4 text-primary animate-spin" />

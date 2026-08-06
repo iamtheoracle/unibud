@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Send, BookOpen, Lightbulb, PenTool, Layers, FileQuestion, FileText, Play } from "lucide-react";
+import { motion } from "framer-motion";
+import { Sparkles, X, Send, BookOpen, Lightbulb, PenTool, Layers, FileQuestion, Play } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 
 const QUICK_ACTIONS = [

@@ -1,37 +1,76 @@
-import type { ILifecycleManager, LifecycleState } from "../types/index.js";
+import type { ILifecycleManager, LifecycleState } from '../types/index';
+
+interface Handler {
+  name: string;
+  fn: () => Promise<void>;
+  priority: number;
+}
 
 export class LifecycleManager implements ILifecycleManager {
-  private readonly initializers: Array<() => Promise<void>> = [];
-  private readonly shutdownHandlers: Array<() => Promise<void>> = [];
-  public state: LifecycleState = "created";
+  private state: LifecycleState = 'uninitialized';
+  private stateChangeHandlers: ((state: LifecycleState) => void)[] = [];
+  private initializers: Handler[] = [];
+  private shutdownHandlers: Handler[] = [];
 
-  public registerInitializable(initializer: () => Promise<void>): void {
-    this.initializers.push(initializer);
+  getState(): LifecycleState {
+    return this.state;
   }
 
-  public registerShutdownable(shutdown: () => Promise<void>): void {
-    this.shutdownHandlers.unshift(shutdown);
+  onStateChange(handler: (state: LifecycleState) => void): () => void {
+    this.stateChangeHandlers.push(handler);
+    return () => {
+      this.stateChangeHandlers = this.stateChangeHandlers.filter(h => h !== handler);
+    };
   }
 
-  public async initialize(): Promise<void> {
-    if (this.state === "running") {
-      return;
-    }
-    this.state = "initializing";
-    for (const initializer of this.initializers) {
-      await initializer();
-    }
-    this.state = "running";
+  transitionTo(state: LifecycleState): void {
+    this.state = state;
+    this.stateChangeHandlers.forEach(h => h(state));
   }
 
-  public async shutdown(): Promise<void> {
-    if (this.state === "stopped") {
-      return;
+  isReady(): boolean {
+    return this.state === 'ready';
+  }
+
+  addInitializer(name: string, fn: () => Promise<void>, priority = 0): void {
+    this.initializers.push({ name, fn, priority });
+    this.initializers.sort((a, b) => b.priority - a.priority);
+  }
+
+  addShutdownHandler(name: string, fn: () => Promise<void>, priority = 0): void {
+    this.shutdownHandlers.push({ name, fn, priority });
+    this.shutdownHandlers.sort((a, b) => b.priority - a.priority);
+  }
+
+  async initialize(): Promise<void> {
+    if (this.state !== 'uninitialized') {
+      throw new Error(`Cannot initialize from state: ${this.state}`);
     }
-    this.state = "shutting_down";
-    for (const shutdown of this.shutdownHandlers) {
-      await shutdown();
+    this.transitionTo('initializing');
+    try {
+      for (const { fn } of this.initializers) {
+        await fn();
+      }
+      this.transitionTo('ready');
+    } catch (error) {
+      this.transitionTo('error');
+      throw error;
     }
-    this.state = "stopped";
+  }
+
+  async shutdown(): Promise<void> {
+    if (this.state !== 'ready') {
+      throw new Error(`Cannot shutdown from state: ${this.state}`);
+    }
+    this.transitionTo('shutting-down');
+    try {
+      for (const { fn } of this.shutdownHandlers) {
+        await fn();
+      }
+      this.transitionTo('shutdown');
+    } catch (error) {
+      this.transitionTo('error');
+      throw error;
+    }
   }
 }

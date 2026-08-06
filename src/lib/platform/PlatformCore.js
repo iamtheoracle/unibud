@@ -1,0 +1,81 @@
+/**
+ * Platform Core — Unified Facade
+ *
+ * The single entry point for all Platform Core services. Experiences and
+ * agents consume Platform Core through this facade — they never import
+ * individual services or kernel components directly.
+ *
+ * Hierarchy:
+ *   Experience → PlatformCore → Kernel (Oracle/Nexus/Guardian/Spark/Orbit)
+ *                        → Services (19 platform services)
+ *                        → Boot (staged boot + health checks)
+ */
+
+import { oracle, nexus, guardian, spark, orbit } from '@/lib/runtime/kernel';
+import { services } from '@/lib/runtime/services';
+import { runtimeBoot } from '@/lib/runtime/boot';
+import { lifecycleManager } from '@/lib/runtime/lifecycle/ServiceLifecycleManager';
+
+export const PlatformCore = {
+  // ── Kernel ──
+  kernel: { oracle, nexus, guardian, spark, orbit },
+
+  // ── Services (19 platform services) ──
+  services,
+
+  // ── Convenience accessors ──
+  get bud() { return oracle; },
+  get oracle() { return oracle; },
+  get spark() { return spark; },
+  get orbit() { return orbit; },
+  get nexus() { return nexus; },
+  get guardian() { return guardian; },
+
+  // ── Boot ──
+  boot: () => runtimeBoot.boot(),
+  shutdown: () => runtimeBoot.shutdown(),
+
+  // ── Status ──
+  isReady: () => runtimeBoot.ready,
+  getStage: () => runtimeBoot.stage,
+  getBootResults: () => runtimeBoot.results,
+
+  // ── Lifecycle Manager ──
+  get lifecycle() { return lifecycleManager; },
+
+  // ── Health (real probes via lifecycle manager) ──
+  async checkHealth() {
+    return lifecycleManager.checkAll();
+  },
+  getServiceCatalog() {
+    return lifecycleManager.getCatalog();
+  },
+  getRecoveryLog() {
+    return lifecycleManager.getRecoveryLog();
+  },
+
+  // ── Student Routing Engine ──
+  get studentRouting() { return services.studentRouting; },
+  get courseLoad() { return services.courseLoad; },
+  get mentorship() { return services.mentorship; },
+  get studyGroup() { return services.studyGroup; },
+  get recommendation() { return services.recommendation; },
+  get classmateDiscovery() { return services.classmateDiscovery; },
+  get facultyDirectory() { return services.facultyDirectory; },
+  get resourceRecommendation() { return services.resourceRecommendation; },
+  get eventRecommendation() { return services.eventRecommendation; },
+  get campusKnowledge() { return services.campusKnowledge; },
+  get presence() { return services.presence; },
+  get campusIntelligence() { return services.campusIntelligence; },
+  get academicPlanning() { return services.academicPlanning; },
+  get opportunityEngine() { return services.opportunityEngine; },
+  get careerIntelligence() { return services.careerIntelligence; },
+  get studentSuccessPrediction() { return services.studentSuccessPrediction; },
+  get campusDigitalTwin() { return services.campusDigitalTwin; },
+  get crossSpaceIntelligence() { return services.crossSpaceIntelligence; },
+  get autonomousTaskEngine() { return services.autonomousTaskEngine; },
+  get personalKnowledgeGraph() { return services.personalKnowledgeGraph; },
+  get studentIntelligence() { return services.studentIntelligence; },
+};
+
+export default PlatformCore;

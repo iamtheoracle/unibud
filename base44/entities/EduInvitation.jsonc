@@ -1,0 +1,41 @@
+{
+  "name": "EduInvitation",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string",
+      "description": "Unique invitation token"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["student", "educator"]
+    },
+    "organization_id": {
+      "type": "string"
+    },
+    "program_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "accepted", "rejected", "revoked"],
+      "default": "pending"
+    },
+    "data": {
+      "type": "object",
+      "description": "Additional invitation payload"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["email", "token", "type", "expires_at"]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "Bud Reminders",
+  "description": "Every 30 minutes, Bud scans deadlines, exams, classes, events, career applications and study habits, then sends pref-aware, dedup-safe reminders \u2014 respecting quiet hours, categories and delivery settings.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "*/30 * * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "bud_reminders",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "scan_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "budReminders",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Scan & send Bud reminders",
+            "description": "Pref-aware, dedup-safe reminders across all categories"
+          }
+        }
+      }
+    ]
+  }
+}

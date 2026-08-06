@@ -1,13 +1,18 @@
-import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, Calendar } from "lucide-react";
+import { Search, Calendar, Plus } from "lucide-react";
+import CommunityShell from "@/components/community/CommunityShell";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useToast } from "@/components/ui/use-toast";
 import { hapticTap } from "@/lib/haptics";
 import EmptyState from "@/components/ui/EmptyState";
 import EventCard from "@/components/campus/EventCard";
+import EventDetailSheet from "@/components/events/EventDetailSheet";
+import BudEventRecommendations from "@/components/events/BudEventRecommendations";
+import WeatherStrip from "@/components/weather/WeatherStrip";
+import EventComposer from "@/components/events/EventComposer";
 import { EVENT_TYPES, getIcon } from "@/components/campus/campusConstants";
 
 const DEMO_EVENTS = [
@@ -68,13 +73,14 @@ const DEMO_EVENTS = [
 const FILTER_KEYS = ["all", ...Object.keys(EVENT_TYPES)];
 
 export default function CampusEvents() {
-  const navigate = useNavigate();
   const qc = useQueryClient();
   const { toast } = useToast();
   const { isDemoMode } = useDemoMode();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [showPast, setShowPast] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showComposer, setShowComposer] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -93,7 +99,39 @@ export default function CampusEvents() {
   });
 
   const displayEvents = isDemoMode ? DEMO_EVENTS : (events || []);
-  const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
+  const activeUser = isDemoMode ? null : user;
+
+  useEffect(() => {
+    if (isDemoMode || !user?.id) return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const checkinId = urlParams.get("checkin");
+    const purchasedId = urlParams.get("purchased");
+    if (checkinId) {
+      base44.entities.CampusEvent.get(checkinId).then((event) => {
+        const checkedIn = event.checked_in || [];
+        if (!checkedIn.includes(user.id)) {
+          base44.entities.CampusEvent.update(checkinId, { checked_in: [...checkedIn, user.id] });
+          toast({ title: "Checked in!", description: event.title });
+          qc.invalidateQueries({ queryKey: ["campusEvents"] });
+        }
+        window.history.replaceState({}, "", "/events");
+      }).catch(() => {});
+    }
+    if (purchasedId) {
+      base44.entities.CampusEvent.get(purchasedId).then((event) => {
+        const rsvpList = event.rsvp_list || [];
+        if (!rsvpList.some((r) => r.user_id === user.id)) {
+          base44.entities.CampusEvent.update(purchasedId, {
+            rsvp_list: [...rsvpList, { user_id: user.id, name: user.full_name, status: "going", rsvp_at: new Date().toISOString() }],
+            attendees_count: (event.attendees_count || 0) + 1,
+          });
+          toast({ title: "Ticket purchased!", description: "You're going. See you there!" });
+          qc.invalidateQueries({ queryKey: ["campusEvents"] });
+        }
+        window.history.replaceState({}, "", "/events");
+      }).catch(() => {});
+    }
+  }, [user, qc, toast, isDemoMode]);
 
   const filtered = useMemo(() => {
     const now = new Date();
@@ -133,23 +171,18 @@ export default function CampusEvents() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3 sticky top-0 z-20 glass border-b border-border/20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">Events</h1>
-          <p className="text-[11px] text-muted-foreground">{isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Calendar className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <CommunityShell title="Events" icon={Calendar} accent="217 91% 60%" actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Search */}
-      <div className="px-4 py-3">
+      <div className="py-3 space-y-3">
+        {activeUser && (
+          <button
+            onClick={() => setShowComposer(true)}
+            className="w-full h-11 rounded-[16px] bg-primary text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-2 spring-tap"
+          >
+            <Plus className="w-4 h-4" /> Create Event
+          </button>
+        )}
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -161,8 +194,13 @@ export default function CampusEvents() {
         </div>
       </div>
 
+      {/* Weather */}
+      <div className="mb-3">
+        <WeatherStrip />
+      </div>
+
       {/* Upcoming / Past Toggle */}
-      <div className="px-4 mb-3">
+      <div className="mb-3">
         <div className="bg-muted/50 rounded-[14px] p-1 flex">
           <button
             onClick={() => setShowPast(false)}
@@ -180,7 +218,7 @@ export default function CampusEvents() {
       </div>
 
       {/* Filter Chips */}
-      <div className="px-4 pb-3 overflow-x-auto no-scrollbar">
+      <div className="pb-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {FILTER_KEYS.map((key) => {
             const meta = key === "all" ? { label: "All" } : EVENT_TYPES[key];
@@ -204,8 +242,13 @@ export default function CampusEvents() {
         </div>
       </div>
 
+      {/* Bud Recommendations */}
+      {!isDemoMode && (
+        <BudEventRecommendations user={activeUser} onOpenEvent={setSelectedEvent} />
+      )}
+
       {/* Events Grid */}
-      <div className="px-4 responsive-cards">
+      <div className="responsive-cards">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] soft-shadow border border-border/40 overflow-hidden">
@@ -233,10 +276,36 @@ export default function CampusEvents() {
               user={activeUser}
               index={i}
               onAddToCalendar={handleAddToCalendar}
+              onOpen={setSelectedEvent}
             />
           ))
         )}
       </div>
-    </div>
+
+      <AnimatePresence>
+        {selectedEvent && (
+          <EventDetailSheet
+            event={selectedEvent}
+            user={activeUser}
+            onClose={() => setSelectedEvent(null)}
+            onAddToCalendar={handleAddToCalendar}
+            onShare={() => {
+              if (navigator.share) {
+                navigator.share({ title: selectedEvent.title, url: `${window.location.origin}/events` });
+              } else {
+                navigator.clipboard?.writeText(`${window.location.origin}/events`);
+                toast({ title: "Link copied" });
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
+      <EventComposer
+        open={showComposer}
+        onClose={() => setShowComposer(false)}
+        user={activeUser}
+        event={null}
+      />
+    </CommunityShell>
   );
 }

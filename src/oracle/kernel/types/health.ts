@@ -1,8 +1,22 @@
-import type { HealthStatus } from "./module.js";
+export type HealthStatus = 'healthy' | 'degraded' | 'unhealthy' | 'unknown';
 
-export interface IHealthSnapshot {
+export interface IHealthCheckResult {
+  name: string;
   status: HealthStatus;
   message?: string;
-  details?: Record<string, unknown>;
-  timestamp: Date;
+  metadata?: Record<string, unknown>;
+  checkedAt: Date;
+}
+
+export interface IHealthCheck {
+  name: string;
+  check(): Promise<IHealthCheckResult>;
+}
+
+export interface IHealthManager {
+  register(check: IHealthCheck): void;
+  unregister(name: string): boolean;
+  check(name: string): Promise<IHealthCheckResult>;
+  checkAll(): Promise<IHealthCheckResult[]>;
+  getStatus(): HealthStatus;
 }

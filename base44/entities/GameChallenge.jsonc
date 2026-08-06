@@ -1,0 +1,155 @@
+{
+  "name": "GameChallenge",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "challenge_type": {
+      "type": "string",
+      "enum": [
+        "coding",
+        "study",
+        "reading",
+        "fitness",
+        "photography",
+        "campus",
+        "quiz",
+        "innovation",
+        "debate",
+        "other"
+      ],
+      "default": "other"
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Organizing community if applicable"
+    },
+    "organizer_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "active",
+        "completed"
+      ],
+      "default": "active"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "progress": {
+            "type": "number",
+            "default": 0
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "max_participants": {
+      "type": "number"
+    },
+    "target_metric": {
+      "type": "string",
+      "description": "What participants are trying to achieve (e.g. 'Read 5 books', 'Solve 10 problems')"
+    },
+    "leaderboard": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "challenge_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

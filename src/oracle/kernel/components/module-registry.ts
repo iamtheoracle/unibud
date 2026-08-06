@@ -1,24 +1,28 @@
-import type { IModule, IModuleRegistry } from "../types/index.js";
+import type { IModule, IModuleRegistry } from '../types/index';
 
 export class ModuleRegistry implements IModuleRegistry {
-  private readonly modules = new Map<string, IModule>();
+  private modules = new Map<string, IModule>();
 
-  public register(module: IModule): void {
-    if (!module.name) {
-      throw new Error("Module name is required");
+  register(module: IModule): void {
+    if (this.modules.has(module.name)) {
+      throw new Error(`Module already registered: ${module.name}`);
     }
     this.modules.set(module.name, module);
   }
 
-  public get(name: string): IModule | undefined {
+  get(name: string): IModule | undefined {
     return this.modules.get(name);
   }
 
-  public list(): IModule[] {
-    return [...this.modules.values()];
+  getAll(): IModule[] {
+    return Array.from(this.modules.values());
   }
 
-  public has(name: string): boolean {
+  has(name: string): boolean {
     return this.modules.has(name);
+  }
+
+  unregister(name: string): boolean {
+    return this.modules.delete(name);
   }
 }

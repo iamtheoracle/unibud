@@ -1,26 +1,33 @@
-import type { IConfigManager } from "../types/index.js";
+import type { IConfigManager } from '../types/index';
 
 export class ConfigManager implements IConfigManager {
-  private readonly values = new Map<string, unknown>();
+  private store: Map<string, unknown> = new Map();
 
-  public load(values: Record<string, unknown>): void {
-    for (const [key, value] of Object.entries(values)) {
-      this.values.set(key, value);
+  get<T>(key: string, defaultValue?: T): T {
+    if (this.store.has(key)) {
+      return this.store.get(key) as T;
     }
-  }
-
-  public get<T = unknown>(key: string, fallback?: T): T | undefined {
-    if (!this.values.has(key)) {
-      return fallback;
+    if (defaultValue !== undefined) {
+      return defaultValue;
     }
-    return this.values.get(key) as T;
+    throw new Error(`Configuration key not found: ${key}`);
   }
 
-  public set(key: string, value: unknown): void {
-    this.values.set(key, value);
+  set(key: string, value: unknown): void {
+    this.store.set(key, value);
   }
 
-  public has(key: string): boolean {
-    return this.values.has(key);
+  has(key: string): boolean {
+    return this.store.has(key);
+  }
+
+  getAll(): Record<string, unknown> {
+    return Object.fromEntries(this.store);
+  }
+
+  load(config: Record<string, unknown>): void {
+    for (const [key, value] of Object.entries(config)) {
+      this.store.set(key, value);
+    }
   }
 }
