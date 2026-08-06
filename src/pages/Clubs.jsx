@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useMockFallback } from "@/lib/mock/useMockFallback";
-import { ArrowLeft, Search, Users, BadgeCheck } from "lucide-react";
+import { Search, Users, BadgeCheck } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import ClubCard from "@/components/campus/ClubCard";

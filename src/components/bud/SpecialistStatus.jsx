@@ -1,5 +1,5 @@
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Sparkles, Brain, Rocket } from "lucide-react";
 
 const ICONS = { Sparkles, Brain, Rocket };

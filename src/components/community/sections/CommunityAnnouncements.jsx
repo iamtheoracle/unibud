@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { Megaphone, Pin, Shield, Info } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 

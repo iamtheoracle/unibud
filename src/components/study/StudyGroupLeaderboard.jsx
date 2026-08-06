@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Trophy, FileText, CheckCircle2, Award, TrendingUp, Crown } from "lucide-react";
+import { Trophy, FileText, CheckCircle2, Award, Crown } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 

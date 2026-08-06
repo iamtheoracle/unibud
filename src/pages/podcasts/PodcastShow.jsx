@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText, Bell, BellOff } from "lucide-react";
+import { ArrowLeft, Mic, Plus, PlayCircle, CheckCircle2, Clock, Trash2, Sparkles, Loader2, FileText } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import EmptyState from "@/components/ui/EmptyState";
 import PodcastPlayer from "@/components/podcast/PodcastPlayer";

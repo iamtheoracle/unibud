@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
-  Bell, Clock, BookOpen, GraduationCap, FileText, Calendar,
-  Plus, X, Sparkles, ChevronRight,
+  Bell, BookOpen, GraduationCap, FileText, Calendar, Sparkles, ChevronRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";

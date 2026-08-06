@@ -1,5 +1,4 @@
 import React from "react";
-import { Radio } from "lucide-react";
 
 /**
  * CommunityShell — the shared chrome for every themed community hub

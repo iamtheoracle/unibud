@@ -2,8 +2,7 @@ import React, { useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {
-  AlertCircle, Clock, CalendarClock, Award, BookOpen,
+import { CalendarClock, Award, BookOpen,
   Megaphone, ChevronRight, Bell,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";

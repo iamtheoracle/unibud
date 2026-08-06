@@ -3,8 +3,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
-  AlertCircle, Flame, Clock, BookOpen, Award, Pin, PinOff,
-  CheckCircle, BellOff, ChevronRight, Filter, Inbox,
+  AlertCircle, Flame, Clock, BookOpen, Pin, PinOff,
+  CheckCircle, BellOff, Inbox,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { usePriorityItems } from "@/lib/academic/usePriorityItems";

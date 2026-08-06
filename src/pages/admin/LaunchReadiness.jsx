@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Circle, Shield, Cpu, Database, Wifi, Lock, Zap, Server, Activity, AlertTriangle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, Cpu, Database, Wifi, Lock, Zap, Server, Activity } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const CREAM = "#F7F0E8";

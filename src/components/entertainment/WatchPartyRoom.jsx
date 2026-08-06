@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Users, MessageCircle, Radio, Lock, Mic, Video } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 /**

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import {
   GraduationCap, Briefcase, Users, FlaskConical, Rocket, Mail,
   Star, MapPin, ChevronRight,
 } from "lucide-react";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 const DIRECTORY_TYPES = {

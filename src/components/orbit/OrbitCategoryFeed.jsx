@@ -6,7 +6,7 @@ import { matchesCategory } from "@/data/contentCategories";
 import DiscoverySection from "@/components/discovery/DiscoverySection";
 import EmptyState from "@/components/ui/EmptyState";
 import NewsFeed from "@/components/news/NewsFeed";
-import { Sparkles, Users, Calendar, ShoppingBag, Newspaper } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];
 

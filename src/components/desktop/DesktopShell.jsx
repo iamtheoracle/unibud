@@ -8,7 +8,6 @@ import DesktopWindow from "@/components/desktop/DesktopWindow";
 import DesktopBudDock from "@/components/desktop/DesktopBudDock";
 import CommandPalette from "@/components/desktop/CommandPalette";
 import { WindowManagerProvider, useWindowManager } from "@/lib/desktop/WindowManagerContext";
-import { cn } from "@/lib/utils";
 
 const MODULE_TITLES = {
   bud: "Bud",

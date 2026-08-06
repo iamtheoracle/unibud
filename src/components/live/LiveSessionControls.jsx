@@ -5,7 +5,6 @@ import {
   Share2, Bookmark, PictureInPicture2, Minimize2, Maximize2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { EASE } from "@/lib/motion/motionPresets";
 
 const CONTROLS = [
   { id: "chat", icon: MessageCircle, label: "Chat" },

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { ListSkeleton } from "@/components/resilience/SkeletonKit";

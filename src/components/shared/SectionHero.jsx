@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Image } from "@/components/ui/image";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 /**

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, Send, Heart, ArrowLeft, Share2, Radio } from "lucide-react";
+import { Eye, Send, Heart, ArrowLeft, Radio } from "lucide-react";
 
 const DEMO_HOST = {
   name: "Dr. Ibrahim",

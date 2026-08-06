@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Siren, Phone, HeartPulse, Brain, Shield, AlertTriangle, X, CheckCircle2, MessageSquare } from "lucide-react";
+import { ArrowLeft, Siren, Phone, HeartPulse, Brain, Shield, AlertTriangle, CheckCircle2, MessageSquare } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";

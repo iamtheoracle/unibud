@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Sparkles, Loader2, Plus } from "lucide-react";
-import { TASK_TYPES, TASK_PRIORITIES, TONE_CLASS } from "@/lib/tasks/constants";
+import { TASK_TYPES, TASK_PRIORITIES } from "@/lib/tasks/constants";
 import { useCreateTask, useUpdateTask } from "@/lib/tasks/useTasks";
 import { parseTaskFromText } from "@/lib/tasks/budTaskIntent";
 import { useToast } from "@/components/ui/use-toast";

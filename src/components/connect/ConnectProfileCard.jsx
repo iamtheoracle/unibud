@@ -1,9 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { MapPin, BookOpen, Award, ChevronRight } from "lucide-react";
+import { MapPin, ChevronRight } from "lucide-react";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
 import { InfoChips } from "@/components/shared/CompactInfoGrid";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 /**

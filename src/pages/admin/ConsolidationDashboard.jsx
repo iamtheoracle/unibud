@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2, XCircle, AlertTriangle, Shield, Package, Layers,
-  Zap, Database, Globe, Eye, Snowflake, ChevronRight, Activity,
+  CheckCircle2, XCircle, AlertTriangle, Shield, Package, Layers, Database, Globe, Eye, Snowflake, ChevronRight, Activity,
 } from "lucide-react";
 import { runConsolidationAudit } from "@/lib/os/consolidationValidator";
 import ScreenHeader from "@/components/layout/ScreenHeader";

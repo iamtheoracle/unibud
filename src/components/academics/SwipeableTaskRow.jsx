@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Check, CalendarClock, Pencil, Pin, FileText, Bell, Trash2, MoreHorizontal, Flag, Copy, Share, Archive, Eye } from "lucide-react";
+import { Check, CalendarClock, Pencil, Pin, Trash2, MoreHorizontal, Flag, Copy, Share, Archive, Eye } from "lucide-react";
 import { hapticImpact, hapticSelect } from "@/lib/haptics";
 
 const EASE = [0.16, 1, 0.3, 1];

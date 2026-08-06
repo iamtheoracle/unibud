@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Settings, PenSquare, MessageCircle } from "lucide-react";
-import { ORBIT_TABS, useConversations } from "@/hooks/useConversations";
+import { ORBIT_TABS } from "@/hooks/useConversations";
 import OrbitStoriesBar from "./OrbitStoriesBar";
 import OrbitConversationCard from "./OrbitConversationCard";
 import OrbitMessageSearch from "./OrbitMessageSearch";

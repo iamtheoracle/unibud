@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
   CheckCircle2, Clock, Circle, AlertTriangle, Shield,
-  Zap, Radio, TrendingUp, Layers, Package, ArrowRight, GraduationCap,
+  Zap, Radio, TrendingUp, Layers, Package, GraduationCap,
 } from "lucide-react";
 import { getMigrationReport } from "@/lib/os/migrationTracker";
 import { useRealtimeEngine } from "@/lib/realtime/useRealtimeChannel";

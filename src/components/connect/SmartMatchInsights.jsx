@@ -1,10 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import {
-  BookOpen, Users, GitBranch, Heart, CalendarDays, FlaskConical,
+  BookOpen, Users, Heart, CalendarDays, FlaskConical,
   Target, Clock, Sparkles, TrendingUp,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 const MATCH_REASONS = {

@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import {
-  CheckCircle2, Circle, Clock, FileText, StickyNote, TrendingUp,
-  Calendar, ListTodo, Layout, Sparkles, Award, Users,
+  CheckCircle2, Circle, Clock, FileText, StickyNote,
+  Calendar, ListTodo, Layout, Sparkles, Award,
 } from "lucide-react";
 
 const EASE = [0.16, 1, 0.3, 1];

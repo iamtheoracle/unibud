@@ -4,7 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { SectionHeader, StatusPill, LoadingState } from "@/components/oracle/oracle-ui";
 import {
   Activity, Server, Database, ShieldCheck, HardDrive, Bot, Cpu, Zap, Brain,
-  AlertTriangle, CheckCircle2, Clock, MapPin, Wifi, TrendingUp,
+  AlertTriangle, CheckCircle2, Clock, MapPin, Wifi,
 } from "lucide-react";
 
 const dayKey = (d) => (d ? new Date(d).toISOString().slice(0, 10) : "—");

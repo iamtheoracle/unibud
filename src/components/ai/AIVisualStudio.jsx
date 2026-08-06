@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Sparkles, Image as ImageIcon, Download, X, RefreshCw, Wand2, Edit3, Loader2,
+  Sparkles, Image as ImageIcon, Download, Wand2, Loader2,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";

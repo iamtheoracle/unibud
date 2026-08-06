@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { MessageCircle, Users, BookOpen, ShoppingBag } from "lucide-react";
-import { Image } from "@/components/ui/image";
 
 const EASE = [0.16, 1, 0.3, 1];
 

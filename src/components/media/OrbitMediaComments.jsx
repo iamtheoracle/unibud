@@ -6,7 +6,6 @@ import {
   MessageCircle, ArrowUpDown,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
-import { Image } from "@/components/ui/image";
 import {
   getUserReaction, setUserReaction,
   timeAgo, formatCount,

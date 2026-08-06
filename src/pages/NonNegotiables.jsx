@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Check, Lock, FileText } from "lucide-react";
+import { ArrowLeft, Check, Lock } from "lucide-react";
 import {
   NON_NEGOTIABLES_PREAMBLE,
   NON_NEGOTIABLES_RULES,

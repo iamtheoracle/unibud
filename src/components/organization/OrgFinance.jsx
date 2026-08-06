@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
-import { TrendingUp, TrendingDown, Plus, Wallet, Receipt } from "lucide-react";
-import { formatCurrency, FINANCE_CATEGORIES, isOfficer, timeAgo } from "./orgConstants";
+import { TrendingUp, TrendingDown, Plus, Wallet } from "lucide-react";
+import { formatCurrency, FINANCE_CATEGORIES, isOfficer } from "./orgConstants";
 import EmptyState from "@/components/ui/EmptyState";
 
 export default function OrgFinance({ club, user }) {

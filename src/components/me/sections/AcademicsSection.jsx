@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  BookOpen, GraduationCap, Calendar, ClipboardList, Award, ChevronRight,
+  BookOpen, GraduationCap, Calendar, ClipboardList, Award,
 } from "lucide-react";
 import AcademicProgressSection from "@/components/me/AcademicProgressSection";
 import AcademicTimelinePreview from "@/components/me/AcademicTimelinePreview";

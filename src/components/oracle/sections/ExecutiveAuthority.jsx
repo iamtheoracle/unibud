@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, LogOut, Clock, AlertTriangle, Power, ToggleLeft, ToggleRight, Loader2, Activity } from "lucide-react";
+import { ShieldCheck, LogOut, Clock, Power, ToggleLeft, ToggleRight, Loader2, Activity } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { levelByCode } from "@/lib/oracle/authorityLevels";

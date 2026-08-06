@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Clock, AlertCircle, TrendingUp, MapPin, CheckCircle2 } from "lucide-react";
+import { Clock, AlertCircle, TrendingUp, CheckCircle2 } from "lucide-react";
 import { useAcademicData } from "@/lib/academic/useAcademicData";
 
 const EASE = [0.16, 1, 0.3, 1];
