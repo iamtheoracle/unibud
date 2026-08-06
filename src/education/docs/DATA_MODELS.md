@@ -1,153 +1,211 @@
 # Education Module Data Models
 
-All interfaces are in `src/education/types/index.ts`.
+## Shared Foundation
 
-## IProgram
-
+### IProgram
 ```typescript
 interface IProgram {
   id: string;
-  name: string;          // e.g. "WAEC", "University Degree"
-  code?: string;         // e.g. "WAEC-2024"
-  description?: string;
-  type: string;          // e.g. "preUniversity", "university"
+  name: string;          // "WAEC 2024", "B.Sc. Computer Science"
+  type: string;          // "waec" | "neco" | "jamb" | "university_degree" | ...
+  organizationType: 'university' | 'learningOrg';
   subjects: string[];    // Subject IDs
-  metadata?: Record<string, unknown>;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-## IOrganization
-
-```typescript
-interface IOrganization {
-  id: string;
-  name: string;
-  type: string;          // e.g. "University", "ExamCentre", "TutorialCentre"
   description?: string;
-  educators: string[];   // Educator IDs
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-## IStudent
-
-```typescript
-interface IStudent {
-  id: string;
-  userId: string;            // Oracle User ID
-  organizationId: string;
-  programId: string;
-  enrollmentNumber?: string;
-  status: 'active' | 'inactive' | 'graduated' | 'withdrawn';
-  metadata?: Record<string, unknown>;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-## IEducator
-
-```typescript
-interface IEducator {
-  id: string;
-  userId: string;            // Oracle User ID
-  bio?: string;
-  qualifications?: string[];
-  organizations: string[];   // Organization IDs
-  metadata?: Record<string, unknown>;
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-## IClass
-
+### IClass
 ```typescript
 interface IClass {
   id: string;
-  organizationId: string;
+  organizationId: string; // University ID or Learning Org ID
   programId: string;
   subjectId: string;
   educatorId: string;
   name: string;
   code?: string;
-  schedule?: {
-    days?: string[];
-    time?: string;
-    location?: string;
-  };
+  schedule?: unknown;
   capacity?: number;
-  students: string[];        // Student IDs
+  students: string[];
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-## ISubject
-
+### ISubject
 ```typescript
 interface ISubject {
   id: string;
   programId: string;
-  code: string;              // e.g. "ENG101"
+  code: string;          // "MATH101"
   name: string;
   description?: string;
-  credits?: number;
-  metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-## IEnrollment
+### IEducator
+```typescript
+interface IEducator {
+  id: string;
+  email: string;
+  name: string;
+  bio?: string;
+  organizationIds: string[];  // Can belong to multiple orgs
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
 
+### IEnrollment
 ```typescript
 interface IEnrollment {
   id: string;
   studentId: string;
   classId: string;
-  status: 'pending' | 'approved' | 'rejected' | 'withdrawn';
+  status: 'pending' | 'approved' | 'withdrawn';
   enrolledAt: Date;
-  approvedAt?: Date;
-  withdrawnAt?: Date;
-  metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-## IPermission
-
+### IPermission
 ```typescript
 interface IPermission {
   id: string;
-  name: string;              // e.g. "student.view_class"
+  name: string;          // e.g., "course:read"
   description?: string;
-  scope: 'global' | 'organization' | 'class';
-  metadata?: Record<string, unknown>;
+  scope: string;         // "global" | "university" | "learningOrg" | ...
   createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
-## IInvitation
-
+### IInvitation
 ```typescript
 interface IInvitation {
   id: string;
   email: string;
-  token: string;             // URL-safe random token (64 hex chars)
-  type: 'student' | 'educator';
-  organizationId?: string;
+  type: 'educator' | 'student' | 'admin';
+  organizationId: string;
   programId?: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'revoked';
+  token: string;
+  status: 'pending' | 'accepted' | 'rejected' | 'expired';
   data?: Record<string, unknown>;
-  expiresAt: Date;           // 72 hours from creation
-  acceptedAt?: Date;
+  expiresAt: Date;
   createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+---
+
+## University Ecosystem
+
+### IUniversity
+```typescript
+interface IUniversity {
+  id: string;
+  name: string;
+  code: string;          // "UNILAG"
+  description?: string;
+  faculties: string[];   // Faculty IDs
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### IFaculty
+```typescript
+interface IFaculty {
+  id: string;
+  universityId: string;
+  name: string;
+  code: string;          // "Engineering"
+  departments: string[]; // Department IDs
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### IDepartment
+```typescript
+interface IDepartment {
+  id: string;
+  facultyId: string;
+  name: string;
+  code: string;          // "Computer Science"
+  courses: string[];     // Course IDs
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### ICourse
+```typescript
+interface ICourse {
+  id: string;
+  departmentId: string;
+  code: string;          // "CS101"
+  name: string;
+  description?: string;
+  credits?: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### IUniversityStudent
+```typescript
+interface IUniversityStudent {
+  id: string;
+  userId: string;        // Oracle User ID
+  universityId: string;
+  departmentId: string;
+  courseId: string;
+  matriculationNumber?: string;
+  level?: '100' | '200' | '300' | '400' | '500' | '600';
+  status: 'active' | 'inactive' | 'graduated' | 'withdrawn';
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+---
+
+## Learning Organization Ecosystem
+
+### ILearningOrganization
+```typescript
+type LearningOrgType = 'examCentre' | 'tutorialCentre' | 'academy' | 'trainingCentre';
+
+interface ILearningOrganization {
+  id: string;
+  name: string;
+  type: LearningOrgType;
+  description?: string;
+  educators: string[];   // Educator IDs
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### ILearningOrgStudent
+```typescript
+interface ILearningOrgStudent {
+  id: string;
+  userId: string;        // Oracle User ID
+  organizationId: string;
+  programId: string;     // WAEC, NECO, JAMB, etc.
+  enrollmentNumber?: string;
+  status: 'active' | 'inactive' | 'completed' | 'withdrawn';
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```

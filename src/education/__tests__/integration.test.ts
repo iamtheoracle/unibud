@@ -1,154 +1,118 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { OracleKernel } from '../../oracle/kernel/oracle-kernel.js';
-import { EducationModule } from '../module.js';
-import type { ProgramService } from '../services/program.service.js';
-import type { OrganizationService } from '../services/organization.service.js';
-import type { StudentService } from '../services/student.service.js';
-import type { EducatorService } from '../services/educator.service.js';
-import type { ClassService } from '../services/class.service.js';
-import type { SubjectService } from '../services/subject.service.js';
-import type { EnrollmentService } from '../services/enrollment.service.js';
-import type { PermissionService } from '../services/permission.service.js';
-import type { InvitationService } from '../services/invitation.service.js';
-import { DEFAULT_PERMISSIONS } from '../types/index.js';
+import { EducationModule } from '../module';
+import type { IOracle, IOracleEvent, IOracleCommand } from '../oracle.interface';
 
-describe('Education Module ↔ Oracle Integration', () => {
-  let oracle: OracleKernel;
-  let education: EducationModule;
+// ─── Mock Oracle ──────────────────────────────────────────────────────────────
+function createMockOracle(): IOracle {
+  const modules = new Map();
+  const events: IOracleEvent[] = [];
+  return {
+    registerModule: (m) => modules.set(m.name, m),
+    getModule: (name) => modules.get(name),
+    emit: (event) => events.push(event),
+    execute: async (_cmd: IOracleCommand) => null,
+    logger: {
+      info: () => {},
+      warn: () => {},
+      error: () => {},
+      debug: () => {},
+    },
+  };
+}
+
+describe('EducationModule Integration', () => {
+  let module: EducationModule;
+  let oracle: IOracle;
 
   beforeEach(async () => {
-    oracle = new OracleKernel();
-    education = new EducationModule();
-    await oracle.modules.register(education);
-    await oracle.bootstrap();
+    module = new EducationModule();
+    oracle = createMockOracle();
+    await module.initialize(oracle);
   });
 
-  it('registers education module with Oracle', () => {
-    expect(oracle.modules.has('education')).toBe(true);
-    expect(oracle.modules.get('education')).toBe(education);
+  it('registers with oracle on initialize', () => {
+    expect(oracle.getModule('education')).toBe(module);
   });
 
-  it('registers all 9 services with Oracle DI', () => {
-    const tokens = [
-      'ProgramService',
-      'OrganizationService',
-      'StudentService',
-      'EducatorService',
-      'ClassService',
-      'SubjectService',
-      'EnrollmentService',
-      'PermissionService',
-      'InvitationService',
-    ];
-    for (const token of tokens) {
-      expect(oracle.dependencies.has(token)).toBe(true);
-    }
+  it('has correct name and version', () => {
+    expect(module.name).toBe('education');
+    expect(module.version).toBe('1.0.0');
   });
 
-  it('resolves services from Oracle DI', () => {
-    const programs = oracle.dependencies.resolve<ProgramService>('ProgramService');
-    expect(typeof programs.createProgram).toBe('function');
+  it('registers default permissions on initialize', () => {
+    const perms = module.permissions.listPermissions();
+    expect(perms.length).toBeGreaterThan(0);
+    const names = perms.map(p => p.name);
+    expect(names).toContain('university:create');
+    expect(names).toContain('organization:create');
+    expect(names).toContain('enrollment:create');
   });
 
-  it('registers 9 capabilities with Oracle', () => {
-    const caps = oracle.capabilities.listByProvider('education');
-    expect(caps.length).toBeGreaterThanOrEqual(9);
-    const capNames = caps.map((c) => c.name);
-    expect(capNames).toContain('education.manage_programs');
-    expect(capNames).toContain('education.manage_students');
-    expect(capNames).toContain('education.manage_enrollments');
+  it('shuts down gracefully', async () => {
+    await expect(module.shutdown()).resolves.toBeUndefined();
   });
 
-  it('registers resources with Oracle', () => {
-    const resources = oracle.resources.listByProvider('education');
-    expect(resources.length).toBeGreaterThanOrEqual(7);
-    const types = resources.map((r) => r.id);
-    expect(types).toContain('education.programs');
-    expect(types).toContain('education.classes');
-  });
+  describe('University Ecosystem Workflow', () => {
+    it('creates full university hierarchy', () => {
+      const uni = module.universities.createUniversity('UNILAG', 'UNILAG', 'University of Lagos');
+      const faculty = module.faculties.createFaculty(uni.id, 'Engineering', 'ENG');
+      module.universities.addFaculty(uni.id, faculty.id);
+      const dept = module.departments.createDepartment(faculty.id, 'Computer Science', 'CS');
+      module.faculties.addDepartment(faculty.id, dept.id);
+      const course = module.courses.createCourse(dept.id, 'CS101', 'Intro to CS', undefined, 3);
+      module.departments.addCourse(dept.id, course.id);
 
-  it('registers education health check', async () => {
-    const result = await oracle.health.check('education');
-    expect(result.status).toBe('healthy');
-    expect(result.name).toBe('education');
-  });
-
-  it('seeds default permissions', () => {
-    for (const { name } of DEFAULT_PERMISSIONS) {
-      expect(
-        education.permissions.listPermissions('nobody').find(() => true) ?? null,
-      ).toBe(null); // user has none
-      // Verify the permission is defined by granting it
-      expect(() =>
-        education.permissions.grantPermission('user-test', name),
-      ).not.toThrow();
-    }
-  });
-
-  it('full end-to-end education workflow', () => {
-    const programs = oracle.dependencies.resolve<ProgramService>('ProgramService');
-    const orgs = oracle.dependencies.resolve<OrganizationService>('OrganizationService');
-    const students = oracle.dependencies.resolve<StudentService>('StudentService');
-    const educators = oracle.dependencies.resolve<EducatorService>('EducatorService');
-    const classes = oracle.dependencies.resolve<ClassService>('ClassService');
-    const subjects = oracle.dependencies.resolve<SubjectService>('SubjectService');
-    const enrollments = oracle.dependencies.resolve<EnrollmentService>('EnrollmentService');
-    const permissions = oracle.dependencies.resolve<PermissionService>('PermissionService');
-    const invitations = oracle.dependencies.resolve<InvitationService>('InvitationService');
-
-    // 1. Create a program
-    const program = programs.createProgram('WAEC 2025', 'West African Exams', { type: 'preUniversity' });
-    expect(program.id).toBeTruthy();
-
-    // 2. Create a subject and link to program
-    const subject = subjects.createSubject(program.id, 'ENG101', 'English Language');
-    programs.addSubject(program.id, subject.id);
-    expect(programs.getProgram(program.id).subjects).toContain(subject.id);
-
-    // 3. Create an organization
-    const org = orgs.createOrganization('Lagos Tutorial Centre', 'TutorialCentre');
-    expect(org.id).toBeTruthy();
-
-    // 4. Register and assign an educator
-    const educator = educators.registerEducator('user-edu-1', 'MSc English');
-    educators.assignEducator(educator.id, org.id);
-    orgs.addEducator(org.id, educator.id);
-    expect(educators.getEducator(educator.id).organizations).toContain(org.id);
-
-    // 5. Create a class
-    const cls = classes.createClass(org.id, program.id, subject.id, educator.id, 'English A', {
-      days: ['Monday'],
-      time: '10:00',
+      const foundUni = module.universities.getUniversity(uni.id);
+      expect(foundUni.faculties).toContain(faculty.id);
+      const foundFac = module.faculties.getFaculty(faculty.id);
+      expect(foundFac.departments).toContain(dept.id);
+      const foundDept = module.departments.getDepartment(dept.id);
+      expect(foundDept.courses).toContain(course.id);
     });
-    expect(cls.students).toHaveLength(0);
 
-    // 6. Enroll a student
-    const student = students.enrollStudent(org.id, 'user-stu-1', program.id);
-    classes.addStudent(cls.id, student.id);
-    expect(classes.getClass(cls.id).students).toContain(student.id);
-
-    // 7. Class enrollment with approval flow
-    const enrollment = enrollments.enrollInClass(student.id, cls.id);
-    expect(enrollment.status).toBe('pending');
-    enrollments.approveEnrollment(enrollment.id);
-    expect(enrollments.getEnrollment(enrollment.id).status).toBe('approved');
-
-    // 8. Permission check
-    permissions.grantPermission(student.userId, 'student.view_class', org.id, cls.id);
-    expect(
-      permissions.hasPermission(student.userId, 'student.view_class', { classId: cls.id }),
-    ).toBe(true);
-
-    // 9. Invitation
-    const inv = invitations.sendInvitation('new@student.com', 'student', org.id, program.id);
-    expect(inv.status).toBe('pending');
-    invitations.acceptInvitation(inv.token);
-    expect(invitations.getInvitation(inv.token).status).toBe('accepted');
+    it('enrolls university student', () => {
+      const uni = module.universities.createUniversity('ABU', 'ABU');
+      const fac = module.faculties.createFaculty(uni.id, 'Sciences', 'SCI');
+      const dept = module.departments.createDepartment(fac.id, 'Physics', 'PHY');
+      const crs = module.courses.createCourse(dept.id, 'PHY101', 'Mechanics');
+      const student = module.universityStudents.enrollStudent(uni.id, 'user123', dept.id, crs.id, 'ABU/2024/0001', '100');
+      expect(student.status).toBe('active');
+      expect(student.level).toBe('100');
+    });
   });
 
-  it('Oracle lifecycle correctly starts and stops', async () => {
-    expect(oracle.lifecycle.getStatus()).toBe('running');
-    await oracle.shutdown();
-    expect(oracle.lifecycle.getStatus()).toBe('stopped');
+  describe('Learning Organization Ecosystem Workflow', () => {
+    it('creates a learning org and enrolls students', () => {
+      const prog = module.programs.createProgram('WAEC 2025', 'waec', 'learningOrg');
+      const org = module.organizations.createOrganization('Top Exam Centre', 'examCentre', 'WAEC prep');
+      const subject = module.subjects.createSubject(prog.id, 'MATH', 'Mathematics');
+      const educator = module.educators.registerEducator('teach@example.com', 'Mr. Obi');
+      module.educators.assignToOrganization(educator.id, org.id);
+      module.organizations.addEducator(org.id, educator.id);
+      const cls = module.classes.createClass(org.id, prog.id, subject.id, educator.id, 'WAEC Maths Class A');
+      const student = module.orgStudents.enrollStudent(org.id, 'user456', prog.id, 'ENR-001');
+      const enrollment = module.enrollments.enrollInClass(student.id, cls.id);
+      module.enrollments.approveEnrollment(enrollment.id);
+
+      expect(student.organizationId).toBe(org.id);
+      const approvedEnrollment = module.enrollments.getEnrollment(enrollment.id);
+      expect(approvedEnrollment.status).toBe('approved');
+    });
+  });
+
+  describe('Shared Foundation Across Both Ecosystems', () => {
+    it('uses same class service for both ecosystems', () => {
+      const uniProg = module.programs.createProgram('B.Sc. CS', 'university_degree', 'university');
+      const orgProg = module.programs.createProgram('JAMB', 'jamb', 'learningOrg');
+      const subject = module.subjects.createSubject(uniProg.id, 'CS101', 'Intro CS');
+      const educator = module.educators.registerEducator('prof@uni.edu', 'Prof. Ada');
+
+      const uniClass = module.classes.createClass('uni1', uniProg.id, subject.id, educator.id, 'CS101 Lecture A');
+      const orgClass = module.classes.createClass('org1', orgProg.id, subject.id, educator.id, 'JAMB CS');
+
+      expect(module.classes.listClasses('uni1')).toHaveLength(1);
+      expect(module.classes.listClasses('org1')).toHaveLength(1);
+      expect(module.classes.listClasses()).toHaveLength(2);
+    });
   });
 });

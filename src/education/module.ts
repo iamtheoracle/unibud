@@ -1,119 +1,131 @@
-/**
- * Education Module — IEducationModule Implementation
- *
- * Registers all education services with Oracle Kernel.
- * Oracle remains domain-agnostic — this module owns all education logic.
- */
+import type { IModule, IOracle } from './oracle.interface';
 
-import type { IOracle, ILogger } from '../oracle/kernel/types.js';
-import type { IEducationModule } from './types/index.js';
-import { DEFAULT_PERMISSIONS } from './types/index.js';
+// Shared foundation services
+import { ProgramService } from './services/shared/program.service';
+import { ClassService } from './services/shared/class.service';
+import { SubjectService } from './services/shared/subject.service';
+import { EducatorService } from './services/shared/educator.service';
+import { EnrollmentService } from './services/shared/enrollment.service';
+import { PermissionService } from './services/shared/permission.service';
+import { InvitationService } from './services/shared/invitation.service';
 
-import { ProgramService } from './services/program.service.js';
-import { OrganizationService } from './services/organization.service.js';
-import { StudentService } from './services/student.service.js';
-import { EducatorService } from './services/educator.service.js';
-import { ClassService } from './services/class.service.js';
-import { SubjectService } from './services/subject.service.js';
-import { EnrollmentService } from './services/enrollment.service.js';
-import { PermissionService } from './services/permission.service.js';
-import { InvitationService } from './services/invitation.service.js';
+// University ecosystem services
+import { UniversityService } from './services/university/university.service';
+import { FacultyService } from './services/university/faculty.service';
+import { DepartmentService } from './services/university/department.service';
+import { CourseService } from './services/university/course.service';
+import { UniversityStudentService } from './services/university/university-student.service';
 
-export const EDUCATION_VERSION = '1.0.0';
+// Learning organization ecosystem services
+import { LearningOrganizationService } from './services/learning-org/organization.service';
+import { LearningOrgStudentService } from './services/learning-org/org-student.service';
+
+export interface IEducationModule extends IModule {
+  name: 'education';
+  version: '1.0.0';
+
+  // Shared foundation
+  programs: ProgramService;
+  classes: ClassService;
+  subjects: SubjectService;
+  educators: EducatorService;
+  enrollments: EnrollmentService;
+  permissions: PermissionService;
+  invitations: InvitationService;
+
+  // University ecosystem
+  universities: UniversityService;
+  faculties: FacultyService;
+  departments: DepartmentService;
+  courses: CourseService;
+  universityStudents: UniversityStudentService;
+
+  // Learning organization ecosystem
+  organizations: LearningOrganizationService;
+  orgStudents: LearningOrgStudentService;
+}
 
 export class EducationModule implements IEducationModule {
   readonly name = 'education' as const;
-  readonly version = EDUCATION_VERSION;
-  readonly description = 'Education Module — Programs, Organizations, Classes, Students, Educators';
+  readonly version = '1.0.0' as const;
 
-  private moduleLogger?: ILogger;
+  // Shared foundation services
+  readonly programs = new ProgramService();
+  readonly classes = new ClassService();
+  readonly subjects = new SubjectService();
+  readonly educators = new EducatorService();
+  readonly enrollments = new EnrollmentService();
+  readonly permissions = new PermissionService();
+  readonly invitations = new InvitationService();
 
-  // Services are created lazily on initialize() to ensure the logger is available.
-  programs!: ProgramService;
-  organizations!: OrganizationService;
-  students!: StudentService;
-  educators!: EducatorService;
-  classes!: ClassService;
-  subjects!: SubjectService;
-  enrollments!: EnrollmentService;
-  permissions!: PermissionService;
-  invitations!: InvitationService;
+  // University ecosystem services
+  readonly universities = new UniversityService();
+  readonly faculties = new FacultyService();
+  readonly departments = new DepartmentService();
+  readonly courses = new CourseService();
+  readonly universityStudents = new UniversityStudentService();
+
+  // Learning organization ecosystem services
+  readonly organizations = new LearningOrganizationService();
+  readonly orgStudents = new LearningOrgStudentService();
+
+  private oracle?: IOracle;
 
   async initialize(oracle: IOracle): Promise<void> {
-    this.moduleLogger = oracle.logger.child('EducationModule');
-    const logger = this.moduleLogger;
-    logger.info('Education Module initializing…');
-
-    // 1. Create service instances
-    this.programs = new ProgramService(oracle.logger);
-    this.organizations = new OrganizationService(oracle.logger);
-    this.students = new StudentService(oracle.logger);
-    this.educators = new EducatorService(oracle.logger);
-    this.classes = new ClassService(oracle.logger);
-    this.subjects = new SubjectService(oracle.logger);
-    this.enrollments = new EnrollmentService(oracle.logger);
-    this.permissions = new PermissionService(oracle.logger);
-    this.invitations = new InvitationService(oracle.logger);
-
-    // 2. Register services with Oracle DI
-    oracle.dependencies.register('ProgramService', this.programs);
-    oracle.dependencies.register('OrganizationService', this.organizations);
-    oracle.dependencies.register('StudentService', this.students);
-    oracle.dependencies.register('EducatorService', this.educators);
-    oracle.dependencies.register('ClassService', this.classes);
-    oracle.dependencies.register('SubjectService', this.subjects);
-    oracle.dependencies.register('EnrollmentService', this.enrollments);
-    oracle.dependencies.register('PermissionService', this.permissions);
-    oracle.dependencies.register('InvitationService', this.invitations);
-
-    // 3. Register capabilities with Oracle
-    const capabilities = [
-      'education.manage_programs',
-      'education.manage_organizations',
-      'education.manage_students',
-      'education.manage_educators',
-      'education.manage_classes',
-      'education.manage_subjects',
-      'education.manage_enrollments',
-      'education.manage_permissions',
-      'education.manage_invitations',
-    ];
-    for (const cap of capabilities) {
-      oracle.capabilities.register({ name: cap, provider: 'education', version: EDUCATION_VERSION });
-    }
-
-    // 4. Register resources with Oracle
-    oracle.resources.register({ id: 'education.programs', type: 'resource_collection', provider: 'education', name: 'Academic Programs' });
-    oracle.resources.register({ id: 'education.organizations', type: 'resource_collection', provider: 'education', name: 'Learning Organizations' });
-    oracle.resources.register({ id: 'education.students', type: 'resource_collection', provider: 'education', name: 'Students' });
-    oracle.resources.register({ id: 'education.educators', type: 'resource_collection', provider: 'education', name: 'Educators' });
-    oracle.resources.register({ id: 'education.classes', type: 'resource_collection', provider: 'education', name: 'Classes' });
-    oracle.resources.register({ id: 'education.subjects', type: 'resource_collection', provider: 'education', name: 'Subjects' });
-    oracle.resources.register({ id: 'education.enrollments', type: 'resource_collection', provider: 'education', name: 'Enrollments' });
-
-    // 5. Seed default permissions
-    for (const { name, description, scope } of DEFAULT_PERMISSIONS) {
-      this.permissions.definePermission(name, description, scope);
-    }
-
-    // 6. Register health check
-    oracle.health.register('education', async () => ({
-      name: 'education',
-      status: 'healthy',
-      message: 'Education Module operational',
-      checkedAt: new Date(),
-      metadata: { version: EDUCATION_VERSION },
-    }));
-
-    logger.info('Education Module initialized.', { version: EDUCATION_VERSION });
+    this.oracle = oracle;
+    oracle.registerModule(this);
+    oracle.logger.info('Education Module initialized', { name: this.name, version: this.version });
+    this.registerDefaultPermissions();
   }
 
   async shutdown(): Promise<void> {
-    // In-memory stores are cleared automatically on process exit.
-    // Persistent stores would flush/disconnect here.
-    this.moduleLogger?.info('Education Module shut down.');
+    this.oracle?.logger.info('Education Module shutting down', { name: this.name });
+    this.oracle = undefined;
+  }
+
+  private registerDefaultPermissions(): void {
+    const defaultPermissions = [
+      // University ecosystem
+      { name: 'university:create', description: 'Create universities', scope: 'university' },
+      { name: 'university:read', description: 'Read university data', scope: 'university' },
+      { name: 'university:update', description: 'Update university data', scope: 'university' },
+      { name: 'university:delete', description: 'Delete universities', scope: 'university' },
+      { name: 'faculty:create', description: 'Create faculties', scope: 'university' },
+      { name: 'faculty:read', description: 'Read faculty data', scope: 'university' },
+      { name: 'faculty:update', description: 'Update faculty data', scope: 'university' },
+      { name: 'faculty:delete', description: 'Delete faculties', scope: 'university' },
+      { name: 'department:create', description: 'Create departments', scope: 'university' },
+      { name: 'department:read', description: 'Read department data', scope: 'university' },
+      { name: 'department:update', description: 'Update department data', scope: 'university' },
+      { name: 'department:delete', description: 'Delete departments', scope: 'university' },
+      { name: 'course:create', description: 'Create courses', scope: 'university' },
+      { name: 'course:read', description: 'Read course data', scope: 'university' },
+      { name: 'course:update', description: 'Update course data', scope: 'university' },
+      { name: 'course:delete', description: 'Delete courses', scope: 'university' },
+      // Learning org ecosystem
+      { name: 'organization:create', description: 'Create learning organizations', scope: 'learningOrg' },
+      { name: 'organization:read', description: 'Read organization data', scope: 'learningOrg' },
+      { name: 'organization:update', description: 'Update organization data', scope: 'learningOrg' },
+      { name: 'organization:delete', description: 'Delete organizations', scope: 'learningOrg' },
+      // Shared
+      { name: 'program:create', description: 'Create academic programs', scope: 'global' },
+      { name: 'program:read', description: 'Read program data', scope: 'global' },
+      { name: 'program:update', description: 'Update program data', scope: 'global' },
+      { name: 'class:create', description: 'Create classes', scope: 'global' },
+      { name: 'class:read', description: 'Read class data', scope: 'global' },
+      { name: 'class:update', description: 'Update class data', scope: 'global' },
+      { name: 'enrollment:create', description: 'Enroll in classes', scope: 'global' },
+      { name: 'enrollment:approve', description: 'Approve enrollments', scope: 'global' },
+      { name: 'educator:register', description: 'Register educators', scope: 'global' },
+      { name: 'invitation:send', description: 'Send invitations', scope: 'global' },
+    ];
+
+    for (const perm of defaultPermissions) {
+      try {
+        this.permissions.definePermission(perm.name, perm.description, perm.scope);
+      } catch {
+        // Permission may already exist — skip
+      }
+    }
   }
 }
-
-/** Singleton Education Module instance. */
-export const educationModule = new EducationModule();

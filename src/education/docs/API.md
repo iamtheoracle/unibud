@@ -1,158 +1,155 @@
-# Education Module API Reference
+# Education Module API
 
-All services are resolved from Oracle's DI container after `oracle.bootstrap()`.
+All routes follow the pattern `/api/education/<resource>`.
 
-## Bootstrap
+## Shared Foundation Endpoints
 
-```typescript
-import { oracle } from '@/oracle/kernel';
-import { educationModule } from '@/education';
+### Academic Programs — `/api/education/programs`
 
-await oracle.modules.register(educationModule);
-await oracle.bootstrap();
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/programs` | Create academic program |
+| GET | `/api/education/programs` | List programs (query: `type`, `organizationType`) |
+| GET | `/api/education/programs/:id` | Get program by ID |
+| PUT | `/api/education/programs/:id` | Update program |
+| DELETE | `/api/education/programs/:id` | Delete program |
 
----
+### Classes — `/api/education/classes`
 
-## Programs API
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/classes` | Create class |
+| GET | `/api/education/classes` | List classes (query: `organizationId`, `programId`, `educatorId`) |
+| GET | `/api/education/classes/:id` | Get class |
+| PUT | `/api/education/classes/:id` | Update class |
+| DELETE | `/api/education/classes/:id` | Delete class |
 
-```typescript
-const programs = oracle.dependencies.resolve('ProgramService');
+### Subjects — `/api/education/subjects`
 
-// Create
-programs.createProgram(name, description?, metadata?)   → IProgram
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/subjects` | Create subject |
+| GET | `/api/education/subjects` | List subjects (query: `programId`) |
+| GET | `/api/education/subjects/:id` | Get subject |
+| PUT | `/api/education/subjects/:id` | Update subject |
+| DELETE | `/api/education/subjects/:id` | Delete subject |
 
-// Read
-programs.getProgram(id)                                 → IProgram
-programs.listPrograms(filter?)                          → IProgram[]
+### Educators — `/api/education/educators`
 
-// Update
-programs.updateProgram(id, data)                        → IProgram
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/educators` | Register educator |
+| GET | `/api/education/educators` | List educators (query: `organizationId`) |
+| GET | `/api/education/educators/:id` | Get educator |
+| PUT | `/api/education/educators/:id` | Update educator |
+| POST | `/api/education/educators/:id/organizations` | Assign to organization |
 
-// Delete
-programs.deleteProgram(id)                              → void
+### Enrollments — `/api/education/enrollments`
 
-// Subjects
-programs.addSubject(programId, subjectId)               → void
-programs.removeSubject(programId, subjectId)            → void
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/enrollments` | Enroll student in class |
+| GET | `/api/education/enrollments` | List enrollments (query: `studentId`, `classId`) |
+| GET | `/api/education/enrollments/:id` | Get enrollment |
+| DELETE | `/api/education/enrollments` | Withdraw from class |
+| POST | `/api/education/enrollments/:id/approve` | Approve enrollment |
 
----
+### Permissions — `/api/education/permissions`
 
-## Organizations API
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/permissions` | Define permission |
+| GET | `/api/education/permissions` | List permissions |
+| POST | `/api/education/permissions/grant` | Grant permission to user |
+| POST | `/api/education/permissions/revoke` | Revoke permission from user |
+| GET | `/api/education/permissions/check` | Check if user has permission |
 
-```typescript
-const orgs = oracle.dependencies.resolve('OrganizationService');
+### Invitations — `/api/education/invitations`
 
-orgs.createOrganization(name, type, metadata?)          → IOrganization
-orgs.getOrganization(id)                                → IOrganization
-orgs.listOrganizations(filter?)                         → IOrganization[]
-orgs.updateOrganization(id, data)                       → IOrganization
-orgs.deleteOrganization(id)                             → void
-orgs.addEducator(orgId, educatorId)                     → void
-orgs.removeEducator(orgId, educatorId)                  → void
-```
-
----
-
-## Students API
-
-```typescript
-const students = oracle.dependencies.resolve('StudentService');
-
-students.enrollStudent(orgId, userId, programId, meta?) → IStudent
-students.getStudent(id)                                 → IStudent
-students.listStudents(orgId?, programId?)               → IStudent[]
-students.updateStudent(id, data)                        → IStudent
-students.activateStudent(id)                            → void
-students.deactivateStudent(id)                          → void
-```
-
----
-
-## Educators API
-
-```typescript
-const educators = oracle.dependencies.resolve('EducatorService');
-
-educators.registerEducator(userId, bio?, quals?)        → IEducator
-educators.getEducator(id)                               → IEducator
-educators.listEducators(orgId?)                         → IEducator[]
-educators.updateEducator(id, data)                      → IEducator
-educators.assignEducator(educatorId, orgId)             → void
-educators.unassignEducator(educatorId, orgId)           → void
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/invitations` | Send invitation |
+| GET | `/api/education/invitations` | List invitations |
+| GET | `/api/education/invitations/:id` | Get invitation |
+| POST | `/api/education/invitations/accept` | Accept invitation by token |
+| POST | `/api/education/invitations/reject` | Reject invitation by token |
 
 ---
 
-## Classes API
+## University Ecosystem Endpoints
 
-```typescript
-const classes = oracle.dependencies.resolve('ClassService');
+### Universities — `/api/education/universities`
 
-classes.createClass(orgId, programId, subjectId, educatorId, name, schedule?) → IClass
-classes.getClass(id)                                                           → IClass
-classes.listClasses(orgId?, programId?, educatorId?)                          → IClass[]
-classes.updateClass(id, data)                                                  → IClass
-classes.deleteClass(id)                                                        → void
-classes.addStudent(classId, studentId)                                         → void
-classes.removeStudent(classId, studentId)                                      → void
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/universities` | Create university |
+| GET | `/api/education/universities` | List all universities |
+| GET | `/api/education/universities/:id` | Get university |
+| PUT | `/api/education/universities/:id` | Update university |
+| DELETE | `/api/education/universities/:id` | Delete university |
 
----
+### Faculties — `/api/education/faculties`
 
-## Subjects API
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/faculties` | Create faculty |
+| GET | `/api/education/faculties` | List faculties (query: `universityId`) |
+| GET | `/api/education/faculties/:id` | Get faculty |
+| PUT | `/api/education/faculties/:id` | Update faculty |
+| DELETE | `/api/education/faculties/:id` | Delete faculty |
 
-```typescript
-const subjects = oracle.dependencies.resolve('SubjectService');
+### Departments — `/api/education/departments`
 
-subjects.createSubject(programId, code, name, description?) → ISubject
-subjects.getSubject(id)                                      → ISubject
-subjects.listSubjects(programId?)                            → ISubject[]
-subjects.updateSubject(id, data)                             → ISubject
-subjects.deleteSubject(id)                                   → void
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/departments` | Create department |
+| GET | `/api/education/departments` | List departments (query: `facultyId`) |
+| GET | `/api/education/departments/:id` | Get department |
+| PUT | `/api/education/departments/:id` | Update department |
+| DELETE | `/api/education/departments/:id` | Delete department |
 
----
+### Courses — `/api/education/courses`
 
-## Enrollments API
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/courses` | Create course |
+| GET | `/api/education/courses` | List courses (query: `departmentId`) |
+| GET | `/api/education/courses/:id` | Get course |
+| PUT | `/api/education/courses/:id` | Update course |
+| DELETE | `/api/education/courses/:id` | Delete course |
 
-```typescript
-const enrollments = oracle.dependencies.resolve('EnrollmentService');
+### University Students — `/api/education/university-students`
 
-enrollments.enrollInClass(studentId, classId)       → IEnrollment
-enrollments.getEnrollment(id)                       → IEnrollment
-enrollments.listEnrollments(studentId?, classId?)   → IEnrollment[]
-enrollments.withdrawFromClass(studentId, classId)   → void
-enrollments.approveEnrollment(enrollmentId)         → void
-enrollments.rejectEnrollment(enrollmentId)          → void
-```
-
----
-
-## Permissions API
-
-```typescript
-const perms = oracle.dependencies.resolve('PermissionService');
-
-perms.definePermission(name, description?, scope?)              → IPermission
-perms.grantPermission(userId, permName, orgId?, classId?)       → void
-perms.revokePermission(userId, permName, orgId?, classId?)      → void
-perms.hasPermission(userId, permName, context?)                 → boolean
-perms.listPermissions(userId)                                   → IPermission[]
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/university-students` | Enroll student |
+| GET | `/api/education/university-students` | List students (query: `universityId`, `departmentId`, `courseId`) |
+| GET | `/api/education/university-students/:id` | Get student |
+| PUT | `/api/education/university-students/:id` | Update student |
+| POST | `/api/education/university-students/:id/activate` | Activate student |
+| POST | `/api/education/university-students/:id/deactivate` | Deactivate student |
 
 ---
 
-## Invitations API
+## Learning Organization Ecosystem Endpoints
 
-```typescript
-const invitations = oracle.dependencies.resolve('InvitationService');
+### Organizations — `/api/education/organizations`
 
-invitations.sendInvitation(email, type, orgId?, programId?, data?) → IInvitation
-invitations.getInvitation(token)                                    → IInvitation
-invitations.acceptInvitation(token)                                 → IInvitation
-invitations.rejectInvitation(token)                                 → void
-invitations.listInvitations(orgId?)                                 → IInvitation[]
-invitations.revokeInvitation(id)                                    → void
-```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/organizations` | Create learning organization |
+| GET | `/api/education/organizations` | List organizations (query: `type`) |
+| GET | `/api/education/organizations/:id` | Get organization |
+| PUT | `/api/education/organizations/:id` | Update organization |
+| DELETE | `/api/education/organizations/:id` | Delete organization |
+
+### Learning Org Students — `/api/education/org-students`
+
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/education/org-students` | Enroll student |
+| GET | `/api/education/org-students` | List students (query: `organizationId`, `programId`) |
+| GET | `/api/education/org-students/:id` | Get student |
+| PUT | `/api/education/org-students/:id` | Update student |
+| POST | `/api/education/org-students/:id/activate` | Activate student |
+| POST | `/api/education/org-students/:id/deactivate` | Deactivate student |
