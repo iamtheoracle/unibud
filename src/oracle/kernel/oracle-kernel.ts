@@ -1,91 +1,66 @@
 /**
- * Oracle Kernel — Core Implementation
+ * Oracle Kernel — Main Oracle Class
  *
- * Generic infrastructure kernel. Manages module lifecycle,
- * capability registry, and event bus. Zero business knowledge.
+ * Composes all infrastructure services into the IOracle interface.
+ * Domain-agnostic: no business logic lives here.
  */
 
-import type {
-  IOracle,
-  IModule,
-  ICapability,
-  IBootstrapOptions,
-} from './types';
+import type { IOracle } from './types.js';
+import { OracleLogger } from './logger.js';
+import { OracleConfigManager } from './config.js';
+import { OracleDependencyInjector } from './di.js';
+import { OracleHealthManager } from './health.js';
+import { OracleErrorBoundary } from './error-boundary.js';
+import { OracleLifecycleManager } from './lifecycle.js';
+import { OracleModuleRegistry } from './module-registry.js';
+import { OracleCapabilityRegistry } from './capability-registry.js';
+import { OracleResourceRegistry } from './resource-registry.js';
+
+export const ORACLE_VERSION = '1.0.0';
 
 export class OracleKernel implements IOracle {
-  private readonly modules = new Map<string, IModule>();
-  private readonly capabilities = new Map<string, ICapability>();
-  private readonly listeners = new Map<string, Array<(payload?: unknown) => void>>();
+  readonly version = ORACLE_VERSION;
 
-  async registerModule(module: IModule): Promise<void> {
-    if (this.modules.has(module.name)) {
-      throw new Error(`Module "${module.name}" is already registered.`);
-    }
-    this.modules.set(module.name, module);
-    this.emit('module:registered', { name: module.name, version: module.version });
-  }
+  readonly logger = new OracleLogger('Oracle');
+  readonly config = new OracleConfigManager();
+  readonly dependencies = new OracleDependencyInjector();
+  readonly health = new OracleHealthManager();
+  readonly errors = new OracleErrorBoundary(this.logger);
+  readonly lifecycle = new OracleLifecycleManager();
 
-  getModule<T extends IModule>(name: string): T | undefined {
-    return this.modules.get(name) as T | undefined;
-  }
+  readonly modules = new OracleModuleRegistry();
+  readonly capabilities = new OracleCapabilityRegistry();
+  readonly resources = new OracleResourceRegistry();
 
-  listModules(): string[] {
-    return Array.from(this.modules.keys());
-  }
-
-  registerCapability(capability: ICapability): void {
-    if (this.capabilities.has(capability.name)) {
-      throw new Error(`Capability "${capability.name}" is already registered.`);
-    }
-    this.capabilities.set(capability.name, capability);
-    this.emit('capability:registered', { name: capability.name });
-  }
-
-  hasCapability(name: string): boolean {
-    return this.capabilities.has(name);
-  }
-
-  emit(event: string, payload?: unknown): void {
-    const handlers = this.listeners.get(event) ?? [];
-    handlers.forEach((handler) => {
-      try {
-        handler(payload);
-      } catch (err) {
-        // Swallow handler errors to maintain kernel stability; log for diagnostics
-        console.warn(`[OracleKernel] Error in handler for event "${event}":`, err);
+  async bootstrap(config?: Record<string, unknown>): Promise<void> {
+    if (config) {
+      for (const [key, value] of Object.entries(config)) {
+        this.config.set(key, value);
       }
-    });
-  }
-
-  on(event: string, handler: (payload?: unknown) => void): void {
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
     }
-    this.listeners.get(event)!.push(handler);
+
+    this.logger.info('Oracle Kernel bootstrapping…', { version: this.version });
+
+    this.lifecycle.onStart(async () => {
+      this.logger.info('Oracle Kernel starting modules…');
+      await this.modules.initializeAll(this);
+      this.logger.info('Oracle Kernel running.', { version: this.version });
+    });
+
+    this.lifecycle.onStop(async () => {
+      this.logger.info('Oracle Kernel stopping modules…');
+      await this.modules.shutdownAll();
+      this.logger.info('Oracle Kernel stopped.');
+    });
+
+    await this.lifecycle.start();
+  }
+
+  async shutdown(): Promise<void> {
+    this.logger.info('Oracle Kernel shutting down…');
+    await this.lifecycle.stop();
   }
 }
 
-// ─── Singleton Kernel Instance ────────────────────────────────────────────────
-
-let kernelInstance: OracleKernel | null = null;
-
-export function getOracle(): OracleKernel {
-  if (!kernelInstance) {
-    kernelInstance = new OracleKernel();
-  }
-  return kernelInstance;
-}
-
-// ─── Bootstrap ────────────────────────────────────────────────────────────────
-
-export async function bootstrap(options: IBootstrapOptions = {}): Promise<OracleKernel> {
-  const oracle = getOracle();
-
-  for (const module of options.modules ?? []) {
-    await oracle.registerModule(module);
-    await module.initialize(oracle);
-  }
-
-  oracle.emit('oracle:ready', { modules: oracle.listModules() });
-  return oracle;
-}
+/** Singleton Oracle instance for the application. */
+export const oracle = new OracleKernel();
