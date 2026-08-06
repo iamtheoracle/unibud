@@ -217,6 +217,7 @@ const AdminHub = lazy(() => import("@/pages/admin/AdminHub"));
 const MigrationDashboard = lazy(() => import("@/pages/admin/MigrationDashboard"));
 const ConsolidationDashboard = lazy(() => import("@/pages/admin/ConsolidationDashboard"));
 const PlatformCoreDashboard = lazy(() => import("@/pages/admin/PlatformCoreDashboard"));
+const IntelligenceCenter = lazy(() => import("@/pages/admin/IntelligenceCenter"));
 
 // Directory & Help Center
 const DirectoryHub = lazy(() => import("@/pages/directory/DirectoryHub"));
@@ -436,6 +437,7 @@ function App() {
                     <Route path="/automation/builder/:id" element={<OracleWorkspaceGuard><WorkflowBuilder /></OracleWorkspaceGuard>} />
                     <Route path="/security" element={<OracleWorkspaceGuard><SecurityCenter /></OracleWorkspaceGuard>} />
                     <Route path="/admin" element={<OracleWorkspaceGuard><AdminHub /></OracleWorkspaceGuard>} />
+                    <Route path="/admin/intelligence" element={<OracleWorkspaceGuard><IntelligenceCenter /></OracleWorkspaceGuard>} />
                     <Route path="/migration" element={<OracleWorkspaceGuard><MigrationDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/consolidation" element={<OracleWorkspaceGuard><ConsolidationDashboard /></OracleWorkspaceGuard>} />
                     <Route path="/platform-core" element={<OracleWorkspaceGuard><PlatformCoreDashboard /></OracleWorkspaceGuard>} />
