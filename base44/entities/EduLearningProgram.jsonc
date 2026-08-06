@@ -1,0 +1,31 @@
+{
+  "name": "EduLearningProgram",
+  "type": "object",
+  "properties": {
+    "organization_id": {
+      "type": "string",
+      "description": "Reference to EduLearningOrganization"
+    },
+    "program_id": {
+      "type": "string",
+      "description": "Reference to EduAcademicProgram"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "completed", "cancelled"],
+      "default": "active"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": ["organization_id", "program_id", "start_date", "end_date"]
+}

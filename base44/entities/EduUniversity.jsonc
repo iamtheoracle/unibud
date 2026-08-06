@@ -1,0 +1,24 @@
+{
+  "name": "EduUniversity",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "faculties": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of EduFaculty IDs"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": ["name", "code"]
+}
