@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { ArrowUpRight, ArrowDownLeft, GraduationCap, ArrowLeftRight, Sparkles } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, GraduationCap, ArrowLeftRight, Sparkles, QrCode } from "lucide-react";
 import { SectionCard, Pill, formatMoney, WalletEmpty } from "./WalletShared";
 import FundWalletModal from "./FundWalletModal";
 import PayFeesModal from "./PayFeesModal";
 import TransferModal from "./TransferModal";
+import QRPayModal from "./QRPayModal";
 
 export function BalanceHero({ wallets }) {
   const available = wallets.reduce((s, w) => s + (w.available_balance || w.balance || 0), 0);
@@ -36,14 +37,16 @@ export function QuickActions({ wallets, institutionId }) {
   const [fundOpen, setFundOpen] = useState(false);
   const [feesOpen, setFeesOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
   const actions = [
     { icon: ArrowDownLeft, label: "Add Money", tone: "bg-success/10", color: "text-success", onClick: () => setFundOpen(true) },
     { icon: GraduationCap, label: "School Fees", tone: "bg-primary/10", color: "text-primary", onClick: () => setFeesOpen(true) },
     { icon: ArrowUpRight, label: "Transfer", tone: "bg-accent/10", color: "text-accent", onClick: () => setTransferOpen(true) },
+    { icon: QrCode, label: "QR Pay", tone: "bg-warning/10", color: "text-warning", onClick: () => setQrOpen(true) },
   ];
   return (
     <SectionCard title="Quick Actions">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {actions.map((a) => (
           <button key={a.label} onClick={a.onClick} className="flex flex-col items-center gap-1.5 spring-tap">
             <div className={`w-12 h-12 rounded-[18px] ${a.tone} border border-border/40 flex items-center justify-center`}>
@@ -56,6 +59,7 @@ export function QuickActions({ wallets, institutionId }) {
       <FundWalletModal open={fundOpen} onClose={() => setFundOpen(false)} wallet={wallet} institutionId={institutionId} />
       <PayFeesModal open={feesOpen} onClose={() => setFeesOpen(false)} institutionId={institutionId} />
       <TransferModal open={transferOpen} onClose={() => setTransferOpen(false)} wallet={wallet} institutionId={institutionId} />
+      <QRPayModal open={qrOpen} onClose={() => setQrOpen(false)} wallet={wallet} />
     </SectionCard>
   );
 }

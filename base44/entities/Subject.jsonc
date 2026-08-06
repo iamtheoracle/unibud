@@ -1,0 +1,67 @@
+{
+  "name": "Subject",
+  "type": "object",
+  "description": "Subject or module definition. Used by both university and learning organization ecosystems. Examples: Mathematics, English Language, Computer Science 101.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full subject name (e.g. Mathematics, Introduction to Programming)"
+    },
+    "code": {
+      "type": "string",
+      "description": "Subject code (e.g. MTH101, ENG201)"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "description": "Subject category (e.g. Sciences, Arts, Commerce, Technology)"
+    },
+    "level": {
+      "type": "string",
+      "description": "Academic level (e.g. 100, O-Level, A-Level, Tertiary)"
+    },
+    "credit_hours": {
+      "type": "number"
+    },
+    "is_compulsory": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this subject is compulsory for its program"
+    },
+    "ecosystem": {
+      "type": "string",
+      "enum": ["university", "learning_organization", "both"],
+      "default": "both"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Owner institution (null if generic/platform-wide)"
+    },
+    "academic_program_id": {
+      "type": "string",
+      "description": "Reference to parent AcademicProgram"
+    },
+    "department_id": {
+      "type": "string",
+      "description": "Owning department (university subjects)"
+    },
+    "prerequisites": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Subject IDs that must be passed before taking this subject"
+    },
+    "syllabus": {
+      "type": "string",
+      "description": "Subject syllabus outline"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": ["name"]
+}

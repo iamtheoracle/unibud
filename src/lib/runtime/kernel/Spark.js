@@ -138,6 +138,7 @@ Compose a warm, natural response that:
 
 Student's message: ${message}`;
 
+        let text;
         try {
           text = await modelService.invoke({ prompt: routingPrompt, taskTier: 'standard' });
         } catch (e) {

@@ -1,0 +1,70 @@
+{
+  "name": "EducatorContext",
+  "type": "object",
+  "description": "Teaching context for an educator. An educator can teach in multiple contexts (university and/or learning org).",
+  "properties": {
+    "educator_id": {
+      "type": "string",
+      "description": "Reference to Educator entity"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": ["university", "learning_organization"],
+      "description": "Which educational ecosystem this context belongs to"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution entity (for university context)"
+    },
+    "institution_name": {
+      "type": "string"
+    },
+    "learning_organization_id": {
+      "type": "string",
+      "description": "Reference to LearningOrganization entity"
+    },
+    "learning_organization_name": {
+      "type": "string"
+    },
+    "faculty_id": {
+      "type": "string",
+      "description": "Reference to Faculty entity (university context)"
+    },
+    "department_id": {
+      "type": "string",
+      "description": "Reference to Department entity"
+    },
+    "role": {
+      "type": "string",
+      "enum": ["lecturer", "senior_lecturer", "associate_professor", "professor", "instructor", "tutor", "hod", "dean"],
+      "default": "lecturer"
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Subject IDs this educator teaches in this context"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Null if still active"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["active", "inactive", "on_leave"],
+      "default": "active"
+    },
+    "is_primary": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the educator's primary teaching context"
+    }
+  },
+  "required": ["educator_id", "context_type"]
+}

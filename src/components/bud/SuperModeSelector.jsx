@@ -3,19 +3,19 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Brain, Rocket, Zap, ChevronDown } from "lucide-react";
 
 const MODES = [
-  { id: "auto", label: "Auto", icon: Zap, color: "text-primary", bg: "bg-primary/10", description: "Bud routes automatically" },
-  { id: "spark", label: "Spark", icon: Sparkles, color: "text-primary", bg: "bg-primary/10", description: "Creativity & Design" },
-  { id: "oracle", label: "Oracle", icon: Brain, color: "text-blue-500", bg: "bg-blue-500/10", description: "Reasoning & Research" },
-  { id: "orbit", label: "Orbit", icon: Rocket, color: "text-green-500", bg: "bg-green-500/10", description: "Execution & Automation" },
+  { id: "auto", label: "Auto", icon: Zap, color: "text-primary", bg: "bg-primary/10", description: "Bud decides what to focus on" },
+  { id: "spark", label: "Creative", icon: Sparkles, color: "text-primary", bg: "bg-primary/10", description: "Writing, ideas & design" },
+  { id: "oracle", label: "Research", icon: Brain, color: "text-blue-500", bg: "bg-blue-500/10", description: "Analysis & explanations" },
+  { id: "orbit", label: "Tasks", icon: Rocket, color: "text-green-500", bg: "bg-green-500/10", description: "Planning & automation" },
 ];
 
 /**
- * SuperModeSelector — Compact mode selector for power users.
+ * SuperModeSelector — Compact focus selector for Bud.
  *
- * In AUTO mode (default), Bud routes automatically.
- * Users can manually select a specialist to force its cognitive lens.
+ * In AUTO mode (default), Bud decides which area to focus on.
+ * Users can hint at a focus area — Bud still handles everything.
  *
- * This is optional — Bud recommends Auto whenever possible.
+ * Specialist names are never shown to the user.
  */
 export default function SuperModeSelector({ mode, onModeChange, disabled }) {
   const [expanded, setExpanded] = useState(false);

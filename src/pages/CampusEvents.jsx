@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Search, Calendar } from "lucide-react";
+import { Search, Calendar, Plus } from "lucide-react";
 import CommunityShell from "@/components/community/CommunityShell";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,6 +12,7 @@ import EventCard from "@/components/campus/EventCard";
 import EventDetailSheet from "@/components/events/EventDetailSheet";
 import BudEventRecommendations from "@/components/events/BudEventRecommendations";
 import WeatherStrip from "@/components/weather/WeatherStrip";
+import EventComposer from "@/components/events/EventComposer";
 import { EVENT_TYPES, getIcon } from "@/components/campus/campusConstants";
 
 const DEMO_EVENTS = [
@@ -79,6 +80,7 @@ export default function CampusEvents() {
   const [filter, setFilter] = useState("all");
   const [showPast, setShowPast] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showComposer, setShowComposer] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
@@ -97,7 +99,7 @@ export default function CampusEvents() {
   });
 
   const displayEvents = isDemoMode ? DEMO_EVENTS : (events || []);
-  const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
+  const activeUser = isDemoMode ? null : user;
 
   useEffect(() => {
     if (isDemoMode || !user?.id) return;
@@ -172,7 +174,15 @@ export default function CampusEvents() {
     <CommunityShell title="Events" icon={Calendar} accent="217 91% 60%" actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Calendar className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Search */}
-      <div className="py-3">
+      <div className="py-3 space-y-3">
+        {activeUser && (
+          <button
+            onClick={() => setShowComposer(true)}
+            className="w-full h-11 rounded-[16px] bg-primary text-primary-foreground text-[13px] font-semibold flex items-center justify-center gap-2 spring-tap"
+          >
+            <Plus className="w-4 h-4" /> Create Event
+          </button>
+        )}
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -290,6 +300,12 @@ export default function CampusEvents() {
           />
         )}
       </AnimatePresence>
+      <EventComposer
+        open={showComposer}
+        onClose={() => setShowComposer(false)}
+        user={activeUser}
+        event={null}
+      />
     </CommunityShell>
   );
 }

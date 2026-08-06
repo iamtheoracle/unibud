@@ -84,17 +84,8 @@ export function routeMessage(message, mode = "auto") {
 
 /**
  * Get status message for the active specialists.
- * Used for the "✨ Spark is creating ideas..." indicator.
+ * Always attributed to Bud — specialist names are never surfaced to the user.
  */
-export function getStatusMessage(specialistIds) {
-  if (!specialistIds || specialistIds.length === 0) return "Bud is thinking...";
-  if (specialistIds.length === 1) {
-    return SPECIALISTS[specialistIds[0]]?.statusMessage || "Bud is thinking...";
-  }
-  // Multiple specialists — show a collaborative message
-  const names = specialistIds.map((id) => SPECIALISTS[id]?.name).filter(Boolean);
-  if (names.length === 2) {
-    return `${names[0]} and ${names[1]} are collaborating...`;
-  }
-  return "Specialists are collaborating...";
+export function getStatusMessage(_specialistIds) {
+  return "Bud is thinking...";
 }
