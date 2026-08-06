@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/lib/ThemeContext';
 import { MotionProvider } from '@/lib/motion/MotionProvider';
 import { PlatformProvider } from '@/lib/platform/PlatformProvider';
 import { RuntimeBootProvider } from '@/lib/runtime/RuntimeBootProvider';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 import { ExperienceProvider } from '@/lib/ExperienceContext';
 import { SearchProvider } from '@/lib/SearchContext';
@@ -472,6 +473,7 @@ function App() {
         </PlatformProvider>
         </MotionProvider>
       </ThemeProvider>
+      <SpeedInsights />
     </AuthProvider>
   )
 }
