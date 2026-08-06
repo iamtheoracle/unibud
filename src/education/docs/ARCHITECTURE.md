@@ -2,102 +2,95 @@
 
 ## Overview
 
-The Education Module is a first-class module that registers with the Oracle Kernel. It owns all education business logic. Oracle remains domain-agnostic infrastructure.
-
-## Module Dependency Flow
+The Education Module implements two distinct education ecosystems that share a common foundation. It registers with the Oracle Kernel as a domain module.
 
 ```
-UNIBUD
-  │
-  ├── Oracle Kernel  (src/oracle/kernel/)
-  │     Domain-agnostic infrastructure:
-  │     Bootstrap · Config · DI · Logger · Health ·
-  │     Lifecycle · Error Boundary · Module Registry ·
-  │     Capability Registry · Resource Registry
-  │
-  └── Education Module  (src/education/)
-        Registers with Oracle:
-        Programs · Organizations · Students · Educators ·
-        Classes · Subjects · Enrollments · Permissions · Invitations
+Education Module
+    │
+    ├── University Ecosystem
+    │   ├── University (container)
+    │   ├── Faculty (sub-container)
+    │   ├── Department (sub-container)
+    │   ├── Course (defines what's taught)
+    │   └── University Student (learner in university)
+    │
+    ├── Learning Organization Ecosystem
+    │   ├── Learning Organization (container)
+    │   │   ├── Exam Centre
+    │   │   ├── Tutorial Centre
+    │   │   ├── Academy
+    │   │   └── Training Centre
+    │   └── Learning Org Student (pre-university learner)
+    │
+    └── Shared Foundation (Used by Both)
+        ├── Academic Programs (WAEC, NECO, JAMB, Degrees, etc.)
+        ├── Classes (organized learning groups)
+        ├── Subjects (curriculum units)
+        ├── Educators (teachers/instructors)
+        ├── Enrollment (joining classes)
+        ├── Permissions (access control)
+        └── Invitations (onboarding)
 ```
 
-## Architectural Principles
+## Key Principle
 
-| Principle | Implementation |
-|---|---|
-| **One-way dependency** | Education Module depends on Oracle. Oracle knows nothing about Education. |
-| **Module registration** | Education registers itself with `oracle.modules.register(educationModule)` |
-| **DI for services** | All 9 services are registered with `oracle.dependencies` and resolved by token |
-| **Capability declaration** | Every operation surface is declared as an Oracle Capability |
-| **Resource tracking** | All data collections are registered as Oracle Resources |
-| **Health reporting** | Module registers a health check with Oracle's Health Manager |
+**Do NOT merge different educational models.**
 
-## Module Registration Flow
+| | University | Learning Org |
+|---|---|---|
+| Container | University → Faculty → Department → Course | Learning Organization (Exam/Tutorial/Academy/Training) |
+| Students | University Students (matriculation, levels) | Learning Org Students (enrollment numbers) |
+| Programs | University Degrees | WAEC, NECO, JAMB, etc. |
+| Structure | Hierarchical | Flat |
+| Progression | Level-based (100–600) | Program-based |
+
+## Oracle Registration
 
 ```typescript
-import { oracle } from '@/oracle/kernel';
-import { educationModule } from '@/education';
+import { EducationModule } from './src/education';
 
-// Register module
-await oracle.modules.register(educationModule);
-
-// Bootstrap Oracle (initializes all registered modules)
-await oracle.bootstrap();
-
-// Resolve a service via DI
-const programs = oracle.dependencies.resolve('ProgramService');
+const education = new EducationModule();
+await education.initialize(oracle); // registers with Oracle Kernel
 ```
 
-## Source Structure
+## Directory Structure
 
 ```
-src/
-  oracle/
-    kernel/
-      types.ts                  # All Oracle interfaces (IOracle, IModule, etc.)
-      logger.ts                 # OracleLogger
-      config.ts                 # OracleConfigManager
-      di.ts                     # OracleDependencyInjector
-      health.ts                 # OracleHealthManager
-      error-boundary.ts         # OracleErrorBoundary
-      lifecycle.ts              # OracleLifecycleManager
-      module-registry.ts        # OracleModuleRegistry
-      capability-registry.ts    # OracleCapabilityRegistry
-      resource-registry.ts      # OracleResourceRegistry
-      oracle-kernel.ts          # OracleKernel (composes all above)
-      index.ts                  # Public re-exports
-
-  education/
-    types/
-      index.ts                  # All Education TypeScript interfaces
-    services/
-      program.service.ts
-      organization.service.ts
-      student.service.ts
-      educator.service.ts
-      class.service.ts
-      subject.service.ts
-      enrollment.service.ts
-      permission.service.ts
-      invitation.service.ts
-    utils.ts                    # generateId(), generateToken()
-    module.ts                   # EducationModule (IEducationModule impl)
-    index.ts                    # Public re-exports
-    __tests__/
-      *.service.test.ts         # Unit tests (one per service)
-      integration.test.ts       # Oracle ↔ Education integration
-    docs/
-      ARCHITECTURE.md           # This file
-      SERVICES.md
-      API.md
-      DATA_MODELS.md
+src/education/
+├── index.ts              — public exports
+├── module.ts             — EducationModule class (Oracle registration)
+├── oracle.interface.ts   — minimal Oracle interfaces
+├── utils.ts              — shared utilities
+│
+├── types/
+│   ├── shared.ts         — IProgram, IClass, ISubject, IEducator, ...
+│   ├── university.ts     — IUniversity, IFaculty, IDepartment, ICourse, ...
+│   ├── learning-org.ts   — ILearningOrganization, ILearningOrgStudent
+│   └── index.ts
+│
+├── models/
+│   ├── shared/           — ProgramModel, ClassModel, ...
+│   ├── university/       — UniversityModel, FacultyModel, ...
+│   └── learning-org/     — LearningOrganizationModel, ...
+│
+├── services/
+│   ├── shared/           — 7 shared services
+│   ├── university/       — 5 university services
+│   └── learning-org/     — 2 learning org services
+│
+├── api/
+│   ├── shared/           — 7 route factories
+│   ├── university/       — 5 route factories
+│   └── learning-org/     — 2 route factories
+│
+├── database/
+│   └── schema.sql        — 16 tables
+│
+├── docs/                 — additional documentation
+│
+└── __tests__/
+    ├── shared/           — 7 service test files
+    ├── university/       — university ecosystem tests
+    ├── learning-org/     — learning org ecosystem tests
+    └── integration.test.ts
 ```
-
-## Next Steps
-
-| Task | Scope |
-|---|---|
-| TASK-003 | Campus Module (Student Dashboard UI) |
-| TASK-004 | Command System (command routing through Oracle) |
-| TASK-005 | Event System (event coordination through Oracle) |
-| TASK-006 | Bud Intelligence integration |
