@@ -1,55 +1,29 @@
-export interface IStudent {
-  id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  status: 'active' | 'inactive' | 'graduated' | 'withdrawn';
-  metadata?: Record<string, unknown>;
-  createdAt: Date;
-  updatedAt: Date;
-}
+// ─── Shared Foundation Types ──────────────────────────────────────────────────
+// Used by both University and Learning Organization ecosystems
 
-export interface IStudentContext {
-  id: string;
-  studentId: string;
-  contextType: 'university' | 'learning_organization';
-  contextId: string;
-  enrollmentNumber?: string;
-  status: 'active' | 'graduated' | 'withdrawn';
-  enrolledAt: Date;
-}
-
-export interface IEducator {
-  id: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  bio?: string;
-  qualifications?: string[];
-  status: 'active' | 'inactive';
-  metadata?: Record<string, unknown>;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface IEducatorContext {
-  id: string;
-  educatorId: string;
-  contextType: 'university' | 'learning_organization';
-  contextId: string;
-  assignedAt: Date;
-}
-
-export interface IAcademicProgram {
+export interface IProgram {
   id: string;
   name: string;
-  code: string;
   type: string;
-  description?: string;
-  /** Subject IDs – resolved from the program_subjects junction table */
+  organizationType: 'university' | 'learningOrg';
   subjects: string[];
+  description?: string;
+  metadata?: Record<string, unknown>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IClass {
+  id: string;
+  organizationId: string;
+  programId: string;
+  subjectId: string;
+  educatorId: string;
+  name: string;
+  code?: string;
+  schedule?: unknown;
+  capacity?: number;
+  students: string[];
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
@@ -61,22 +35,17 @@ export interface ISubject {
   code: string;
   name: string;
   description?: string;
+  metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface IClass {
+export interface IEducator {
   id: string;
-  programId: string;
-  subjectId: string;
-  educatorId: string;
-  organizationId?: string;
+  email: string;
   name: string;
-  code?: string;
-  schedule?: Record<string, unknown>;
-  capacity?: number;
-  /** Student IDs – resolved from the class_students junction table */
-  students: string[];
+  bio?: string;
+  organizationIds: string[];
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
@@ -88,33 +57,37 @@ export interface IEnrollment {
   classId: string;
   status: 'pending' | 'approved' | 'withdrawn';
   enrolledAt: Date;
+  metadata?: Record<string, unknown>;
+  createdAt: Date;
   updatedAt: Date;
 }
 
 export interface IPermission {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   scope: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUserPermission {
-  id: string;
   userId: string;
   permissionName: string;
-  context?: string;
+  context?: Record<string, unknown>;
   grantedAt: Date;
 }
 
 export interface IInvitation {
   id: string;
   email: string;
-  type: 'student' | 'educator';
+  type: 'educator' | 'student' | 'admin';
   organizationId: string;
   programId?: string;
   token: string;
   status: 'pending' | 'accepted' | 'rejected' | 'expired';
-  createdAt: Date;
+  data?: Record<string, unknown>;
   expiresAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

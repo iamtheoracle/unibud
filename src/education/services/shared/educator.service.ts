@@ -1,80 +1,47 @@
+import type { IEducator } from '../../types/shared';
 import { EducatorModel } from '../../models/shared/educator.model';
-import type { IEducator, IEducatorContext } from '../../types/shared';
+import { generateId } from '../../utils';
 
 export class EducatorService {
-  async registerEducator(
-    email: string,
-    firstName: string,
-    lastName: string,
-    bio?: string,
-    qualifications?: string[]
-  ): Promise<IEducator> {
-    const existing = await EducatorModel.findByEmail(email);
-    if (existing) {
-      throw new Error(`Educator with email ${email} already exists`);
+  private store = new Map<string, EducatorModel>();
+
+  registerEducator(email: string, name: string, bio?: string, metadata?: Record<string, unknown>): IEducator {
+    const existing = Array.from(this.store.values()).find(e => e.email === email);
+    if (existing) throw new Error(`Educator with email ${email} already exists`);
+    const id = generateId('edu');
+    const educator = new EducatorModel({ id, email, name, bio, organizationIds: [], metadata });
+    this.store.set(id, educator);
+    return educator.toJSON();
+  }
+
+  getEducator(id: string): IEducator {
+    const educator = this.store.get(id);
+    if (!educator) throw new Error(`Educator not found: ${id}`);
+    return educator.toJSON();
+  }
+
+  updateEducator(id: string, data: Partial<Pick<IEducator, 'name' | 'bio' | 'metadata'>>): IEducator {
+    const educator = this.store.get(id);
+    if (!educator) throw new Error(`Educator not found: ${id}`);
+    if (data.name !== undefined) educator.name = data.name;
+    if (data.bio !== undefined) educator.bio = data.bio;
+    if (data.metadata !== undefined) educator.metadata = data.metadata;
+    educator.updatedAt = new Date();
+    return educator.toJSON();
+  }
+
+  listEducators(organizationId?: string): IEducator[] {
+    return Array.from(this.store.values())
+      .filter(e => !organizationId || e.organizationIds.includes(organizationId))
+      .map(e => e.toJSON());
+  }
+
+  assignToOrganization(educatorId: string, organizationId: string): void {
+    const educator = this.store.get(educatorId);
+    if (!educator) throw new Error(`Educator not found: ${educatorId}`);
+    if (!educator.organizationIds.includes(organizationId)) {
+      educator.organizationIds.push(organizationId);
+      educator.updatedAt = new Date();
     }
-
-    return EducatorModel.create({
-      userId: '',
-      email,
-      firstName,
-      lastName,
-      bio,
-      qualifications,
-      status: 'active',
-    });
-  }
-
-  async getEducator(id: string): Promise<IEducator> {
-    const educator = await EducatorModel.findById(id);
-    if (!educator) {
-      throw new Error(`Educator ${id} not found`);
-    }
-
-    return educator;
-  }
-
-  async updateEducator(id: string, data: Partial<Omit<IEducator, 'id' | 'createdAt' | 'updatedAt'>>): Promise<IEducator> {
-    return EducatorModel.update(id, data);
-  }
-
-  async listEducators(): Promise<IEducator[]> {
-    return EducatorModel.findAll();
-  }
-
-  async assignToContext(
-    educatorId: string,
-    contextType: IEducatorContext['contextType'],
-    contextId: string
-  ): Promise<void> {
-    await this.getEducator(educatorId);
-    const existing = await EducatorModel.findContexts(educatorId);
-    const alreadyAssigned = existing.some((context) => context.contextType === contextType && context.contextId === contextId);
-    if (!alreadyAssigned) {
-      await EducatorModel.createContext({
-        educatorId,
-        contextType,
-        contextId,
-        assignedAt: new Date(),
-      });
-    }
-  }
-
-  async removeFromContext(
-    educatorId: string,
-    contextType: IEducatorContext['contextType'],
-    contextId: string
-  ): Promise<void> {
-    const existing = await EducatorModel.findContexts(educatorId);
-    const context = existing.find((item) => item.contextType === contextType && item.contextId === contextId);
-    if (context) {
-      await EducatorModel.deleteContext(context.id);
-    }
-  }
-
-  async getEducatorContexts(educatorId: string): Promise<IEducatorContext[]> {
-    return EducatorModel.findContexts(educatorId);
   }
 }
-
-export const educatorService = new EducatorService();

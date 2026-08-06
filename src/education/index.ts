@@ -1,146 +1,76 @@
-/**
- * Education Module — Entry Point
- *
- * Creates and exports the EducationModule instance.
- * Register with the Oracle Kernel via bootstrap().
- *
- * @example
- * ```ts
- * import { bootstrap } from '@/oracle/kernel';
- * import { educationModule } from '@/education';
- *
- * await bootstrap({ modules: [educationModule] });
- * ```
- */
+// ─── Education Module ─────────────────────────────────────────────────────────
+// Two distinct education ecosystems sharing a common foundation.
+//
+// University Ecosystem:  University → Faculty → Department → Course → Student
+// Learning Org Ecosystem: Organization → Program → Class → Student
+//
+// Shared Foundation: Programs, Classes, Subjects, Educators, Enrollments,
+//                    Permissions, Invitations
 
-import type { IOracle } from '@/oracle/kernel';
+export { EducationModule } from './module';
+export type { IEducationModule } from './module';
 
-// Domain 1: Identity
-import { StudentService } from './domains/identity/services/student.service';
-import { EducatorService } from './domains/identity/services/educator.service';
+// Oracle interface
+export type { IModule, IOracle, IOracleEvent, IOracleCommand, IOracleLogger } from './oracle.interface';
 
-// Domain 2: Academic
-import { ProgramService } from './domains/academic/services/program.service';
-import { SubjectService } from './domains/academic/services/subject.service';
-import { ClassService } from './domains/academic/services/class.service';
-import { EnrollmentService } from './domains/academic/services/enrollment.service';
+// Types
+export type {
+  IProgram,
+  IClass,
+  ISubject,
+  IEducator,
+  IEnrollment,
+  IPermission,
+  IUserPermission,
+  IInvitation,
+} from './types/shared';
 
-// Domain 3: University
-import { UniversityService } from './domains/university/services/university.service';
-import { FacultyService } from './domains/university/services/faculty.service';
-import { DepartmentService } from './domains/university/services/department.service';
-import { CourseService } from './domains/university/services/course.service';
+export type {
+  IUniversity,
+  IFaculty,
+  IDepartment,
+  ICourse,
+  IUniversityStudent,
+} from './types/university';
 
-// Domain 4: Learning Organization
-import { LearningOrganizationService } from './domains/learning-organization/services/organization.service';
-import { LearningProgramService } from './domains/learning-organization/services/learning-program.service';
+export type {
+  LearningOrgType,
+  ILearningOrganization,
+  ILearningOrgStudent,
+} from './types/learning-org';
 
-// Domain 5: Shared Infrastructure
-import { PermissionService } from './domains/shared/services/permission.service';
-import { InvitationService } from './domains/shared/services/invitation.service';
+// Shared services
+export { ProgramService } from './services/shared/program.service';
+export { ClassService } from './services/shared/class.service';
+export { SubjectService } from './services/shared/subject.service';
+export { EducatorService } from './services/shared/educator.service';
+export { EnrollmentService } from './services/shared/enrollment.service';
+export { PermissionService } from './services/shared/permission.service';
+export { InvitationService } from './services/shared/invitation.service';
 
-import type { IEducationModule } from './module';
+// University ecosystem services
+export { UniversityService } from './services/university/university.service';
+export { FacultyService } from './services/university/faculty.service';
+export { DepartmentService } from './services/university/department.service';
+export { CourseService } from './services/university/course.service';
+export { UniversityStudentService } from './services/university/university-student.service';
 
-// ─── Education Module Implementation ─────────────────────────────────────────
+// Learning organization ecosystem services
+export { LearningOrganizationService } from './services/learning-org/organization.service';
+export { LearningOrgStudentService } from './services/learning-org/org-student.service';
 
-const EducationModule: IEducationModule = {
-  name: 'education',
-  version: '1.0.0',
-
-  domains: {
-    // Domain 1: Identity
-    identity: {
-      students: StudentService,
-      educators: EducatorService,
-    },
-
-    // Domain 2: Academic
-    academic: {
-      programs: ProgramService,
-      subjects: SubjectService,
-      classes: ClassService,
-      enrollments: EnrollmentService,
-    },
-
-    // Domain 3: University
-    university: {
-      universities: UniversityService,
-      faculties: FacultyService,
-      departments: DepartmentService,
-      courses: CourseService,
-    },
-
-    // Domain 4: Learning Organization
-    learningOrganization: {
-      organizations: LearningOrganizationService,
-      learningPrograms: LearningProgramService,
-    },
-
-    // Domain 5: Shared Infrastructure
-    shared: {
-      permissions: PermissionService,
-      invitations: InvitationService,
-    },
-  },
-
-  async initialize(oracle: IOracle): Promise<void> {
-    // Register capabilities with the Oracle Kernel
-    oracle.registerCapability({
-      name: 'education.students',
-      description: 'Student identity management',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.educators',
-      description: 'Educator identity management',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.programs',
-      description: 'Academic program management',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.classes',
-      description: 'Class management and enrollment',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.universities',
-      description: 'University structure management',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.learningOrganizations',
-      description: 'Learning organization management',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.permissions',
-      description: 'Education permission management',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-    oracle.registerCapability({
-      name: 'education.invitations',
-      description: 'Education invitation workflow',
-      scope: 'module',
-      moduleOwner: 'education',
-    });
-
-    oracle.emit('education:initialized', { version: this.version });
-  },
-
-  async shutdown(): Promise<void> {
-    // Clean-up if needed in future
-  },
-};
-
-export { EducationModule as educationModule };
-export default EducationModule;
+// API route factories
+export { createProgramRoutes } from './api/shared/programs.routes';
+export { createClassRoutes } from './api/shared/classes.routes';
+export { createSubjectRoutes } from './api/shared/subjects.routes';
+export { createEducatorRoutes } from './api/shared/educators.routes';
+export { createEnrollmentRoutes } from './api/shared/enrollments.routes';
+export { createPermissionRoutes } from './api/shared/permissions.routes';
+export { createInvitationRoutes } from './api/shared/invitations.routes';
+export { createUniversityRoutes } from './api/university/universities.routes';
+export { createFacultyRoutes } from './api/university/faculties.routes';
+export { createDepartmentRoutes } from './api/university/departments.routes';
+export { createCourseRoutes } from './api/university/courses.routes';
+export { createUniversityStudentRoutes } from './api/university/university-students.routes';
+export { createOrganizationRoutes } from './api/learning-org/organizations.routes';
+export { createOrgStudentRoutes } from './api/learning-org/org-students.routes';

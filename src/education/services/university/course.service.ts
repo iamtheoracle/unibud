@@ -1,42 +1,50 @@
-import { CourseModel } from '../../models/university/course.model';
-import { DepartmentModel } from '../../models/university/department.model';
 import type { ICourse } from '../../types/university';
+import { CourseModel } from '../../models/university/course.model';
+import { generateId } from '../../utils';
 
 export class CourseService {
-  async createCourse(departmentId: string, code: string, name: string, description?: string): Promise<ICourse> {
-    const department = await DepartmentModel.findById(departmentId);
-    if (!department) {
-      throw new Error(`Department ${departmentId} not found`);
-    }
+  private store = new Map<string, CourseModel>();
 
-    const existing = await CourseModel.findByCode(departmentId, code);
-    if (existing) {
-      throw new Error(`Course with code ${code} already exists in department ${departmentId}`);
-    }
-
-    return CourseModel.create({ departmentId, code, name, description });
+  createCourse(
+    departmentId: string,
+    code: string,
+    name: string,
+    description?: string,
+    credits?: number,
+    metadata?: Record<string, unknown>,
+  ): ICourse {
+    const id = generateId('crs');
+    const course = new CourseModel({ id, departmentId, code, name, description, credits, metadata });
+    this.store.set(id, course);
+    return course.toJSON();
   }
 
-  async getCourse(id: string): Promise<ICourse> {
-    const course = await CourseModel.findById(id);
-    if (!course) {
-      throw new Error(`Course ${id} not found`);
-    }
-
-    return course;
+  getCourse(id: string): ICourse {
+    const course = this.store.get(id);
+    if (!course) throw new Error(`Course not found: ${id}`);
+    return course.toJSON();
   }
 
-  async updateCourse(id: string, data: Partial<Omit<ICourse, 'id' | 'createdAt' | 'updatedAt'>>): Promise<ICourse> {
-    return CourseModel.update(id, data);
+  updateCourse(id: string, data: Partial<Pick<ICourse, 'code' | 'name' | 'description' | 'credits' | 'metadata'>>): ICourse {
+    const course = this.store.get(id);
+    if (!course) throw new Error(`Course not found: ${id}`);
+    if (data.code !== undefined) course.code = data.code;
+    if (data.name !== undefined) course.name = data.name;
+    if (data.description !== undefined) course.description = data.description;
+    if (data.credits !== undefined) course.credits = data.credits;
+    if (data.metadata !== undefined) course.metadata = data.metadata;
+    course.updatedAt = new Date();
+    return course.toJSON();
   }
 
-  async listCourses(departmentId?: string): Promise<ICourse[]> {
-    return CourseModel.findAll(departmentId);
+  listCourses(departmentId?: string): ICourse[] {
+    return Array.from(this.store.values())
+      .filter(c => !departmentId || c.departmentId === departmentId)
+      .map(c => c.toJSON());
   }
 
-  async deleteCourse(id: string): Promise<void> {
-    await CourseModel.delete(id);
+  deleteCourse(id: string): void {
+    if (!this.store.has(id)) throw new Error(`Course not found: ${id}`);
+    this.store.delete(id);
   }
 }
-
-export const courseService = new CourseService();

@@ -1,60 +1,47 @@
-import { ClassModel } from '../../models/shared/class.model';
-import { EnrollmentModel } from '../../models/shared/enrollment.model';
-import { StudentModel } from '../../models/shared/student.model';
 import type { IEnrollment } from '../../types/shared';
+import { EnrollmentModel } from '../../models/shared/enrollment.model';
+import { generateId } from '../../utils';
 
 export class EnrollmentService {
-  async enrollInClass(studentId: string, classId: string): Promise<IEnrollment> {
-    const [student, educationClass, existing] = await Promise.all([
-      StudentModel.findById(studentId),
-      ClassModel.findById(classId),
-      EnrollmentModel.findByStudentAndClass(studentId, classId),
-    ]);
+  private store = new Map<string, EnrollmentModel>();
 
-    if (!student) {
-      throw new Error(`Student ${studentId} not found`);
-    }
-    if (!educationClass) {
-      throw new Error(`Class ${classId} not found`);
-    }
-    if (existing && existing.status !== 'withdrawn') {
-      throw new Error(`Student ${studentId} is already enrolled in class ${classId}`);
-    }
-
-    return EnrollmentModel.create({
-      studentId,
-      classId,
-      status: 'pending',
-      enrolledAt: new Date(),
-    });
+  enrollInClass(studentId: string, classId: string, metadata?: Record<string, unknown>): IEnrollment {
+    const existing = Array.from(this.store.values()).find(
+      e => e.studentId === studentId && e.classId === classId && e.status !== 'withdrawn'
+    );
+    if (existing) throw new Error(`Student ${studentId} is already enrolled in class ${classId}`);
+    const id = generateId('enr');
+    const enrollment = new EnrollmentModel({ id, studentId, classId, status: 'pending', enrolledAt: new Date(), metadata });
+    this.store.set(id, enrollment);
+    return enrollment.toJSON();
   }
 
-  async getEnrollment(id: string): Promise<IEnrollment> {
-    const enrollment = await EnrollmentModel.findById(id);
-    if (!enrollment) {
-      throw new Error(`Enrollment ${id} not found`);
-    }
-
-    return enrollment;
+  getEnrollment(id: string): IEnrollment {
+    const enrollment = this.store.get(id);
+    if (!enrollment) throw new Error(`Enrollment not found: ${id}`);
+    return enrollment.toJSON();
   }
 
-  async listEnrollments(studentId?: string, classId?: string): Promise<IEnrollment[]> {
-    return EnrollmentModel.findAll({ studentId, classId });
+  listEnrollments(studentId?: string, classId?: string): IEnrollment[] {
+    return Array.from(this.store.values())
+      .filter(e => (!studentId || e.studentId === studentId) && (!classId || e.classId === classId))
+      .map(e => e.toJSON());
   }
 
-  async withdrawFromClass(studentId: string, classId: string): Promise<void> {
-    const enrollment = await EnrollmentModel.findByStudentAndClass(studentId, classId);
-    if (!enrollment) {
-      throw new Error(`Enrollment for student ${studentId} in class ${classId} not found`);
-    }
-
-    await EnrollmentModel.update(enrollment.id, { status: 'withdrawn' });
+  withdrawFromClass(studentId: string, classId: string): void {
+    const enrollment = Array.from(this.store.values()).find(
+      e => e.studentId === studentId && e.classId === classId && e.status !== 'withdrawn'
+    );
+    if (!enrollment) throw new Error(`No active enrollment found for student ${studentId} in class ${classId}`);
+    enrollment.status = 'withdrawn';
+    enrollment.updatedAt = new Date();
   }
 
-  async approveEnrollment(enrollmentId: string): Promise<void> {
-    await this.getEnrollment(enrollmentId);
-    await EnrollmentModel.update(enrollmentId, { status: 'approved' });
+  approveEnrollment(enrollmentId: string): void {
+    const enrollment = this.store.get(enrollmentId);
+    if (!enrollment) throw new Error(`Enrollment not found: ${enrollmentId}`);
+    if (enrollment.status === 'withdrawn') throw new Error('Cannot approve a withdrawn enrollment');
+    enrollment.status = 'approved';
+    enrollment.updatedAt = new Date();
   }
 }
-
-export const enrollmentService = new EnrollmentService();

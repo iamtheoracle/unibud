@@ -1,88 +1,96 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ProgramModel } from '../../models/shared/program.model';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { ProgramService } from '../../services/shared/program.service';
-
-vi.mock('../../models/shared/program.model', () => ({
-  ProgramModel: {
-    findByCode: vi.fn(),
-    create: vi.fn(),
-    findById: vi.fn(),
-    update: vi.fn(),
-    findAll: vi.fn(),
-    delete: vi.fn(),
-  },
-}));
 
 describe('ProgramService', () => {
   let service: ProgramService;
 
   beforeEach(() => {
     service = new ProgramService();
-    vi.clearAllMocks();
   });
 
-  it('creates a program with an empty subject list', async () => {
-    const program = {
-      id: 'prog-1',
-      name: 'Computer Science',
-      code: 'CS',
-      type: 'degree',
-      subjects: [],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    vi.mocked(ProgramModel.findByCode).mockResolvedValue(null);
-    vi.mocked(ProgramModel.create).mockResolvedValue(program);
+  describe('createProgram', () => {
+    it('creates a university program', () => {
+      const program = service.createProgram('B.Sc. Computer Science', 'university_degree', 'university', 'Bachelor degree in CS');
+      expect(program.id).toBeTruthy();
+      expect(program.name).toBe('B.Sc. Computer Science');
+      expect(program.type).toBe('university_degree');
+      expect(program.organizationType).toBe('university');
+      expect(program.subjects).toEqual([]);
+      expect(program.createdAt).toBeInstanceOf(Date);
+    });
 
-    await expect(service.createProgram('Computer Science', 'CS', 'degree')).resolves.toEqual(program);
-    expect(ProgramModel.create).toHaveBeenCalledWith(expect.objectContaining({ subjects: [] }));
+    it('creates a learning org program', () => {
+      const program = service.createProgram('WAEC 2024', 'waec', 'learningOrg', 'West African Examinations Council');
+      expect(program.organizationType).toBe('learningOrg');
+      expect(program.type).toBe('waec');
+    });
+
+    it('creates programs with metadata', () => {
+      const metadata = { year: 2024, country: 'NG' };
+      const program = service.createProgram('NECO', 'neco', 'learningOrg', undefined, metadata);
+      expect(program.metadata).toEqual(metadata);
+    });
   });
 
-  it('adds a subject to a program when absent', async () => {
-    vi.mocked(ProgramModel.findById).mockResolvedValue({
-      id: 'prog-1',
-      name: 'Computer Science',
-      code: 'CS',
-      type: 'degree',
-      subjects: ['sub-1'],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    vi.mocked(ProgramModel.update).mockResolvedValue({
-      id: 'prog-1',
-      name: 'Computer Science',
-      code: 'CS',
-      type: 'degree',
-      subjects: ['sub-1', 'sub-2'],
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  describe('getProgram', () => {
+    it('returns an existing program', () => {
+      const created = service.createProgram('JAMB', 'jamb', 'learningOrg');
+      const found = service.getProgram(created.id);
+      expect(found.id).toBe(created.id);
+      expect(found.name).toBe('JAMB');
     });
 
-    await service.addSubject('prog-1', 'sub-2');
-    expect(ProgramModel.update).toHaveBeenCalledWith('prog-1', { subjects: ['sub-1', 'sub-2'] });
+    it('throws if program not found', () => {
+      expect(() => service.getProgram('nonexistent')).toThrow('Program not found');
+    });
   });
 
-  it('removes a subject from a program', async () => {
-    vi.mocked(ProgramModel.findById).mockResolvedValue({
-      id: 'prog-1',
-      name: 'Computer Science',
-      code: 'CS',
-      type: 'degree',
-      subjects: ['sub-1', 'sub-2'],
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-    vi.mocked(ProgramModel.update).mockResolvedValue({
-      id: 'prog-1',
-      name: 'Computer Science',
-      code: 'CS',
-      type: 'degree',
-      subjects: ['sub-2'],
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  describe('updateProgram', () => {
+    it('updates program fields', () => {
+      const program = service.createProgram('WAEC', 'waec', 'learningOrg');
+      const updated = service.updateProgram(program.id, { name: 'WAEC 2025', subjects: ['math', 'english'] });
+      expect(updated.name).toBe('WAEC 2025');
+      expect(updated.subjects).toEqual(['math', 'english']);
     });
 
-    await service.removeSubject('prog-1', 'sub-1');
-    expect(ProgramModel.update).toHaveBeenCalledWith('prog-1', { subjects: ['sub-2'] });
+    it('throws if program not found', () => {
+      expect(() => service.updateProgram('bad-id', { name: 'X' })).toThrow('Program not found');
+    });
+  });
+
+  describe('listPrograms', () => {
+    it('lists all programs', () => {
+      service.createProgram('P1', 'waec', 'learningOrg');
+      service.createProgram('P2', 'jamb', 'learningOrg');
+      service.createProgram('P3', 'university_degree', 'university');
+      expect(service.listPrograms()).toHaveLength(3);
+    });
+
+    it('filters by type', () => {
+      service.createProgram('P1', 'waec', 'learningOrg');
+      service.createProgram('P2', 'jamb', 'learningOrg');
+      service.createProgram('P3', 'university_degree', 'university');
+      expect(service.listPrograms('waec')).toHaveLength(1);
+    });
+
+    it('filters by organizationType', () => {
+      service.createProgram('P1', 'waec', 'learningOrg');
+      service.createProgram('P2', 'jamb', 'learningOrg');
+      service.createProgram('P3', 'university_degree', 'university');
+      expect(service.listPrograms(undefined, 'learningOrg')).toHaveLength(2);
+      expect(service.listPrograms(undefined, 'university')).toHaveLength(1);
+    });
+  });
+
+  describe('deleteProgram', () => {
+    it('deletes a program', () => {
+      const program = service.createProgram('TMP', 'tmp', 'university');
+      service.deleteProgram(program.id);
+      expect(service.listPrograms()).toHaveLength(0);
+    });
+
+    it('throws if program not found', () => {
+      expect(() => service.deleteProgram('nonexistent')).toThrow('Program not found');
+    });
   });
 });

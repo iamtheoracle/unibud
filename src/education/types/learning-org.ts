@@ -1,22 +1,25 @@
-export type LearningOrganizationType = 'examCentre' | 'tutorialCentre' | 'academy' | 'trainingCentre';
+// ─── Learning Organization Ecosystem Types ────────────────────────────────────
+
+export type LearningOrgType = 'examCentre' | 'tutorialCentre' | 'academy' | 'trainingCentre';
 
 export interface ILearningOrganization {
   id: string;
   name: string;
-  type: LearningOrganizationType;
+  type: LearningOrgType;
   description?: string;
+  educators: string[];
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface ILearningProgram {
+export interface ILearningOrgStudent {
   id: string;
+  userId: string;
   organizationId: string;
   programId: string;
-  startDate: Date;
-  endDate: Date;
-  status: 'active' | 'completed' | 'cancelled';
+  enrollmentNumber?: string;
+  status: 'active' | 'inactive' | 'completed' | 'withdrawn';
   metadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;

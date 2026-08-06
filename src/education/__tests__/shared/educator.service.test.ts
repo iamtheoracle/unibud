@@ -1,78 +1,63 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { EducatorModel } from '../../models/shared/educator.model';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { EducatorService } from '../../services/shared/educator.service';
-
-vi.mock('../../models/shared/educator.model', () => ({
-  EducatorModel: {
-    findByEmail: vi.fn(),
-    create: vi.fn(),
-    findById: vi.fn(),
-    update: vi.fn(),
-    findAll: vi.fn(),
-    findContexts: vi.fn(),
-    createContext: vi.fn(),
-    deleteContext: vi.fn(),
-  },
-}));
 
 describe('EducatorService', () => {
   let service: EducatorService;
 
   beforeEach(() => {
     service = new EducatorService();
-    vi.clearAllMocks();
   });
 
-  it('registers a new educator', async () => {
-    const educator = {
-      id: 'ed-1',
-      userId: '',
-      firstName: 'Ada',
-      lastName: 'Lovelace',
-      email: 'ada@test.com',
-      status: 'active' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    vi.mocked(EducatorModel.findByEmail).mockResolvedValue(null);
-    vi.mocked(EducatorModel.create).mockResolvedValue(educator);
-
-    await expect(service.registerEducator('ada@test.com', 'Ada', 'Lovelace')).resolves.toEqual(educator);
+  it('registers an educator', () => {
+    const edu = service.registerEducator('alice@example.com', 'Alice Smith', 'Math teacher');
+    expect(edu.id).toBeTruthy();
+    expect(edu.email).toBe('alice@example.com');
+    expect(edu.name).toBe('Alice Smith');
+    expect(edu.organizationIds).toEqual([]);
   });
 
-  it('assigns an educator to a context once', async () => {
-    const educator = {
-      id: 'ed-1',
-      userId: '',
-      firstName: 'Ada',
-      lastName: 'Lovelace',
-      email: 'ada@test.com',
-      status: 'active' as const,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    vi.mocked(EducatorModel.findById).mockResolvedValue(educator);
-    vi.mocked(EducatorModel.findContexts).mockResolvedValue([]);
-    vi.mocked(EducatorModel.createContext).mockResolvedValue({
-      id: 'ctx-1',
-      educatorId: 'ed-1',
-      contextType: 'university',
-      contextId: 'uni-1',
-      assignedAt: new Date(),
-    });
-
-    await service.assignToContext('ed-1', 'university', 'uni-1');
-    expect(EducatorModel.createContext).toHaveBeenCalledWith(
-      expect.objectContaining({ educatorId: 'ed-1', contextType: 'university', contextId: 'uni-1' })
-    );
+  it('throws on duplicate email', () => {
+    service.registerEducator('dup@example.com', 'Dup User');
+    expect(() => service.registerEducator('dup@example.com', 'Another')).toThrow('already exists');
   });
 
-  it('removes educator context when it exists', async () => {
-    vi.mocked(EducatorModel.findContexts).mockResolvedValue([
-      { id: 'ctx-1', educatorId: 'ed-1', contextType: 'university', contextId: 'uni-1', assignedAt: new Date() },
-    ]);
+  it('retrieves an educator', () => {
+    const edu = service.registerEducator('bob@example.com', 'Bob');
+    const found = service.getEducator(edu.id);
+    expect(found.id).toBe(edu.id);
+  });
 
-    await service.removeFromContext('ed-1', 'university', 'uni-1');
-    expect(EducatorModel.deleteContext).toHaveBeenCalledWith('ctx-1');
+  it('throws on get if not found', () => {
+    expect(() => service.getEducator('bad')).toThrow('Educator not found');
+  });
+
+  it('updates educator', () => {
+    const edu = service.registerEducator('c@example.com', 'C');
+    const updated = service.updateEducator(edu.id, { bio: 'New bio' });
+    expect(updated.bio).toBe('New bio');
+  });
+
+  it('assigns educator to organization', () => {
+    const edu = service.registerEducator('d@example.com', 'D');
+    service.assignToOrganization(edu.id, 'org1');
+    const found = service.getEducator(edu.id);
+    expect(found.organizationIds).toContain('org1');
+  });
+
+  it('does not duplicate organization assignment', () => {
+    const edu = service.registerEducator('e@example.com', 'E');
+    service.assignToOrganization(edu.id, 'org1');
+    service.assignToOrganization(edu.id, 'org1');
+    const found = service.getEducator(edu.id);
+    expect(found.organizationIds).toHaveLength(1);
+  });
+
+  it('lists educators filtered by organization', () => {
+    const e1 = service.registerEducator('f1@example.com', 'F1');
+    const e2 = service.registerEducator('f2@example.com', 'F2');
+    service.assignToOrganization(e1.id, 'orgA');
+    service.assignToOrganization(e2.id, 'orgB');
+    expect(service.listEducators('orgA')).toHaveLength(1);
+    expect(service.listEducators()).toHaveLength(2);
   });
 });

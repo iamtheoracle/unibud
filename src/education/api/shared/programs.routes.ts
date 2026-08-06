@@ -1,16 +1,36 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { ProgramService } from '../../services/shared/program.service';
 
-export const programRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/programs', description: 'Create academic program', handler: 'programService.createProgram' },
-  { method: 'GET', path: '/api/education/programs', description: 'List academic programs', handler: 'programService.listPrograms' },
-  { method: 'GET', path: '/api/education/programs/:id', description: 'Get academic program', handler: 'programService.getProgram' },
-  { method: 'PUT', path: '/api/education/programs/:id', description: 'Update academic program', handler: 'programService.updateProgram' },
-  { method: 'DELETE', path: '/api/education/programs/:id', description: 'Delete academic program', handler: 'programService.deleteProgram' },
-  { method: 'POST', path: '/api/education/programs/:id/subjects', description: 'Add subject to program', handler: 'programService.addSubject' },
-  { method: 'DELETE', path: '/api/education/programs/:id/subjects/:subjectId', description: 'Remove subject from program', handler: 'programService.removeSubject' },
-];
+export function createProgramRoutes(service: ProgramService) {
+  return {
+    'POST /api/education/programs': (body: {
+      name: string;
+      type: string;
+      organizationType: 'university' | 'learningOrg';
+      description?: string;
+      metadata?: Record<string, unknown>;
+    }) => {
+      const program = service.createProgram(body.name, body.type, body.organizationType, body.description, body.metadata);
+      return { status: 201, data: program };
+    },
+
+    'GET /api/education/programs/:id': (params: { id: string }) => {
+      const program = service.getProgram(params.id);
+      return { status: 200, data: program };
+    },
+
+    'PUT /api/education/programs/:id': (params: { id: string }, body: Parameters<ProgramService['updateProgram']>[1]) => {
+      const program = service.updateProgram(params.id, body);
+      return { status: 200, data: program };
+    },
+
+    'GET /api/education/programs': (query: { type?: string; organizationType?: 'university' | 'learningOrg' }) => {
+      const programs = service.listPrograms(query.type, query.organizationType);
+      return { status: 200, data: programs };
+    },
+
+    'DELETE /api/education/programs/:id': (params: { id: string }) => {
+      service.deleteProgram(params.id);
+      return { status: 204, data: null };
+    },
+  };
+}

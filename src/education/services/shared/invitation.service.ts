@@ -1,109 +1,60 @@
-import { EducatorModel } from '../../models/shared/educator.model';
+import type { IInvitation } from '../../types/shared';
 import { InvitationModel } from '../../models/shared/invitation.model';
-import { StudentModel } from '../../models/shared/student.model';
-import type { IEducator, IInvitation, IStudent } from '../../types/shared';
+import { generateId, generateToken } from '../../utils';
 
-function createToken(): string {
-  if (typeof globalThis.crypto?.randomUUID === 'function') {
-    return globalThis.crypto.randomUUID();
-  }
-  // Node.js < 19 fallback: use crypto.randomBytes via dynamic import is async,
-  // so we fall back to a hex string built from crypto.getRandomValues if available.
-  const bytes = new Uint8Array(16);
-  globalThis.crypto?.getRandomValues?.(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
-}
-
-function deriveNames(email: string): { firstName: string; lastName: string } {
-  const localPart = email.split('@')[0] || 'user';
-  const [first, ...rest] = localPart
-    .split(/[._-]+/)
-    .filter(Boolean)
-    .map((value) => value.charAt(0).toUpperCase() + value.slice(1));
-
-  return {
-    firstName: first || 'Invited',
-    lastName: rest.join(' ') || 'User',
-  };
-}
+const DEFAULT_EXPIRY_DAYS = 7;
 
 export class InvitationService {
-  async sendInvitation(
+  private store = new Map<string, InvitationModel>();
+
+  sendInvitation(
     email: string,
-    type: IInvitation['type'],
+    type: 'educator' | 'student' | 'admin',
     organizationId: string,
-    programId?: string
-  ): Promise<IInvitation> {
-    return InvitationModel.create({
-      email,
-      type,
-      organizationId,
-      programId,
-      token: createToken(),
-      status: 'pending',
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-    });
+    programId?: string,
+    data?: Record<string, unknown>,
+  ): IInvitation {
+    const id = generateId('inv');
+    const token = generateToken();
+    const expiresAt = new Date(Date.now() + DEFAULT_EXPIRY_DAYS * 24 * 60 * 60 * 1000);
+    const invitation = new InvitationModel({ id, email, type, organizationId, programId, token, status: 'pending', data, expiresAt });
+    this.store.set(id, invitation);
+    return invitation.toJSON();
   }
 
-  async acceptInvitation(token: string, password: string): Promise<IStudent | IEducator> {
-    // password is accepted for forward-compatibility: callers may provide it
-    // so that auth integrations can set it during account creation. It is not
-    // consumed here because identity management belongs to the Oracle layer.
-    const invitation = await InvitationModel.findByToken(token);
-    if (!invitation) {
-      throw new Error('Invitation not found');
-    }
-    if (invitation.status !== 'pending') {
-      throw new Error(`Invitation ${invitation.id} is not pending`);
-    }
-    if (invitation.expiresAt.getTime() < Date.now()) {
-      await InvitationModel.update(invitation.id, { status: 'expired' });
-      throw new Error('Invitation has expired');
-    }
-
-    const names = deriveNames(invitation.email);
-    let user: IStudent | IEducator;
-
-    if (invitation.type === 'student') {
-      const existing = await StudentModel.findByEmail(invitation.email);
-      if (existing) {
-        user = existing;
-      } else {
-        user = await StudentModel.create({
-          userId: '',
-          email: invitation.email,
-          firstName: names.firstName,
-          lastName: names.lastName,
-          status: 'active',
-        });
-      }
-    } else {
-      const existing = await EducatorModel.findByEmail(invitation.email);
-      if (existing) {
-        user = existing;
-      } else {
-        user = await EducatorModel.create({
-          userId: '',
-          email: invitation.email,
-          firstName: names.firstName,
-          lastName: names.lastName,
-          status: 'active',
-        });
-      }
-    }
-
-    await InvitationModel.update(invitation.id, { status: 'accepted' });
-    return user;
+  getInvitation(id: string): IInvitation {
+    const invitation = this.store.get(id);
+    if (!invitation) throw new Error(`Invitation not found: ${id}`);
+    return invitation.toJSON();
   }
 
-  async rejectInvitation(token: string): Promise<void> {
-    const invitation = await InvitationModel.findByToken(token);
-    if (!invitation) {
-      throw new Error('Invitation not found');
-    }
+  getInvitationByToken(token: string): IInvitation {
+    const invitation = Array.from(this.store.values()).find(i => i.token === token);
+    if (!invitation) throw new Error(`Invitation not found for token`);
+    return invitation.toJSON();
+  }
 
-    await InvitationModel.update(invitation.id, { status: 'rejected' });
+  acceptInvitation(token: string): IInvitation {
+    const invitation = Array.from(this.store.values()).find(i => i.token === token);
+    if (!invitation) throw new Error('Invalid invitation token');
+    if (invitation.status !== 'pending') throw new Error(`Invitation is already ${invitation.status}`);
+    if (invitation.expiresAt < new Date()) throw new Error('Invitation has expired');
+    invitation.status = 'accepted';
+    invitation.updatedAt = new Date();
+    return invitation.toJSON();
+  }
+
+  rejectInvitation(token: string): void {
+    const invitation = Array.from(this.store.values()).find(i => i.token === token);
+    if (!invitation) throw new Error('Invalid invitation token');
+    if (invitation.status !== 'pending') throw new Error(`Invitation is already ${invitation.status}`);
+    invitation.status = 'rejected';
+    invitation.updatedAt = new Date();
+  }
+
+  listInvitations(organizationId?: string, status?: IInvitation['status']): IInvitation[] {
+    return Array.from(this.store.values())
+      .filter(i => (!organizationId || i.organizationId === organizationId) && (!status || i.status === status))
+      .map(i => i.toJSON());
   }
 }
-
-export const invitationService = new InvitationService();

@@ -1,14 +1,34 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { EnrollmentService } from '../../services/shared/enrollment.service';
 
-export const enrollmentRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/enrollments', description: 'Create enrollment', handler: 'enrollmentService.enrollInClass' },
-  { method: 'GET', path: '/api/education/enrollments', description: 'List enrollments', handler: 'enrollmentService.listEnrollments' },
-  { method: 'GET', path: '/api/education/enrollments/:id', description: 'Get enrollment', handler: 'enrollmentService.getEnrollment' },
-  { method: 'POST', path: '/api/education/enrollments/:id/approve', description: 'Approve enrollment', handler: 'enrollmentService.approveEnrollment' },
-  { method: 'POST', path: '/api/education/enrollments/withdraw', description: 'Withdraw from class', handler: 'enrollmentService.withdrawFromClass' },
-];
+export function createEnrollmentRoutes(service: EnrollmentService) {
+  return {
+    'POST /api/education/enrollments': (body: {
+      studentId: string;
+      classId: string;
+      metadata?: Record<string, unknown>;
+    }) => {
+      const enrollment = service.enrollInClass(body.studentId, body.classId, body.metadata);
+      return { status: 201, data: enrollment };
+    },
+
+    'GET /api/education/enrollments/:id': (params: { id: string }) => {
+      const enrollment = service.getEnrollment(params.id);
+      return { status: 200, data: enrollment };
+    },
+
+    'GET /api/education/enrollments': (query: { studentId?: string; classId?: string }) => {
+      const enrollments = service.listEnrollments(query.studentId, query.classId);
+      return { status: 200, data: enrollments };
+    },
+
+    'DELETE /api/education/enrollments': (body: { studentId: string; classId: string }) => {
+      service.withdrawFromClass(body.studentId, body.classId);
+      return { status: 200, data: null };
+    },
+
+    'POST /api/education/enrollments/:id/approve': (params: { id: string }) => {
+      service.approveEnrollment(params.id);
+      return { status: 200, data: null };
+    },
+  };
+}

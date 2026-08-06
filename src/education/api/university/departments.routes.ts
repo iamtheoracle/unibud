@@ -1,14 +1,36 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { DepartmentService } from '../../services/university/department.service';
 
-export const departmentRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/departments', description: 'Create department', handler: 'departmentService.createDepartment' },
-  { method: 'GET', path: '/api/education/departments', description: 'List departments', handler: 'departmentService.listDepartments' },
-  { method: 'GET', path: '/api/education/departments/:id', description: 'Get department', handler: 'departmentService.getDepartment' },
-  { method: 'PUT', path: '/api/education/departments/:id', description: 'Update department', handler: 'departmentService.updateDepartment' },
-  { method: 'DELETE', path: '/api/education/departments/:id', description: 'Delete department', handler: 'departmentService.deleteDepartment' },
-];
+export function createDepartmentRoutes(service: DepartmentService) {
+  return {
+    'POST /api/education/departments': (body: {
+      facultyId: string;
+      name: string;
+      code: string;
+      description?: string;
+      metadata?: Record<string, unknown>;
+    }) => {
+      const department = service.createDepartment(body.facultyId, body.name, body.code, body.description, body.metadata);
+      return { status: 201, data: department };
+    },
+
+    'GET /api/education/departments/:id': (params: { id: string }) => {
+      const department = service.getDepartment(params.id);
+      return { status: 200, data: department };
+    },
+
+    'PUT /api/education/departments/:id': (params: { id: string }, body: Parameters<DepartmentService['updateDepartment']>[1]) => {
+      const department = service.updateDepartment(params.id, body);
+      return { status: 200, data: department };
+    },
+
+    'GET /api/education/departments': (query: { facultyId?: string }) => {
+      const departments = service.listDepartments(query.facultyId);
+      return { status: 200, data: departments };
+    },
+
+    'DELETE /api/education/departments/:id': (params: { id: string }) => {
+      service.deleteDepartment(params.id);
+      return { status: 204, data: null };
+    },
+  };
+}

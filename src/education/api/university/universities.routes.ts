@@ -1,14 +1,35 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { UniversityService } from '../../services/university/university.service';
 
-export const universityRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/universities', description: 'Create university', handler: 'universityService.createUniversity' },
-  { method: 'GET', path: '/api/education/universities', description: 'List universities', handler: 'universityService.listUniversities' },
-  { method: 'GET', path: '/api/education/universities/:id', description: 'Get university', handler: 'universityService.getUniversity' },
-  { method: 'PUT', path: '/api/education/universities/:id', description: 'Update university', handler: 'universityService.updateUniversity' },
-  { method: 'DELETE', path: '/api/education/universities/:id', description: 'Delete university', handler: 'universityService.deleteUniversity' },
-];
+export function createUniversityRoutes(service: UniversityService) {
+  return {
+    'POST /api/education/universities': (body: {
+      name: string;
+      code: string;
+      description?: string;
+      metadata?: Record<string, unknown>;
+    }) => {
+      const university = service.createUniversity(body.name, body.code, body.description, body.metadata);
+      return { status: 201, data: university };
+    },
+
+    'GET /api/education/universities/:id': (params: { id: string }) => {
+      const university = service.getUniversity(params.id);
+      return { status: 200, data: university };
+    },
+
+    'PUT /api/education/universities/:id': (params: { id: string }, body: Parameters<UniversityService['updateUniversity']>[1]) => {
+      const university = service.updateUniversity(params.id, body);
+      return { status: 200, data: university };
+    },
+
+    'GET /api/education/universities': () => {
+      const universities = service.listUniversities();
+      return { status: 200, data: universities };
+    },
+
+    'DELETE /api/education/universities/:id': (params: { id: string }) => {
+      service.deleteUniversity(params.id);
+      return { status: 204, data: null };
+    },
+  };
+}

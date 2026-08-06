@@ -1,23 +1,18 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "src"),
-    },
-  },
   test: {
-    environment: "node",
-    include: ["src/education/__tests__/**/*.test.ts"],
+    environment: 'node',
+    include: ['src/education/__tests__/**/*.test.ts', 'src/oracle/**/__tests__/**/*.test.ts'],
     coverage: {
-      provider: "v8",
-      include: ["src/education/**/*.ts"],
-      exclude: ["src/education/__tests__/**/*.ts", "src/education/docs/**/*", "src/education/database/**/*"],
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/education/**/*.ts', 'src/oracle/kernel/**/*.ts'],
+      exclude: [
+        'src/education/__tests__/**',
+        'src/oracle/**/__tests__/**',
+        'src/education/index.ts',
+      ],
     },
   },
 });

@@ -1,16 +1,40 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { ClassService } from '../../services/shared/class.service';
 
-export const classRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/classes', description: 'Create class', handler: 'classService.createClass' },
-  { method: 'GET', path: '/api/education/classes', description: 'List classes', handler: 'classService.listClasses' },
-  { method: 'GET', path: '/api/education/classes/:id', description: 'Get class', handler: 'classService.getClass' },
-  { method: 'PUT', path: '/api/education/classes/:id', description: 'Update class', handler: 'classService.updateClass' },
-  { method: 'DELETE', path: '/api/education/classes/:id', description: 'Delete class', handler: 'classService.deleteClass' },
-  { method: 'POST', path: '/api/education/classes/:id/students', description: 'Add student to class', handler: 'classService.addStudent' },
-  { method: 'DELETE', path: '/api/education/classes/:id/students/:studentId', description: 'Remove student from class', handler: 'classService.removeStudent' },
-];
+export function createClassRoutes(service: ClassService) {
+  return {
+    'POST /api/education/classes': (body: {
+      organizationId: string;
+      programId: string;
+      subjectId: string;
+      educatorId: string;
+      name: string;
+      schedule?: unknown;
+      code?: string;
+      capacity?: number;
+      metadata?: Record<string, unknown>;
+    }) => {
+      const cls = service.createClass(body.organizationId, body.programId, body.subjectId, body.educatorId, body.name, body.schedule, body.code, body.capacity, body.metadata);
+      return { status: 201, data: cls };
+    },
+
+    'GET /api/education/classes/:id': (params: { id: string }) => {
+      const cls = service.getClass(params.id);
+      return { status: 200, data: cls };
+    },
+
+    'PUT /api/education/classes/:id': (params: { id: string }, body: Parameters<ClassService['updateClass']>[1]) => {
+      const cls = service.updateClass(params.id, body);
+      return { status: 200, data: cls };
+    },
+
+    'GET /api/education/classes': (query: { organizationId?: string; programId?: string; educatorId?: string }) => {
+      const classes = service.listClasses(query.organizationId, query.programId, query.educatorId);
+      return { status: 200, data: classes };
+    },
+
+    'DELETE /api/education/classes/:id': (params: { id: string }) => {
+      service.deleteClass(params.id);
+      return { status: 204, data: null };
+    },
+  };
+}

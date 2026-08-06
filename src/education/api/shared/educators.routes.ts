@@ -1,16 +1,35 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { EducatorService } from '../../services/shared/educator.service';
 
-export const educatorRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/educators', description: 'Register a new educator', handler: 'educatorService.registerEducator' },
-  { method: 'GET', path: '/api/education/educators', description: 'List all educators', handler: 'educatorService.listEducators' },
-  { method: 'GET', path: '/api/education/educators/:id', description: 'Get educator by ID', handler: 'educatorService.getEducator' },
-  { method: 'PUT', path: '/api/education/educators/:id', description: 'Update educator', handler: 'educatorService.updateEducator' },
-  { method: 'POST', path: '/api/education/educators/:id/context', description: 'Assign educator to context', handler: 'educatorService.assignToContext' },
-  { method: 'DELETE', path: '/api/education/educators/:id/context', description: 'Remove educator from context', handler: 'educatorService.removeFromContext' },
-  { method: 'GET', path: '/api/education/educators/:id/contexts', description: 'Get educator contexts', handler: 'educatorService.getEducatorContexts' },
-];
+export function createEducatorRoutes(service: EducatorService) {
+  return {
+    'POST /api/education/educators': (body: {
+      email: string;
+      name: string;
+      bio?: string;
+      metadata?: Record<string, unknown>;
+    }) => {
+      const educator = service.registerEducator(body.email, body.name, body.bio, body.metadata);
+      return { status: 201, data: educator };
+    },
+
+    'GET /api/education/educators/:id': (params: { id: string }) => {
+      const educator = service.getEducator(params.id);
+      return { status: 200, data: educator };
+    },
+
+    'PUT /api/education/educators/:id': (params: { id: string }, body: Parameters<EducatorService['updateEducator']>[1]) => {
+      const educator = service.updateEducator(params.id, body);
+      return { status: 200, data: educator };
+    },
+
+    'GET /api/education/educators': (query: { organizationId?: string }) => {
+      const educators = service.listEducators(query.organizationId);
+      return { status: 200, data: educators };
+    },
+
+    'POST /api/education/educators/:id/organizations': (params: { id: string }, body: { organizationId: string }) => {
+      service.assignToOrganization(params.id, body.organizationId);
+      return { status: 200, data: null };
+    },
+  };
+}

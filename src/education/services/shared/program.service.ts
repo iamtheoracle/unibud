@@ -1,57 +1,49 @@
+import type { IProgram } from '../../types/shared';
 import { ProgramModel } from '../../models/shared/program.model';
-import type { IAcademicProgram } from '../../types/shared';
+import { generateId } from '../../utils';
 
 export class ProgramService {
-  async createProgram(name: string, code: string, type: string, description?: string): Promise<IAcademicProgram> {
-    const existing = await ProgramModel.findByCode(code);
-    if (existing) {
-      throw new Error(`Program with code ${code} already exists`);
-    }
+  private store = new Map<string, ProgramModel>();
 
-    return ProgramModel.create({
-      name,
-      code,
-      type,
-      description,
-      subjects: [],
-    });
+  createProgram(
+    name: string,
+    type: string,
+    organizationType: 'university' | 'learningOrg',
+    description?: string,
+    metadata?: Record<string, unknown>,
+  ): IProgram {
+    const id = generateId('prog');
+    const program = new ProgramModel({ id, name, type, organizationType, subjects: [], description, metadata });
+    this.store.set(id, program);
+    return program.toJSON();
   }
 
-  async getProgram(id: string): Promise<IAcademicProgram> {
-    const program = await ProgramModel.findById(id);
-    if (!program) {
-      throw new Error(`Program ${id} not found`);
-    }
-
-    return program;
+  getProgram(id: string): IProgram {
+    const program = this.store.get(id);
+    if (!program) throw new Error(`Program not found: ${id}`);
+    return program.toJSON();
   }
 
-  async updateProgram(
-    id: string,
-    data: Partial<Omit<IAcademicProgram, 'id' | 'createdAt' | 'updatedAt'>>
-  ): Promise<IAcademicProgram> {
-    return ProgramModel.update(id, data);
+  updateProgram(id: string, data: Partial<Pick<IProgram, 'name' | 'type' | 'description' | 'subjects' | 'metadata'>>): IProgram {
+    const program = this.store.get(id);
+    if (!program) throw new Error(`Program not found: ${id}`);
+    if (data.name !== undefined) program.name = data.name;
+    if (data.type !== undefined) program.type = data.type;
+    if (data.description !== undefined) program.description = data.description;
+    if (data.subjects !== undefined) program.subjects = data.subjects;
+    if (data.metadata !== undefined) program.metadata = data.metadata;
+    program.updatedAt = new Date();
+    return program.toJSON();
   }
 
-  async listPrograms(type?: string): Promise<IAcademicProgram[]> {
-    return ProgramModel.findAll(type);
+  listPrograms(type?: string, organizationType?: 'university' | 'learningOrg'): IProgram[] {
+    return Array.from(this.store.values())
+      .filter(p => (!type || p.type === type) && (!organizationType || p.organizationType === organizationType))
+      .map(p => p.toJSON());
   }
 
-  async deleteProgram(id: string): Promise<void> {
-    await ProgramModel.delete(id);
-  }
-
-  async addSubject(programId: string, subjectId: string): Promise<void> {
-    const program = await this.getProgram(programId);
-    if (!program.subjects.includes(subjectId)) {
-      await ProgramModel.update(programId, { subjects: [...program.subjects, subjectId] });
-    }
-  }
-
-  async removeSubject(programId: string, subjectId: string): Promise<void> {
-    const program = await this.getProgram(programId);
-    await ProgramModel.update(programId, { subjects: program.subjects.filter((id) => id !== subjectId) });
+  deleteProgram(id: string): void {
+    if (!this.store.has(id)) throw new Error(`Program not found: ${id}`);
+    this.store.delete(id);
   }
 }
-
-export const programService = new ProgramService();

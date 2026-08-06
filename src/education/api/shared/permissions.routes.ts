@@ -1,13 +1,47 @@
-export interface RouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-  path: string;
-  description: string;
-  handler: string;
-}
+import type { PermissionService } from '../../services/shared/permission.service';
 
-export const permissionRoutes: RouteDefinition[] = [
-  { method: 'POST', path: '/api/education/permissions', description: 'Define permission', handler: 'permissionService.definePermission' },
-  { method: 'POST', path: '/api/education/permissions/grant', description: 'Grant permission', handler: 'permissionService.grantPermission' },
-  { method: 'POST', path: '/api/education/permissions/revoke', description: 'Revoke permission', handler: 'permissionService.revokePermission' },
-  { method: 'GET', path: '/api/education/permissions/check', description: 'Check permission', handler: 'permissionService.hasPermission' },
-];
+export function createPermissionRoutes(service: PermissionService) {
+  return {
+    'POST /api/education/permissions': (body: {
+      name: string;
+      description?: string;
+      scope?: string;
+    }) => {
+      const permission = service.definePermission(body.name, body.description, body.scope);
+      return { status: 201, data: permission };
+    },
+
+    'GET /api/education/permissions': () => {
+      const permissions = service.listPermissions();
+      return { status: 200, data: permissions };
+    },
+
+    'POST /api/education/permissions/grant': (body: {
+      userId: string;
+      permissionName: string;
+      context?: Record<string, unknown>;
+    }) => {
+      service.grantPermission(body.userId, body.permissionName, body.context);
+      return { status: 200, data: null };
+    },
+
+    'POST /api/education/permissions/revoke': (body: {
+      userId: string;
+      permissionName: string;
+      context?: Record<string, unknown>;
+    }) => {
+      service.revokePermission(body.userId, body.permissionName, body.context);
+      return { status: 200, data: null };
+    },
+
+    'GET /api/education/permissions/check': (query: {
+      userId: string;
+      permissionName: string;
+      context?: string;
+    }) => {
+      const context = query.context ? JSON.parse(query.context) : undefined;
+      const hasPermission = service.hasPermission(query.userId, query.permissionName, context);
+      return { status: 200, data: { hasPermission } };
+    },
+  };
+}
