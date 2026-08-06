@@ -15,7 +15,14 @@ export default function BudInviteBar({ hub }) {
 
   const handleSend = () => {
     if (!message.trim()) return;
-    invoke(`You are Bud, a helpful companion. A student in the ${hub.label} (${hub.description}) invited you with: "${message}". Provide a helpful, concise response about ${hub.label} topics. After answering, you will leave the conversation.`, 12000);
+    invoke({
+      templateId: "bud.response",
+      variables: {
+        userMessage: message,
+        context: `Hub: ${hub.label}. Description: ${hub.description}. Focus on ${hub.label} topics and keep the reply concise before quietly leaving the conversation.`,
+      },
+      autoDismiss: 12000,
+    });
     setMessage("");
   };
 

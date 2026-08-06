@@ -37,6 +37,7 @@ import { services } from './services';
 import { registries } from './registries';
 import { eventBus } from './eventBus';
 import { logger } from './logger';
+import { osAIKernel, triggerOSAI } from '@/lib/ai/osAIKernel';
 
 export const runtime = {
   boot: () => runtimeBoot.boot(),
@@ -53,6 +54,10 @@ export const runtime = {
   guardian,
   spark,
   orbit,
+
+  // OS AI Activation Protocol — 8 OS-level AIs
+  osAI: osAIKernel,
+  triggerOSAI,
 
   // Services
   services,

@@ -31,6 +31,17 @@ export default function UniversalSearchOverlay({ open, onClose }) {
   const navigate = useNavigate();
   const { query, setQuery, results, isLoading, clear } = useUniversalSearch();
   const [recent, setRecent] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const FILTER_CHIPS = [
+    { id: "all", label: "All" },
+    { id: "students", label: "People" },
+    { id: "courses", label: "Courses" },
+    { id: "events", label: "Events" },
+    { id: "scholarships", label: "Scholarships" },
+    { id: "marketplace", label: "Marketplace" },
+    { id: "files", label: "Files" },
+  ];
 
   useEffect(() => {
     if (open) setRecent(getRecentSearches());
@@ -39,6 +50,7 @@ export default function UniversalSearchOverlay({ open, onClose }) {
   const handleClose = () => {
     hapticTap();
     clear();
+    setActiveFilter("all");
     onClose();
   };
 
@@ -54,8 +66,17 @@ export default function UniversalSearchOverlay({ open, onClose }) {
     setQuery(term);
   };
 
+  const clearRecentSearches = () => {
+    try { localStorage.removeItem("unibud_recent_searches"); } catch {}
+    setRecent([]);
+  };
+
   const { categories, total } = results;
   const hasQuery = query.trim().length >= 2;
+
+  const filteredCategories = activeFilter === "all"
+    ? categories
+    : categories.filter(({ key }) => key === activeFilter);
 
   return (
     <AnimatePresence>
@@ -98,15 +119,34 @@ export default function UniversalSearchOverlay({ open, onClose }) {
               </button>
             </div>
 
+            {/* Filter chips — only when query active */}
+            {hasQuery && (
+              <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 pb-2">
+                {FILTER_CHIPS.map((chip) => (
+                  <button
+                    key={chip.id}
+                    onClick={() => { hapticTap(); setActiveFilter(chip.id); }}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold spring-tap transition-colors ${
+                      activeFilter === chip.id
+                        ? "bg-primary text-primary-foreground"
+                        : "glass text-muted-foreground"
+                    }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {/* Content */}
             <div className="flex-1 overflow-y-auto no-scrollbar px-4 pb-8">
               {!hasQuery ? (
-                <LandingState recent={recent} onQuickSearch={handleQuickSearch} />
+                <LandingState recent={recent} onQuickSearch={handleQuickSearch} onClearRecent={clearRecentSearches} />
               ) : total === 0 && !isLoading ? (
                 <NoResults query={query} />
               ) : (
                 <div className="space-y-5 pt-2">
-                  {categories.map(({ key, label, results: items }) => {
+                  {filteredCategories.map(({ key, label, results: items }) => {
                     const config = CONFIG_MAP[key];
                     if (!config) return null;
                     const Icon = config.icon;
@@ -178,12 +218,15 @@ function ResultThumb({ config, record }) {
   );
 }
 
-function LandingState({ recent, onQuickSearch }) {
+function LandingState({ recent, onQuickSearch, onClearRecent }) {
   return (
     <div className="pt-6">
       {recent.length > 0 && (
         <div className="mb-6">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-3">Recent</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Recent</p>
+            <button onClick={onClearRecent} className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground spring-tap">Clear</button>
+          </div>
           <div className="space-y-1">
             {recent.map((term, i) => (
               <button

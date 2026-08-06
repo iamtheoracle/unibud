@@ -34,6 +34,16 @@ export default function ProfileView() {
     staleTime: 120000,
   });
 
+  const isOwnProfile = currentUser?.id === profileId;
+
+  const { data: followRecord, refetch: refetchFollow } = useQuery({
+    queryKey: ["follow-status", profileId, currentUser?.id],
+    queryFn: () => base44.entities.Follow.filter({ follower_id: currentUser?.id, followed_id: profileId }, "-created_date", 1),
+    enabled: !!currentUser?.id && !!profileId && !isOwnProfile,
+    select: (data) => data?.[0] || null,
+  });
+  const isFollowing = !!followRecord;
+
   const { data: posts = [] } = useQuery({
     queryKey: ["profile-posts", profileId],
     queryFn: () => base44.entities.QuadPost.filter({ created_by_id: profileId }, "-created_date", 50),
@@ -52,14 +62,30 @@ export default function ProfileView() {
     enabled: !!profileId,
   });
 
-  const isOwnProfile = currentUser?.id === profileId;
+  const { data: followersData = [] } = useQuery({
+    queryKey: ["profile-followers", profileId],
+    queryFn: () => base44.entities.Follow.filter({ followed_id: profileId }, "-created_date", 500),
+    enabled: !!profileId,
+  });
+
+  const { data: followingData = [] } = useQuery({
+    queryKey: ["profile-following", profileId],
+    queryFn: () => base44.entities.Follow.filter({ follower_id: profileId }, "-created_date", 500),
+    enabled: !!profileId,
+  });
 
   const handleFollow = async () => {
     try {
-      await base44.entities.Follow.create({ follower_id: currentUser?.id, followed_id: profileId });
-      toast({ title: "Following" });
+      if (isFollowing && followRecord?.id) {
+        await base44.entities.Follow.delete(followRecord.id);
+        toast({ title: "Unfollowed" });
+      } else {
+        await base44.entities.Follow.create({ follower_id: currentUser?.id, followed_id: profileId });
+        toast({ title: "Following" });
+      }
+      refetchFollow();
     } catch {
-      toast({ title: "Couldn't follow", variant: "destructive" });
+      toast({ title: "Action failed", variant: "destructive" });
     }
   };
 
@@ -113,6 +139,8 @@ export default function ProfileView() {
 
   const stats = {
     posts: posts.length,
+    followers: followersData.length,
+    following: followingData.length,
     collections: collections.length,
     achievements: achievements.length,
   };
@@ -128,6 +156,7 @@ export default function ProfileView() {
         onAddFriend={handleAddFriend}
         onMessage={() => navigate("/messages")}
         onShare={handleShare}
+        isFollowing={isFollowing}
       />
 
       <ProfileTabBar active={activeTab} onChange={setActiveTab} />

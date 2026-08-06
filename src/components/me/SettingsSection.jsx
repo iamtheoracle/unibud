@@ -14,7 +14,6 @@ import { queryClientInstance } from "@/lib/query-client";
 const ROUTE_MAP = {
   notifications: "/bud/notifications",
   security: "/security",
-  privacy: "/security",
   devices: "/security",
   data: "/me",
 };
@@ -52,10 +51,41 @@ const SettingsSection = forwardRef(({ user }, ref) => {
   const [editing, setEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [privacy, setPrivacy] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("unibud_privacy") || "{}"); } catch { return {}; }
+  });
+
+  const savePrivacy = (updates) => {
+    const next = { ...privacy, ...updates };
+    setPrivacy(next);
+    try { localStorage.setItem("unibud_privacy", JSON.stringify(next)); } catch {}
+    toast({ title: "Privacy updated" });
+  };
+
+  const PrivacyToggle = ({ label, description, field, defaultValue = true }) => {
+    const value = privacy[field] ?? defaultValue;
+    return (
+      <div className="flex items-start justify-between gap-3 py-3 border-b border-border/30 last:border-0">
+        <div className="flex-1">
+          <p className="text-[13px] font-medium text-foreground">{label}</p>
+          {description && <p className="text-[11px] text-muted-foreground mt-0.5">{description}</p>}
+        </div>
+        <button
+          onClick={() => savePrivacy({ [field]: !value })}
+          className={`w-11 h-6 rounded-full transition-colors flex-shrink-0 mt-0.5 ${value ? "bg-primary" : "bg-muted"}`}
+          role="switch"
+          aria-checked={value}
+        >
+          <span className={`block w-5 h-5 rounded-full bg-white shadow transition-transform mx-0.5 ${value ? "translate-x-5" : "translate-x-0"}`} />
+        </button>
+      </div>
+    );
+  };
 
   const handle = (key) => {
     if (key === "account") setSheet("account");
     else if (key === "about") setSheet("about");
+    else if (key === "privacy") setSheet("privacy");
     else if (key === "appearance") {
       const next = theme === "dark" ? "light" : theme === "light" ? "system" : "dark";
       changeTheme(next);
@@ -128,10 +158,21 @@ const SettingsSection = forwardRef(({ user }, ref) => {
               className="relative w-full max-w-[520px] glass-strong rounded-t-[28px] p-5 pb-8 safe-area-pb"
             >
               <div className="flex items-center justify-between mb-5">
-                <h2 className="font-heading font-bold text-[18px] text-foreground">{sheet === "account" ? "Account" : "About UNIBUD"}</h2>
+                <h2 className="font-heading font-bold text-[18px] text-foreground">{sheet === "account" ? "Account" : sheet === "privacy" ? "Privacy" : "About UNIBUD"}</h2>
                 <button onClick={() => setSheet(null)} className="text-[13px] font-semibold text-muted-foreground">Close</button>
               </div>
-              {sheet === "account" ? (
+              {sheet === "privacy" ? (
+                <div className="space-y-0">
+                  <PrivacyToggle field="private_profile" label="Private Profile" description="Only approved followers see your posts and profile" defaultValue={false} />
+                  <PrivacyToggle field="show_online" label="Show Online Status" description="Let others see when you're active" />
+                  <PrivacyToggle field="show_in_search" label="Appear in Search" description="Allow others to find you by name or username" />
+                  <PrivacyToggle field="allow_tags" label="Allow Tagging" description="Let others tag you in posts and comments" />
+                  <PrivacyToggle field="show_activity" label="Show Activity Feed" description="Display your recent activity on your profile" />
+                  <PrivacyToggle field="allow_messages" label="Allow Messages from Anyone" description="Receive DMs from people you don't follow" />
+                  <PrivacyToggle field="show_academic" label="Show Academic Info" description="Display your faculty, department and level publicly" />
+                  <PrivacyToggle field="data_personalization" label="Personalised Recommendations" description="Allow Bud to use your activity for better suggestions" />
+                </div>
+              ) : sheet === "account" ? (
                 <div className="space-y-3">
                   <div className="glass rounded-2xl p-4 space-y-3">
                     <AccountRow label="Full Name" value={user?.full_name} />
