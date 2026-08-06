@@ -1,0 +1,148 @@
+{
+  "name": "CampusLocation",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name of the campus location"
+    },
+    "description": {
+      "type": "string",
+      "description": "What this location is used for"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "classroom",
+        "lecture_hall",
+        "hostel",
+        "library",
+        "cafeteria",
+        "medical_center",
+        "parking",
+        "event_venue",
+        "administrative",
+        "sports",
+        "lab",
+        "other"
+      ],
+      "default": "other",
+      "description": "Type of campus location"
+    },
+    "building": {
+      "type": "string",
+      "description": "Building name or block"
+    },
+    "floor": {
+      "type": "string",
+      "description": "Floor level (e.g. 'Ground', '1st', '2nd')"
+    },
+    "room_number": {
+      "type": "string",
+      "description": "Room or hall number"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "GPS latitude coordinate"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "GPS longitude coordinate"
+    },
+    "address": {
+      "type": "string",
+      "description": "Full street address if applicable"
+    },
+    "accessibility": {
+      "type": "object",
+      "properties": {
+        "wheelchair_accessible": {
+          "type": "boolean",
+          "default": false
+        },
+        "elevator": {
+          "type": "boolean",
+          "default": false
+        },
+        "ramp": {
+          "type": "boolean",
+          "default": false
+        },
+        "accessible_restroom": {
+          "type": "boolean",
+          "default": false
+        },
+        "braille_signage": {
+          "type": "boolean",
+          "default": false
+        },
+        "hearing_loop": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "description": "Accessibility features available at this location"
+    },
+    "opening_hours": {
+      "type": "string",
+      "description": "Opening time (e.g. '08:00')"
+    },
+    "closing_hours": {
+      "type": "string",
+      "description": "Closing time (e.g. '22:00')"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "capacity": {
+      "type": "number",
+      "default": 0,
+      "description": "Seating or occupancy capacity"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Photo of the building or location"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags"
+    },
+    "favorited_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who saved this as a favorite"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "latitude",
+    "longitude"
+  ],
+  "rls": {
+    "read": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "create": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "update": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    },
+    "delete": {
+      "data.institution_id": "{{user.data.institution_id}}"
+    }
+  }
+}

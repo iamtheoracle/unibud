@@ -1,441 +1,238 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { base44 } from "@/api/base44Client";
+import { useFriends } from "@/lib/social/useFriends";
+import { useToast } from "@/components/ui/use-toast";
+import { Image } from "@/components/ui/image";
+import { resolveDisplayName } from "@/lib/userDisplayName";
+import EditProfileModal from "@/components/me/EditProfileModal";
+import QRShareSheet from "@/components/shared/QRShareSheet";
+import MeSocial from "@/components/me/MeSocial";
+import MeAcademic from "@/components/me/MeAcademic";
 import {
-  ChevronRight, Award, BookOpen, Flame, Target,
-  Bell, Shield, Palette, HelpCircle, LogOut, Download,
-  BarChart3, Trophy, Star, FileText, Globe, Bookmark, Brain, Link2, Heart, Compass,
-  PartyPopper, Rocket, Calendar, Users, GraduationCap,
-  Trash2,
+  Settings, QrCode, Share2, Edit3, Bookmark, Shield, Heart, FolderOpen, Link2,
+  BadgeCheck, Trophy, ChevronRight,
 } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
-import { Link } from "react-router-dom";
-import {
-  AlertDialog, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { toast } from "@/components/ui/use-toast";
-import AcademicProgressSection from "@/components/me/AcademicProgressSection";
-import CampusLifeSection from "@/components/me/CampusLifeSection";
-import BadgesSection from "@/components/me/BadgesSection";
-import StudyStatsSection from "@/components/me/StudyStatsSection";
-import MilestonesSection from "@/components/milestones/MilestonesSection";
-import HighlightShelf from "@/components/stories/HighlightShelf";
-import MatriculationCard from "@/components/me/MatriculationCard";
-import TransitionToStudent from "@/components/future-student/TransitionToStudent";
-import GraduationTransition from "@/components/journey/GraduationTransition";
-import { useDemoMode } from "@/lib/DemoModeContext";
-import { getEducationLevel, getExamStatus } from "@/lib/futureStudentConfig";
-import { getJourneyStageForUser } from "@/lib/universityJourney";
 
-const menuSections = [
-  {
-    title: "Academic",
-    items: [
-      { icon: BarChart3, label: "Learning Analytics", path: "/academics" },
-      { icon: FileText, label: "Transcript & Results", path: "/academics" },
-      { icon: Bookmark, label: "Saved Resources", path: "/library" },
-      { icon: Target, label: "Academic Goals", path: "/academics" },
-    ],
-  },
-  {
-    title: "Achievements",
-    items: [
-      { icon: Award, label: "Achievement Timeline", path: "/achievements" },
-      { icon: Trophy, label: "Challenges", path: "/challenges" },
-      { icon: PartyPopper, label: "Celebrations", path: "/celebrations" },
-      { icon: Rocket, label: "FYP Hub", path: "/fyp-hub" },
-      { icon: Calendar, label: "Traditions Calendar", path: "/traditions-calendar" },
-      { icon: Star, label: "Portfolio & Projects", path: "/portfolio" },
-      { icon: Globe, label: "Career Readiness", path: "/opportunities" },
-    ],
-  },
-  {
-    title: "Settings",
-    items: [
-      { icon: Brain, label: "Bud Memory", path: "/bud-memory" },
-      { icon: Link2, label: "Connected Accounts", path: "/connected-accounts" },
-      { icon: Compass, label: "Discover", path: "/discover" },
-      { icon: PartyPopper, label: "Campus Life", path: "/campus-traditions" },
-      { icon: Users, label: "Mentorship", path: "/mentorship" },
-      { icon: Heart, label: "Student Support", path: "/student-support" },
-      { icon: Shield, label: "Student Government", path: "/student-government" },
-      { icon: Calendar, label: "Calendar", path: "/calendar" },
-      { icon: Heart, label: "Wellbeing", path: "/wellbeing" },
-      { icon: Bell, label: "Notifications", path: "/notifications" },
-      { icon: Palette, label: "Appearance", path: "/me" },
-      { icon: Shield, label: "Privacy & Security", path: "/connected-accounts" },
-      { icon: Download, label: "Downloads", path: "/library" },
-      { icon: HelpCircle, label: "Help & Support", path: "/student-support" },
-    ],
-  },
+const EASE = [0.16, 1, 0.3, 1];
+
+const QUICK_ACCESS = [
+  { id: "highlights",  label: "Highlights",  to: "/highlights",                icon: Bookmark },
+  { id: "saved",       label: "Saved",       to: "/highlights",                icon: Heart },
+  { id: "collections", label: "Collections", to: "/highlights",                icon: FolderOpen },
+  { id: "settings",    label: "Settings",    to: "/settings",                  icon: Settings },
+  { id: "privacy",     label: "Privacy",     to: "/settings",                  icon: Shield },
+  { id: "accounts",    label: "Connected",  to: "/settings/connected-accounts", icon: Link2 },
 ];
 
 export default function Me() {
-  const { isDemoMode } = useDemoMode();
-  const [showTransition, setShowTransition] = useState(false);
-  const [showGraduation, setShowGraduation] = useState(false);
-  const { data: user } = useQuery({
-    queryKey: ["currentUser"],
-    queryFn: () => base44.auth.me(),
-    enabled: !isDemoMode,
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [editing, setEditing] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [mode, setMode] = useState("social");
+
+  const { data: user } = useQuery({ queryKey: ["me"], queryFn: () => base44.auth.me() });
+  const { friends } = useFriends();
+
+  const { data: posts = [] } = useQuery({
+    queryKey: ["me-posts-count", user?.id],
+    queryFn: () => base44.entities.QuadPost.filter({ created_by_id: user.id }, "-created_date", 50),
+    enabled: !!user?.id,
+  });
+  const { data: achievements = [] } = useQuery({
+    queryKey: ["me-achievements", user?.id],
+    queryFn: () => base44.entities.StudentAchievement.filter({ created_by_id: user.id }, "-created_date", 50),
+    enabled: !!user?.id,
+  });
+  const { data: collections = [] } = useQuery({
+    queryKey: ["me-collections-count", user?.id],
+    queryFn: () => base44.entities.Highlight.filter({ created_by_id: user.id }, "-created_date", 50),
+    enabled: !!user?.id,
   });
 
-  const { data: courses } = useQuery({
-    queryKey: ["meCourses"],
-    queryFn: () => base44.entities.Course.list(),
-    enabled: !isDemoMode,
-  });
-  const { data: sessions } = useQuery({
-    queryKey: ["meSessions"],
-    queryFn: () => base44.entities.StudySession.list("-session_date", 50),
-    enabled: !isDemoMode,
-  });
-  const { data: badges } = useQuery({
-    queryKey: ["meBadges"],
-    queryFn: () => base44.entities.DigitalBadge.list(),
-    enabled: !isDemoMode,
-  });
+  const name = resolveDisplayName(user) || user?.full_name || "Student";
+  const handle = user?.username ? `@${user.username}` : null;
+  const initials = name.charAt(0).toUpperCase();
+  const bio = user?.bio || "";
+  const avatarUrl = user?.avatar_url;
+  const coverUrl = user?.cover_url || user?.data?.cover_url;
+  const university = user?.university || "";
+  const faculty = user?.faculty || "";
+  const department = user?.department || "";
+  const level = user?.level || "";
+  const isVerified = user?.is_verified || false;
+  const uniParts = [university, faculty, department, level].filter(Boolean);
 
-  const handleLogout = () => {
-    base44.auth.logout("/login");
-  };
+  const stats = [
+    { label: "Posts", value: posts.length },
+    { label: "Friends", value: friends.length },
+    { label: "Awards", value: achievements.length },
+    { label: "Saved", value: collections.length },
+  ];
 
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const handleDeleteAccount = async () => {
-    setIsDeleting(true);
+  const handleShare = async () => {
     try {
-      await base44.entities.SupportTicket.create({
-        subject: "Account Deletion Request",
-        category: "general",
-        priority: "urgent",
-        status: "open",
-        student_name: user?.full_name || user?.email || "Unknown",
-        student_id: user?.id || "",
-        messages: [{
-          content: "User requested permanent account deletion.",
-          author: user?.email || "user",
-          created_at: new Date().toISOString(),
-        }],
-      });
-      toast({
-        title: "Deletion request submitted",
-        description: "Our support team will contact you within 48 hours to complete this.",
-      });
-      setShowDeleteDialog(false);
-      setTimeout(() => base44.auth.logout("/login"), 2000);
-    } catch {
-      toast({
-        title: "Something went wrong",
-        description: "Could not submit your request. Please try again or contact support.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsDeleting(false);
-    }
+      if (navigator.share) {
+        await navigator.share({ title: name, text: `Check out ${name} on UNIBUD` });
+      } else {
+        await navigator.clipboard?.writeText(window.location.href);
+        toast({ title: "Profile link copied" });
+      }
+    } catch {}
   };
-
-  const sessionDates = (sessions || []).filter((s) => s.session_date).map((s) => s.session_date);
-  const uniqueDates = [...new Set(sessionDates)].sort().reverse();
-  let streak = 0;
-  const today = new Date().toISOString().split("T")[0];
-  let checkDate = today;
-  for (let i = 0; i < uniqueDates.length; i++) {
-    if (uniqueDates[i] === checkDate) {
-      streak++;
-      const d = new Date(checkDate);
-      d.setDate(d.getDate() - 1);
-      checkDate = d.toISOString().split("T")[0];
-    } else if (uniqueDates[i] < checkDate) {
-      break;
-    }
-  }
-
-  const quickStats = isDemoMode
-    ? [
-        { label: "GPA", value: "4.20", icon: Award, color: "text-primary" },
-        { label: "Streak", value: "12d", icon: Flame, color: "text-warning" },
-        { label: "Courses", value: "6", icon: BookOpen, color: "text-success" },
-        { label: "Badges", value: "8", icon: Trophy, color: "text-primary" },
-      ]
-    : [
-        { label: "Courses", value: String(courses?.length || 0), icon: BookOpen, color: "text-success" },
-        { label: "Streak", value: streak + "d", icon: Flame, color: "text-warning" },
-        { label: "Sessions", value: String(sessions?.length || 0), icon: BarChart3, color: "text-info" },
-        { label: "Badges", value: String(badges?.length || 0), icon: Trophy, color: "text-primary" },
-      ];
-
-  const displayName = isDemoMode ? "Alex Johnson" : (user?.full_name || "Student");
-  const displayEmail = isDemoMode ? "alex.demo@unibud.app" : (user?.email || "");
-  const displayProgram = isDemoMode ? "Computer Science · 300 Level" : (user?.department ? user.department + " · " + (user?.level || "") : "Add your program");
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Profile Header */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="pt-12 pb-6 px-5 text-center"
-      >
-        <motion.div
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, type: "spring", stiffness: 260, damping: 20 }}
-          className="w-20 h-20 rounded-[26px] bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto mb-3.5 gold-glow"
-        >
-          <span className="text-primary-foreground font-heading font-bold text-2xl">
-            {displayName.charAt(0)}
-          </span>
-        </motion.div>
-        <h1 className="font-heading font-bold text-[20px] text-foreground">{displayName}</h1>
-        <p className="text-[11px] text-muted-foreground mt-0.5">{displayEmail}</p>
-        {!isDemoMode && (() => {
-          const stage = getJourneyStageForUser(user);
-          const StageIcon = stage.icon;
-          return (
-            <span className={`inline-flex items-center gap-1 mt-1.5 px-3 py-1 rounded-full ${stage.badge} text-[10px] font-semibold`}>
-              <StageIcon className="w-3 h-3" /> {stage.label}
-            </span>
-          );
-        })()}
-        {isDemoMode && (
-          <span className="inline-block mt-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-semibold">
-            {displayProgram}
-          </span>
+    <div className="w-full max-w-[520px] mx-auto pb-36 safe-area-pt">
+      {/* Cover */}
+      <div className="relative w-full h-32 overflow-hidden">
+        {coverUrl ? (
+          <Image src={coverUrl} fittingType="fill" className="w-full h-full" />
+        ) : (
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--primary) / 0.02))" }} />
         )}
-        {!isDemoMode && user?.user_type === "student" && user?.department && (
-          <span className="block mt-1 text-[10px] text-muted-foreground">
-            {user.department}{user.level ? ` · ${user.level} Level` : ""}{user.university ? ` · ${user.university}` : ""}
-          </span>
-        )}
-        {!isDemoMode && user?.user_type === "alumni" && user?.graduation_year && (
-          <span className="block mt-1 text-[10px] text-muted-foreground">
-            {user.university ? `${user.university} · ` : ""}Class of {user.graduation_year}
-            {user.current_occupation ? ` · ${user.current_occupation}` : ""}
-          </span>
-        )}
-        {!isDemoMode && user?.user_type === "postgraduate" && (
-          <span className="block mt-1 text-[10px] text-muted-foreground">
-            {user.postgraduate_field || user.department || ""}{user.university ? ` · ${user.university}` : ""}
-          </span>
-        )}
-      </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+      </div>
 
-      {/* Future Student Banner + Transition */}
-      {!isDemoMode && user?.user_type === "future_student" && (
-        <div className="px-5 mb-6">
-          <div className="rounded-[24px] bg-gradient-to-br from-primary to-primary/80 p-5 shadow-[0_8px_30px_rgba(124,58,237,0.25)]">
-            <div className="flex items-center gap-2 mb-2">
-              <Rocket className="w-5 h-5 text-white" />
-              <p className="font-heading font-bold text-[15px] text-white">Future Student</p>
+      {/* Avatar */}
+      <div className="px-5 -mt-12 relative">
+        <div className="w-20 h-20 rounded-full ring-4 ring-background overflow-hidden liquid-mirror">
+          {avatarUrl ? (
+            <Image src={avatarUrl} fittingType="fill" className="w-full h-full" />
+          ) : (
+            <div className="w-full h-full grid place-items-center bg-muted">
+              <span className="text-[24px] font-bold text-muted-foreground">{initials}</span>
             </div>
-            <div className="flex items-center gap-3 mb-3 text-white/90 text-[12px]">
-              {user.education_level && (
-                <span className="px-2.5 py-1 rounded-full bg-white/15 font-medium">
-                  {getEducationLevel(user.education_level)?.short || user.education_level}
-                </span>
-              )}
-              {user.exam_status && (
-                <span className="px-2.5 py-1 rounded-full bg-white/15 font-medium">
-                  {getExamStatus(user.exam_status)?.label || user.exam_status}
-                </span>
-              )}
+          )}
+        </div>
+      </div>
+
+      {/* Identity + Actions */}
+      <div className="px-5 pt-3">
+        <div className="flex justify-between items-start gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h1 className="text-[22px] font-bold text-foreground truncate tracking-tight leading-tight">{name}</h1>
+              {isVerified && <BadgeCheck className="w-[18px] h-[18px] text-primary shrink-0" />}
             </div>
-            <p className="text-[12px] text-white/85 leading-relaxed mb-3">
-              Been admitted? Transition your account to a full student profile — all your history, conversations, and progress stay with you.
-            </p>
-            <button
-              onClick={() => setShowTransition(true)}
-              className="w-full h-[46px] rounded-2xl bg-white/20 text-white font-heading font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap"
-            >
-              <GraduationCap className="w-[18px] h-[18px]" /> Transition to Student Account
+            {handle && <p className="text-[13px] text-muted-foreground truncate mt-0.5">{handle}</p>}
+            {uniParts.length > 0 && (
+              <p className="text-[11px] text-muted-foreground/70 mt-0.5 line-clamp-1">{uniParts.join(" · ")}</p>
+            )}
+          </div>
+          <div className="flex gap-2 flex-shrink-0">
+            <button onClick={() => setEditing(true)} className="w-9 h-9 rounded-full glass-card grid place-items-center spring-tap" aria-label="Edit profile">
+              <Edit3 className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+            </button>
+            <button onClick={handleShare} className="w-9 h-9 rounded-full glass-card grid place-items-center spring-tap" aria-label="Share profile">
+              <Share2 className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+            </button>
+            <button onClick={() => setQrOpen(true)} className="w-9 h-9 rounded-full glass-card grid place-items-center spring-tap" aria-label="QR code">
+              <QrCode className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
+            </button>
+            <button onClick={() => navigate("/settings")} className="w-9 h-9 rounded-full glass-card grid place-items-center spring-tap" aria-label="Settings">
+              <Settings className="w-4 h-4 text-muted-foreground" strokeWidth={1.8} />
             </button>
           </div>
-          <TransitionToStudent open={showTransition} onClose={() => setShowTransition(false)} user={user} />
         </div>
-      )}
 
-      {/* Graduation Transition — for undergraduate & postgraduate students */}
-      {!isDemoMode && (user?.user_type === "student" || user?.user_type === "postgraduate") && (
-        <div className="px-5 mb-6">
-          <div className="rounded-[24px] bg-gradient-to-br from-success/10 to-success/5 border border-success/20 p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Award className="w-5 h-5 text-success" />
-              <p className="font-heading font-bold text-[15px] text-foreground">
-                {user?.user_type === "postgraduate" ? "Completed Your Programme?" : "Graduating Soon?"}
-              </p>
+        {bio && <p className="text-[14px] text-muted-foreground mt-3 leading-relaxed">{bio}</p>}
+
+        {/* Stats */}
+        <div className="grid grid-cols-4 gap-0 mt-5 rounded-[18px] glass-card overflow-hidden">
+          {stats.map((s, i) => (
+            <div key={s.label} className={`text-center py-3 ${i > 0 ? "border-l border-border/30" : ""}`}>
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.3, ease: EASE }}
+                className="text-[18px] font-bold text-foreground tabular-nums"
+              >
+                {s.value}
+              </motion.div>
+              <div className="text-[9px] uppercase tracking-wider text-muted-foreground mt-0.5">{s.label}</div>
             </div>
-            <p className="text-[12px] text-muted-foreground leading-relaxed mb-3">
-              {user?.user_type === "postgraduate"
-                ? "Transition to an Alumni profile or continue your journey. All your research, conversations, and achievements will be preserved."
-                : "Transition to an Alumni profile or continue to postgraduate studies. All your history, conversations, and achievements will be preserved."}
-            </p>
-            <button
-              onClick={() => setShowGraduation(true)}
-              className="w-full h-[46px] rounded-2xl bg-success text-white font-heading font-semibold text-[13px] flex items-center justify-center gap-2 spring-tap"
-            >
-              {user?.user_type === "postgraduate" ? <Award className="w-[18px] h-[18px]" /> : <GraduationCap className="w-[18px] h-[18px]" />}
-              {user?.user_type === "postgraduate" ? "Complete Your Journey" : "Graduate & Transition"}
-            </button>
-          </div>
-          <GraduationTransition open={showGraduation} onClose={() => setShowGraduation(false)} user={user} />
-        </div>
-      )}
-
-      {/* Quick Stats */}
-      <div className="px-5 mb-6">
-        <div className="grid grid-cols-4 gap-2.5">
-          {quickStats.map((stat, i) => (
-            <GlassCard key={i} variant="solid" className="p-2.5 text-center" delay={i * 0.04}>
-              <stat.icon className={"w-4 h-4 mx-auto mb-1 " + stat.color} strokeWidth={2.2} />
-              <p className="font-heading font-bold text-[13px] text-foreground">{stat.value}</p>
-              <p className="text-[8px] text-muted-foreground mt-0.5">{stat.label}</p>
-            </GlassCard>
           ))}
         </div>
-      </div>
 
-      {/* Matriculation Number — visible for enrolled students (undergrad + postgrad) */}
-      {!isDemoMode && (user?.user_type === "student" || user?.user_type === "postgraduate") && (
-        <div className="px-5 mb-6">
-          <MatriculationCard user={user} />
-        </div>
-      )}
-
-      {/* Academic Progress Dashboard */}
-      <div className="px-5 mb-6">
-        <div className="flex items-center gap-2 mb-3 px-1">
-          <BarChart3 className="w-4 h-4 text-primary" />
-          <h2 className="font-heading font-bold text-[15px] text-foreground">Academic Progress</h2>
-        </div>
-        <AcademicProgressSection />
-      </div>
-
-      {/* Campus Journey */}
-      <div className="px-5 mb-6">
-        <CampusLifeSection />
-      </div>
-
-      {/* Story Highlights */}
-      <div className="mb-6">
-        <HighlightShelf />
-      </div>
-
-      {/* Study Stats */}
-      <div className="px-5 mb-6">
-        <div className="flex items-center gap-2 mb-3 px-1">
-          <BarChart3 className="w-4 h-4 text-primary" />
-          <h2 className="font-heading font-bold text-[15px] text-foreground">Weekly Progress</h2>
-        </div>
-        <StudyStatsSection />
-      </div>
-
-      {/* Digital Badges */}
-      <div className="px-5 mb-6">
-        <BadgesSection />
-      </div>
-
-      {/* Recent Milestones */}
-      <div className="px-5 mb-6">
-        <div className="flex items-center gap-2 mb-3 px-1">
-          <PartyPopper className="w-4 h-4 text-primary" />
-          <h2 className="font-heading font-bold text-[15px] text-foreground">Recent Milestones</h2>
-        </div>
-        <MilestonesSection />
-      </div>
-
-      {/* Menu Sections */}
-      <div className="px-5 space-y-6">
-        {menuSections.map((section, si) => (
-          <div key={si}>
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 px-1">
-              {section.title}
-            </p>
-            <GlassCard variant="solid" className="overflow-hidden" delay={0.1 + si * 0.05}>
-              {section.items.map((item, ii) => (
-                <Link
-                  key={ii}
-                  to={item.path}
-                  className={"flex items-center gap-3 px-4 py-3.5 hover:bg-muted/40 transition-colors " + (ii < section.items.length - 1 ? "border-b border-border/20" : "")}
+        {/* Quick Access */}
+        <div className="mt-5">
+          <div className="grid grid-cols-3 gap-2">
+            {QUICK_ACCESS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => navigate(item.to)}
+                  className="flex flex-col items-center gap-1.5 p-3 rounded-[16px] glass-card spring-tap"
                 >
-                  <div className="w-8 h-8 rounded-[12px] bg-primary/8 flex items-center justify-center">
-                    <item.icon className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-full grid place-items-center bg-muted/40">
+                    <Icon className="w-4 h-4 text-foreground" strokeWidth={1.8} />
                   </div>
-                  <span className="flex-1 text-[13px] font-medium text-foreground">{item.label}</span>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                </Link>
-              ))}
-            </GlassCard>
+                  <span className="text-[10px] font-medium text-foreground truncate">{item.label}</span>
+                </button>
+              );
+            })}
           </div>
-        ))}
-
-        {/* Logout */}
-        {!isDemoMode && (
-          <GlassCard variant="solid" className="overflow-hidden" delay={0.3}>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3.5 w-full hover:bg-destructive/10 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-[12px] bg-destructive/10 flex items-center justify-center">
-                <LogOut className="w-4 h-4 text-destructive" />
-              </div>
-              <span className="text-[13px] font-medium text-destructive">Sign Out</span>
-            </button>
-          </GlassCard>
-        )}
-
-        {/* Delete Account */}
-        {!isDemoMode && (
-          <>
-            <GlassCard variant="solid" className="overflow-hidden" delay={0.35}>
-              <button
-                onClick={() => setShowDeleteDialog(true)}
-                className="flex items-center gap-3 px-4 py-3.5 w-full hover:bg-destructive/10 transition-colors"
-              >
-                <div className="w-8 h-8 rounded-[12px] bg-destructive/10 flex items-center justify-center">
-                  <Trash2 className="w-4 h-4 text-destructive" />
-                </div>
-                <span className="text-[13px] font-medium text-destructive">Delete Account</span>
-              </button>
-            </GlassCard>
-
-            <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-              <AlertDialogContent className="max-w-sm rounded-3xl">
-                <AlertDialogHeader>
-                  <AlertDialogTitle className="text-[16px] font-heading font-bold">Delete your account?</AlertDialogTitle>
-                  <AlertDialogDescription className="text-[13px] leading-relaxed">
-                    This will permanently remove your profile, conversations, and all associated data. This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter className="flex-row gap-2">
-                  <AlertDialogCancel className="flex-1 h-[42px] rounded-2xl text-[13px] mt-0">
-                    Cancel
-                  </AlertDialogCancel>
-                  <button
-                    onClick={handleDeleteAccount}
-                    disabled={isDeleting}
-                    className="flex-1 h-[42px] rounded-2xl bg-destructive text-destructive-foreground text-[13px] font-semibold hover:bg-destructive/90 disabled:opacity-50 transition-colors"
-                  >
-                    {isDeleting ? "Processing..." : "Delete Account"}
-                  </button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </>
-        )}
-
-        {/* Branding */}
-        <div className="text-center pt-4 pb-2">
-          <p className="text-[9px] text-muted-foreground/60">A My Realm Product</p>
-          <p className="text-[8px] text-muted-foreground/40 mt-0.5">My Realm Network Limited · RC: 9645700</p>
-          <p className="text-[8px] text-muted-foreground/40">© 2026 My Realm Network Limited. All Rights Reserved.</p>
         </div>
+
+        {/* Mode toggle */}
+        <div className="mt-5">
+          <div className="flex bg-muted/40 rounded-full p-1">
+            {["social", "academic"].map((m) => (
+              <button
+                key={m}
+                onClick={() => setMode(m)}
+                className={`flex-1 py-2 rounded-full text-[12px] font-semibold capitalize spring-tap transition-all ${mode === m ? "bg-foreground text-background" : "text-muted-foreground"}`}
+              >
+                {m}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Mode content */}
+        <div className="mt-5">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mode}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25, ease: EASE }}
+            >
+              {mode === "social" ? <MeSocial bio={bio} user={user} /> : <MeAcademic user={user} />}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Achievements preview */}
+        {achievements.length > 0 && (
+          <div className="mt-6">
+            <div className="flex items-center justify-between mb-2.5">
+              <h2 className="text-[14px] font-bold text-foreground tracking-tight">Achievements</h2>
+              <button onClick={() => navigate("/achievements")} className="flex items-center gap-0.5 text-[11px] font-semibold text-muted-foreground spring-tap">
+                See All <ChevronRight className="w-3 h-3" />
+              </button>
+            </div>
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {achievements.slice(0, 6).map((a) => (
+                <div key={a.id} className="flex flex-col items-center gap-1.5 p-3 rounded-[16px] glass-card shrink-0 w-20">
+                  <div className="w-9 h-9 rounded-full grid place-items-center bg-gold/10">
+                    <Trophy className="w-4 h-4 text-gold" strokeWidth={1.5} />
+                  </div>
+                  <span className="text-[10px] font-bold text-foreground text-center line-clamp-2 leading-tight">{a.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      <EditProfileModal open={editing} onClose={() => setEditing(false)} user={user} />
+      <QRShareSheet open={qrOpen} onClose={() => setQrOpen(false)} />
     </div>
   );
 }

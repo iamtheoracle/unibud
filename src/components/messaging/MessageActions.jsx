@@ -1,14 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Reply, Copy, Forward, Pin, Trash2, Edit3, Flag,
+  Reply, Copy, Forward, Pin, Trash2, Edit3, Flag, Languages,
 } from "lucide-react";
 import { QUICK_REACTIONS } from "./messagingConstants";
 
 export default function MessageActions({
-  open, message, isOwn, onClose, onReact, onReply, onEdit, onDelete, onPin, onCopy, onForward, onReport,
+  open, message, isOwn, onClose, onReact, onReply, onEdit, onDelete, onPin, onCopy, onForward, onReport, onTranslate,
 }) {
+  const [translating, setTranslating] = useState(false);
+  const [translated, setTranslated] = useState(null);
   if (!open || !message) return null;
+
+  const handleTranslateClick = async () => {
+    if (!onTranslate || translating) return;
+    setTranslating(true);
+    try {
+      const t = await onTranslate(message);
+      setTranslated(t || "No text to translate.");
+    } catch {
+      setTranslated("Translation unavailable right now.");
+    } finally {
+      setTranslating(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -55,6 +70,7 @@ export default function MessageActions({
             <ActionButton icon={Copy} label="Copy" onClick={() => { onCopy(); onClose(); }} />
             <ActionButton icon={Forward} label="Forward" onClick={() => { onForward(); onClose(); }} />
             <ActionButton icon={Pin} label={message.is_pinned ? "Unpin" : "Pin"} onClick={() => { onPin(); onClose(); }} />
+            <ActionButton icon={Languages} label={translating ? "…" : "Translate"} onClick={handleTranslateClick} />
             {isOwn && message.type === "text" && (
               <ActionButton icon={Edit3} label="Edit" onClick={() => { onEdit(); onClose(); }} />
             )}
@@ -65,6 +81,16 @@ export default function MessageActions({
               <ActionButton icon={Flag} label="Report" danger onClick={() => { onReport(); onClose(); }} />
             )}
           </div>
+
+          {translated && (
+            <div className="mt-3 mb-1 p-3 rounded-2xl bg-accent/10 border border-accent/20">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-semibold text-accent flex items-center gap-1"><Languages className="w-3 h-3" /> Translated</span>
+                <button onClick={() => setTranslated(null)} className="text-[10px] text-muted-foreground">Clear</button>
+              </div>
+              <p className="text-[12px] text-foreground leading-relaxed">{translated}</p>
+            </div>
+          )}
 
           <button
             onClick={onClose}

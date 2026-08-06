@@ -1,81 +1,127 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, Building2 } from "lucide-react";
-import { useDemoMode } from "@/lib/DemoModeContext";
+import { Search, Building2, Compass } from "lucide-react";
 import EmptyState from "@/components/ui/EmptyState";
 import CommunityCard from "@/components/campus/CommunityCard";
 import { COMMUNITY_TYPES, getIcon } from "@/components/campus/campusConstants";
-
-const DEMO_COMMUNITIES = [
-  { id: "dc1", name: "University of Benin", type: "university", description: "The official UNIBUD community for all students.", members_count: 12450, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
-  { id: "dc2", name: "Faculty of Engineering", type: "faculty", description: "All engineering departments and students.", members_count: 3200, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
-  { id: "dc3", name: "Department of Computer Science", type: "department", description: "CSC students, lecturers, and resources.", members_count: 850, is_verified: true, is_official: true, accent_color: "142 71% 45%" },
-  { id: "dc4", name: "200 Level Computer Science", type: "level", description: "200L CSC students — your class community.", members_count: 210, is_verified: true, is_official: true, accent_color: "0 72% 51%" },
-  { id: "dc5", name: "CSC 301 — Data Structures", type: "course", course_code: "CSC 301", description: "Course space for lectures, notes, and discussions.", members_count: 180, is_verified: true, is_official: true, accent_color: "217 91% 60%" },
-  { id: "dc6", name: "UNIBUD Programming Club", type: "club", description: "Weekly coding sessions, hackathons, and tech talks.", members_count: 340, is_verified: true, accent_color: "38 92% 50%" },
-  { id: "dc7", name: "AI Research Group", type: "research_group", description: "Exploring machine learning and AI applications.", members_count: 45, accent_color: "142 71% 45%" },
-  { id: "dc8", name: "Student Union Government", type: "sug", description: "The official student government body.", members_count: 120, is_verified: true, is_official: true, accent_color: "262 83% 58%" },
-  { id: "dc9", name: "Hall 3 Hostel", type: "hostel", description: "Residents of Hall 3 — announcements and updates.", members_count: 280, accent_color: "262 83% 58%" },
-  { id: "dc10", name: "Photography Enthusiasts", type: "interest_group", description: "Capturing moments on and off campus.", members_count: 95, accent_color: "142 71% 45%" },
-];
+import CommunityShell from "@/components/community/CommunityShell";
+import InterestSelection from "@/components/communities/InterestSelection";
+import HubCard from "@/components/hubs/HubCard";
+import { getHubsForInterests, getOtherHubs } from "@/data/hubRegistry";
+import { useInterests } from "@/hooks/useInterests";
+import CategoryTabs from "@/components/discovery/CategoryTabs";
+import { DISCOVERY_TABS, matchesCategory } from "@/data/contentCategories";
 
 const FILTER_KEYS = ["all", ...Object.keys(COMMUNITY_TYPES).slice(0, 8)];
 
 export default function Communities() {
-  const navigate = useNavigate();
-  const { isDemoMode } = useDemoMode();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("foryou");
+  const { interests, loading: interestsLoading, hasInterests } = useInterests();
+  const userHubs = getHubsForInterests(interests);
+  const exploreHubs = getOtherHubs(interests);
 
   const { data: user } = useQuery({
     queryKey: ["currentUser"],
     queryFn: () => base44.auth.me(),
-    enabled: !isDemoMode,
   });
 
-  const { data: communities, isLoading } = useQuery({
+  const cq = useQuery({
     queryKey: ["communities", user?.university],
     queryFn: () => base44.entities.Community.filter(
       { university: user?.university || "" },
       "-members_count",
       50
     ),
-    enabled: !isDemoMode && !!user,
+    enabled: !!user,
   });
 
-  const displayCommunities = isDemoMode ? DEMO_COMMUNITIES : (communities || []);
-  const activeUser = isDemoMode ? { id: "demo", full_name: "Demo User" } : user;
+  const communities = cq.data || [];
+  const isLoading = cq.isLoading;
 
   const filtered = useMemo(() => {
-    return displayCommunities.filter((c) => {
+    return communities.filter((c) => {
+      const matchesCat = activeCategory === "foryou" || matchesCategory(c, activeCategory);
       const matchesFilter = filter === "all" || c.type === filter;
       const matchesSearch = !search ||
         c.name?.toLowerCase().includes(search.toLowerCase()) ||
         c.description?.toLowerCase().includes(search.toLowerCase());
-      return matchesFilter && matchesSearch;
+      return matchesCat && matchesFilter && matchesSearch;
     });
-  }, [displayCommunities, filter, search]);
+  }, [communities, filter, search, activeCategory]);
+
+  // Category tabs — hide categories with no communities
+  const availableCategoryTabs = useMemo(() => {
+    return DISCOVERY_TABS.filter((tab) => {
+      if (tab.id === "foryou") return true;
+      return communities.some((c) => matchesCategory(c, tab.id));
+    });
+  }, [communities]);
+
+  // ── Interest selection gate ── first-time visitors pick interests before seeing communities
+  if (!interestsLoading && !hasInterests) {
+    return <InterestSelection onComplete={() => {}} />;
+  }
+
+  if (interestsLoading) {
+    return (
+      <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
+        <div className="space-y-2.5">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-[16px] shimmer" />
+              <div className="flex-1 space-y-2">
+                <div className="h-3 w-1/2 shimmer rounded-full" />
+                <div className="h-2 w-1/3 shimmer rounded-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </CommunityShell>
+    );
+  }
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-3 px-5 flex items-center gap-3 sticky top-0 z-20 glass border-b border-border/20">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[22px] tracking-tight text-foreground">Communities</h1>
-          <p className="text-[11px] text-muted-foreground">{isDemoMode ? "Your Campus" : (user?.university || "Your Campus")}</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Building2 className="w-5 h-5 text-primary-foreground" />
-        </div>
+    <CommunityShell title="Communities" icon={Building2} accent="262 83% 58%">
+
+      {/* ── Category tabs ── universal content categories */}
+      <div className="pb-4">
+        <CategoryTabs tabs={availableCategoryTabs} activeTab={activeCategory} onChange={setActiveCategory} />
       </div>
 
+      {/* ── Your Hubs ── specialized community workspaces based on interests */}
+      {userHubs.length > 0 && (
+        <div className="pb-5">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1">Your Hubs</p>
+          <div className="grid grid-cols-2 gap-3">
+            {userHubs.map((hub, i) => (
+              <HubCard key={hub.id} hub={hub} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Explore ── other hubs available on campus */}
+      {exploreHubs.length > 0 && (
+        <div className="pb-5">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1 flex items-center gap-1.5">
+            <Compass className="w-3 h-3" /> Explore
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {exploreHubs.map((hub, i) => (
+              <HubCard key={hub.id} hub={hub} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Browse Communities ── */}
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-2.5 px-1">Browse Communities</p>
+
       {/* Search */}
-      <div className="px-4 py-3">
+      <div className="py-1">
         <div className="relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
@@ -88,7 +134,7 @@ export default function Communities() {
       </div>
 
       {/* Filter Chips */}
-      <div className="px-4 pb-3 overflow-x-auto no-scrollbar">
+      <div className="pb-3 overflow-x-auto no-scrollbar">
         <div className="flex gap-2">
           {FILTER_KEYS.map((key) => {
             const meta = key === "all" ? { label: "All" } : COMMUNITY_TYPES[key];
@@ -113,7 +159,7 @@ export default function Communities() {
       </div>
 
       {/* List */}
-      <div className="px-4 space-y-2.5">
+      <div className="space-y-2.5">
         {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className="bg-card rounded-[20px] p-4 soft-shadow border border-border/40 flex items-center gap-3">
@@ -128,15 +174,15 @@ export default function Communities() {
         ) : filtered.length === 0 ? (
           <EmptyState
             icon={Building2}
-            title="No communities found"
-            description={search ? "Try a different search term." : "Communities will appear here as they're created."}
+            title="No communities yet"
+            description={search ? "Try a different search term." : "When communities are created, I'll recommend the ones that match your interests."}
           />
         ) : (
           filtered.map((community, i) => (
-            <CommunityCard key={community.id} community={community} user={activeUser} index={i} />
+            <CommunityCard key={community.id} community={community} user={user} index={i} />
           ))
         )}
       </div>
-    </div>
+    </CommunityShell>
   );
 }

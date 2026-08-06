@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Trophy, Users, Calendar, ArrowLeft, Flame, Globe, Sparkles, Crown, Award,
+  Trophy, Users, Calendar, Flame, Globe, Sparkles, Crown, Award,
   Code, BookOpen, Camera, Music, Lightbulb, Rocket, Dumbbell,
   Heart, Brain, UserPlus, CheckCircle2, Clock,
 } from "lucide-react";
+
+import ScreenShell from "@/components/layout/ScreenShell";
 
 const TYPE_FILTERS = ["All", "Academic", "Coding", "Reading", "Photography", "Dance", "Innovation", "Startup", "Sports", "Quiz", "Fitness", "Hackathon"];
 
@@ -19,13 +20,13 @@ const typeIcons = {
 };
 
 const typeColors = {
-  academic: "hsl(var(--unibud-blue))", coding: "hsl(var(--unibud-purple))",
-  reading: "hsl(var(--unibud-green))", photography: "hsl(var(--unibud-orange))",
-  dance: "hsl(var(--unibud-gold))", innovation: "hsl(var(--unibud-purple))",
-  startup: "hsl(var(--unibud-gold))", sports: "hsl(var(--unibud-red))",
-  volunteer: "hsl(var(--unibud-green))", quiz: "hsl(var(--unibud-blue))",
-  fitness: "hsl(var(--unibud-red))", hackathon: "hsl(var(--unibud-purple))",
-  music: "hsl(var(--unibud-gold))",
+  academic: "hsl(var(--primary))", coding: "hsl(var(--accent))",
+  reading: "hsl(var(--success))", photography: "hsl(var(--warning))",
+  dance: "hsl(var(--gold))", innovation: "hsl(var(--accent))",
+  startup: "hsl(var(--gold))", sports: "hsl(var(--destructive))",
+  volunteer: "hsl(var(--success))", quiz: "hsl(var(--primary))",
+  fitness: "hsl(var(--destructive))", hackathon: "hsl(var(--accent))",
+  music: "hsl(var(--gold))",
 };
 
 const withAlpha = (hsl, a = 0.08) => hsl.replace("))", ") / " + a + ")");
@@ -34,7 +35,6 @@ export default function Challenges() {
   const [activeType, setActiveType] = useState("All");
   const [scope, setScope] = useState("campus");
   const qc = useQueryClient();
-  const navigate = useNavigate();
 
   const { data: user } = useQuery({ queryKey: ["currentUser"], queryFn: () => base44.auth.me() });
   const { data: challenges } = useQuery({
@@ -58,23 +58,11 @@ export default function Challenges() {
   };
 
   return (
-    <div className="min-h-screen pb-8">
-      {/* Header */}
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Challenges</h1>
-          <p className="text-[12px] text-muted-foreground">Compete. Learn. Win.</p>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center gold-glow">
-          <Trophy className="w-5 h-5 text-primary-foreground" />
-        </div>
-      </div>
+    <ScreenShell title="Challenges" subtitle="Compete. Learn. Win." back
+      actions={<div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center ice-glow" aria-hidden><Trophy className="w-5 h-5 text-primary-foreground" /></div>}>
 
       {/* Scope tabs */}
-      <div className="px-4 mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
+      <div className="mb-3 flex gap-1.5 p-1 bg-muted/60 rounded-[16px]">
         {[
           { key: "campus", label: "Campus", icon: Users },
           { key: "global", label: "Global", icon: Globe },
@@ -91,14 +79,14 @@ export default function Challenges() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="px-4 mb-4"
+          className="mb-4"
         >
           <FeaturedChallenge challenge={activeChallenges[0]} onJoin={() => toggleJoin(activeChallenges[0])} />
         </motion.div>
       )}
 
       {/* Type filters */}
-      <div className="px-4 pb-3 flex gap-2 overflow-x-auto no-scrollbar">
+      <div className="pb-3 flex gap-2 overflow-x-auto no-scrollbar">
         {TYPE_FILTERS.map(t => (
           <button key={t} onClick={() => setActiveType(t)}
             className={`px-4 py-2 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all spring-tap ${activeType === t ? "bg-foreground text-background soft-shadow" : "bg-card border border-border/40 text-muted-foreground"}`}>
@@ -109,7 +97,7 @@ export default function Challenges() {
 
       {/* Active Challenges */}
       {activeChallenges.length > 0 && (
-        <div className="px-4 mb-4">
+        <div className="mb-4">
           <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
             <Flame className="w-4 h-4 text-primary" /> Active Now
           </h3>
@@ -123,7 +111,7 @@ export default function Challenges() {
 
       {/* Upcoming */}
       {upcomingChallenges.length > 0 && (
-        <div className="px-4">
+        <div>
           <h3 className="font-heading font-bold text-[16px] text-foreground mb-3 px-1 flex items-center gap-1.5">
             <Clock className="w-4 h-4 text-muted-foreground" /> Upcoming
           </h3>
@@ -136,7 +124,7 @@ export default function Challenges() {
       )}
 
       {filtered.length === 0 && (
-        <div className="text-center py-12 px-4">
+        <div className="text-center py-12">
           <div className="w-14 h-14 rounded-[20px] bg-muted flex items-center justify-center mx-auto mb-3">
             <Trophy className="w-6 h-6 text-muted-foreground" strokeWidth={1.8} />
           </div>
@@ -144,13 +132,13 @@ export default function Challenges() {
           <p className="text-[11px] text-muted-foreground mt-0.5">Check back soon for exciting competitions</p>
         </div>
       )}
-    </div>
+    </ScreenShell>
   );
 }
 
 function FeaturedChallenge({ challenge, onJoin }) {
   const Icon = typeIcons[challenge.type] || Trophy;
-  const color = typeColors[challenge.type] || "hsl(var(--unibud-gold))";
+  const color = typeColors[challenge.type] || "hsl(var(--gold))";
   return (
     <div className="relative rounded-[24px] overflow-hidden premium-shadow border border-border/30" style={{ background: `linear-gradient(135deg, ${withAlpha(color, 0.12)}, hsl(var(--card)))` }}>
       <div className="p-5">
@@ -185,7 +173,7 @@ function FeaturedChallenge({ challenge, onJoin }) {
 
 function ChallengeCard({ challenge, onJoin, delay = 0 }) {
   const Icon = typeIcons[challenge.type] || Trophy;
-  const color = typeColors[challenge.type] || "hsl(var(--unibud-gold))";
+  const color = typeColors[challenge.type] || "hsl(var(--gold))";
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}

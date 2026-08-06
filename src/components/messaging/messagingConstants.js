@@ -184,6 +184,45 @@ export function getLastMessagePreview(conversation) {
   return typeLabel[lm.type] || lm.content || "";
 }
 
+export function deriveCategory(conversation) {
+  if (conversation.category) return conversation.category;
+  const t = conversation.type;
+  if (t === "direct") return "friend";
+  if (["group", "club", "department", "faculty"].includes(t)) return "community";
+  if (["study_group", "course", "lecturer", "mentor", "project_team", "event_team", "competition_team", "alumni"].includes(t)) return "academic";
+  return "friend";
+}
+
+export const CATEGORY_ICONS = {
+  friend: { icon: MessageCircle, label: "Friend" },
+  community: { icon: Users, label: "Community" },
+  academic: { icon: BookOpen, label: "Academic" },
+  marketplace: { icon: Briefcase, label: "Marketplace" },
+  event: { icon: Calendar, label: "Event" },
+  project: { icon: FlaskConical, label: "Project" },
+};
+
+export function getCategoryMeta(conversation) {
+  const cat = deriveCategory(conversation);
+  return CATEGORY_ICONS[cat] || CATEGORY_ICONS.friend;
+}
+
+export function isVerifiedParticipant(conversation, currentUserId) {
+  const other = getOtherParticipant(conversation, currentUserId);
+  return !!other?.is_verified;
+}
+
+export function getParticipantUniversity(conversation, currentUserId) {
+  const other = getOtherParticipant(conversation, currentUserId);
+  return other?.university || conversation?.university || "";
+}
+
+export function getTypingUser(conversation, currentUserId) {
+  if (!conversation?.typing) return null;
+  if (conversation.typing.user_id === currentUserId) return null;
+  return conversation.typing;
+}
+
 export function hasUnreadMessages(conversation, currentUserId) {
   if (!conversation.participants) return false;
   const participant = conversation.participants.find((p) => p.user_id === currentUserId);

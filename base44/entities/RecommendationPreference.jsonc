@@ -1,0 +1,71 @@
+{
+  "name": "RecommendationPreference",
+  "type": "object",
+  "properties": {
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Global kill-switch for Spark tool recommendations"
+    },
+    "disabled_types": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Recommendation types the user permanently turned off"
+    },
+    "cooldown_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "How long to suppress a dismissed type before showing it again"
+    },
+    "last_dismissed": {
+      "type": "object",
+      "description": "{ recommendation_type: ISO timestamp } \u2014 drives the cooldown"
+    }
+  },
+  "required": [
+    "enabled"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

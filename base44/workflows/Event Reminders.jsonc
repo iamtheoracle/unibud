@@ -1,0 +1,45 @@
+{
+  "description": "Daily at 7am, scans campus events happening within the next ~30h and posts social reminder notifications.",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 7 * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Event Reminders",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "event_reminders",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "scan_events": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "eventReminders",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Scan upcoming events",
+            "description": "Tomorrow's events"
+          }
+        }
+      }
+    ]
+  }
+}

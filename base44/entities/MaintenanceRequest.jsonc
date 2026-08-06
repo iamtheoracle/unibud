@@ -1,0 +1,106 @@
+{
+  "name": "MaintenanceRequest",
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string",
+      "enum": [
+        "electrical",
+        "plumbing",
+        "furniture",
+        "internet",
+        "cleaning",
+        "hvac",
+        "structural",
+        "security",
+        "other"
+      ],
+      "default": "other"
+    },
+    "location": {
+      "type": "string",
+      "description": "Building / room / area where the issue is"
+    },
+    "description": {
+      "type": "string"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "urgent"
+      ],
+      "default": "medium"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "submitted",
+        "assigned",
+        "in_progress",
+        "resolved",
+        "closed"
+      ],
+      "default": "submitted"
+    },
+    "assigned_to": {
+      "type": "string"
+    },
+    "resolution_notes": {
+      "type": "string"
+    },
+    "reporter_name": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "category",
+    "location",
+    "description",
+    "urgency"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {},
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "name": "VoiceRoom",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "room_type": {
+      "type": "string",
+      "enum": [
+        "student_discussion",
+        "society_meeting",
+        "club_session",
+        "public_discussion",
+        "academic_qa",
+        "department_announcement",
+        "campus_radio",
+        "event_broadcast",
+        "study_group",
+        "other"
+      ],
+      "default": "student_discussion",
+      "description": "What kind of voice room this is"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "live",
+        "scheduled",
+        "ended"
+      ],
+      "default": "scheduled"
+    },
+    "host": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "is_verified": {
+          "type": "boolean",
+          "default": false
+        },
+        "is_moderator": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "co_hosts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "speakers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "is_speaking": {
+            "type": "boolean",
+            "default": false
+          },
+          "is_muted": {
+            "type": "boolean",
+            "default": false
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "host",
+              "co_host",
+              "speaker",
+              "listener"
+            ],
+            "default": "listener"
+          }
+        }
+      }
+    },
+    "listeners_count": {
+      "type": "number",
+      "default": 0
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 50
+    },
+    "community_id": {
+      "type": "string",
+      "description": "Linked Community if this room belongs to one"
+    },
+    "club_id": {
+      "type": "string",
+      "description": "Linked Club if this is a club session"
+    },
+    "event_id": {
+      "type": "string",
+      "description": "Linked CampusEvent if this is an event broadcast"
+    },
+    "scheduled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_recording": {
+      "type": "boolean",
+      "default": false
+    },
+    "recording_url": {
+      "type": "string"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether any university member can join"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "public",
+        "university",
+        "community",
+        "friends",
+        "private"
+      ],
+      "default": "university"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "category_label": {
+      "type": "string",
+      "description": "Custom category label shown on the card"
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "room_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.visibility": "public"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

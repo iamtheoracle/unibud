@@ -143,7 +143,7 @@ export default function CommentItem({ comment, isOwner, onReply, depth = 0 }) {
     >
       {/* Avatar */}
       {avatar ? (
-        <img src={avatar} alt={displayName} className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+        <img src={avatar} alt={displayName} className="w-8 h-8 rounded-full object-cover flex-shrink-0" loading="lazy" />
       ) : (
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-[11px] flex-shrink-0">
           {displayName.charAt(0)}
@@ -186,7 +186,7 @@ export default function CommentItem({ comment, isOwner, onReply, depth = 0 }) {
           {comment.media_urls && comment.media_urls.length > 0 && (
             <div className="flex gap-1 mt-2">
               {comment.media_urls.map((url, i) => (
-                <img key={i} src={url} alt="" className="w-20 h-20 rounded-lg object-cover" />
+                <img key={i} src={url} alt="" className="w-20 h-20 rounded-lg object-cover" loading="lazy" />
               ))}
             </div>
           )}

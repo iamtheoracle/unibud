@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Search, Building2, BadgeCheck } from "lucide-react";
+import { Search, Building2, BadgeCheck } from "lucide-react";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import EmptyState from "@/components/ui/EmptyState";
 import CompanyCard from "@/components/career/CompanyCard";
+import ScreenShell from "@/components/layout/ScreenShell";
 import { COMPANY_TYPES } from "@/components/career/careerConstants";
 
 const DEMO_COMPANIES = [
@@ -21,7 +21,6 @@ const FILTER_KEYS = Object.keys(COMPANY_TYPES);
 
 export default function Companies() {
   const { isDemoMode } = useDemoMode();
-  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [hiringOnly, setHiringOnly] = useState(false);
@@ -46,37 +45,32 @@ export default function Companies() {
   });
 
   return (
-    <div className="min-h-screen pb-8">
-      <div className="pt-12 pb-4 px-5 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="w-10 h-10 rounded-full bg-card soft-shadow flex items-center justify-center spring-tap border border-border/30">
-          <ArrowLeft className="w-[18px] h-[18px] text-foreground" strokeWidth={2} />
-        </button>
-        <div className="flex-1">
-          <h1 className="font-heading font-extrabold text-[24px] tracking-tight text-foreground">Companies</h1>
-          <p className="text-[12px] text-muted-foreground">Organizations · Hiring · Sponsors</p>
-        </div>
+    <ScreenShell
+      title="Companies"
+      subtitle="Organizations · Hiring · Sponsors"
+      back
+      actions={
         <button
           onClick={() => setHiringOnly(!hiringOnly)}
+          aria-label="Filter hiring companies"
           className={"px-3.5 h-10 rounded-full flex items-center gap-1.5 spring-tap text-[11px] font-semibold " + (hiringOnly ? "bg-success text-success-foreground" : "bg-card text-muted-foreground border border-border/30 soft-shadow")}
         >
           <BadgeCheck className="w-4 h-4" /> Hiring
         </button>
+      }
+    >
+      <div className="relative mt-4 mb-4">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search companies..."
+          className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 soft-shadow"
+        />
       </div>
 
-      <div className="px-4 mb-4">
-        <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search companies..."
-            className="w-full pl-10 pr-4 py-3 rounded-[16px] bg-card border border-border/40 text-[13px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/40 soft-shadow"
-          />
-        </div>
-      </div>
-
-      <div className="px-4 mb-5">
+      <div className="mb-5">
         <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
           <button
             onClick={() => setActiveFilter("all")}
@@ -100,22 +94,20 @@ export default function Companies() {
       </div>
 
       {isLoading && !isDemoMode ? (
-        <div className="px-4 responsive-cards">
+        <div className="responsive-cards">
           {[1, 2, 3, 4].map((i) => <div key={i} className="h-[240px] rounded-[20px] shimmer" />)}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="px-4">
-          <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
-            <EmptyState icon={Building2} title="No companies found" description="Try adjusting your filters to discover organizations" />
-          </div>
+        <div className="bg-card rounded-[20px] soft-shadow border border-border/40">
+          <EmptyState icon={Building2} title="No companies found" description="Try adjusting your filters to discover organizations" />
         </div>
       ) : (
-        <div className="px-4 responsive-cards">
+        <div className="responsive-cards">
           {filtered.map((comp, i) => (
             <CompanyCard key={comp.id || i} company={comp} index={i} />
           ))}
         </div>
       )}
-    </div>
+    </ScreenShell>
   );
 }

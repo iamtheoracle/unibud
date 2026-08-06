@@ -1,0 +1,89 @@
+{
+  "name": "ExamQuestion",
+  "type": "object",
+  "properties": {
+    "paper_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "mcq",
+        "true_false",
+        "short_answer",
+        "essay"
+      ],
+      "default": "mcq"
+    },
+    "question": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Choice texts for mcq"
+    },
+    "correct_answer": {
+      "type": "string",
+      "description": "Correct option value (mcq), 'true'/'false', or reference text"
+    },
+    "explanation": {
+      "type": "string"
+    },
+    "marks": {
+      "type": "number",
+      "default": 1
+    },
+    "topic": {
+      "type": "string"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "default": "medium"
+    }
+  },
+  "required": [
+    "paper_id",
+    "question",
+    "type"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

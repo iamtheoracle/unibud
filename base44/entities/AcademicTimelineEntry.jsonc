@@ -1,0 +1,138 @@
+{
+  "name": "AcademicTimelineEntry",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User this milestone belongs to"
+    },
+    "entry_type": {
+      "type": "string",
+      "enum": [
+        "admission",
+        "orientation",
+        "semester_started",
+        "course_completed",
+        "research_published",
+        "competition_won",
+        "project_completed",
+        "leadership_role",
+        "internship",
+        "award",
+        "scholarship",
+        "graduation",
+        "alumni",
+        "custom"
+      ],
+      "default": "custom",
+      "description": "Kind of milestone in the academic journey"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short headline e.g. 'Admitted to B.Sc Computer Science'"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Secondary line e.g. 'Faculty of Science, 100 Level'"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional richer context"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the milestone occurred (chronological anchor)"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional end for ranged milestones (internships, roles)"
+    },
+    "organization": {
+      "type": "string",
+      "description": "Issuing or hosting organization"
+    },
+    "location": {
+      "type": "string"
+    },
+    "related_type": {
+      "type": "string",
+      "description": "Optional link target type (course, research, competition, project)"
+    },
+    "related_id": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verified by issuing organization / Oracle"
+    },
+    "verification_source": {
+      "type": "string",
+      "description": "Who verified this milestone"
+    },
+    "is_hidden": {
+      "type": "boolean",
+      "default": false,
+      "description": "Student may hide selected entries from public profile"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope for system-generated entries"
+    }
+  },
+  "required": [
+    "user_id",
+    "entry_type",
+    "title",
+    "date"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.user_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.user_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

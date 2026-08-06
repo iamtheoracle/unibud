@@ -1,0 +1,45 @@
+{
+  "description": "Twice daily \u2014 morning nudge to log study hours and evening check that celebrates streak milestones (3, 7, 14, 21, 30, 50, 100 days).",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 9,20 * * *",
+      "one_time_date": null,
+      "timezone": "Africa/Lagos",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Study Streak Reminders",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "study_streak_reminders",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_streak_reminders": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "streakReminders",
+            "args": {}
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Scan streaks & send reminders",
+            "description": "Morning nudge + milestone celebrations"
+          }
+        }
+      }
+    ]
+  }
+}

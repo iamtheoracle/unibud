@@ -1,0 +1,173 @@
+{
+  "name": "StudyBuddyRequest",
+  "type": "object",
+  "properties": {
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    },
+    "requester": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "faculty": {
+          "type": "string"
+        },
+        "department": {
+          "type": "string"
+        },
+        "level": {
+          "type": "string"
+        }
+      }
+    },
+    "buddy_type": {
+      "type": "string",
+      "enum": [
+        "study_partner",
+        "coding_partner",
+        "lab_partner",
+        "research_partner",
+        "language_exchange",
+        "exam_partner",
+        "accountability_partner",
+        "project_team",
+        "hackathon_team",
+        "other"
+      ],
+      "default": "study_partner",
+      "description": "What kind of study buddy is being requested"
+    },
+    "title": {
+      "type": "string",
+      "description": "Short title for the request"
+    },
+    "description": {
+      "type": "string",
+      "description": "Details about what the student is looking for"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Related course if applicable"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "schedule_preference": {
+      "type": "string",
+      "description": "When the student prefers to study (e.g. 'Weekday evenings')"
+    },
+    "location_preference": {
+      "type": "string",
+      "description": "Where they prefer to study (e.g. 'Library', 'Online')"
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 1,
+      "description": "How many buddies they're looking for"
+    },
+    "accepted_by": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "accepted_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "matched",
+        "closed"
+      ],
+      "default": "open"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this request auto-expires"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "buddy_type",
+    "title"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.status": "open"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

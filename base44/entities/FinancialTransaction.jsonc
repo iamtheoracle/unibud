@@ -1,0 +1,118 @@
+{
+  "name": "FinancialTransaction",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdrawal",
+        "tuition_payment",
+        "school_fee",
+        "hostel_fee",
+        "acceptance_fee",
+        "examination_fee",
+        "library_fee",
+        "refund",
+        "transfer",
+        "adjustment"
+      ],
+      "default": "deposit"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0
+    },
+    "currency": {
+      "type": "string",
+      "default": "NGN"
+    },
+    "from_wallet_id": {
+      "type": "string"
+    },
+    "to_wallet_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "reference": {
+      "type": "string"
+    },
+    "fee_id": {
+      "type": "string"
+    },
+    "receipt_no": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "type",
+    "amount",
+    "institution_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

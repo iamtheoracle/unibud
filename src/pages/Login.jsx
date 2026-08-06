@@ -2,136 +2,169 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Eye, EyeOff, Loader2, ArrowRight, Mail, Lock, Check } from "lucide-react";
-import AuthLogo from "@/components/auth/AuthLogo";
-import SocialButtons from "@/components/auth/SocialButtons";
-import VisitorBud from "@/components/auth/VisitorBud";
+import { Loader2 } from "lucide-react";
+import BrandLogo from "@/components/foundation/BrandLogo";
+import SparkField from "@/components/foundation/SparkField";
+import CompanyFooter from "@/components/foundation/CompanyFooter";
+import GlassInput from "@/components/foundation/GlassInput";
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
+
+const EASE = [0.16, 1, 0.3, 1];
+const ACCESS_CODE_RE = /^[A-Za-z0-9_-]{6,64}$/;
+const LOCKOUT_BASE_SECONDS = 3;
+const LOCKOUT_MAX_SECONDS = 60;
 
 export default function Login() {
   const navigate = useNavigate();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [accessCode, setAccessCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState(0);
 
   useEffect(() => {
-    base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/"); });
+    base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/auth-router", { replace: true }); });
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const now = Date.now();
+    if (lockoutUntil > now) {
+      const waitSeconds = Math.ceil((lockoutUntil - now) / 1000);
+      setError(`Too many attempts. Try again in ${waitSeconds}s.`);
+      return;
+    }
     setError("");
     setLoading(true);
     try {
+      if (!navigator.onLine) {
+        throw new Error("offline");
+      }
+      if (accessCode.trim() && !ACCESS_CODE_RE.test(accessCode.trim())) {
+        throw new Error("invalid_access_code");
+      }
       await base44.auth.loginViaEmailPassword(identifier, password);
-      window.location.href = "/";
+
+      // If a platform access code was entered, validate & elevate silently.
+      // The code is never stored, never displayed back — evaluated and discarded.
+      if (accessCode.trim()) {
+        try {
+          await base44.functions.invoke("validatePlatformAccess", { access_code: accessCode.trim() });
+        } catch {
+          throw new Error("invalid_access_code");
+        }
+      }
+      setFailedAttempts(0);
+      setLockoutUntil(0);
+
+      // Oracle silently evaluates role + permissions and routes to the correct workspace
+      window.location.href = "/auth-router";
     } catch (err) {
-      setError(err.message || "Invalid email or password");
+      if (err?.message === "offline") {
+        setError("You're offline. Reconnect to continue.");
+      } else if (err?.message === "invalid_access_code") {
+        setError("Access code is invalid. Check the code and try again.");
+      } else {
+        const nextAttempts = failedAttempts + 1;
+        setFailedAttempts(nextAttempts);
+        const lockSeconds = Math.min(LOCKOUT_MAX_SECONDS, LOCKOUT_BASE_SECONDS * (2 ** Math.max(0, nextAttempts - 1)));
+        setLockoutUntil(Date.now() + lockSeconds * 1000);
+        setError("Invalid credentials. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      <motion.div
-        className="absolute top-[-15%] left-[-10%] w-[70%] h-[40%] rounded-full bg-primary/[0.05] blur-[100px] pointer-events-none"
-        animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
-      />
+    <div className="min-h-screen w-full relative overflow-hidden flex flex-col">
+      <SparkField count={12} />
+      <div className="relative z-10 w-full max-w-[460px] mx-auto flex-1 flex flex-col px-6 safe-area-pt safe-area-pb no-scrollbar overflow-y-auto">
+        <button onClick={() => navigate("/welcome")} className="text-muted-foreground mt-6 mb-7 spring-tap self-start">
+          <span className="text-[13px] font-medium">Back</span>
+        </button>
 
-      <div className="flex-1 overflow-y-auto px-6 pt-12 pb-8 relative z-10 no-scrollbar">
-        <AuthLogo />
+        <BrandLogo size="sm" />
 
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-center mb-7"
-        >
-          <h2 className="font-heading font-bold text-[22px] tracking-tight text-foreground mb-1">Welcome Back 👋</h2>
-          <p className="text-[14px] text-muted-foreground">Continue your university journey.</p>
-        </motion.div>
+        <div className="flex-1 flex flex-col justify-center py-6">
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ ease: EASE }} className="mb-6">
+            <h2 className="font-heading font-bold text-[26px] tracking-tight text-foreground mb-1.5">Welcome back</h2>
+            <p className="text-[14px] text-muted-foreground">Continue your university journey.</p>
+          </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="bg-card rounded-[24px] p-5 premium-shadow border border-border/30"
-        >
-          {error && <div className="mb-4 p-3 rounded-xl bg-destructive/10 text-destructive text-[13px]">{error}</div>}
+          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, ease: EASE }} className="glass-card p-5">
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-[13px]">{error}</div>
+            )}
+            <form onSubmit={handleSubmit} className="space-y-3.5">
+              <GlassInput
+                label="Email or Phone"
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="you@example.com"
+                autoComplete="username"
+                autoFocus
+                required
+              />
+              <GlassInput
+                label="Password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                autoComplete="current-password"
+                required
+                trailing={
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-[12px] font-semibold text-muted-foreground hover:text-foreground px-1">
+                    {showPassword ? "Hide" : "Show"}
+                  </button>
+                }
+              />
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-[12px] font-semibold text-foreground">Email, Phone or Student ID</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  required
-                  autoFocus
-                />
-              </div>
-            </div>
+              <GlassInput
+                label="Platform Access Code (optional)"
+                type="text"
+                value={accessCode}
+                onChange={(e) => setAccessCode(e.target.value)}
+                placeholder="For staff & administrators"
+                autoComplete="off"
+              />
 
-            <div className="space-y-1.5">
-              <label className="text-[12px] font-semibold text-foreground">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-10 h-[48px] rounded-2xl bg-muted/50 border border-border/50 text-[14px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  required
-                />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <button type="button" onClick={() => setRememberMe(!rememberMe)} className="flex items-center gap-2">
-                <div className={`w-[18px] h-[18px] rounded-md border flex items-center justify-center transition-colors ${rememberMe ? "bg-primary border-primary" : "border-border bg-transparent"}`}>
-                  {rememberMe && <Check className="w-3 h-3 text-primary-foreground" strokeWidth={3} />}
-                </div>
-                <span className="text-[12px] text-muted-foreground font-medium">Remember me</span>
+              <button type="submit" disabled={loading} className="w-full h-[54px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2.5 spring-tap disabled:opacity-50 ice-glow mt-2">
+                {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Signing in…</> : "Login"}
               </button>
-              <Link to="/forgot-password" className="text-[12px] text-primary font-semibold hover:underline">Forgot Password?</Link>
+            </form>
+
+            <div className="flex justify-center mt-4">
+              <Link to="/forgot-password" className="text-[13px] text-primary font-semibold hover:underline">
+                Forgot Password?
+              </Link>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full h-[52px] rounded-2xl bg-primary text-primary-foreground font-heading font-semibold text-[15px] flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50 shadow-[0_4px_20px_hsl(var(--primary)/0.3)]"
-            >
-              {loading ? <><Loader2 className="w-[18px] h-[18px] animate-spin" /> Signing in...</> : <>Sign In <ArrowRight className="w-[18px] h-[18px]" strokeWidth={2.2} /></>}
-            </button>
-          </form>
-        </motion.div>
+            <div className="flex items-center gap-3 mt-5">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-[11px] font-medium text-muted-foreground">or continue with</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            <div className="mt-3">
+              <SocialAuthButtons onError={setError} />
+            </div>
+          </motion.div>
 
-        <div className="relative my-5">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border/40" /></div>
-          <div className="relative flex justify-center text-[11px] uppercase"><span className="bg-background px-3 text-muted-foreground font-medium">or</span></div>
+          <p className="text-center text-[13px] text-muted-foreground mt-6">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-primary font-semibold hover:underline">Create Account</Link>
+          </p>
         </div>
 
-        <SocialButtons redirectTo="/" />
-
-        <p className="text-center text-[13px] text-muted-foreground mt-6">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-primary font-semibold hover:underline">Create Account</Link>
-        </p>
+        <div className="pb-8 safe-area-pb">
+          <CompanyFooter />
+        </div>
       </div>
-
-      <VisitorBud />
     </div>
   );
 }

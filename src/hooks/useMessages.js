@@ -1,7 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { encryptValue, decryptValue } from "@/lib/crypto";
 
 const PAGE_SIZE = 30;
+
+// Fields stored encrypted at rest; decrypt is tolerant so existing plaintext
+// messages keep rendering while new content is encrypted on write.
+const SENSITIVE_FIELDS = ["content", "reply_to_content"];
+const decryptMsg = async (m) => {
+  if (!m) return m;
+  const out = { ...m };
+  for (const f of SENSITIVE_FIELDS) if (out[f] != null) out[f] = await decryptValue(out[f]);
+  return out;
+};
+const decryptMsgs = (arr) => Promise.all(arr.map(decryptMsg));
+const encryptPayload = async (obj) => {
+  const out = { ...obj };
+  for (const f of SENSITIVE_FIELDS) if (out[f] != null) out[f] = await encryptValue(out[f]);
+  return out;
+};
 
 export function useMessages(conversationId, user) {
   const [messages, setMessages] = useState([]);
@@ -22,8 +39,9 @@ export function useMessages(conversationId, user) {
 
     base44.entities.Message
       .filter({ conversation_id: conversationId, is_deleted: { $ne: true } }, "-created_date", PAGE_SIZE)
-      .then((fetched) => {
-        setMessages(fetched.reverse());
+      .then(async (fetched) => {
+        const dec = await decryptMsgs(fetched.reverse());
+        setMessages(dec);
         setHasMore(fetched.length === PAGE_SIZE);
       })
       .catch(() => setMessages([]))
@@ -42,17 +60,16 @@ export function useMessages(conversationId, user) {
       if (event.data?.conversation_id !== conversationId) return;
 
       if (event.type === "create") {
-        setMessages((prev) => {
-          if (prev.some((m) => m.id === event.data.id)) return prev;
-          if (event.data.is_deleted) return prev;
-          return [...prev, event.data];
+        decryptMsg(event.data).then((dec) => {
+          if (dec.is_deleted) return;
+          setMessages((prev) => (prev.some((m) => m.id === dec.id) ? prev : [...prev, dec]));
+          if (dec.author_id !== user?.id && user) {
+            markAsReadInternal(conversationId, user);
+          }
         });
-        if (event.data.author_id !== user?.id && user) {
-          markAsReadInternal(conversationId, user);
-        }
       } else if (event.type === "update") {
-        setMessages((prev) =>
-          prev.map((m) => (m.id === event.data.id ? event.data : m))
+        decryptMsg(event.data).then((dec) =>
+          setMessages((prev) => prev.map((m) => (m.id === dec.id ? dec : m)))
         );
       } else if (event.type === "delete") {
         setMessages((prev) => prev.filter((m) => m.id !== event.data.id));
@@ -104,7 +121,8 @@ export function useMessages(conversationId, user) {
         "-created_date",
         PAGE_SIZE
       );
-      setMessages((prev) => [...older.reverse(), ...prev]);
+      const dec = await decryptMsgs(older.reverse());
+      setMessages((prev) => [...dec, ...prev]);
       setHasMore(older.length === PAGE_SIZE);
     } catch {
       setHasMore(false);
@@ -145,7 +163,7 @@ export function useMessages(conversationId, user) {
       setReplyTo(null);
 
       try {
-        const created = await base44.entities.Message.create({
+        const payload = await encryptPayload({
           conversation_id: conversationId,
           content: content || "",
           type,
@@ -159,8 +177,10 @@ export function useMessages(conversationId, user) {
           reply_to_author: replyTo?.author_name || null,
           ...extra,
         });
+        const created = await base44.entities.Message.create(payload);
 
-        setMessages((prev) => prev.map((m) => (m.id === tempId ? created : m)));
+        const dec = await decryptMsg(created);
+        setMessages((prev) => prev.map((m) => (m.id === tempId ? dec : m)));
 
         const preview =
           type === "text"
@@ -210,7 +230,7 @@ export function useMessages(conversationId, user) {
         prev.map((m) => (m.id === messageId ? { ...m, status: "pending" } : m))
       );
       try {
-        const created = await base44.entities.Message.create({
+        const payload = await encryptPayload({
           conversation_id: msg.conversation_id,
           content: msg.content,
           type: msg.type,
@@ -227,7 +247,9 @@ export function useMessages(conversationId, user) {
           reply_to_content: msg.reply_to_content,
           reply_to_author: msg.reply_to_author,
         });
-        setMessages((prev) => prev.map((m) => (m.id === messageId ? created : m)));
+        const created = await base44.entities.Message.create(payload);
+        const dec = await decryptMsg(created);
+        setMessages((prev) => prev.map((m) => (m.id === messageId ? dec : m)));
       } catch {
         setMessages((prev) =>
           prev.map((m) => (m.id === messageId ? { ...m, status: "failed" } : m))
@@ -249,7 +271,7 @@ export function useMessages(conversationId, user) {
       setEditingId(null);
       try {
         await base44.entities.Message.update(messageId, {
-          content: newContent,
+          content: await encryptValue(newContent),
           is_edited: true,
           edited_at: new Date().toISOString(),
         });
