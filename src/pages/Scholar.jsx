@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  PenLine, FlaskConical, Briefcase, Award, Users, FileText, ArrowUpRight, Loader2,
+  PenLine, FlaskConical, Briefcase, Award, Users, FileText, ArrowUpRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";

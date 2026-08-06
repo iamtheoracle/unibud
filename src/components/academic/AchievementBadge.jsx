@@ -6,7 +6,7 @@ import {
   StickyNote, Notebook, Layers, FileQuestion, Microscope,
   Users, HeartHandshake, FolderCheck, HandHeart,
   Calendar, CalendarCheck, Briefcase,
-  Flag, GraduationCap, Lock, Eye, EyeOff,
+  Flag, GraduationCap,
 } from "lucide-react";
 
 const ICON_MAP = {

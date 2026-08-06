@@ -4,7 +4,6 @@ import ParallaxHero from "@/components/ui/ParallaxHero";
 import DetailTabs, { DetailTabContent } from "@/components/ui/DetailTabs";
 import FloatingActionBar from "@/components/ui/FloatingActionBar";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 /**

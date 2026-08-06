@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useInfiniteFeed, getCachedFeed } from "@/hooks/useInfiniteFeed";
+import { useInfiniteFeed } from "@/hooks/useInfiniteFeed";
 import { ListSkeleton } from "@/components/resilience/SkeletonKit";
 
 export default function FeedCard() {

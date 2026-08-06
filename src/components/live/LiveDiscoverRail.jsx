@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
 import { Users, Building2, GraduationCap, CalendarDays, Bookmark, UserCheck, Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";

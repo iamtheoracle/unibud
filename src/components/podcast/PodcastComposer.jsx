@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Loader2, Upload, ImageIcon } from "lucide-react";
+import { X, Loader2, ImageIcon } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { queryClientInstance } from "@/lib/query-client";

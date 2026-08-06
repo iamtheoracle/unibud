@@ -9,8 +9,7 @@ import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { Image } from "@/components/ui/image";
 import { hapticTap } from "@/lib/haptics";
-import {
-  timeAgo, formatCount, getPostType,
+import { formatCount, getPostType,
   getUserReaction, setUserReaction,
   isBookmarked, toggleBookmarkLocal,
   extractHashtags,

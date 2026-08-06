@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { INTEREST_CATEGORIES } from "@/data/interestCategories";
 import { useInterests } from "@/hooks/useInterests";
 import InterestCard from "@/components/communities/InterestCard";

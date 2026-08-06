@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Lock, Mail, Users, Building2, Globe, ChevronRight } from "lucide-react";
+import { Lock, Mail, Users, Building2, Globe } from "lucide-react";
 import CollectionCover from "./CollectionCover";
 import CollectionPreviewModal from "./CollectionPreviewModal";
 

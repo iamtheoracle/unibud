@@ -8,9 +8,9 @@ import {
   RadialBarChart, RadialBar, PolarAngleAxis,
 } from "recharts";
 import {
-  ArrowLeft, TrendingUp, TrendingDown, Flame, Award, Target,
+  ArrowLeft, TrendingUp, TrendingDown, Target,
   CheckCircle, CalendarClock, BookOpen, GraduationCap, Sparkles,
-  Clock, ChevronDown, Download, Loader2, ChevronRight,
+  Clock, Download, Loader2, ChevronRight,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";

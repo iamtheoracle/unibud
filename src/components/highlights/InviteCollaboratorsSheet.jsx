@@ -4,8 +4,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  Search, Send, Eye, Plus, Pencil, Shield, Crown, Trash2,
-  MessageSquare, Activity, Users2, X, Bookmark,
+  Search, Send, Eye, Plus, Pencil, Shield, Trash2,
+  MessageSquare, Activity, Users2, Bookmark,
   Lock, Mail, Users, Building2, Globe, Check,
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";

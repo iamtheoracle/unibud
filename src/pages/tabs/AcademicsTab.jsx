@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen, ClipboardList, GraduationCap, CalendarClock,
-  TrendingUp, Library, Wallet, Award, ChevronRight, Sparkles,
+  TrendingUp, Library, Award, ChevronRight, Sparkles,
   FileText, Briefcase, CheckCircle, Folder, Upload,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";

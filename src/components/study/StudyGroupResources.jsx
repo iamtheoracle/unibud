@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Plus, SlidersHorizontal, ChevronDown, FolderOpen, Sparkles, X, Clock, Bookmark } from "lucide-react";
+import { Search, Plus, SlidersHorizontal, FolderOpen, Sparkles, X, Clock, Bookmark } from "lucide-react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/AuthContext";
-import ResourceRow, { FILE_TYPE_CONFIG, formatDate } from "./ResourceRow";
+import ResourceRow from "./ResourceRow";
 import ResourceDetailSheet from "./ResourceDetailSheet";
 import AddResourceSheet from "./AddResourceSheet";
 import ResourceTemplateSheet from "./ResourceTemplateSheet";

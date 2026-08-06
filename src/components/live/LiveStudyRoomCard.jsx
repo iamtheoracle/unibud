@@ -4,9 +4,7 @@ import {
   Mic, Video, ScreenShare, PenTool, FileText, Users, Timer,
   Play, Lock, Radio, BookOpen, CheckSquare,
 } from "lucide-react";
-import { Image } from "@/components/ui/image";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
-import { cn } from "@/lib/utils";
 import { EASE } from "@/lib/motion/motionPresets";
 
 const FEATURES = {

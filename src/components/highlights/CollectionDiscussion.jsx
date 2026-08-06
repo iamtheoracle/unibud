@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useRef } from "react";
-import { motion } from "framer-motion";
 import { Search, MessageSquare, Filter, CheckCircle2, BookOpen } from "lucide-react";
 import { useCollectionDiscussion } from "@/hooks/useCollectionDiscussion";
 import DiscussionComposer from "./DiscussionComposer";

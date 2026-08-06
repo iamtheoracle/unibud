@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Plus, X, MessageCircle, Sparkles, Star, Flag, Bell, Package, Store, ChevronRight, TrendingUp } from "lucide-react";
+import { Search, Plus, X, MessageCircle, Sparkles, Star, Flag, Bell, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +13,6 @@ import SellerRatingBadge from "@/components/marketplace/SellerRatingBadge";
 import ReviewComposer from "@/components/marketplace/ReviewComposer";
 import ReportModal from "@/components/ecosystem/ReportModal";
 import MarketplaceCard from "@/components/marketplace/MarketplaceCard";
-import ListingRow from "@/components/marketplace/ListingRow";
 import ServiceRow from "@/components/marketplace/ServiceRow";
 import ListingImageCard from "@/components/marketplace/ListingImageCard";
 

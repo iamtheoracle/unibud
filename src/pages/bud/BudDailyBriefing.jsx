@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Sun, Calendar, ClipboardList, Bell, RefreshCw, ChevronRight,
-  Clock, MapPin, AlertCircle, BookOpen, Sparkles
+  Clock, MapPin, Sparkles
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { hapticTap } from "@/lib/haptics";

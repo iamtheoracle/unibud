@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft, Upload, Search, Star, FileText, File, Image, Music,
   Video, Link2, Sheet, Presentation, FileQuestion, BookOpen,
-  MoreVertical, Download, Share2, Trash2, Sparkles, Folder,
-  Clock, TrendingUp, Loader2, X,
+  MoreVertical, Download, Trash2, Sparkles, Folder, Loader2, X,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import ProductionState from "@/components/shared/ProductionState";

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { Image } from "@/components/ui/image";
 import {
-  BadgeCheck, ChevronRight, Award, Briefcase,
+  BadgeCheck, Award, Briefcase,
   FileText, Wallet as WalletIcon, Star,
 } from "lucide-react";
 import StreakShowcase from "@/components/me/StreakShowcase";

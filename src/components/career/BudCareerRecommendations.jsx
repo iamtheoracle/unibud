@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
-import { Sparkles, Calendar, Building2, MapPin } from "lucide-react";
+import { Sparkles, Calendar, Building2 } from "lucide-react";
 import { TYPE_META } from "./careerConstants";
 
 export default function BudCareerRecommendations({ user, opportunities, onOpen }) {

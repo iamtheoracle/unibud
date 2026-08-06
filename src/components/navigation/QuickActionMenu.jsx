@@ -9,7 +9,7 @@ import {
   Clock, CheckSquare, Users, PenLine, Camera, MessageSquare,
   Calendar, ClipboardList, BookOpen, Megaphone, Search, Award,
   FlaskConical, Trophy, Edit3, QrCode, Share2, Settings, UserPlus,
-  Radio, GraduationCap, X,
+  Radio, X,
 } from "lucide-react";
 
 const MENU_SPRING = { type: "spring", stiffness: 420, damping: 32, mass: 0.85 };

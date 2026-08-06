@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen, FileText, Lightbulb, CalendarDays, Users, FlaskConical,
-  Newspaper, GraduationCap, FolderKanban, Mic, ChevronRight, X, Sparkles,
+  Newspaper, GraduationCap, FolderKanban, Mic, X, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";

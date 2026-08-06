@@ -1,9 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Search, Users, Building2, GraduationCap, Mail, MapPin, Phone, ArrowLeft } from "lucide-react";
+import { Search, Users, Building2, GraduationCap, Mail, ArrowLeft } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
 
 const CREAM = "#F7F0E8";

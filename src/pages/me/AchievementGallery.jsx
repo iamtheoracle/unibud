@@ -7,7 +7,7 @@ import {
   BookOpen, Flame, Briefcase, Users, Trophy, TrendingUp,
   GraduationCap, Target, ScrollText, BadgeCheck, Heart,
   HandHeart, Medal, Rocket, FlaskConical, CalendarDays,
-  Star, Mic, Video, Sparkles, X, Loader2,
+  Star, Mic, Video,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";

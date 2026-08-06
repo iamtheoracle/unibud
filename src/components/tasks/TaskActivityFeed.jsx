@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  CheckCircle2, MessageSquare, UserPlus, FileUp, Flag, Eye, ThumbsDown, Ban, Loader, Clock, Archive, Check,
+  CheckCircle2, MessageSquare, UserPlus, FileUp, Flag, Eye, ThumbsDown, Loader, Clock, Archive, Check,
 } from "lucide-react";
 
 const ICONS = {

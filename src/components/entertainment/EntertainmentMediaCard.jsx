@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Play, Clock, Eye, BadgeCheck, Bookmark, Share2 } from "lucide-react";
+import { Play, Clock, Eye, Bookmark, Share2 } from "lucide-react";
 import { Image } from "@/components/ui/image";
 import PremiumAvatar from "@/components/ui/PremiumAvatar";
 import { cn } from "@/lib/utils";

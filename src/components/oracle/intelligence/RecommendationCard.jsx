@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, Activity, Clock, ArrowRight } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Activity, Clock } from "lucide-react";
 
 const PRIORITY_STYLES = {
   critical: { bg: "bg-destructive/15", text: "text-destructive", border: "border-destructive/30" },

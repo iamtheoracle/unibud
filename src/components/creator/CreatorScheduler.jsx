@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   CalendarClock, FileText, Video, Mic, Radio, ShoppingBag,
-  Clock, CheckCircle2, XCircle, Edit3, Trash2, Send, X, Sparkles, Loader2,
+  Clock, CheckCircle2, XCircle, Edit3, Send, X, Sparkles, Loader2,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";

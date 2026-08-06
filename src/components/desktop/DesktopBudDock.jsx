@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, Send } from "lucide-react";
 import { cn } from "@/lib/utils";

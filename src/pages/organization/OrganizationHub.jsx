@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { ArrowLeft, Users, BadgeCheck, Share2, Bell, BellOff, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Users, BadgeCheck, Share2, Bell, BellOff } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import EmptyState from "@/components/ui/EmptyState";
 import { ORG_TABS, isOfficer, ROLE_META } from "@/components/organization/orgConstants";

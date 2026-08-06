@@ -1,9 +1,8 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
-import { Users, Calendar, Vote, Wallet, Pin, MessageSquare, FileText, TrendingUp, TrendingDown, FolderOpen } from "lucide-react";
+import { Users, Calendar, Vote, Wallet, Pin, MessageSquare, FileText, FolderOpen } from "lucide-react";
 import { formatCurrency, timeAgo, DISCUSSION_CATEGORIES } from "./orgConstants";
-import EmptyState from "@/components/ui/EmptyState";
 
 export default function OrgOverview({ club, user, onNavigate }) {
   const { data: discussions } = useQuery({

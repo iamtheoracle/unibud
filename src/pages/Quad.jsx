@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Search, PenLine, Users, FlaskConical, Award, Briefcase, Headphones } from "lucide-react";
 import { base44 } from "@/api/base44Client";

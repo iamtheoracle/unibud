@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { CalendarClock, Plus, Video, MapPin, Clock, Users, XCircle, Loader2 } from "lucide-react";
+import { CalendarClock, Plus, Video, MapPin, Clock, Users, XCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useMockFallback } from "@/lib/mock/useMockFallback";
 import { OFFICE_HOURS_SLOT_MOCK, OFFICE_HOURS_BOOKING_MOCK } from "@/lib/academic/mockShapes2";

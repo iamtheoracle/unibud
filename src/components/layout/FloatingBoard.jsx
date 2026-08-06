@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Minimize2, Maximize2, Lock, Unlock, X, PanelRight, Maximize } from "lucide-react";
+import { Minimize2, Maximize2, Lock, Unlock, PanelRight, Maximize } from "lucide-react";
 
 const STORAGE_KEY = "unibud-floating-board";
 const SNAP_THRESHOLD = 24;

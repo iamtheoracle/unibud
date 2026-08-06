@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Save, Trash2, Clock, Bookmark, Filter } from "lucide-react";
+import { Trash2, Bookmark } from "lucide-react";
 
 const FILE_TYPES = [
   { id: "pdf", label: "PDF" },

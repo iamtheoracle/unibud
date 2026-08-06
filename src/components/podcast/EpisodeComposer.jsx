@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Loader2, Upload, FileAudio, Mic, Square, Plus, Trash2,
-  Sparkles, Tag, Calendar, Clock,
+  Sparkles, Tag, Calendar,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useToast } from "@/components/ui/use-toast";

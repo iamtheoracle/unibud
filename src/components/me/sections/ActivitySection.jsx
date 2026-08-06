@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import {
-  MessageSquare, Clock, Award, Users, Calendar, FileText, Flame,
+  MessageSquare, Clock, Award, Users, Flame,
 } from "lucide-react";
 
 function timeAgo(dateStr) {
