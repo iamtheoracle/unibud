@@ -1,0 +1,44 @@
+{
+  "name": "EduClass",
+  "type": "object",
+  "properties": {
+    "program_id": {
+      "type": "string",
+      "description": "Reference to EduAcademicProgram"
+    },
+    "subject_id": {
+      "type": "string",
+      "description": "Reference to EduSubject"
+    },
+    "educator_id": {
+      "type": "string",
+      "description": "Reference to EduEducator"
+    },
+    "organization_id": {
+      "type": "string",
+      "description": "Which university or learning organisation runs this class"
+    },
+    "name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "schedule": {
+      "type": "object",
+      "description": "Flexible schedule definition"
+    },
+    "capacity": {
+      "type": "number"
+    },
+    "students": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Array of EduStudent IDs"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": ["program_id", "subject_id", "educator_id", "name"]
+}

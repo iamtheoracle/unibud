@@ -1113,6 +1113,49 @@
   @keyframes ribbon-scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
   .ribbon-scroll { animation: ribbon-scroll 20s linear infinite; }
 
+  /* ── Splash screen — premium time-of-day animations ── */
+  @keyframes splash-star-twinkle {
+    0%, 100% { opacity: 0.25; transform: scale(1); }
+    50%       { opacity: 1;    transform: scale(1.5); }
+  }
+  .splash-star { animation: splash-star-twinkle linear infinite; will-change: opacity, transform; }
+
+  @keyframes splash-particle-drift {
+    0%   { transform: translateY(0)   translateX(0)   scale(1);    opacity: 0; }
+    8%   { opacity: 0.7; }
+    92%  { opacity: 0.4; }
+    100% { transform: translateY(-90px) translateX(15px) scale(0.4); opacity: 0; }
+  }
+  .splash-particle { animation: splash-particle-drift linear infinite; will-change: transform, opacity; }
+
+  @keyframes splash-orb-pulse {
+    0%, 100% { opacity: 0.18; transform: scale(1); }
+    50%       { opacity: 0.38; transform: scale(1.12); }
+  }
+  .splash-orb-pulse { animation: splash-orb-pulse ease-in-out infinite; will-change: opacity, transform; }
+
+  @keyframes splash-logo-glow {
+    0%, 100% { filter: brightness(1)   drop-shadow(0 0 0px transparent); }
+    50%       { filter: brightness(1.06) drop-shadow(0 0 18px rgba(255,122,0,0.45)); }
+  }
+  .splash-logo-glow { animation: splash-logo-glow 3.6s ease-in-out infinite; will-change: filter; }
+
+  @keyframes splash-shimmer-sweep {
+    0%   { background-position: -300% 0; }
+    100% { background-position: 300%  0; }
+  }
+  .splash-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.12) 50%, transparent 100%);
+    background-size: 300% 100%;
+    animation: splash-shimmer-sweep 2.8s ease-in-out infinite;
+  }
+
+  @keyframes splash-msg-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .splash-msg-in { animation: splash-msg-in 0.45s ease-out both; }
+
   /* ── Accessibility overrides (toggled from the Ecosystem Rail) ── */
   .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
     animation: none !important;
@@ -1203,7 +1246,7 @@
   /* UDS — Accessibility */
   .uds-focus:focus-visible { outline: 3px solid hsl(var(--ring)); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle, .breathe, .glow-pulse, .like-pop, .heart-burst, .msg-in, .slide-in-right, .chart-rise, .live-pulse, .error-shake, .success-bloom, .upload-flow, .gentle-sway { animation: none !important; }
+    .bud-breathe, .bud-blink, .bud-speak, .bud-listen, .bud-celebrate, .stream-dot, .spark-particle, .wx-sun, .wx-cloud, .wx-rain, .wx-snow, .wx-flash, .wx-twinkle, .breathe, .glow-pulse, .like-pop, .heart-burst, .msg-in, .slide-in-right, .chart-rise, .live-pulse, .error-shake, .success-bloom, .upload-flow, .gentle-sway, .splash-star, .splash-particle, .splash-orb-pulse, .splash-logo-glow, .splash-shimmer, .splash-msg-in { animation: none !important; }
   }
 
   /* ════════════════════════════════════════════════════════════

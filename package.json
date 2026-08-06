@@ -10,10 +10,11 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
     "typecheck:education": "tsc -p ./src/education/tsconfig.json",
+    "typecheck:oracle": "tsc -p ./tsconfig.oracle.json --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@base44/sdk": "^0.8.41",
@@ -100,5 +101,10 @@
     "typescript": "^5.8.2",
     "vite": "^6.1.0",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.21.5": true,
+    "core-js@3.48.0": true
   }
 }

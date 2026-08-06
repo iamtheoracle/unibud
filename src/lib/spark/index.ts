@@ -9,6 +9,7 @@
  * those paths are internal implementation detail and may change.
  */
 import { Container } from "./container";
+import { aiKernel } from "@/lib/ai/kernel";
 import { TOKENS, tokenLabel } from "./tokens";
 import { EventBus } from "./events";
 import { MiddlewarePipeline, type Middleware } from "./middleware";
@@ -81,6 +82,10 @@ export class Spark {
   // ---------------------------------------------------------------------
   async initialize(): Promise<void> {
     if (this.initialized) return;
+    await aiKernel.initializeComponent("spark", {
+      config: { version: SPARK_VERSION, build: SPARK_BUILD },
+      context: { modules: this.container.registeredTokens().map(tokenLabel) },
+    });
     // Eagerly resolve every registered service once so configuration
     // errors surface immediately rather than on first use.
     for (const token of this.container.registeredTokens()) {
@@ -95,12 +100,17 @@ export class Spark {
     this.events.clear();
     this.middleware.clear();
     this.initialized = false;
+    await aiKernel.stopComponent("spark");
   }
 
   async reset(): Promise<void> {
     this.container.reset();
     this.registerCoreServices();
     this.initialized = false;
+    await aiKernel.restartComponent("spark", {
+      config: { version: SPARK_VERSION, build: SPARK_BUILD },
+      context: { modules: this.container.registeredTokens().map(tokenLabel) },
+    });
   }
 
   // ---------------------------------------------------------------------
@@ -149,18 +159,18 @@ export class Spark {
     };
   }
 
-  health(): SparkHealthReport {
-    const diagnostics: string[] = [];
-    const providers = this.providerRegistry.list();
-    if (!providers.some((p) => p.available)) {
-      this.warnings.push(
-        "No AI provider is currently available besides the mock provider."
-      );
-    }
-    diagnostics.push(
-      `${this.container.resolvedTokens().length}/${
-        this.container.registeredTokens().length
-      } services resolved.`
+    health(): SparkHealthReport {
+      const diagnostics: string[] = [];
+      const providers = this.providerRegistry.list();
+      if (!providers.some((p) => p.available)) {
+        this.warnings.push(
+          "No AI provider is currently available besides the mock provider."
+        );
+      }
+      diagnostics.push(
+        `${this.container.resolvedTokens().length}/${
+          this.container.registeredTokens().length
+        } services resolved.`
     );
 
     const status: SparkHealthReport["status"] = this.initialized
@@ -176,6 +186,10 @@ export class Spark {
       uptimeMs: Date.now() - this.startedAt,
       checkedAt: new Date().toISOString(),
     };
+  }
+
+  kernelMetadata() {
+    return aiKernel.describe("spark");
   }
 
   metrics(): SparkMetrics {

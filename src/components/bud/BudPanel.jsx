@@ -16,7 +16,7 @@ export default function BudPanel() {
     closeBud, messages, input, setInput, sendMessage, isTyping,
     attachments, handleFileUpload, removeAttachment,
     screenContext, conversations, openConversation, newConversation,
-    mode, setMode, activeSpecialists, statusMessage,
+    mode, setMode,
     activePacks, togglePack,
   } = useBudPanel();
 
@@ -218,7 +218,7 @@ export default function BudPanel() {
               <ChatMessage key={i} message={msg} />
             ))}
             <AnimatePresence>
-              {isTyping && <SpecialistStatus specialists={activeSpecialists} statusMessage={statusMessage} />}
+              {isTyping && <SpecialistStatus />}
             </AnimatePresence>
           </div>
         )}

@@ -1,0 +1,35 @@
+{
+  "name": "EduEnrollment",
+  "type": "object",
+  "properties": {
+    "student_id": {
+      "type": "string",
+      "description": "Reference to EduStudent"
+    },
+    "class_id": {
+      "type": "string",
+      "description": "Reference to EduClass"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected", "withdrawn"],
+      "default": "pending"
+    },
+    "enrolled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "withdrawn_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": ["student_id", "class_id"]
+}
