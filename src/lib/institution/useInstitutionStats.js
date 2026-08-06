@@ -75,7 +75,6 @@ export function useInstitutionStats(institution) {
     const u1 = base44.entities.StaffAnnouncement.subscribe?.(onAnn);
     const u2 = base44.entities.CampusEvent.subscribe?.(onEvent);
     return () => { u1?.(); u2?.(); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [institution?.id]);
 
   const health = {
