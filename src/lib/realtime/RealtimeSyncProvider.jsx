@@ -25,7 +25,6 @@ export default function RealtimeSyncProvider({ children }) {
     return () => {
       // Engine is a singleton — don't destroy on unmount in dev (HMR)
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryClient]);
 
   return (
