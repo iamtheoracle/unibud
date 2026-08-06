@@ -20,6 +20,7 @@ export default function OracleAuthRouter() {
   const [workspace, setWorkspace] = useState(null);
 
   useEffect(() => {
+    let routeTimer = null;
     (async () => {
       try {
         const user = await base44.auth.me();
@@ -35,14 +36,17 @@ export default function OracleAuthRouter() {
         setStatus("routing");
 
         // Brief moment for the evaluation to feel intentional, not jarring
-        setTimeout(() => {
+        routeTimer = setTimeout(() => {
           window.location.href = ws.path;
         }, 1400);
-      } catch (err) {
-        // If we can't evaluate, default to student home rather than blocking
-        window.location.href = "/home";
+      } catch {
+        // Fail closed: if identity can't be evaluated, re-authenticate.
+        window.location.href = "/login";
       }
     })();
+    return () => {
+      if (routeTimer) clearTimeout(routeTimer);
+    };
   }, [navigate]);
 
   return (

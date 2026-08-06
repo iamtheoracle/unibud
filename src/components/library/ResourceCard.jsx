@@ -15,7 +15,7 @@ export default function ResourceCard({ resource, onClick }) {
     <motion.div whileTap={{ scale: 0.97 }} onClick={onClick} className="flex-shrink-0 w-[150px] bg-card rounded-[18px] overflow-hidden premium-shadow border border-border/30 cursor-pointer">
       <div className="relative h-[170px] flex items-end justify-center p-3" style={{ background: `linear-gradient(135deg, ${accent}22, ${accent}08)` }}>
         {resource.cover_url ? (
-          <img src={resource.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={resource.cover_url} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
         ) : (
           <div className="relative z-10 w-full h-full flex flex-col items-center justify-center gap-2">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${accent}20` }}>

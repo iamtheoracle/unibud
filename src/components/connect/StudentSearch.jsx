@@ -162,7 +162,7 @@ function StudentCard({ student, index }) {
       className="bg-card rounded-[18px] soft-shadow border border-border/20 p-3 card-hover"
     >
       {avatar ? (
-        <img src={avatar} alt={name} className="w-full h-16 rounded-[12px] object-cover mb-2" />
+        <img src={avatar} alt={name} className="w-full h-16 rounded-[12px] object-cover mb-2" loading="lazy" />
       ) : (
         <div className="w-full h-16 rounded-[12px] bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-2">
           <span className="text-[16px] font-bold text-primary">{name.charAt(0).toUpperCase()}</span>

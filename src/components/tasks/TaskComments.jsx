@@ -38,7 +38,7 @@ export default function TaskComments({ task, actor }) {
         {(comments || []).map((c) => (
           <div key={c.id} className="flex gap-2.5 msg-in">
             {c.author_image ? (
-              <img src={c.author_image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+              <img src={c.author_image} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" loading="lazy" />
             ) : (
               <div className="w-7 h-7 rounded-full bg-primary/15 grid place-items-center text-[11px] font-bold text-primary shrink-0">
                 {(c.author_name || "U").charAt(0)}

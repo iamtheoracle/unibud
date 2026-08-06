@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Loader2, GraduationCap, ShieldCheck, AlertCircle } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { formatMoney } from "./WalletShared";
-
+import { startCardCheckout } from "@/lib/finance/cardPayment";
 import { useToast } from "@/components/ui/use-toast";
 
 const TYPE_MAP = {
@@ -18,6 +18,8 @@ const TYPE_MAP = {
 };
 
 /**
+ * PayFeesModal — pay a school fee via card checkout.
+ * Lists the institution's FeeStructure; on confirm, opens card checkout.
  * Money credits the institution's wallet; the webhook completes the ledger.
  */
 export default function PayFeesModal({ open, onClose, institutionId }) {
@@ -50,8 +52,16 @@ export default function PayFeesModal({ open, onClose, institutionId }) {
     try {
       const fee = (fees || []).find((f) => f.id === selected);
       const amount = Math.max(0, Number(fee?.amount || 0) - Number(fee?.discount || 0) + Number(fee?.late_fee || 0));
-      // Online card payments are not available — contact institution for payment options.
-      throw new Error("Online card payments are not available at this time. Please contact your institution for payment options.");
+      await startCardCheckout({
+        amount,
+        currency: "NGN",
+        description: fee?.name || "School Fee",
+        type: TYPE_MAP[fee?.category] || "school_fee",
+        to_wallet_id: destinationWalletId,
+        institution_id: institutionId,
+        fee_id: fee.id,
+      });
+      // Browser redirects to payment provider here — the line below only runs if redirect blocked.
     } catch (e) {
       setPaying(false);
       setErr(e.message || "Payment could not start.");
@@ -146,7 +156,7 @@ export default function PayFeesModal({ open, onClose, institutionId }) {
               className="w-full mt-4 py-3.5 rounded-[18px] bg-primary text-primary-foreground font-semibold text-[14px] spring-tap disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {paying ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
-              {paying ? "Processing…" : "Pay with Card"}
+              {paying ? "Processing payment…" : "Pay with Card"}
             </button>
             <p className="text-[10px] text-muted-foreground text-center mt-2.5 flex items-center justify-center gap-1">
               <ShieldCheck className="w-3 h-3" /> Secured payment

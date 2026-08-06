@@ -10,6 +10,9 @@ import GlassInput from "@/components/foundation/GlassInput";
 import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 
 const EASE = [0.16, 1, 0.3, 1];
+const ACCESS_CODE_RE = /^[A-Za-z0-9_-]{6,64}$/;
+const LOCKOUT_BASE_SECONDS = 3;
+const LOCKOUT_MAX_SECONDS = 60;
 
 export default function Login() {
   const navigate = useNavigate();
@@ -19,6 +22,8 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+  const [lockoutUntil, setLockoutUntil] = useState(0);
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => { if (authed) navigate("/auth-router", { replace: true }); });
@@ -26,9 +31,21 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const now = Date.now();
+    if (lockoutUntil > now) {
+      const waitSeconds = Math.ceil((lockoutUntil - now) / 1000);
+      setError(`Too many attempts. Try again in ${waitSeconds}s.`);
+      return;
+    }
     setError("");
     setLoading(true);
     try {
+      if (!navigator.onLine) {
+        throw new Error("offline");
+      }
+      if (accessCode.trim() && !ACCESS_CODE_RE.test(accessCode.trim())) {
+        throw new Error("invalid_access_code");
+      }
       await base44.auth.loginViaEmailPassword(identifier, password);
 
       // If a platform access code was entered, validate & elevate silently.
@@ -37,14 +54,26 @@ export default function Login() {
         try {
           await base44.functions.invoke("validatePlatformAccess", { access_code: accessCode.trim() });
         } catch {
-          // Invalid code doesn't block login — user still authenticates normally
+          throw new Error("invalid_access_code");
         }
       }
+      setFailedAttempts(0);
+      setLockoutUntil(0);
 
       // Oracle silently evaluates role + permissions and routes to the correct workspace
       window.location.href = "/auth-router";
     } catch (err) {
-      setError(err.message || "Invalid credentials");
+      if (err?.message === "offline") {
+        setError("You're offline. Reconnect to continue.");
+      } else if (err?.message === "invalid_access_code") {
+        setError("Access code is invalid. Check the code and try again.");
+      } else {
+        const nextAttempts = failedAttempts + 1;
+        setFailedAttempts(nextAttempts);
+        const lockSeconds = Math.min(LOCKOUT_MAX_SECONDS, LOCKOUT_BASE_SECONDS * (2 ** Math.max(0, nextAttempts - 1)));
+        setLockoutUntil(Date.now() + lockSeconds * 1000);
+        setError("Invalid credentials. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

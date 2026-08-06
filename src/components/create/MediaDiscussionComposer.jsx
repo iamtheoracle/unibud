@@ -355,7 +355,7 @@ Only return content that actually exists. Never fabricate results.`,
               {/* Author row */}
               <div className="flex items-center gap-2.5">
                 {user?.avatar_url || user?.image ? (
-                  <img src={user.avatar_url || user.image} alt="" className="w-8 h-8 rounded-full object-cover" />
+                  <img src={user.avatar_url || user.image} alt="" className="w-8 h-8 rounded-full object-cover" loading="lazy" />
                 ) : (
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-bold"

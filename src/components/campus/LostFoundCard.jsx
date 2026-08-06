@@ -77,7 +77,7 @@ export default function LostFoundCard({ item, index = 0, onContact }) {
       <div className="px-3.5 pb-3.5 flex items-center justify-between border-t border-border/20 pt-2.5">
         <div className="flex items-center gap-1.5 min-w-0">
           {item.reporter_image ? (
-            <img src={item.reporter_image} alt="" className="w-5 h-5 rounded-full object-cover flex-shrink-0" />
+            <img src={item.reporter_image} alt="" className="w-5 h-5 rounded-full object-cover flex-shrink-0" loading="lazy" />
           ) : (
             <div className="w-5 h-5 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
               <span className="text-[8px] font-bold text-muted-foreground">

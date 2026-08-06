@@ -41,7 +41,7 @@ const ROUTE_ACCESS = {
 export function isAuthorizedFor(path, role) {
   // Find the matching route prefix (longest match wins)
   const matchedPrefix = Object.keys(ROUTE_ACCESS)
-    .filter((prefix) => path === prefix || path.startsWith(prefix + "/") || path.startsWith(prefix))
+    .filter((prefix) => path === prefix || path.startsWith(prefix + "/"))
     .sort((a, b) => b.length - a)[0];
 
   if (!matchedPrefix) return true; // Unrestricted route

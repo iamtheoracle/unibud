@@ -70,7 +70,7 @@ export default function LeaderboardPreview({ entries = [] }) {
                   </div>
                   <div className="w-7 h-7 rounded-full bg-muted grid place-items-center overflow-hidden shrink-0">
                     {entry.image ? (
-                      <img src={entry.image} alt="" className="w-full h-full object-cover" />
+                      <img src={entry.image} alt="" className="w-full h-full object-cover" loading="lazy" />
                     ) : (
                       <span className="text-[10px] font-bold text-muted-foreground">{entry.name?.[0]?.toUpperCase()}</span>
                     )}

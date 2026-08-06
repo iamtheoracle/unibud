@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { resolveWorkspace } from "@/lib/auth/oracleRouter";
@@ -22,9 +22,14 @@ export default function OracleWorkspaceGuard({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [state, setState] = useState("checking"); // checking → authorized | redirecting
+  const redirectTimerRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
+    if (redirectTimerRef.current) {
+      clearTimeout(redirectTimerRef.current);
+      redirectTimerRef.current = null;
+    }
     (async () => {
       try {
         const user = await base44.auth.me();
@@ -42,18 +47,29 @@ export default function OracleWorkspaceGuard({ children }) {
           // Oracle silently redirects to the user's correct workspace
           const ws = resolveWorkspace(user);
           setState("redirecting");
-          setTimeout(() => {
+          const timer = setTimeout(() => {
             window.location.href = ws.path;
           }, 600);
+          if (!cancelled) redirectTimerRef.current = timer;
         } else {
           setState("authorized");
         }
       } catch {
-        // If evaluation fails, don't block — let the page render
-        if (!cancelled) setState("authorized");
+        if (cancelled) return;
+        setState("redirecting");
+        const timer = setTimeout(() => {
+          navigate("/login", { replace: true });
+        }, 150);
+        redirectTimerRef.current = timer;
       }
     })();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+    };
   }, [location.pathname, navigate]);
 
   if (state === "authorized") return children;

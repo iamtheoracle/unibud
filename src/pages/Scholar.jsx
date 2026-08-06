@@ -176,7 +176,7 @@ export default function Scholar() {
           className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-card soft-shadow border border-border/40 spring-tap text-left card-hover"
         >
           {user?.avatar_url || user?.image ? (
-            <img src={user.avatar_url || user.image} alt="" className="w-9 h-9 rounded-full object-cover" />
+            <img src={user.avatar_url || user.image} alt="" className="w-9 h-9 rounded-full object-cover" loading="lazy" />
           ) : (
             <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center text-[12px] font-bold text-foreground">
               {(user?.full_name || "U").charAt(0)}

@@ -98,7 +98,7 @@ export const SOCIAL_FUNCTIONS = [
 export const SHARED_FUNCTIONS = [
   "activateAnnouncements", "budReminders", "deleteAccount", "googleCalendarSync",
   "outreachFollowup", "providerSecrets",
-  "runAutomation", "studentSearch", "trustProfile",
+  "runAutomation", "cardPayment", "studentSearch", "trustProfile",
   "universityConnectBgSync", "universityConnectSync", "updateProfile",
   "welcomeNewStudent",
 ];

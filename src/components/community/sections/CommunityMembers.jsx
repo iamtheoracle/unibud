@@ -30,7 +30,7 @@ export default function CommunityMembers({ community, onMessage, accentColor }) 
             className="crystal-card p-3 flex items-center gap-3 hover-lift spring-tap edge-light"
           >
             {member.image ? (
-              <img src={member.image} alt="" className="w-11 h-11 rounded-full object-cover" />
+              <img src={member.image} alt="" className="w-11 h-11 rounded-full object-cover" loading="lazy" />
             ) : (
               <div
                 className="w-11 h-11 rounded-full flex items-center justify-center text-primary-foreground font-bold text-[14px]"

@@ -54,7 +54,7 @@ export default function CollectionPreviewModal({
           <div className="flex items-center gap-3 p-3 rounded-2xl glass-card">
             <div className="w-10 h-10 rounded-full bg-card grid place-items-center overflow-hidden shrink-0">
               {owner.image ? (
-                <img src={owner.image} alt="" className="w-full h-full object-cover" />
+                <img src={owner.image} alt="" className="w-full h-full object-cover" loading="lazy" />
               ) : (
                 <span className="text-[12px] font-bold">{(owner.name || "U").charAt(0).toUpperCase()}</span>
               )}
@@ -78,7 +78,7 @@ export default function CollectionPreviewModal({
                 {collaborators.slice(0, 8).map((c) => (
                   <div key={c.user_id} className="flex items-center gap-2 px-2.5 py-1.5 rounded-full glass-card">
                     <div className="w-5 h-5 rounded-full bg-card grid place-items-center overflow-hidden">
-                      {c.image ? <img src={c.image} alt="" className="w-full h-full object-cover" /> : <span className="text-[8px] font-bold">{(c.name || "U").charAt(0).toUpperCase()}</span>}
+                      {c.image ? <img src={c.image} alt="" className="w-full h-full object-cover" loading="lazy" /> : <span className="text-[8px] font-bold">{(c.name || "U").charAt(0).toUpperCase()}</span>}
                     </div>
                     <span className="text-[11px] font-medium">{c.name}</span>
                     <span className="text-[9px] text-muted-foreground capitalize">· {c.role}</span>

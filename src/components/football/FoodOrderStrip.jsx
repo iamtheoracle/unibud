@@ -49,7 +49,7 @@ export default function FoodOrderStrip({ items = [] }) {
             className="flex-shrink-0 w-[160px] rounded-2xl bg-card border border-border/30 overflow-hidden"
           >
             <div className="aspect-square bg-muted overflow-hidden relative">
-              {item.image_url && <img src={item.image_url} alt="" className="w-full h-full object-cover" />}
+              {item.image_url && <img src={item.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />}
               <button
                 onClick={() => add(item.id)}
                 className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-foreground text-background flex items-center justify-center spring-tap"

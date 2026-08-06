@@ -178,7 +178,7 @@ export default function ShortVideoCard({ video, isActive, user, isDemoMode, _onO
         {/* Author avatar + follow */}
         <div className="relative mb-1">
           {video.author_image ? (
-            <img src={video.author_image} alt="" className="w-11 h-11 rounded-full object-cover border-2 border-white" />
+            <img src={video.author_image} alt="" className="w-11 h-11 rounded-full object-cover border-2 border-white" loading="lazy" />
           ) : (
             <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/70 border-2 border-white flex items-center justify-center text-primary-foreground font-bold text-sm">
               {video.author_name?.charAt(0)}

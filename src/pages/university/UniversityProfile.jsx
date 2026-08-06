@@ -70,13 +70,13 @@ export default function UniversityProfile() {
           <div className="crystal-card overflow-hidden">
             {institution.banner_url && (
               <div className="h-20 overflow-hidden">
-                <img src={institution.banner_url} alt="" className="w-full h-full object-cover" />
+                <img src={institution.banner_url} alt="" className="w-full h-full object-cover" loading="lazy" />
               </div>
             )}
             <div className="p-4">
               <div className="flex items-start gap-3">
                 {institution.logo_url ? (
-                  <img src={institution.logo_url} alt={institution.name} className="w-14 h-14 rounded-2xl object-cover border border-border/40" />
+                  <img src={institution.logo_url} alt={institution.name} className="w-14 h-14 rounded-2xl object-cover border border-border/40" loading="lazy" />
                 ) : (
                   <div className="w-14 h-14 rounded-2xl crystal-card flex items-center justify-center">
                     <Building2 className="w-6 h-6 text-primary" strokeWidth={1.5} />

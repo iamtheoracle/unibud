@@ -105,7 +105,7 @@ export default function ConversationList({
                 >
                   <div className="relative shrink-0">
                     {image ? (
-                      <img src={image} alt="" className="w-11 h-11 rounded-full object-cover" />
+                      <img src={image} alt="" className="w-11 h-11 rounded-full object-cover" loading="lazy" />
                     ) : (
                       <div className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
                         <Icon className="w-[18px] h-[18px] text-primary-foreground" strokeWidth={2} />

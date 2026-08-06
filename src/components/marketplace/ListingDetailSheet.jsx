@@ -100,7 +100,7 @@ export default function ListingDetailSheet({ listing, user, rating, onClose, onR
           <div className="relative h-56 overflow-hidden rounded-t-[28px]">
             <div className="flex h-full overflow-x-auto no-scrollbar snap-x snap-mandatory">
               {images.map((img, i) => (
-                <img key={i} src={img} alt="" className="w-full h-full object-cover snap-center shrink-0" />
+                <img key={i} src={img} alt="" className="w-full h-full object-cover snap-center shrink-0" loading="lazy" />
               ))}
             </div>
             {images.length > 1 && (

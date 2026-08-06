@@ -290,7 +290,7 @@ function Classmates({ list, loading }) {
       {list.map((c, i) => (
         <motion.div key={c.id || i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03, duration: 0.3, ease: EASE }} className="flex items-center gap-3 glass-card p-3">
           <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[14px] shrink-0 overflow-hidden">
-            {c.avatar_url ? <img src={c.avatar_url} alt="" className="w-full h-full object-cover" /> : (c.full_name || "?").charAt(0).toUpperCase()}
+            {c.avatar_url ? <img src={c.avatar_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : (c.full_name || "?").charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1">

@@ -94,7 +94,7 @@ export default function EventDetailSheet({ event: initialEvent, user, onClose, o
         {/* Banner */}
         {event.banner_url ? (
           <div className="relative h-32 overflow-hidden rounded-t-[28px]">
-            <img src={event.banner_url} alt={event.title} className="w-full h-full object-cover" />
+            <img src={event.banner_url} alt={event.title} className="w-full h-full object-cover" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
             {event.is_featured && (
               <span className="absolute top-3 left-3 px-2 py-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center gap-1">

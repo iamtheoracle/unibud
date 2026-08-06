@@ -106,7 +106,7 @@ export default function OrganizationHub() {
       <div className="relative">
         {club.banner_url ? (
           <div className="h-32 overflow-hidden">
-            <img src={club.banner_url} alt="" className="w-full h-full object-cover" />
+            <img src={club.banner_url} alt="" className="w-full h-full object-cover" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/90" />
           </div>
         ) : (
@@ -120,7 +120,7 @@ export default function OrganizationHub() {
 
           <div className="flex items-end gap-3 mb-3">
             <div className="w-16 h-16 rounded-[20px] bg-card soft-shadow flex items-center justify-center overflow-hidden border-2 border-background flex-shrink-0">
-              {club.logo_url ? <img src={club.logo_url} alt="" className="w-full h-full object-cover" /> : <Users className="w-7 h-7 text-primary" />}
+              {club.logo_url ? <img src={club.logo_url} alt="" className="w-full h-full object-cover" loading="lazy" /> : <Users className="w-7 h-7 text-primary" />}
             </div>
             <div className="flex-1 min-w-0 pb-1">
               <h1 className="text-[20px] font-bold text-foreground leading-tight flex items-center gap-1.5">
