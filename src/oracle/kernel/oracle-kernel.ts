@@ -1,66 +1,94 @@
-/**
- * Oracle Kernel — Main Oracle Class
- *
- * Composes all infrastructure services into the IOracle interface.
- * Domain-agnostic: no business logic lives here.
- */
+import { ConfigManager } from './components/config-manager';
+import { EnvironmentManager } from './components/environment-manager';
+import { DependencyInjector } from './components/dependency-injector';
+import { ModuleRegistry } from './components/module-registry';
+import { CapabilityRegistry } from './components/capability-registry';
+import { LifecycleManager } from './components/lifecycle-manager';
+import { HealthManager } from './components/health-manager';
+import { Logger } from './components/logger';
+import { ErrorBoundary } from './components/error-boundary';
+import { PluginRegistrar } from './components/plugin-registrar';
+import { VersionManager } from './components/version-manager';
 
-import type { IOracle } from './types.js';
-import { OracleLogger } from './logger.js';
-import { OracleConfigManager } from './config.js';
-import { OracleDependencyInjector } from './di.js';
-import { OracleHealthManager } from './health.js';
-import { OracleErrorBoundary } from './error-boundary.js';
-import { OracleLifecycleManager } from './lifecycle.js';
-import { OracleModuleRegistry } from './module-registry.js';
-import { OracleCapabilityRegistry } from './capability-registry.js';
-import { OracleResourceRegistry } from './resource-registry.js';
+import type {
+  IOracle,
+  IConfigManager,
+  IEnvironmentManager,
+  IModuleRegistry,
+  ICapabilityRegistry,
+  IDependencyInjector,
+  ILifecycleManager,
+  IHealthManager,
+  ILogger,
+  IErrorBoundary,
+  IPluginRegistrar,
+  IVersionManager,
+  LogLevel,
+} from './types/index';
 
-export const ORACLE_VERSION = '1.0.0';
+export interface OracleKernelOptions {
+  logLevel?: LogLevel;
+  kernelVersion?: string;
+  env?: Record<string, string | undefined>;
+}
 
 export class OracleKernel implements IOracle {
-  readonly version = ORACLE_VERSION;
+  readonly config: IConfigManager;
+  readonly environment: IEnvironmentManager;
+  readonly modules: IModuleRegistry;
+  readonly capabilities: ICapabilityRegistry;
+  readonly dependencies: IDependencyInjector;
+  readonly lifecycle: ILifecycleManager;
+  readonly health: IHealthManager;
+  readonly logger: ILogger;
+  readonly errors: IErrorBoundary;
+  readonly plugins: IPluginRegistrar;
+  readonly version: IVersionManager;
 
-  readonly logger = new OracleLogger('Oracle');
-  readonly config = new OracleConfigManager();
-  readonly dependencies = new OracleDependencyInjector();
-  readonly health = new OracleHealthManager();
-  readonly errors = new OracleErrorBoundary(this.logger);
-  readonly lifecycle = new OracleLifecycleManager();
+  constructor(options: OracleKernelOptions = {}) {
+    this.config = new ConfigManager();
+    this.environment = new EnvironmentManager(options.env);
+    this.modules = new ModuleRegistry();
+    this.capabilities = new CapabilityRegistry();
+    this.dependencies = new DependencyInjector();
+    this.lifecycle = new LifecycleManager();
+    this.health = new HealthManager();
+    this.logger = new Logger({}, options.logLevel ?? 'info');
+    this.errors = new ErrorBoundary();
+    this.version = new VersionManager(options.kernelVersion);
+    this.plugins = new PluginRegistrar(this.version, this);
 
-  readonly modules = new OracleModuleRegistry();
-  readonly capabilities = new OracleCapabilityRegistry();
-  readonly resources = new OracleResourceRegistry();
+    this.lifecycle.addInitializer(
+      'oracle:logger',
+      async () => {
+        this.logger.info('Oracle Kernel initializing...', {
+          version: this.version.getKernelVersion().toString(),
+        });
+      },
+      100,
+    );
 
-  async bootstrap(config?: Record<string, unknown>): Promise<void> {
-    if (config) {
-      for (const [key, value] of Object.entries(config)) {
-        this.config.set(key, value);
-      }
-    }
+    this.lifecycle.addShutdownHandler(
+      'oracle:logger',
+      async () => {
+        this.logger.info('Oracle Kernel shutting down...');
+      },
+      100,
+    );
+  }
 
-    this.logger.info('Oracle Kernel bootstrapping…', { version: this.version });
-
-    this.lifecycle.onStart(async () => {
-      this.logger.info('Oracle Kernel starting modules…');
-      await this.modules.initializeAll(this);
-      this.logger.info('Oracle Kernel running.', { version: this.version });
+  async initialize(): Promise<void> {
+    await this.lifecycle.initialize();
+    this.logger.info('Oracle Kernel ready.', {
+      version: this.version.getKernelVersion().toString(),
     });
-
-    this.lifecycle.onStop(async () => {
-      this.logger.info('Oracle Kernel stopping modules…');
-      await this.modules.shutdownAll();
-      this.logger.info('Oracle Kernel stopped.');
-    });
-
-    await this.lifecycle.start();
   }
 
   async shutdown(): Promise<void> {
-    this.logger.info('Oracle Kernel shutting down…');
-    await this.lifecycle.stop();
+    await this.lifecycle.shutdown();
+  }
+
+  isReady(): boolean {
+    return this.lifecycle.isReady();
   }
 }
-
-/** Singleton Oracle instance for the application. */
-export const oracle = new OracleKernel();
