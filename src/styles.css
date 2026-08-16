@@ -15,3 +15,53 @@ body{ font-family: system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue',
 .message{ padding:6px 0; border-bottom:1px dashed #eee }
 .messages-compose{ display:flex; gap:8px }
 .messages-compose input{ flex:1 }
+
+/* Square styles (mobile-first) */
+.square-header{ padding:16px 16px 8px }
+.square-title{ font-size:20px; font-weight:700 }
+.square-subtitle{ font-size:13px; color:#555; margin-top:6px }
+
+.square-page{ padding-bottom:80px } /* leave space for bottom nav */
+.square-content{ padding:12px 16px }
+
+.square-section{ margin-top:20px }
+.square-section-title{ font-size:16px; font-weight:700; margin-bottom:10px }
+.square-section-body{ display:flex; flex-direction:column; gap:10px }
+
+.square-item-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:12px;
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:10px;
+  box-shadow:none;
+}
+.square-item-title{ font-size:15px; margin:0 0 6px 0 }
+.square-item-excerpt{ margin:0; color:#666; font-size:13px }
+.square-item-meta{ margin-left:12px; font-size:12px; color:#777 }
+
+.square-item-assignment{ border-left:4px solid #8b5cf6 } /* restrained purple accent */
+.square-item-event{ border-left:4px solid #06b6d4 } /* teal accent for events */
+.square-item-task{ border-left:4px solid #f59e0b } /* amber accent for tasks */
+
+.square-empty{ text-align:center; padding:28px; border:1px dashed #eee; border-radius:10px }
+.square-empty-title{ font-weight:700; margin-bottom:8px }
+.square-empty-text{ color:#666; margin-bottom:12px }
+
+.square-loading{ display:flex; gap:10px; align-items:center; padding:12px }
+.loader{ width:20px; height:20px; border-radius:50%; border:3px solid #eee; border-top-color:#555; animation:spin 1s linear infinite }
+@keyframes spin{ to{ transform:rotate(360deg) } }
+
+.square-error{ padding:12px; border:1px solid #f1a7a7; background:#fff6f6; color:#7a1b1b; border-radius:8px }
+
+.btn{ background:#8b5cf6; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer }
+.btn:active{ transform:translateY(1px) }
+.btn:focus{ outline:2px solid rgba(139,92,246,0.25); outline-offset:2px }
+
+@media(min-width:720px){
+  .square-section-body{ flex-direction:row; gap:16px; flex-wrap:wrap }
+  .square-item-card{ width:calc(50% - 8px) }
+  .square-priority .square-item-card{ width:100% }
+}
