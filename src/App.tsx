@@ -16,8 +16,8 @@ export default function App() {
           <Route path="/" element={<Navigate to="/square" replace />} />
           <Route path="/square" element={<Square />} />
           <Route path="/connect/*" element={<Connect />} />
-          <Route path="/communities" element={<Communities />} />
-          <Route path="/messages" element={<Messages />} />
+          <Route path="/communities/*" element={<Communities />} />
+          <Route path="/messages/*" element={<Messages />} />
         </Routes>
       </main>
       <Bud />

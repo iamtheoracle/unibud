@@ -7,7 +7,8 @@ export interface AIProvider {
 
 export class ServerAIProvider implements AIProvider{
   async generateText(prompt: string){
-    const res = await fetch('/.netlify/functions/ai-provider', { method:'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({prompt}) })
+    // Use the /api/* path so client and Netlify Functions mapping are consistent.
+    const res = await fetch('/api/ai-provider', { method:'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({prompt}) })
     if(!res.ok) throw new Error('AI provider error')
     return res.json()
   }
