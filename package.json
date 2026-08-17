@@ -7,8 +7,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "typecheck": "tsc --noEmit",
-    "lint": "echo 'No linter configured'"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "react": "^18.2.0",
