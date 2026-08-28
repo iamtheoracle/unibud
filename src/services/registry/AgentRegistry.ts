@@ -276,6 +276,6 @@ export class AgentRegistry {
 
   isActive(id: string): boolean {
     const agent = this.agents.get(id);
-    return agent?.status === 'active' ?? false;
+    return agent?.status === 'active';
   }
 }
