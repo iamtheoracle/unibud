@@ -1,0 +1,94 @@
+{
+  "name": "LibraryResource",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "author": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "book",
+        "journal",
+        "paper",
+        "past_question",
+        "lecture_note",
+        "thesis"
+      ],
+      "default": "book"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "file_url": {
+      "type": "string"
+    },
+    "cover_url": {
+      "type": "string"
+    },
+    "pages": {
+      "type": "number"
+    },
+    "year": {
+      "type": "number"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "isbn": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_downloaded": {
+      "type": "boolean",
+      "default": false
+    },
+    "reading_progress": {
+      "type": "number",
+      "default": 0
+    },
+    "current_page": {
+      "type": "number",
+      "default": 0
+    },
+    "is_bookmarked": {
+      "type": "boolean",
+      "default": false
+    },
+    "highlights": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rating": {
+      "type": "number",
+      "default": 0
+    },
+    "language": {
+      "type": "string",
+      "default": "English"
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ]
+}

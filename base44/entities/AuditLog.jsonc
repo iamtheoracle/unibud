@@ -1,0 +1,42 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "The action performed (e.g., 'module_disabled', 'user_role_changed', 'login')"
+    },
+    "actor_name": {
+      "type": "string"
+    },
+    "actor_id": {
+      "type": "string"
+    },
+    "actor_role": {
+      "type": "string"
+    },
+    "target_type": {
+      "type": "string",
+      "description": "What was affected (e.g., 'module', 'user', 'system')"
+    },
+    "target_name": {
+      "type": "string"
+    },
+    "details": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ],
+      "default": "info"
+    }
+  },
+  "required": [
+    "action",
+    "actor_name"
+  ]
+}

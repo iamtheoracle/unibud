@@ -1,0 +1,66 @@
+{
+  "name": "DigitalBadge",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "orientation",
+        "matriculation",
+        "department_week",
+        "faculty_week",
+        "sports_festival",
+        "career_fair",
+        "innovation_week",
+        "hackathon",
+        "volunteer_service",
+        "student_leadership",
+        "club_membership",
+        "research",
+        "competition",
+        "community_service",
+        "final_year_project",
+        "graduation",
+        "deans_list",
+        "outstanding_student",
+        "scholarship_recipient",
+        "internship_completion"
+      ],
+      "default": "orientation"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "date_awarded": {
+      "type": "string",
+      "format": "date"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Lucide icon name"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title",
+    "category"
+  ]
+}

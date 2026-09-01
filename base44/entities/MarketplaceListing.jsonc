@@ -1,0 +1,75 @@
+{
+  "name": "MarketplaceListing",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "NGN"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "textbooks",
+        "electronics",
+        "furniture",
+        "accommodation",
+        "tutoring",
+        "services",
+        "tickets",
+        "other"
+      ],
+      "default": "other"
+    },
+    "condition": {
+      "type": "string",
+      "enum": [
+        "new",
+        "like_new",
+        "good",
+        "fair"
+      ],
+      "default": "good"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "seller_image": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "sold",
+        "reserved"
+      ],
+      "default": "active"
+    },
+    "location": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "price"
+  ]
+}

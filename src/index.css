@@ -1,0 +1,419 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap');
+
+@layer base {
+  :root {
+    /* === LIGHT MODE — UNIBUD Design System v3.0 (Premium) === */
+    --background: 220 14% 97%;        /* Very Light Gray — #F7F8FA */
+    --foreground: 0 0% 7%;            /* Near Black — #111111 */
+    --card: 0 0% 100%;                /* Pure White — #FFFFFF */
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 160 72% 34%;           /* Deep Emerald */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;         /* Very Light Gray */
+    --secondary-foreground: 0 0% 7%;
+    --muted: 220 14% 94%;             /* Light Gray */
+    --muted-foreground: 220 9% 46%;   /* Medium Gray — #6B7280 */
+    --accent: 186 50% 95%;            /* Very light teal tint */
+    --accent-foreground: 186 60% 25%;
+    --destructive: 0 72% 51%;         /* Red — #DC2626 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 91%;               /* Soft Border — #E8E8E8 */
+    --input: 0 0% 91%;
+    --ring: 160 72% 34%;              /* Deep Emerald */
+    --radius: 1.5rem;                  /* 24px — premium, spacious */
+
+    /* Surface tones */
+    --surface: 0 0% 100%;             /* Pure White */
+    --surface-secondary: 220 14% 97%; /* Very Light Gray — #F7F8FA */
+    --surface-elevated: 0 0% 100%;    /* Pure White */
+    --foreground-secondary: 220 9% 24%; /* Dark Gray */
+    --foreground-tertiary: 220 9% 46%;  /* Medium Gray — #6B7280 */
+
+    /* Semantic — identical in both themes */
+    --unibud-gold: 46 65% 42%;        /* Gold — branding, logo, achievements only */
+    --unibud-emerald: 160 72% 34%;    /* Deep Emerald — primary interface accent */
+    --unibud-teal: 186 75% 32%;       /* Deep Teal — secondary interface accent */
+    --unibud-blue: 217 91% 60%;        /* Professional Blue — #3B82F6 */
+    --unibud-purple: 270 60% 55%;     /* Purple — specialty only */
+    --unibud-green: 142 71% 45%;       /* Emerald Green — success states */
+    --unibud-orange: 38 92% 50%;       /* Amber — events & reminders only */
+    --unibud-red: 0 72% 51%;          /* Modern Red — #DC2626 */
+
+    /* Neutral palette — N1 (lightest) → N7 (darkest), absolute in both themes */
+    --unibud-black: 0 0% 7%;           /* Near Black — #111111 */
+    --unibud-white: 0 0% 100%;        /* Pure White */
+    --unibud-n1: 220 14% 96%;
+    --unibud-n2: 0 0% 91%;
+    --unibud-n3: 220 9% 65%;
+    --unibud-n4: 220 9% 46%;
+    --unibud-n5: 220 9% 24%;
+    --unibud-n6: 220 10% 14%;
+    --unibud-n7: 0 0% 10%;
+
+    /* Semantic foregrounds — absolute, same in light & dark */
+    --unibud-green-foreground: 0 0% 100%;
+    --unibud-orange-foreground: 0 0% 0%;
+    --unibud-red-foreground: 0 0% 100%;
+    --unibud-blue-foreground: 0 0% 100%;
+    --unibud-purple-foreground: 0 0% 100%;
+
+    /* Glass — light mode */
+    --glass-bg: rgba(255, 255, 255, 0.76);
+    --glass-border: rgba(16, 185, 129, 0.10);
+    --glass-shadow: 0 20px 76px rgba(0, 0, 0, 0.09);
+    --glass-blur: 28px;
+    --surface-grouped: 220 14% 96%;
+
+    --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.036);
+    --shadow-premium: 0 12px 40px rgba(0, 0, 0, 0.09), 0 4px 10px rgba(0, 0, 0, 0.05);
+    --shadow-elevated: 0 20px 76px rgba(0, 0, 0, 0.10), 0 6px 20px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 32px 96px rgba(0, 0, 0, 0.13), 0 10px 30px rgba(0, 0, 0, 0.06);
+
+    --chart-1: 160 72% 34%;
+    --chart-2: 186 75% 42%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 46 65% 42%;
+    --chart-5: 38 92% 50%;
+
+    --font-heading: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* BPT Spacing Scale — 4px base unit */
+    --space-1: 0.25rem;   /* 4px */
+    --space-2: 0.5rem;    /* 8px */
+    --space-3: 0.75rem;   /* 12px */
+    --space-4: 1rem;      /* 16px */
+    --space-5: 1.25rem;   /* 20px */
+    --space-6: 1.5rem;    /* 24px */
+    --space-8: 2rem;      /* 32px */
+    --space-10: 2.5rem;   /* 40px */
+    --space-12: 3rem;     /* 48px */
+    --space-15: 3.75rem;  /* 60px */
+    --space-20: 5rem;     /* 80px */
+    --space-24: 6rem;     /* 96px */
+    --space-30: 7.5rem;   /* 120px */
+    --space-40: 10rem;    /* 160px */
+    --space-48: 12rem;    /* 192px */
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 9% 24%;
+    --sidebar-primary: 160 72% 34%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 186 50% 95%;
+    --sidebar-accent-foreground: 186 60% 25%;
+    --sidebar-border: 0 0% 91%;
+    --sidebar-ring: 160 72% 34%;
+  }
+
+  .dark {
+    /* === DARK MODE — UNIBUD Design System v3.0 (Deep Charcoal) === */
+    --background: 0 0% 7%;            /* Near Black — #111111 */
+    --foreground: 0 0% 98%;           /* Near White */
+    --card: 220 10% 10%;              /* Deep Charcoal */
+    --card-foreground: 0 0% 98%;
+    --popover: 220 10% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 160 72% 42%;           /* Brighter Deep Emerald for dark */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 10% 14%;         /* Dark Charcoal */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 10% 16%;             /* Dark Grey */
+    --muted-foreground: 220 9% 65%;   /* Medium Grey */
+    --accent: 186 30% 14%;            /* Dark teal tint */
+    --accent-foreground: 186 55% 55%; /* Light teal text */
+    --destructive: 0 72% 51%;         /* Modern Red */
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 10% 20%;            /* Dark border */
+    --input: 220 10% 20%;
+    --ring: 160 72% 42%;
+
+    /* Surface tones */
+    --surface: 220 10% 10%;            /* Charcoal Surface */
+    --surface-secondary: 0 0% 7%;      /* Near Black */
+    --surface-elevated: 220 10% 14%;   /* Elevated Charcoal */
+    --foreground-secondary: 220 9% 84%; /* Light Grey */
+    --foreground-tertiary: 220 9% 65%;  /* Medium Grey */
+
+    /* Glass — dark mode: deep charcoal with premium blur */
+    --glass-bg: rgba(17, 17, 17, 0.82);
+    --glass-border: rgba(16, 185, 129, 0.15);
+    --glass-shadow: 0 28px 96px rgba(0, 0, 0, 0.65);
+    --glass-blur: 36px;
+    --surface-grouped: 220 10% 8%;
+
+    --shadow-soft: 0 6px 30px rgba(0, 0, 0, 0.48), 0 2px 8px rgba(0, 0, 0, 0.28);
+    --shadow-premium: 0 16px 60px rgba(0, 0, 0, 0.55), 0 6px 16px rgba(0, 0, 0, 0.28);
+    --shadow-elevated: 0 32px 96px rgba(0, 0, 0, 0.68), 0 10px 28px rgba(0, 0, 0, 0.34);
+    --shadow-hover: 0 40px 112px rgba(0, 0, 0, 0.75), 0 16px 40px rgba(0, 0, 0, 0.38);
+
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 220 9% 65%;
+    --sidebar-primary: 160 72% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 186 30% 14%;
+    --sidebar-accent-foreground: 186 55% 55%;
+    --sidebar-border: 220 10% 20%;
+    --sidebar-ring: 160 72% 42%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    overscroll-behavior: none;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    overscroll-behavior-y: none;
+    overflow-x: hidden;
+  }
+
+  /* Allow text selection on actual content — inputs, editable areas, and rich text */
+  input, textarea, [contenteditable="true"], [contenteditable=""],
+  p, li, blockquote, pre, code, article, .selectable {
+    -webkit-user-select: text;
+    user-select: text;
+    -webkit-user-select: auto;
+    -webkit-touch-callout: default;
+  }
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+  a, button, nav, [role="tab"], [role="button"] {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Responsive scrollbar — subtle & premium */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: hsl(var(--muted-foreground) / 0.2); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.35); }
+
+  /* Prevent layout shift on focus ring */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring) / 0.5);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .theme-transition * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
+  }
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.5);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  }
+  .glass-strong {
+    background: hsl(var(--card) / 0.82);
+    backdrop-filter: blur(44px) saturate(1.7);
+    -webkit-backdrop-filter: blur(44px) saturate(1.7);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  }
+  .text-gold-gradient {
+    background: linear-gradient(135deg, hsl(46 65% 42%), hsl(46 70% 55%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .premium-shadow {
+    box-shadow: var(--shadow-premium);
+  }
+  .surface-grouped {
+    background: hsl(var(--surface-grouped));
+  }
+  .primary-card-gradient {
+    background-image: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--card)) 55%, hsl(var(--primary) / 0.04) 100%);
+  }
+  .soft-shadow {
+    box-shadow: var(--shadow-soft);
+  }
+  .elevated-shadow {
+    box-shadow: var(--shadow-elevated);
+  }
+  .gold-glow {
+    box-shadow: 0 0 36px hsl(46 65% 42% / 0.28), var(--shadow-premium);
+  }
+  .emerald-glow {
+    box-shadow: 0 0 36px hsl(160 72% 34% / 0.28), var(--shadow-premium);
+  }
+  .text-emerald-gradient {
+    background: linear-gradient(135deg, hsl(160 72% 34%), hsl(186 75% 42%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  @keyframes bud-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.65; transform: scale(1.1); }
+  }
+  @keyframes bud-orbit-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .bud-glow { animation: bud-pulse 3s ease-in-out infinite; }
+  .bud-orbit-spin { animation: bud-orbit-rotate 10s linear infinite; }
+  .card-hover {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+  }
+  .card-hover:active {
+    transform: translateY(-1px) scale(0.99);
+  }
+
+  .press-scale {
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .press-scale:active {
+    transform: scale(0.96);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted) / 0.5) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Responsive grid helpers — auto-adapt cards to screen width */
+  .responsive-cards {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 768px) {
+    .responsive-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .responsive-cards { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* Touch-optimized tap targets on mobile, hover states on desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .hover-lift { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease; }
+    .hover-lift:hover { transform: translateY(-3px); }
+  }
+  @media (hover: none) and (pointer: coarse) {
+    .hover-lift { transition: transform 0.15s ease; }
+    .hover-lift:active { transform: scale(0.97); }
+  }
+
+  .spring-tap {
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .spring-tap:active {
+    transform: scale(0.94);
+  }
+
+  .fade-in-up {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .portal-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, hsl(var(--primary) / 0.04), transparent),
+      hsl(var(--background));
+  }
+
+  .portal-card-hover {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .portal-card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .input-base {
+    width: 100%;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    padding: 0 0.75rem;
+    font-size: 0.8125rem;
+    color: hsl(var(--foreground));
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .input-base:focus {
+    border-color: hsl(var(--primary) / 0.5);
+    box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1);
+  }
+  textarea.input-base {
+    height: auto;
+    padding: 0.625rem 0.75rem;
+    line-height: 1.5;
+  }
+  select.input-base {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='hsl(220 9% 46%)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2rem;
+  }
+
+  /* Safe-area utilities for notches, home indicators, and rounded displays */
+  .safe-area-pt { padding-top: env(safe-area-inset-top); }
+  .safe-area-pb { padding-bottom: max(0.6rem, env(safe-area-inset-bottom)); }
+  .safe-area-px {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .safe-area-top { top: env(safe-area-inset-top); }
+  .safe-area-bottom { bottom: env(safe-area-inset-bottom); }
+
+  /* Prevent iOS rubber-banding on scrollable views */
+  .no-overscroll { overscroll-behavior-y: none; }
+}

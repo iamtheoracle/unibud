@@ -1,0 +1,68 @@
+{
+  "name": "Educator",
+  "type": "object",
+  "description": "Educator identity record. One identity per person; teaching context is tracked via EducatorContext.",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Reference to the platform User entity"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Educator full name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Educator email address"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "Professional title (e.g. Dr., Prof., Mr., Mrs.)"
+    },
+    "specialization": {
+      "type": "string",
+      "description": "Primary subject specialization"
+    },
+    "qualifications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of qualifications (e.g. B.Sc. Mathematics, M.Ed., Ph.D.)"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "years_of_experience": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "suspended"
+      ],
+      "default": "active"
+    },
+    "registration_source": {
+      "type": "string",
+      "enum": [
+        "self_registration",
+        "invitation",
+        "institution_import",
+        "admin_created"
+      ],
+      "default": "invitation"
+    }
+  },
+  "required": [
+    "full_name"
+  ]
+}

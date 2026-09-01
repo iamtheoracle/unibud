@@ -1,0 +1,187 @@
+{
+  "name": "Story",
+  "type": "object",
+  "properties": {
+    "content": {
+      "type": "string",
+      "description": "Text content for text stories, or caption for media stories"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "admin",
+        "club"
+      ],
+      "default": "student"
+    },
+    "author_handle": {
+      "type": "string",
+      "description": "Department \u00b7 Level or role descriptor"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "photo",
+        "video",
+        "text",
+        "campus_moment",
+        "study_session",
+        "achievement",
+        "project",
+        "event",
+        "club",
+        "competition",
+        "research",
+        "graduation"
+      ],
+      "default": "photo"
+    },
+    "media_url": {
+      "type": "string"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "default": 5,
+      "description": "Display duration in seconds (5-15 for media, 5 for text)"
+    },
+    "background_color": {
+      "type": "string",
+      "description": "Gradient or solid color for text stories"
+    },
+    "text_style": {
+      "type": "object",
+      "description": "{ align, font_size, color } for text overlay"
+    },
+    "stickers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array of sticker objects: { type: 'poll'|'question'|'countdown'|'location'|'hashtag'|'mention'|'link', data: {...}, position: {x,y} }"
+    },
+    "poll_data": {
+      "type": "object",
+      "description": "{ question: string, options: [{ id, text, votes: number }] }"
+    },
+    "question_data": {
+      "type": "object",
+      "description": "{ question: string, answers: [{ author_name, content }] }"
+    },
+    "countdown_data": {
+      "type": "object",
+      "description": "{ label: string, target_date: ISO string }"
+    },
+    "link_url": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "hashtags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "university": {
+      "type": "string",
+      "description": "University scope \u2014 only students from this university see the story"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "music": {
+      "type": "object",
+      "description": "{ title, artist, url } optional background music"
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "replies_count": {
+      "type": "number",
+      "default": 0
+    },
+    "reactions": {
+      "type": "object",
+      "description": "Aggregate reaction counts: { like: 3, love: 1, ... }"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Auto-expiry timestamp (creation + 24h)"
+    },
+    "is_highlight": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether saved to a highlight collection (persists beyond 24h)"
+    },
+    "highlight_category": {
+      "type": "string",
+      "enum": [
+        "academic",
+        "projects",
+        "campus",
+        "research",
+        "competitions",
+        "travel",
+        "memories",
+        "leadership",
+        "graduation",
+        "custom"
+      ],
+      "description": "Category if saved to highlights"
+    },
+    "highlight_order": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "under_review",
+        "removed",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "moderation_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "author_name",
+    "type"
+  ]
+}

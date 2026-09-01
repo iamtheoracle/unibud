@@ -1,0 +1,31 @@
+{
+  "name": "EduDepartment",
+  "type": "object",
+  "properties": {
+    "faculty_id": {
+      "type": "string",
+      "description": "Reference to EduFaculty"
+    },
+    "name": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "courses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of EduCourse IDs"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "faculty_id",
+    "name",
+    "code"
+  ]
+}

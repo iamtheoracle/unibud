@@ -1,0 +1,120 @@
+{
+  "name": "CompanyPage",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "tech",
+        "finance",
+        "healthcare",
+        "education",
+        "manufacturing",
+        "consulting",
+        "media",
+        "telecommunications",
+        "agriculture",
+        "energy",
+        "government",
+        "ngo",
+        "startup",
+        "research_lab",
+        "university",
+        "other"
+      ],
+      "default": "tech"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "size": {
+      "type": "string",
+      "enum": [
+        "startup",
+        "small",
+        "medium",
+        "large",
+        "enterprise"
+      ],
+      "default": "medium"
+    },
+    "headquarters": {
+      "type": "string"
+    },
+    "locations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "founded_year": {
+      "type": "number"
+    },
+    "social_links": {
+      "type": "object",
+      "description": "{ linkedin, twitter, instagram, facebook }"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_hiring": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_sponsor": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this company sponsors UNIBUD events or competitions"
+    },
+    "active_jobs_count": {
+      "type": "number",
+      "default": 0
+    },
+    "followers_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_following": {
+      "type": "boolean",
+      "default": false
+    },
+    "perks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ]
+}

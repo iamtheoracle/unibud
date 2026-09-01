@@ -1,0 +1,163 @@
+{
+  "name": "ResearchProject",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "abstract": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "research_group",
+        "publication",
+        "project",
+        "collaboration",
+        "laboratory",
+        "funding",
+        "event",
+        "competition",
+        "thesis",
+        "dissertation"
+      ],
+      "default": "project"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "computer_science",
+        "engineering",
+        "medicine",
+        "sciences",
+        "social_sciences",
+        "humanities",
+        "business",
+        "law",
+        "education",
+        "agriculture",
+        "environmental",
+        "interdisciplinary",
+        "other"
+      ],
+      "default": "other"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "researcher",
+        "alumni"
+      ],
+      "default": "student"
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "supervisor": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "collaborators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paper_url": {
+      "type": "string",
+      "description": "Link to published paper or PDF"
+    },
+    "dataset_url": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "funding_amount": {
+      "type": "string"
+    },
+    "funding_source": {
+      "type": "string"
+    },
+    "publication_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "members_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_recruiting": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this project is looking for collaborators"
+    },
+    "is_joined": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "active",
+        "published",
+        "completed",
+        "on_hold"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "author_name"
+  ]
+}

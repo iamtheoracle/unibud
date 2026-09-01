@@ -1,0 +1,57 @@
+{
+  "name": "StudentAchievement",
+  "type": "object",
+  "properties": {
+    "student_name": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "academic",
+        "leadership",
+        "club",
+        "volunteer",
+        "competition",
+        "sports",
+        "research",
+        "certification",
+        "project",
+        "award",
+        "creative"
+      ],
+      "default": "academic"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "student_name",
+    "title",
+    "category"
+  ]
+}

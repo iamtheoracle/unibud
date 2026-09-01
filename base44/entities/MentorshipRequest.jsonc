@@ -1,0 +1,57 @@
+{
+  "name": "MentorshipRequest",
+  "type": "object",
+  "properties": {
+    "mentor_id": {
+      "type": "string"
+    },
+    "mentor_name": {
+      "type": "string"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "student_university": {
+      "type": "string"
+    },
+    "student_department": {
+      "type": "string"
+    },
+    "request_type": {
+      "type": "string",
+      "enum": [
+        "mentorship",
+        "study_session",
+        "career_guidance",
+        "video_call",
+        "voice_call",
+        "chat"
+      ],
+      "default": "mentorship"
+    },
+    "message": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "declined",
+        "completed"
+      ],
+      "default": "pending"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "meeting_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "mentor_id",
+    "student_name"
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "name": "Scholarship",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Organization offering the scholarship"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "government",
+        "ngo",
+        "international",
+        "research_grant",
+        "travel_grant",
+        "innovation_grant",
+        "merit",
+        "need_based",
+        "athletic",
+        "departmental"
+      ],
+      "default": "merit"
+    },
+    "description": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "string",
+      "description": "Award amount or range, e.g. $5,000 or Full Tuition"
+    },
+    "eligibility": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "undergraduate",
+        "postgraduate",
+        "phd",
+        "all_levels"
+      ],
+      "default": "undergraduate"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "duration": {
+      "type": "string",
+      "description": "e.g. 1 year, Full programme, 4 years"
+    },
+    "location": {
+      "type": "string"
+    },
+    "is_international": {
+      "type": "boolean",
+      "default": false
+    },
+    "fields_of_study": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "link": {
+      "type": "string"
+    },
+    "logo_url": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_bookmarked": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closing_soon",
+        "closed",
+        "ongoing"
+      ],
+      "default": "open"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "provider"
+  ]
+}

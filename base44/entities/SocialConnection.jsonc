@@ -1,0 +1,42 @@
+{
+  "name": "SocialConnection",
+  "type": "object",
+  "properties": {
+    "platform": {
+      "type": "string",
+      "enum": [
+        "instagram",
+        "tiktok",
+        "linkedin",
+        "x",
+        "facebook",
+        "youtube",
+        "github",
+        "behance",
+        "portfolio"
+      ],
+      "default": "linkedin"
+    },
+    "profile_url": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "is_connected": {
+      "type": "boolean",
+      "default": false
+    },
+    "connected_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "consent_for_recommendations": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "platform"
+  ]
+}

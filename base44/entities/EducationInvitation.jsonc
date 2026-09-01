@@ -1,0 +1,98 @@
+{
+  "name": "EducationInvitation",
+  "type": "object",
+  "description": "Invitation for students or educators to join an educational context. Tracks the full invitation lifecycle.",
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Invitee email address"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Invitee name (optional at time of invite)"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "educator"
+      ],
+      "description": "Role being invited to"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "learning_organization"
+      ],
+      "description": "Educational ecosystem being invited to"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution (university invitations)"
+    },
+    "institution_name": {
+      "type": "string"
+    },
+    "learning_organization_id": {
+      "type": "string",
+      "description": "Reference to LearningOrganization"
+    },
+    "learning_organization_name": {
+      "type": "string"
+    },
+    "academic_program_id": {
+      "type": "string",
+      "description": "Program being invited to enroll in"
+    },
+    "faculty_id": {
+      "type": "string"
+    },
+    "department_id": {
+      "type": "string"
+    },
+    "invited_by_id": {
+      "type": "string",
+      "description": "User ID who sent the invitation"
+    },
+    "invited_by_name": {
+      "type": "string"
+    },
+    "token": {
+      "type": "string",
+      "description": "Unique invitation token (used in accept link)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "expired",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "accepted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "message": {
+      "type": "string",
+      "description": "Custom invitation message"
+    }
+  },
+  "required": [
+    "email",
+    "role",
+    "context_type"
+  ]
+}

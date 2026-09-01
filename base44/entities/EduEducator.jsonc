@@ -1,0 +1,45 @@
+{
+  "name": "EduEducator",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Oracle User ID \u2014 links to the platform User entity"
+    },
+    "first_name": {
+      "type": "string"
+    },
+    "last_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "qualifications": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "user_id",
+    "first_name",
+    "last_name",
+    "email"
+  ]
+}

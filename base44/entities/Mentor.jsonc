@@ -1,0 +1,103 @@
+{
+  "name": "Mentor",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "senior_student",
+        "alumni",
+        "lecturer",
+        "researcher",
+        "industry_professional"
+      ],
+      "default": "senior_student"
+    },
+    "university": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "graduation_year": {
+      "type": "number"
+    },
+    "current_position": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "expertise": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "availability": {
+      "type": "string",
+      "enum": [
+        "available",
+        "limited",
+        "unavailable"
+      ],
+      "default": "available"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "rating": {
+      "type": "number",
+      "default": 0
+    },
+    "mentorship_count": {
+      "type": "number",
+      "default": 0
+    },
+    "response_time_hours": {
+      "type": "number",
+      "default": 24
+    },
+    "linkedin_url": {
+      "type": "string"
+    },
+    "portfolio_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "role"
+  ]
+}

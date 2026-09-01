@@ -1,0 +1,76 @@
+{
+  "name": "StudentGovernmentBody",
+  "type": "object",
+  "properties": {
+    "university": {
+      "type": "string"
+    },
+    "body_type": {
+      "type": "string",
+      "enum": [
+        "SUG",
+        "SRC",
+        "Guild Council",
+        "Student Parliament",
+        "Student Senate",
+        "Custom"
+      ],
+      "default": "SUG"
+    },
+    "body_name": {
+      "type": "string"
+    },
+    "president_name": {
+      "type": "string"
+    },
+    "vice_president_name": {
+      "type": "string"
+    },
+    "secretary_name": {
+      "type": "string"
+    },
+    "treasurer_name": {
+      "type": "string"
+    },
+    "pro_name": {
+      "type": "string"
+    },
+    "committee_members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "election_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "nomination",
+        "campaigning",
+        "voting",
+        "completed"
+      ],
+      "default": "completed"
+    },
+    "term_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "term_end": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "university",
+    "body_type"
+  ]
+}

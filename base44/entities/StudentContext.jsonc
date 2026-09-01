@@ -1,0 +1,87 @@
+{
+  "name": "StudentContext",
+  "type": "object",
+  "description": "Academic context for a student. A student can have multiple contexts (e.g., University + Learning Org). Context type determines the ecosystem.",
+  "properties": {
+    "student_id": {
+      "type": "string",
+      "description": "Reference to Student entity"
+    },
+    "context_type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "learning_organization"
+      ],
+      "description": "Which educational ecosystem this context belongs to"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Reference to Institution entity (for university context)"
+    },
+    "institution_name": {
+      "type": "string",
+      "description": "Denormalised institution name for display"
+    },
+    "learning_organization_id": {
+      "type": "string",
+      "description": "Reference to LearningOrganization entity (for learning org context)"
+    },
+    "learning_organization_name": {
+      "type": "string",
+      "description": "Denormalised learning org name for display"
+    },
+    "academic_program_id": {
+      "type": "string",
+      "description": "Reference to AcademicProgram entity"
+    },
+    "program_name": {
+      "type": "string",
+      "description": "Denormalised program name for display"
+    },
+    "faculty_id": {
+      "type": "string",
+      "description": "Reference to Faculty entity (university context)"
+    },
+    "department_id": {
+      "type": "string",
+      "description": "Reference to Department entity (university context)"
+    },
+    "level": {
+      "type": "string",
+      "description": "Academic level (e.g. 100, 200, SS3, Year 1)"
+    },
+    "student_identifier": {
+      "type": "string",
+      "description": "Institution-specific student ID or matric number"
+    },
+    "enrollment_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expected_completion_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "completed",
+        "suspended",
+        "deferred"
+      ],
+      "default": "active"
+    },
+    "is_primary": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the student's primary educational context"
+    }
+  },
+  "required": [
+    "student_id",
+    "context_type"
+  ]
+}

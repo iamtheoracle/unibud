@@ -1,0 +1,259 @@
+{
+  "name": "StudyGroupResource",
+  "type": "object",
+  "properties": {
+    "study_group_id": {
+      "type": "string",
+      "description": "ID of the StudyGroup this resource belongs to"
+    },
+    "title": {
+      "type": "string",
+      "description": "Display name for the shared resource"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description of the resource content"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "lecture_slides",
+        "pdf",
+        "past_questions",
+        "notes",
+        "study_guide",
+        "link",
+        "document",
+        "presentation",
+        "image",
+        "video",
+        "audio_recording",
+        "spreadsheet",
+        "archive",
+        "code",
+        "assignment",
+        "project",
+        "template",
+        "research_paper",
+        "handout",
+        "folder"
+      ],
+      "default": "pdf",
+      "description": "What kind of shared material this is"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded file URL (via UploadFile integration)"
+    },
+    "external_url": {
+      "type": "string",
+      "description": "External link (Google Drive, Dropbox, etc.)"
+    },
+    "folder": {
+      "type": "string",
+      "description": "Custom folder name for organizing resources"
+    },
+    "parent_folder_id": {
+      "type": "string",
+      "description": "ID of parent resource (for nested folders); null/empty for root level"
+    },
+    "sort_order": {
+      "type": "number",
+      "default": 0,
+      "description": "Custom sort position for drag-and-drop ordering"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false,
+      "description": "Pinned by group members as important material"
+    },
+    "is_archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Archived \u2014 hidden from main view but retained"
+    },
+    "is_offline_available": {
+      "type": "boolean",
+      "default": false,
+      "description": "Student marked this for offline access"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Related course code"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject area (e.g. Calculus, Organic Chemistry)"
+    },
+    "semester": {
+      "type": "string",
+      "description": "e.g. '2024/2025 First Semester'"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Searchable tags"
+    },
+    "access_level": {
+      "type": "string",
+      "enum": [
+        "read_only",
+        "editable"
+      ],
+      "default": "read_only",
+      "description": "Whether members can edit or only view this resource"
+    },
+    "shared_with": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "shared_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Users this resource has been explicitly shared with"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Current version number for version tracking"
+    },
+    "previous_versions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "file_size_bytes": {
+            "type": "number"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_by": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "History of previous file versions for restoration"
+    },
+    "uploaded_by_name": {
+      "type": "string",
+      "description": "Display name of uploader"
+    },
+    "uploaded_by_id": {
+      "type": "string",
+      "description": "User ID of uploader \u2014 for permission checks"
+    },
+    "mime_type": {
+      "type": "string",
+      "description": "MIME type of the uploaded file"
+    },
+    "file_size_bytes": {
+      "type": "number",
+      "default": 0,
+      "description": "File size in bytes"
+    },
+    "download_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total downloads"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total views"
+    },
+    "bookmarked_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "User IDs who bookmarked this resource"
+    },
+    "last_modified": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last content modification timestamp"
+    },
+    "is_reported": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flagged as inappropriate"
+    },
+    "report_reason": {
+      "type": "string",
+      "description": "Reason for reporting"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Tenant scope \u2014 Institution id"
+    }
+  },
+  "required": [
+    "study_group_id",
+    "title",
+    "file_type"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "data.institution_id": "{{user.data.institution_id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

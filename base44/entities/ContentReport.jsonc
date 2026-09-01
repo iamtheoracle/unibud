@@ -1,0 +1,71 @@
+{
+  "name": "ContentReport",
+  "type": "object",
+  "properties": {
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "story",
+        "short_video",
+        "quad_post",
+        "quad_comment",
+        "short_video_comment"
+      ],
+      "description": "The type of content being reported"
+    },
+    "content_id": {
+      "type": "string"
+    },
+    "reporter_name": {
+      "type": "string"
+    },
+    "reporter_id": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "spam",
+        "duplicate",
+        "offensive",
+        "illegal",
+        "malicious_link",
+        "fake_university_info",
+        "other"
+      ],
+      "description": "Moderation reason category"
+    },
+    "description": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "reviewing",
+        "actioned",
+        "dismissed"
+      ],
+      "default": "pending"
+    },
+    "moderator_notes": {
+      "type": "string"
+    },
+    "action_taken": {
+      "type": "string",
+      "enum": [
+        "none",
+        "warning",
+        "content_removed",
+        "user_suspended"
+      ],
+      "default": "none"
+    }
+  },
+  "required": [
+    "content_type",
+    "content_id",
+    "reporter_name",
+    "reason"
+  ]
+}

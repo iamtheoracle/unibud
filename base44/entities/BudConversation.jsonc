@@ -1,0 +1,53 @@
+{
+  "name": "BudConversation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "context": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "study",
+        "tutoring",
+        "guidance",
+        "general"
+      ],
+      "default": "general"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Auto-generated summary for the conversation list"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "agents_used": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Agent IDs that were activated during this conversation"
+    },
+    "message_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

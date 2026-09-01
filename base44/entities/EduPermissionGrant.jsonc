@@ -1,0 +1,28 @@
+{
+  "name": "EduPermissionGrant",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "permission_id": {
+      "type": "string",
+      "description": "Reference to EduPermission"
+    },
+    "context_type": {
+      "type": "string",
+      "description": "e.g. university, learning_organization"
+    },
+    "context_id": {
+      "type": "string"
+    },
+    "granted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "user_id",
+    "permission_id"
+  ]
+}

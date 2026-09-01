@@ -1,0 +1,62 @@
+{
+  "name": "Course",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "code": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "credits": {
+      "type": "number"
+    },
+    "semester": {
+      "type": "string"
+    },
+    "lecturer": {
+      "type": "string"
+    },
+    "lecturer_image": {
+      "type": "string"
+    },
+    "schedule": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "color": {
+      "type": "string"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0
+    },
+    "grade": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "dropped"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "title",
+    "code"
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "name": "StudyGroup",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "private",
+        "public",
+        "department",
+        "faculty",
+        "course",
+        "exam_revision",
+        "project_team"
+      ],
+      "default": "public"
+    },
+    "room_type": {
+      "type": "string",
+      "enum": [
+        "voice",
+        "video"
+      ],
+      "default": "video"
+    },
+    "host_name": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "lecturer": {
+      "type": "string"
+    },
+    "semester": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "share_link": {
+      "type": "string"
+    },
+    "meeting_url": {
+      "type": "string"
+    },
+    "members_count": {
+      "type": "number",
+      "default": 0
+    },
+    "max_members": {
+      "type": "number",
+      "default": 50
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "scheduled",
+        "ended"
+      ],
+      "default": "active"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_joined": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

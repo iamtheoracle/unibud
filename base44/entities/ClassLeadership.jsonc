@@ -1,0 +1,56 @@
+{
+  "name": "ClassLeadership",
+  "type": "object",
+  "properties": {
+    "university": {
+      "type": "string"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "class_governor_name": {
+      "type": "string"
+    },
+    "assistant_governor_name": {
+      "type": "string"
+    },
+    "course_rep_name": {
+      "type": "string"
+    },
+    "dept_rep_name": {
+      "type": "string"
+    },
+    "faculty_rep_name": {
+      "type": "string"
+    },
+    "election_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "nomination",
+        "campaigning",
+        "voting",
+        "completed"
+      ],
+      "default": "completed"
+    },
+    "term_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "term_end": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "university",
+    "department"
+  ]
+}

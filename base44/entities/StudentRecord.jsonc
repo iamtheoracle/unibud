@@ -1,0 +1,94 @@
+{
+  "name": "StudentRecord",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Reference to the User entity this record belongs to"
+    },
+    "full_name": {
+      "type": "string",
+      "description": "Student's display name for directory search"
+    },
+    "email": {
+      "type": "string",
+      "description": "Student email (masked in search results)"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "matriculation_number": {
+      "type": "string",
+      "description": "University-specific matriculation number, unique within each university. Format is university-defined."
+    },
+    "student_id": {
+      "type": "string",
+      "description": "University-issued student ID, where different from matriculation number"
+    },
+    "university": {
+      "type": "string",
+      "description": "University name for scoping and uniqueness"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "description": "e.g. 100, 200, 300, 400, 500"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Primary course/programme code if applicable"
+    },
+    "matric_privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "university_only",
+        "connections_only",
+        "private"
+      ],
+      "default": "university_only",
+      "description": "Who can view the full matriculation number: public = same university peers, university_only = staff + connections, connections_only = only connections, private = only self and authorized staff"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the matriculation number has been verified against university records"
+    },
+    "verified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "enrollment_year": {
+      "type": "number",
+      "description": "Year of admission/enrollment"
+    },
+    "expected_graduation": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "graduated",
+        "suspended"
+      ],
+      "default": "active"
+    },
+    "last_active_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last activity timestamp for Recently Active filtering"
+    }
+  },
+  "required": [
+    "user_id",
+    "full_name",
+    "university"
+  ]
+}

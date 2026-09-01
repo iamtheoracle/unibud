@@ -1,0 +1,82 @@
+{
+  "name": "CampusTradition",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "freshers_week",
+        "orientation",
+        "matriculation",
+        "convocation",
+        "final_year_week",
+        "department_week",
+        "faculty_week",
+        "cultural_day",
+        "career_fair",
+        "awards_night",
+        "entrepreneurship_week",
+        "innovation_week",
+        "sports_festival",
+        "inter_faculty",
+        "inter_university",
+        "debate",
+        "hackathon",
+        "research_exhibition",
+        "art_exhibition",
+        "music_festival",
+        "talent_show",
+        "charity",
+        "community_outreach",
+        "alumni_event"
+      ],
+      "default": "freshers_week"
+    },
+    "university": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "location": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "ongoing",
+        "completed"
+      ],
+      "default": "upcoming"
+    },
+    "organizer": {
+      "type": "string"
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ]
+}

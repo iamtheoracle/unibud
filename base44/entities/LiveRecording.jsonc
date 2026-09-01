@@ -1,0 +1,71 @@
+{
+  "name": "LiveRecording",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "lecturer_name": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "video_url": {
+      "type": "string"
+    },
+    "thumbnail_url": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "transcript": {
+      "type": "string"
+    },
+    "has_captions": {
+      "type": "boolean",
+      "default": true
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ai_highlights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "views": {
+      "type": "number",
+      "default": 0
+    },
+    "recorded_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "course_code"
+  ]
+}

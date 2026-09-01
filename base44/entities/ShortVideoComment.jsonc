@@ -1,0 +1,67 @@
+{
+  "name": "ShortVideoComment",
+  "type": "object",
+  "properties": {
+    "video_id": {
+      "type": "string",
+      "description": "ID of the ShortVideo this comment belongs to"
+    },
+    "content": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "author_role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "lecturer",
+        "admin",
+        "club"
+      ],
+      "default": "student"
+    },
+    "author_handle": {
+      "type": "string"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent comment ID for nested replies"
+    },
+    "mentions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reactions": {
+      "type": "object",
+      "description": "Aggregate reaction counts"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "replies_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_edited": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "video_id",
+    "content",
+    "author_name"
+  ]
+}

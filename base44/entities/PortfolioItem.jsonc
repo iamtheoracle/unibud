@@ -1,0 +1,114 @@
+{
+  "name": "PortfolioItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "project",
+        "research",
+        "design",
+        "programming",
+        "photography",
+        "writing",
+        "video",
+        "document",
+        "certificate",
+        "achievement",
+        "presentation",
+        "other"
+      ],
+      "default": "project"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_id": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "cover_url": {
+      "type": "string"
+    },
+    "media_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Attached document, PDF, or deliverable"
+    },
+    "external_link": {
+      "type": "string",
+      "description": "GitHub repo, Behance, live demo, etc."
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "university": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "views_count": {
+      "type": "number",
+      "default": 0
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "published",
+        "archived"
+      ],
+      "default": "published"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "author_name"
+  ]
+}

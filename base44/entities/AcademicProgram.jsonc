@@ -1,0 +1,91 @@
+{
+  "name": "AcademicProgram",
+  "type": "object",
+  "description": "Academic program definition. Used by both university and learning organization ecosystems. Examples: B.Sc. Computer Science, WAEC preparation, JAMB tutoring.",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full program name (e.g. Bachelor of Science in Computer Science)"
+    },
+    "code": {
+      "type": "string",
+      "description": "Program code (e.g. BSC-CS, WAEC-PREP)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "undergraduate",
+        "postgraduate",
+        "diploma",
+        "certificate",
+        "exam_preparation",
+        "professional",
+        "short_course",
+        "other"
+      ],
+      "default": "undergraduate"
+    },
+    "ecosystem": {
+      "type": "string",
+      "enum": [
+        "university",
+        "learning_organization",
+        "both"
+      ],
+      "default": "university",
+      "description": "Which educational ecosystem(s) this program applies to"
+    },
+    "description": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "string",
+      "description": "Duration (e.g. 4 years, 6 months, 3 weeks)"
+    },
+    "credit_hours": {
+      "type": "number"
+    },
+    "degree_type": {
+      "type": "string",
+      "description": "e.g. B.Sc., M.Sc., Ph.D., HND, ND, Certificate"
+    },
+    "grading_system": {
+      "type": "string",
+      "enum": [
+        "gpa_4",
+        "gpa_5",
+        "percentage",
+        "pass_fail",
+        "grades_a_f",
+        "other"
+      ],
+      "default": "gpa_5"
+    },
+    "institution_id": {
+      "type": "string",
+      "description": "Owner institution (null if platform-wide/generic)"
+    },
+    "department_id": {
+      "type": "string",
+      "description": "Home department (university programs)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "entry_requirements": {
+      "type": "string"
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Subject IDs included in this program"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "name": "Exam",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "midterm",
+        "final",
+        "quiz",
+        "practical",
+        "oral"
+      ],
+      "default": "final"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "location": {
+      "type": "string"
+    },
+    "seat_number": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "completed",
+        "missed"
+      ],
+      "default": "upcoming"
+    },
+    "topics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "revision_progress": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "course_code",
+    "date"
+  ]
+}

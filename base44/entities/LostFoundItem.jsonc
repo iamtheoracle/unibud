@@ -1,0 +1,86 @@
+{
+  "name": "LostFoundItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "lost",
+        "found"
+      ],
+      "default": "lost"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "electronics",
+        "books",
+        "documents",
+        "clothing",
+        "accessories",
+        "keys",
+        "wallet",
+        "phone",
+        "laptop",
+        "id_card",
+        "bag",
+        "jewelry",
+        "other"
+      ],
+      "default": "other"
+    },
+    "location": {
+      "type": "string"
+    },
+    "location_details": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "date_lost_found": {
+      "type": "string",
+      "format": "date"
+    },
+    "reporter_name": {
+      "type": "string"
+    },
+    "reporter_id": {
+      "type": "string"
+    },
+    "reporter_image": {
+      "type": "string"
+    },
+    "contact_info": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "claimed",
+        "resolved",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "university": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "category",
+    "reporter_name"
+  ]
+}

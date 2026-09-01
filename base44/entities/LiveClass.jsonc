@@ -1,0 +1,80 @@
+{
+  "name": "LiveClass",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "course_code": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "lecturer_name": {
+      "type": "string"
+    },
+    "university": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "live",
+        "ended"
+      ],
+      "default": "scheduled"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string"
+    },
+    "end_time": {
+      "type": "string"
+    },
+    "duration_minutes": {
+      "type": "number"
+    },
+    "participants_count": {
+      "type": "number",
+      "default": 0
+    },
+    "max_participants": {
+      "type": "number"
+    },
+    "description": {
+      "type": "string"
+    },
+    "class_code": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "lecture",
+        "lab",
+        "tutorial",
+        "seminar",
+        "office_hours",
+        "study_group"
+      ],
+      "default": "lecture"
+    },
+    "recording_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "accent_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "course_code",
+    "lecturer_name"
+  ]
+}

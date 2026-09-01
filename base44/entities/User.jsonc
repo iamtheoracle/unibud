@@ -1,0 +1,176 @@
+{
+  "properties": {
+    "role": {
+      "type": "string",
+      "description": "The role of the user in the platform",
+      "enum": [
+        "student",
+        "lecturer",
+        "department_admin",
+        "faculty_admin",
+        "university_admin",
+        "operator",
+        "senior_operator",
+        "moderator",
+        "finance_manager",
+        "support_manager",
+        "compliance_officer",
+        "developer",
+        "platform_admin",
+        "super_admin",
+        "operations_staff",
+        "executive",
+        "oracle"
+      ],
+      "default": "student"
+    },
+    "user_type": {
+      "type": "string",
+      "description": "University Journey stage: future_student (pre-university) \u2192 student (undergraduate) \u2192 postgraduate \u2192 alumni. Bud adapts the entire experience based on this.",
+      "enum": [
+        "future_student",
+        "student",
+        "postgraduate",
+        "alumni"
+      ],
+      "default": "student"
+    },
+    "education_level": {
+      "type": "string",
+      "description": "For future students: current education stage. Helps Bud tailor preparation advice.",
+      "enum": [
+        "secondary_school",
+        "waec_candidate",
+        "neco_candidate",
+        "jamb_candidate",
+        "a_level",
+        "transfer",
+        "direct_entry",
+        ""
+      ],
+      "default": ""
+    },
+    "exam_status": {
+      "type": "string",
+      "description": "For future students: current examination preparation status",
+      "enum": [
+        "preparing",
+        "registered",
+        "completed",
+        "awaiting_result",
+        "admitted",
+        ""
+      ],
+      "default": ""
+    },
+    "target_universities": {
+      "type": "array",
+      "description": "For future students: universities they are applying to or aspiring to attend",
+      "items": {
+        "type": "string"
+      }
+    },
+    "target_faculty": {
+      "type": "string",
+      "description": "For future students: faculty they aspire to join"
+    },
+    "target_department": {
+      "type": "string",
+      "description": "For future students: department they aspire to join"
+    },
+    "admission_year": {
+      "type": "number",
+      "description": "For future students: the year they plan to be admitted"
+    },
+    "transitioned_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when a future student transitioned to a full student account"
+    },
+    "postgraduate_type": {
+      "type": "string",
+      "description": "For postgraduate students: type of programme",
+      "enum": [
+        "pgd",
+        "masters",
+        "phd",
+        "mba",
+        "mphil",
+        ""
+      ],
+      "default": ""
+    },
+    "postgraduate_field": {
+      "type": "string",
+      "description": "For postgraduate students: field of study"
+    },
+    "graduation_year": {
+      "type": "number",
+      "description": "Year of graduation (undergraduate or postgraduate)"
+    },
+    "alumni_since": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when the user transitioned to alumni status"
+    },
+    "current_occupation": {
+      "type": "string",
+      "description": "For alumni: current job title or role"
+    },
+    "current_company": {
+      "type": "string",
+      "description": "For alumni: current employer or organization"
+    },
+    "matriculation_number": {
+      "type": "string",
+      "description": "University-specific matriculation number. Unique within each university. Format is university-defined \u2014 no global format enforced."
+    },
+    "student_id": {
+      "type": "string",
+      "description": "University-issued student ID, where applicable and different from matriculation number"
+    },
+    "university": {
+      "type": "string",
+      "description": "University the student belongs to"
+    },
+    "faculty": {
+      "type": "string"
+    },
+    "department": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "description": "Academic level e.g. 100, 200, 300, 400"
+    },
+    "course_code": {
+      "type": "string",
+      "description": "Primary course or programme code"
+    },
+    "matriculation_verified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the matriculation number has been verified against university records"
+    },
+    "matric_privacy": {
+      "type": "string",
+      "enum": [
+        "public",
+        "university_only",
+        "connections_only",
+        "private"
+      ],
+      "default": "university_only",
+      "description": "Controls who can view the full matriculation number for this student"
+    },
+    "enrollment_year": {
+      "type": "number",
+      "description": "Year of admission"
+    }
+  },
+  "required": [
+    "role"
+  ],
+  "name": "User",
+  "type": "object"
+}

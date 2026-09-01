@@ -1,0 +1,110 @@
+{
+  "name": "Challenge",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "academic",
+        "coding",
+        "reading",
+        "photography",
+        "dance",
+        "innovation",
+        "startup",
+        "sports",
+        "volunteer",
+        "quiz",
+        "fitness",
+        "debate",
+        "hackathon",
+        "music"
+      ],
+      "default": "academic"
+    },
+    "organizer_name": {
+      "type": "string"
+    },
+    "organizer_type": {
+      "type": "string",
+      "enum": [
+        "university",
+        "student_org",
+        "department",
+        "faculty",
+        "unibud",
+        "global"
+      ],
+      "default": "unibud"
+    },
+    "university": {
+      "type": "string",
+      "description": "null for global challenges"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "active",
+        "voting",
+        "completed"
+      ],
+      "default": "active"
+    },
+    "participants_count": {
+      "type": "number",
+      "default": 0
+    },
+    "max_participants": {
+      "type": "number"
+    },
+    "team_based": {
+      "type": "boolean",
+      "default": false
+    },
+    "team_size_max": {
+      "type": "number",
+      "default": 5
+    },
+    "prize": {
+      "type": "string"
+    },
+    "rules": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "banner_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "is_joined": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ]
+}

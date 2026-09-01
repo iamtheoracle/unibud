@@ -1,0 +1,59 @@
+{
+  "name": "ReminderPreference",
+  "type": "object",
+  "properties": {
+    "unibud_push": {
+      "type": "boolean",
+      "default": true
+    },
+    "whatsapp": {
+      "type": "boolean",
+      "default": false
+    },
+    "email": {
+      "type": "boolean",
+      "default": true
+    },
+    "sms": {
+      "type": "boolean",
+      "default": false
+    },
+    "google_calendar": {
+      "type": "boolean",
+      "default": false
+    },
+    "apple_calendar": {
+      "type": "boolean",
+      "default": false
+    },
+    "outlook_calendar": {
+      "type": "boolean",
+      "default": false
+    },
+    "reminder_lead_hours": {
+      "type": "number",
+      "default": 24
+    },
+    "assignment_reminders": {
+      "type": "boolean",
+      "default": true
+    },
+    "exam_reminders": {
+      "type": "boolean",
+      "default": true
+    },
+    "event_reminders": {
+      "type": "boolean",
+      "default": true
+    },
+    "deadline_reminders": {
+      "type": "boolean",
+      "default": true
+    },
+    "meeting_reminders": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": []
+}

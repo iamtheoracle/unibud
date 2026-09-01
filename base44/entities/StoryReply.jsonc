@@ -1,0 +1,41 @@
+{
+  "name": "StoryReply",
+  "type": "object",
+  "properties": {
+    "story_id": {
+      "type": "string",
+      "description": "ID of the Story being replied to"
+    },
+    "content": {
+      "type": "string"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "author_image": {
+      "type": "string"
+    },
+    "author_handle": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "reaction"
+      ],
+      "default": "text"
+    },
+    "reaction_emoji": {
+      "type": "string",
+      "description": "Emoji character for reaction-type replies"
+    },
+    "university": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "story_id",
+    "author_name"
+  ]
+}

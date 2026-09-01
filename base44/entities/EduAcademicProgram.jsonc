@@ -1,0 +1,35 @@
+{
+  "name": "EduAcademicProgram",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "e.g. WAEC, B.Sc. Computer Science"
+    },
+    "code": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "description": "e.g. waec, neco, jamb, university_degree, diploma"
+    },
+    "description": {
+      "type": "string"
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of EduSubject IDs"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "name",
+    "code",
+    "type"
+  ]
+}

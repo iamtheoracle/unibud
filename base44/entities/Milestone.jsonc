@@ -1,0 +1,59 @@
+{
+  "name": "Milestone",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "assignment_complete",
+        "study_goal",
+        "gpa_improvement",
+        "project_complete",
+        "badge_earned",
+        "leadership_role",
+        "event_joined",
+        "mentorship_complete",
+        "fyp_milestone",
+        "study_streak",
+        "exam_passed"
+      ],
+      "default": "assignment_complete"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "share_scope": {
+      "type": "string",
+      "enum": [
+        "private",
+        "classmates",
+        "quad",
+        "university"
+      ],
+      "default": "private"
+    },
+    "is_shared": {
+      "type": "boolean",
+      "default": false
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "accent_color": {
+      "type": "string"
+    },
+    "metadata": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "title",
+    "type"
+  ]
+}
