@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowLeft, Cpu, History } from "lucide-react";
+import { Sparkles, ArrowLeft, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
@@ -205,9 +205,6 @@ export default function Bud() {
         >
           <History className="w-[18px] h-[18px] text-muted-foreground" />
         </button>
-        <Link to="/agents" className="w-9 h-9 rounded-[12px] hover:bg-muted/60 flex items-center justify-center spring-tap">
-          <Cpu className="w-[18px] h-[18px] text-muted-foreground" />
-        </Link>
       </motion.div>
 
       <ConversationHistory

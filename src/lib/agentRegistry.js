@@ -7,301 +7,91 @@ import {
 
 export const AGENTS = [
   {
-    id: "academic_coach",
-    name: "Academic Success Coach",
-    short: "Study plans, GPA tracking & revision strategies",
-    description: "Creates personalized study plans, tracks GPA progression, builds revision strategies, and helps plan your academic journey semester by semester.",
+    id: "study",
+    name: "Study",
+    short: "Learning, tutoring, assignments, exam prep",
+    description: "Internal learning specialist. Covers notes, flashcards, quizzes, assignments, projects, exam preparation, revision, study plans, and the learning feedback loop.",
     icon: GraduationCap,
     color: "text-primary",
     bg: "bg-primary/10",
     category: "Academic",
-    keywords: ["study plan", "gpa", "cgpa", "revision strateg", "academic plan", "grade improvement", "semester plan", "study schedule", "academic progress"],
-    capabilities: ["Personalized study plans", "GPA tracking & projection", "Revision strategies", "Semester planning"],
-    modules: ["academics", "calendar", "library"],
-    enabledByDefault: true,
-    optional: false,
-  },
-  {
-    id: "assignment_planner",
-    name: "Assignment Planner",
-    short: "Deadlines, reminders & workload management",
-    description: "Tracks assignment deadlines, manages workload across courses, sends smart reminders, and helps you balance submissions without last-minute stress.",
-    icon: ClipboardList,
-    color: "text-info",
-    bg: "bg-info/10",
-    category: "Academic",
-    keywords: ["assignment", "deadline", "submit", "coursework", "homework", "project due", "deliverable", "submission"],
-    capabilities: ["Deadline tracking", "Workload management", "Smart reminders", "Progress tracking"],
-    modules: ["academics", "assignments"],
-    enabledByDefault: true,
-    optional: false,
-  },
-  {
-    id: "exam_prep",
-    name: "Exam Preparation Coach",
-    short: "Revision plans, quizzes, flashcards & weak-topic analysis",
-    description: "Builds targeted revision plans, generates quizzes and flashcards, identifies weak topics from your grades, and tracks exam countdowns.",
-    icon: Brain,
-    color: "text-purple",
-    bg: "bg-purple/10",
-    category: "Academic",
-    keywords: ["exam", "test", "quiz", "flashcard", "past question", "mock", "revision", "prepare for", "study for exam"],
-    capabilities: ["Revision plans", "Quiz generation", "Flashcard creation", "Weak-topic analysis", "Exam countdowns"],
+    keywords: ["study", "learn", "explain", "understand", "assignment", "coursework", "homework", "project", "exam", "quiz", "flashcard", "revision", "note", "gpa", "cgpa", "prepare", "tutor", "misconception", "knowledge gap", "practice"],
+    capabilities: ["Learning & tutoring", "Assignments & projects", "Exam preparation", "Notes, flashcards, quizzes", "Study plans", "Learning feedback loop"],
     modules: ["academics", "library"],
     enabledByDefault: true,
     optional: false,
   },
   {
-    id: "timetable",
-    name: "Timetable Manager",
-    short: "Class schedules, exam schedules & calendar sync",
-    description: "Manages your class timetable, exam schedules, sends timely reminders, and synchronizes everything with your calendar.",
-    icon: CalendarClock,
-    color: "text-success",
-    bg: "bg-success/10",
-    category: "Academic",
-    keywords: ["timetable", "class schedule", "lecture time", "exam schedule", "calendar sync", "when is my class", "what time"],
-    capabilities: ["Class schedule management", "Exam scheduling", "Calendar synchronization", "Smart reminders"],
-    modules: ["calendar", "academics"],
-    enabledByDefault: true,
-    optional: false,
-  },
-  {
-    id: "study_buddy",
-    name: "Study Buddy Finder",
-    short: "Study partners, accountability & project teammates",
-    description: "Finds study partners with matching courses and schedules, connects you with accountability partners, and helps form project teams.",
-    icon: Users,
-    color: "text-info",
-    bg: "bg-info/10",
-    category: "Social",
-    keywords: ["study partner", "study group", "accountability", "study buddy", "teammate", "project team", "find someone to study"],
-    capabilities: ["Study partner matching", "Group formation", "Accountability tracking", "Team building"],
-    modules: ["study-groups", "connect"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "campus_guide",
-    name: "Campus Guide",
-    short: "Navigation, buildings, offices & facilities",
-    description: "Helps you navigate campus, find lecture halls, offices, libraries, and facilities, and gives directions to any location on campus.",
+    id: "campus",
+    name: "Campus",
+    short: "Campus info, events, timetables, navigation",
+    description: "Internal campus specialist. Covers campus information, student services, events, activities, timetables, and campus resources.",
     icon: MapPin,
     color: "text-warning",
     bg: "bg-warning/10",
     category: "Campus",
-    keywords: ["where is", "how to find", "building", "hall", "office", "library location", "campus map", "directions", "navigate", "find room", "locate"],
-    capabilities: ["Campus navigation", "Building & room finder", "Facility info", "Transport guidance"],
-    modules: ["campus", "communities"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "portal_sync",
-    name: "University Portal Agent",
-    short: "Syncs courses, grades, attendance & announcements",
-    description: "Synchronizes your courses, assignments, grades, attendance, and announcements from your university portal into UNIBUD automatically.",
-    icon: Building2,
-    color: "text-primary",
-    bg: "bg-primary/10",
-    category: "Academic",
-    keywords: ["portal", "sync", "university portal", "sync courses", "sync grades", "attendance", "portal data", "import", "matric", "matriculation", "matric number", "find student", "student record", "student search", "verify student", "student id"],
-    capabilities: ["Course synchronization", "Grade import", "Attendance tracking", "Announcement sync", "Matriculation number lookup", "Student verification"],
-    modules: ["university-portal", "academics"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "opportunity_scout",
-    name: "Opportunity Scout",
-    short: "Scholarships, internships, grants & competitions",
-    description: "Discovers scholarships, internships, grants, competitions, exchange programmes, and career opportunities matched to your profile.",
-    icon: Compass,
-    color: "text-success",
-    bg: "bg-success/10",
-    category: "Career",
-    keywords: ["scholarship", "internship", "grant", "competition", "exchange", "opportunity", "fellowship", "funding", "career opportunity"],
-    capabilities: ["Scholarship discovery", "Internship matching", "Competition alerts", "Exchange programmes", "Application tracking"],
-    modules: ["career", "scholarships", "opportunities"],
+    keywords: ["campus", "timetable", "class schedule", "lecture time", "building", "hall", "office", "library location", "campus map", "directions", "navigate", "find room", "locate", "facility", "campus event", "what's happening", "campus news", "announcement", "sug", "student service"],
+    capabilities: ["Campus information", "Events & activities", "Timetables", "Navigation", "Student services"],
+    modules: ["campus", "events"],
     enabledByDefault: true,
     optional: false,
   },
   {
-    id: "career_coach",
-    name: "Career Coach",
-    short: "CV reviews, interview prep & career planning",
-    description: "Reviews your CV, guides your LinkedIn profile, prepares you for interviews, helps with graduate job searches, and plans your career path.",
-    icon: Briefcase,
-    color: "text-info",
-    bg: "bg-info/10",
-    category: "Career",
-    keywords: ["cv", "resume", "linkedin", "interview", "job", "career", "graduate job", "professional", "cover letter", "career path"],
-    capabilities: ["CV reviews", "LinkedIn guidance", "Interview preparation", "Career planning", "Job matching"],
-    modules: ["career", "cv-builder", "portfolio"],
-    enabledByDefault: true,
-    optional: false,
-  },
-  {
-    id: "mentor_match",
-    name: "Mentor Match",
-    short: "Mentor discovery, alumni connections & scheduling",
-    description: "Finds mentors from senior students, alumni, lecturers, and industry professionals. Schedules meetings and tracks your mentoring relationships.",
-    icon: HeartHandshake,
-    color: "text-error",
-    bg: "bg-error/10",
-    category: "Career",
-    keywords: ["mentor", "mentoring", "alumni", "advisor", "guidance counselor", "find mentor", "career mentor", "industry professional"],
-    capabilities: ["Mentor discovery", "Alumni connections", "Meeting scheduling", "Relationship tracking"],
-    modules: ["mentorship", "connect"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "research_assistant",
-    name: "Research Assistant",
-    short: "Literature, citations, project guidance & academic writing",
-    description: "Helps plan research, discover relevant literature, manage citations, structure projects, and improve academic writing quality.",
-    icon: FlaskConical,
-    color: "text-purple",
-    bg: "bg-purple/10",
-    category: "Academic",
-    keywords: ["research", "paper", "publication", "citation", "literature", "thesis", "dissertation", "academic writing", "research method", "journal"],
-    capabilities: ["Research planning", "Literature discovery", "Citation management", "Academic writing guidance", "Project structure"],
-    modules: ["research", "library"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "library_assistant",
-    name: "Library Assistant",
-    short: "Books, journals, past questions & recommendations",
-    description: "Searches for books, journals, lecture notes, and past questions. Recommends reading materials based on your courses and interests.",
-    icon: BookOpen,
-    color: "text-info",
-    bg: "bg-info/10",
-    category: "Academic",
-    keywords: ["book", "journal", "lecture note", "past question", "reading material", "textbook", "find book", "recommend book", "reading list"],
-    capabilities: ["Book search", "Journal access", "Lecture note recommendations", "Past question finder", "Reading lists"],
-    modules: ["library", "academics"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "productivity",
-    name: "Productivity Coach",
-    short: "Pomodoro, study goals, habits & focus sessions",
-    description: "Runs Pomodoro sessions, tracks study goals, builds habits, manages focus sessions, and provides productivity analytics.",
-    icon: Timer,
-    color: "text-warning",
-    bg: "bg-warning/10",
-    category: "Personal",
-    keywords: ["pomodoro", "focus", "habit", "productivity", "study goal", "time management", "procrastination", "study session", "streak", "concentrate"],
-    capabilities: ["Pomodoro sessions", "Study goal tracking", "Habit building", "Focus sessions", "Productivity analytics"],
-    modules: ["study-session", "academics"],
-    enabledByDefault: true,
-    optional: false,
-  },
-  {
-    id: "wellness",
-    name: "Wellness Companion",
-    short: "Stress management, wellbeing check-ins & healthy routines",
-    description: "Provides supportive conversations, helps manage stress, conducts wellbeing check-ins, and suggests healthy study routines using natural, human language.",
-    icon: Heart,
-    color: "text-error",
-    bg: "bg-error/10",
-    category: "Personal",
-    keywords: ["stress", "anxious", "anxiety", "wellbeing", "mental health", "tired", "overwhelmed", "burnout", "feeling", "sad", "lonely", "depressed", "self-care", "can't cope", "struggling"],
-    capabilities: ["Supportive conversations", "Stress management", "Wellbeing check-ins", "Healthy study routines", "Mindfulness"],
-    modules: ["wellbeing"],
-    enabledByDefault: true,
-    optional: false,
-  },
-  {
-    id: "campus_pulse",
-    name: "Campus Pulse",
-    short: "News, announcements, SUG updates & campus events",
-    description: "Tracks university news, faculty announcements, department updates, SUG announcements, campus traditions, sports, and verified campus events.",
-    icon: Newspaper,
-    color: "text-primary",
-    bg: "bg-primary/10",
-    category: "Campus",
-    keywords: ["news", "announcement", "update", "what's happening", "campus news", "sug", "faculty news", "department update", "campus event", "trending"],
-    capabilities: ["Campus news", "Faculty updates", "SUG announcements", "Event discovery", "Tradition tracking"],
-    modules: ["campus", "communities", "events"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "social_companion",
-    name: "Social Companion",
-    short: "Friends, communities, clubs & social engagement",
-    description: "Recommends friends, discovers communities and clubs, suggests societies, and tracks your social engagement across campus.",
+    id: "quad",
+    name: "Quad",
+    short: "Social, communities, feed, connections",
+    description: "Internal social specialist. Covers the feed, communities, social conversations, student groups, collaboration, and social discovery.",
     icon: MessageCircle,
     color: "text-info",
     bg: "bg-info/10",
     category: "Social",
-    keywords: ["friend", "community", "club", "society", "social", "meet people", "connect with", "join group", "make friends"],
-    capabilities: ["Friend recommendations", "Community discovery", "Club suggestions", "Social engagement tracking"],
-    modules: ["connect", "communities", "clubs"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "marketplace",
-    name: "Marketplace Assistant",
-    short: "Buying, selling, Lost & Found & campus transactions",
-    description: "Helps with the campus marketplace — buying, selling, finding lost items, and ensuring trusted campus transactions.",
-    icon: ShoppingBag,
-    color: "text-warning",
-    bg: "bg-warning/10",
-    category: "Campus",
-    keywords: ["buy", "sell", "marketplace", "lost", "found", "item for sale", "purchase", "rent", "campus market", "price"],
-    capabilities: ["Campus marketplace", "Buy & sell assistance", "Lost & Found", "Trusted transactions"],
-    modules: ["marketplace", "lost-found"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "live_class",
-    name: "Live Class Assistant",
-    short: "Attendance, recordings, summaries & classroom support",
-    description: "Supports live classes — tracks attendance, provides recording access, generates lecture summaries, and helps with classroom Q&A.",
-    icon: Video,
-    color: "text-purple",
-    bg: "bg-purple/10",
-    category: "Academic",
-    keywords: ["live class", "live lecture", "recording", "virtual class", "online class", "attend class", "stream", "video lecture"],
-    capabilities: ["Live class support", "Attendance tracking", "Recording access", "Lecture summaries", "Classroom Q&A"],
-    modules: ["live", "academics"],
-    enabledByDefault: true,
-    optional: true,
-  },
-  {
-    id: "notification_intel",
-    name: "Notification Intelligence",
-    short: "Prioritizes reminders, deadlines & important updates",
-    description: "Intelligently prioritizes your reminders, assignments, deadlines, exams, announcements, and important updates so you never miss what matters.",
-    icon: Bell,
-    color: "text-success",
-    bg: "bg-success/10",
-    category: "Personal",
-    keywords: ["notification", "reminder", "alert", "priority", "important update", "unread", "deadline reminder", "what did i miss"],
-    capabilities: ["Smart prioritization", "Deadline reminders", "Important alerts", "Digest summaries"],
-    modules: ["notifications", "calendar"],
+    keywords: ["friend", "community", "club", "society", "social", "meet people", "connect with", "join group", "make friends", "post", "feed", "square", "discussion", "group", "team", "teammate", "collaboration"],
+    capabilities: ["Social discovery", "Communities & clubs", "Feed & discussions", "Student groups", "Connections"],
+    modules: ["connect", "communities"],
     enabledByDefault: true,
     optional: false,
   },
   {
-    id: "personalization",
-    name: "Personalization Agent",
-    short: "Learns your preferences to personalize everything",
-    description: "Continuously learns your university, department, courses, interests, goals, and preferences to personalize the entire UNIBUD experience.",
-    icon: Sparkles,
-    color: "text-primary",
-    bg: "bg-primary/10",
-    category: "Personal",
-    keywords: [],
-    capabilities: ["Preference learning", "Profile personalization", "Smart recommendations", "Adaptive experience"],
+    id: "career",
+    name: "Career",
+    short: "Jobs, internships, CV, interviews, opportunities",
+    description: "Internal career specialist. Covers jobs, internships, career guidance, CV/resume support, interviews, professional development, opportunities, scholarships, mentorship, and portfolios.",
+    icon: Briefcase,
+    color: "text-info",
+    bg: "bg-info/10",
+    category: "Career",
+    keywords: ["cv", "resume", "linkedin", "interview", "job", "career", "graduate job", "professional", "cover letter", "career path", "scholarship", "internship", "grant", "competition", "exchange", "fellowship", "opportunity", "mentor", "alumni", "portfolio"],
+    capabilities: ["Jobs & internships", "CV & interview prep", "Opportunities & scholarships", "Mentorship", "Portfolios"],
+    modules: ["career", "opportunities"],
+    enabledByDefault: true,
+    optional: false,
+  },
+  {
+    id: "library",
+    name: "Library",
+    short: "Research, papers, citations, references",
+    description: "Internal research specialist. Covers books, journals, papers, citations, references, research materials, and knowledge retrieval.",
+    icon: BookOpen,
+    color: "text-info",
+    bg: "bg-info/10",
+    category: "Academic",
+    keywords: ["research", "paper", "publication", "citation", "literature", "thesis", "dissertation", "academic writing", "journal", "book", "reference", "source", "doi", "past question", "textbook", "reading list", "reading material"],
+    capabilities: ["Research & literature", "Citations & references", "Papers & journals", "Knowledge retrieval"],
+    modules: ["library", "research"],
+    enabledByDefault: true,
+    optional: false,
+  },
+  {
+    id: "search",
+    name: "Search",
+    short: "Intelligent search across authorized data",
+    description: "Internal search specialist. Finds people, posts, communities, topics, courses, resources, events, and files the user is authorized to access.",
+    icon: Compass,
+    color: "text-success",
+    bg: "bg-success/10",
+    category: "Discovery",
+    keywords: ["search", "find", "look for", "show me", "discover", "lookup", "where can i", "who is"],
+    capabilities: ["Global search", "People & posts", "Communities & topics", "Courses & resources"],
     modules: ["all"],
     enabledByDefault: true,
     optional: false,
@@ -329,31 +119,15 @@ export function getAgentById(id) {
 }
 
 export function getEnabledAgents() {
-  try {
-    const states = JSON.parse(localStorage.getItem("bud_agent_states") || "{}");
-    return AGENTS.filter((a) => a.optional === false || states[a.id] !== false);
-  } catch {
-    return AGENTS;
-  }
+  return AGENTS;
 }
 
 export function isAgentEnabled(agentId) {
-  const agent = getAgentById(agentId);
-  if (!agent || agent.optional === false) return true;
-  try {
-    const states = JSON.parse(localStorage.getItem("bud_agent_states") || "{}");
-    return states[agentId] !== false;
-  } catch {
-    return true;
-  }
+  return true;
 }
 
 export function setAgentEnabled(agentId, enabled) {
-  try {
-    const states = JSON.parse(localStorage.getItem("bud_agent_states") || "{}");
-    states[agentId] = enabled;
-    localStorage.setItem("bud_agent_states", JSON.stringify(states));
-  } catch {}
+  // Internal specialists are always available; students do not toggle them.
 }
 
 export function recordAgentActivity(agentIds) {
@@ -388,17 +162,18 @@ export function formatLastActivity(agentId) {
 }
 
 export function routeAgents(text) {
-  if (!text || !text.trim()) return [getAgentById("personalization")];
+  if (!text || !text.trim()) return [];
   const lower = text.toLowerCase();
-  const enabled = getEnabledAgents();
-  const matches = enabled.filter(
-    (agent) => agent.id !== "personalization" && agent.keywords.some((kw) => lower.includes(kw))
-  );
-  const personalization = getAgentById("personalization");
-  if (!matches.find((a) => a.id === "personalization")) {
-    matches.push(personalization);
-  }
-  return matches.length > 1 ? matches : [personalization];
+  const scored = AGENTS.map((a) => ({
+    a,
+    hits: a.keywords.reduce((n, kw) => (lower.includes(kw) ? n + 1 : n), 0),
+  })).filter((s) => s.hits > 0);
+  if (scored.length === 0) return [];
+  scored.sort((x, y) => y.hits - x.hits);
+  const top = scored[0];
+  const tied = scored.filter((s) => s.hits === top.hits);
+  // Minimum necessary: at most the top specialist (2 only for genuine cross-domain ties)
+  return tied.length > 1 ? tied.slice(0, 2).map((s) => s.a) : [top.a];
 }
 
 export function buildBudPrompt(text, agents, user) {
@@ -514,7 +289,7 @@ function buildUndergraduatePrompt(text, agents, user) {
 
 You are not an AI, chatbot, or assistant. You are Bud: a trusted mentor, tutor, and friend who learns with each student and grows with them throughout their university journey — from admission through graduation and into their career and alumni life.
 
-You are the only assistant users interact with. Behind the scenes, you are powered by the Oracle Platform — an intelligence core that orchestrates seven coordinated systems: Learning Studio (academics, research, careers), Campus Central (institutions, housing, transport), Discovery Hub (opportunities, events, recommendations), Community Circle (social, messaging, communities), Trust Shield (security, verification, moderation), The Architect (system design, diagnostics, performance), and Integration Bridge (external services and APIs). Users never see these systems — only you.
+You are the only companion users interact with. Behind the scenes, you draw on internal capabilities only when a request needs them — the student never sees or chooses these; they only ever talk to you, Bud.
 
 You have deep understanding of every UNIBUD module: Campus, Quad, Connect, Live, Library, Academics, Marketplace, Study Groups, Mentorship, Careers, Scholarships, Calendar, Notifications, University Portal, Profile, Communities, Research, Portfolio, CV Builder, Companies, Events, Clubs, and Lost & Found.
 
@@ -526,7 +301,7 @@ Based on the student's message, these capabilities are relevant right now:`;
 
   if (agents && agents.length > 0) {
     agents.forEach((agent) => {
-      prompt += `\n• ${agent.name}: ${agent.capabilities.join(", ")}`;
+      prompt += `\n• ${agent.capabilities.join(", ")}`;
     });
   }
 
@@ -580,7 +355,7 @@ function buildPostgraduatePrompt(text, agents, user) {
 
 You are not an AI, chatbot, or assistant. You are Bud: a trusted mentor, tutor, and friend who accompanies each person through their entire university journey — from pre-university preparation, through undergraduate studies, through postgraduate research, and into their alumni career.
 
-You are the only assistant users interact with. Behind the scenes, you are powered by the Oracle Platform — an intelligence core that orchestrates seven coordinated systems. Users never see these systems — only you.
+You are the only companion users interact with. Behind the scenes, you draw on internal capabilities only when a request needs them — the student never sees or chooses these; they only ever talk to you, Bud.
 
 JOURNEY CONTEXT: This user is currently a POSTGRADUATE STUDENT — someone pursuing advanced studies beyond their first degree. Their next milestone is completing their postgraduate programme. After that, they will transition into an Alumni profile, and UNIBUD will continue to support them throughout their professional career.
 
@@ -629,7 +404,7 @@ Available features for postgraduate students:
   if (agents && agents.length > 0) {
     prompt += "\n\nRelevant capabilities for this conversation:";
     agents.forEach((agent) => {
-      prompt += `\n• ${agent.name}: ${agent.capabilities.join(", ")}`;
+      prompt += `\n• ${agent.capabilities.join(", ")}`;
     });
   }
 
@@ -645,7 +420,7 @@ function buildAlumniPrompt(text, agents, user) {
 
 You are not an AI, chatbot, or assistant. You are Bud: a trusted mentor, tutor, and friend who accompanies each person through their entire university journey — from pre-university preparation, through undergraduate and postgraduate studies, and now into their alumni life and professional career.
 
-You are the only assistant users interact with. Behind the scenes, you are powered by the Oracle Platform — an intelligence core that orchestrates seven coordinated systems. Users never see these systems — only you.
+You are the only companion users interact with. Behind the scenes, you draw on internal capabilities only when a request needs them — the student never sees or chooses these; they only ever talk to you, Bud.
 
 JOURNEY CONTEXT: This user is now an ALUMNI — a graduate and lifelong member of the UNIBUD community. They have completed their university journey (undergraduate and/or postgraduate) and are now in their professional career. UNIBUD remains their lifelong companion.
 
@@ -697,7 +472,7 @@ Available features for alumni:
   if (agents && agents.length > 0) {
     prompt += "\n\nRelevant capabilities for this conversation:";
     agents.forEach((agent) => {
-      prompt += `\n• ${agent.name}: ${agent.capabilities.join(", ")}`;
+      prompt += `\n• ${agent.capabilities.join(", ")}`;
     });
   }
 
@@ -731,7 +506,7 @@ function buildFutureStudentPrompt(text, agents, user) {
 
 You are not an AI, chatbot, or assistant. You are Bud: a trusted mentor, tutor, and friend who guides each student through their entire journey — from preparing for admission, through university life, and into their career.
 
-You are the only assistant users interact with. Behind the scenes, you are powered by the Oracle Platform — an intelligence core that orchestrates seven coordinated systems. Users never see these systems — only you.
+You are the only companion users interact with. Behind the scenes, you draw on internal capabilities only when a request needs them — the student never sees or chooses these; they only ever talk to you, Bud.
 
 Right now, you are speaking with a FUTURE STUDENT — someone who has not yet been admitted to university but is preparing for that journey. This is a pre-university companion experience. The student should feel welcomed, motivated, and excited about becoming a university student. They should NOT feel excluded because they are not yet enrolled.
 
@@ -811,7 +586,7 @@ Available pre-university features on UNIBUD:
   if (agents && agents.length > 0) {
     prompt += "\n\nRelevant capabilities for this conversation:";
     agents.forEach((agent) => {
-      prompt += `\n• ${agent.name}: ${agent.capabilities.join(", ")}`;
+      prompt += `\n• ${agent.capabilities.join(", ")}`;
     });
   }
 
