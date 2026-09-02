@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { routeAgents, buildBudPrompt, recordAgentActivity } from "@/lib/agentRegistry";
 import { detectMatricNumber } from "@/lib/matriculationPrivacy";
+import { askBud } from "@/lib/ai/aiService";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import BudWelcome from "@/components/bud/BudWelcome";
 import ChatMessage from "@/components/bud/ChatMessage";
@@ -126,15 +127,21 @@ export default function Bud() {
       }
 
       const prompt = buildBudPrompt(trimmed, agents, user) + matricSearchContext;
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        ...(fileUrls.length > 0 ? { file_urls: fileUrls } : {}),
-      });
+      const response = await askBud(prompt, { fileUrls });
 
-      const budMsg = { role: "bud", content: response, time: new Date(), agents: agentIds };
-      const finalMessages = [...newMessages, budMsg];
-      setMessages(finalMessages);
-      await saveConversation(finalMessages, agentIds);
+      if (response) {
+        const budMsg = { role: "bud", content: response, time: new Date(), agents: agentIds };
+        const finalMessages = [...newMessages, budMsg];
+        setMessages(finalMessages);
+        await saveConversation(finalMessages, agentIds);
+      } else {
+        setMessages([...newMessages, {
+          role: "bud",
+          content: "I'm having a bit of trouble connecting right now. Let's try again in a moment!",
+          time: new Date(),
+          agents: agentIds,
+        }]);
+      }
     } catch {
       const errorMsg = {
         role: "bud",

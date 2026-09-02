@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Sparkles, X, Send, BookOpen, Lightbulb, PenTool, Layers, FileQuestion, FileText, Languages } from "lucide-react";
 import { base44 } from "@/api/base44Client";
+import { askBud } from "@/lib/ai/aiService";
 
 const QUICK_ACTIONS = [
   { icon: BookOpen, label: "Explain", prompt: "Explain the current topic being discussed in this lecture in simple terms." },
@@ -27,10 +28,8 @@ export default function LiveBudPanel({ onClose }) {
     setLoading(true);
     setMessages(p => [...p, { role: "user", content: prompt }]);
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are Bud, a warm, supportive university tutor sitting beside a student during a live Data Structures lecture. The lecture is covering Binary Search Trees. ${prompt} Keep your response concise and friendly.`,
-      });
-      setMessages(p => [...p, { role: "bud", content: typeof res === "string" ? res : "I'm here to help!" }]);
+      const res = await askBud(`You are Bud, a warm, supportive university tutor sitting beside a student during a live Data Structures lecture. The lecture is covering Binary Search Trees. ${prompt} Keep your response concise and friendly.`);
+      setMessages(p => [...p, { role: "bud", content: res || "I'm having trouble right now, but I'm still here for you!" }]);
     } catch {
       setMessages(p => [...p, { role: "bud", content: "I'm having trouble right now, but I'm still here for you!" }]);
     }

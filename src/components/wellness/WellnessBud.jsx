@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { Send, Loader2, Heart } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import { askBud } from "@/lib/ai/aiService";
 
 const SUGGESTIONS = [
   "I'm feeling stressed about exams",
@@ -34,10 +35,8 @@ export default function WellnessBud() {
     setLoading(true);
 
     try {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: `${SYSTEM_PROMPT}\n\nStudent: ${msg}`,
-      });
-      setMessages((p) => [...p, { role: "bud", content: res }]);
+      const res = await askBud(`${SYSTEM_PROMPT}\n\nStudent: ${msg}`);
+      setMessages((p) => [...p, { role: "bud", content: res || "I'm here for you. Everything will be okay." }]);
     } catch {
       setMessages((p) => [...p, { role: "bud", content: "I'm here for you. Everything will be okay." }]);
     }

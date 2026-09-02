@@ -255,18 +255,6 @@
     {
       "function_name": "googleCalendarSync",
       "description": "Sync calendar events with the user's Google Calendar"
-    },
-    {
-      "function_name": "socialProfile",
-      "description": "Fetch a user's social profile summary"
-    },
-    {
-      "function_name": "updateProfile",
-      "description": "Update the current user's profile data"
-    },
-    {
-      "function_name": "trustProfile",
-      "description": "Read the user's trust/safety profile summary"
     }
   ],
   "name": "bud"

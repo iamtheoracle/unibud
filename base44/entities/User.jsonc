@@ -24,6 +24,22 @@
       ],
       "default": "student"
     },
+    "product_roles": {
+      "type": "array",
+      "description": "Product identity capabilities (non-exclusive): student, creator, educator. A user may hold more than one. These are product identities, not administrative/platform roles.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "student",
+          "creator",
+          "educator"
+        ]
+      },
+      "default": [
+        "student"
+      ],
+      "uniqueItems": true
+    },
     "user_type": {
       "type": "string",
       "description": "University Journey stage: future_student (pre-university) \u2192 student (undergraduate) \u2192 postgraduate \u2192 alumni. Bud adapts the entire experience based on this.",

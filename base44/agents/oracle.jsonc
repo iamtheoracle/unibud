@@ -103,14 +103,6 @@
       "allowed_operations": [
         "read"
       ]
-    },
-    {
-      "function_name": "trustProfile",
-      "description": "Compute/read a trust profile summary"
-    },
-    {
-      "function_name": "runAutomation",
-      "description": "Run a registered automation for analytics/reporting"
     }
   ],
   "name": "oracle"

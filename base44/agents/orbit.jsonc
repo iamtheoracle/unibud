@@ -81,42 +81,6 @@
         "read",
         "create"
       ]
-    },
-    {
-      "function_name": "deadlineReminders",
-      "description": "Send deadline reminder notifications"
-    },
-    {
-      "function_name": "eventReminders",
-      "description": "Send event reminder notifications"
-    },
-    {
-      "function_name": "examReminders",
-      "description": "Send exam reminder notifications"
-    },
-    {
-      "function_name": "streakReminders",
-      "description": "Send study-streak reminder notifications"
-    },
-    {
-      "function_name": "taskReminders",
-      "description": "Send task reminder notifications"
-    },
-    {
-      "function_name": "welcomeNewStudent",
-      "description": "Send a welcome message to a newly registered student"
-    },
-    {
-      "function_name": "activateAnnouncements",
-      "description": "Activate and deliver scheduled announcements"
-    },
-    {
-      "function_name": "outreachFollowup",
-      "description": "Send an outreach follow-up message"
-    },
-    {
-      "function_name": "studyGroupEventBridge",
-      "description": "Bridge study group events to notifications"
     }
   ],
   "name": "orbit"

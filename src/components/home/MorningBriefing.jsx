@@ -4,16 +4,14 @@ import { Sparkles } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
+import { askBud } from "@/lib/ai/aiService";
 
 export default function MorningBriefing({ user }) {
   const { isDemoMode } = useDemoMode();
   const { data: budTip } = useQuery({
     queryKey: ["budMorningTip"],
     queryFn: async () => {
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt: "You are Bud, a warm university companion. Generate a short (1-2 sentence) motivational morning message for a student. Be encouraging, specific, and natural. No emojis except maybe one. Vary your tone daily. Today is " + new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) + ".",
-      });
-      return res;
+      return await askBud("You are Bud, a warm university companion. Generate a short (1-2 sentence) motivational morning message for a student. Be encouraging, specific, and natural. No emojis except maybe one. Vary your tone daily. Today is " + new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }) + ".");
     },
     staleTime: 1000 * 60 * 60 * 6,
     enabled: !isDemoMode,
