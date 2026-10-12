@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, Lock, ChevronDown, Building2, UserRound, ShieldCheck, Globe } from "lucide-react";
+import { ArrowRight, Lock, ChevronDown, Building2, UserRound, ShieldCheck, Globe, Waves } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import WelcomeBackground from "@/components/welcome/WelcomeBackground";
@@ -19,10 +19,10 @@ const TRUST_PILLARS = ["Secure", "Private", "Reliable", "Modern"];
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { enterDemoMode } = useDemoMode();
+  const { enterDemoMode, exitDemoMode } = useDemoMode();
   const reduceMotion = useReducedMotion();
   const [isLoading, setIsLoading] = useState(true);
-  const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem("introSeen"));
+  const [showIntro, setShowIntro] = useState(false);
   const [showStaffOptions, setShowStaffOptions] = useState(false);
 
   const { background, loaded, tone } = useWelcomeBackground();
@@ -34,16 +34,16 @@ export default function Welcome() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
-      if (authed) navigate("/");
+      if (authed) { exitDemoMode(); navigate("/"); }
     });
     const timer = setTimeout(() => setIsLoading(false), 1400);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, exitDemoMode]);
 
   const handleGuest = () => {
     hapticImpact();
     enterDemoMode();
-    navigate("/");
+    navigate("/bud");
   };
 
   const tap = (fn) => () => {
@@ -166,6 +166,17 @@ export default function Welcome() {
                   >
                     <Lock className="w-[18px] h-[18px]" strokeWidth={2} style={{ color: "#0E1111" }} />
                     Sign In
+                  </motion.button>
+
+                  <motion.button
+                    whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                    onClick={tap(() => navigate("/reef"))}
+                    className="w-full mt-1 h-10 flex items-center justify-center gap-2 text-[13px] font-semibold spring-tap"
+                    style={{ color: textColor }}
+                    aria-label="Explore public Reef"
+                  >
+                    <Waves className="w-4 h-4" strokeWidth={2} />
+                    Explore REEF
                   </motion.button>
 
                   {/* Text button: Continue as Guest */}
