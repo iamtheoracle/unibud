@@ -19,7 +19,7 @@ const TRUST_PILLARS = ["Secure", "Private", "Reliable", "Modern"];
 
 export default function Welcome() {
   const navigate = useNavigate();
-  const { enterDemoMode, exitDemoMode } = useDemoMode();
+  const { enterDemoMode } = useDemoMode();
   const reduceMotion = useReducedMotion();
   const [isLoading, setIsLoading] = useState(true);
   const [showIntro, setShowIntro] = useState(false);
@@ -34,11 +34,11 @@ export default function Welcome() {
 
   useEffect(() => {
     base44.auth.isAuthenticated().then((authed) => {
-      if (authed) { exitDemoMode(); navigate("/"); }
+      if (authed) navigate("/");
     });
     const timer = setTimeout(() => setIsLoading(false), 1400);
     return () => clearTimeout(timer);
-  }, [navigate, exitDemoMode]);
+  }, [navigate]);
 
   const handleGuest = () => {
     hapticImpact();
