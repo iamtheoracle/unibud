@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useDemoMode } from "@/lib/DemoModeContext";
 import UserNotRegisteredError from "@/components/UserNotRegisteredError";
@@ -13,6 +13,7 @@ const DefaultFallback = () => (
 export default function ProtectedRoute({ fallback = <DefaultFallback />, unauthenticatedElement }) {
   const { isAuthenticated, isLoadingAuth, authChecked, authError, checkUserAuth } = useAuth();
   const { isDemoMode } = useDemoMode();
+  const location = useLocation();
 
   useEffect(() => {
     if (!authChecked && !isLoadingAuth && !isDemoMode) {
@@ -21,7 +22,8 @@ export default function ProtectedRoute({ fallback = <DefaultFallback />, unauthe
   }, [authChecked, isLoadingAuth, checkUserAuth, isDemoMode]);
 
   if (isDemoMode) {
-    return <Outlet />;
+    // Guest sessions are restricted to Bud; they cannot browse the authenticated app shell.
+    return location.pathname === "/bud" ? <Outlet /> : <Navigate to="/welcome" replace />;
   }
 
   if (isLoadingAuth || !authChecked) {
