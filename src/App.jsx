@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { ThemeProvider } from '@/lib/ThemeContext';
@@ -35,6 +35,7 @@ import Notifications from '@/pages/Notifications';
 import BudMemory from '@/pages/BudMemory';
 import ConnectedAccounts from '@/pages/ConnectedAccounts';
 import Welcome from '@/pages/Welcome';
+import Riff from '@/pages/Riff';
 import UniversitySelection from '@/pages/UniversitySelection';
 import UniversityConnect from '@/pages/UniversityConnect';
 import StudentProfile from '@/pages/StudentProfile';
@@ -140,6 +141,7 @@ import InstitutionOutreach from '@/pages/portal/InstitutionOutreach';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const location = useLocation();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -157,9 +159,11 @@ const AuthenticatedApp = () => {
   }
 
   if (authError) {
-    if (authError.type === 'user_not_registered') {
+    const publicPaths = ['/welcome', '/login', '/register', '/forgot-password', '/reset-password', '/riff', '/reef'];
+    const isPublicEntry = publicPaths.includes(location.pathname);
+    if (!isPublicEntry && authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
+    } else if (!isPublicEntry && authError.type === 'auth_required') {
       navigateToLogin();
       return null;
     }
@@ -172,6 +176,8 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/welcome" element={<Welcome />} />
+      <Route path="/riff" element={<Riff />} />
+      <Route path="/reef" element={<Navigate to="/riff" replace />} />
       <Route path="/onboarding/language-region" element={<LanguageRegion />} />
       <Route path="/university-staff-login" element={<UniversityStaffLogin />} />
       <Route path="/platform-staff-login" element={<PlatformStaffLogin />} />
