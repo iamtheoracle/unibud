@@ -1,318 +1,175 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowRight, Lock, ChevronDown, Building2, UserRound, ShieldCheck, Globe } from "lucide-react";
+import {
+  ArrowRight, ArrowUpRight, LockKeyhole, UserRound, MessageCircle,
+  Building2, ChevronDown, Globe2, Sparkles,
+} from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { useDemoMode } from "@/lib/DemoModeContext";
-import WelcomeBackground from "@/components/welcome/WelcomeBackground";
 import WelcomeLogo from "@/components/welcome/WelcomeLogo";
-import WelcomeLoader from "@/components/welcome/WelcomeLoader";
-import IntroCarousel from "@/components/onboarding/IntroCarousel";
-import { useWelcomeBackground } from "@/hooks/useWelcomeBackground";
 import { hapticTap, hapticImpact } from "@/lib/haptics";
-import { ACCREDITED_INSTITUTIONS } from "@/data/welcomeBackgrounds";
 
 const ease = [0.16, 1, 0.3, 1];
-const GOLD = "#C9A24B";
-
-const TRUST_PILLARS = ["Secure", "Private", "Reliable", "Modern"];
 
 export default function Welcome() {
   const navigate = useNavigate();
   const { enterDemoMode } = useDemoMode();
   const reduceMotion = useReducedMotion();
-  const [isLoading, setIsLoading] = useState(true);
-  const [showIntro, setShowIntro] = useState(() => !sessionStorage.getItem("introSeen"));
   const [showStaffOptions, setShowStaffOptions] = useState(false);
 
-  const { background, loaded, tone } = useWelcomeBackground();
-
-  // Text + logo colour adapts to the background for maximum readability.
-  const onDark = tone !== "light";
-  const textColor = onDark ? "#FFFFFF" : "#0E1111";
-  const subColor = onDark ? "rgba(255,255,255,0.80)" : "rgba(14,17,17,0.66)";
-
   useEffect(() => {
-    base44.auth.isAuthenticated().then((authed) => {
-      if (authed) navigate("/");
-    });
-    const timer = setTimeout(() => setIsLoading(false), 1400);
-    return () => clearTimeout(timer);
+    let active = true;
+    base44.auth.isAuthenticated()
+      .then((authenticated) => {
+        if (active && authenticated) navigate("/", { replace: true });
+      })
+      .catch(() => {
+        // A failed session check should leave the public welcome screen available.
+      });
+    return () => { active = false; };
   }, [navigate]);
+
+  const tap = (action) => () => {
+    hapticTap();
+    action();
+  };
 
   const handleGuest = () => {
     hapticImpact();
     enterDemoMode();
-    navigate("/");
-  };
-
-  const tap = (fn) => () => {
-    hapticTap();
-    fn?.();
+    navigate("/bud", { replace: true });
   };
 
   return (
-    <div className="min-h-[100dvh] flex flex-col relative overflow-hidden" style={{ background: "#0A0E0E" }}>
-      <WelcomeBackground background={background} loaded={loaded} reduceMotion={reduceMotion} />
+    <main className="relative min-h-[100dvh] overflow-hidden bg-[#090B10] text-white">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 left-[-18%] h-[28rem] w-[28rem] rounded-full bg-violet-600/20 blur-[110px]" />
+        <div className="absolute right-[-22%] top-[24%] h-[25rem] w-[25rem] rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute bottom-[-18rem] left-[12%] h-[30rem] w-[30rem] rounded-full bg-amber-500/[0.08] blur-[120px]" />
+        <div className="absolute inset-0 opacity-[0.08]" style={{ backgroundImage: "radial-gradient(#fff 0.7px, transparent 0.7px)", backgroundSize: "22px 22px" }} />
+      </div>
 
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          <WelcomeLoader key="loader" />
-        ) : showIntro ? (
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-xl flex-col px-5 pb-7 pt-[max(env(safe-area-inset-top),1.5rem)]">
+        <header className="flex items-center justify-between">
+          <WelcomeLogo tone="white" size="md" />
+          <span className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/65">
+            A My Realm product
+          </span>
+        </header>
+
+        <section className="flex flex-1 flex-col justify-center py-10">
           <motion.div
-            key="intro"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4, ease }}
-            className="flex-1 flex flex-col relative z-10 min-h-[100dvh]"
-            style={{ background: "hsl(var(--background))" }}
+            initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease }}
           >
-            <IntroCarousel
-              onComplete={() => {
-                sessionStorage.setItem("introSeen", "true");
-                navigate("/onboarding/language-region");
-              }}
-            />
+            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-[11px] font-medium text-white/70">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+              One space. Many sides of you.
+            </div>
+            <h1 className="max-w-lg text-[clamp(2.7rem,11vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.065em]">
+              Your life has
+              <span className="block bg-gradient-to-r from-white via-white to-white/45 bg-clip-text text-transparent">more than one side.</span>
+            </h1>
+            <p className="mt-5 max-w-sm text-[15px] leading-7 text-white/60">
+              Find your people, get things moving, and drop into conversations that matter to you.
+            </p>
           </motion.div>
-        ) : (
+
           <motion.div
-            key="content"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, ease }}
-            className="flex-1 flex flex-col relative z-10"
+            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.5, ease }}
+            className="mt-9 rounded-[28px] border border-white/[0.12] bg-[#141720]/80 p-3 shadow-2xl shadow-black/30 backdrop-blur-2xl"
           >
-            {/* === Center: Logo + Headline + Description === */}
-            <div
-              className="flex-1 flex flex-col items-center justify-center px-6"
-              style={{ paddingTop: "max(env(safe-area-inset-top), 2.5rem)" }}
+            <button
+              type="button"
+              onClick={tap(() => navigate("/register"))}
+              className="flex h-[54px] w-full items-center justify-between rounded-[19px] bg-white px-5 text-left text-[14px] font-semibold text-[#0A0C11] transition-transform active:scale-[0.985]"
             >
-              <div className="max-w-md mx-auto w-full flex flex-col items-center">
-                {/* Official Logo — auto black/white per background */}
-                <WelcomeLogo tone={onDark ? "white" : "black"} size="xl" />
+              Create an account
+              <ArrowRight className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              onClick={tap(() => navigate("/login"))}
+              className="mt-2 flex h-[52px] w-full items-center justify-center gap-2 rounded-[19px] border border-white/10 bg-white/[0.045] text-[14px] font-semibold text-white transition-colors hover:bg-white/[0.08]"
+            >
+              <LockKeyhole className="h-4 w-4 text-white/60" />
+              Sign in
+            </button>
 
-                {/* Headline */}
-                <motion.h1
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35, duration: 0.7, ease }}
-                  className="font-heading font-extrabold text-[27px] md:text-[31px] text-center mt-8 tracking-tight leading-tight"
-                  style={{ color: textColor }}
-                >
-                  Your University Companion
-                </motion.h1>
-
-                {/* Description */}
-                <motion.p
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.7, ease }}
-                  className="text-[14px] md:text-[15px] text-center mt-3 max-w-[320px] leading-relaxed"
-                  style={{ color: subColor }}
-                >
-                  Everything you need for university life in one place. Learn, connect, collaborate and succeed.
-                </motion.p>
-              </div>
+            <div className="my-3 flex items-center gap-3 px-1">
+              <span className="h-px flex-1 bg-white/10" />
+              <span className="text-[10px] uppercase tracking-[0.18em] text-white/35">Or explore</span>
+              <span className="h-px flex-1 bg-white/10" />
             </div>
 
-            {/* === Bottom: Actions + Trust === */}
-            <div
-              className="px-5 relative z-10"
-              style={{ paddingBottom: "max(env(safe-area-inset-bottom), 1rem)" }}
+            <button
+              type="button"
+              onClick={tap(handleGuest)}
+              className="flex min-h-[50px] w-full items-center gap-3 rounded-[18px] px-3 text-left transition-colors hover:bg-white/[0.05]"
             >
-              <div className="max-w-md mx-auto w-full">
-                {/* Glass action panel */}
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.65, duration: 0.7, ease }}
-                  className="rounded-[28px] p-5"
-                  style={{
-                    background: onDark ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.72)",
-                    backdropFilter: "blur(28px) saturate(1.2)",
-                    WebkitBackdropFilter: "blur(28px) saturate(1.2)",
-                    border: `1px solid ${onDark ? "rgba(255,255,255,0.18)" : "rgba(14,17,17,0.10)"}`,
-                    boxShadow: "0 16px 48px rgba(0,0,0,0.35)",
-                  }}
-                >
-                  {/* Primary: Create Account — black pill */}
-                  <motion.button
-                    whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-                    onClick={tap(() => navigate("/register"))}
-                    className="w-full h-[56px] rounded-full flex items-center justify-center gap-2 font-heading font-semibold text-[16px] spring-tap"
-                    style={{
-                      background: "#0E1111",
-                      color: "#FFFFFF",
-                      boxShadow: "0 10px 30px rgba(0,0,0,0.40)",
-                    }}
-                    aria-label="Create your account"
-                  >
-                    Create Account
-                    <ArrowRight className="w-5 h-5" strokeWidth={2.2} />
-                  </motion.button>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-400/10 text-violet-200">
+                <UserRound className="h-[18px] w-[18px]" />
+              </span>
+              <span className="flex-1">
+                <span className="block text-[13px] font-semibold">Continue as guest</span>
+                <span className="mt-0.5 block text-[11px] text-white/45">Go straight to BUD. No account needed.</span>
+              </span>
+              <ArrowUpRight className="h-4 w-4 text-white/40" />
+            </button>
 
-                  {/* Secondary: Sign In — white glass pill */}
-                  <motion.button
-                    whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-                    onClick={tap(() => navigate("/login"))}
-                    className="w-full h-[56px] rounded-full flex items-center justify-center gap-2 font-heading font-semibold text-[16px] mt-2.5 spring-tap"
-                    style={{
-                      background: "rgba(255,255,255,0.82)",
-                      color: "#0E1111",
-                      border: "1px solid rgba(14,17,17,0.10)",
-                    }}
-                    aria-label="Sign in — returning users"
-                  >
-                    <Lock className="w-[18px] h-[18px]" strokeWidth={2} style={{ color: "#0E1111" }} />
-                    Sign In
-                  </motion.button>
-
-                  {/* Text button: Continue as Guest */}
-                  <motion.button
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.8, duration: 0.6 }}
-                    onClick={tap(handleGuest)}
-                    className="w-full mt-3 h-11 flex items-center justify-center gap-1.5 text-[13px] font-medium spring-tap"
-                    style={{ color: subColor }}
-                    aria-label="Continue as guest"
-                  >
-                    <UserRound className="w-3.5 h-3.5" strokeWidth={2} />
-                    Continue as Guest
-                  </motion.button>
-
-                  {/* Language & Region */}
-                  <Link
-                    to="/onboarding/language-region"
-                    onClick={() => hapticTap()}
-                    className="w-full mt-1.5 h-9 flex items-center justify-center gap-1.5 text-[12px] font-medium spring-tap"
-                    style={{ color: subColor }}
-                  >
-                    <Globe className="w-3.5 h-3.5" strokeWidth={2} />
-                    Language & Region
-                  </Link>
-
-                  {/* Divider */}
-                  <div className="flex items-center gap-3 my-3">
-                    <div className="flex-1 h-px" style={{ background: onDark ? "rgba(255,255,255,0.14)" : "rgba(14,17,17,0.10)" }} />
-                    <span className="text-[10px] uppercase tracking-[0.2em] font-medium" style={{ color: subColor }}>Staff</span>
-                    <div className="flex-1 h-px" style={{ background: onDark ? "rgba(255,255,255,0.14)" : "rgba(14,17,17,0.10)" }} />
-                  </div>
-
-                  {/* Staff + Forgot links */}
-                  <div className="flex items-center justify-center gap-3.5">
-                    <button
-                      onClick={tap(() => {
-                        hapticTap();
-                        setShowStaffOptions((s) => !s);
-                      })}
-                      className="text-[12px] font-medium flex items-center gap-1 transition-colors"
-                      style={{ color: subColor }}
-                    >
-                      <Building2 className="w-3 h-3" strokeWidth={2} />
-                      Staff
-                      <ChevronDown
-                        className={`w-3 h-3 transition-transform ${showStaffOptions ? "rotate-180" : ""}`}
-                      />
-                    </button>
-                    <span className="w-1 h-1 rounded-full" style={{ background: onDark ? "rgba(255,255,255,0.25)" : "rgba(14,17,17,0.18)" }} />
-                    <Link
-                      to="/forgot-password"
-                      className="text-[12px] font-medium flex items-center gap-1 transition-colors"
-                      style={{ color: subColor }}
-                    >
-                      Forgot Password
-                    </Link>
-                  </div>
-
-                  {/* Staff options (expandable) */}
-                  <AnimatePresence>
-                    {showStaffOptions && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease }}
-                        className="overflow-hidden"
-                      >
-                        <button
-                          onClick={tap(() => navigate("/university-staff-login"))}
-                          className="w-full mt-3 h-[46px] rounded-full flex items-center justify-center gap-2 font-heading font-medium text-[14px] spring-tap"
-                          style={{
-                            background: onDark ? "rgba(255,255,255,0.08)" : "rgba(14,17,17,0.05)",
-                            border: `1px solid ${onDark ? "rgba(255,255,255,0.14)" : "rgba(14,17,17,0.10)"}`,
-                            color: textColor,
-                          }}
-                        >
-                          <Building2 className="w-4 h-4" strokeWidth={2} />
-                          University Staff Sign In
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-
-                {/* Trust section */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.85, duration: 0.7, ease }}
-                  className="mt-6 text-center"
-                >
-                  <p className="text-[12.5px] font-medium" style={{ color: onDark ? "rgba(255,255,255,0.88)" : "rgba(14,17,17,0.72)" }}>
-                    Trusted by students worldwide.
-                  </p>
-                  <p className="text-[11px] mt-0.5" style={{ color: subColor }}>
-                    Built for every student journey.
-                  </p>
-
-                  {/* Trust pillars */}
-                  <div className="flex items-center justify-center gap-1.5 mt-3 flex-wrap">
-                    {TRUST_PILLARS.map((p, i) => (
-                      <span
-                        key={p}
-                        className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.14em]"
-                        style={{ color: subColor }}
-                      >
-                        {i > 0 && <span style={{ color: GOLD }}>·</span>}
-                        <ShieldCheck className="w-2.5 h-2.5" strokeWidth={2.2} style={{ color: GOLD }} />
-                        {p}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Accredited institutions — small monochrome marks */}
-                  <div className="flex items-center justify-center gap-2.5 mt-4 flex-wrap opacity-80">
-                    {ACCREDITED_INSTITUTIONS.map((name) => (
-                      <span
-                        key={name}
-                        className="text-[10px] font-heading font-semibold tracking-[0.08em] px-2 py-0.5 rounded-md"
-                        style={{
-                          color: onDark ? "rgba(255,255,255,0.7)" : "rgba(14,17,17,0.6)",
-                          border: `1px solid ${onDark ? "rgba(255,255,255,0.16)" : "rgba(14,17,17,0.12)"}`,
-                        }}
-                      >
-                        {name}
-                      </span>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Branding */}
-                <div className="text-center mt-5">
-                  <p className="text-[9px]" style={{ color: onDark ? "rgba(255,255,255,0.45)" : "rgba(14,17,17,0.40)" }}>
-                    A My Realm Product · My Realm Network Limited · RC: 9645700
-                  </p>
-                  <p className="text-[8px] mt-0.5" style={{ color: onDark ? "rgba(255,255,255,0.30)" : "rgba(14,17,17,0.28)" }}>
-                    © 2026 My Realm Network Limited. All Rights Reserved.
-                  </p>
-                </div>
-              </div>
-            </div>
+            <Link
+              to="/riff"
+              onClick={() => hapticTap()}
+              className="flex min-h-[50px] w-full items-center gap-3 rounded-[18px] px-3 text-left transition-colors hover:bg-white/[0.05]"
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-300/10 text-amber-200">
+                <MessageCircle className="h-[18px] w-[18px]" />
+              </span>
+              <span className="flex-1">
+                <span className="block text-[13px] font-semibold">Enter Riff</span>
+                <span className="mt-0.5 block text-[11px] text-white/45">Open conversations, no account required.</span>
+              </span>
+              <ArrowUpRight className="h-4 w-4 text-white/40" />
+            </Link>
           </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        </section>
+
+        <footer className="relative">
+          <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-4">
+            <Link to="/onboarding/language-region" className="inline-flex items-center gap-1.5 text-[11px] text-white/45 hover:text-white/75">
+              <Globe2 className="h-3.5 w-3.5" /> Language & region
+            </Link>
+            <button
+              type="button"
+              onClick={tap(() => setShowStaffOptions((shown) => !shown))}
+              className="inline-flex items-center gap-1.5 text-[11px] text-white/45 hover:text-white/75"
+              aria-expanded={showStaffOptions}
+            >
+              <Building2 className="h-3.5 w-3.5" /> Staff access
+              <ChevronDown className={`h-3 w-3 transition-transform ${showStaffOptions ? "rotate-180" : ""}`} />
+            </button>
+          </div>
+          <AnimatePresence>
+            {showStaffOptions && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <Link to="/university-staff-login" className="mt-3 flex h-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-xs font-medium text-white/75">
+                  University staff sign in
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <p className="mt-4 text-center text-[10px] text-white/25">© 2026 My Realm Network Limited</p>
+        </footer>
+      </div>
+    </main>
   );
 }
