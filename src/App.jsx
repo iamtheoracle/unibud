@@ -35,6 +35,7 @@ import Notifications from '@/pages/Notifications';
 import BudMemory from '@/pages/BudMemory';
 import ConnectedAccounts from '@/pages/ConnectedAccounts';
 import Welcome from '@/pages/Welcome';
+import Reef from '@/pages/Reef';
 import UniversitySelection from '@/pages/UniversitySelection';
 import UniversityConnect from '@/pages/UniversityConnect';
 import StudentProfile from '@/pages/StudentProfile';
@@ -172,6 +173,7 @@ const AuthenticatedApp = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/welcome" element={<Welcome />} />
+      <Route path="/reef" element={<Reef />} />
       <Route path="/onboarding/language-region" element={<LanguageRegion />} />
       <Route path="/university-staff-login" element={<UniversityStaffLogin />} />
       <Route path="/platform-staff-login" element={<PlatformStaffLogin />} />
