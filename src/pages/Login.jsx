@@ -6,9 +6,11 @@ import { Eye, EyeOff, Loader2, ArrowRight, Mail, Lock, Check } from "lucide-reac
 import AuthLogo from "@/components/auth/AuthLogo";
 import SocialButtons from "@/components/auth/SocialButtons";
 import VisitorBud from "@/components/auth/VisitorBud";
+import { useDemoMode } from "@/lib/DemoModeContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { exitDemoMode } = useDemoMode();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +28,7 @@ export default function Login() {
     setLoading(true);
     try {
       await base44.auth.loginViaEmailPassword(identifier, password);
+      exitDemoMode();
       window.location.href = "/";
     } catch (err) {
       setError(err.message || "Invalid email or password");
