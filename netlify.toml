@@ -8,3 +8,9 @@
   to = "/.netlify/functions/:splat"
   status = 200
   force = true
+
+# SPA fallback so client-side routes (e.g. /welcome, /riff) resolve on direct load
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
