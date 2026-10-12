@@ -7,11 +7,13 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import AuthLogo from "@/components/auth/AuthLogo";
 import SocialButtons from "@/components/auth/SocialButtons";
 import VisitorBud from "@/components/auth/VisitorBud";
+import { useDemoMode } from "@/lib/DemoModeContext";
 import { COUNTRIES } from "@/data/universities";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { exitDemoMode } = useDemoMode();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,6 +71,7 @@ export default function Register() {
       if (fullName.trim()) {
         try { await base44.auth.updateMe({ full_name: fullName.trim(), country }); } catch {}
       }
+      exitDemoMode();
       setStage("success");
       setTimeout(() => { window.location.href = "/university-selection"; }, 1800);
     } catch (err) {
