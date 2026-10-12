@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
-  ArrowRight, ArrowUpRight, LockKeyhole, UserRound, MessageCircle,
+  ArrowUpRight, LockKeyhole, UserRound, MessageCircle,
   Building2, ChevronDown, Globe2, Sparkles,
 } from "lucide-react";
 import { base44 } from "@/api/base44Client";
