@@ -1,20 +1,13 @@
-// Community detail endpoint
+// In-memory development community-detail endpoint.
 const communities = [
   { id: 'c1', name: 'Computer Science Club', description: 'CS students and projects', private: false },
-  { id: 'c2', name: 'Math Study Group', description: 'Weekly problem solving', private: true }
-]
+  { id: 'c2', name: 'Math Study Group', description: 'Weekly problem solving', private: true },
+];
+const membership = { c1: ['Alice'], c2: ['Bob'] };
 
-// membership store (in-memory)
-const membership = {
-  c1: ['Alice'],
-  c2: ['Bob']
-}
-
-exports.handler = async function(event) {
-  const q = event.queryStringParameters || {}
-  const id = q.id
-  const community = communities.find(c=>c.id===id)
-  if(!community) return { statusCode: 200, body: JSON.stringify({ error: 'not found' }) }
-  const members = membership[id] || []
-  return { statusCode: 200, body: JSON.stringify({ community, members }) }
-}
+export const handler = async (event) => {
+  const id = (event.queryStringParameters || {}).id;
+  const community = communities.find((item) => item.id === id);
+  if (!community) return { statusCode: 404, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Community not found' }) };
+  return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ community, members: membership[id] || [] }) };
+};
