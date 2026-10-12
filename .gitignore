@@ -4,3 +4,4 @@ dist
 .env
 .vscode
 
+base44/.app.jsonc
