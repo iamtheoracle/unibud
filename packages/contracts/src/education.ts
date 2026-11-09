@@ -77,7 +77,9 @@ export function areDistinctEducationRoles(
   left: EducationRoleAssignment,
   right: EducationRoleAssignment
 ): boolean {
-  return left.id !== right.id &&
+  return left.status === "active" &&
+    right.status === "active" &&
+    left.id !== right.id &&
     left.accountId === right.accountId &&
     left.institutionId === right.institutionId &&
     left.role !== right.role;
