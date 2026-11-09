@@ -77,6 +77,7 @@ export interface ProfileOwnershipTransferPreflight {
   activeOwnedProfiles:number; activeDelegatedRelationships:number; pendingInvitations:number;
   openTransferRequests:number; personalIdentityAvailable:boolean; canTransfer:boolean;
 }
+export interface OutgoingProfileOwnershipTransfer {transferId:string;recipientHandle:string;status:"pending_recipient"|"recipient_accepted";createdAt:string;expiresAt:string;}
 export interface IncomingProfileOwnershipTransfer {
   transferId:string; profileId:string; profileName:string; profileHandle:string;
   ownerHandle:string; createdAt:string; expiresAt:string;
@@ -97,6 +98,7 @@ export interface ProfileRepository {
   getOwnershipTransferPreflight(ownerAccountId:string,profileId:string):Promise<ProfileOwnershipTransferPreflight>;
   requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string,expiresAt:string):Promise<{id:string;recipientHandle:string}>;
   listIncomingOwnershipTransfers(recipientAccountId:string):Promise<IncomingProfileOwnershipTransfer[]>;
+  listOutgoingOwnershipTransfers(ownerAccountId:string,profileId:string):Promise<OutgoingProfileOwnershipTransfer[]>;
   respondToOwnershipTransfer(recipientAccountId:string,transferId:string,accept:boolean):Promise<boolean>;
   cancelOwnershipTransfer(ownerAccountId:string,transferId:string):Promise<boolean>;
   completeOwnershipTransfer(ownerAccountId:string,transferId:string):Promise<boolean>;
@@ -164,6 +166,13 @@ export class ProfileService {
     const handle=recipientHandle.trim().replace(/^@/,"").toLowerCase();
     if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(handle)) throw new Error("Enter a valid UNIBUD username.");
     return this.repository.requestOwnershipTransfer(accountId,profileId,handle,randomUUID(),new Date(Date.now()+7*24*60*60*1000).toISOString());
+  }
+  async listOutgoingOwnershipTransfers(accountId:string,profileId:string):Promise<OutgoingProfileOwnershipTransfer[]>{
+    if(!accountId||!/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
+    const access=await this.repository.findProfileAccess(accountId,profileId);
+    if(!access||access.relationship!=="owner"||access.membershipStatus!=="active"||access.profile.ownerAccountId!==accountId)
+      throw new ProfileAccessDeniedError("Only the profile owner may view outgoing transfer requests.");
+    return this.repository.listOutgoingOwnershipTransfers(accountId,profileId);
   }
   async listIncomingOwnershipTransfers(accountId:string):Promise<IncomingProfileOwnershipTransfer[]>{
     if(!accountId) throw new ProfileAccessDeniedError();
