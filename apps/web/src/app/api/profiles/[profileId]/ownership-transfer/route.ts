@@ -44,6 +44,6 @@ export async function DELETE(request:NextRequest,context:Context){
   const outgoing=await profiles.listOutgoingOwnershipTransfers(session.account.id,profileId);
   if(!outgoing.some(transfer=>transfer.transferId===body.transferId))return NextResponse.json({ok:false,error:"Open transfer request not found."},{status:404});
   const cancelled=await profiles.cancelOwnershipTransfer(session.account.id,body.transferId);
-  return NextResponse.json({ok:cancelled},{status:cancelled?200:404});
+  return cancelled?NextResponse.json({ok:true}):NextResponse.json({ok:false,error:"This transfer request is no longer open."},{status:404});
  }catch(error){if(error instanceof ProfileAccessDeniedError)return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});return routeError(error);}
 }
