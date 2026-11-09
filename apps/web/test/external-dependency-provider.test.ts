@@ -95,3 +95,20 @@ test("provider cannot return a digest outside the requested account-scoped refer
   const result = await registry.lookup({ accountId: "account-a", integrationKey: "storage_provider", referenceDigests: ["a".repeat(64)] });
   assert.deepEqual(result, { state: "unavailable", reason: "invalid_provider_response", references: [], sharedReferenceCount: 0 });
 });
+
+test("stale verification evidence is not accepted as verified", async () => {
+  const adapter: ExternalDependencyProviderAdapter = {
+    ...baseAdapter,
+    async verify() {
+      return {
+        providerIdentity: "Verified storage provider",
+        verifiedAt: "2026-11-07T12:00:00.000Z",
+        evidenceSource: "provider_confirmation",
+        lookupSupported: true
+      };
+    }
+  };
+  const registry = new ExternalDependencyProviderRegistry([adapter], { now: () => now, maxEvidenceAgeMs: 60_000 });
+  const result = await registry.verify({ accountId: "account-a", integrationKey: "storage_provider" });
+  assert.deepEqual(result, { state: "unknown", reason: "verification_stale" });
+});
