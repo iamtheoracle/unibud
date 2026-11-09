@@ -11,6 +11,40 @@ permissions:
   contents: read
 
 jobs:
+  database-isolation:
+    name: PostgreSQL 16 migration and RLS isolation
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: unibud_test
+          POSTGRES_PASSWORD: unibud_test_only
+          POSTGRES_DB: unibud_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U unibud_test -d unibud_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Apply identity schema
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0001_identity_foundation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0002_identity_access_control.sql
+      - name: Verify identity constraints
+        env:
+          PGPASSWORD: unibud_test_only
+        run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0001_identity_foundation.test.sql
+      - name: Verify signed account isolation and forged-context denial
+        env:
+          PGPASSWORD: unibud_test_only
+        run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0002_identity_access_control.test.sql
   foundation-integrity:
     name: Foundation integrity
     runs-on: ubuntu-latest
