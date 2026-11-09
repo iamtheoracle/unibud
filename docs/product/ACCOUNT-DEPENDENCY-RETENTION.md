@@ -53,3 +53,21 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - Approve retention and legal notice policy with qualified review; do not encode guessed durations.
 - Add export/deletion orchestration, dry-run reports, idempotency, audit evidence, backup expiry and recovery tests.
 - Keep the database closure guard authoritative and permanent closure disabled until all gates pass.
+
+
+## Live authenticated discovery engine (migration 0018)
+
+- The authenticated `GET /api/account/closure-readiness` route now validates the session first, then calls `AccountDependencyRepository` using the validated account ID only.
+- The repository creates a short-lived HMAC-signed account context and invokes `public.account_dependency_discovery(UUID)` inside one transaction. The function rejects a requested account that differs from the signed context.
+- PostgreSQL returns aggregate counts only for registered account/profile records: account, identities, sessions, owned profiles by status, ownership/delegation memberships, grants, invitations, lifecycle notifications, ownership transfers and audit events as actor.
+- It returns foreign-key topology from PostgreSQL catalog metadata for the registered table set. This describes schema relationships, not another account's row contents.
+- Shared ownership is represented by delegated relationships, profile-owner/member links, grants, invitations and incoming/outgoing transfers. Counts are separated by direction to avoid treating a shared relationship as a single-owner record.
+- The UI shows counts, relationship topology, policy gaps and the inventory generation time. The API response is non-cacheable through the existing `Cache-Control: no-store` header.
+- Database integration test `0018_account_dependency_discovery.test.sql` verifies counts, FK discovery, missing-policy fail-closed behavior and cross-account denial. Web repository tests verify signed transaction setup, commit/rollback and release handling.
+
+### Important limits
+
+- Counts cover only the explicitly registered tables in migration 0018, including password credential and verification-challenge record counts (never credential hashes, challenge digests or challenge payloads). They do not establish completeness for future product spaces, object storage, event streams, payment processors, email/SMS providers, analytics, backups or manually held support records.
+- Foreign-key metadata cannot reveal dependencies stored only in JSON, text, external services or untracked object stores.
+- The current `missingPolicyDomains` list is deliberately fail-closed; no retention duration, legal basis, export/deletion action or external processor clearance is inferred.
+- Permanent account closure remains disabled. The discovery RPC is read-only and exposes no record contents.

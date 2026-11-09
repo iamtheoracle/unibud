@@ -6,6 +6,7 @@ import { SessionService } from "../auth/session-core.ts";
 import { createAuthRpcRepository } from "../auth/auth-rpc-repository-core.ts";
 import type { SqlPool } from "../database/account-context-core.ts";
 import { ProfileService } from "../profiles/profile-service-core.ts";
+import { AccountDependencyRepository } from "../account/account-dependency-repository.ts";
 import { ProfileProcedureRepository } from "../profiles/profile-procedure-repository.ts";
 import { OnboardingService } from "../onboarding/onboarding-core.ts";
 import { OnboardingProcedureRepository } from "../onboarding/onboarding-repository-core.ts";
@@ -40,6 +41,7 @@ export function createIdentityServices(dependencies:IdentityRuntimeDependencies)
  const onboarding=new OnboardingService(
   sessions,new OnboardingProcedureRepository(dependencies.appPool)
  );
- return {authentication,verification,sessions,profiles,onboarding};
+ const accountDependencies = new AccountDependencyRepository(dependencies.appPool);
+ return {authentication,verification,sessions,profiles,onboarding,accountDependencies};
 }
 

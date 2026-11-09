@@ -9,16 +9,17 @@ export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
   if (!token) return NextResponse.json({ ok: false, error: "Authentication required." }, { status: 401 });
   try {
-    const { sessions, profiles } = createConfiguredIdentityServices();
+    const { sessions, profiles, accountDependencies } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return NextResponse.json({ ok: false, error: "Authentication required." }, { status: 401 });
 
     const accountId = validation.account.id;
-    const [preflight, accessible, archived, incomingTransfers] = await Promise.all([
+    const [preflight, accessible, archived, incomingTransfers, dependencyDiscovery] = await Promise.all([
       profiles.getAccountClosurePreflight(accountId),
       profiles.listAccessibleProfiles(accountId),
       profiles.listArchivedOwnedProfiles(accountId),
-      profiles.listIncomingOwnershipTransfers(accountId)
+      profiles.listIncomingOwnershipTransfers(accountId),
+      accountDependencies.getForAccount(accountId)
     ]);
 
     const owned = accessible.filter((entry) => entry.relationship === "owner" && entry.profile.ownerAccountId === accountId);
@@ -57,7 +58,7 @@ export async function GET(request: NextRequest) {
     };
     const readiness = buildClosureReadiness(snapshot);
     const dependencies = buildAccountDependencyInventory();
-    return NextResponse.json({ ok: true, readiness, snapshot, dependencies }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ ok: true, readiness, snapshot, dependencies, dependencyDiscovery }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof ProfileAccessDeniedError) return NextResponse.json({ ok: false, error: "Account access denied." }, { status: 403 });
     return routeError(error);
