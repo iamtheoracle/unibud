@@ -7,7 +7,7 @@ const owner="10000000-0000-4000-8000-000000000001";
 const delegate="10000000-0000-4000-8000-000000000002";
 const profileId="20000000-0000-4000-8000-000000000001";
 function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwitch=true):ProfileAccessRecord{
- return {accountId:accountId as ProfileAccessRecord["accountId"],relationship,membershipStatus:"active",canSwitchToProfile:canSwitch,
+ return {accountId:accountId as ProfileAccessRecord["accountId"],relationship,role:relationship==="owner"?"owner":"editor",membershipStatus:"active",canSwitchToProfile:canSwitch,
  profile:{id:profileId as ProfileAccessRecord["profile"]["id"],ownerAccountId:owner as ProfileAccessRecord["profile"]["ownerAccountId"],kind:"personal",handle:"oracle",displayName:"Oracle",visibility:"private",status:"active"}};
 }
 class Repo implements ProfileRepository{
@@ -15,6 +15,9 @@ class Repo implements ProfileRepository{
  async updateOwnedProfile(accountId:string,input:ProfileUpdateInput){this.updateInput=input;return {...access(accountId),profile:{...access(accountId).profile,kind:"creator",handle:input.handle,displayName:input.displayName,visibility:input.visibility}};}
  async authorizeAction(_account:string,_profile:string,_permission:ProfilePermission){return this.permissionAllowed;}
  async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
+ async manageDelegatedAccess(){return true;}
+ async cancelInvitation(){return true;}
+ async listOutgoingInvitations(){return [];}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async listDelegatedAccess(){return [access(delegate,"delegated",true)];}
