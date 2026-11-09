@@ -11,13 +11,16 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
  profile:{id:profileId as ProfileAccessRecord["profile"]["id"],ownerAccountId:owner as ProfileAccessRecord["profile"]["ownerAccountId"],kind:"personal",handle:"oracle",displayName:"Oracle",visibility:"private",status:"active"}};
 }
 class Repo implements ProfileRepository{
- record=access(); grants=0; revoked=0; activeContext=false;
+ record=access(); grants=0; revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null;
  async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
  async grantDelegatedAccess(_owner:string,input:DelegatedProfileGrantInput){this.grants++;return access(input.delegateAccountId,"delegated",input.canSwitchToProfile);}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async listDelegatedAccess(){return [access(delegate,"delegated",true)];}
  async findProfileAccess(accountId:string){return this.record.accountId===accountId?this.record:undefined;}
+ async inviteDelegateByHandle(_owner:string,input:Parameters<ProfileRepository["inviteDelegateByHandle"]>[1]){this.invitationInput=input;return {id:"60000000-0000-4000-8000-000000000001",inviteeHandle:input.inviteeHandle,inviteeDisplayName:"Invitee"};}
+ async listIncomingInvitations(){return [];}
+ async respondToInvitation(_account:string,id:string,accept:boolean){this.invitationResponse={id,accept};return true;}
  async setActiveProfileContext(){this.activeContext=true;return true;}
 }
 
@@ -44,4 +47,20 @@ test("switching requires repository-backed membership and explicit switch permis
  assert.equal(result.activeProfile.activeProfileId,profileId);
  repo.record=access(delegate,"delegated",false);
  await assert.rejects(()=>service.switchProfile(delegate,"40000000-0000-4000-8000-000000000002",profileId),ProfileAccessDeniedError);
+});
+
+test("page delegation invites a discoverable UNIBUD handle and does not grant access before acceptance",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"page_community"}};
+ const invitation=await service.inviteDelegateByHandle(owner,{profileId,inviteeHandle:" @Invitee.One ",role:"editor",canSwitchToProfile:true});
+ assert.equal(invitation.inviteeHandle,"invitee.one");
+ assert.deepEqual(repo.invitationInput,{profileId,inviteeHandle:"invitee.one",role:"editor",canSwitchToProfile:true});
+ assert.equal(repo.grants,0);
+ assert.equal(await service.respondToInvitation(delegate,invitation.id,true),true);
+ assert.deepEqual(repo.invitationResponse,{id:invitation.id,accept:true});
+});
+
+test("only an owned active page can issue a profile invitation",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ await assert.rejects(()=>service.inviteDelegateByHandle(delegate,{profileId,inviteeHandle:"valid.user",role:"editor",canSwitchToProfile:false}),ProfileAccessDeniedError);
 });
