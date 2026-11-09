@@ -13,6 +13,7 @@ export type ChallengeVerificationResult =
 export interface NewVerificationChallenge {
   id: string;
   accountId: string;
+  identityId: string;
   channel: VerificationChannel;
   purpose: VerificationPurpose;
   targetDigest: Buffer;
@@ -58,6 +59,7 @@ export interface VerificationDelivery {
 
 export interface IssueVerificationInput {
   accountId: string;
+  identityId: string;
   channel: VerificationChannel;
   purpose: VerificationPurpose;
   destination: string;
@@ -133,6 +135,7 @@ export class VerificationChallengeService {
 
     await this.limiter.assertAllowed({
       accountId: input.accountId,
+      identityId: input.identityId,
       channel: input.channel,
       purpose: input.purpose,
       targetDigest,
