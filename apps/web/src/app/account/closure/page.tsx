@@ -12,7 +12,7 @@ type ResponseBody = { ok: true; readiness: {
   blockers: { ownedProfiles: number; activeOwnedProfiles: number; archivedOwnedProfiles: number; delegatedRelationships: number; incomingTransfers: number; outgoingTransfers: number };
   policyGate: { status: "not_approved"; message: string };
   explanation: string;
-}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } } } | { ok: false; error: string };
+}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } }; dependencyDiscovery: { version: string; generatedAt: string; counts: Record<string, number>; sharedOwnership: Record<string, number>; foreignKeys: Array<{ constraint: string; fromTable: string; toTable: string; definition: string }>; coverage: { registeredTables: string[]; notImplementedDomains: string[]; unknownExternalDependenciesBlockClosure: true }; policy: { status: "not_approved"; missingPolicyDomains: string[]; canClose: false } } } | { ok: false; error: string };
 
 export default function AccountClosureReadinessPage() {
   const [data, setData] = useState<Extract<ResponseBody, { ok: true }> | null>(null);
@@ -101,6 +101,32 @@ export default function AccountClosureReadinessPage() {
           </li>)}
         </ul>
         <p className="mt-4 text-sm font-medium" role="status">{data.dependencies.policy.reason}</p>
+      </section>
+
+      <section aria-labelledby="discovery-heading" className="mt-8">
+        <h2 id="discovery-heading" className="text-xl font-semibold">Live account dependency discovery</h2>
+        <p className="mt-2 text-sm text-slate-600">Aggregate counts are queried from PostgreSQL inside a short-lived, signed account transaction. No record contents or credential values are returned.</p>
+        <p className="mt-2 text-xs text-slate-500">Generated: {new Date(data.dependencyDiscovery.generatedAt).toLocaleString()}</p>
+        <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {Object.entries(data.dependencyDiscovery.counts).map(([key, value]) => <div key={key} className="rounded-xl border p-3"><dt className="text-xs text-slate-600">{key.replace(/[A-Z]/g, letter => ` ${letter.toLowerCase()}`)}</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{value}</dd></div>)}
+        </dl>
+        <h3 className="mt-6 font-semibold">Shared ownership and open relationships</h3>
+        <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {Object.entries(data.dependencyDiscovery.sharedOwnership).map(([key, value]) => <div key={key} className="rounded-xl border p-3"><dt className="text-xs text-slate-600">{key.replace(/[A-Z]/g, letter => ` ${letter.toLowerCase()}`)}</dt><dd className="mt-1 text-lg font-semibold tabular-nums">{value}</dd></div>)}
+        </dl>
+        <h3 className="mt-6 font-semibold">Database relationship map</h3>
+        <p className="mt-1 text-sm text-slate-600">Foreign-key definitions among the registered account and profile tables.</p>
+        {data.dependencyDiscovery.foreignKeys.length === 0 ? <p className="mt-3 text-sm" role="status">No foreign-key relationships were returned. This is a discovery failure or an incomplete schema, not proof that dependencies do not exist.</p> : (
+          <ul className="mt-3 space-y-2">
+            {data.dependencyDiscovery.foreignKeys.map((edge) => <li key={edge.constraint} className="rounded-lg border p-3 text-sm">
+              <p className="font-medium">{edge.fromTable} → {edge.toTable}</p>
+              <p className="mt-1 text-xs text-slate-500">{edge.definition}</p>
+            </li>)}
+          </ul>
+        )}
+        <h3 className="mt-6 font-semibold">Unapproved policy domains</h3>
+        <p className="mt-1 text-sm text-slate-600">{data.dependencyDiscovery.policy.missingPolicyDomains.join(", ")}</p>
+        <p className="mt-2 text-sm font-medium" role="status">Permanent closure remains blocked. Unknown external dependencies are also blockers.</p>
       </section>
 
       <section aria-labelledby="policy-heading" className="mt-8 rounded-2xl border p-5">
