@@ -21,8 +21,8 @@ BEGIN
     VALUES (audit_id,a,'unibud','migration_smoke_test','success');
 
   BEGIN
-    INSERT INTO profile_memberships (id,profile_id,account_id,owner_account_id,relationship,role,status,can_switch_to_profile)
-      VALUES ('30000000-0000-4000-8000-000000000002',p,b,a,'delegated','admin','active',true);
+    INSERT INTO profile_memberships (id,profile_id,account_id,owner_account_id,profile_owner_account_id,relationship,role,status,can_switch_to_profile)
+      VALUES ('30000000-0000-4000-8000-000000000002',p,b,a,a,'delegated','admin','active',true);
   EXCEPTION WHEN check_violation OR foreign_key_violation THEN rejected := true; END;
   IF NOT rejected THEN RAISE EXCEPTION 'Invalid delegated membership was accepted'; END IF;
 
