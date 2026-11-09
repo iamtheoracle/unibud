@@ -96,6 +96,7 @@ test("verification rejects mismatched purpose and invalid phone formats", async 
   );
   await assert.rejects(() => service.issue({
     accountId: "10000000-0000-4000-8000-000000000001",
+    identityId: "20000000-0000-4000-8000-000000000001",
     channel: "phone",
     purpose: "email_verification",
     destination: "+2348012345678"
