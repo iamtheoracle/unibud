@@ -15,7 +15,7 @@ INSERT INTO profile_memberships(
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES('ci-profile-session-key',decode(repeat('5a',32),'hex'));
 SET LOCAL ROLE unibud_auth;
-PERFORM public.auth_create_session(
+SELECT public.auth_create_session(
  '40000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001',
  decode(repeat('a1',32),'hex'),now(),now()+interval '30 minutes',now()+interval '12 hours'
 );
