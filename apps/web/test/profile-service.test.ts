@@ -64,3 +64,19 @@ test("only an owned active page can issue a profile invitation",async()=>{
  const repo=new Repo(),service=new ProfileService(repo);
  await assert.rejects(()=>service.inviteDelegateByHandle(delegate,{profileId,inviteeHandle:"valid.user",role:"editor",canSwitchToProfile:false}),ProfileAccessDeniedError);
 });
+
+test("profile creation and switching complete as one authenticated profile workflow",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ const created=await service.createOwnedProfile(owner,{kind:"creator",handle:"new.creator",displayName:"New Creator"});
+ repo.record=created;
+ const switched=await service.switchProfile(owner,"40000000-0000-4000-8000-000000000001",created.profile.id);
+ assert.equal(switched.activeProfile.activeProfileId,created.profile.id);
+ assert.equal(repo.activeContext,true);
+});
+
+test("profile switching rejects another account and revoked memberships",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ await assert.rejects(()=>service.switchProfile(delegate,"40000000-0000-4000-8000-000000000002",profileId),ProfileAccessDeniedError);
+ repo.record={...access(),membershipStatus:"revoked"};
+ await assert.rejects(()=>service.switchProfile(owner,"40000000-0000-4000-8000-000000000001",profileId),ProfileAccessDeniedError);
+});
