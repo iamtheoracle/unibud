@@ -24,7 +24,7 @@ REVOKE ALL ON public.profile_role_permissions FROM PUBLIC,unibud_app;
 GRANT SELECT ON public.profile_role_permissions TO unibud_profile_owner;
 
 INSERT INTO public.profile_role_permissions(role,permission) VALUES
- ('admin','profile.read'),('admin','profile.update_identity'),
+ ('admin','profile.read'),
  ('admin','content.create'),('admin','content.update'),('admin','content.publish'),
  ('admin','content.delete'),('admin','content.moderate'),('admin','members.view'),
  ('moderator','profile.read'),('moderator','content.moderate'),('moderator','members.view'),
