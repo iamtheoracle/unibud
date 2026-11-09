@@ -23,8 +23,8 @@ SET search_path=pg_catalog,public
 AS $function$
 DECLARE current_count INTEGER;
 BEGIN
- IF p_action NOT IN ('register','login','recovery','verification')
- OR p_bucket_digest IS NULL OR octet_length(p_bucket_digest)<>32
+ IF p_action IS NULL OR p_action NOT IN ('register','login','recovery','verification')
+ OR p_bucket_digest IS NULL OR octet_length(p_bucket_digest)<>32 OR p_now IS NULL
  OR p_limit<1 OR p_limit>1000 OR p_window_seconds<1 OR p_window_seconds>86400
  OR p_retention_seconds<p_window_seconds OR p_retention_seconds>2592000
  THEN RAISE EXCEPTION 'Invalid rate limit request'; END IF;
@@ -48,7 +48,9 @@ BEGIN
 END;
 $function$;
 
+GRANT CREATE ON SCHEMA public TO unibud_auth_owner;
 ALTER FUNCTION public.auth_consume_rate_limit(TEXT,BYTEA,TIMESTAMPTZ,INTEGER,INTEGER,INTEGER) OWNER TO unibud_auth_owner;
+REVOKE CREATE ON SCHEMA public FROM unibud_auth_owner;
 REVOKE ALL ON FUNCTION public.auth_consume_rate_limit(TEXT,BYTEA,TIMESTAMPTZ,INTEGER,INTEGER,INTEGER) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.auth_consume_rate_limit(TEXT,BYTEA,TIMESTAMPTZ,INTEGER,INTEGER,INTEGER) TO unibud_auth;
 COMMIT;
