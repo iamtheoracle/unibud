@@ -9,6 +9,7 @@
 ## Architecture
 - [System Architecture](architecture/SYSTEM-ARCHITECTURE.md)
 - [Data Architecture](architecture/DATA-ARCHITECTURE.md)
+- [Cross-Space Flows and Ownership Boundaries](architecture/CROSS-SPACE-FLOWS.md)
 - [Integration Register](architecture/INTEGRATION-REGISTER.md)
 - [Decision 0001: Monorepo and Service Boundaries](decisions/0001-monorepo-and-service-boundaries.md)
 - [Decision Log](decisions/DECISION-LOG.md)
