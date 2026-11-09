@@ -334,6 +334,37 @@ AS $function$
   LIMIT 1
 $function$;
 
+CREATE OR REPLACE FUNCTION public.auth_touch_session(
+  p_credential_digest BYTEA,
+  p_now TIMESTAMPTZ,
+  p_idle_expires_at TIMESTAMPTZ
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public
+AS $function$
+BEGIN
+  IF p_credential_digest IS NULL OR octet_length(p_credential_digest) <> 32
+     OR p_now IS NULL OR p_idle_expires_at <= p_now THEN
+    RETURN FALSE;
+  END IF;
+  UPDATE public.account_sessions s
+  SET last_seen_at = p_now,
+      idle_expires_at = LEAST(p_idle_expires_at,s.absolute_expires_at)
+  WHERE s.credential_digest = p_credential_digest
+    AND s.status = 'active' AND s.revoked_at IS NULL
+    AND s.issued_at <= p_now
+    AND s.idle_expires_at > p_now
+    AND s.absolute_expires_at > p_now
+    AND EXISTS (
+      SELECT 1 FROM public.accounts a
+      WHERE a.id = s.account_id AND a.status = 'active'
+    );
+  RETURN FOUND;
+END;
+$function$;
+
 CREATE OR REPLACE FUNCTION public.auth_revoke_session(
   p_credential_digest BYTEA,
   p_revoked_at TIMESTAMPTZ,
@@ -414,7 +445,7 @@ BEGIN
       'auth_create_pending_account','auth_lookup_identity',
       'auth_create_verification_challenge','auth_revoke_verification_challenge',
       'auth_verify_challenge','auth_reset_password','auth_create_session',
-      'auth_lookup_session','auth_revoke_session','auth_rotate_session'
+      'auth_lookup_session','auth_touch_session','auth_revoke_session','auth_rotate_session'
     )
   LOOP
     EXECUTE format('ALTER FUNCTION %s OWNER TO unibud_auth_owner',signature);
@@ -432,6 +463,7 @@ REVOKE ALL ON FUNCTION public.auth_verify_challenge(UUID,BYTEA,TIMESTAMPTZ) FROM
 REVOKE ALL ON FUNCTION public.auth_reset_password(UUID,TEXT,TIMESTAMPTZ) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_create_session(UUID,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_lookup_session(BYTEA) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.auth_touch_session(BYTEA,TIMESTAMPTZ,TIMESTAMPTZ) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_revoke_session(BYTEA,TIMESTAMPTZ,TEXT) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) FROM PUBLIC;
 
@@ -443,6 +475,7 @@ GRANT EXECUTE ON FUNCTION public.auth_verify_challenge(UUID,BYTEA,TIMESTAMPTZ) T
 GRANT EXECUTE ON FUNCTION public.auth_reset_password(UUID,TEXT,TIMESTAMPTZ) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_create_session(UUID,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_lookup_session(BYTEA) TO unibud_auth;
+GRANT EXECUTE ON FUNCTION public.auth_touch_session(BYTEA,TIMESTAMPTZ,TIMESTAMPTZ) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_revoke_session(BYTEA,TIMESTAMPTZ,TEXT) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) TO unibud_auth;
 
