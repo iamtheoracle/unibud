@@ -1,5 +1,6 @@
 -- Authenticated, account-scoped dependency discovery for closure readiness.
 -- Counts only; no row contents, identifiers, credentials or event payloads leave PostgreSQL.
+-- Credential and verification rows are counted without exposing hashes or challenge digests.
 BEGIN;
 
 GRANT SELECT ON
