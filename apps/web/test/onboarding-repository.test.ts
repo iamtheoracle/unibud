@@ -61,7 +61,7 @@ test("onboarding transaction rolls back when persistence fails",async()=>{
     return original(sql,values);
   };
   const repo=new OnboardingProcedureRepository(pool);
-  await assert.rejects(()=>repo.completeOnboarding(accountId,{
+  await assert.rejects(()=>repo.completeOnboarding(accountId,"40000000-0000-4000-8000-000000000001",{
     handle:"oracle",displayName:"Oracle",termsVersion:"terms-v1",privacyVersion:"privacy-v1",acceptedAt:"2026-11-09T06:00:00.000Z"
   }),/synthetic profile failure/);
   assert.ok(pool.client.calls.some(c=>c.sql==="ROLLBACK"));
