@@ -37,11 +37,11 @@ export default function AccountClosureReadinessPage() {
   if (error) return <main className="mx-auto max-w-3xl px-5 py-12"><h1 className="text-2xl font-semibold">Account closure readiness</h1><p role="alert" className="mt-4">{error}</p><button className="mt-5 rounded-lg border px-4 py-2" onClick={() => window.location.reload()}>Try again</button></main>;
   if (!data) return null;
 
-  const { readiness, snapshot } = data;
+  const { readiness } = data;
   const counts = readiness.blockers;
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm"><Link href="/settings" className="underline">Settings</Link><span aria-hidden="true"> / </span><span>Account closure</span></nav>
+      <nav aria-label="Breadcrumb" className="mb-6 text-sm"><Link href="/profiles" className="underline">Profiles</Link><span aria-hidden="true"> / </span><span>Account closure</span></nav>
       <header>
         <p className="text-sm font-medium text-slate-600">ACCOUNT &amp; SECURITY</p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Account closure readiness</h1>
