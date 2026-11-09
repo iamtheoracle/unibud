@@ -21,7 +21,7 @@ type ProfileRecord = {
 };
 type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
 
-const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "moderator", "viewer"];
+const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "professional", "student", "staff", "operator", "viewer"];
 
 async function readError(response: Response): Promise<string> {
   try {
@@ -199,7 +199,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
         {ownedProfiles.filter((item) => item.profile.kind === "page_community").length === 0 ? <p className="profile-empty">Create a page/community profile before adding administrators.</p> : <>
           <label className="profile-field">Choose a page or community<select value={selectedDelegationProfile} onChange={(event) => setSelectedDelegationProfile(event.target.value)}>{ownedProfiles.filter((item) => item.profile.kind === "page_community").map((item) => <option key={item.profile.id} value={item.profile.id}>{item.profile.displayName}</option>)}</select></label>
           <div className="delegate-list">
-            {delegates.length === 0 ? <p className="profile-muted">No delegated members for this profile yet.</p> : delegates.map((delegate) => <article className="delegate-row" key={delegate.accountId}><div><strong>{delegate.profile.displayName}</strong><small>Account {delegate.accountId} · {delegate.membershipStatus}</small></div><button className="profile-text-action" type="button" disabled={busy} onClick={() => void revokeDelegate(delegate.accountId)}>Revoke</button></article>)}
+            {delegates.length === 0 ? <p className="profile-muted">No delegated members for this profile yet.</p> : delegates.map((delegate) => <article className="delegate-row" key={delegate.accountId}><div><strong>Account {delegate.accountId}</strong><small>Access to {delegate.profile.displayName} · {delegate.membershipStatus}</small></div><button className="profile-text-action" type="button" disabled={busy} onClick={() => void revokeDelegate(delegate.accountId)}>Revoke</button></article>)}
           </div>
           <form className="profile-form delegate-form" onSubmit={grantDelegate}>
             <label>Delegate’s UNIBUD account ID<input value={delegateAccountId} onChange={(event) => setDelegateAccountId(event.target.value)} required placeholder="Account ID supplied by the person" /></label>
