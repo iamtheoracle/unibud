@@ -162,4 +162,22 @@ BEGIN
  IF v_notifications<4 THEN RAISE EXCEPTION 'Expected request, acceptance and both completion notifications, got %',v_notifications; END IF;
 END
 $complete$;
+-- The new owner can review the append-only ownership transfer audit history.
+WITH x AS (
+ SELECT '17000000-0000-4000-8000-000000000002'::text a,
+ floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+ 'eaeaeaea-eaea-4aea-8aea-eaeaeaeaeaea'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry',e,true),
+ set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('bc',32),'hex'),'sha256'),'hex'),true) FROM x;
+DO $history$
+DECLARE v_count INTEGER;
+BEGIN
+ SELECT count(*) INTO v_count FROM public.profile_list_lifecycle_history(
+  '37000000-0000-4000-8000-000000000002','17000000-0000-4000-8000-000000000002')
+ WHERE action LIKE 'profile.ownership_transfer.%';
+ IF v_count<>3 THEN RAISE EXCEPTION 'New owner could not review complete transfer audit history: %',v_count; END IF;
+END
+$history$;
 ROLLBACK;
