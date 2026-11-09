@@ -40,7 +40,7 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
  private readonly identifiers:IdentifierProtector;
  constructor(pool:SqlPool,identifiers:IdentifierProtector){this.pool=pool;this.identifiers=identifiers;}
 
- private async query<T extends Row=Row>(sql:string,values:readonly unknown[]=[]):Promise<T[]>{
+ private async query<T=Row>(sql:string,values:readonly unknown[]=[]):Promise<T[]>{
   const client:SqlClient=await this.pool.connect();
   try{return (await client.query<T>(sql,values)).rows;}
   finally{client.release();}
