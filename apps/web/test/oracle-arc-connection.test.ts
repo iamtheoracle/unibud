@@ -178,10 +178,13 @@ test("operator diagnostic gate requires the configured bearer credential", t => 
   });
   delete process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN;
   assert.equal(isIntegrationOperatorRequest("Bearer any-token"), false);
+  process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN = "short";
+  assert.equal(isIntegrationOperatorRequest("Bearer short"), false);
   process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN = "operator-test-token-with-sufficient-entropy";
   assert.equal(isIntegrationOperatorRequest(null), false);
   assert.equal(isIntegrationOperatorRequest("Basic operator-test-token-with-sufficient-entropy"), false);
   assert.equal(isIntegrationOperatorRequest("Bearer wrong-token"), false);
   assert.equal(isIntegrationOperatorRequest("Bearer operator-test-token-with-sufficient-entropy extra"), false);
+  assert.equal(isIntegrationOperatorRequest("Bearer\\toperator-test-token-with-sufficient-entropy"), false);
   assert.equal(isIntegrationOperatorRequest("Bearer operator-test-token-with-sufficient-entropy"), true);
 });
