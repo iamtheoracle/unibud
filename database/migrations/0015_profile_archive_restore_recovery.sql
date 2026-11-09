@@ -73,9 +73,9 @@ BEGIN
      AND status='active';
 
   INSERT INTO public.security_audit_events(
-    actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data
+    id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data
   ) VALUES (
-    p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,
+    gen_random_uuid(),p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,
     'owner_requested',
     jsonb_build_object('profile_kind',v_profile.kind,'previous_status',v_profile.status,'new_status','archived')
   );
