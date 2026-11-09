@@ -20,7 +20,8 @@ VALUES
  ('37000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000002','personal','transfer-recipient','transfer-recipient','Transfer Recipient','private'),
  ('37000000-0000-4000-8000-000000000004','17000000-0000-4000-8000-000000000003','personal','transfer-delegate','transfer-delegate','Transfer Delegate','private'),
  ('37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001','page_community','transfer-page','transfer-page','Transfer Page','public'),
- ('37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001','creator','archive-transfer','archive-transfer','Archive Transfer','public');
+ ('37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001','creator','archive-transfer','archive-transfer','Archive Transfer','public'),
+ ('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001','creator','delegate-archive','delegate-archive','Delegate Archive','public');
 
 INSERT INTO public.profile_memberships(id,profile_id,account_id,owner_account_id,profile_owner_account_id,
  relationship,role,status,can_switch_to_profile,granted_by_account_id)
@@ -31,7 +32,9 @@ VALUES
  ('47000000-0000-4000-8000-000000000004','37000000-0000-4000-8000-000000000004','17000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000003','owner','owner','active',true,'17000000-0000-4000-8000-000000000003'),
  ('47000000-0000-4000-8000-000000000005','37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','owner','owner','active',true,'17000000-0000-4000-8000-000000000001'),
  ('47000000-0000-4000-8000-000000000006','37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000003',NULL,'17000000-0000-4000-8000-000000000001','delegated','admin','active',false,'17000000-0000-4000-8000-000000000001'),
- ('47000000-0000-4000-8000-000000000007','37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','owner','owner','active',true,'17000000-0000-4000-8000-000000000001');
+ ('47000000-0000-4000-8000-000000000007','37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','owner','owner','active',true,'17000000-0000-4000-8000-000000000001'),
+ ('47000000-0000-4000-8000-000000000009','37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','owner','owner','active',true,'17000000-0000-4000-8000-000000000001'),
+ ('47000000-0000-4000-8000-000000000010','37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000003',NULL,'17000000-0000-4000-8000-000000000001','delegated','editor','active',false,'17000000-0000-4000-8000-000000000001');
 
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES('ci-profile-transfer-key',decode(repeat('bc',32),'hex'));
@@ -78,6 +81,19 @@ BEGIN
  IF v_status<>'cancelled' THEN RAISE EXCEPTION 'Archiving did not cancel outstanding transfer consent'; END IF;
 END
 $archive_cancel$;
+
+-- Archiving suspends active delegates; restoration never silently reactivates them.
+DO $delegate_archive$
+DECLARE v_status TEXT;
+BEGIN
+ PERFORM public.profile_archive_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
+ SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
+ IF v_status<>'suspended' THEN RAISE EXCEPTION 'Archive did not suspend delegated access'; END IF;
+ PERFORM public.profile_restore_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
+ SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
+ IF v_status<>'suspended' THEN RAISE EXCEPTION 'Restore silently reactivated delegated access'; END IF;
+END
+$delegate_archive$;
 
 -- Expiry is terminal, audited and visible to both parties.
 DO $expiry$
