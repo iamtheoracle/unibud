@@ -8,6 +8,7 @@ interface Row { [key: string]: unknown }
 function asString(value:unknown):string { if(typeof value!=="string") throw new Error("Unexpected database result."); return value; }
 function asNullableString(value:unknown):string|null { return value===null||value===undefined?null:asString(value); }
 function asDateString(value:unknown):string { return value instanceof Date?value.toISOString():asString(value); }
+function asNullableDateString(value:unknown):string|null { return value===null||value===undefined?null:asDateString(value); }
 function readKey(name:string):Buffer {
  const raw=process.env[name]?.trim()??"";
  if(!/^(?:[0-9a-f]{2}){32,}$/i.test(raw)) throw new Error(name+" must be at least 32 random bytes encoded as hex.");
@@ -19,14 +20,15 @@ export class IdentifierProtector {
  constructor(private readonly encryptionKey:Uint8Array,private readonly lookupKey:Uint8Array){
   if(encryptionKey.byteLength!==32||lookupKey.byteLength<32) throw new Error("Invalid identifier protection key material.");
  }
- protect(identifier:string):{ciphertext:Buffer;lookupDigest:Buffer}{
+ protect(identifier:string,method:"email"|"phone"):{ciphertext:Buffer;lookupDigest:Buffer}{
   const iv=randomBytes(12),cipher=createCipheriv("aes-256-gcm",this.encryptionKey,iv);
+  cipher.setAAD(Buffer.from("unibud:identity:v1:"+method,"utf8"));
   const encrypted=Buffer.concat([cipher.update(identifier,"utf8"),cipher.final()]);
   return {ciphertext:Buffer.concat([Buffer.from([1]),iv,cipher.getAuthTag(),encrypted]),
-   lookupDigest:createHmac("sha256",this.lookupKey).update(identifier,"utf8").digest()};
+   lookupDigest:this.digest(identifier,method)};
  }
- digest(identifier:string):Buffer {
-  return createHmac("sha256",this.lookupKey).update(identifier,"utf8").digest();
+ digest(identifier:string,method:"email"|"phone"):Buffer {
+  return createHmac("sha256",this.lookupKey).update("identifier:"+method+":"+identifier,"utf8").digest();
  }
 }
 
@@ -47,7 +49,7 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
  }
 
  async registerPending(input:Parameters<AuthRepository["registerPending"]>[0]):Promise<boolean>{
-  const protectedValue=this.identifiers.protect(input.normalizedIdentifier);
+  const protectedValue=this.identifiers.protect(input.normalizedIdentifier,input.method);
   try{
    await this.query("SELECT * FROM public.auth_create_pending_account($1,$2,$3,$4,$5,$6,$7)",[
     input.accountId,input.identityId,input.subject,input.method,protectedValue.ciphertext,
@@ -61,16 +63,17 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
  }
 
  async findLoginAccount(identifier:string,channel:"email"|"phone"):Promise<AuthAccountRecord|null>{
-  const rows=await this.query("SELECT * FROM public.auth_lookup_identity($1,$2)",[channel,this.identifiers.digest(identifier)]);
+  const rows=await this.query("SELECT * FROM public.auth_lookup_identity($1,$2)",[channel,this.identifiers.digest(identifier,channel)]);
   const row=rows[0];if(!row)return null;
   return {id:asString(row.account_id),identityId:asString(row.identity_id),
    status:asString(row.account_status) as AuthAccountRecord["status"],
-   identityVerifiedAt:asNullableString(row.verified_at),credentialHash:asString(row.credential_hash)};
+   identityVerifiedAt:asNullableDateString(row.verified_at),credentialHash:asNullableString(row.credential_hash)??""};
  }
 
  async findRecoveryTarget(identifier:string,channel:"email"|"phone"):Promise<RecoveryTarget|null>{
   const rows=await this.query("SELECT * FROM public.auth_lookup_identity($1,$2)",[channel,this.identifiers.digest(identifier)]);
   const row=rows[0];if(!row)return null;
+  if(asString(row.account_status)!=="active" || !asNullableDateString(row.verified_at)) return null;
   return {accountId:asString(row.account_id),identityId:asString(row.identity_id),channel,destination:identifier};
  }
 
@@ -121,7 +124,7 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
   const session:PersistedSession={
    id:asString(row.session_id),accountId:asString(row.account_id),credentialDigest:digest,
    status:asString(row.session_status) as PersistedSession["status"],
-   issuedAt:asDateString(row.issued_at),lastSeenAt:asNullableString(row.last_seen_at),
+   issuedAt:asDateString(row.issued_at),lastSeenAt:asNullableDateString(row.last_seen_at),
    idleExpiresAt:asDateString(row.idle_expires_at),absoluteExpiresAt:asDateString(row.absolute_expires_at),
    revokedAt:asNullableString(row.revoked_at),rotatedFromSessionId:null
   };
