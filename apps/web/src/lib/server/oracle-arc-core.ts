@@ -46,6 +46,34 @@ function resolveStatusUrl(apiUrl: string): URL {
   return new URL("integration/status", normalized);
 }
 
+async function readBoundedBody(response: Response, maximumBytes: number): Promise<string | null> {
+  if (!response.body) return "";
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > maximumBytes) {
+        await reader.cancel();
+        return null;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const bytes = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+}
+
 export async function checkOracleArcConnection(): Promise<OracleArcConnectionResult> {
   const checkedAt = new Date().toISOString();
   const { apiUrl, model, apiKey } = readConfig();
@@ -118,8 +146,13 @@ export async function checkOracleArcConnection(): Promise<OracleArcConnectionRes
       };
     }
 
-    const responseBody = await response.text();
-    if (responseBody.length > 8192) {
+    let responseBody: string | null;
+    try {
+      responseBody = await readBoundedBody(response, 8192);
+    } catch {
+      responseBody = null;
+    }
+    if (responseBody === null) {
       return {
         state: "misconfigured",
         checkedAt,
