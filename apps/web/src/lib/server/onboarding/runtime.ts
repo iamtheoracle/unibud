@@ -1,3 +1,11 @@
 import "server-only";
 
-export { createOnboardingRuntime } from "./runtime-core";
+import { getAppDatabasePool } from "../database/postgres-pool";
+import type { SessionService } from "../auth/session-core";
+import { createOnboardingRuntime } from "./runtime-core";
+
+export { createOnboardingRuntime };
+
+export function createConfiguredOnboardingRuntime(sessions:SessionService) {
+  return createOnboardingRuntime(sessions,getAppDatabasePool());
+}
