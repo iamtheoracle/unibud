@@ -19,7 +19,8 @@ import type {
   ProfileLifecycleNotification,
   ProfileClosurePreflight,
   ProfileOwnershipTransferPreflight,
-  IncomingProfileOwnershipTransfer
+  IncomingProfileOwnershipTransfer,
+  OutgoingProfileOwnershipTransfer
 } from "./profile-service-core";
 
 interface ProfileJoinRow {
@@ -127,6 +128,15 @@ export class ProfileProcedureRepository implements ProfileRepository {
         "SELECT * FROM public.profile_ownership_transfer_list_incoming($1)",[recipientAccountId]);
       return result.rows.map(row=>({transferId:row.transfer_id,profileId:row.profile_id,profileName:row.profile_name,
         profileHandle:row.profile_handle,ownerHandle:row.owner_handle,createdAt:row.created_at.toISOString(),expiresAt:row.expires_at.toISOString()}));
+    });
+  }
+
+  async listOutgoingOwnershipTransfers(ownerAccountId:string,profileId:string):Promise<OutgoingProfileOwnershipTransfer[]>{
+    return this.inAccountContext(ownerAccountId,async client=>{
+      const result=await client.query<{transfer_id:string;recipient_handle:string;status:OutgoingProfileOwnershipTransfer["status"];created_at:Date;expires_at:Date}>(
+        "SELECT * FROM public.profile_ownership_transfer_list_outgoing($1,$2)",[ownerAccountId,profileId]);
+      return result.rows.map(row=>({transferId:row.transfer_id,recipientHandle:row.recipient_handle,status:row.status,
+        createdAt:row.created_at.toISOString(),expiresAt:row.expires_at.toISOString()}));
     });
   }
 
