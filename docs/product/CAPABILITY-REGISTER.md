@@ -200,3 +200,12 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Explicit evidence state:** the verification-delivery gateway and Oracle Arc catalogue entries remain `unknown`; a tracked environment template is not proof of live configuration or provider identity. Provider capability flags default to false.
 - **Not implemented:** provider-specific adapters, actual object-store/event/payment/identity-provider inventory, deletion/export workflows or receipts, backup expiry, and the UI for the new response. These remain closure blockers, not zero-count domains.
 - **Verification:** SQL and web repository tests have been added. Full CI for this new branch is pending; no passing result is claimed. Permanent closure remains disabled and no production changes are authorised.
+
+
+### External dependency readiness experience — in progress
+
+- **Implemented on `foundation/external-dependency-readiness`:** account closure readiness UI now displays registered external integrations and aggregate account reference counts with verified, unknown, unavailable and unclassified states. Policy gaps are reported separately.
+- **Implemented:** provider adapter lookup and verification contracts use account-scoped opaque digests, reject stale or malformed evidence and fail closed when adapters are missing or fail.
+- **Safety boundary:** no export or delete operations exist in the provider adapter contract; UI projection always reports export/deletion/closure unavailable. No provider is registered or contacted by this implementation.
+- **Tests added:** missing provider, stale lookup and verification evidence, provider failure, unexpected references, shared participant ownership, state classification and fail-closed capability display.
+- **Verification:** fresh CI for the exact branch head is required; no passing CI is claimed until workflows report completion for that SHA.
