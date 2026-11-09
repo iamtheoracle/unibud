@@ -21,7 +21,7 @@ class FakeClient implements SqlClient {
     if(sql.includes("profile_create_owned")) {
       this.profileCreated++;
       this.existing=true;
-      return {rows:[{profile_id:"20000000-0000-4000-8000-000000000001",kind:"personal",handle:"oracle",display_name:"Oracle",status:"active"}] as Row[]};
+      return {rows:[{id:"20000000-0000-4000-8000-000000000001",kind:"personal",handle:"oracle",display_name:"Oracle",status:"active"}] as Row[]};
     }
     return {rows:[] as Row[]};
   }
