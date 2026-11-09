@@ -47,3 +47,8 @@ The status client now refuses redirects, requires an HTTPS remote URL, accepts o
 The operator-only endpoint remains `GET /api/internal/integrations/oracle-arc/status`, protected by the backend-only `UNIBUD_INTEGRATION_ADMIN_TOKEN`. It is not mounted in the consumer account-closure page and must not be called from browser code. The current token gate is a controlled diagnostics boundary, not a substitute for future session-derived operator RBAC.
 
 Automated tests cover missing configuration, HTTPS enforcement, authenticated identity, authentication rejection, upstream failures, malformed content, oversized responses, redirect/network failure, inference misreporting and operator bearer authentication. These tests use mocked responses; they do not assert that a deployed Oracle Arc endpoint is currently reachable.
+
+
+### Temporary operator bearer-token floor
+
+The temporary internal diagnostics bearer gate now fails closed unless the configured token contains at least 32 UTF-8 bytes. It accepts exactly one RFC-style bearer token without tabs, extra fields or whitespace and compares equal-length byte sequences in constant time. This is a minimum configuration safeguard, not operator identity, role-based access control, rotation, revocation, or an acceptable substitute for session-derived operator authorisation. Keep internal diagnostics unavailable to ordinary account sessions until that RBAC boundary exists.
