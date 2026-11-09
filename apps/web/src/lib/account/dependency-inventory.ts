@@ -124,7 +124,7 @@ export function buildAccountDependencyInventory() {
   const unimplemented = ACCOUNT_DEPENDENCY_DOMAINS.filter((domain) => domain.status === "not_implemented");
   return {
     version: "schema-inventory-1",
-    sourceMigrations: ["0001_identity_foundation", "0005_profile_access_and_context", "0011_profile_invitations", "0016_profile_recovery_notifications_and_ownership_guards", "0017_profile_ownership_transfer"],
+    sourceMigrations: ["0001_identity_foundation", "0003_credentials_and_verification", "0005_profile_access_and_context", "0008_auth_session_maintenance", "0011_profile_invitations", "0014_profile_delegation_lifecycle", "0016_profile_recovery_notifications_and_ownership_guards", "0017_profile_ownership_transfer"],
     domains: ACCOUNT_DEPENDENCY_DOMAINS,
     summary: {
       totalDomains: ACCOUNT_DEPENDENCY_DOMAINS.length,
