@@ -14,7 +14,7 @@ export default function HomePage() {
     <main className="shell">
       <header className="topbar">
         <Link className="wordmark" href="/" aria-label="UNIBUD home">unibud<span>.</span></Link>
-        <span className="eyebrow">A connected ecosystem</span>
+        <div className="home-actions"><Link href="/login">Sign in</Link><Link href="/signup">Create account</Link></div>
       </header>
 
       <section className="intro" aria-labelledby="welcome-title">
