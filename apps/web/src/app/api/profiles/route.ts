@@ -19,7 +19,7 @@ export async function POST(request:NextRequest){
  if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
  const body=await readJsonObject(request);
  if(!body) return NextResponse.json({ok:false,error:"Invalid JSON request."},{status:400});
- if(!["personal","creator","page_community"].includes(String(body.kind))||
+ if(!["creator","page_community"].includes(String(body.kind))||
    typeof body.handle!=="string"||typeof body.displayName!=="string"||
    (body.visibility!==undefined&&!["private","limited","public"].includes(String(body.visibility)))){
   return NextResponse.json({ok:false,error:"Invalid profile details."},{status:400});
@@ -29,7 +29,7 @@ export async function POST(request:NextRequest){
   const validation=await sessions.validate(token);
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
   const profile=await profiles.createOwnedProfile(validation.account.id,{
-   kind:body.kind as "personal"|"creator"|"page_community",
+   kind:body.kind as "creator"|"page_community",
    handle:body.handle,displayName:body.displayName,
    visibility:(body.visibility??"private") as "private"|"limited"|"public"
   });
