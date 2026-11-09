@@ -2,6 +2,7 @@ import "server-only";
 
 import { AuthenticationService } from "../auth/authentication-core.ts";
 import { VerificationChallengeService, type VerificationDelivery } from "../auth/verification-core.ts";
+import { HttpVerificationDelivery } from "../auth/verification-delivery.ts";
 import { SessionService } from "../auth/session-core.ts";
 import { createAuthRpcRepository } from "../auth/auth-rpc-repository-core.ts";
 import type { SqlPool } from "../database/account-context-core.ts";
@@ -45,7 +46,7 @@ export function createIdentityServices(dependencies:IdentityRuntimeDependencies)
 }
 
 /** Environment-backed factory; email/SMS delivery remains an explicit dependency. */
-export function createConfiguredIdentityServices(verificationDelivery:VerificationDelivery){
+export function createConfiguredIdentityServices(verificationDelivery:VerificationDelivery=HttpVerificationDelivery.fromEnvironment()){
  return createIdentityServices({
   authPool:getAuthDatabasePool(),
   appPool:getAppDatabasePool(),
