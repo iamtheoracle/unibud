@@ -220,7 +220,7 @@ export async function checkOracleArcConnection(): Promise<OracleArcConnectionRes
 
 export function isIntegrationOperatorRequest(authorization: string | null): boolean {
   const expected = process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN?.trim() ?? "";
-  if (!authorization || Buffer.byteLength(expected, "utf8") < 32) return false;
+  if (!authorization || !/^[A-Za-z0-9_-]{43}$/.test(expected)) return false;
 
   // Accept exactly one bearer token; reject tabs, extra fields and whitespace.
   const match = /^Bearer ([^\s]+)$/i.exec(authorization);
