@@ -43,6 +43,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0010_auth_rate_limiting.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0011_profile_invitations.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0012_profile_editing_and_role_permissions.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0013_fail_closed_profile_permission_checks.sql
       - name: Verify identity constraints and audit immutability
         env:
           PGPASSWORD: unibud_test_only
