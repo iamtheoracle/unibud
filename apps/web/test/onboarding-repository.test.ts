@@ -18,6 +18,7 @@ class FakeClient implements SqlClient {
     if(sql.includes("FROM public.profiles")) {
       return {rows:(this.existing?[{id:"20000000-0000-4000-8000-000000000001",kind:"personal",handle:"oracle",display_name:"Oracle",status:"active"}]:[]) as Row[]};
     }
+    if(sql.includes("profile_set_active_context")) return {rows:[{switched:true}] as Row[]};
     if(sql.includes("profile_create_owned")) {
       this.profileCreated++;
       this.existing=true;
@@ -35,7 +36,7 @@ class FakePool implements SqlPool {
 test("onboarding persists one personal profile and versioned acceptances in one signed transaction",async()=>{
   const pool=new FakePool(),repo=new OnboardingProcedureRepository(pool);
   const input={handle:"oracle",displayName:"Oracle",termsVersion:"terms-v1",privacyVersion:"privacy-v1",acceptedAt:"2026-11-09T06:00:00.000Z"};
-  const first=await repo.completeOnboarding(accountId,input);
+  const first=await repo.completeOnboarding(accountId,"40000000-0000-4000-8000-000000000001",input);
   assert.deepEqual(first,{id:"20000000-0000-4000-8000-000000000001",kind:"personal",handle:"oracle",displayName:"Oracle",status:"active"});
   const sql=pool.client.calls.map(c=>c.sql);
   assert.equal(sql[0],"BEGIN");
@@ -47,7 +48,7 @@ test("onboarding persists one personal profile and versioned acceptances in one 
   assert.equal(pool.client.released,true);
 
   const before=pool.client.profileCreated;
-  const second=await repo.completeOnboarding(accountId,{...input,handle:"ignored-retry"});
+  const second=await repo.completeOnboarding(accountId,"40000000-0000-4000-8000-000000000001",{...input,handle:"ignored-retry"});
   assert.equal(second.handle,"oracle");
   assert.equal(pool.client.profileCreated,before);
 });
