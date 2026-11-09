@@ -17,7 +17,7 @@ This foundation supports first-party email/phone registration and password login
 
 - Migration 0004 provides narrow account creation, identity lookup, verification challenge, password reset, and session issue/lookup/revoke/rotation procedures.
 - Migration 0005 adds profile creation, exact-profile delegated grant/revocation, and session-bound active-profile switching.
-- Migration 0008 adds challenge-owner lookup, session idle touch, and account-scoped session revocation.
+- Migration 0008 adds challenge-owner lookup, session idle touch, and account-scoped session revocation. Migration 0009 makes session lookup return the active profile context and preserves that context across session rotation.
 - The application calls these procedures with bound parameters. It must never pass a client-supplied account ID as authority; account identity comes from a verified session or challenge record.
 
 ## Credential and verification rules
@@ -27,7 +27,7 @@ This foundation supports first-party email/phone registration and password login
 - Email identifiers are normalised case-insensitively; phone identifiers require E.164. The RPC adapter encrypts identifiers with AES-256-GCM and uses a separate HMAC lookup key.
 - Public login errors are generic. Recovery request responses do not reveal whether an identity exists.
 - Challenge delivery failures revoke the persisted challenge. Rate limiting and abuse controls are injected dependencies and still need production-backed implementations.
-- Session credentials are random opaque tokens; only SHA-256 digests are persisted. Rotation revokes the previous session atomically, idle and absolute expiry are enforced, and password recovery revokes all active sessions.
+- Session credentials are random opaque tokens; only SHA-256 digests are persisted. Rotation revokes the previous session atomically, idle and absolute expiry are enforced, password recovery revokes all active sessions, and the selected profile/context version is retained across session rotation.
 - Session cookies must be Secure, HttpOnly, SameSite, scoped, rotated, and never exposed to client-side JavaScript. Cookie route handlers are not yet wired.
 
 ## Profile and onboarding boundaries
@@ -38,4 +38,4 @@ Onboarding derives the account only from a verified session, requires explicit t
 
 ## Verification status
 
-GitHub Actions applies migrations 0001–0008 to disposable PostgreSQL 16 and runs synthetic SQL isolation/immutability tests. Web CI runs pure service tests, TypeScript checks, lint, and build. Passing CI is not evidence that production secrets, pools, providers, delivery channels, cookie settings, backups, or operations are deployed.
+GitHub Actions applies migrations 0001–0009 to disposable PostgreSQL 16 and runs synthetic SQL isolation/immutability tests. Web CI runs pure service tests, TypeScript checks, lint, and build. Passing CI is not evidence that production secrets, pools, providers, delivery channels, cookie settings, backups, or operations are deployed.
