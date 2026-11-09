@@ -4,7 +4,7 @@ import { getAuthDatabasePool, getAppDatabasePool } from "../database/postgres-po
 import { HttpVerificationDelivery } from "../auth/verification-delivery";
 import { createIdentityServices } from "./identity-runtime-core";
 
-export { createIdentityServices, createConfiguredIdentityServices };
+export { createIdentityServices };
 export type { IdentityRuntimeDependencies } from "./identity-runtime-core";
 
 export function createConfiguredIdentityServices() {
