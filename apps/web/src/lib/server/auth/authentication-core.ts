@@ -79,6 +79,22 @@ export class AuthenticationService {
     });
     return {ok:true,state:"verification_required",challengeId:challenge.challengeId,expiresAt:challenge.expiresAt};
   }
+  async resendVerification(input:{channel:VerificationChannel;identifier:string;now?:Date}):Promise<AuthResult>{
+    const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
+    await this.limiter.assertAllowed({action:"register",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
+    const account=await this.repository.findLoginAccount(identifier,input.channel);
+    const challengeId=randomUUID();
+    if(account && account.status==="pending_verification" && !account.identityVerifiedAt){
+      const challenge=await this.challenges.issue({
+        challengeId,accountId:account.id,identityId:account.identityId,channel:input.channel,
+        purpose:input.channel==="email"?"email_verification":"phone_verification",
+        destination:identifier,now
+      });
+      return {ok:true,state:"accepted",challengeId:challenge.challengeId};
+    }
+    return {ok:true,state:"accepted",challengeId};
+  }
+
   async completeVerification(input:{challengeId:string;purpose:"email_verification"|"phone_verification";code:string;now?:Date}):Promise<AuthResult>{
     const accountId=await this.repository.findChallengeAccount(input.challengeId);
     if(!accountId) return {ok:false,state:"verification_failed"};
