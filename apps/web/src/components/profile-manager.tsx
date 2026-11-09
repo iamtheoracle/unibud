@@ -171,7 +171,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
     try {
       const response = await fetch("/api/profiles/" + encodeURIComponent(profileId) + "/restore", { method: "POST" });
       if (!response.ok) throw new Error(await readError(response));
-      setNotice("Profile restored. Its previous delegates remain suspended until you review and reactivate them.");
+      setNotice("Profile restored. Any previously delegated access remains suspended until you review and reactivate it.");
       const restored=archivedProfiles.find(item=>item.profile.id===profileId);
       await Promise.all([loadProfiles(),loadArchivedProfiles(),loadLifecycleNotifications()]);
       if(restored?.profile.kind==="page_community"){setSelectedDelegationProfile(profileId);await loadDelegates(profileId);}
