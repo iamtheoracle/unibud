@@ -12,7 +12,7 @@ Ownership is immutable in the current implementation. A future transfer must be 
 
 The database serializes profile lifecycle operations per account. It rejects an archive that would leave no active owned profile or remove the active personal identity. When an active profile is archived, only sessions currently using that profile context have the profile context cleared; the account session itself remains active.
 
-Restoration is owner-only and idempotent for an already active profile. It does not automatically reinstate delegated access that was suspended or revoked independently.
+Restoration is owner-only and idempotent for an already active profile. Archiving suspends all active delegated memberships; restoration leaves those memberships suspended. The owner must explicitly review and reactivate or revoke each delegate after restoring the profile.
 
 ## Notifications and audit
 
