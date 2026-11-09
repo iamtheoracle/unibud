@@ -17,8 +17,8 @@ The initial repository foundation is documentation and service scaffolding. The 
 
 | Capability | Scope to preserve | Initial state |
 |---|---|---|
-| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Migrations 0001–0004 and PostgreSQL 16 auth/RLS tests added; scrypt, verification, session, and registration/login/recovery orchestration cores implemented; production RPC adapters, routes, delivery, and cookie wiring pending |
-| Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Contracts and server-side profile service implemented; one-personal-profile invariant and delegated owner binding migrated; PostgreSQL 16 role-isolation tests pending latest CI; production repository adapter pending |
+| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Migrations 0001–0007 and PostgreSQL 16 auth/RLS tests added; scrypt, verification, session lifecycle, registration/login/recovery orchestration, encrypted identifier protection and narrow PostgreSQL RPC adapter implemented; concrete pool, rate limiter, delivery provider, routes, and cookie wiring pending |
+| Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Contracts and server-side profile service implemented; one-personal-profile invariant and delegated owner binding migrated; PostgreSQL 16 owner/delegate/outsider tests added; production profile repository adapter pending |
 | Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Exact-profile grant/revoke service implemented; delegated rows bound to canonical owner and grantor; owner/delegate/unrelated-account isolation test added |
 | Discovery and search | People, profiles, communities, institutions, creators, services, opportunities, activities, content | Target |
 | Messaging | Direct and contextual conversations, attachments, voice messages, safety controls | Target |
