@@ -31,7 +31,7 @@ async function newPage() {
   );
   await page.route("**/api/profiles/*/ownership-transfer", route =>
     route.request().method() === "GET"
-      ? json(route, 200, { ok: true, preflight: { canTransfer: false, activeOwnedProfiles: 1, activeDelegatedRelationships: 0, pendingInvitations: 0, openTransferRequests: 0, personalIdentityAvailable: true }, transfers: [] })
+      ? json(route, 200, { ok: true, preflight: { canTransfer: false, activeOwnedProfiles: 1, activeDelegatedRelationships: 0, pendingInvitations: 0, openTransferRequests: 0, personalIdentityAvailable: true, verifiedIdentityAvailable: true }, transfers: [] })
       : json(route, 200, { ok: true, transfer: { id: "90000000-0000-4000-8000-000000000001" } })
   );
   return page;
