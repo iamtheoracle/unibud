@@ -28,7 +28,7 @@ export type ProfilePermission =
 export interface ProfileInvitationInput {
   profileId: string;
   inviteeHandle: string;
-  role: "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
+  role: "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "viewer";
   canSwitchToProfile: boolean;
 }
 
