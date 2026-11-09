@@ -8,7 +8,7 @@ export async function POST(request:NextRequest){
  if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
  const body=await readJsonObject(request);
  if(!body||typeof body.profileId!=="string"||typeof body.delegateAccountId!=="string"||
-   typeof body.role!=="string"||typeof body.canSwitchToProfile!=="boolean"){
+   typeof body.role!=="string"||!["admin","moderator","editor","member","seller","provider","professional","student","staff","operator","viewer"].includes(body.role)||typeof body.canSwitchToProfile!=="boolean"){
   return NextResponse.json({ok:false,error:"Invalid delegated access request."},{status:400});
  }
  try{
