@@ -206,11 +206,11 @@ COMMENT ON TABLE security_audit_events IS
 CREATE FUNCTION reject_security_audit_mutation()
 RETURNS trigger
 LANGUAGE plpgsql
-AS $
+AS $$
 BEGIN
   RAISE EXCEPTION 'security_audit_events is append-only';
 END;
-$;
+$$;
 
 CREATE TRIGGER security_audit_events_no_update_or_delete
 BEFORE UPDATE OR DELETE ON security_audit_events
