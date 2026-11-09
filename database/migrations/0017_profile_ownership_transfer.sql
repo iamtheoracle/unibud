@@ -19,7 +19,7 @@ ALTER TABLE public.profile_lifecycle_notifications
   CHECK(event_type IN(
     'profile_archived','profile_restored',
     'ownership_transfer_requested','ownership_transfer_accepted',
-    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired'
+    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired','delegated_access_suspended'
   ));
 
 CREATE TABLE public.profile_ownership_transfers(
@@ -107,6 +107,13 @@ BEGIN
  VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,
   'owner_requested',jsonb_build_object('profile_kind',v_profile.kind,'previous_status',v_profile.status,
    'new_status','archived','suspended_delegate_account_ids',to_jsonb(v_suspended_delegate_ids)));
+ INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+ VALUES(p_owner_account_id,p_profile_id,'profile_archived',
+  jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle));
+ INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+ SELECT delegate_account,p_profile_id,'delegated_access_suspended',
+  jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle,'reason','profile_archived')
+ FROM unnest(v_suspended_delegate_ids) AS delegate_account;
  RETURN TRUE;
 END;
 $function$;
