@@ -26,8 +26,13 @@ CREATE TABLE public.external_dependency_integrations (
   last_verified_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   CHECK (
-    (verification_state = 'verified' AND last_verified_at IS NOT NULL)
-    OR verification_state <> 'verified'
+    verification_state <> 'verified'
+    OR (last_verified_at IS NOT NULL AND provider_name IS NOT NULL
+      AND evidence_source IN ('runtime_attestation','provider_confirmation','operator_review'))
+  ),
+  CHECK (
+    NOT (supports_lookup OR supports_export OR supports_delete OR supports_deletion_receipt OR supports_backup_expiry)
+    OR (verification_state = 'verified' AND last_verified_at IS NOT NULL)
   )
 );
 
@@ -71,8 +76,11 @@ CREATE TABLE public.account_external_dependency_refs (
   last_verified_at TIMESTAMPTZ,
   UNIQUE (account_id, integration_key, domain_key, reference_digest),
   CHECK (
-    (evidence_state = 'provider_confirmed' AND last_verified_at IS NOT NULL)
-    OR evidence_state <> 'provider_confirmed'
+    evidence_state <> 'provider_confirmed' OR last_verified_at IS NOT NULL
+  ),
+  CHECK (
+    disposition_state <> 'deleted_confirmed'
+    OR (evidence_state = 'provider_confirmed' AND last_verified_at IS NOT NULL)
   )
 );
 
