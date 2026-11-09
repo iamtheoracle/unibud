@@ -228,6 +228,16 @@ BEGIN
   '17000000-0000-4000-8000-000000000001') THEN RAISE EXCEPTION 'Owner finalization failed'; END IF;
  SELECT owner_account_id INTO v_owner FROM public.profiles WHERE id='37000000-0000-4000-8000-000000000002';
  IF v_owner<>'17000000-0000-4000-8000-000000000002' THEN RAISE EXCEPTION 'Profile owner was not transferred'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m ON m.profile_id=p.id
+  WHERE p.owner_account_id='17000000-0000-4000-8000-000000000001' AND p.kind='personal' AND p.status='active'
+   AND m.account_id='17000000-0000-4000-8000-000000000001' AND m.relationship='owner' AND m.status='active') THEN
+  RAISE EXCEPTION 'Former owner lost their remaining personal identity';
+ END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m ON m.profile_id=p.id
+  WHERE p.owner_account_id='17000000-0000-4000-8000-000000000002' AND p.kind='personal' AND p.status='active'
+   AND m.account_id='17000000-0000-4000-8000-000000000002' AND m.relationship='owner' AND m.status='active') THEN
+  RAISE EXCEPTION 'Recipient personal identity was not preserved';
+ END IF;
  IF EXISTS(SELECT 1 FROM public.profile_memberships WHERE profile_id='37000000-0000-4000-8000-000000000002'
   AND account_id='17000000-0000-4000-8000-000000000001' AND relationship='owner' AND status='active') THEN
   RAISE EXCEPTION 'Former owner retained owner membership';
