@@ -1,4 +1,4 @@
-# Identity Persistence Migration 0001
+# Identity, Authentication and Profile Persistence Migrations 0001–0010
 
 ## Purpose
 
@@ -18,7 +18,9 @@ This migration establishes the first provider-neutral PostgreSQL persistence bou
 - Migration 0005 adds profile-owner membership binding, session-bound active profile context, and narrowly scoped profile procedures.
 - Migration 0006 enforces canonical profile-owner/grantor consistency and one non-archived personal profile per account.
 - Migration 0007 stores immutable, versioned terms/privacy acceptance.
-- Migration 0008 adds session touch, account-wide revocation, and challenge-owner lookup procedures.
+- Migration 0008 adds hardened session touch, account-wide revocation, challenge-owner lookup, and session lookup/rotation with active-profile context.
+- Migration 0009 adds per-session active-profile context and preserves it across credential rotation.
+- Migration 0010 adds atomic PostgreSQL-backed authentication rate-limit buckets; only the restricted auth procedure can consume them.
 
 ## Security decisions
 
@@ -51,6 +53,9 @@ Production-to-development refreshes are prohibited by default. Any future except
 ## Migration and deployment status
 
 - GitHub Actions applies migrations 0001–0010 to disposable PostgreSQL 16 and runs synthetic SQL tests for schema constraints, audit immutability, signed-context denial, credential isolation, auth procedure behavior, profile owner/delegate/outsider isolation, onboarding acceptance, and session maintenance.
-- The server-only auth RPC, profile RPC, and onboarding RPC adapters are implemented against a narrow query-pool contract.
+- The server-only auth RPC, profile RPC, and onboarding RPC adapters are implemented against a narrow query-pool contract. A Node PostgreSQL driver adapter uses distinct auth and app connection pools and distinct LOGIN credentials.
+- First-party registration, verification, login, password recovery, secure cookie, logout, session inspection/rotation, onboarding, profile creation/listing/switching, and delegated-access API routes are implemented. The first-party email/phone UI has no Google or Apple sign-up path.
+- Verification delivery uses a provider-neutral private HTTP gateway. The gateway endpoint/token are intentionally unconfigured until a real delivery provider and operational owner are selected.
+- Browser write routes enforce same-origin requests; session credentials are held only in HTTP-only, same-site cookies. Rate limiting is keyed and database-backed, but IP/device reputation and broader abuse monitoring remain future controls.
 - No production database, concrete production pool/LOGIN principal, signing/encryption key, delivery provider, backup schedule, restore drill, or live service connection has been provisioned.
-- Production rollout still requires secret-manager bindings and rotation, network restrictions, least-privilege login provisioning, rate limiting, delivery integration, cookie routes, operational monitoring, and a reviewed migration/restore procedure.
+- Production rollout still requires a real UNIBUD-controlled PostgreSQL instance, provisioning the separate LOGIN principals and HMAC signing-key row, secret-manager bindings and rotation, private networking, a live email/SMS delivery gateway, approved legal text and policy versions, IP/device abuse controls, operational monitoring, backup/restore drills, and a reviewed migration/rollback procedure.
