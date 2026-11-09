@@ -24,6 +24,7 @@ export interface ProfileRepository {
   grantDelegatedAccess(ownerAccountId: string, input: DelegatedProfileGrantInput): Promise<ProfileAccessRecord>;
   revokeDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string): Promise<boolean>;
   listAccessibleProfiles(accountId: string): Promise<ProfileAccessRecord[]>;
+  listDelegatedAccess(ownerAccountId: string, profileId: string): Promise<ProfileAccessRecord[]>;
   findProfileAccess(accountId: string, profileId: string): Promise<ProfileAccessRecord | undefined>;
   setActiveProfileContext(accountId: string, sessionId: string, profileId: string, contextVersion: string): Promise<boolean>;
 }
@@ -86,6 +87,15 @@ export class ProfileService {
 
   async listAccessibleProfiles(authenticatedAccountId: string): Promise<ProfileAccessRecord[]> {
     return this.repository.listAccessibleProfiles(authenticatedAccountId);
+  }
+
+  async listDelegatedAccess(authenticatedOwnerAccountId: string, profileId: string): Promise<ProfileAccessRecord[]> {
+    const profile=await this.repository.findProfileAccess(authenticatedOwnerAccountId,profileId);
+    if(!profile || profile.profile.ownerAccountId!==authenticatedOwnerAccountId ||
+       profile.relationship!=="owner" || profile.membershipStatus!=="active") {
+      throw new ProfileAccessDeniedError("Only the active profile owner may view delegated access.");
+    }
+    return this.repository.listDelegatedAccess(authenticatedOwnerAccountId,profileId);
   }
 
   async switchProfile(authenticatedAccountId: string, sessionId: string, targetProfileId: string): Promise<ProfileSwitchResult> {
