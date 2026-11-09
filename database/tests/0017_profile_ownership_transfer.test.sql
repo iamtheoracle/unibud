@@ -120,6 +120,28 @@ BEGIN
 END
 $suspension$;
 
+-- Losing the recipient's last verified identity also cancels open consent.
+DO $identity_loss$
+DECLARE v_status TEXT; v_audit INTEGER; v_notifications INTEGER;
+BEGIN
+ PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000005',
+  '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
+  'transfer-recipient');
+ UPDATE public.authentication_identities SET status='disabled',verified_at=NULL
+ WHERE id='27000000-0000-4000-8000-000000000002';
+ SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000005';
+ SELECT count(*) INTO v_audit FROM public.security_audit_events WHERE resource_id='37000000-0000-4000-8000-000000000005'
+  AND action='profile.ownership_transfer.cancelled' AND reason_code='participant_identity_unverified';
+ SELECT count(*) INTO v_notifications FROM public.profile_lifecycle_notifications WHERE profile_id='37000000-0000-4000-8000-000000000005'
+  AND event_type='ownership_transfer_cancelled';
+ UPDATE public.authentication_identities SET status='active',verified_at=clock_timestamp()
+ WHERE id='27000000-0000-4000-8000-000000000002';
+ IF v_status<>'cancelled' OR v_audit<>1 OR v_notifications<2 THEN
+  RAISE EXCEPTION 'Loss of verified identity did not cancel and notify both transfer participants';
+ END IF;
+END
+$identity_loss$;
+
 DO $request$
 DECLARE v_id UUID; v_handle TEXT;
 BEGIN
