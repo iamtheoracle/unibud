@@ -21,7 +21,7 @@ export async function POST(request:NextRequest){
  if(!body) return NextResponse.json({ok:false,error:"Invalid JSON request."},{status:400});
  if(!["personal","creator","page_community"].includes(String(body.kind))||
    typeof body.handle!=="string"||typeof body.displayName!=="string"||
-   (body.visibility!==undefined&&!["private","public","unlisted"].includes(String(body.visibility)))){
+   (body.visibility!==undefined&&!["private","limited","public"].includes(String(body.visibility)))){
   return NextResponse.json({ok:false,error:"Invalid profile details."},{status:400});
  }
  try{
@@ -31,7 +31,7 @@ export async function POST(request:NextRequest){
   const profile=await profiles.createOwnedProfile(validation.account.id,{
    kind:body.kind as "personal"|"creator"|"page_community",
    handle:body.handle,displayName:body.displayName,
-   visibility:(body.visibility??"private") as "private"|"public"|"unlisted"
+   visibility:(body.visibility??"private") as "private"|"limited"|"public"
   });
   return NextResponse.json({ok:true,profile},{status:201});
  }catch(error){return routeError(error);}
