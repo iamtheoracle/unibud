@@ -63,10 +63,36 @@ END
 $lifecycle$;
 RESET ROLE;
 
--- Revoked membership is terminal: role/status management must not reactivate it.
-UPDATE profile_memberships SET status='revoked',revoked_at=clock_timestamp()
- WHERE profile_id='22000000-0000-4000-8000-000000000001'
-   AND account_id='12000000-0000-4000-8000-000000000002';
+-- A suspended delegate can be permanently revoked; revoked access is terminal.
+WITH x AS (
+ SELECT '12000000-0000-4000-8000-000000000001'::text a,
+ floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+ 'bcbcbcbc-bcbc-4bcb-8bcb-bcbcbcbcbcbc'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry',e,true),
+ set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('8b',32),'hex'),'sha256'),'hex'),true) FROM x;
+SET LOCAL ROLE unibud_app;
+DO $revoke$
+BEGIN
+ IF public.profile_manage_delegated_access(
+  '22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001',
+  '12000000-0000-4000-8000-000000000002','moderator','suspended') IS NOT TRUE THEN
+  RAISE EXCEPTION 'Could not suspend delegate before revocation';
+ END IF;
+ IF public.profile_revoke_delegated_access(
+  '22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001',
+  '12000000-0000-4000-8000-000000000002',clock_timestamp()) IS NOT TRUE THEN
+  RAISE EXCEPTION 'Owner could not revoke suspended delegate';
+ END IF;
+ IF public.profile_manage_delegated_access(
+  '22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001',
+  '12000000-0000-4000-8000-000000000002','admin','active') IS NOT FALSE THEN
+  RAISE EXCEPTION 'Revoked membership was reactivated';
+ END IF;
+END
+$revoke$;
+RESET ROLE;
 WITH x AS (
  SELECT '12000000-0000-4000-8000-000000000001'::text a,
  floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
