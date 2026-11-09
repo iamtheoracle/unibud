@@ -32,7 +32,7 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry'
  set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('6b',32),'hex'),'sha256'),'hex'),true) FROM x;
 SET LOCAL ROLE unibud_app;
 DO $invite$
-DECLARE v_id UUID;
+DECLARE v_id UUID; v_private_name TEXT;
 BEGIN
  SELECT invitation_id INTO v_id FROM public.profile_invite_by_handle(
   '60000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000004',
@@ -42,14 +42,11 @@ BEGIN
  IF EXISTS(SELECT 1 FROM profile_memberships WHERE profile_id='20000000-0000-4000-8000-000000000004' AND account_id='10000000-0000-4000-8000-000000000002') THEN
   RAISE EXCEPTION 'Invitation activated membership before recipient acceptance';
  END IF;
- DECLARE v_private_name TEXT;
- BEGIN
-  SELECT invitee_display_name INTO v_private_name FROM public.profile_invite_by_handle(
+ SELECT invitee_display_name INTO v_private_name FROM public.profile_invite_by_handle(
    '60000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000004',
    '10000000-0000-4000-8000-000000000001','private-three','editor',true
   );
-  IF v_private_name<>'UNIBUD member' THEN RAISE EXCEPTION 'Private identity details were disclosed'; END IF;
- END;
+ IF v_private_name<>'UNIBUD member' THEN RAISE EXCEPTION 'Private identity details were disclosed'; END IF;
 END
 $invite$;
 RESET ROLE;
