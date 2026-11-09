@@ -176,6 +176,42 @@ try {
     await page.close();
   }
 
+  // Owner archive and recovery keeps the personal identity available and exposes immutable history.
+  {
+    const page = await newPage();
+    let activeProfiles = [personal, creator];
+    let archivedProfiles = [profile("20000000-0000-4000-8000-000000000006", "page_community", "archived.page", "Archived Page")];
+    archivedProfiles[0] = { ...archivedProfiles[0], profile: { ...archivedProfiles[0].profile, status: "archived" } };
+    let archived = false;
+    let restored = false;
+    await page.route("**/api/profiles/archived", route => json(route, 200, { ok: true, profiles: archivedProfiles }));
+    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: activeProfiles }));
+    await page.route("**/api/profiles/" + creatorId + "/archive", async route => {
+      archived = true;
+      activeProfiles = [personal];
+      archivedProfiles = [...archivedProfiles, { ...creator, profile: { ...creator.profile, status: "archived" } }];
+      return json(route, 200, { ok: true, profileLifecycleUpdated: true });
+    });
+    await page.route("**/api/profiles/" + archivedProfiles[0].profile.id + "/restore", async route => {
+      restored = true;
+      archivedProfiles = archivedProfiles.filter(item => item.profile.id !== archivedProfiles[0].profile.id);
+      return json(route, 200, { ok: true, profileLifecycleUpdated: true });
+    });
+    await page.route("**/api/profiles/" + archivedProfiles[0].profile.id + "/history", route => json(route, 200, { ok: true, history: [{ action: "profile.archive", occurredAt: new Date(0).toISOString() }] }));
+    page.on("dialog", dialog => dialog.accept());
+    await openProfiles(page);
+    await page.getByRole("button", { name: "Archive" }).click();
+    await page.getByText("Profile archived. Your personal identity and other active profiles remain available.").waitFor();
+    assert.equal(archived, true);
+    await page.getByRole("heading", { name: "Archived profiles" }).waitFor();
+    await page.getByRole("button", { name: "History" }).first().click();
+    await page.getByText(/profile.archive/).waitFor();
+    await page.getByRole("button", { name: "Restore" }).first().click();
+    await page.getByText("Profile restored. It is available in your profile switcher again.").waitFor();
+    assert.equal(restored, true);
+    await page.close();
+  }
+
   // The active profile shell changes its navigation and identity framing by family.
   {
     const cases = [
@@ -197,7 +233,7 @@ try {
     }
   }
 
-  process.stdout.write("PASS: profile create, edit, switch, family-specific navigation, handle invitation, recipient acceptance, role change, suspension, restoration and invitation cancellation browser workflows.\\n");
+  process.stdout.write("PASS: profile create, edit, switch, family-specific navigation, owner archive, recovery history, restore, handle invitation, recipient acceptance, role change, suspension, restoration and invitation cancellation browser workflows.\\n");
 } finally {
   await browser.close();
 }
