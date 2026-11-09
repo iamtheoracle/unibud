@@ -140,7 +140,7 @@ AS $function$
    AND owner_profile.kind='personal' AND owner_profile.status='active'
  WHERE i.invitee_account_id=p_invitee_account_id
    AND p_invitee_account_id=unibud_private.current_account_id()
-   AND i.status='pending' AND i.expires_at>clock_timestamp()
+   AND i.status='pending' AND i.expires_at>statement_timestamp()
  ORDER BY i.created_at DESC
 $function$;
 
