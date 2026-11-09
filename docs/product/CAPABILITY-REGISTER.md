@@ -179,3 +179,13 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Verified:** readiness builder tests cover active/archived profiles, active/suspended delegation, incoming/outgoing transfers, and the invariant that permanent closure remains disabled even when profile checks are clear. Full CI passed at code commit `b2204d568635db570924572c5f4c8b501abdff46` (PostgreSQL 16 migration/RLS, Oracle Arc API, typecheck, contract tests, server security tests, lint, profile browser E2E and production build).
 - **Not implemented / not approved:** permanent account closure, deletion, data export, retention schedules, legal notices, content ownership rules, dependent transaction/provider record disposition, backup expiry, cooling-off/recovery windows, and production support operations. The page must never be treated as a closure authorization.
 - **Release boundary:** no production deployment or production database change is part of this milestone. Full CI must pass on the feature branch before this work is considered verified.
+
+
+## Account closure dependency and retention readiness
+
+- **Implemented:** schema-grounded dependency inventory version `schema-inventory-1`, served through the existing authenticated `GET /api/account/closure-readiness` response and displayed in the account readiness page.
+- **Verified schema boundary:** account identity, sessions, profile families, memberships, delegated grants/invitations, lifecycle notifications, ownership transfers and audit records are registered from migrations 0001–0017.
+- **Not implemented / explicit blockers:** messaging, media, commerce/payments/bookings/contracts/disputes, education records, subscriptions and support/operations have no persisted domain schemas in migrations 0001–0017. They are not treated as empty.
+- **Policy state:** every registered domain remains unclassified; every unimplemented domain blocks closure. No legal retention durations or deletion rights are inferred. The inventory is not a record-count query and does not claim row-level completeness.
+- **Boundary:** permanent closure remains disabled. Authenticated account-scoped record counts, approved retention policies, export/deletion orchestration, external processor evidence, backup expiry and recovery workflows remain future work.
+- See [Account Dependency and Retention Inventory](./ACCOUNT-DEPENDENCY-RETENTION.md).
