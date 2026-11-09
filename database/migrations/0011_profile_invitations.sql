@@ -122,18 +122,42 @@ BEGIN
 END;
 $function$;
 
+
+CREATE OR REPLACE FUNCTION public.profile_list_incoming_invitations(p_invitee_account_id UUID)
+RETURNS TABLE(
+ id UUID,profile_id UUID,profile_name TEXT,profile_handle TEXT,
+ owner_display_name TEXT,owner_handle TEXT,role TEXT,
+ can_switch_to_profile BOOLEAN,created_at TIMESTAMPTZ,expires_at TIMESTAMPTZ
+)
+LANGUAGE sql STABLE SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+ SELECT i.id,i.profile_id,p.display_name,p.handle,owner_profile.display_name,owner_profile.handle,
+        i.role,i.can_switch_to_profile,i.created_at,i.expires_at
+ FROM public.profile_invitations i
+ JOIN public.profiles p ON p.id=i.profile_id
+ JOIN public.profiles owner_profile ON owner_profile.owner_account_id=i.owner_account_id
+   AND owner_profile.kind='personal' AND owner_profile.status='active'
+ WHERE i.invitee_account_id=p_invitee_account_id
+   AND p_invitee_account_id=unibud_private.current_account_id()
+   AND i.status='pending' AND i.expires_at>clock_timestamp()
+ ORDER BY i.created_at DESC
+$function$;
+
 DO $ownership$
 DECLARE signature TEXT;
 BEGIN
  FOR signature IN
   SELECT p.oid::regprocedure::TEXT FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
-  WHERE n.nspname='public' AND p.proname IN ('profile_invite_by_handle','profile_respond_to_invitation')
+  WHERE n.nspname='public' AND p.proname IN ('profile_invite_by_handle','profile_respond_to_invitation','profile_list_incoming_invitations')
  LOOP EXECUTE format('ALTER FUNCTION %s OWNER TO unibud_profile_owner',signature); END LOOP;
 END;
 $ownership$;
 REVOKE ALL ON FUNCTION public.profile_invite_by_handle(UUID,UUID,UUID,TEXT,TEXT,BOOLEAN) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_respond_to_invitation(UUID,UUID,BOOLEAN) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.profile_list_incoming_invitations(UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.profile_invite_by_handle(UUID,UUID,UUID,TEXT,TEXT,BOOLEAN) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_respond_to_invitation(UUID,UUID,BOOLEAN) TO unibud_app;
+GRANT EXECUTE ON FUNCTION public.profile_list_incoming_invitations(UUID) TO unibud_app;
 
 COMMIT;
