@@ -37,10 +37,12 @@ export async function DELETE(request:NextRequest,context:Context){
   return NextResponse.json({ok:false,error:"Transfer ID and fresh account verification are required."},{status:400});
  const token=readSessionCookie(request);if(!token)return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
  try{
-  await context.params;const {sessions,authentication,profiles}=createConfiguredIdentityServices();
+  const {profileId}=await context.params;const {sessions,authentication,profiles}=createConfiguredIdentityServices();
   const session=await sessions.validate(token);if(!session.valid)return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
   const verified=await authentication.verifyCredentialsForAccount({accountId:session.account.id,channel:body.channel,identifier:body.identifier,password:body.password});
   if(!verified)return NextResponse.json({ok:false,error:"Fresh account verification was not accepted."},{status:401});
+  const outgoing=await profiles.listOutgoingOwnershipTransfers(session.account.id,profileId);
+  if(!outgoing.some(transfer=>transfer.transferId===body.transferId))return NextResponse.json({ok:false,error:"Open transfer request not found."},{status:404});
   const cancelled=await profiles.cancelOwnershipTransfer(session.account.id,body.transferId);
   return NextResponse.json({ok:cancelled},{status:cancelled?200:404});
  }catch(error){if(error instanceof ProfileAccessDeniedError)return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});return routeError(error);}
