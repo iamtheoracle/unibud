@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import {
   evaluateProfileSwitch,
   type ProfileAccessRecord,
@@ -90,6 +91,6 @@ export class ProfileService {
     const access=await this.repository.findProfileAccess(authenticatedAccountId,targetProfileId);
     const decision=evaluateProfileSwitch(access,authenticatedAccountId as ProfileAccessRecord["accountId"],targetProfileId as ProfileAccessRecord["profile"]["id"]);
     if(!decision.allowed) throw new ProfileAccessDeniedError(decision.reason);
-    return {activeProfile:decision.context,contextVersion:crypto.randomUUID()};
+    return {activeProfile:decision.context,contextVersion:randomUUID()};
   }
 }
