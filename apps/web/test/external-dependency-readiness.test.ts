@@ -45,7 +45,7 @@ test("readiness preserves stale, unavailable and shared counts and never enables
     policy: { status: "not_approved", missingPolicyDomains: ["external_dependencies", "provider_retention"], canClose: false }
   };
   const result = buildExternalDependencyReadiness(discovery);
-  assert.deepEqual(result.counts, { verified: 1, unknown: 1, unavailable: 1, unclassified: 2 });
+  assert.deepEqual(result.counts, { verified: 1, unknown: 1, unavailable: 1, unclassified: 0, policyGaps: 2 });
   assert.equal(result.references.stale, 1);
   assert.equal(result.references.unavailable, 1);
   assert.equal(result.references.shared, 1);
