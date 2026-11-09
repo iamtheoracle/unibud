@@ -26,7 +26,7 @@ export async function POST(request:NextRequest){
  if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
  const body=await readJsonObject(request);
  if(!body||typeof body.profileId!=="string"||typeof body.inviteeHandle!=="string"||
-   typeof body.role!=="string"||!["admin","moderator","editor","member","seller","provider","professional","student","staff","operator","viewer"].includes(body.role)||
+   typeof body.role!=="string"||!["admin","moderator","editor","member","seller","provider","viewer"].includes(body.role)||
    typeof body.canSwitchToProfile!=="boolean"){
   return NextResponse.json({ok:false,error:"Enter a UNIBUD username and valid invitation details."},{status:400});
  }
@@ -36,7 +36,7 @@ export async function POST(request:NextRequest){
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
   const invitation=await profiles.inviteDelegateByHandle(validation.account.id,{
    profileId:body.profileId,inviteeHandle:body.inviteeHandle,
-   role:body.role as "admin"|"moderator"|"editor"|"member"|"seller"|"provider"|"professional"|"student"|"staff"|"operator"|"viewer",
+   role:body.role as "admin"|"moderator"|"editor"|"member"|"seller"|"provider"|"viewer",
    canSwitchToProfile:body.canSwitchToProfile
   });
   return NextResponse.json({ok:true,invitation},{status:201});
