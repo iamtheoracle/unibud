@@ -50,7 +50,7 @@ Production-to-development refreshes are prohibited by default. Any future except
 
 ## Migration and deployment status
 
-- GitHub Actions applies migrations 0001–0009 to disposable PostgreSQL 16 and runs synthetic SQL tests for schema constraints, audit immutability, signed-context denial, credential isolation, auth procedure behavior, profile owner/delegate/outsider isolation, onboarding acceptance, and session maintenance.
+- GitHub Actions applies migrations 0001–0010 to disposable PostgreSQL 16 and runs synthetic SQL tests for schema constraints, audit immutability, signed-context denial, credential isolation, auth procedure behavior, profile owner/delegate/outsider isolation, onboarding acceptance, and session maintenance.
 - The server-only auth RPC, profile RPC, and onboarding RPC adapters are implemented against a narrow query-pool contract.
 - No production database, concrete production pool/LOGIN principal, signing/encryption key, delivery provider, backup schedule, restore drill, or live service connection has been provisioned.
 - Production rollout still requires secret-manager bindings and rotation, network restrictions, least-privilege login provisioning, rate limiting, delivery integration, cookie routes, operational monitoring, and a reviewed migration/restore procedure.
