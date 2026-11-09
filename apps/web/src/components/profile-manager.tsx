@@ -20,9 +20,9 @@ type ProfileRecord = {
   };
 };
 type IncomingInvitation = { id:string; profileId:string; profileName:string; profileHandle:string; ownerDisplayName:string; ownerHandle:string; role:string; canSwitchToProfile:boolean; createdAt:string; expiresAt:string };
-type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
+type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "viewer";
 
-const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "professional", "student", "staff", "operator", "viewer"];
+const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"];
 
 async function readError(response: Response): Promise<string> {
   try {
