@@ -102,3 +102,13 @@ test("profile permissions are delegated to the repository policy evaluator",asyn
  assert.equal(await service.authorizeAction(delegate,profileId,"members.view"),false);
  assert.equal(await service.authorizeAction("","", "profile.read"),false);
 });
+
+
+test("requireAction denies unauthorized profile actions at the server boundary",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.permissionAllowed=true;
+ await assert.doesNotReject(()=>service.requireAction(delegate,profileId,"content.publish"));
+ repo.permissionAllowed=false;
+ await assert.rejects(()=>service.requireAction(delegate,profileId,"members.view"),ProfileAccessDeniedError);
+ await assert.rejects(()=>service.requireAction("","", "profile.read"),ProfileAccessDeniedError);
+});
