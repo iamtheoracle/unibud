@@ -64,6 +64,9 @@ BEGIN
   IF session_row.account_id <> account_a OR session_row.session_status <> 'active' THEN
     RAISE EXCEPTION 'Session issuance or lookup failed';
   END IF;
+  IF NOT public.auth_touch_session(
+    decode(repeat('aa',32),'hex'),now_at+interval '2 seconds',now_at+interval '40 minutes'
+  ) THEN RAISE EXCEPTION 'Active session idle renewal failed'; END IF;
 
   SELECT * INTO rotated FROM public.auth_rotate_session(
     decode(repeat('aa',32),'hex'),session_b,decode(repeat('bb',32),'hex'),
