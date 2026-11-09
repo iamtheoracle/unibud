@@ -12,6 +12,10 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
 }
 class Repo implements ProfileRepository{
  record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null; updateInput:ProfileUpdateInput|null=null; permissionAllowed=false; managedInput:unknown=null; cancelledInput:unknown=null;
+ async listArchivedOwnedProfiles(){return this.record.profile.status==="archived"?[this.record]:[];}
+ async archiveOwnedProfile(accountId:string,id:string){if(accountId!==owner||id!==profileId)return false;this.record={...this.record,profile:{...this.record.profile,status:"archived"}};return true;}
+ async restoreOwnedProfile(accountId:string,id:string){if(accountId!==owner||id!==profileId)return false;this.record={...this.record,profile:{...this.record.profile,status:"active"}};return true;}
+ async listProfileLifecycleHistory(){return [{id:"70000000-0000-4000-8000-000000000001",occurredAt:new Date(0).toISOString(),action:"profile.archive" as const,outcome:"success" as const,reasonCode:"owner_requested",eventData:{new_status:"archived"}}];}
  async updateOwnedProfile(accountId:string,input:ProfileUpdateInput){this.updateInput=input;return {...access(accountId),profile:{...access(accountId).profile,kind:"creator",handle:input.handle,displayName:input.displayName,visibility:input.visibility}};}
  async authorizeAction(_account:string,_profile:string,_permission:ProfilePermission){return this.permissionAllowed;}
  async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
@@ -150,4 +154,34 @@ test("invitation cancellation is owner-scoped and outgoing lists require page ow
  repo.record={...access(),profile:{...access().profile,kind:"page_community"}};
  assert.deepEqual(await service.listOutgoingInvitations(owner,profileId),[]);
  await assert.rejects(()=>service.listOutgoingInvitations(delegate,profileId),ProfileAccessDeniedError);
+});
+
+
+test("only the owning account can archive and restore creator/page profiles",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"creator"}};
+ assert.equal(await service.archiveOwnedProfile(owner,profileId),true);
+ assert.equal(repo.record.profile.status,"archived");
+ assert.deepEqual(await service.listArchivedOwnedProfiles(owner),[repo.record]);
+ assert.equal(await service.restoreOwnedProfile(owner,profileId),true);
+ assert.equal(repo.record.profile.status,"active");
+ await assert.rejects(()=>service.archiveOwnedProfile(delegate,profileId),ProfileAccessDeniedError);
+});
+
+test("delegated administrators and personal profiles cannot use owner archive controls",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"page_community"}};
+ repo.record={...repo.record,relationship:"delegated",accountId:delegate as ProfileAccessRecord["accountId"]};
+ await assert.rejects(()=>service.archiveOwnedProfile(delegate,profileId),ProfileAccessDeniedError);
+ repo.record=access();
+ await assert.rejects(()=>service.archiveOwnedProfile(owner,profileId),ProfileAccessDeniedError);
+});
+
+test("profile recovery history is visible only to the active owner",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"creator"}};
+ const history=await service.listProfileLifecycleHistory(owner,profileId);
+ assert.equal(history[0]?.action,"profile.archive");
+ repo.record={...repo.record,relationship:"delegated",accountId:delegate as ProfileAccessRecord["accountId"]};
+ await assert.rejects(()=>service.listProfileLifecycleHistory(delegate,profileId),ProfileAccessDeniedError);
 });
