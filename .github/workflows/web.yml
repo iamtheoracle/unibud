@@ -52,6 +52,8 @@ jobs:
         run: pnpm typecheck
       - name: Contract tests
         run: pnpm --filter @unibud/contracts test
+      - name: Server security unit tests
+        run: pnpm --filter @unibud/web test
       - name: Lint
         run: pnpm lint
       - name: Build
