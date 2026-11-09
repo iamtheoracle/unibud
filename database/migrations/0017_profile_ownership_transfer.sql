@@ -90,9 +90,12 @@ RETURNS trigger LANGUAGE plpgsql
 SET search_path=pg_catalog,public
 AS $function$
 BEGIN
- IF NEW.status IS DISTINCT FROM OLD.status AND current_user<>'unibud_profile_owner' THEN
-  RAISE EXCEPTION 'Profile lifecycle state can change only through an approved owner procedure'
-   USING ERRCODE='55000';
+ IF NEW.status IS DISTINCT FROM OLD.status THEN
+  PERFORM pg_advisory_xact_lock(hashtextextended(OLD.owner_account_id::text,0));
+  IF current_user<>'unibud_profile_owner' THEN
+   RAISE EXCEPTION 'Profile lifecycle state can change only through an approved owner procedure'
+    USING ERRCODE='55000';
+  END IF;
  END IF;
  RETURN NEW;
 END;
