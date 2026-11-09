@@ -17,9 +17,21 @@ INSERT INTO public.account_external_dependency_refs(
  ),
  (
   '29000000-0000-4000-8000-000000000002',
+  '19000000-0000-4000-8000-000000000001',
+  'oracle_arc','ai_assistance','shared_participant',
+  decode(repeat('b2',32),'hex'),'test-v1','stale','unknown',NULL
+ ),
+ (
+  '29000000-0000-4000-8000-000000000003',
+  '19000000-0000-4000-8000-000000000001',
+  'oracle_arc','ai_assistance','processor_copy',
+  decode(repeat('c3',32),'hex'),'test-v1','unavailable','unknown',NULL
+ ),
+ (
+  '29000000-0000-4000-8000-000000000004',
   '19000000-0000-4000-8000-000000000002',
   'oracle_arc','ai_assistance','processor_copy',
-  decode(repeat('b2',32),'hex'),'test-v1','unverified','unknown',NULL
+  decode(repeat('d4',32),'hex'),'test-v1','unverified','unknown',NULL
  );
 
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
@@ -43,14 +55,18 @@ DECLARE v JSONB;
 BEGIN
  v := public.account_external_dependency_discovery('19000000-0000-4000-8000-000000000001');
 
- IF (v#>>'{counts,linkedReferences}')::integer <> 1
-   OR (v#>>'{counts,unverifiedReferences}')::integer <> 1
-   OR (v#>>'{counts,unknownDispositionReferences}')::integer <> 1
+ IF (v#>>'{counts,linkedReferences}')::integer <> 3
+   OR (v#>>'{counts,unverifiedReferences}')::integer <> 3
+   OR (v#>>'{counts,unknownDispositionReferences}')::integer <> 3
+   OR (v#>>'{counts,unavailableReferences}')::integer <> 1
+   OR (v#>>'{counts,staleReferences}')::integer <> 1
+   OR (v#>>'{counts,sharedReferences}')::integer <> 1
  THEN
    RAISE EXCEPTION 'External dependency aggregate counts mismatch: %',v->'counts';
  END IF;
 
- IF (v#>>'{countsByDomain,identity_verification}')::integer <> 1 THEN
+ IF (v#>>'{countsByDomain,identity_verification}')::integer <> 1
+   OR (v#>>'{countsByDomain,ai_assistance}')::integer <> 2 THEN
    RAISE EXCEPTION 'External dependency domain aggregation mismatch: %',v->'countsByDomain';
  END IF;
 
