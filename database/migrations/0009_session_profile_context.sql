@@ -1,7 +1,9 @@
 -- Preserve selected profile context across session rotation and expose it on trusted lookup.
 BEGIN;
 
-CREATE OR REPLACE FUNCTION public.auth_lookup_session(p_credential_digest BYTEA)
+DROP FUNCTION public.auth_lookup_session(BYTEA);
+
+CREATE FUNCTION public.auth_lookup_session(p_credential_digest BYTEA)
 RETURNS TABLE(
   session_id UUID,
   account_id UUID,
