@@ -1,6 +1,6 @@
 import { NextRequest,NextResponse } from "next/server";
-import { createConfiguredIdentityServices } from "../../../../../../lib/server/identity/identity-runtime";
-import { hasSameOrigin,readJsonObject,routeError } from "../../../../../../lib/server/identity/http";
+import { createConfiguredIdentityServices } from "../../../../../lib/server/identity/identity-runtime";
+import { hasSameOrigin,readJsonObject,routeError } from "../../../../../lib/server/identity/http";
 
 export async function POST(request:NextRequest){
  if(!hasSameOrigin(request)) return NextResponse.json({ok:false,error:"Forbidden."},{status:403});
