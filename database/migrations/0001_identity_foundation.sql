@@ -69,6 +69,7 @@ CREATE TABLE profile_memberships (
   id UUID PRIMARY KEY,
   profile_id UUID NOT NULL REFERENCES profiles(id) ON DELETE RESTRICT,
   account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+  owner_account_id UUID,
   relationship TEXT NOT NULL CHECK (relationship IN ('owner', 'delegated')),
   role TEXT NOT NULL CHECK (role IN (
     'owner', 'admin', 'moderator', 'editor', 'member', 'seller',
@@ -80,11 +81,13 @@ CREATE TABLE profile_memberships (
   granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   revoked_at TIMESTAMPTZ,
   UNIQUE (profile_id, account_id),
+  FOREIGN KEY (owner_account_id, profile_id)
+    REFERENCES profiles(owner_account_id, id) ON DELETE RESTRICT,
+  CHECK ((relationship = 'owner' AND role = 'owner' AND can_switch_to_profile
+          AND owner_account_id = account_id)
+      OR (relationship = 'delegated' AND owner_account_id IS NULL)),
   CHECK ((status = 'revoked') = (revoked_at IS NOT NULL)),
-  CHECK (
-    (relationship = 'owner' AND role = 'owner' AND can_switch_to_profile)
-    OR relationship = 'delegated'
-  )
+  CHECK (relationship IN ('owner', 'delegated'))
 );
 
 CREATE INDEX profile_memberships_account_idx
@@ -101,7 +104,14 @@ CREATE TABLE resource_grants (
   resource_type TEXT NOT NULL,
   resource_id UUID NOT NULL,
   role TEXT NOT NULL,
-  actions TEXT[] NOT NULL CHECK (cardinality(actions) > 0),
+  actions TEXT[] NOT NULL CHECK (
+    cardinality(actions) > 0
+    AND array_position(actions, NULL) IS NULL
+    AND actions <@ ARRAY[
+      'read', 'create', 'update', 'delete', 'publish', 'manage_members',
+      'manage_billing', 'manage_integrations', 'dispatch', 'approve', 'export'
+    ]::TEXT[]
+  ),
   issued_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   expires_at TIMESTAMPTZ,
   revoked_at TIMESTAMPTZ,
@@ -158,5 +168,19 @@ COMMENT ON TABLE resource_grants IS
   'Explicit app/resource/action grants; deny by default when no active matching grant exists.';
 COMMENT ON TABLE security_audit_events IS
   'Security-relevant event history; application roles must not update or delete audit rows.';
+
+-- Enforce append-only audit history at the database boundary as defence in depth.
+CREATE FUNCTION reject_security_audit_mutation()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $
+BEGIN
+  RAISE EXCEPTION 'security_audit_events is append-only';
+END;
+$;
+
+CREATE TRIGGER security_audit_events_no_update_or_delete
+BEFORE UPDATE OR DELETE ON security_audit_events
+FOR EACH ROW EXECUTE FUNCTION reject_security_audit_mutation();
 
 COMMIT;
