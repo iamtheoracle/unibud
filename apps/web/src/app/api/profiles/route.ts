@@ -1,5 +1,6 @@
 import { NextRequest,NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
+import { ProfileAccessDeniedError } from "../../../lib/server/profiles/profile-service-core";
 import { hasSameOrigin,readJsonObject,readSessionCookie,routeError } from "../../../lib/server/identity/http";
 
 export async function GET(request:NextRequest){
@@ -10,7 +11,11 @@ export async function GET(request:NextRequest){
   const validation=await sessions.validate(token);
   if(!validation.valid) return NextResponse.json({ok:false},{status:401});
   return NextResponse.json({ok:true,profiles:await profiles.listAccessibleProfiles(validation.account.id)});
- }catch(error){return routeError(error);}
+ }catch(error){
+  if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
+  if(error instanceof Error&&/handle|display name/i.test(error.message)) return NextResponse.json({ok:false,error:error.message},{status:400});
+  return routeError(error);
+ }
 }
 
 export async function POST(request:NextRequest){
