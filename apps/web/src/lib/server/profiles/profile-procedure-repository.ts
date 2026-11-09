@@ -17,7 +17,9 @@ import type {
   ProfileRepository,
   ProfileLifecycleEvent,
   ProfileLifecycleNotification,
-  ProfileClosurePreflight
+  ProfileClosurePreflight,
+  ProfileOwnershipTransferPreflight,
+  IncomingProfileOwnershipTransfer
 } from "./profile-service-core";
 
 interface ProfileJoinRow {
@@ -97,6 +99,58 @@ export class ProfileProcedureRepository implements ProfileRepository {
       const result=await client.query<{preflight:ProfileClosurePreflight}>("SELECT public.account_profile_closure_preflight($1) AS preflight",[accountId]);
       if(!result.rows[0]) throw new Error("Account closure preflight returned no result.");
       return result.rows[0].preflight;
+    });
+  }
+
+  async getOwnershipTransferPreflight(ownerAccountId:string,profileId:string):Promise<ProfileOwnershipTransferPreflight>{
+    return this.inAccountContext(ownerAccountId,async client=>{
+      const result=await client.query<{preflight:ProfileOwnershipTransferPreflight}>(
+        "SELECT public.profile_ownership_transfer_preflight($1,$2) AS preflight",[profileId,ownerAccountId]);
+      if(!result.rows[0]) throw new Error("Ownership transfer preflight returned no result.");
+      return result.rows[0].preflight;
+    });
+  }
+
+  async requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string,expiresAt:string):Promise<{id:string;recipientHandle:string}>{
+    return this.inAccountContext(ownerAccountId,async client=>{
+      const result=await client.query<{transfer_id:string;recipient_handle:string}>(
+        "SELECT * FROM public.profile_ownership_transfer_request($1,$2,$3,$4,$5)",
+        [transferId,profileId,ownerAccountId,recipientHandle,expiresAt]);
+      const row=result.rows[0];if(!row) throw new Error("Ownership transfer request was not created.");
+      return {id:row.transfer_id,recipientHandle:row.recipient_handle};
+    });
+  }
+
+  async listIncomingOwnershipTransfers(recipientAccountId:string):Promise<IncomingProfileOwnershipTransfer[]>{
+    return this.inAccountContext(recipientAccountId,async client=>{
+      const result=await client.query<{transfer_id:string;profile_id:string;profile_name:string;profile_handle:string;owner_handle:string;created_at:Date;expires_at:Date}>(
+        "SELECT * FROM public.profile_ownership_transfer_list_incoming($1)",[recipientAccountId]);
+      return result.rows.map(row=>({transferId:row.transfer_id,profileId:row.profile_id,profileName:row.profile_name,
+        profileHandle:row.profile_handle,ownerHandle:row.owner_handle,createdAt:row.created_at.toISOString(),expiresAt:row.expires_at.toISOString()}));
+    });
+  }
+
+  async respondToOwnershipTransfer(recipientAccountId:string,transferId:string,accept:boolean):Promise<boolean>{
+    return this.inAccountContext(recipientAccountId,async client=>{
+      const result=await client.query<{responded:boolean}>(
+        "SELECT public.profile_ownership_transfer_respond($1,$2,$3) AS responded",[transferId,recipientAccountId,accept]);
+      return result.rows[0]?.responded===true;
+    });
+  }
+
+  async cancelOwnershipTransfer(ownerAccountId:string,transferId:string):Promise<boolean>{
+    return this.inAccountContext(ownerAccountId,async client=>{
+      const result=await client.query<{cancelled:boolean}>(
+        "SELECT public.profile_ownership_transfer_cancel($1,$2) AS cancelled",[transferId,ownerAccountId]);
+      return result.rows[0]?.cancelled===true;
+    });
+  }
+
+  async completeOwnershipTransfer(ownerAccountId:string,transferId:string):Promise<boolean>{
+    return this.inAccountContext(ownerAccountId,async client=>{
+      const result=await client.query<{completed:boolean}>(
+        "SELECT public.profile_ownership_transfer_complete($1,$2) AS completed",[transferId,ownerAccountId]);
+      return result.rows[0]?.completed===true;
     });
   }
 
