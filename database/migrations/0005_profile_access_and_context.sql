@@ -74,7 +74,7 @@ SET search_path = pg_catalog, public, unibud_private
 AS $function$
 BEGIN
   IF p_account_id IS DISTINCT FROM unibud_private.current_account_id()
-     OR NOT EXISTS (SELECT 1 FROM public.accounts WHERE id=p_account_id AND status='active') THEN
+     OR NOT EXISTS (SELECT 1 FROM public.accounts a WHERE a.id=p_account_id AND a.status='active') THEN
     RAISE EXCEPTION 'Authenticated active account is required' USING ERRCODE='42501';
   END IF;
 
