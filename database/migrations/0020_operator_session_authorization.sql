@@ -22,9 +22,12 @@ CREATE TABLE public.operator_worker_identities (
   activated_at TIMESTAMPTZ,
   suspended_at TIMESTAMPTZ,
   terminated_at TIMESTAMPTZ,
-  CHECK ((worker_status='active') = (activated_at IS NOT NULL AND suspended_at IS NULL AND terminated_at IS NULL)),
-  CHECK (suspended_at IS NULL OR worker_status IN ('suspended','terminated')),
-  CHECK (terminated_at IS NULL OR worker_status='terminated')
+  CHECK (
+    (worker_status='pending' AND activated_at IS NULL AND suspended_at IS NULL AND terminated_at IS NULL)
+    OR (worker_status='active' AND activated_at IS NOT NULL AND suspended_at IS NULL AND terminated_at IS NULL)
+    OR (worker_status='suspended' AND activated_at IS NOT NULL AND suspended_at IS NOT NULL AND terminated_at IS NULL)
+    OR (worker_status='terminated' AND activated_at IS NOT NULL AND terminated_at IS NOT NULL)
+  )
 );
 
 CREATE TABLE public.operator_role_grants (
@@ -78,7 +81,6 @@ GRANT USAGE ON SCHEMA public TO unibud_operator_owner;
 GRANT SELECT ON public.accounts,public.account_sessions TO unibud_operator_owner;
 GRANT SELECT ON public.operator_worker_identities,public.operator_role_grants TO unibud_operator_owner;
 GRANT INSERT ON public.operator_access_audit_events TO unibud_operator_owner;
-GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA public TO unibud_operator_owner;
 
 CREATE OR REPLACE FUNCTION public.operator_authorize_session(
   p_session_digest BYTEA,
