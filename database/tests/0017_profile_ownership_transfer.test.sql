@@ -192,6 +192,10 @@ BEGIN
 END
 $identity_loss$;
 
+INSERT INTO public.resource_grants(id,subject_account_id,application_id,resource_type,resource_id,role,actions,issuer_account_id)
+VALUES('87000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000003','unibud','profile',
+ '37000000-0000-4000-8000-000000000002','admin',ARRAY['read','update'],'17000000-0000-4000-8000-000000000001');
+
 DO $request$
 DECLARE v_id UUID; v_handle TEXT;
 BEGIN
@@ -274,10 +278,6 @@ INSERT INTO public.account_sessions(id,account_id,credential_digest,status,issue
 VALUES('67000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001',decode(repeat('44',32),'hex'),
  'active',clock_timestamp(),clock_timestamp(),clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day',
  '37000000-0000-4000-8000-000000000002','77000000-0000-4000-8000-000000000001');
-
-INSERT INTO public.resource_grants(id,subject_account_id,application_id,resource_type,resource_id,role,actions,issuer_account_id)
-VALUES('87000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000003','unibud','profile',
- '37000000-0000-4000-8000-000000000002','admin',ARRAY['read','update'],'17000000-0000-4000-8000-000000000001');
 
 DO $complete$
 DECLARE v_owner UUID; v_status TEXT; v_revoked TIMESTAMPTZ; v_context UUID; v_audit INTEGER; v_notifications INTEGER;
