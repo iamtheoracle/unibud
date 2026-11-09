@@ -5,6 +5,7 @@ import { VerificationChallengeService, type VerificationDelivery } from "../auth
 import { SessionService } from "../auth/session-core.ts";
 import { createAuthRpcRepository } from "../auth/auth-rpc-repository-core.ts";
 import type { SqlPool } from "../database/account-context-core.ts";
+import { getAppDatabasePool, getAuthDatabasePool } from "../database/postgres-pool.ts";
 import { ProfileService } from "../profiles/profile-service-core.ts";
 import { ProfileProcedureRepository } from "../profiles/profile-procedure-repository.ts";
 import { OnboardingService } from "../onboarding/onboarding-core.ts";
@@ -41,4 +42,13 @@ export function createIdentityServices(dependencies:IdentityRuntimeDependencies)
   sessions,new OnboardingProcedureRepository(dependencies.appPool)
  );
  return {authentication,verification,sessions,profiles,onboarding};
+}
+
+/** Environment-backed factory; email/SMS delivery remains an explicit dependency. */
+export function createConfiguredIdentityServices(verificationDelivery:VerificationDelivery){
+ return createIdentityServices({
+  authPool:getAuthDatabasePool(),
+  appPool:getAppDatabasePool(),
+  verificationDelivery
+ });
 }
