@@ -8,12 +8,12 @@ INSERT INTO profiles(id,owner_account_id,kind,handle,handle_normalized,display_n
 VALUES('20000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001',
 'page_community','owner-page','owner-page','Owner Page');
 INSERT INTO profile_memberships(
- id,profile_id,account_id,owner_account_id,relationship,role,status,can_switch_to_profile,granted_by_account_id
+ id,profile_id,account_id,owner_account_id,profile_owner_account_id,relationship,role,status,can_switch_to_profile,granted_by_account_id
 ) VALUES
 ('30000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001',
-'10000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','owner','owner','active',true,NULL),
+'10000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','owner','owner','active',true,'10000000-0000-4000-8000-000000000001'),
 ('30000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000001',
-'10000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000001','delegated','editor','active',true,'10000000-0000-4000-8000-000000000001');
+'10000000-0000-4000-8000-000000000002',NULL,'10000000-0000-4000-8000-000000000001','delegated','editor','active',true,'10000000-0000-4000-8000-000000000001');
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES('ci-profile-delegation-key',decode(repeat('5a',32),'hex'));
 
