@@ -14,5 +14,8 @@ export async function POST(request:NextRequest){
   const {authentication}=createConfiguredIdentityServices();
   const result=await authentication.requestRecovery({channel:body.channel,identifier:body.identifier});
   return NextResponse.json(result,{status:202});
- }catch(error){return routeError(error);}
+ }catch(error){
+  if(error instanceof Error&&/email address|E\\.164/.test(error.message)) return NextResponse.json({ok:false,error:"Enter a valid email address or E.164 phone number."},{status:400});
+  return routeError(error);
+ }
 }
