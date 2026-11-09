@@ -1,5 +1,16 @@
 # Oracle Arc API
 
-This is the independent Oracle Arc service boundary. It will have its own application authentication, configuration, deployment, secrets, provider gateway, agent runtime, and audit trail.
+Independent service boundary with its own application authentication, deployment, secrets, provider gateway, agent runtime, and audit trail.
 
-Do not import UNIBUD application internals here. Integrate through authenticated, versioned contracts and explicit app registration. No live model provider is configured in this foundation commit.
+## Local smoke test
+
+From this directory, create a virtual environment, install `requirements.txt`, then run:
+
+```bash
+uvicorn app.main:app --reload --port 8100
+```
+
+- `GET /health` confirms that the API process responds.
+- `GET /ready` reports that inference and durable dependencies are not configured.
+
+A healthy process is not evidence that inference, memory, tools, or production security are operational. No live model provider is configured.
