@@ -71,3 +71,15 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - Foreign-key metadata cannot reveal dependencies stored only in JSON, text, external services or untracked object stores.
 - The current `missingPolicyDomains` list is deliberately fail-closed; no retention duration, legal basis, export/deletion action or external processor clearance is inferred.
 - Permanent account closure remains disabled. The discovery RPC is read-only and exposes no record contents.
+
+
+## External dependency registry foundation (migration 0019)
+
+- Migration 0019 adds a global catalogue of integration surfaces evidenced in tracked configuration/documentation and an account-scoped registry for opaque external references.
+- The initial catalogue contains only the verification-delivery gateway and the separately bounded Oracle Arc service because those interfaces are declared in the repository. Their verification state is deliberately `unknown`; no provider identity, live configuration, API access, or deletion capability is inferred.
+- Account references store only a 32-byte keyed HMAC-SHA256 digest plus a key-version label. Raw provider identifiers, access tokens, credentials, message bodies, file contents and processor payloads are prohibited.
+- The account reference table has forced row-level security tied to the signed transaction account context. The app role receives no direct table write permission. The read-only discovery function returns aggregate counts, domain counts and a non-secret integration catalogue.
+- The authenticated `GET /api/account/closure-readiness` route now includes `externalDependencyDiscovery` and derives its account scope from the validated session. The repository uses the same short-lived signed account transaction pattern as migration 0018.
+- SQL tests cover aggregate counts, opaque-digest non-disclosure, unknown disposition, unverified provider state, fail-closed policy and cross-account denial. Web repository tests cover signed context, commit/rollback and client release.
+- **Not implemented yet:** provider-specific lookup adapters, object-storage inventory, event-bus/webhook scans, payment or identity processor API calls, export/deletion execution, provider receipts, backup expiry checks, and a UI presentation for this new registry response. No live provider is queried by this migration.
+- Registry capability flags default to false. A provider may be marked verified only with explicit evidence and a verification timestamp. Permanent closure remains disabled; no retention durations or legal conclusions are encoded.
