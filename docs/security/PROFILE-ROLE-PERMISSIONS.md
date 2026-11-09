@@ -44,3 +44,8 @@ The first permission matrix and owner-only creator/page identity editor are impl
 ## Additional fail-closed hardening
 
 Migration `0013_fail_closed_profile_permission_checks.sql` validates permission names inside PostgreSQL before evaluating either owner or delegated membership. Unknown and NULL permission values are denied even for owners. This is intentional: compile-time TypeScript unions do not constrain runtime inputs, and a future caller must not accidentally turn an arbitrary permission string into authority. The PostgreSQL 16 profile-role test asserts both owner and editor denial for unknown permissions.
+
+
+## Workforce and operations authorization boundary
+
+Migration 0020 introduces a separate workforce identity and operator permission model. It is independent of personal/creator/page profile membership. The database checks a live opaque session digest, active account, active worker identity, and exact unexpired global permission grant for every authorization decision, and records allow/deny events. Runtime application/auth roles cannot read or mutate workforce identity/grant tables. No worker provisioning or grant-administration UI exists; trusted database administration is the only provisioning path at this stage. Region/assigned scopes remain deny-only until dedicated assignment enforcement exists. The HTTP diagnostics route is not yet integrated with this primitive, so the legacy temporary bearer gate is still present and is not considered production-grade operator authentication.
