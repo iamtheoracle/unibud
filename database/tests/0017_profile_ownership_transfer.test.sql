@@ -73,7 +73,7 @@ BEGIN
  PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000002',
   '37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001',
   'transfer-recipient',clock_timestamp()+interval '1 day');
- UPDATE public.profiles SET status='archived' WHERE id='37000000-0000-4000-8000-000000000006';
+ PERFORM public.profile_archive_owned('37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001');
  SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000002';
  IF v_status<>'cancelled' THEN RAISE EXCEPTION 'Archiving did not cancel outstanding transfer consent'; END IF;
 END
