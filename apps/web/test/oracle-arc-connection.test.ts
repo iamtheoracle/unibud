@@ -185,6 +185,6 @@ test("operator diagnostic gate requires the configured bearer credential", t => 
   assert.equal(isIntegrationOperatorRequest("Basic operator-test-token-with-sufficient-entropy"), false);
   assert.equal(isIntegrationOperatorRequest("Bearer wrong-token"), false);
   assert.equal(isIntegrationOperatorRequest("Bearer operator-test-token-with-sufficient-entropy extra"), false);
-  assert.equal(isIntegrationOperatorRequest("Bearer\\toperator-test-token-with-sufficient-entropy"), false);
+  assert.equal(isIntegrationOperatorRequest("Bearer\toperator-test-token-with-sufficient-entropy"), false);
   assert.equal(isIntegrationOperatorRequest("Bearer operator-test-token-with-sufficient-entropy"), true);
 });
