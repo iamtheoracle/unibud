@@ -596,7 +596,7 @@ REVOKE ALL ON FUNCTION public.profile_ownership_transfer_respond(UUID,UUID,BOOLE
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_cancel(UUID,UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_complete(UUID,UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_preflight(UUID,UUID) TO unibud_app;
-GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_request(UUID,UUID,UUID,TEXT,TIMESTAMPTZ) TO unibud_app;
+GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_request(UUID,UUID,UUID,TEXT) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_list_incoming(UUID) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_list_outgoing(UUID,UUID) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_respond(UUID,UUID,BOOLEAN) TO unibud_app;
