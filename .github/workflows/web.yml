@@ -35,6 +35,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0002_identity_access_control.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0003_credentials_and_verification.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0004_first_party_auth_procedures.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0005_profile_access_and_context.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0005_profile_delegation_integrity.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0006_onboarding_acceptances.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0007_auth_session_maintenance.sql
@@ -46,6 +47,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0002_identity_access_control.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0003_credentials_and_verification.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0004_first_party_auth_procedures.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0005_profile_access_and_context.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0005_profile_delegation_integrity.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0006_onboarding_acceptances.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0007_auth_session_maintenance.test.sql
