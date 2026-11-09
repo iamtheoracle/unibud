@@ -44,6 +44,9 @@ export class OnboardingService {
   const validated=await this.sessions.validate(input.sessionToken,now);
   if(!validated.valid) return {ok:false,reason:"invalid_session"};
   if(validated.account.status!=="active") return {ok:false,reason:"account_inactive"};
+  if(process.env.NODE_ENV==="production" && process.env.UNIBUD_ONBOARDING_POLICIES_APPROVED!=="true") {
+   throw new Error("Onboarding is unavailable until the current Terms and Privacy Notice are approved for production.");
+  }
   const handle=input.handle.trim().toLowerCase();
   if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(handle)) throw new Error("Invalid personal profile handle.");
   const displayName=input.displayName.trim();
