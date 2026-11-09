@@ -162,6 +162,7 @@ BEGIN
 END;
 $function$;
 
+GRANT SELECT, INSERT ON public.security_audit_events TO unibud_profile_owner;
 ALTER FUNCTION public.profile_archive_owned(UUID,UUID) OWNER TO unibud_profile_owner;
 ALTER FUNCTION public.profile_restore_owned(UUID,UUID) OWNER TO unibud_profile_owner;
 ALTER FUNCTION public.profile_list_lifecycle_history(UUID,UUID) OWNER TO unibud_profile_owner;
