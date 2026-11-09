@@ -5,6 +5,8 @@ BEGIN;
 GRANT SELECT ON
   public.accounts,
   public.authentication_identities,
+  public.password_credentials,
+  public.verification_challenges,
   public.account_sessions,
   public.profiles,
   public.profile_memberships,
@@ -40,6 +42,8 @@ BEGIN
   SELECT jsonb_build_object(
     'account', (SELECT count(*) FROM public.accounts WHERE id=v_account),
     'authenticationIdentities', (SELECT count(*) FROM public.authentication_identities WHERE account_id=v_account),
+    'passwordCredentials', (SELECT count(*) FROM public.password_credentials WHERE account_id=v_account),
+    'verificationChallenges', (SELECT count(*) FROM public.verification_challenges WHERE account_id=v_account),
     'sessions', (SELECT count(*) FROM public.account_sessions WHERE account_id=v_account),
     'ownedProfiles', (SELECT count(*) FROM public.profiles WHERE owner_account_id=v_account),
     'activeOwnedProfiles', (SELECT count(*) FROM public.profiles WHERE owner_account_id=v_account AND status='active'),
