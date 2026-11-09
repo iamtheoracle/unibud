@@ -50,6 +50,10 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   const [incomingInvitations, setIncomingInvitations] = useState<IncomingInvitation[]>([]);
   const [delegateRole, setDelegateRole] = useState<DelegateRole>("editor");
   const [canDelegateSwitch, setCanDelegateSwitch] = useState(false);
+  const [editingProfileId, setEditingProfileId] = useState("");
+  const [editDisplayName, setEditDisplayName] = useState("");
+  const [editHandle, setEditHandle] = useState("");
+  const [editVisibility, setEditVisibility] = useState<"private" | "limited" | "public">("private");
 
   const ownedProfiles = useMemo(() => profiles.filter((item) => item.relationship === "owner"), [profiles]);
   const loadProfiles = useCallback(async () => {
@@ -69,6 +73,14 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   }, []);
 
   useEffect(() => { void loadProfiles(); }, [loadProfiles]);
+
+  useEffect(() => {
+    const selected = ownedProfiles.find((item) => item.profile.id === editingProfileId);
+    if (!selected) return;
+    setEditDisplayName(selected.profile.displayName);
+    setEditHandle(selected.profile.handle);
+    setEditVisibility(selected.profile.visibility);
+  }, [editingProfileId, ownedProfiles]);
 
   const loadIncomingInvitations = useCallback(async () => {
     try {
@@ -125,6 +137,22 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       await loadProfiles();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not create profile.");
+    } finally { setBusy(false); }
+  }
+
+  async function saveProfile(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault(); if (!editingProfileId) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/profiles/" + encodeURIComponent(editingProfileId), {
+        method: "PATCH", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ displayName: editDisplayName, handle: editHandle, visibility: editVisibility })
+      });
+      if (!response.ok) throw new Error(await readError(response));
+      setNotice("Profile details updated.");
+      await loadProfiles();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not update profile.");
     } finally { setBusy(false); }
   }
 
@@ -217,6 +245,21 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
           <label>Unique handle<input value={handle} onChange={(event) => setHandle(event.target.value)} minLength={3} maxLength={30} pattern="[A-Za-z0-9][A-Za-z0-9._-]{1,28}[A-Za-z0-9]" required placeholder="your.handle" /><small>3–30 characters. Letters, numbers, dots, underscores and hyphens.</small></label>
           <label>Initial visibility<select value={visibility} onChange={(event) => setVisibility(event.target.value as typeof visibility)}><option value="private">Private — only approved access</option><option value="limited">Limited — selected information</option><option value="public">Public — discoverable</option></select></label>
           <button className="profile-primary" type="submit" disabled={busy}>{busy ? "Please wait…" : "Create profile"}</button>
+        </form>
+      </section>
+
+      <section className="profile-section">
+        <div className="profile-section-heading"><div><p className="eyebrow">Profile identity</p><h2>Edit a creator or page profile</h2></div></div>
+        <p className="profile-muted">Each profile keeps its own name, handle and visibility. Personal account identity and security details are managed separately.</p>
+        <form className="profile-form" onSubmit={saveProfile}>
+          <label>Profile to edit<select value={editingProfileId} onChange={(event) => setEditingProfileId(event.target.value)} required>
+            <option value="">Choose a profile</option>
+            {ownedProfiles.filter((item) => item.profile.kind === "creator" || item.profile.kind === "page_community").map((item) => <option key={item.profile.id} value={item.profile.id}>{item.profile.displayName} · {item.profile.kind === "creator" ? "Creator" : "Page / community"}</option>)}
+          </select></label>
+          <label>Display name<input value={editDisplayName} onChange={(event) => setEditDisplayName(event.target.value)} maxLength={80} required disabled={!editingProfileId} /></label>
+          <label>Handle<input value={editHandle} onChange={(event) => setEditHandle(event.target.value)} minLength={3} maxLength={30} pattern="[A-Za-z0-9][A-Za-z0-9._-]{1,28}[A-Za-z0-9]" required disabled={!editingProfileId} /><small>Changing a handle may affect how people find this profile.</small></label>
+          <label>Visibility<select value={editVisibility} onChange={(event) => setEditVisibility(event.target.value as typeof editVisibility)} disabled={!editingProfileId}><option value="private">Private — only approved access</option><option value="limited">Limited — selected information</option><option value="public">Public — discoverable</option></select></label>
+          <button className="profile-primary" type="submit" disabled={busy || !editingProfileId}>{busy ? "Please wait…" : "Save profile changes"}</button>
         </form>
       </section>
 
