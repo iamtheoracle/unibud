@@ -1,8 +1,16 @@
 {
   "name": "unibud",
   "private": true,
-  "description": "UNIBUD ecosystem monorepo",
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
   "scripts": {
+    "dev": "pnpm --filter @unibud/web dev",
+    "build": "pnpm --filter @unibud/web build",
+    "lint": "pnpm --filter @unibud/web lint",
+    "typecheck": "pnpm --filter @unibud/web typecheck",
     "check:docs": "bash scripts/check-docs.sh"
   }
 }
