@@ -55,7 +55,19 @@ export interface ProfileOutgoingInvitationRecord {
   expiresAt: string;
 }
 
+export interface ProfileLifecycleEvent {
+  id: string;
+  occurredAt: string;
+  action: "profile.archive" | "profile.restore";
+  outcome: "success" | "failure" | "denied";
+  reasonCode: string | null;
+  eventData: Record<string, unknown>;
+}
+
 export interface ProfileRepository {
+  archiveOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
+  restoreOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
+  listProfileLifecycleHistory(ownerAccountId: string, profileId: string): Promise<ProfileLifecycleEvent[]>;
   manageDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string, role: ProfileInvitationInput["role"], status: "active" | "suspended"): Promise<boolean>;
   cancelInvitation(ownerAccountId: string, invitationId: string): Promise<boolean>;
   listOutgoingInvitations(ownerAccountId: string, profileId: string): Promise<ProfileOutgoingInvitationRecord[]>;
@@ -88,6 +100,27 @@ export class ProfileService {
   private readonly repository: ProfileRepository;
 
   constructor(repository: ProfileRepository) { this.repository=repository; }
+
+  async archiveOwnedProfile(accountId: string, profileId: string): Promise<boolean> {
+    if (!accountId || !/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
+    const access = await this.repository.findProfileAccess(accountId, profileId);
+    if (!access || access.relationship !== "owner" || access.membershipStatus !== "active" || access.profile.ownerAccountId !== accountId || !["creator", "page_community"].includes(access.profile.kind)) throw new ProfileAccessDeniedError("Only the owner may archive an owned creator or page profile.");
+    return this.repository.archiveOwnedProfile(accountId, profileId);
+  }
+
+  async restoreOwnedProfile(accountId: string, profileId: string): Promise<boolean> {
+    if (!accountId || !/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
+    const access = await this.repository.findProfileAccess(accountId, profileId);
+    if (!access || access.relationship !== "owner" || access.membershipStatus !== "active" || access.profile.ownerAccountId !== accountId || !["creator", "page_community"].includes(access.profile.kind) || access.profile.status !== "archived") throw new ProfileAccessDeniedError("Only the owner may restore an archived creator or page profile.");
+    return this.repository.restoreOwnedProfile(accountId, profileId);
+  }
+
+  async listProfileLifecycleHistory(accountId: string, profileId: string): Promise<ProfileLifecycleEvent[]> {
+    if (!accountId || !/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
+    const access = await this.repository.findProfileAccess(accountId, profileId);
+    if (!access || access.relationship !== "owner" || access.membershipStatus !== "active" || access.profile.ownerAccountId !== accountId) throw new ProfileAccessDeniedError("Only the active owner may view profile recovery history.");
+    return this.repository.listProfileLifecycleHistory(accountId, profileId);
+  }
 
   async updateOwnedProfile(accountId: string, input: ProfileUpdateInput): Promise<ProfileAccessRecord> {
     if (!accountId) throw new Error("Authenticated account is required.");
