@@ -15,18 +15,18 @@ class MemorySessions implements SessionRepository {
     const s = [...this.rows.values()].find(x => x.credentialDigest.equals(d));
     return s ? { session: s, account: this.account } : null;
   }
-  async touch(id: string, last: string, idle: string) {
-    const s=this.rows.get(id); if (!s || s.status!=="active") return false;
+  async touch(digest: Buffer, last: string, idle: string) {
+    const s=[...this.rows.values()].find(x=>x.credentialDigest.equals(digest)); if (!s || s.status!=="active") return false;
     s.lastSeenAt=last; s.idleExpiresAt=idle; return true;
   }
-  async revoke(id: string, at: string) {
-    const s=this.rows.get(id); if(s){s.status="revoked";s.revokedAt=at;}
+  async revoke(digest: Buffer, at: string) {
+    const s=[...this.rows.values()].find(x=>x.credentialDigest.equals(digest)); if(s){s.status="revoked";s.revokedAt=at;}
   }
   async revokeAll(accountId: string, at: string) {
     for(const s of this.rows.values()) if(s.accountId===accountId && s.status==="active"){s.status="revoked";s.revokedAt=at;}
   }
-  async rotate(oldId: string, replacement: PersistedSession, at: string) {
-    const old=this.rows.get(oldId); if(!old || old.status!=="active") return false;
+  async rotate(oldDigest: Buffer, replacement: PersistedSession, at: string) {
+    const old=[...this.rows.values()].find(x=>x.credentialDigest.equals(oldDigest)); if(!old || old.status!=="active") return false;
     old.status="revoked"; old.revokedAt=at; this.rows.set(replacement.id,replacement); return true;
   }
 }
