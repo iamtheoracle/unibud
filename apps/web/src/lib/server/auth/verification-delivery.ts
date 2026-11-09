@@ -1,12 +1,15 @@
 import "server-only";
 
-import type { VerificationDelivery, VerificationPurpose, VerificationChannel } from "./verification-core";
+import type { VerificationDelivery, VerificationPurpose, VerificationChannel } from "./verification-core.ts";
+
+export type VerificationFetch = (input:RequestInfo|URL,init?:RequestInit)=>Promise<Response>;
 
 export class HttpVerificationDelivery implements VerificationDelivery {
   private readonly endpoint: URL;
   private readonly token: string;
+  private readonly fetcher: VerificationFetch;
 
-  constructor(endpoint: string, token: string) {
+  constructor(endpoint: string, token: string, fetcher: VerificationFetch = fetch) {
     const parsed = new URL(endpoint);
     if (!["https:","http:"].includes(parsed.protocol) || !parsed.hostname ||
         parsed.username || parsed.password) {
@@ -20,6 +23,7 @@ export class HttpVerificationDelivery implements VerificationDelivery {
     }
     this.endpoint = parsed;
     this.token = token;
+    this.fetcher = fetcher;
   }
 
   static fromEnvironment(): HttpVerificationDelivery {
@@ -39,16 +43,23 @@ export class HttpVerificationDelivery implements VerificationDelivery {
     purpose: VerificationPurpose;
     expiresAt: string;
   }): Promise<void> {
-    const response = await fetch(this.endpoint, {
+    let response: Response;
+    try {
+      response = await this.fetcher(this.endpoint, {
       method: "POST",
       redirect: "error",
       signal: AbortSignal.timeout(10_000),
       headers: {
         "content-type": "application/json",
-        authorization: `Bearer ${this.token}`
+        authorization: `Bearer ${this.token}`,
+        "idempotency-key": input.challengeId
       },
-      body: JSON.stringify(input)
-    });
+      body: JSON.stringify(input),
+      cache: "no-store"
+      });
+    } catch {
+      throw new Error("Verification delivery service could not be reached.");
+    }
     if (!response.ok) {
       // Never include provider response bodies, destinations or codes in errors/logs.
       throw new Error("Verification delivery gateway rejected the request.");
