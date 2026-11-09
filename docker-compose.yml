@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: unibud-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-unibud}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-unibud_dev_only}
+      POSTGRES_DB: ${POSTGRES_DB:-unibud}
+    ports:
+      - "5432:5432"
+    volumes:
+      - unibud_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-unibud} -d ${POSTGRES_DB:-unibud}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  unibud_postgres_data:
