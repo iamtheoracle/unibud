@@ -1,4 +1,4 @@
-import type { AccountId, ApplicationId, ResourceId } from "./identity";
+import type { AccountId, ApplicationId, ResourceId } from "./identity.ts";
 
 /**
  * Private education-domain identities.
