@@ -104,3 +104,11 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - The repository integration register also names candidate services such as object storage, payments, maps/geocoding and hosted inference. No executable adapters for object storage, payment processing, maps/geocoding, analytics, push delivery or backup services were found in the audited integration paths. They remain implementation gaps—not zero dependencies.
 - Tests verify all-or-none/partial configuration handling, whitespace handling, separation of the two database roles, and that no environment values are returned.
 - This stage performs no provider network calls, does not mutate the integration registry, does not create external references, and does not add export/deletion methods. Unknown external dependencies continue to block closure.
+
+## Authenticated provider evidence — current stage
+
+- Oracle Arc exposes an authenticated status contract at `GET /v1/integration/status`. UNIBUD's internal operator-only diagnostic now hardens the call against redirects, invalid content types, malformed/oversized JSON, incorrect service identity and untrusted upstream error bodies. It reports inference as ready only when Oracle Arc itself reports both a configured model and ready inference.
+- The Oracle Arc diagnostic has not been run against a deployed service in this CI task. Mocked tests prove client behaviour; they are not evidence of live connectivity.
+- The verification-delivery gateway exposes only a POST delivery contract in this repository. No read-only health endpoint or vendor identity is defined. A separate operator-only metadata diagnostic therefore reports configuration completeness while keeping provider identity and connectivity unknown; it sends no test email/SMS, recipient, challenge or verification code.
+- A real verification-gateway connectivity check requires a documented, authenticated, side-effect-free health contract and confirmed downstream vendor identity. Do not probe the delivery POST route as a health check.
+- Account-level external references remain undiscovered until a provider-specific, account-scoped adapter can safely resolve approved opaque reference digests. Unknown remains a blocker.
