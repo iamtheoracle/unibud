@@ -228,7 +228,7 @@ try {
       await navigation.waitFor();
       for (const label of item.nav) await navigation.getByRole("button", { name: label }).waitFor();
       await assert.rejects(async () => navigation.getByRole("button", { name: item.absent, exact: true }).waitFor({ timeout: 150 }));
-      await page.getByRole("heading", { name: "Distinct Identity" }).waitFor();
+      await page.locator("#active-profile-title").getByText("Distinct Identity").waitFor();
       await page.close();
     }
   }
