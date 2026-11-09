@@ -23,6 +23,7 @@ type ProfileRecord = {
 type IncomingInvitation = { id:string; profileId:string; profileName:string; profileHandle:string; ownerDisplayName:string; ownerHandle:string; role:string; canSwitchToProfile:boolean; createdAt:string; expiresAt:string };
 type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "viewer";
 type OutgoingInvitation = { id:string; profileId:string; inviteeHandle:string; role:DelegateRole; status:"pending"|"expired"; createdAt:string; expiresAt:string };
+type LifecycleNotification = {id:string;profileId:string;eventType:"profile_archived"|"profile_restored";createdAt:string;readAt:string|null;details:Record<string,unknown>};
 
 const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"];
 
@@ -39,6 +40,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   const router = useRouter();
   const [profiles, setProfiles] = useState<ProfileRecord[]>([]);
   const [archivedProfiles, setArchivedProfiles] = useState<ProfileRecord[]>([]);
+  const [lifecycleNotifications, setLifecycleNotifications] = useState<LifecycleNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -60,6 +62,23 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   const [editVisibility, setEditVisibility] = useState<"private" | "limited" | "public">("private");
 
   const ownedProfiles = useMemo(() => profiles.filter((item) => item.relationship === "owner"), [profiles]);
+  const loadLifecycleNotifications = useCallback(async () => {
+    try {
+      const response=await fetch("/api/profile-lifecycle/notifications",{cache:"no-store"});
+      if(!response.ok) throw new Error(await readError(response));
+      const body=await response.json() as {notifications:LifecycleNotification[]};
+      setLifecycleNotifications(body.notifications??[]);
+    } catch(cause) { setError(cause instanceof Error?cause.message:"Could not load profile recovery notifications."); }
+  }, []);
+
+  const markLifecycleNotificationRead = useCallback(async (notificationId:string) => {
+    try {
+      const response=await fetch("/api/profile-lifecycle/notifications",{method:"PATCH",headers:{"content-type":"application/json"},body:JSON.stringify({notificationId})});
+      if(!response.ok) throw new Error(await readError(response));
+      await loadLifecycleNotifications();
+    } catch(cause) { setError(cause instanceof Error?cause.message:"Could not update notification."); }
+  },[loadLifecycleNotifications]);
+
   const loadArchivedProfiles = useCallback(async () => {
     try {
       const response = await fetch("/api/profiles/archived", { cache: "no-store" });
@@ -77,14 +96,14 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       if (!response.ok) throw new Error(await readError(response));
       const body = await response.json() as { profiles: ProfileRecord[] };
       setProfiles(body.profiles ?? []);
-      await loadArchivedProfiles();
+      await Promise.all([loadArchivedProfiles(),loadLifecycleNotifications()]);
       setSelectedDelegationProfile((current) => current || (body.profiles ?? []).find((p) => p.relationship === "owner" && p.profile.kind === "page_community")?.profile.id || "");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not load profiles.");
     } finally {
       setLoading(false);
     }
-  }, [loadArchivedProfiles]);
+  }, [loadArchivedProfiles,loadLifecycleNotifications]);
 
   useEffect(() => { void loadProfiles(); }, [loadProfiles]);
 
@@ -309,8 +328,9 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
 
       <section className="profile-section">
         <div className="profile-section-heading"><div><p className="eyebrow">Profile recovery</p><h2>Archived profiles</h2></div><span className="profile-count">{archivedProfiles.length} archived</span></div>
+        <div className="profile-notification-list" aria-label="Profile recovery notifications">{lifecycleNotifications.length===0 ? <p className="profile-muted">No profile recovery notifications.</p> : lifecycleNotifications.map(notification=><article className="profile-notification" key={notification.id}><div><strong>{notification.eventType==="profile_archived"?"Profile archived":"Profile restored"}</strong><p>{String(notification.details.profileName??"Your profile")} · {new Date(notification.createdAt).toLocaleString()}</p><small>{notification.readAt?"Read":"Unread"}</small></div>{!notification.readAt&&<button className="profile-text-action" type="button" onClick={()=>void markLifecycleNotificationRead(notification.id)}>Mark read</button>}</article>)}</div>
         <p className="profile-muted">Archived profiles are hidden from discovery and switching. Their identity and content are retained; only the owning account can restore them.</p>
-        {archivedProfiles.length === 0 ? <p className="profile-muted">You have no archived profiles.</p> : <div className="profile-list">{archivedProfiles.map((item) => <article className="profile-card" key={item.profile.id}><div className="profile-avatar" aria-hidden="true">{item.profile.displayName.slice(0,1).toUpperCase()}</div><div className="profile-card-copy"><h3>{item.profile.displayName}</h3><p>@{item.profile.handle} · {item.profile.kind === "creator" ? "Creator" : "Page / community"}</p><small>Archived · owned by you</small></div><button className="profile-action" type="button" disabled={busy} onClick={() => void restoreProfile(item.profile.id)}>Restore</button><button className="profile-text-action" type="button" disabled={busy} onClick={async () => { try { const response=await fetch("/api/profiles/"+encodeURIComponent(item.profile.id)+"/history",{cache:"no-store"}); if(!response.ok) throw new Error(await readError(response)); const body=await response.json() as {history:Array<{action:string;occurredAt:string}>}; setNotice(body.history.map(event => event.action+" · "+new Date(event.occurredAt).toLocaleString()).join(" | ") || "No lifecycle history is available."); } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not load recovery history."); } }}>History</button></article>)}</div>}
+        {archivedProfiles.length === 0 ? <p className="profile-muted">You have no archived profiles.</p> : <div className="profile-list">{archivedProfiles.map((item) => <article className="profile-card" key={item.profile.id}><div className="profile-avatar" aria-hidden="true">{item.profile.displayName.slice(0,1).toUpperCase()}</div><div className="profile-card-copy"><h3>{item.profile.displayName}</h3><p>@{item.profile.handle} · {item.profile.kind === "creator" ? "Creator" : "Page / community"}</p><small>Archived · owned by you · hidden from discovery and switching</small></div><button className="profile-action" type="button" disabled={busy} onClick={() => void restoreProfile(item.profile.id)}>Restore</button><button className="profile-text-action" type="button" disabled={busy} onClick={async () => { try { const response=await fetch("/api/profiles/"+encodeURIComponent(item.profile.id)+"/history",{cache:"no-store"}); if(!response.ok) throw new Error(await readError(response)); const body=await response.json() as {history:Array<{action:string;occurredAt:string}>}; setNotice(body.history.map(event => event.action+" · "+new Date(event.occurredAt).toLocaleString()).join(" | ") || "No lifecycle history is available."); } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not load recovery history."); } }}>History</button></article>)}</div>}
       </section>
 
       <section className="profile-section">
