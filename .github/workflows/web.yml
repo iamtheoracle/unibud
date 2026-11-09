@@ -1,3 +1,4 @@
+# Profile lifecycle migration 0014 and database test 0013 are part of the PostgreSQL CI sequence.
 name: UNIBUD Web and Database
 on:
   pull_request:
