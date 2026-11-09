@@ -26,7 +26,7 @@ export class OnboardingProcedureRepository implements OnboardingRepository {
     this.pool = pool;
   }
 
-  async completeOnboarding(accountId: string, input: {
+  async completeOnboarding(accountId: string, sessionId: string, input: {
     handle: string;
     displayName: string;
     termsVersion: string;
@@ -67,6 +67,13 @@ export class OnboardingProcedureRepository implements OnboardingRepository {
         if (!profile || profile.status !== "active") {
           throw new Error("The account's personal profile is unavailable.");
         }
+
+        const contextVersion=randomUUID();
+        const switched=await client.query<{switched:boolean}>(
+          "SELECT public.profile_set_active_context($1,$2,$3,$4) AS switched",
+          [accountId,sessionId,profile.id,contextVersion]
+        );
+        if(switched.rows[0]?.switched!==true) throw new Error("The verified session could not enter its personal profile context.");
 
         await client.query(
           `INSERT INTO public.account_policy_acceptances
