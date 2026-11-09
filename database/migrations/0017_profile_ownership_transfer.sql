@@ -197,6 +197,7 @@ AS $function$
 DECLARE v_transfer public.profile_ownership_transfers%ROWTYPE;
 BEGIN
  IF OLD.status='active' AND NEW.status<>'active' THEN
+  PERFORM pg_advisory_xact_lock(hashtextextended(NEW.id::text,0));
   FOR v_transfer IN
    UPDATE public.profile_ownership_transfers AS transfer
     SET status='cancelled',cancelled_at=clock_timestamp()
