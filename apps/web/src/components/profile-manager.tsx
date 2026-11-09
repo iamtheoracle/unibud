@@ -38,6 +38,7 @@ async function readError(response: Response): Promise<string> {
 export function ProfileManager({ activeProfileId }: { activeProfileId: string | null }) {
   const router = useRouter();
   const [profiles, setProfiles] = useState<ProfileRecord[]>([]);
+  const [archivedProfiles, setArchivedProfiles] = useState<ProfileRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -59,6 +60,15 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   const [editVisibility, setEditVisibility] = useState<"private" | "limited" | "public">("private");
 
   const ownedProfiles = useMemo(() => profiles.filter((item) => item.relationship === "owner"), [profiles]);
+  const loadArchivedProfiles = useCallback(async () => {
+    try {
+      const response = await fetch("/api/profiles/archived", { cache: "no-store" });
+      if (!response.ok) throw new Error(await readError(response));
+      const body = await response.json() as { profiles: ProfileRecord[] };
+      setArchivedProfiles(body.profiles ?? []);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not load archived profiles."); }
+  }, []);
+
   const loadProfiles = useCallback(async () => {
     setLoading(true);
     setError("");
@@ -67,6 +77,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       if (!response.ok) throw new Error(await readError(response));
       const body = await response.json() as { profiles: ProfileRecord[] };
       setProfiles(body.profiles ?? []);
+      await loadArchivedProfiles();
       setSelectedDelegationProfile((current) => current || (body.profiles ?? []).find((p) => p.relationship === "owner" && p.profile.kind === "page_community")?.profile.id || "");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not load profiles.");
@@ -122,6 +133,29 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not load outgoing invitations."); }
   }, []);
   useEffect(() => { void loadOutgoingInvitations(selectedDelegationProfile); }, [selectedDelegationProfile, loadOutgoingInvitations]);
+
+  async function archiveProfile(profileId: string) {
+    if (!window.confirm("Archive this profile? Its content and ownership are retained, and you can restore it later. Your personal profile will remain available.")) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/profiles/" + encodeURIComponent(profileId) + "/archive", { method: "POST" });
+      if (!response.ok) throw new Error(await readError(response));
+      setNotice("Profile archived. Your personal identity and other active profiles remain available.");
+      await loadProfiles();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not archive profile."); }
+    finally { setBusy(false); }
+  }
+
+  async function restoreProfile(profileId: string) {
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/profiles/" + encodeURIComponent(profileId) + "/restore", { method: "POST" });
+      if (!response.ok) throw new Error(await readError(response));
+      setNotice("Profile restored. It is available in your profile switcher again.");
+      await loadProfiles();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not restore profile."); }
+    finally { setBusy(false); }
+  }
 
   async function switchProfile(profileId: string) {
     setBusy(true); setError(""); setNotice("");
@@ -266,11 +300,17 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
                 </div>
                 <button className="profile-action" type="button" disabled={busy || active || !item.canSwitchToProfile || item.membershipStatus !== "active"} onClick={() => void switchProfile(item.profile.id)}>
                   {active ? "Active" : "Switch"}
-                </button>
+                </button>{item.relationship === "owner" && (item.profile.kind === "creator" || item.profile.kind === "page_community") && <button className="profile-text-action" type="button" disabled={busy} onClick={() => void archiveProfile(item.profile.id)}>Archive</button>}
               </article>;
             })}
           </div>
         )}
+      </section>
+
+      <section className="profile-section">
+        <div className="profile-section-heading"><div><p className="eyebrow">Profile recovery</p><h2>Archived profiles</h2></div><span className="profile-count">{archivedProfiles.length} archived</span></div>
+        <p className="profile-muted">Archived profiles are hidden from discovery and switching. Their identity and content are retained; only the owning account can restore them.</p>
+        {archivedProfiles.length === 0 ? <p className="profile-muted">You have no archived profiles.</p> : <div className="profile-list">{archivedProfiles.map((item) => <article className="profile-card" key={item.profile.id}><div className="profile-avatar" aria-hidden="true">{item.profile.displayName.slice(0,1).toUpperCase()}</div><div className="profile-card-copy"><h3>{item.profile.displayName}</h3><p>@{item.profile.handle} · {item.profile.kind === "creator" ? "Creator" : "Page / community"}</p><small>Archived · owned by you</small></div><button className="profile-action" type="button" disabled={busy} onClick={() => void restoreProfile(item.profile.id)}>Restore</button><button className="profile-text-action" type="button" disabled={busy} onClick={async () => { try { const response=await fetch("/api/profiles/"+encodeURIComponent(item.profile.id)+"/history",{cache:"no-store"}); if(!response.ok) throw new Error(await readError(response)); const body=await response.json() as {history:Array<{action:string;occurredAt:string}>}; setNotice(body.history.map(event => event.action+" · "+new Date(event.occurredAt).toLocaleString()).join(" | ") || "No lifecycle history is available."); } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not load recovery history."); } }}>History</button></article>)}</div>}
       </section>
 
       <section className="profile-section">
