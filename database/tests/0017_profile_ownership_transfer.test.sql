@@ -107,6 +107,7 @@ BEGIN
  SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
  IF v_status<>'suspended' THEN RAISE EXCEPTION 'Archive did not suspend delegated access'; END IF;
  PERFORM public.profile_restore_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
+ SELECT revoked_at INTO v_grant_revoked FROM public.resource_grants WHERE id='87000000-0000-4000-8000-000000000002';
  SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
  IF v_status<>'suspended' THEN RAISE EXCEPTION 'Restore silently reactivated delegated access'; END IF;
  SELECT count(*) INTO v_owner_notice FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000001'
