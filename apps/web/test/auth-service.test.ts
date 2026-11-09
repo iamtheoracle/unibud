@@ -63,7 +63,7 @@ test("registration creates a pending account and sends an identity-bound challen
   assert.match(result.message,/verification instructions/);
   assert.ok(repo.createdAccount);
   assert.ok(repo.challenge);
-  assert.equal(repo.challenge.accountId,accountId === "unused" ? "unused" : (repo.createdAccount as {accountId:string}).accountId);
+  assert.equal(repo.challenge.accountId,(repo.createdAccount as {accountId:string}).accountId);
   assert.equal(repo.challenge.identityId,(repo.createdAccount as {identityId:string}).identityId);
   assert.equal(sent.code.length,6);
   assert.equal("password" in (repo.createdAccount as object),false);
