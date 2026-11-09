@@ -75,7 +75,7 @@ export interface ProfileLifecycleNotification {
 export interface ProfileOwnershipTransferPreflight {
   profileId:string; profileKind:"creator"|"page_community"; profileStatus:"active"|"restricted"|"archived";
   activeOwnedProfiles:number; activeDelegatedRelationships:number; pendingInvitations:number;
-  openTransferRequests:number; personalIdentityAvailable:boolean; canTransfer:boolean;
+  openTransferRequests:number; personalIdentityAvailable:boolean; verifiedIdentityAvailable:boolean; canTransfer:boolean;
 }
 export interface OutgoingProfileOwnershipTransfer {transferId:string;recipientHandle:string;status:"pending_recipient"|"recipient_accepted";createdAt:string;expiresAt:string;}
 export interface IncomingProfileOwnershipTransfer {
