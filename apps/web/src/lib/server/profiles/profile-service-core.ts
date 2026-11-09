@@ -3,7 +3,7 @@ import {
   evaluateProfileSwitch,
   type ProfileAccessRecord,
   type ProfileSwitchResult
-} from "../../../../../../packages/contracts/src/profile";
+} from "../../../../../../packages/contracts/src/profile.ts";
 
 export interface ProfileCreateInput {
   kind: "personal" | "creator" | "page_community";
