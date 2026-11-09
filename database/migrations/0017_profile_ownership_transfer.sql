@@ -512,17 +512,23 @@ BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
   RAISE EXCEPTION 'Transfer completion denied' USING ERRCODE='42501';
  END IF;
+ -- Read participant IDs without locking the transfer row. Acquire account locks
+ -- first, then profile, then transfer: this matches archive/account-state triggers.
  SELECT * INTO v_transfer FROM public.profile_ownership_transfers
- WHERE id=p_transfer_id AND current_owner_account_id=p_owner_account_id FOR UPDATE;
+ WHERE id=p_transfer_id AND current_owner_account_id=p_owner_account_id;
  IF NOT FOUND OR v_transfer.status<>'recipient_accepted' THEN RETURN FALSE; END IF;
  PERFORM pg_advisory_xact_lock(LEAST(hashtextextended(p_owner_account_id::text,0),hashtextextended(v_transfer.recipient_account_id::text,0)));
  PERFORM pg_advisory_xact_lock(GREATEST(hashtextextended(p_owner_account_id::text,0),hashtextextended(v_transfer.recipient_account_id::text,0)));
+ SELECT * INTO v_profile FROM public.profiles
+ WHERE id=v_transfer.profile_id AND owner_account_id=p_owner_account_id FOR UPDATE;
+ SELECT * INTO v_transfer FROM public.profile_ownership_transfers
+ WHERE id=p_transfer_id AND current_owner_account_id=p_owner_account_id FOR UPDATE;
+ IF NOT FOUND OR v_transfer.status<>'recipient_accepted' THEN RETURN FALSE; END IF;
  IF v_transfer.expires_at<=clock_timestamp() THEN
   UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp() WHERE id=p_transfer_id;
   RETURN FALSE;
  END IF;
- SELECT * INTO v_profile FROM public.profiles WHERE id=v_transfer.profile_id AND owner_account_id=p_owner_account_id FOR UPDATE;
- IF NOT FOUND OR v_profile.kind NOT IN('creator','page_community') OR v_profile.status<>'active'
+ IF NOT FOUND OR v_profile.id IS NULL OR v_profile.kind NOT IN('creator','page_community') OR v_profile.status<>'active'
   OR NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active')
   OR NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=v_transfer.recipient_account_id AND status='active')
  THEN RAISE EXCEPTION 'Transfer eligibility changed; request a new transfer after resolving account/profile state' USING ERRCODE='23514'; END IF;
@@ -550,8 +556,6 @@ BEGIN
  THEN RAISE EXCEPTION 'Transfer safeguards changed; remaining profiles, personal identity, recipient eligibility and all delegated access must be resolved' USING ERRCODE='23514'; END IF;
 
  SET CONSTRAINTS profile_memberships_profile_owner_fk DEFERRED;
- -- Remove the former owner's canonical membership; history remains in the
- -- transfer table and append-only audit events.
  DELETE FROM public.profile_memberships WHERE profile_id=v_profile.id
   AND account_id=p_owner_account_id AND relationship='owner' AND role='owner' AND status='active';
  IF NOT FOUND THEN RAISE EXCEPTION 'Current owner membership is missing' USING ERRCODE='23514'; END IF;
