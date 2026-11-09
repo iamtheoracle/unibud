@@ -258,7 +258,7 @@ DECLARE v_recipient UUID; v_handle TEXT; v_profile public.profiles%ROWTYPE; v_ow
 BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
     OR p_recipient_handle IS NULL OR length(trim(p_recipient_handle)) NOT BETWEEN 3 AND 30
-    OR p_expires_at<=clock_timestamp() THEN
+    OR p_expires_at IS NULL OR p_expires_at<=clock_timestamp() THEN
   RAISE EXCEPTION 'Invalid ownership transfer request' USING ERRCODE='22023';
  END IF;
  PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
