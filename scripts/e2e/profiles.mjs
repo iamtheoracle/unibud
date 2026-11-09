@@ -197,6 +197,9 @@ try {
     let transferState = "pending_recipient";
     let requestPayload, completionPayload;
     const transferId = "90000000-0000-4000-8000-000000000001";
+    await page.route("**/api/profiles/archived", route => json(route, 200, { ok: true, profiles: [] }));
+    await page.route("**/api/profile-invitations", route => json(route, 200, { ok: true, invitations: [] }));
+    await page.route("**/api/profiles/delegations**", route => json(route, 200, { ok: true, delegatedAccess: [] }));
     await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, creator] }));
     await page.route("**/api/profile-ownership-transfers", route => json(route, 200, { ok: true, transfers: [] }));
     await page.route("**/api/profiles/" + creatorId + "/ownership-transfer", async route => {
@@ -235,6 +238,9 @@ try {
     let responsePayload;
     let pending = [{ transferId, profileId: creatorId, profileName: "Oracle Creates", profileHandle: "oracle.creates",
       ownerHandle: "oracle", createdAt: new Date().toISOString(), expiresAt: new Date(Date.now()+86400000).toISOString() }];
+    await page.route("**/api/profiles/archived", route => json(route, 200, { ok: true, profiles: [] }));
+    await page.route("**/api/profile-invitations", route => json(route, 200, { ok: true, invitations: [] }));
+    await page.route("**/api/profiles/delegations**", route => json(route, 200, { ok: true, delegatedAccess: [] }));
     await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal] }));
     await page.route("**/api/profile-ownership-transfers", async route => {
       if (route.request().method() === "GET") return json(route, 200, { ok: true, transfers: pending });
