@@ -296,7 +296,7 @@ try {
     await page.getByRole("button", { name: "History" }).first().click();
     await page.getByText(/profile.archive/).waitFor();
     await page.getByRole("button", { name: "Restore" }).first().click();
-    await page.getByText("Profile restored. It is available in your profile switcher again.").waitFor();
+    await page.getByText("Profile restored. Any previously delegated access remains suspended until you review and reactivate it.").waitFor();
     assert.equal(restored, true);
     await page.close();
   }
