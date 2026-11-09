@@ -85,7 +85,7 @@ BEGIN
   RAISE EXCEPTION 'Transfer preflight denied' USING ERRCODE='42501';
  END IF;
  SELECT * INTO v_profile FROM public.profiles WHERE id=p_profile_id AND owner_account_id=p_owner_account_id;
- IF NOT FOUND OR v_profile.kind NOT IN('creator','page_community') THEN
+ IF NOT FOUND OR v_profile.kind NOT IN('creator','page_community') OR NOT EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id AND m.account_id=p_owner_account_id AND m.relationship='owner' AND m.role='owner' AND m.status='active') THEN
   RAISE EXCEPTION 'Only an owned creator or page/community profile can be transferred' USING ERRCODE='42501';
  END IF;
  SELECT count(*) INTO v_owned FROM public.profiles p
@@ -97,7 +97,7 @@ BEGIN
  SELECT count(*) INTO v_pending FROM public.profile_invitations
  WHERE profile_id=p_profile_id AND status='pending' AND expires_at>clock_timestamp();
  SELECT count(*) INTO v_open FROM public.profile_ownership_transfers
- WHERE profile_id=p_profile_id AND status IN('pending_recipient','recipient_accepted');
+ WHERE profile_id=p_profile_id AND status IN('pending_recipient','recipient_accepted') AND expires_at>clock_timestamp();
  RETURN jsonb_build_object(
   'profileId',p_profile_id,'profileKind',v_profile.kind,'profileStatus',v_profile.status,
   'activeOwnedProfiles',v_owned,'activeDelegatedRelationships',v_delegated,
@@ -125,6 +125,13 @@ BEGIN
   RAISE EXCEPTION 'Invalid ownership transfer request' USING ERRCODE='22023';
  END IF;
  PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
+ UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp()
+  WHERE profile_id=p_profile_id AND status IN('pending_recipient','recipient_accepted') AND expires_at<=clock_timestamp();
+ UPDATE public.profile_invitations SET status='expired',responded_at=clock_timestamp()
+  WHERE profile_id=p_profile_id AND status='pending' AND expires_at<=clock_timestamp();
+ IF NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active') THEN
+  RAISE EXCEPTION 'Active owner account required' USING ERRCODE='42501';
+ END IF;
  SELECT * INTO v_profile FROM public.profiles WHERE id=p_profile_id AND owner_account_id=p_owner_account_id FOR UPDATE;
  IF NOT FOUND OR v_profile.kind NOT IN('creator','page_community') OR v_profile.status<>'active'
   OR NOT EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id
@@ -209,6 +216,8 @@ BEGIN
  SELECT * INTO v_profile FROM public.profiles WHERE id=v_transfer.profile_id AND owner_account_id=v_transfer.current_owner_account_id;
  IF NOT FOUND OR v_profile.status<>'active' OR NOT EXISTS(
   SELECT 1 FROM public.accounts WHERE id=v_transfer.current_owner_account_id AND status='active')
+  OR NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_recipient_account_id AND status='active')
+  OR NOT EXISTS(SELECT 1 FROM public.authentication_identities WHERE account_id=p_recipient_account_id AND status='active' AND verified_at IS NOT NULL)
  THEN
   UPDATE public.profile_ownership_transfers SET status='cancelled',cancelled_at=clock_timestamp() WHERE id=p_transfer_id;
   RETURN FALSE;
@@ -224,6 +233,10 @@ BEGIN
   INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
   VALUES(v_transfer.current_owner_account_id,v_transfer.profile_id,'ownership_transfer_accepted',
    jsonb_build_object('transferId',p_transfer_id,'profileName',v_profile.display_name,'recipientAccountId',p_recipient_account_id));
+ ELSE
+  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+  VALUES(v_transfer.current_owner_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+   jsonb_build_object('transferId',p_transfer_id,'reason','recipient_declined'));
  END IF;
  RETURN TRUE;
 END;
