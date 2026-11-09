@@ -127,6 +127,10 @@ export class ProfileService {
   }
 
   async manageDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string, role: ProfileInvitationInput["role"], status: "active" | "suspended"): Promise<boolean> {
+    const publicRoles: readonly string[] = ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"];
+    if (!publicRoles.includes(role) || !["active", "suspended"].includes(status)) {
+      throw new Error("Choose a supported public page role and lifecycle state.");
+    }
     const profile = await this.repository.findProfileAccess(ownerAccountId, profileId);
     if (!profile || profile.profile.ownerAccountId !== ownerAccountId ||
         profile.profile.kind !== "page_community" || profile.relationship !== "owner" ||
