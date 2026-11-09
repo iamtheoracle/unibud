@@ -153,6 +153,7 @@ BEGIN
  LOOP EXECUTE format('ALTER FUNCTION %s OWNER TO unibud_profile_owner',signature); END LOOP;
 END;
 $ownership$;
+REVOKE ALL ON FUNCTION public.profile_grant_delegated_access(UUID,UUID,UUID,TEXT,BOOLEAN) FROM PUBLIC,unibud_app;
 REVOKE ALL ON FUNCTION public.profile_invite_by_handle(UUID,UUID,UUID,TEXT,TEXT,BOOLEAN) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_respond_to_invitation(UUID,UUID,BOOLEAN) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_list_incoming_invitations(UUID) FROM PUBLIC;
