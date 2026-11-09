@@ -45,7 +45,7 @@ function resolveStatusUrl(apiUrl: string): URL {
   }
 
   const normalized = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
-  return new URL("integration/status", new URL("v1/", normalized));
+  return new URL("integration/status", normalized);
 }
 
 export async function checkOracleArcConnection(): Promise<OracleArcConnectionResult> {
