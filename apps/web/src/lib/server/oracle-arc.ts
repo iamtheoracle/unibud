@@ -82,6 +82,7 @@ export async function checkOracleArcConnection(): Promise<OracleArcConnectionRes
       method: "GET",
       headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
       cache: "no-store",
+      redirect: "error",
       signal: AbortSignal.timeout(5000)
     });
 
@@ -107,8 +108,45 @@ export async function checkOracleArcConnection(): Promise<OracleArcConnectionRes
       };
     }
 
-    const payload = (await response.json()) as OracleArcStatusPayload;
-    if (payload.service !== "oracle-arc" || payload.authenticated !== true) {
+    const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+    if (!contentType.includes("application/json")) {
+      return {
+        state: "misconfigured",
+        checkedAt,
+        apiUrlConfigured: true,
+        modelConfigured: true,
+        inference: "unknown",
+        message: "Oracle Arc responded with an unexpected content type."
+      };
+    }
+
+    const responseBody = await response.text();
+    if (responseBody.length > 8192) {
+      return {
+        state: "misconfigured",
+        checkedAt,
+        apiUrlConfigured: true,
+        modelConfigured: true,
+        inference: "unknown",
+        message: "Oracle Arc returned an oversized status response."
+      };
+    }
+
+    let payload: OracleArcStatusPayload;
+    try {
+      payload = JSON.parse(responseBody) as OracleArcStatusPayload;
+    } catch {
+      return {
+        state: "misconfigured",
+        checkedAt,
+        apiUrlConfigured: true,
+        modelConfigured: true,
+        inference: "unknown",
+        message: "Oracle Arc returned an invalid status response."
+      };
+    }
+
+    if (payload.service !== "oracle-arc" || payload.authenticated !== true || typeof payload.model_configured !== "boolean") {
       return {
         state: "misconfigured",
         checkedAt,
@@ -120,7 +158,7 @@ export async function checkOracleArcConnection(): Promise<OracleArcConnectionRes
     }
 
     const inference =
-      payload.inference === "ready"
+      payload.model_configured === true && payload.inference === "ready"
         ? "ready"
         : payload.inference === "not-configured"
           ? "not_configured"
