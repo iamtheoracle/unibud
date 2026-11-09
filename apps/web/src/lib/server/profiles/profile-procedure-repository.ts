@@ -11,6 +11,8 @@ import type { ProfileAccessRecord } from "../../../../../../packages/contracts/s
 import type {
   DelegatedProfileGrantInput,
   ProfileCreateInput,
+  ProfileInvitationInput,
+  ProfileInvitationRecord,
   ProfileRepository
 } from "./profile-service-core";
 
@@ -168,6 +170,43 @@ export class ProfileProcedureRepository implements ProfileRepository {
         [accountId,profileId]
       );
       return result.rows[0] ? mapAccess(result.rows[0]) : undefined;
+    });
+  }
+
+  async inviteDelegateByHandle(ownerAccountId: string, input: ProfileInvitationInput) {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{ invitation_id:string; invitee_handle:string; invitee_display_name:string }>(
+        "SELECT * FROM public.profile_invite_by_handle($1,$2,$3,$4,$5,$6)",
+        [randomUUID(),input.profileId,ownerAccountId,input.inviteeHandle,input.role,input.canSwitchToProfile]
+      );
+      const row=result.rows[0];
+      if(!row) throw new Error("Invitation was not created.");
+      return {id:row.invitation_id,inviteeHandle:row.invitee_handle,inviteeDisplayName:row.invitee_display_name};
+    });
+  }
+
+  async listIncomingInvitations(inviteeAccountId: string): Promise<ProfileInvitationRecord[]> {
+    return this.inAccountContext(inviteeAccountId, async client => {
+      const result=await client.query<{
+        id:string; profile_id:string; profile_name:string; profile_handle:string;
+        owner_display_name:string; owner_handle:string; role:ProfileInvitationRecord["role"];
+        can_switch_to_profile:boolean; created_at:Date; expires_at:Date;
+      }>("SELECT * FROM public.profile_list_incoming_invitations($1)",[inviteeAccountId]);
+      return result.rows.map(row=>({
+        id:row.id,profileId:row.profile_id,profileName:row.profile_name,profileHandle:row.profile_handle,
+        ownerDisplayName:row.owner_display_name,ownerHandle:row.owner_handle,role:row.role,
+        canSwitchToProfile:row.can_switch_to_profile,createdAt:row.created_at.toISOString(),expiresAt:row.expires_at.toISOString()
+      }));
+    });
+  }
+
+  async respondToInvitation(inviteeAccountId: string, invitationId: string, accept: boolean): Promise<boolean> {
+    return this.inAccountContext(inviteeAccountId, async client => {
+      const result=await client.query<{responded:boolean}>(
+        "SELECT public.profile_respond_to_invitation($1,$2,$3) AS responded",
+        [invitationId,inviteeAccountId,accept]
+      );
+      return result.rows[0]?.responded===true;
     });
   }
 
