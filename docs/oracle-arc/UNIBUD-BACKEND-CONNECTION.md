@@ -42,7 +42,7 @@ No production URL, API key, model provider, or production deployment is configur
 
 ## Authenticated status evidence hardening
 
-The status client now refuses redirects, requires an HTTPS remote URL, accepts only JSON status responses, caps the response body at 8 KiB, validates the expected `service=oracle-arc` identity and `authenticated=true` assertion, and rejects malformed or incomplete payloads. Upstream response bodies and exception text are never returned. A configured model label cannot make inference ready: Oracle Arc must also report `model_configured=true` and `inference=ready`.
+The status client now refuses redirects, requires an HTTPS remote URL, accepts only JSON status responses, streams and caps the response body at 8 KiB before parsing, validates the expected `service=oracle-arc` identity and `authenticated=true` assertion, and rejects malformed or incomplete payloads. Upstream response bodies and exception text are never returned. A configured model label cannot make inference ready: Oracle Arc must also report `model_configured=true` and `inference=ready`.
 
 The operator-only endpoint remains `GET /api/internal/integrations/oracle-arc/status`, protected by the backend-only `UNIBUD_INTEGRATION_ADMIN_TOKEN`. It is not mounted in the consumer account-closure page and must not be called from browser code. The current token gate is a controlled diagnostics boundary, not a substitute for future session-derived operator RBAC.
 
