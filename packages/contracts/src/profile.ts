@@ -3,7 +3,7 @@ import type {
   ProfileId,
   ProfileKind,
   ProfileSummary
-} from "./identity";
+} from "./identity.ts";
 
 export interface ProfileContext {
   accountId: AccountId;
