@@ -25,22 +25,25 @@ export async function POST(request:NextRequest){
  const token=readSessionCookie(request);
  if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
  const body=await readJsonObject(request);
- if(!body||typeof body.profileId!=="string"||typeof body.delegateAccountId!=="string"||
-   typeof body.role!=="string"||!["admin","moderator","editor","member","seller","provider","professional","student","staff","operator","viewer"].includes(body.role)||typeof body.canSwitchToProfile!=="boolean"){
-  return NextResponse.json({ok:false,error:"Invalid delegated access request."},{status:400});
+ if(!body||typeof body.profileId!=="string"||typeof body.inviteeHandle!=="string"||
+   typeof body.role!=="string"||!["admin","moderator","editor","member","seller","provider","professional","student","staff","operator","viewer"].includes(body.role)||
+   typeof body.canSwitchToProfile!=="boolean"){
+  return NextResponse.json({ok:false,error:"Enter a UNIBUD username and valid invitation details."},{status:400});
  }
  try{
   const {sessions,profiles}=createConfiguredIdentityServices();
   const validation=await sessions.validate(token);
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
-  const access=await profiles.grantDelegatedAccess(validation.account.id,{
-   profileId:body.profileId,delegateAccountId:body.delegateAccountId,
+  const invitation=await profiles.inviteDelegateByHandle(validation.account.id,{
+   profileId:body.profileId,inviteeHandle:body.inviteeHandle,
    role:body.role as "admin"|"moderator"|"editor"|"member"|"seller"|"provider"|"professional"|"student"|"staff"|"operator"|"viewer",
    canSwitchToProfile:body.canSwitchToProfile
   });
-  return NextResponse.json({ok:true,access},{status:201});
+  return NextResponse.json({ok:true,invitation},{status:201});
  }catch(error){
   if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
+  if(error instanceof Error&&/handle|identity not found|not eligible|duplicate key/i.test(error.message))
+   return NextResponse.json({ok:false,error:"That UNIBUD identity could not be invited. Check the handle and their discovery settings."},{status:400});
   return routeError(error);
  }
 }
