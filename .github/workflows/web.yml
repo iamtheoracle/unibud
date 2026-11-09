@@ -1,16 +1,40 @@
-name: UNIBUD Web
-
+name: UNIBUD Web and Database
 on:
   pull_request:
   push:
     branches:
       - main
       - "foundation/**"
-
 permissions:
   contents: read
-
 jobs:
+  database-migration:
+    name: PostgreSQL migration validation
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: unibud_test
+          POSTGRES_PASSWORD: unibud_test_only
+          POSTGRES_DB: unibud_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U unibud_test -d unibud_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply identity migration
+        env:
+          PGPASSWORD: unibud_test_only
+        run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0001_identity_foundation.sql
+      - name: Verify identity constraints and audit immutability
+        env:
+          PGPASSWORD: unibud_test_only
+        run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0001_identity_foundation.test.sql
   web-checks:
     name: Web build and type checks
     runs-on: ubuntu-latest
