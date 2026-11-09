@@ -209,3 +209,11 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Safety boundary:** no export or delete operations exist in the provider adapter contract; UI projection always reports export/deletion/closure unavailable. No provider is registered or contacted by this implementation.
 - **Tests added:** missing provider, stale lookup and verification evidence, provider failure, unexpected references, shared participant ownership, state classification and fail-closed capability display.
 - **Verification:** fresh CI for the exact branch head is required; no passing CI is claimed until workflows report completion for that SHA.
+
+
+### Provider diagnostics and verification gateway transport hardening
+
+- **Verified on PR #10:** the temporary internal diagnostic bearer gate requires at least 32 UTF-8 bytes, accepts exactly one bearer credential, rejects embedded whitespace/additional fields, and uses constant-time comparison for equal-length credentials. The Foundation, Oracle Arc API, and UNIBUD Web and Database workflows all passed on commit `8bde0050c2485f70ab04692f16c7af54855cbfa8`. This is a configuration gate only, not operator identity, session-derived RBAC, token rotation/revocation, or live provider verification.
+- **Implemented on the next stacked feature branch:** verification gateway endpoint validation rejects embedded URL credentials, query strings and fragments; production requires HTTPS; non-production HTTP is limited to loopback development hosts. Focused tests cover these boundaries and verify that endpoint secrets are not exposed in diagnostic output.
+- **Provider evidence remains unknown:** no vendor identity is inferred, no POST delivery is used as a health probe, and no email/SMS or verification code is sent. A provider-specific adapter and documented read-only health contract are still required before connectivity can be tested.
+- **Release boundary:** all changes remain on unmerged feature branches. No production deployment, production credentials, production data, or `main` change is included.
