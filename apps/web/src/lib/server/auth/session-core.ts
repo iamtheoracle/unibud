@@ -73,9 +73,11 @@ function validateDates(session: PersistedSession, now: Date): "revoked" | "expir
 }
 
 export class SessionService {
+  private readonly repository: SessionRepository;
   private readonly policy: SessionPolicy;
 
-  constructor(private readonly repository: SessionRepository, policy: Partial<SessionPolicy> = {}) {
+  constructor(repository: SessionRepository, policy: Partial<SessionPolicy> = {}) {
+    this.repository = repository;
     this.policy = { ...DEFAULT_POLICY, ...policy };
     if (
       this.policy.idleLifetimeSeconds < 60 ||
