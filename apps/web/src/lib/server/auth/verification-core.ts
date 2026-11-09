@@ -90,15 +90,24 @@ function keyedDigest(key: Uint8Array, domain: string, value: string): Buffer {
 }
 
 export class VerificationChallengeService {
+  private readonly repository: VerificationChallengeRepository;
+  private readonly limiter: VerificationRateLimiter;
+  private readonly delivery: VerificationDelivery;
+  private readonly digestKey: Uint8Array;
+
   constructor(
-    private readonly repository: VerificationChallengeRepository,
-    private readonly limiter: VerificationRateLimiter,
-    private readonly delivery: VerificationDelivery,
-    private readonly digestKey: Uint8Array
+    repository: VerificationChallengeRepository,
+    limiter: VerificationRateLimiter,
+    delivery: VerificationDelivery,
+    digestKey: Uint8Array
   ) {
     if (digestKey.byteLength < 32) {
       throw new Error("Verification digest key must contain at least 32 bytes.");
     }
+    this.repository = repository;
+    this.limiter = limiter;
+    this.delivery = delivery;
+    this.digestKey = digestKey;
   }
 
   async issue(input: IssueVerificationInput): Promise<IssuedVerificationChallenge> {
