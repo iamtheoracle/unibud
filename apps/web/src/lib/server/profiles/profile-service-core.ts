@@ -45,7 +45,20 @@ export interface ProfileInvitationRecord {
   expiresAt: string;
 }
 
+export interface ProfileOutgoingInvitationRecord {
+  id: string;
+  profileId: string;
+  inviteeHandle: string;
+  role: ProfileInvitationInput["role"];
+  status: "pending" | "expired";
+  createdAt: string;
+  expiresAt: string;
+}
+
 export interface ProfileRepository {
+  manageDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string, role: ProfileInvitationInput["role"], status: "active" | "suspended"): Promise<boolean>;
+  cancelInvitation(ownerAccountId: string, invitationId: string): Promise<boolean>;
+  listOutgoingInvitations(ownerAccountId: string, profileId: string): Promise<ProfileOutgoingInvitationRecord[]>;
   updateOwnedProfile(ownerAccountId: string, input: ProfileUpdateInput): Promise<ProfileAccessRecord>;
   authorizeAction(accountId: string, profileId: string, permission: ProfilePermission): Promise<boolean>;
   createOwnedProfile(ownerAccountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord>;
@@ -111,6 +124,33 @@ export class ProfileService {
     return this.repository.createOwnedProfile(accountId,{
       ...input,handle,displayName,visibility:input.visibility??"private"
     });
+  }
+
+  async manageDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string, role: ProfileInvitationInput["role"], status: "active" | "suspended"): Promise<boolean> {
+    const profile = await this.repository.findProfileAccess(ownerAccountId, profileId);
+    if (!profile || profile.profile.ownerAccountId !== ownerAccountId ||
+        profile.profile.kind !== "page_community" || profile.relationship !== "owner" ||
+        profile.membershipStatus !== "active") {
+      throw new ProfileAccessDeniedError("Only the active page owner may manage delegated access.");
+    }
+    return this.repository.manageDelegatedAccess(ownerAccountId, profileId, delegateAccountId, role, status);
+  }
+
+  async cancelInvitation(ownerAccountId: string, invitationId: string): Promise<boolean> {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(invitationId)) {
+      throw new ProfileAccessDeniedError();
+    }
+    return this.repository.cancelInvitation(ownerAccountId, invitationId);
+  }
+
+  async listOutgoingInvitations(ownerAccountId: string, profileId: string): Promise<ProfileOutgoingInvitationRecord[]> {
+    const profile = await this.repository.findProfileAccess(ownerAccountId, profileId);
+    if (!profile || profile.profile.ownerAccountId !== ownerAccountId ||
+        profile.profile.kind !== "page_community" || profile.relationship !== "owner" ||
+        profile.membershipStatus !== "active") {
+      throw new ProfileAccessDeniedError("Only the active page owner may view outgoing invitations.");
+    }
+    return this.repository.listOutgoingInvitations(ownerAccountId, profileId);
   }
 
   async revokeDelegatedAccess(
