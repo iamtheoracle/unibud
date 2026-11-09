@@ -11,8 +11,8 @@ BEGIN
   INSERT INTO accounts (id,status) VALUES (a,'active'),(b,'active');
   INSERT INTO profiles (id,owner_account_id,kind,handle,handle_normalized,display_name)
     VALUES (p,a,'personal','synthetic-a','synthetic-a','Synthetic A');
-  INSERT INTO profile_memberships (id,profile_id,account_id,owner_account_id,relationship,role,status,can_switch_to_profile)
-    VALUES ('30000000-0000-4000-8000-000000000001',p,a,a,'owner','owner','active',true);
+  INSERT INTO profile_memberships (id,profile_id,account_id,owner_account_id,profile_owner_account_id,relationship,role,status,can_switch_to_profile)
+    VALUES ('30000000-0000-4000-8000-000000000001',p,a,a,a,'owner','owner','active',true);
   INSERT INTO account_sessions (id,account_id,credential_digest,issued_at,idle_expires_at,absolute_expires_at)
     VALUES ('40000000-0000-4000-8000-000000000001',a,decode(repeat('ab',32),'hex'),now(),now()+interval '30 minutes',now()+interval '12 hours');
   INSERT INTO resource_grants (id,subject_account_id,application_id,resource_type,resource_id,role,actions,issuer_account_id)
