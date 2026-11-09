@@ -1,6 +1,6 @@
 import { createHmac, randomUUID } from "node:crypto";
 import { hashPassword, verifyPassword } from "./credential-core.ts";
-import { VerificationChallengeService, type VerificationChannel } from "./verification-core";
+import { VerificationChallengeService, type VerificationChannel } from "./verification-core.ts";
 import { SessionService } from "./session-core";
 
 export interface AuthAccountRecord {
