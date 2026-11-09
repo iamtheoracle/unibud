@@ -121,3 +121,10 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - The temporary operator bearer gate's 32-byte minimum is not a substitute for authenticated staff/operator identities, scoped roles, revocation, audit history or step-up authentication.
 - Verification gateway URL configuration must not contain embedded credentials, query strings or fragments. Production uses HTTPS; development HTTP is allowed only for loopback hosts.
 - None of this evidence changes account closure, export, deletion or retention policy. Those remain unavailable and fail closed.
+
+
+## Workforce authorization dependencies (migration 0020)
+
+- A private workforce identity and exact operator permission grant are now represented separately from consumer profiles. The DB authorization function validates active session/account/worker/grant and records allow/deny audit events.
+- These records are not yet included in the consumer account-closure inventory or user-facing readiness counts. They are sensitive workforce/security records and require a separate retention, legal basis, access-review, offboarding and audit-retention policy before any operator lifecycle or account closure action can be approved.
+- Worker provisioning, role assignment, revocation UI, region/assigned-scope enforcement, operator audit review UI and HTTP diagnostics integration remain unimplemented. Until integrated, the temporary bearer diagnostic endpoint is not production-grade operator RBAC.

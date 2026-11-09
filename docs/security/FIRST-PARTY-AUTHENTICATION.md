@@ -39,3 +39,13 @@ Onboarding derives the account only from a verified session, requires explicit t
 ## Verification status
 
 GitHub Actions applies migrations 0001–0010 to disposable PostgreSQL 16 and runs synthetic SQL isolation/immutability tests. Web CI runs pure service tests, TypeScript checks, lint, and build. Passing CI is not evidence that production secrets, pools, providers, delivery channels, cookie settings, backups, or operations are deployed.
+
+
+## Workforce identity and session-derived operator authorization (migration 0020)
+
+- Workforce identities are separate records linked to a verified UNIBUD account. A consumer profile label or delegated profile role never creates a staff/operator identity.
+- Operator permission grants are explicit, purpose-specific, time-bounded where configured, and cannot be created or changed by `unibud_app` or `unibud_auth`. Provisioning and grant changes require trusted database administration until a separately reviewed workforce administration workflow exists.
+- `public.operator_authorize_session` receives only the SHA-256 digest of the opaque session cookie. PostgreSQL resolves the active session and active account, then requires an active workforce identity and an unexpired, non-revoked global permission grant.
+- Every allow/deny decision is appended to a restricted audit table with a reason code and optional request reference. Raw session credentials, passwords, verification codes and sensitive payloads are never stored in this audit event.
+- Region and assigned-work scopes are represented but deliberately do not authorize access yet. The current authorization function permits only explicit global grants for the exact permission. Unsupported scope remains denied.
+- PostgreSQL 16 migration/test coverage is added to the Foundation workflow. This is a database authorization primitive, not yet wired into the HTTP diagnostics route. The existing temporary bearer-token route must not be described as session-derived or production operator RBAC until a follow-up integrates cookie validation, this RPC, CSRF/origin controls, and audit-safe response handling.
