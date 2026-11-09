@@ -13,6 +13,7 @@ This migration establishes the first provider-neutral PostgreSQL persistence bou
 - `profile_memberships`: exact-profile ownership and delegated membership.
 - `resource_grants`: explicit application/resource/action permissions.
 - `security_audit_events`: security-relevant event records.
+- Migration 0003 adds `password_credentials` (scrypt verifiers only) and `verification_challenges` (keyed target/code digests, expiry, attempt limits and one-time consumption state).
 
 ## Security decisions
 
