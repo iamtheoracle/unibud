@@ -78,7 +78,7 @@ SET LOCAL ROLE unibud_app;
 DO $editor$
 BEGIN
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','content.publish') IS NOT TRUE THEN RAISE EXCEPTION 'Editor publish permission missing'; END IF;
- IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','110000000000-4000-8000-000000000003','profile.update_identity') IS NOT FALSE THEN RAISE EXCEPTION 'Editor unexpectedly received identity permission'; END IF;
+ IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','profile.update_identity') IS NOT FALSE THEN RAISE EXCEPTION 'Editor unexpectedly received identity permission'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','members.view') IS NOT FALSE THEN RAISE EXCEPTION 'Editor unexpectedly received member permission'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000002','11000000-0000-4000-8000-000000000003','content.publish') IS NOT FALSE THEN RAISE EXCEPTION 'Editor permission crossed profile boundary'; END IF;
 END
