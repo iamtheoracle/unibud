@@ -84,7 +84,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [loadArchivedProfiles]);
 
   useEffect(() => { void loadProfiles(); }, [loadProfiles]);
 
