@@ -12,7 +12,7 @@ export interface OnboardingRepository {
    * One transaction: ensure one personal profile + owner membership, record both
    * policy versions, and return the existing profile on a safe retry.
    */
-  completeOnboarding(accountId: string, input: {
+  completeOnboarding(accountId: string, sessionId: string, input: {
     handle: string;
     displayName: string;
     termsVersion: string;
@@ -48,7 +48,7 @@ export class OnboardingService {
   if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(handle)) throw new Error("Invalid personal profile handle.");
   const displayName=input.displayName.trim();
   if(!displayName || displayName.length>80) throw new Error("Display name must be 1–80 characters.");
-  const profile=await this.repository.completeOnboarding(validated.account.id,{
+  const profile=await this.repository.completeOnboarding(validated.account.id,validated.session.id,{
    handle,displayName,termsVersion:validatePolicyVersion(input.termsVersion),
    privacyVersion:validatePolicyVersion(input.privacyVersion),acceptedAt:now.toISOString()
   });
