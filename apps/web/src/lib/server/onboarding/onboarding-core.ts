@@ -36,9 +36,11 @@ export class OnboardingService {
   this.sessions=sessions;this.repository=repository;
  }
  async complete(input:{
-  sessionToken:string;handle:string;displayName:string;termsVersion:string;privacyVersion:string;now?:Date;
+  sessionToken:string;handle:string;displayName:string;termsVersion:string;privacyVersion:string;
+  acceptTerms:boolean;acceptPrivacy:boolean;now?:Date;
  }):Promise<OnboardingResult>{
   const now=input.now??new Date();
+  if(input.acceptTerms!==true || input.acceptPrivacy!==true) throw new Error("Terms and privacy acceptance are required to continue.");
   const validated=await this.sessions.validate(input.sessionToken,now);
   if(!validated.valid) return {ok:false,reason:"invalid_session"};
   if(validated.account.status!=="active") return {ok:false,reason:"account_inactive"};
