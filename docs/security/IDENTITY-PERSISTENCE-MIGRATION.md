@@ -14,6 +14,11 @@ This migration establishes the first provider-neutral PostgreSQL persistence bou
 - `resource_grants`: explicit application/resource/action permissions.
 - `security_audit_events`: security-relevant event records.
 - Migration 0003 adds `password_credentials` (scrypt verifiers only) and `verification_challenges` (keyed target/code digests, expiry, attempt limits and one-time consumption state).
+- Migration 0004 adds narrow SECURITY DEFINER auth procedures and separate `unibud_auth` / `unibud_auth_owner` roles.
+- Migration 0005 adds profile-owner membership binding, session-bound active profile context, and narrowly scoped profile procedures.
+- Migration 0006 enforces canonical profile-owner/grantor consistency and one non-archived personal profile per account.
+- Migration 0007 stores immutable, versioned terms/privacy acceptance.
+- Migration 0008 adds session touch, account-wide revocation, and challenge-owner lookup procedures.
 
 ## Security decisions
 
@@ -24,7 +29,7 @@ This migration establishes the first provider-neutral PostgreSQL persistence bou
 5. Membership and grants are scoped to exact accounts, profiles, applications, resources, and actions. A role name alone is not permission.
 6. Audit event payloads must be minimised. Never log passwords, verification secrets, session tokens, private message bodies, or full financial payloads.
 7. Foreign-key deletion is restricted so account closure/deletion must use an explicit retention and erasure workflow rather than cascading through records.
-8. These tables do not yet enforce tenant/domain row-level security. Database roles, application authorisation, and later reviewed RLS policies are still required.
+8. Migrations 0002 and 0005 enforce FORCE RLS with signed transaction-scoped account context and separate non-login procedure-owner roles. Arbitrary user-settable GUC values do not authorise access without a valid HMAC.
 
 ## Domain isolation
 
@@ -45,8 +50,7 @@ Production-to-development refreshes are prohibited by default. Any future except
 
 ## Migration and deployment status
 
-- This file defines a proposed initial schema migration.
-- No database instance has been provisioned or connected.
-- No migration has been applied to a live database.
-- No RLS policy, database role grants, backup schedule, restore drill, or production secret has been configured.
-- SQL execution and PostgreSQL-version compatibility must be verified in an isolated disposable PostgreSQL environment before adoption.
+- GitHub Actions applies migrations 0001–0008 to disposable PostgreSQL 16 and runs synthetic SQL tests for schema constraints, audit immutability, signed-context denial, credential isolation, auth procedure behavior, profile owner/delegate/outsider isolation, onboarding acceptance, and session maintenance.
+- The server-only auth RPC, profile RPC, and onboarding RPC adapters are implemented against a narrow query-pool contract.
+- No production database, concrete production pool/LOGIN principal, signing/encryption key, delivery provider, backup schedule, restore drill, or live service connection has been provisioned.
+- Production rollout still requires secret-manager bindings and rotation, network restrictions, least-privilege login provisioning, rate limiting, delivery integration, cookie routes, operational monitoring, and a reviewed migration/restore procedure.
