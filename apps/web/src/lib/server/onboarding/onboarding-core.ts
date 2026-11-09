@@ -45,7 +45,7 @@ export class OnboardingService {
   if(!validated.valid) return {ok:false,reason:"invalid_session"};
   if(validated.account.status!=="active") return {ok:false,reason:"account_inactive"};
   const handle=input.handle.trim().toLowerCase();
-  if(!/^[a-z0-9](?:[a-z0-9._-]{1,28}[a-z0-9])?$/.test(handle)) throw new Error("Invalid personal profile handle.");
+  if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(handle)) throw new Error("Invalid personal profile handle.");
   const displayName=input.displayName.trim();
   if(!displayName || displayName.length>80) throw new Error("Display name must be 1–80 characters.");
   const profile=await this.repository.completeOnboarding(validated.account.id,{
