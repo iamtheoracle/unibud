@@ -38,6 +38,23 @@ INSERT INTO public.operator_role_grants(
  'integration_operator','integration.diagnostics.read','global'
 );
 
+INSERT INTO public.operator_role_grants(
+ id,worker_identity_id,role_key,permission_key,scope_key,granted_at,expires_at
+) VALUES (
+ '23000000-0000-4000-8000-000000000002',
+ '22000000-0000-4000-8000-000000000001',
+ 'security_auditor','security.audit.read','global',
+ clock_timestamp()-interval '2 hours',clock_timestamp()-interval '1 hour'
+);
+INSERT INTO public.operator_role_grants(
+ id,worker_identity_id,role_key,permission_key,scope_key,granted_at,revoked_at
+) VALUES (
+ '23000000-0000-4000-8000-000000000003',
+ '22000000-0000-4000-8000-000000000001',
+ 'support_readonly','account.support.read','global',
+ clock_timestamp()-interval '2 hours',clock_timestamp()
+);
+
 SET LOCAL ROLE unibud_auth;
 DO $test$
 DECLARE v_count INTEGER;
@@ -58,6 +75,14 @@ BEGIN
     decode(repeat('a1',31),'hex'),'integration.diagnostics.read','ci-deny-digest'
   ) THEN RAISE EXCEPTION 'Malformed session digest unexpectedly authorized'; END IF;
 
+  IF public.operator_authorize_session(
+    decode(repeat('a1',32),'hex'),'security.audit.read','ci-deny-expired'
+  ) THEN RAISE EXCEPTION 'Expired permission grant unexpectedly authorized'; END IF;
+
+  IF public.operator_authorize_session(
+    decode(repeat('a1',32),'hex'),'account.support.read','ci-deny-revoked'
+  ) THEN RAISE EXCEPTION 'Revoked permission grant unexpectedly authorized'; END IF;
+
   IF has_table_privilege('unibud_auth','public.operator_role_grants','INSERT')
      OR has_table_privilege('unibud_auth','public.operator_access_audit_events','SELECT')
      OR has_table_privilege('unibud_app','public.operator_worker_identities','SELECT') THEN
@@ -67,14 +92,30 @@ END
 $test$;
 
 RESET ROLE;
+UPDATE public.operator_worker_identities
+SET worker_status='suspended',suspended_at=clock_timestamp()
+WHERE id='22000000-0000-4000-8000-000000000001';
+SET LOCAL ROLE unibud_auth;
+DO $suspended$
+BEGIN
+  IF public.operator_authorize_session(
+    decode(repeat('a1',32),'hex'),'integration.diagnostics.read','ci-deny-suspended'
+  ) THEN RAISE EXCEPTION 'Suspended workforce identity unexpectedly authorized'; END IF;
+END
+$suspended$;
+
+RESET ROLE;
 SET LOCAL ROLE unibud_operator_owner;
 DO $audit$
 DECLARE v_count INTEGER;
 BEGIN
   SELECT count(*) INTO v_count
   FROM public.operator_access_audit_events
-  WHERE request_reference IN ('ci-allow-001','ci-deny-consumer','ci-deny-permission','ci-deny-digest');
-  IF v_count<>4 THEN RAISE EXCEPTION 'Authorization decisions were not fully audited'; END IF;
+  WHERE request_reference IN (
+    'ci-allow-001','ci-deny-consumer','ci-deny-permission','ci-deny-digest',
+    'ci-deny-expired','ci-deny-revoked','ci-deny-suspended'
+  );
+  IF v_count<>7 THEN RAISE EXCEPTION 'Authorization decisions were not fully audited'; END IF;
 END
 $audit$;
 
