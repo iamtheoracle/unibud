@@ -49,7 +49,7 @@ BEGIN
  END IF;
  SELECT a.id,p.handle,CASE WHEN p.visibility='private' THEN 'UNIBUD member' ELSE p.display_name END INTO v_invitee,v_handle,v_name
  FROM public.profiles p JOIN public.accounts a ON a.id=p.owner_account_id
- WHERE p.kind='personal' AND p.status='active' AND p.visibility IN ('public','limited')
+ WHERE p.kind='personal' AND p.status='active'
    AND p.handle_normalized=lower(trim(leading '@' from p_invitee_handle))
    AND a.status='active'
  LIMIT 1;
