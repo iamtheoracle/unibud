@@ -18,6 +18,7 @@
 - [Security Baseline](security/SECURITY-BASELINE.md)
 - [Identity and Onboarding Architecture](security/IDENTITY-ARCHITECTURE.md)
 - [Identity and Profile Service Contracts](security/IDENTITY-CONTRACTS.md)
+- [Private Education Identity Boundaries](security/EDUCATION-IDENTITY-BOUNDARIES.md)
 
 ## Oracle Arc
 - [Independent AI Core Specification](oracle-arc/ORACLE-ARC-SPEC.md)
