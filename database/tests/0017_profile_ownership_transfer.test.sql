@@ -19,7 +19,8 @@ VALUES
  ('37000000-0000-4000-8000-000000000002','17000000-0000-4000-8000-000000000001','creator','transfer-creator','transfer-creator','Transfer Creator','public'),
  ('37000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000002','personal','transfer-recipient','transfer-recipient','Transfer Recipient','private'),
  ('37000000-0000-4000-8000-000000000004','17000000-0000-4000-8000-000000000003','personal','transfer-delegate','transfer-delegate','Transfer Delegate','private'),
- ('37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001','page_community','transfer-page','transfer-page','Transfer Page','public');
+ ('37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001','page_community','transfer-page','transfer-page','Transfer Page','public'),
+ ('37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001','creator','archive-transfer','archive-transfer','Archive Transfer','public');
 
 INSERT INTO public.profile_memberships(id,profile_id,account_id,owner_account_id,profile_owner_account_id,
  relationship,role,status,can_switch_to_profile,granted_by_account_id)
@@ -29,7 +30,8 @@ VALUES
  ('47000000-0000-4000-8000-000000000003','37000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000002','17000000-0000-4000-8000-000000000002','17000000-0000-4000-8000-000000000002','owner','owner','active',true,'17000000-0000-4000-8000-000000000002'),
  ('47000000-0000-4000-8000-000000000004','37000000-0000-4000-8000-000000000004','17000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000003','owner','owner','active',true,'17000000-0000-4000-8000-000000000003'),
  ('47000000-0000-4000-8000-000000000005','37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','owner','owner','active',true,'17000000-0000-4000-8000-000000000001'),
- ('47000000-0000-4000-8000-000000000006','37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000003',NULL,'17000000-0000-4000-8000-000000000001','delegated','admin','active',false,'17000000-0000-4000-8000-000000000001');
+ ('47000000-0000-4000-8000-000000000006','37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000003',NULL,'17000000-0000-4000-8000-000000000001','delegated','admin','active',false,'17000000-0000-4000-8000-000000000001'),
+ ('47000000-0000-4000-8000-000000000007','37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000001','owner','owner','active',true,'17000000-0000-4000-8000-000000000001');
 
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES('ci-profile-transfer-key',decode(repeat('bc',32),'hex'));
@@ -63,6 +65,19 @@ $preflight$;
 -- Revoke the delegate before requesting transfer; old delegation is never carried over.
 UPDATE public.profile_memberships SET status='revoked',revoked_at=clock_timestamp()
 WHERE id='47000000-0000-4000-8000-000000000006';
+
+-- An archive after a request cancels consent for that profile.
+DO $archive_cancel$
+DECLARE v_status TEXT;
+BEGIN
+ PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000002',
+  '37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001',
+  'transfer-recipient',clock_timestamp()+interval '1 day');
+ UPDATE public.profiles SET status='archived' WHERE id='37000000-0000-4000-8000-000000000006';
+ SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000002';
+ IF v_status<>'cancelled' THEN RAISE EXCEPTION 'Archiving did not cancel outstanding transfer consent'; END IF;
+END
+$archive_cancel$;
 
 DO $request$
 DECLARE v_id UUID; v_handle TEXT;
