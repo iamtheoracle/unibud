@@ -1,0 +1,30 @@
+name: Oracle Arc API
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "foundation/**"
+
+permissions:
+  contents: read
+
+jobs:
+  api-tests:
+    name: Oracle Arc API tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: oracle-arc/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: oracle-arc/api/requirements-dev.txt
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run API tests
+        run: python -m pytest -q
