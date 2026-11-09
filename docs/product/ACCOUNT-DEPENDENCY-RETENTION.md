@@ -94,3 +94,13 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - The adapter contract intentionally has **no export or delete method**. The readiness projection hard-codes export, deletion and account closure to false, regardless of provider lookup success.
 - Automated tests cover missing adapters, stale lookup evidence, stale verification evidence, failed provider lookups, unexpected provider references, shared relationships, state classification and the permanent export/deletion/closure prohibition.
 - **Not implemented:** no concrete provider adapter is registered, no provider is contacted by this change, and the current integration registry remains unknown until separately verified. This is contract and visibility groundwork, not live provider discovery.
+
+## Concrete runtime integration inventory
+
+- The authenticated account-readiness API now returns a separate `concreteIntegrationInventory` projection. It inspects only whether known server-side setting names are present; it never returns their values, database hosts, URLs, tokens, model identifiers or credentials.
+- The current executable integration boundaries evidenced by code are two distinct PostgreSQL pools (authentication RPC and tenant-scoped application data), the private email/SMS verification-delivery HTTP gateway, and the server-to-server Oracle Arc status connection.
+- Each entry is classified as `configured_unverified`, `partially_configured` or `not_configured`. These are configuration-presence states only; none proves reachability, provider identity, successful inference, or provider-side data discovery.
+- The verification gateway's underlying email/SMS vendors remain unresolved. Oracle Arc has a separate authenticated status diagnostic, but this inventory does not call it. PostgreSQL pool health is not probed.
+- The repository integration register also names candidate services such as object storage, payments, maps/geocoding and hosted inference. No executable adapters for object storage, payment processing, maps/geocoding, analytics, push delivery or backup services were found in the audited integration paths. They remain implementation gaps—not zero dependencies.
+- Tests verify all-or-none/partial configuration handling, whitespace handling, separation of the two database roles, and that no environment values are returned.
+- This stage performs no provider network calls, does not mutate the integration registry, does not create external references, and does not add export/deletion methods. Unknown external dependencies continue to block closure.
