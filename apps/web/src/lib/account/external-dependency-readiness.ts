@@ -50,7 +50,8 @@ export function buildExternalDependencyReadiness(discovery: AccountExternalDepen
     verified: integrations.filter(item => item.state === "verified").length,
     unknown: integrations.filter(item => item.state === "unknown").length,
     unavailable: integrations.filter(item => item.state === "unavailable").length,
-    unclassified: discovery.policy.missingPolicyDomains.length
+    unclassified: integrations.filter(item => item.state === "unclassified").length,
+    policyGaps: discovery.policy.missingPolicyDomains.length
   };
   return {
     integrations,
