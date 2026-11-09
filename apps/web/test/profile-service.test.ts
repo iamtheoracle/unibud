@@ -11,12 +11,12 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
  profile:{id:profileId as ProfileAccessRecord["profile"]["id"],ownerAccountId:owner as ProfileAccessRecord["profile"]["ownerAccountId"],kind:"personal",handle:"oracle",displayName:"Oracle",visibility:"private",status:"active"}};
 }
 class Repo implements ProfileRepository{
- record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null; updateInput:ProfileUpdateInput|null=null; permissionAllowed=false;
+ record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null; updateInput:ProfileUpdateInput|null=null; permissionAllowed=false; managedInput:unknown=null; cancelledInput:unknown=null;
  async updateOwnedProfile(accountId:string,input:ProfileUpdateInput){this.updateInput=input;return {...access(accountId),profile:{...access(accountId).profile,kind:"creator",handle:input.handle,displayName:input.displayName,visibility:input.visibility}};}
  async authorizeAction(_account:string,_profile:string,_permission:ProfilePermission){return this.permissionAllowed;}
  async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
- async manageDelegatedAccess(){return true;}
- async cancelInvitation(){return true;}
+ async manageDelegatedAccess(ownerAccountId:string,profile:string,delegateAccountId:string,role:string,status:string){this.managedInput={ownerAccountId,profile,delegateAccountId,role,status};return true;}
+ async cancelInvitation(ownerAccountId:string,id:string){this.cancelledInput={ownerAccountId,id};return true;}
  async listOutgoingInvitations(){return [];}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
@@ -132,4 +132,22 @@ test("public profile invitations reject future education and institutional roles
   ()=>service.inviteDelegateByHandle(owner,{profileId,inviteeHandle:"future.staff",role:"staff" as never,canSwitchToProfile:false}),
   /supported public page role/
  );
+});
+
+test("page owner can change delegated roles and suspend or restore an exact-profile member",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"page_community"}};
+ assert.equal(await service.manageDelegatedAccess(owner,profileId,delegate,"moderator","suspended"),true);
+ assert.deepEqual(repo.managedInput,{ownerAccountId:owner,profile:profileId,delegateAccountId:delegate,role:"moderator",status:"suspended"});
+ await assert.rejects(()=>service.manageDelegatedAccess(delegate,profileId,owner,"admin","active"),ProfileAccessDeniedError);
+ await assert.rejects(()=>service.manageDelegatedAccess(owner,profileId,delegate,"student" as never,"active"),/supported public page role/);
+});
+
+test("invitation cancellation is owner-scoped and outgoing lists require page ownership",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ assert.equal(await service.cancelInvitation(owner,"60000000-0000-4000-8000-000000000001"),true);
+ assert.deepEqual(repo.cancelledInput,{ownerAccountId:owner,id:"60000000-0000-4000-8000-000000000001"});
+ repo.record={...access(),profile:{...access().profile,kind:"page_community"}};
+ assert.deepEqual(await service.listOutgoingInvitations(owner,profileId),[]);
+ await assert.rejects(()=>service.listOutgoingInvitations(delegate,profileId),ProfileAccessDeniedError);
 });
