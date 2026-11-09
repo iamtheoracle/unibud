@@ -6,7 +6,7 @@ import {
   withSignedAccountTransaction,
   type SqlClient,
   type SqlPool
-} from "../src/lib/server/database/account-context.ts";
+} from "../src/lib/server/database/account-context-core.ts";
 
 const key = Buffer.alloc(32, 0x5a);
 const accountA = "10000000-0000-4000-8000-000000000001";
