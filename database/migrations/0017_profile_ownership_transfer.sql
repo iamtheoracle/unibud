@@ -245,8 +245,8 @@ BEGIN
  IF p_recipient_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
   RAISE EXCEPTION 'Transfer inbox access denied' USING ERRCODE='42501';
  END IF;
- UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp()
- WHERE recipient_account_id=p_recipient_account_id AND status='pending_recipient' AND expires_at<=clock_timestamp();
+ UPDATE public.profile_ownership_transfers AS transfer SET status='expired',cancelled_at=clock_timestamp()
+ WHERE transfer.recipient_account_id=p_recipient_account_id AND transfer.status='pending_recipient' AND transfer.expires_at<=clock_timestamp();
  RETURN QUERY SELECT t.id,t.profile_id,p.display_name,p.handle,owner_profile.handle,t.created_at,t.expires_at
  FROM public.profile_ownership_transfers t
  JOIN public.profiles p ON p.id=t.profile_id
@@ -270,9 +270,9 @@ BEGIN
     AND m.role='owner' AND m.status='active'
    WHERE p.id=p_profile_id AND p.owner_account_id=p_owner_account_id)
  THEN RAISE EXCEPTION 'Only the active owner may view outgoing transfer requests' USING ERRCODE='42501'; END IF;
- UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp()
- WHERE profile_id=p_profile_id AND current_owner_account_id=p_owner_account_id
-  AND status IN('pending_recipient','recipient_accepted') AND expires_at<=clock_timestamp();
+ UPDATE public.profile_ownership_transfers AS transfer SET status='expired',cancelled_at=clock_timestamp()
+ WHERE transfer.profile_id=p_profile_id AND transfer.current_owner_account_id=p_owner_account_id
+  AND transfer.status IN('pending_recipient','recipient_accepted') AND transfer.expires_at<=clock_timestamp();
  RETURN QUERY SELECT t.id,recipient.handle,t.status,t.created_at,t.expires_at
  FROM public.profile_ownership_transfers t
  JOIN public.profiles recipient ON recipient.owner_account_id=t.recipient_account_id
