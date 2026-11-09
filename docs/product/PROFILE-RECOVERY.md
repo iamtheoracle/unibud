@@ -46,3 +46,10 @@ Permanent profile deletion is not implemented. It must not be represented as arc
 ## Verification
 
 Migrations 0015–0017 add PostgreSQL lifecycle procedures, notifications, ownership immutability, database-enforced lifecycle state transitions, automatic cancellation of open transfers when a profile becomes inactive, account-closure guards, and two-party ownership transfer. Transfer requires fresh password reauthentication by both parties and owner reauthentication again at finalization. Service, PostgreSQL and browser tests cover transfer eligibility, consent, ownership mutation, stale-grant revocation, session-context clearing, audit history and account-access safeguards. Full CI passed at commit 329ace67d54e85d31162ab3af59b84169c5eb0eb, including PostgreSQL 16 migrations/RLS, service and contract tests, browser E2E, typecheck, lint, and production build. No production deployment is implied.
+
+
+## Account closure readiness experience
+
+The authenticated account closure readiness API and dedicated review page are implemented on the account-closure-readiness feature branch. The route derives the account solely from the validated session and aggregates the database closure preflight with owned and archived profiles, active/suspended delegated relationships, and incoming/outgoing ownership transfers. The page provides a blocker inventory and links to profile management; it does not perform closure.
+
+Permanent closure remains unavailable even when the profile preflight is clear. Retention schedules, legal notice, shared-content ownership, dependent transaction/provider record disposition, export/deletion behavior, backup expiry, recovery windows and support operations must be specified, approved and tested first. See [Account Closure Readiness](ACCOUNT-CLOSURE-READINESS.md). The feature branch's automated CI result is the verification gate; no production deployment or production database change is implied.
