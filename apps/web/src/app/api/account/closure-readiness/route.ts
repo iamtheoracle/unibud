@@ -6,6 +6,7 @@ import { buildClosureReadiness, type ClosureReadinessSnapshot } from "../../../.
 import { buildAccountDependencyInventory } from "../../../../lib/account/dependency-inventory";
 import { getAppDatabasePool } from "../../../../lib/server/database/postgres-pool";
 import { AccountExternalDependencyRepository } from "../../../../lib/server/account/account-external-dependency-repository";
+import { buildConcreteIntegrationInventory } from "../../../../lib/server/account/concrete-integration-inventory";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest) {
 
     const accountId = validation.account.id;
     const externalDependencies = new AccountExternalDependencyRepository(getAppDatabasePool());
+    const concreteIntegrationInventory = buildConcreteIntegrationInventory(process.env);
     const [preflight, accessible, archived, incomingTransfers, dependencyDiscovery, externalDependencyDiscovery] = await Promise.all([
       profiles.getAccountClosurePreflight(accountId),
       profiles.listAccessibleProfiles(accountId),
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
     };
     const readiness = buildClosureReadiness(snapshot);
     const dependencies = buildAccountDependencyInventory();
-    return NextResponse.json({ ok: true, readiness, snapshot, dependencies, dependencyDiscovery, externalDependencyDiscovery }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ ok: true, readiness, snapshot, dependencies, dependencyDiscovery, externalDependencyDiscovery, concreteIntegrationInventory }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof ProfileAccessDeniedError) return NextResponse.json({ ok: false, error: "Account access denied." }, { status: 403 });
     return routeError(error);

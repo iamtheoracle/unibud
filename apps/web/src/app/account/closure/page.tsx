@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { ClosureReadinessSnapshot } from "../../../lib/account/closure-readiness";
 import type { AccountDependencyDomain } from "../../../lib/account/dependency-inventory";
 import type { AccountExternalDependencyDiscovery } from "../../../lib/server/account/account-external-dependency-repository";
+import type { ConcreteIntegrationInventory } from "../../../lib/server/account/concrete-integration-inventory";
 import { buildExternalDependencyReadiness } from "../../../lib/account/external-dependency-readiness";
 
 type ResponseBody = { ok: true; readiness: {
@@ -14,7 +15,7 @@ type ResponseBody = { ok: true; readiness: {
   blockers: { ownedProfiles: number; activeOwnedProfiles: number; archivedOwnedProfiles: number; delegatedRelationships: number; incomingTransfers: number; outgoingTransfers: number };
   policyGate: { status: "not_approved"; message: string };
   explanation: string;
-}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } }; dependencyDiscovery: { version: string; generatedAt: string; counts: Record<string, number>; sharedOwnership: Record<string, number>; foreignKeys: Array<{ constraint: string; fromTable: string; toTable: string; definition: string }>; coverage: { registeredTables: string[]; notImplementedDomains: string[]; unknownExternalDependenciesBlockClosure: true }; policy: { status: "not_approved"; missingPolicyDomains: string[]; canClose: false } }; externalDependencyDiscovery: AccountExternalDependencyDiscovery } | { ok: false; error: string };
+}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } }; dependencyDiscovery: { version: string; generatedAt: string; counts: Record<string, number>; sharedOwnership: Record<string, number>; foreignKeys: Array<{ constraint: string; fromTable: string; toTable: string; definition: string }>; coverage: { registeredTables: string[]; notImplementedDomains: string[]; unknownExternalDependenciesBlockClosure: true }; policy: { status: "not_approved"; missingPolicyDomains: string[]; canClose: false } }; externalDependencyDiscovery: AccountExternalDependencyDiscovery; concreteIntegrationInventory: ConcreteIntegrationInventory } | { ok: false; error: string };
 
 export default function AccountClosureReadinessPage() {
   const [data, setData] = useState<Extract<ResponseBody, { ok: true }> | null>(null);
@@ -186,6 +187,35 @@ export default function AccountClosureReadinessPage() {
         <p className="mt-4 rounded-xl border p-4 text-sm" role="status">Export and deletion are disabled. Unknown, stale, unavailable and shared dependencies remain visible blockers. Permanent account closure remains disabled.</p>
       </section>
 
+      <section aria-labelledby="concrete-integration-heading" className="mt-8">
+        <h2 id="concrete-integration-heading" className="text-xl font-semibold">Concrete integration inventory</h2>
+        <p className="mt-2 text-sm text-slate-600">This checks the presence of required server setting names for integrations wired into the repository. It never displays setting values or makes provider calls. “Configured” means configuration is present—not that a connection, provider identity, or external data inventory has been verified.</p>
+        <ul className="mt-4 space-y-3">
+          {data.concreteIntegrationInventory.integrations.map((integration) => (
+            <li key={integration.integrationKey} className="rounded-xl border p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-semibold">{integration.provider ?? integration.integrationKey}</h3>
+                <span className="rounded-full border px-2 py-1 text-xs" data-state={integration.state}>
+                  {integration.state === "configured_unverified" ? "Configured · unverified" : integration.state === "partially_configured" ? "Partially configured" : "Not configured"}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-slate-600">{integration.purpose}</p>
+              <p className="mt-2 text-xs text-slate-500">Domain: {integration.domain}</p>
+              <p className="mt-2 text-sm">{integration.explanation}</p>
+              <p className="mt-2 text-xs text-slate-500">Present setting names: {integration.configuredSettings.length ? integration.configuredSettings.join(", ") : "None"}</p>
+              <p className="mt-1 text-xs text-slate-500">Missing setting names: {integration.missingSettings.length ? integration.missingSettings.join(", ") : "None"}</p>
+              <details className="mt-3 text-xs text-slate-600">
+                <summary className="cursor-pointer font-medium">Repository evidence</summary>
+                <ul className="mt-2 list-disc space-y-1 pl-5">{integration.evidence.map(path => <li key={path}><code>{path}</code></li>)}</ul>
+              </details>
+            </li>
+          ))}
+        </ul>
+        <h3 className="mt-6 font-semibold">Inventory limits</h3>
+        <ul className="mt-2 list-disc space-y-2 pl-5 text-sm text-slate-600">
+          {data.concreteIntegrationInventory.limitations.map(item => <li key={item}>{item}</li>)}
+        </ul>
+      </section>
       <section aria-labelledby="policy-heading" className="mt-8 rounded-2xl border p-5">
         <h2 id="policy-heading" className="text-lg font-semibold">Before permanent closure can be offered</h2>
         <p className="mt-2 text-sm text-slate-600">{readiness.policyGate.message}</p>
