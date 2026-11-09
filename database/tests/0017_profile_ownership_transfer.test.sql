@@ -79,6 +79,43 @@ BEGIN
 END
 $archive_cancel$;
 
+-- Expiry is terminal, audited and visible to both parties.
+DO $expiry$
+DECLARE v_count INTEGER; v_status TEXT; v_audit INTEGER; v_notifications INTEGER;
+BEGIN
+ PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000003',
+  '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
+  'transfer-recipient',clock_timestamp()+interval '1 millisecond');
+ PERFORM pg_sleep(0.02);
+ SELECT count(*) INTO v_count FROM public.profile_ownership_transfer_list_outgoing(
+  '17000000-0000-4000-8000-000000000001','37000000-0000-4000-8000-000000000005');
+ SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000003';
+ SELECT count(*) INTO v_audit FROM public.security_audit_events WHERE resource_id='37000000-0000-4000-8000-000000000005'
+  AND action='profile.ownership_transfer.expired';
+ SELECT count(*) INTO v_notifications FROM public.profile_lifecycle_notifications WHERE profile_id='37000000-0000-4000-8000-000000000005'
+  AND event_type='ownership_transfer_expired';
+ IF v_count<>0 OR v_status<>'expired' OR v_audit<>1 OR v_notifications<>2 THEN
+  RAISE EXCEPTION 'Transfer expiry must be terminal, audited and notify both parties';
+ END IF;
+END
+$expiry$;
+
+-- Suspending either participant cancels open consent and records the reason.
+DO $suspension$
+DECLARE v_status TEXT; v_audit INTEGER;
+BEGIN
+ PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000004',
+  '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
+  'transfer-recipient',clock_timestamp()+interval '1 day');
+ UPDATE public.accounts SET status='suspended' WHERE id='17000000-0000-4000-8000-000000000002';
+ SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000004';
+ SELECT count(*) INTO v_audit FROM public.security_audit_events WHERE resource_id='37000000-0000-4000-8000-000000000005'
+  AND action='profile.ownership_transfer.cancelled' AND reason_code='participant_account_inactive';
+ UPDATE public.accounts SET status='active' WHERE id='17000000-0000-4000-8000-000000000002';
+ IF v_status<>'cancelled' OR v_audit<>1 THEN RAISE EXCEPTION 'Participant suspension did not cancel and audit transfer consent'; END IF;
+END
+$suspension$;
+
 DO $request$
 DECLARE v_id UUID; v_handle TEXT;
 BEGIN
