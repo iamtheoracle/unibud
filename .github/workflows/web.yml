@@ -30,11 +30,17 @@ jobs:
       - name: Apply identity migration
         env:
           PGPASSWORD: unibud_test_only
-        run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0001_identity_foundation.sql
+        run: |
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0001_identity_foundation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0002_identity_access_control.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0003_credentials_and_verification.sql
       - name: Verify identity constraints and audit immutability
         env:
           PGPASSWORD: unibud_test_only
-        run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0001_identity_foundation.test.sql
+        run: |
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0001_identity_foundation.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0002_identity_access_control.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0003_credentials_and_verification.test.sql
   web-checks:
     name: Web build and type checks
     runs-on: ubuntu-latest
