@@ -1,3 +1,4 @@
+# Keep the independent Oracle Arc API regression workflow active on foundation updates.
 name: Oracle Arc API
 
 on:
