@@ -96,7 +96,7 @@ export interface ProfileRepository {
   markLifecycleNotificationRead(accountId: string, notificationId: string): Promise<boolean>;
   getAccountClosurePreflight(accountId: string): Promise<ProfileClosurePreflight>;
   getOwnershipTransferPreflight(ownerAccountId:string,profileId:string):Promise<ProfileOwnershipTransferPreflight>;
-  requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string,expiresAt:string):Promise<{id:string;recipientHandle:string}>;
+  requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string):Promise<{id:string;recipientHandle:string}>;
   listIncomingOwnershipTransfers(recipientAccountId:string):Promise<IncomingProfileOwnershipTransfer[]>;
   listOutgoingOwnershipTransfers(ownerAccountId:string,profileId:string):Promise<OutgoingProfileOwnershipTransfer[]>;
   respondToOwnershipTransfer(recipientAccountId:string,transferId:string,accept:boolean):Promise<boolean>;
@@ -165,7 +165,7 @@ export class ProfileService {
       throw new ProfileAccessDeniedError("Only the owner may transfer an active creator or page/community profile.");
     const handle=recipientHandle.trim().replace(/^@/,"").toLowerCase();
     if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(handle)) throw new Error("Enter a valid UNIBUD username.");
-    return this.repository.requestOwnershipTransfer(accountId,profileId,handle,randomUUID(),new Date(Date.now()+7*24*60*60*1000).toISOString());
+    return this.repository.requestOwnershipTransfer(accountId,profileId,handle,randomUUID());
   }
   async listOutgoingOwnershipTransfers(accountId:string,profileId:string):Promise<OutgoingProfileOwnershipTransfer[]>{
     if(!accountId||!/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
