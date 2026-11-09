@@ -28,14 +28,16 @@ ALTER TABLE public.profile_memberships
       AND role='owner'
       AND can_switch_to_profile
       AND owner_account_id=account_id
+      AND profile_owner_account_id=account_id
     )
     OR
     (
       relationship='delegated'
-      AND owner_account_id IS NOT NULL
-      AND owner_account_id<>account_id
+      AND owner_account_id IS NULL
+      AND profile_owner_account_id IS NOT NULL
+      AND profile_owner_account_id<>account_id
       AND granted_by_account_id IS NOT NULL
-      AND granted_by_account_id=owner_account_id
+      AND granted_by_account_id=profile_owner_account_id
     )
   );
 
@@ -44,6 +46,6 @@ CREATE UNIQUE INDEX IF NOT EXISTS profiles_one_personal_per_account_idx
   WHERE kind='personal' AND status<>'archived';
 
 COMMENT ON COLUMN public.profile_memberships.owner_account_id IS
-  'Canonical profile owner for both owner and delegated membership rows; composite FK binds it to the exact profile. Delegations must be issued by this owner.';
+  'Owner account is set only on owner rows. Delegated rows use profile_owner_account_id, which is FK-bound to the exact profile; only that owner may issue the delegation.';
 
 COMMIT;
