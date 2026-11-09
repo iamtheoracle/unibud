@@ -106,6 +106,10 @@ BEGIN
  IF v_owner_notice<>1 OR v_delegate_notice<>1 OR v_invitation_status<>'cancelled' OR v_invite_notice<>1 THEN
   RAISE EXCEPTION 'Archive must notify owner, suspended delegate and cancelled invitee';
  END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000003'
+  AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='delegated_access_review_required') THEN
+  RAISE EXCEPTION 'Restoring a profile must tell suspended delegates that owner review is required';
+ END IF;
 END
 $delegate_archive$;
 
