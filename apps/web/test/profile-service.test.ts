@@ -11,12 +11,13 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
  profile:{id:profileId as ProfileAccessRecord["profile"]["id"],ownerAccountId:owner as ProfileAccessRecord["profile"]["ownerAccountId"],kind:"personal",handle:"oracle",displayName:"Oracle",visibility:"private",status:"active"}};
 }
 class Repo implements ProfileRepository{
- record=access(); grants=0; revoked=0;
+ record=access(); grants=0; revoked=0; activeContext=false;
  async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
  async grantDelegatedAccess(_owner:string,input:DelegatedProfileGrantInput){this.grants++;return access(input.delegateAccountId,"delegated",input.canSwitchToProfile);}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async findProfileAccess(accountId:string){return this.record.accountId===accountId?this.record:undefined;}
+ async setActiveContext(){this.activeContext=true;return true;}
  async setActiveProfileContext(){return true;}
 }
 
