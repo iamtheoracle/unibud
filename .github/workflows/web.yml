@@ -85,7 +85,6 @@ jobs:
       - name: Profile browser end-to-end tests
         env:
           UNIBUD_E2E_TEST_MODE: "true"
-          PLAYWRIGHT_MODULE: /usr/local/lib/node_modules/playwright/index.mjs
           UNIBUD_E2E_BASE_URL: http://127.0.0.1:3100
         run: |
           set -euo pipefail
@@ -104,6 +103,6 @@ jobs:
             cat /tmp/unibud-e2e-next.log
             exit 1
           fi
-          node scripts/e2e/profiles.mjs
+          PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/profiles.mjs
       - name: Build
         run: pnpm build
