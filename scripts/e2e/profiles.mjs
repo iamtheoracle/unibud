@@ -191,6 +191,64 @@ try {
     await page.close();
   }
 
+  // Profile ownership transfer requires owner reauthentication, recipient consent and owner finalization.
+  {
+    const page = await newPage();
+    let transferState = "pending_recipient";
+    let requestPayload, completionPayload;
+    const transferId = "90000000-0000-4000-8000-000000000001";
+    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, creator] }));
+    await page.route("**/api/profile-ownership-transfers", route => json(route, 200, { ok: true, transfers: [] }));
+    await page.route("**/api/profiles/" + creatorId + "/ownership-transfer", async route => {
+      if (route.request().method() === "GET") return json(route, 200, { ok: true,
+        preflight: { canTransfer: true, activeOwnedProfiles: 2, activeDelegatedRelationships: 0, pendingInvitations: 0, openTransferRequests: 0, personalIdentityAvailable: true },
+        transfers: transferState === "completed" ? [] : [{ transferId, recipientHandle: "new.owner", status: transferState, createdAt: new Date().toISOString(), expiresAt: new Date(Date.now()+86400000).toISOString() }]
+      });
+      requestPayload = route.request().postDataJSON();
+      transferState = "recipient_accepted";
+      return json(route, 201, { ok: true, transfer: { id: transferId } });
+    });
+    await page.route("**/api/profile-ownership-transfers/" + transferId + "/complete", async route => {
+      completionPayload = route.request().postDataJSON();
+      transferState = "completed";
+      return json(route, 200, { ok: true });
+    });
+    page.on("dialog", dialog => dialog.accept());
+    await openProfiles(page);
+    await page.getByLabel("Recipient's UNIBUD username").fill("@new.owner");
+    await page.getByLabel("Account email").fill("owner@example.com");
+    await page.getByLabel("Account password").fill("owner-password");
+    await page.getByRole("button", { name: "Request ownership transfer" }).click();
+    await page.getByText("Transfer request sent. Ownership has not changed; the recipient must accept and you must finalize it.").waitFor();
+    assert.deepEqual(requestPayload, { recipientHandle: "@new.owner", channel: "email", identifier: "owner@example.com", password: "owner-password" });
+    await page.getByRole("button", { name: "Finalize" }).waitFor();
+    await page.getByLabel("Account password").fill("owner-password");
+    await page.getByRole("button", { name: "Finalize" }).click();
+    assert.deepEqual(completionPayload, { channel: "email", identifier: "owner@example.com", password: "owner-password" });
+    await page.close();
+  }
+
+  // The intended recipient must reauthenticate before accepting an ownership transfer.
+  {
+    const page = await newPage();
+    const transferId = "90000000-0000-4000-8000-000000000002";
+    let responsePayload;
+    let pending = [{ transferId, profileId: creatorId, profileName: "Oracle Creates", profileHandle: "oracle.creates",
+      ownerHandle: "oracle", createdAt: new Date().toISOString(), expiresAt: new Date(Date.now()+86400000).toISOString() }];
+    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal] }));
+    await page.route("**/api/profile-ownership-transfers", async route => {
+      if (route.request().method() === "GET") return json(route, 200, { ok: true, transfers: pending });
+      responsePayload = route.request().postDataJSON(); pending = []; return json(route, 200, { ok: true });
+    });
+    await openProfiles(page);
+    await page.getByLabel("Account email").fill("recipient@example.com");
+    await page.getByLabel("Account password").fill("recipient-password");
+    await page.getByRole("button", { name: "Accept" }).click();
+    await page.getByText("Acceptance recorded. The current owner must now finalize the transfer.").waitFor();
+    assert.deepEqual(responsePayload, { transferId, accept: true, channel: "email", identifier: "recipient@example.com", password: "recipient-password" });
+    await page.close();
+  }
+
   // Owner archive and recovery keeps the personal identity available and exposes immutable history.
   {
     const page = await newPage();
