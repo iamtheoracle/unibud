@@ -81,7 +81,7 @@ $archive_cancel$;
 
 -- Expiry is terminal, audited and visible to both parties.
 DO $expiry$
-DECLARE v_count INTEGER; v_status TEXT; v_audit INTEGER; v_notifications INTEGER;
+DECLARE v_count INTEGER; v_status TEXT; v_audit INTEGER; v_notifications INTEGER; v_history INTEGER;
 BEGIN
  PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000003',
   '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
@@ -94,7 +94,9 @@ BEGIN
   AND action='profile.ownership_transfer.expired';
  SELECT count(*) INTO v_notifications FROM public.profile_lifecycle_notifications WHERE profile_id='37000000-0000-4000-8000-000000000005'
   AND event_type='ownership_transfer_expired';
- IF v_count<>0 OR v_status<>'expired' OR v_audit<>1 OR v_notifications<>2 THEN
+ SELECT count(*) INTO v_history FROM public.profile_list_lifecycle_history('37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001')
+  WHERE action='profile.ownership_transfer.expired';
+ IF v_count<>0 OR v_status<>'expired' OR v_audit<>1 OR v_notifications<>2 OR v_history<>1 THEN
   RAISE EXCEPTION 'Transfer expiry must be terminal, audited and notify both parties';
  END IF;
 END
