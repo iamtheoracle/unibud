@@ -219,6 +219,9 @@ try {
       transferState = "completed";
       return json(route, 200, { ok: true });
     });
+    await page.route("**/api/profiles/*/history", route => json(route, 200, { ok: true, history: [
+      { action: "profile.ownership_transfer.completed", occurredAt: new Date().toISOString(), outcome: "success", reasonCode: "two_party_consent_and_owner_reauthentication" }
+    ] }));
     page.on("dialog", dialog => dialog.accept());
     await openProfiles(page);
     await page.getByLabel("Recipient's UNIBUD username").fill("@new.owner");
@@ -232,6 +235,8 @@ try {
     await page.getByLabel("Account password").fill("owner-password");
     await page.getByRole("button", { name: "Finalize" }).click();
     assert.deepEqual(completionPayload, { channel: "email", identifier: "owner@example.com", password: "owner-password" });
+    await page.getByRole("button", { name: "History" }).first().click();
+    await page.getByText(/Ownership transfer completed/).waitFor();
     await page.close();
   }
 
