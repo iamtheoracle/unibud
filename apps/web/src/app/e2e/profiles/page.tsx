@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProfileManager } from "../../../components/profile-manager";
+import { ProfileExperienceView } from "../../../components/profile-experience-view";
 
 /**
  * Isolated browser-test surface. It is deliberately unavailable in production,
@@ -17,6 +18,7 @@ export default function ProfileBrowserTestPage() {
         <a className="wordmark" href="/home">unibud<span>.</span></a>
         <span className="eyebrow">Browser test fixture</span>
       </header>
+      <ProfileExperienceView activeProfileId="20000000-0000-4000-8000-000000000001" />
       <ProfileManager activeProfileId="20000000-0000-4000-8000-000000000001" />
     </main>
   );
