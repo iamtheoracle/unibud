@@ -11,6 +11,7 @@ function access(overrides: Partial<ProfileAccessRecord> = {}): ProfileAccessReco
   return {
     accountId: ownerId,
     relationship: "owner",
+    role: "owner",
     membershipStatus: "active",
     canSwitchToProfile: true,
     profile: {
