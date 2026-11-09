@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ProfileAccessDeniedError, ProfileService, type DelegatedProfileGrantInput, type ProfileCreateInput, type ProfileRepository } from "../src/lib/server/profiles/profile-service-core.ts";
+import { ProfileAccessDeniedError, ProfileService, type ProfileCreateInput, type ProfileRepository } from "../src/lib/server/profiles/profile-service-core.ts";
 import type { ProfileAccessRecord } from "../../../packages/contracts/src/profile.ts";
 
 const owner="10000000-0000-4000-8000-000000000001";
@@ -11,9 +11,8 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
  profile:{id:profileId as ProfileAccessRecord["profile"]["id"],ownerAccountId:owner as ProfileAccessRecord["profile"]["ownerAccountId"],kind:"personal",handle:"oracle",displayName:"Oracle",visibility:"private",status:"active"}};
 }
 class Repo implements ProfileRepository{
- record=access(); grants=0; revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null;
+ record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null;
  async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
- async grantDelegatedAccess(_owner:string,input:DelegatedProfileGrantInput){this.grants++;return access(input.delegateAccountId,"delegated",input.canSwitchToProfile);}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async listDelegatedAccess(){return [access(delegate,"delegated",true)];}
@@ -34,12 +33,11 @@ test("rejects malformed handles and empty names",async()=>{
  await assert.rejects(()=>service.createOwnedProfile(owner,{kind:"creator",handle:"bad handle",displayName:"Creator"}));
  await assert.rejects(()=>service.createOwnedProfile(owner,{kind:"creator",handle:"valid.handle",displayName:" "}));
 });
-test("only the actual active owner may grant or revoke delegated access",async()=>{
+test("only the active page owner may revoke delegated access",async()=>{
  const repo=new Repo(),service=new ProfileService(repo);
- await assert.rejects(()=>service.grantDelegatedAccess(delegate,{profileId,delegateAccountId:"10000000-0000-4000-8000-000000000003",role:"editor",canSwitchToProfile:true}),ProfileAccessDeniedError);
- assert.equal(repo.grants,0);
  assert.equal(await service.revokeDelegatedAccess(owner,profileId,delegate),true);
  assert.equal(repo.revoked,1);
+ await assert.rejects(()=>service.revokeDelegatedAccess(delegate,profileId,owner),ProfileAccessDeniedError);
 });
 test("switching requires repository-backed membership and explicit switch permission",async()=>{
  const repo=new Repo(),service=new ProfileService(repo);
@@ -55,7 +53,6 @@ test("page delegation invites a discoverable UNIBUD handle and does not grant ac
  const invitation=await service.inviteDelegateByHandle(owner,{profileId,inviteeHandle:" @Invitee.One ",role:"editor",canSwitchToProfile:true});
  assert.equal(invitation.inviteeHandle,"invitee.one");
  assert.deepEqual(repo.invitationInput,{profileId,inviteeHandle:"invitee.one",role:"editor",canSwitchToProfile:true});
- assert.equal(repo.grants,0);
  assert.equal(await service.respondToInvitation(delegate,invitation.id,true),true);
  assert.deepEqual(repo.invitationResponse,{id:invitation.id,accept:true});
 });
