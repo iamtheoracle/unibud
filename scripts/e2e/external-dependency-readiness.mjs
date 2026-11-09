@@ -39,6 +39,17 @@ const response = {
     coverage: { registeredTables: ["profiles"], notImplementedDomains: [], unknownExternalDependenciesBlockClosure: true },
     policy: { status: "not_approved", missingPolicyDomains: ["retention"], canClose: false }
   },
+  concreteIntegrationInventory: {
+    version: "concrete-integration-inventory-1",
+    scope: "platform_runtime_configuration_only",
+    integrations: [
+      { integrationKey: "postgresql_auth_pool", domain: "identity_and_authentication", provider: "PostgreSQL", purpose: "Dedicated authentication RPC database connection pool.", state: "configured_unverified", configuredSettings: ["UNIBUD_AUTH_DATABASE_URL"], missingSettings: [], dataCategories: ["account_identity"], evidence: ["apps/web/src/lib/server/database/postgres-pool.ts"], explanation: "Required server settings are present. This does not prove the endpoint is reachable, credentials are valid, or provider-side data has been discovered." },
+      { integrationKey: "postgresql_app_pool", domain: "application_data", provider: "PostgreSQL", purpose: "Tenant-scoped application database connection pool.", state: "partially_configured", configuredSettings: [], missingSettings: ["UNIBUD_APP_DATABASE_URL"], dataCategories: ["profiles"], evidence: ["apps/web/src/lib/server/database/postgres-pool.ts"], explanation: "Some required server settings are present and others are missing." },
+      { integrationKey: "verification_delivery_gateway", domain: "identity_verification", provider: null, purpose: "Private HTTP gateway used to deliver email and SMS verification challenges.", state: "not_configured", configuredSettings: [], missingSettings: ["UNIBUD_VERIFICATION_DELIVERY_URL", "UNIBUD_VERIFICATION_DELIVERY_TOKEN"], dataCategories: ["recipient_identifier"], evidence: ["apps/web/src/lib/server/auth/verification-delivery.ts"], explanation: "No required server settings are present. This is not proof that no external copy or dependency exists." },
+      { integrationKey: "oracle_arc", domain: "ai_assistance", provider: "Oracle Arc", purpose: "Server-to-server authenticated integration status connection.", state: "configured_unverified", configuredSettings: ["ORACLE_ARC_API_URL", "ORACLE_ARC_MODEL", "ORACLE_ARC_API_KEY"], missingSettings: [], dataCategories: ["prompt_context"], evidence: ["apps/web/src/lib/server/oracle-arc.ts"], explanation: "Required server settings are present. This does not prove the endpoint is reachable, credentials are valid, or provider-side data has been discovered." }
+    ],
+    limitations: ["Configuration presence is not a successful connection, provider identity proof, or evidence of provider-side data discovery.", "No executable provider adapter was found in this inventory for object storage, payment processing, maps/geocoding, analytics, push delivery, or backup services. Their absence here is an implementation gap, not proof that no external data exists."]
+  },
   externalDependencyDiscovery: {
     version: "external-dependency-registry-1",
     accountId: "account-a",
@@ -82,6 +93,7 @@ try {
   await page.goto(baseURL + "/account/closure");
   await page.getByRole("heading", { name: "Account closure readiness" }).waitFor();
   await page.getByRole("heading", { name: "External services and shared data" }).waitFor();
+  await page.getByRole("heading", { name: "Concrete integration inventory" }).waitFor();
 
   for (const label of ["Verified integrations", "Unknown integrations", "Unavailable integrations", "Unclassified integrations", "Policy gaps"]) {
     await page.getByText(label, { exact: true }).waitFor();
@@ -89,6 +101,11 @@ try {
   for (const label of ["Stale evidence", "Unavailable references", "Shared relationships"]) {
     await page.getByText(label, { exact: true }).waitFor();
   }
+  await page.getByText("PostgreSQL", { exact: true }).first().waitFor();
+  await page.getByText("Configured · unverified", { exact: true }).first().waitFor();
+  await page.getByText("Partially configured", { exact: true }).waitFor();
+  await page.getByText("UNIBUD_AUTH_DATABASE_URL", { exact: true }).waitFor();
+  await page.getByText(/object storage, payment processing/).waitFor();
   await page.getByText("Verified Storage", { exact: true }).waitFor();
   await page.getByText("Unknown", { exact: true }).waitFor();
   await page.getByText("Unavailable", { exact: true }).waitFor();
