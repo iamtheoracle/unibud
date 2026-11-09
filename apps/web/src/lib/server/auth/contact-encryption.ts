@@ -1,10 +1,15 @@
+import "server-only";
+
 import { createCipheriv, randomBytes } from "node:crypto";
 
 export class AesGcmContactEncryptor {
-  constructor(private readonly key: Uint8Array) {
+  private readonly key: Uint8Array;
+
+  constructor(key: Uint8Array) {
     if (key.byteLength !== 32) {
       throw new Error("Contact encryption key must be exactly 32 bytes.");
     }
+    this.key = key;
   }
 
   static fromEnvironment(): AesGcmContactEncryptor {
