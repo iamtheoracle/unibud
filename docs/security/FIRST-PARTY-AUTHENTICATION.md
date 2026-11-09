@@ -6,33 +6,36 @@ This foundation supports first-party email/phone registration and password login
 
 ## Database trust boundary
 
-- `unibud_app` is a non-login application group role. Its account-scoped table access is governed by FORCE RLS and signed, short-lived transaction context.
-- `unibud_auth` is a non-login role granted EXECUTE on a narrow set of reviewed authentication procedures. It receives no direct table DML.
-- `unibud_auth_owner` is NOLOGIN and BYPASSRLS because the SECURITY DEFINER procedures need to perform pre-session identity lookup and bootstrap. It has DML only on the identity/auth tables and owns only the listed procedures. It must never be granted to a runtime login or inherited by an application role.
-- A separately provisioned LOGIN principal may be granted `unibud_auth`; the connection pool and secret manager are not yet provisioned.
-- Runtime database logins, HMAC/encryption keys, SMTP/SMS delivery, and production network boundaries remain unconfigured.
+- `unibud_app` is a non-login application group role. Account-scoped reads use FORCE RLS and a short-lived HMAC-signed, transaction-local account context. User-settable PostgreSQL GUC values alone are never trusted.
+- `unibud_auth` is a non-login role granted EXECUTE on narrow authentication procedures. It has no direct table DML.
+- `unibud_auth_owner` is NOLOGIN and BYPASSRLS because SECURITY DEFINER procedures perform pre-session identity lookup and session bootstrap. It has DML only on identity/auth tables and owns only the reviewed auth procedures. Never grant it to a runtime login or application role.
+- `unibud_profile_owner` is a separate NOLOGIN/BYPASSRLS owner for reviewed profile procedures. It is not a runtime login. Its functions verify the signed account context before creating profiles, granting/revoking delegation, or changing active profile context.
+- Application runtime and authentication pools must use separate LOGIN principals granted only the corresponding group role. Neither pool may connect as a superuser, table owner, or BYPASSRLS role.
+- Production login principals, database pools, signing/encryption keys, SMTP/SMS delivery, and network boundaries are not yet provisioned.
 
 ## Procedure boundary
 
-Migration 0004 provides narrow operations for account creation, identity lookup, challenge creation/revocation/verification, password reset, session issue/lookup/revoke/rotation. Password reset consumes the verified challenge and revokes every active account session in one database transaction. Session rotation locks and revokes the previous session before inserting its replacement.
-
-The application must never pass a client-supplied account ID as authority. It resolves the account from a verified session or a challenge row. Authentication procedures are not general SQL execution and must be called with bound parameters.
+- Migration 0004 provides narrow account creation, identity lookup, verification challenge, password reset, and session issue/lookup/revoke/rotation procedures.
+- Migration 0005 adds profile creation, exact-profile delegated grant/revocation, and session-bound active-profile switching.
+- Migration 0008 adds challenge-owner lookup, session idle touch, and account-scoped session revocation.
+- The application calls these procedures with bound parameters. It must never pass a client-supplied account ID as authority; account identity comes from a verified session or challenge record.
 
 ## Credential and verification rules
 
 - Passwords are stored only as scrypt verifiers (N=2^17, r=8, p=1, 64-byte output, random 16-byte salt).
-- Verification codes are six-digit, short-lived, one-time values. Persistence stores keyed digests, attempt counters, expiry, and consumption/revocation state—not raw codes or destination addresses.
-- Email identifiers are normalised case-insensitively; phone identifiers require E.164.
+- Verification codes are six-digit, short-lived values. Persistence stores keyed digests, attempt counters, expiry, and consumption/revocation state—not raw codes or destination addresses.
+- Email identifiers are normalised case-insensitively; phone identifiers require E.164. The RPC adapter encrypts identifiers with AES-256-GCM and uses a separate HMAC lookup key.
 - Public login errors are generic. Recovery request responses do not reveal whether an identity exists.
-- Challenge delivery failures revoke the persisted challenge. Rate limiting and abuse controls are injected service dependencies and still need production-backed implementations.
+- Challenge delivery failures revoke the persisted challenge. Rate limiting and abuse controls are injected dependencies and still need production-backed implementations.
+- Session credentials are random opaque tokens; only SHA-256 digests are persisted. Rotation revokes the previous session atomically, idle and absolute expiry are enforced, and password recovery revokes all active sessions.
 - Session cookies must be Secure, HttpOnly, SameSite, scoped, rotated, and never exposed to client-side JavaScript. Cookie route handlers are not yet wired.
 
 ## Profile and onboarding boundaries
 
-Personal, creator, and page/community profiles remain distinct. One account may own multiple creator profiles and manage multiple page/community profiles. Delegated membership is bound to the exact profile and its canonical owner; the owner, delegate, and unrelated-account RLS cases are tested independently. A single non-archived personal profile is enforced per account.
+Personal, creator, and page/community profiles remain distinct. One account may own multiple creator profiles and manage multiple page/community profiles. Delegated membership is bound to the exact profile and its canonical owner; owner, delegate, and unrelated-account visibility are tested independently. One non-archived personal profile is enforced per account.
 
-Onboarding derives the account only from a verified session, requires versioned terms and privacy acceptance, and asks the repository to atomically create or return the personal profile, owner membership, and acceptance records. The orchestration service is implemented; its production persistence adapter and user-facing route are pending.
+Onboarding derives the account only from a verified session, requires explicit terms and privacy acceptance, and asks the repository to atomically create or return the personal profile, owner membership, and acceptance records. The profile and onboarding PostgreSQL repository adapters are implemented; route handlers and concrete runtime pool wiring remain pending.
 
 ## Verification status
 
-GitHub Actions applies the migrations to a disposable PostgreSQL 16 service and runs synthetic SQL isolation/immutability tests. Web CI runs pure service tests, TypeScript checks, lint and build. Passing CI is not evidence that production secrets, providers, database connections, delivery channels, cookie settings, backups, or operations are deployed.
+GitHub Actions applies migrations 0001–0008 to disposable PostgreSQL 16 and runs synthetic SQL isolation/immutability tests. Web CI runs pure service tests, TypeScript checks, lint, and build. Passing CI is not evidence that production secrets, pools, providers, delivery channels, cookie settings, backups, or operations are deployed.
