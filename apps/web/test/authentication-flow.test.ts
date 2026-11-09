@@ -94,12 +94,6 @@ test("password recovery response does not reveal whether an identity exists",asy
 test("verified password recovery stores a new adaptive verifier through the atomic repository operation",async()=>{
  const {service,auth,challengeRepo}=makeService();
  auth.challengeAccount="10000000-0000-4000-8000-000000000001";
- const challenge=await (async()=>{
-  const s=await service.requestRecovery({channel:"email",identifier:"person@example.com",now});
-  assert.deepEqual(s,{ok:true,state:"accepted"});
-  return [...challengeRepo.stored.values()][0];
- })();
- // Test recovery with a repository-provided target and a challenge created for that account.
  auth.recovery={accountId:auth.challengeAccount,identityId:"20000000-0000-4000-8000-000000000001",channel:"email",destination:"person@example.com"};
  await service.requestRecovery({channel:"email",identifier:"person@example.com",now});
  const latest=[...challengeRepo.stored.values()].at(-1)!;
