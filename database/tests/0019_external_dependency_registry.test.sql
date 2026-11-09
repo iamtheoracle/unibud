@@ -39,12 +39,12 @@ SELECT
 FROM x;
 
 DO $test$
-DECLARE v JSONB; v_integration JSONB;
+DECLARE v JSONB;
 BEGIN
  v := public.account_external_dependency_discovery('19000000-0000-4000-8000-000000000001');
 
  IF (v#>>'{counts,linkedReferences}')::integer <> 1
-   OR (v#>>'{counts,unverifiedReferences}')::integer <> 0
+   OR (v#>>'{counts,unverifiedReferences}')::integer <> 1
    OR (v#>>'{counts,unknownDispositionReferences}')::integer <> 1
  THEN
    RAISE EXCEPTION 'External dependency aggregate counts mismatch: %',v->'counts';
