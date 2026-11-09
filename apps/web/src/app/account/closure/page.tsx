@@ -174,7 +174,7 @@ export default function AccountClosureReadinessPage() {
             ))}
           </ul>
         )}
-        <h3 className="mt-6 font-semibold">Unclassified domains and policy gaps</h3>
+        <h3 className="mt-6 font-semibold">Unapproved policy domains</h3>
         {externalReadiness.unclassifiedDomains.length === 0 ? (
           <p className="mt-2 text-sm text-slate-600">No missing policy-domain labels were returned. This alone does not establish complete provider coverage.</p>
         ) : (
