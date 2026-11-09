@@ -219,6 +219,14 @@ BEGIN
  EXCEPTION WHEN check_violation THEN
   IF SQLERRM NOT LIKE 'New invitations are blocked%' THEN RAISE; END IF;
  END;
+ BEGIN
+  INSERT INTO public.resource_grants(id,subject_account_id,application_id,resource_type,resource_id,role,actions,issuer_account_id)
+  VALUES('87000000-0000-4000-8000-000000000004','17000000-0000-4000-8000-000000000003','unibud','profile',
+   '37000000-0000-4000-8000-000000000002','editor',ARRAY['read'],'17000000-0000-4000-8000-000000000001');
+  RAISE EXCEPTION 'Profile-scoped grant unexpectedly created during transfer';
+ EXCEPTION WHEN check_violation THEN
+  IF SQLERRM NOT LIKE 'Profile-scoped grants are blocked%' THEN RAISE; END IF;
+ END;
 END
 $freeze$;
 
