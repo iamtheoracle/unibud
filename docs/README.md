@@ -34,6 +34,7 @@
 
 ## Operations
 - [Physical Operations Requirements](operations/OPERATIONS-SPEC.md)
+- [Database Backup, Restoration and Incident Recovery](operations/DATABASE-RECOVERY-RUNBOOK.md)
 
 ## Quality and Release
 - [Test Strategy](quality/TEST-STRATEGY.md)
