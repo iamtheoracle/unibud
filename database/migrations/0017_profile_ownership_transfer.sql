@@ -385,6 +385,14 @@ BEGIN
   OR NOT EXISTS(SELECT 1 FROM public.authentication_identities WHERE account_id=p_recipient_account_id AND status='active' AND verified_at IS NOT NULL)
  THEN
   UPDATE public.profile_ownership_transfers SET status='cancelled',cancelled_at=clock_timestamp() WHERE id=p_transfer_id;
+  INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+  VALUES(gen_random_uuid(),p_recipient_account_id,'unibud','profile.ownership_transfer.cancelled','success','profile',v_transfer.profile_id,
+   'participant_eligibility_changed',jsonb_build_object('transfer_id',p_transfer_id,'owner_account_id',v_transfer.current_owner_account_id));
+  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+  VALUES(v_transfer.current_owner_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+    jsonb_build_object('transferId',p_transfer_id,'reason','participant_eligibility_changed')),
+   (p_recipient_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+    jsonb_build_object('transferId',p_transfer_id,'reason','participant_eligibility_changed'));
   RETURN FALSE;
  END IF;
  UPDATE public.profile_ownership_transfers SET status=CASE WHEN p_accept THEN 'recipient_accepted' ELSE 'recipient_declined' END,
