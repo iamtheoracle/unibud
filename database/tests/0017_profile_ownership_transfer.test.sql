@@ -72,7 +72,7 @@ DECLARE v_status TEXT;
 BEGIN
  PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000002',
   '37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001',
-  'transfer-recipient',clock_timestamp()+interval '1 day');
+  'transfer-recipient');
  PERFORM public.profile_archive_owned('37000000-0000-4000-8000-000000000006','17000000-0000-4000-8000-000000000001');
  SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000002';
  IF v_status<>'cancelled' THEN RAISE EXCEPTION 'Archiving did not cancel outstanding transfer consent'; END IF;
@@ -110,7 +110,7 @@ DECLARE v_status TEXT; v_audit INTEGER;
 BEGIN
  PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000004',
   '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
-  'transfer-recipient',clock_timestamp()+interval '1 day');
+  'transfer-recipient');
  UPDATE public.accounts SET status='suspended' WHERE id='17000000-0000-4000-8000-000000000002';
  SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000004';
  SELECT count(*) INTO v_audit FROM public.security_audit_events WHERE resource_id='37000000-0000-4000-8000-000000000005'
