@@ -286,6 +286,7 @@ try {
       archivedProfiles = archivedProfiles.filter(item => item.profile.id !== archivedProfiles[0].profile.id);
       return json(route, 200, { ok: true, profileLifecycleUpdated: true });
     });
+    await page.route("**/api/profiles/delegations**", route => json(route, 200, { ok: true, delegatedAccess: [] }));
     await page.route("**/api/profiles/" + archivedProfiles[0].profile.id + "/history", route => json(route, 200, { ok: true, history: [{ action: "profile.archive", occurredAt: new Date(0).toISOString() }] }));
     page.on("dialog", dialog => dialog.accept());
     await openProfiles(page);
