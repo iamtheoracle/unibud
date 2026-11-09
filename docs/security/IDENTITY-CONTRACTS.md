@@ -42,3 +42,16 @@ A single account may own multiple profile families. The active profile is an exp
 - Profile switching cannot elevate permissions.
 - Staff and service identities cannot inherit consumer permissions.
 - Browser-supplied role or grant data is ignored by the server.
+
+## Education identity boundary
+
+Tutors, students, and institutions are separate private education-domain identities, not public profile families.
+
+- Student assignments carry student-specific scope and permissions.
+- Tutor assignments carry separate approval, teaching scope, and tutor-specific permissions.
+- An account may hold both only through two distinct authorised assignments.
+- Institutions may be authorised to manage student records and tutor records independently. Each authority is explicit; neither implies the other.
+- Institution, tutor, and student records are private and non-discoverable in the current phase.
+- A future public institution page, if required, must be a separately created and approved page/community profile; it must not expose private education records.
+
+See [Education Identity Boundaries](EDUCATION-IDENTITY-BOUNDARIES.md).
