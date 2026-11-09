@@ -71,6 +71,16 @@ export function routeError(error: unknown): NextResponse {
   if (error instanceof AuthRateLimitExceededError) {
     return NextResponse.json({ ok: false, error: "Too many attempts. Please wait and try again." }, { status: 429 });
   }
+  if (typeof error === "object" && error !== null && "code" in error) {
+    const code=(error as {code?:unknown}).code;
+    if(code==="23514"||code==="55000") return NextResponse.json({ok:false,error:"This change is blocked by current profile, ownership or delegated-access safeguards."},{status:409});
+    if(code==="42501") return NextResponse.json({ok:false,error:"You are not authorized to perform this action."},{status:403});
+    if(code==="22023") return NextResponse.json({ok:false,error:"The supplied request details are invalid."},{status:400});
+    if(code==="P0002") return NextResponse.json({ok:false,error:"The recipient identity is not eligible for this action."},{status:400});
+  }
+  if (error instanceof Error && /Invalid email address|Phone number must use E\\.164/i.test(error.message)) {
+    return NextResponse.json({ok:false,error:"Enter a valid email address or international phone number."},{status:400});
+  }
   if (error instanceof Error && /not configured|connection|timeout/i.test(error.message)) {
     return NextResponse.json({ ok: false, error: "The service is temporarily unavailable." }, { status: 503 });
   }
