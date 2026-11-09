@@ -20,6 +20,10 @@ Every domain record must have an explicit owning domain, creator/owner identity,
 - Operations owns staff assignments, fleet, dispatch, incidents, and delivery evidence.
 - Oracle Arc owns its app registry, agent/tool configuration, evaluation traces, and explicitly permitted memory/file metadata.
 
+## PostgreSQL ownership and protection
+
+PostgreSQL is the recommended relational system of record. UNIBUD retains ownership and control of application data, schemas, access policy, migrations, exports, and deletion. Hosting must be under a UNIBUD-controlled infrastructure account. Managed PostgreSQL is acceptable only when UNIBUD controls the account, private network, credentials, encryption configuration, backups, and recovery process. See [PostgreSQL Ownership and Database Security](../security/POSTGRESQL-OWNERSHIP-AND-SECURITY.md). No database vendor or production deployment has been selected.
+
 ## Isolation
 
 Use explicit foreign keys and server-side authorisation. Database row-level security may add defence in depth but does not replace application policy. Database owners, superusers, and privileged service identities require careful treatment.
