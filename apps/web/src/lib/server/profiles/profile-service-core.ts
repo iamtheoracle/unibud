@@ -12,7 +12,7 @@ export interface ProfileCreateInput {
   visibility?: "private" | "limited" | "public";
 }
 
-export interface ProfileInvitationInput {
+export interface ProfileUpdateInput {\n  profileId: string;\n  displayName: string;\n  handle: string;\n  visibility: "private" | "limited" | "public";\n}\n\nexport type ProfilePermission =\n  | "profile.read" | "profile.update_identity"\n  | "content.create" | "content.update" | "content.publish" | "content.delete" | "content.moderate"\n  | "members.view" | "marketplace.manage_listing" | "service.manage_availability"\n  | "education.manage_assigned_records" | "operations.view_assigned_work";\n\nexport interface ProfileInvitationInput {
   profileId: string;
   inviteeHandle: string;
   role: "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
@@ -61,7 +61,7 @@ export class ProfileService {
 
   constructor(repository: ProfileRepository) { this.repository=repository; }
 
-  async createOwnedProfile(accountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord> {
+  async updateOwnedProfile(accountId: string, input: ProfileUpdateInput): Promise<ProfileAccessRecord> {\n    if (!accountId) throw new Error("Authenticated account is required.");\n    const handle = normalizeHandle(input.handle);\n    const displayName = input.displayName.trim();\n    if (!displayName || displayName.length > 80) throw new Error("Display name must be 1–80 characters.");\n    if (!["private", "limited", "public"].includes(input.visibility)) throw new Error("Invalid profile visibility.");\n    const access = await this.repository.findProfileAccess(accountId, input.profileId);\n    if (!access || access.relationship !== "owner" || access.membershipStatus !== "active" ||\n        access.profile.ownerAccountId !== accountId || access.profile.status !== "active" ||\n        !["creator", "page_community"].includes(access.profile.kind)) {\n      throw new ProfileAccessDeniedError("Only the owner may edit an active creator or page profile.");\n    }\n    return this.repository.updateOwnedProfile(accountId, { ...input, handle, displayName });\n  }\n\n  async authorizeAction(accountId: string, profileId: string, permission: ProfilePermission): Promise<boolean> {\n    if (!accountId || !profileId) return false;\n    return this.repository.authorizeAction(accountId, profileId, permission);\n  }\n\n  async createOwnedProfile(accountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord> {
     if(!accountId) throw new Error("Authenticated account is required.");
     const handle=normalizeHandle(input.handle);
     const displayName=input.displayName.trim();
