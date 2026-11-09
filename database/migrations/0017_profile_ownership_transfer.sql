@@ -576,7 +576,7 @@ LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
 AS $function$
 DECLARE v_transfer public.profile_ownership_transfers%ROWTYPE; v_profile public.profiles%ROWTYPE;
- v_owned INTEGER; v_old_personal BOOLEAN; v_recipient_personal BOOLEAN;
+ v_owned INTEGER; v_old_personal BOOLEAN; v_recipient_personal BOOLEAN; v_old_owner_handle TEXT; v_new_owner_handle TEXT;
 BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
   RAISE EXCEPTION 'Transfer completion denied' USING ERRCODE='42501';
@@ -615,6 +615,10 @@ BEGIN
   WHERE p.owner_account_id=v_transfer.recipient_account_id AND p.kind='personal' AND p.status='active')
   AND EXISTS(SELECT 1 FROM public.authentication_identities i WHERE i.account_id=v_transfer.recipient_account_id
    AND i.status='active' AND i.verified_at IS NOT NULL) INTO v_recipient_personal;
+ SELECT handle INTO v_old_owner_handle FROM public.profiles
+  WHERE owner_account_id=p_owner_account_id AND kind='personal' AND status='active' LIMIT 1;
+ SELECT handle INTO v_new_owner_handle FROM public.profiles
+  WHERE owner_account_id=v_transfer.recipient_account_id AND kind='personal' AND status='active' LIMIT 1;
  IF v_owned<=1 OR NOT v_old_personal OR NOT v_recipient_personal
   OR EXISTS(SELECT 1 FROM public.profile_memberships WHERE profile_id=v_profile.id
     AND relationship='delegated' AND status IN('active','suspended'))
@@ -650,12 +654,13 @@ BEGIN
  VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.ownership_transfer.completed','success','profile',v_profile.id,
   'two_party_consent_and_owner_reauthentication',
   jsonb_build_object('transfer_id',p_transfer_id,'previous_owner_account_id',p_owner_account_id,
-   'new_owner_account_id',v_transfer.recipient_account_id,'profile_kind',v_profile.kind));
+   'new_owner_account_id',v_transfer.recipient_account_id,'previous_owner_handle',v_old_owner_handle,
+   'new_owner_handle',v_new_owner_handle,'profile_kind',v_profile.kind));
  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
  VALUES(p_owner_account_id,v_profile.id,'ownership_transfer_completed',
-  jsonb_build_object('transferId',p_transfer_id,'profileName',v_profile.display_name,'newOwnerAccountId',v_transfer.recipient_account_id)),
+  jsonb_build_object('transferId',p_transfer_id,'profileName',v_profile.display_name,'newOwnerAccountId',v_transfer.recipient_account_id,'newOwnerHandle',v_new_owner_handle)),
  (v_transfer.recipient_account_id,v_profile.id,'ownership_transfer_completed',
-  jsonb_build_object('transferId',p_transfer_id,'profileName',v_profile.display_name,'previousOwnerAccountId',p_owner_account_id));
+  jsonb_build_object('transferId',p_transfer_id,'profileName',v_profile.display_name,'previousOwnerAccountId',p_owner_account_id,'previousOwnerHandle',v_old_owner_handle));
  RETURN TRUE;
 END;
 $function$;
