@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS unibud_private.context_signing_keys (
   active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX context_signing_keys_one_active_idx
+  ON unibud_private.context_signing_keys(active) WHERE active;
 REVOKE ALL ON unibud_private.context_signing_keys FROM PUBLIC, unibud_app, unibud_readonly, unibud_migrator;
 
 CREATE OR REPLACE FUNCTION unibud_private.current_account_id()
@@ -50,7 +52,10 @@ DECLARE
   v_nonce TEXT;
   v_signature TEXT;
   v_key BYTEA;
-  v_expected TEXT;
+  v_expected BYTEA;
+  v_supplied BYTEA;
+  v_diff INTEGER := 0;
+  v_index INTEGER;
   v_now BIGINT;
 BEGIN
   v_account := current_setting('unibud.account_id', true);
@@ -81,16 +86,21 @@ BEGIN
     RETURN NULL;
   END IF;
 
-  v_expected := encode(
-    public.hmac(
-      convert_to(v_account || ':' || v_expiry || ':' || v_nonce, 'UTF8'),
-      v_key,
-      'sha256'
-    ),
-    'hex'
+  v_expected := public.hmac(
+    convert_to(v_account || ':' || v_expiry || ':' || v_nonce, 'UTF8'),
+    v_key,
+    'sha256'
   );
+  v_supplied := decode(v_signature, 'hex');
+  IF octet_length(v_supplied) <> 32 THEN
+    RETURN NULL;
+  END IF;
 
-  IF v_expected <> v_signature THEN
+  -- Fixed-length XOR accumulation avoids a first-differing-byte comparison.
+  FOR v_index IN 0..31 LOOP
+    v_diff := v_diff | (get_byte(v_expected, v_index) # get_byte(v_supplied, v_index));
+  END LOOP;
+  IF v_diff <> 0 THEN
     RETURN NULL;
   END IF;
 
