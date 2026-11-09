@@ -6,7 +6,8 @@
   "exports": {
     "./identity": "./src/identity.ts",
     "./profile": "./src/profile.ts",
-    "./education": "./src/education.ts"
+    "./education": "./src/education.ts",
+    "./session": "./src/session.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
