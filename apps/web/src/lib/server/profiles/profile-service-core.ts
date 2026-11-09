@@ -170,8 +170,8 @@ export class ProfileService {
   async listOutgoingOwnershipTransfers(accountId:string,profileId:string):Promise<OutgoingProfileOwnershipTransfer[]>{
     if(!accountId||!/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
     const access=await this.repository.findProfileAccess(accountId,profileId);
-    if(!access||access.relationship!=="owner"||access.membershipStatus!=="active"||access.profile.ownerAccountId!==accountId)
-      throw new ProfileAccessDeniedError("Only the profile owner may view outgoing transfer requests.");
+    if(!access||access.relationship!=="owner"||access.membershipStatus!=="active"||access.profile.ownerAccountId!==accountId||!["creator","page_community"].includes(access.profile.kind))
+      throw new ProfileAccessDeniedError("Only the owner of a creator or page/community profile may view outgoing transfer requests.");
     return this.repository.listOutgoingOwnershipTransfers(accountId,profileId);
   }
   async listIncomingOwnershipTransfers(accountId:string):Promise<IncomingProfileOwnershipTransfer[]>{
