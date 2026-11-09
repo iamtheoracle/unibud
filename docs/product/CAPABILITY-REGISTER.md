@@ -217,3 +217,13 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Implemented on the next stacked feature branch:** verification gateway endpoint validation rejects embedded URL credentials, query strings and fragments; production requires HTTPS; non-production HTTP is limited to loopback development hosts. Focused tests cover these boundaries and verify that endpoint secrets are not exposed in diagnostic output.
 - **Provider evidence remains unknown:** no vendor identity is inferred, no POST delivery is used as a health probe, and no email/SMS or verification code is sent. A provider-specific adapter and documented read-only health contract are still required before connectivity can be tested.
 - **Release boundary:** all changes remain on unmerged feature branches. No production deployment, production credentials, production data, or `main` change is included.
+
+
+## Workforce identity and operator authorization foundation (migration 0020)
+
+- Adds private workforce identities linked to UNIBUD accounts, separate from consumer profiles and profile-scoped roles.
+- Adds explicit role/permission grants with expiry, revocation and global/region/assigned scope labels. Only global grants are currently enforceable; region and assigned scopes fail closed.
+- Adds a SECURITY DEFINER authorization RPC that accepts only an opaque session digest, resolves active account/session state inside PostgreSQL, verifies active workforce identity and exact permission grant, and writes an allow/deny audit event.
+- App and auth runtime roles have no direct access to worker identity, grants or audit tables and cannot provision operators. Trusted database administration is required until a reviewed staff administration workflow is implemented.
+- PostgreSQL 16 synthetic tests cover authorized staff session, ordinary consumer denial, missing permission denial, malformed session digest denial, audit completeness and privilege boundaries. Foundation CI now applies migration 0020 and runs its test.
+- **Not yet wired:** HTTP operator diagnostics still use the temporary bearer gate. The next integration must validate the Secure/HttpOnly session cookie, pass only its SHA-256 digest to the RPC using the auth pool, enforce same-origin/CSRF protections for any mutation, and return no sensitive provider data. No operator UI or workforce provisioning workflow is included.
