@@ -8,9 +8,14 @@ export { createIdentityServices, createConfiguredIdentityServices };
 export type { IdentityRuntimeDependencies } from "./identity-runtime-core";
 
 export function createConfiguredIdentityServices() {
+  const endpoint=process.env.UNIBUD_VERIFICATION_DELIVERY_URL?.trim();
+  const token=process.env.UNIBUD_VERIFICATION_DELIVERY_TOKEN?.trim();
+  const verificationDelivery=endpoint && token
+    ? HttpVerificationDelivery.fromEnvironment()
+    : { async deliver(){ throw new Error("Verification delivery gateway is not configured."); } };
   return createIdentityServices({
     authPool: getAuthDatabasePool(),
     appPool: getAppDatabasePool(),
-    verificationDelivery: HttpVerificationDelivery.fromEnvironment()
+    verificationDelivery
   });
 }
