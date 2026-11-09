@@ -1,0 +1,8 @@
+{
+  "name": "unibud",
+  "private": true,
+  "description": "UNIBUD ecosystem monorepo",
+  "scripts": {
+    "check:docs": "bash scripts/check-docs.sh"
+  }
+}
