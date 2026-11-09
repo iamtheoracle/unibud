@@ -84,10 +84,12 @@ try {
     const delegate = { ...profile("20000000-0000-4000-8000-000000000005", "page_community", "campus.community", "Campus Community"), accountId: "10000000-0000-4000-8000-000000000002", relationship: "delegated", role: "editor" };
     let membershipPayloads = [];
     let cancellationPayload;
+    let delegateRole = "editor";
+    let delegateStatus = "active";
     await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, community] }));
     await page.route("**/api/profiles/delegations**", async route => {
-      if (route.request().method() === "GET") return json(route, 200, { ok: true, delegatedAccess: [delegate] });
-      if (route.request().method() === "PATCH") { membershipPayloads.push(route.request().postDataJSON()); return json(route, 200, { ok: true }); }
+      if (route.request().method() === "GET") return json(route, 200, { ok: true, delegatedAccess: [{ ...delegate, role: delegateRole, membershipStatus: delegateStatus }] });
+      if (route.request().method() === "PATCH") { const payload=route.request().postDataJSON(); membershipPayloads.push(payload); delegateRole=payload.role; delegateStatus=payload.status; return json(route, 200, { ok: true }); }
       return json(route, 200, { ok: true });
     });
     await page.route("**/api/profile-invitations**", async route => {
