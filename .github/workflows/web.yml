@@ -93,7 +93,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           READY=0
           for attempt in $(seq 1 60); do
-            if curl --silent --fail http://127.0.0.1:3100/__e2e/profiles > /dev/null; then
+            if curl --silent --fail http://127.0.0.1:3100/e2e/profiles > /dev/null; then
               READY=1
               break
             fi
