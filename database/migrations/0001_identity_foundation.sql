@@ -46,6 +46,37 @@ CREATE UNIQUE INDEX authentication_identity_primary_per_account
 CREATE INDEX authentication_identity_account_idx
   ON authentication_identities(account_id);
 
+
+-- Store only a digest of a high-entropy opaque session credential.
+-- The raw cookie/token is returned once to the client and is never persisted.
+CREATE TABLE account_sessions (
+  id UUID PRIMARY KEY,
+  account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
+  credential_digest BYTEA NOT NULL UNIQUE,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'revoked')),
+  issued_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_seen_at TIMESTAMPTZ,
+  idle_expires_at TIMESTAMPTZ NOT NULL,
+  absolute_expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+  revocation_reason TEXT,
+  rotated_from_session_id UUID REFERENCES account_sessions(id) ON DELETE RESTRICT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CHECK (octet_length(credential_digest) = 32),
+  CHECK (idle_expires_at > issued_at),
+  CHECK (absolute_expires_at > issued_at),
+  CHECK (idle_expires_at <= absolute_expires_at),
+  CHECK ((status = 'revoked') = (revoked_at IS NOT NULL))
+);
+
+CREATE INDEX account_sessions_account_active_idx
+  ON account_sessions(account_id, issued_at DESC)
+  WHERE status = 'active';
+
+CREATE INDEX account_sessions_expiry_idx
+  ON account_sessions(idle_expires_at, absolute_expires_at)
+  WHERE status = 'active';
+
 CREATE TABLE profiles (
   id UUID PRIMARY KEY,
   owner_account_id UUID NOT NULL REFERENCES accounts(id) ON DELETE RESTRICT,
@@ -160,6 +191,8 @@ COMMENT ON TABLE accounts IS
   'Canonical UNIBUD account record; independent of login identifiers and profile families.';
 COMMENT ON TABLE authentication_identities IS
   'Issuer-scoped authentication subjects; never store raw credentials or bearer secrets.';
+COMMENT ON TABLE account_sessions IS
+  'Server-side sessions; stores only a digest of a high-entropy opaque credential, never the raw token.';
 COMMENT ON TABLE profiles IS
   'Distinct personal, creator and page/community profiles.';
 COMMENT ON TABLE profile_memberships IS
