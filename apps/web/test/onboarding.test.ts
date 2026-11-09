@@ -10,9 +10,9 @@ class Sessions implements SessionRepository{
  async touch(){return true;} async revoke(){} async revokeAll(){} async rotate(){return false;}
 }
 class OnboardingStore implements OnboardingRepository{
- calls=0;lastAccount="";profile={id:"20000000-0000-4000-8000-000000000001",kind:"personal" as const,handle:"oracle",displayName:"Oracle",status:"active" as const};
- async completeOnboarding(accountId:string,input:Parameters<OnboardingRepository["completeOnboarding"]>[1]){
-  this.calls++;this.lastAccount=accountId;this.profile={...this.profile,handle:input.handle,displayName:input.displayName};return this.profile;
+ calls=0;lastAccount="";lastSession="";profile={id:"20000000-0000-4000-8000-000000000001",kind:"personal" as const,handle:"oracle",displayName:"Oracle",status:"active" as const};
+ async completeOnboarding(accountId:string,sessionId:string,input:Parameters<OnboardingRepository["completeOnboarding"]>[2]){
+  this.calls++;this.lastAccount=accountId;this.lastSession=sessionId;this.profile={...this.profile,handle:input.handle,displayName:input.displayName};return this.profile;
  }
 }
 test("onboarding derives account from a verified session and persists policy versions",async()=>{
@@ -20,7 +20,7 @@ test("onboarding derives account from a verified session and persists policy ver
  const issued=await sessionService.issue({id:"10000000-0000-4000-8000-000000000001",status:"active"},new Date("2026-11-09T06:00:00Z"));
  const service=new OnboardingService(sessionService,store);
  const result=await service.complete({sessionToken:issued.token,handle:" Oracle ",displayName:"Oracle",termsVersion:"terms-v1",privacyVersion:"privacy-v1",acceptTerms:true,acceptPrivacy:true,now:new Date("2026-11-09T06:01:00Z")});
- assert.equal(result.ok,true);assert.equal(store.lastAccount,"10000000-0000-4000-8000-000000000001");
+ assert.equal(result.ok,true);assert.equal(store.lastAccount,"10000000-0000-4000-8000-000000000001");assert.equal(store.lastSession,issued.session.id);
  assert.equal(result.ok&&result.profile.handle,"oracle");assert.equal(store.calls,1);
 });
 test("onboarding rejects missing or expired sessions and never accepts a caller account ID",async()=>{
