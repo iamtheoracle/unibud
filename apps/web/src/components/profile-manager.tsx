@@ -183,7 +183,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       });
       if (!response.ok) throw new Error(await readError(response));
       setInviteeHandle(""); setNotice("Invitation sent. Access stays pending until the recipient accepts.");
-      await loadDelegates(selectedDelegationProfile);
+      await Promise.all([loadDelegates(selectedDelegationProfile),loadOutgoingInvitations(selectedDelegationProfile)]);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not grant access.");
     } finally { setBusy(false); }
