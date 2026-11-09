@@ -10,6 +10,8 @@ import {
 import type { ProfileAccessRecord } from "../../../../../../packages/contracts/src/profile.ts";
 import type {
   ProfileCreateInput,
+  ProfileUpdateInput,
+  ProfilePermission,
   ProfileInvitationInput,
   ProfileInvitationRecord,
   ProfileRepository
@@ -70,7 +72,39 @@ export class ProfileProcedureRepository implements ProfileRepository {
     );
   }
 
-  async updateOwnedProfile(ownerAccountId: string, input: ProfileUpdateInput): Promise<ProfileAccessRecord> {\n    return this.inAccountContext(ownerAccountId, async client => {\n      const result = await client.query<{\n        profile_id:string; owner_account_id:string; kind:ProfileAccessRecord["profile"]["kind"];\n        handle:string; display_name:string; visibility:ProfileAccessRecord["profile"]["visibility"];\n        status:ProfileAccessRecord["profile"]["status"];\n      }>(\n        "SELECT * FROM public.profile_update_owned($1,$2,$3,$4,$5,$6)",\n        [input.profileId,ownerAccountId,input.displayName,input.handle,input.handle,input.visibility]\n      );\n      const row=result.rows[0];\n      if(!row) throw new Error("Profile update did not return a persisted profile.");\n      return {\n        accountId:ownerAccountId as ProfileAccessRecord["accountId"],relationship:"owner",\n        membershipStatus:"active",canSwitchToProfile:true,\n        profile:{id:row.profile_id as ProfileAccessRecord["profile"]["id"],\n          ownerAccountId:row.owner_account_id as ProfileAccessRecord["profile"]["ownerAccountId"],\n          kind:row.kind,handle:row.handle,displayName:row.display_name,\n          visibility:row.visibility,status:row.status}\n      };\n    });\n  }\n\n  async authorizeAction(accountId:string,profileId:string,permission:ProfilePermission):Promise<boolean>{\n    return this.inAccountContext(accountId,async client=>{\n      const result=await client.query<{allowed:boolean}>(\n        "SELECT public.profile_authorize_action($1,$2,$3) AS allowed",[profileId,accountId,permission]\n      );\n      return result.rows[0]?.allowed===true;\n    });\n  }\n\n  async createOwnedProfile(ownerAccountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord> {
+  async updateOwnedProfile(ownerAccountId: string, input: ProfileUpdateInput): Promise<ProfileAccessRecord> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{
+        profile_id:string; owner_account_id:string; kind:ProfileAccessRecord["profile"]["kind"];
+        handle:string; display_name:string; visibility:ProfileAccessRecord["profile"]["visibility"];
+        status:ProfileAccessRecord["profile"]["status"];
+      }>(
+        "SELECT * FROM public.profile_update_owned($1,$2,$3,$4,$5,$6)",
+        [input.profileId,ownerAccountId,input.displayName,input.handle,input.handle,input.visibility]
+      );
+      const row=result.rows[0];
+      if(!row) throw new Error("Profile update did not return a persisted profile.");
+      return {
+        accountId:ownerAccountId as ProfileAccessRecord["accountId"],relationship:"owner",
+        membershipStatus:"active",canSwitchToProfile:true,
+        profile:{id:row.profile_id as ProfileAccessRecord["profile"]["id"],
+          ownerAccountId:row.owner_account_id as ProfileAccessRecord["profile"]["ownerAccountId"],
+          kind:row.kind,handle:row.handle,displayName:row.display_name,
+          visibility:row.visibility,status:row.status}
+      };
+    });
+  }
+
+  async authorizeAction(accountId:string,profileId:string,permission:ProfilePermission):Promise<boolean>{
+    return this.inAccountContext(accountId,async client=>{
+      const result=await client.query<{allowed:boolean}>(
+        "SELECT public.profile_authorize_action($1,$2,$3) AS allowed",[profileId,accountId,permission]
+      );
+      return result.rows[0]?.allowed===true;
+    });
+  }
+
+  async createOwnedProfile(ownerAccountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord> {
     return this.inAccountContext(ownerAccountId, async client => {
       const profileId = randomUUID();
       const membershipId = randomUUID();
