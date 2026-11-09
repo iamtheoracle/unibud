@@ -153,6 +153,23 @@ BEFORE INSERT OR UPDATE OF status ON public.profile_invitations
 FOR EACH ROW EXECUTE FUNCTION public.guard_profile_invitation_during_transfer();
 REVOKE ALL ON FUNCTION public.guard_profile_invitation_during_transfer() FROM PUBLIC;
 
+-- Authentication identity verification changes serialize with transfer consent.
+CREATE OR REPLACE FUNCTION public.lock_auth_identity_for_profile_transfer()
+RETURNS trigger LANGUAGE plpgsql
+SET search_path=pg_catalog,public
+AS $function$
+BEGIN
+ IF NEW.status IS DISTINCT FROM OLD.status OR NEW.verified_at IS DISTINCT FROM OLD.verified_at THEN
+  PERFORM pg_advisory_xact_lock(hashtextextended(OLD.account_id::text,0));
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+CREATE TRIGGER authentication_identity_transfer_eligibility_lock
+BEFORE UPDATE OF status,verified_at ON public.authentication_identities
+FOR EACH ROW EXECUTE FUNCTION public.lock_auth_identity_for_profile_transfer();
+REVOKE ALL ON FUNCTION public.lock_auth_identity_for_profile_transfer() FROM PUBLIC;
+
 -- The immutable-owner trigger permits a change only while executing the
 -- dedicated SECURITY DEFINER transfer procedure under its non-login owner.
 CREATE OR REPLACE FUNCTION public.reject_profile_owner_change()
