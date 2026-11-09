@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const allOwned = [...owned, ...archived];
     const [delegatedLists, outgoingLists] = await Promise.all([
       Promise.all(allOwned.map((entry) => profiles.listDelegatedAccess(accountId, entry.profile.id))),
-      Promise.all(allOwned.map(async (entry) => ({
+      Promise.all(allOwned.filter((entry) => entry.profile.kind === "creator" || entry.profile.kind === "page_community").map(async (entry) => ({
         profile: entry.profile,
         transfers: await profiles.listOutgoingOwnershipTransfers(accountId, entry.profile.id)
       })))
