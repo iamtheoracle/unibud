@@ -20,7 +20,11 @@ export interface AccountDependencyDiscovery {
 interface DiscoveryRow { discovery: Omit<AccountDependencyDiscovery, "generatedAt"> & { generatedAt: Date | string } }
 
 export class AccountDependencyRepository {
-  constructor(private readonly pool: SqlPool) {}
+  private readonly pool: SqlPool;
+
+  constructor(pool: SqlPool) {
+    this.pool = pool;
+  }
 
   async getForAccount(accountId: string): Promise<AccountDependencyDiscovery> {
     return withSignedAccountTransaction(
