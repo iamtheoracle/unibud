@@ -30,12 +30,12 @@ SET search_path=pg_catalog,public
 AS $function$
 DECLARE bucket public.auth_rate_limit_buckets%ROWTYPE;
 BEGIN
-  IF p_action NOT IN ('register','login','recovery','verification')
+  IF p_action IS NULL OR p_action NOT IN ('register','login','recovery','verification')
      OR p_key_digest IS NULL OR octet_length(p_key_digest)<>32
      OR p_now IS NULL
-     OR p_window_seconds NOT BETWEEN 60 AND 86400
-     OR p_max_attempts NOT BETWEEN 1 AND 100
-     OR p_block_seconds NOT BETWEEN 60 AND 86400 THEN
+     OR p_window_seconds IS NULL OR p_window_seconds NOT BETWEEN 60 AND 86400
+     OR p_max_attempts IS NULL OR p_max_attempts NOT BETWEEN 1 AND 100
+     OR p_block_seconds IS NULL OR p_block_seconds NOT BETWEEN 60 AND 86400 THEN
     RETURN FALSE;
   END IF;
 
@@ -71,8 +71,10 @@ BEGIN
 END;
 $function$;
 
+GRANT CREATE ON SCHEMA public TO unibud_auth_owner;
 ALTER FUNCTION public.auth_consume_rate_limit(TEXT,BYTEA,TIMESTAMPTZ,INTEGER,INTEGER,INTEGER)
   OWNER TO unibud_auth_owner;
+REVOKE CREATE ON SCHEMA public FROM unibud_auth_owner;
 REVOKE ALL ON FUNCTION public.auth_consume_rate_limit(TEXT,BYTEA,TIMESTAMPTZ,INTEGER,INTEGER,INTEGER) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.auth_consume_rate_limit(TEXT,BYTEA,TIMESTAMPTZ,INTEGER,INTEGER,INTEGER) TO unibud_auth;
 
