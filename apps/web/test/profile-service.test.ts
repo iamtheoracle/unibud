@@ -219,6 +219,9 @@ test("ownership transfer is limited to an active owner and normalized UNIBUD rec
  repo.record={...access(),profile:{...access().profile,kind:"creator"}};
  const preflight=await service.getOwnershipTransferPreflight(owner,profileId);
  assert.equal(preflight.canTransfer,true);
+ const outgoing=await service.listOutgoingOwnershipTransfers(owner,profileId);
+ assert.equal(outgoing[0]?.recipientHandle,"recipient");
+ await assert.rejects(()=>service.listOutgoingOwnershipTransfers(delegate,profileId),ProfileAccessDeniedError);
  const requested=await service.requestOwnershipTransfer(owner,profileId," @New.Owner ");
  assert.equal(requested.recipientHandle,"new.owner");
  assert.match(requested.id,/^[0-9a-f-]{36}$/i);
