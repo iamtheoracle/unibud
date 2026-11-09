@@ -14,7 +14,8 @@ import type {
   ProfilePermission,
   ProfileInvitationInput,
   ProfileInvitationRecord,
-  ProfileRepository
+  ProfileRepository,
+  ProfileLifecycleEvent
 } from "./profile-service-core";
 
 interface ProfileJoinRow {
@@ -72,6 +73,27 @@ export class ProfileProcedureRepository implements ProfileRepository {
       createSignedAccountContextFromEnvironment(accountId),
       work
     );
+  }
+
+  async archiveOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{ archived: boolean }>("SELECT public.profile_archive_owned($1,$2) AS archived", [profileId,ownerAccountId]);
+      return result.rows[0]?.archived === true;
+    });
+  }
+
+  async restoreOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{ restored: boolean }>("SELECT public.profile_restore_owned($1,$2) AS restored", [profileId,ownerAccountId]);
+      return result.rows[0]?.restored === true;
+    });
+  }
+
+  async listProfileLifecycleHistory(ownerAccountId: string, profileId: string): Promise<ProfileLifecycleEvent[]> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{id:string;occurred_at:Date;action:ProfileLifecycleEvent["action"];outcome:ProfileLifecycleEvent["outcome"];reason_code:string|null;event_data:Record<string,unknown>}>("SELECT * FROM public.profile_list_lifecycle_history($1,$2)", [profileId,ownerAccountId]);
+      return result.rows.map(row => ({id:row.id,occurredAt:row.occurred_at.toISOString(),action:row.action,outcome:row.outcome,reasonCode:row.reason_code,eventData:row.event_data}));
+    });
   }
 
   async updateOwnedProfile(ownerAccountId: string, input: ProfileUpdateInput): Promise<ProfileAccessRecord> {
