@@ -58,16 +58,24 @@ BEGIN
     decode(repeat('a1',31),'hex'),'integration.diagnostics.read','ci-deny-digest'
   ) THEN RAISE EXCEPTION 'Malformed session digest unexpectedly authorized'; END IF;
 
+  IF has_table_privilege('unibud_auth','public.operator_role_grants','INSERT')
+     OR has_table_privilege('unibud_auth','public.operator_access_audit_events','SELECT')
+     OR has_table_privilege('unibud_app','public.operator_worker_identities','SELECT') THEN
+    RAISE EXCEPTION 'Runtime roles unexpectedly have workforce identity/grant/audit table access';
+  END IF;
+END
+$test$;
+
+RESET ROLE;
+SET LOCAL ROLE unibud_operator_owner;
+DO $audit$
+DECLARE v_count INTEGER;
+BEGIN
   SELECT count(*) INTO v_count
   FROM public.operator_access_audit_events
   WHERE request_reference IN ('ci-allow-001','ci-deny-consumer','ci-deny-permission','ci-deny-digest');
   IF v_count<>4 THEN RAISE EXCEPTION 'Authorization decisions were not fully audited'; END IF;
-
-  IF has_table_privilege('unibud_auth','public.operator_role_grants','INSERT')
-     OR has_table_privilege('unibud_app','public.operator_worker_identities','SELECT') THEN
-    RAISE EXCEPTION 'Runtime roles unexpectedly have workforce identity/grant table access';
-  END IF;
 END
-$test$;
+$audit$;
 
 ROLLBACK;
