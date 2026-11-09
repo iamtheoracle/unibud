@@ -42,6 +42,12 @@ BEGIN
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001','members.view') IS NOT TRUE THEN
   RAISE EXCEPTION 'Owner permission was not recognised';
  END IF;
+ IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001','unknown.superuser') IS NOT FALSE THEN
+  RAISE EXCEPTION 'Owner received an unknown permission string';
+ END IF;
+ IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001',NULL) IS NOT FALSE THEN
+  RAISE EXCEPTION 'Owner received a null permission';
+ END IF;
 END
 $owner_edit$;
 RESET ROLE;
@@ -80,6 +86,7 @@ BEGIN
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','content.publish') IS NOT TRUE THEN RAISE EXCEPTION 'Editor publish permission missing'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','profile.update_identity') IS NOT FALSE THEN RAISE EXCEPTION 'Editor unexpectedly received identity permission'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','members.view') IS NOT FALSE THEN RAISE EXCEPTION 'Editor unexpectedly received member permission'; END IF;
+ IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000003','unknown.superuser') IS NOT FALSE THEN RAISE EXCEPTION 'Editor received an unknown permission string'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000002','11000000-0000-4000-8000-000000000003','content.publish') IS NOT FALSE THEN RAISE EXCEPTION 'Editor permission crossed profile boundary'; END IF;
 END
 $editor$;
