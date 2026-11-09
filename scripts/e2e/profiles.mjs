@@ -120,7 +120,7 @@ try {
     const roleSelect = page.locator(".delegate-row").filter({ hasText: "UNIBUD member" }).getByLabel("Role");
     await roleSelect.selectOption("moderator");
     await page.getByRole("button", { name: "Suspend" }).click();
-    await page.getByRole("button", { name: "Restore" }).click();
+    await page.getByRole("button", { name: "Reactivate access" }).click();
     await page.getByRole("button", { name: "Cancel invitation" }).click();
     assert.equal(membershipPayloads.length, 3);
     assert.deepEqual(membershipPayloads[0], { profileId: pageId, delegateAccountId: delegate.accountId, role: "moderator", status: "active" });
