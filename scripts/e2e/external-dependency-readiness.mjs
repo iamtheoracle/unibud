@@ -83,7 +83,7 @@ try {
   await page.getByRole("heading", { name: "Account closure readiness" }).waitFor();
   await page.getByRole("heading", { name: "External services and shared data" }).waitFor();
 
-  for (const label of ["Verified providers", "Unknown providers", "Unavailable providers", "Unclassified integrations", "Policy gaps"]) {
+  for (const label of ["Verified integrations", "Unknown integrations", "Unavailable integrations", "Unclassified integrations", "Policy gaps"]) {
     await page.getByText(label, { exact: true }).waitFor();
   }
   for (const label of ["Stale evidence", "Unavailable references", "Shared relationships"]) {
