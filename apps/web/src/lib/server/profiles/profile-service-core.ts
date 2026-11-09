@@ -25,6 +25,7 @@ export interface ProfileRepository {
   revokeDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string): Promise<boolean>;
   listAccessibleProfiles(accountId: string): Promise<ProfileAccessRecord[]>;
   findProfileAccess(accountId: string, profileId: string): Promise<ProfileAccessRecord | undefined>;
+  setActiveProfileContext(accountId: string, sessionId: string, profileId: string, contextVersion: string): Promise<boolean>;
 }
 
 export class ProfileAccessDeniedError extends Error {
@@ -33,7 +34,7 @@ export class ProfileAccessDeniedError extends Error {
 
 function normalizeHandle(handle: string): string {
   const normalized=handle.trim().toLowerCase();
-  if(!/^[a-z0-9](?:[a-z0-9._-]{1,28}[a-z0-9])?$/.test(normalized)) {
+  if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(normalized)) {
     throw new Error("Handle must be 3–30 characters and use letters, numbers, dots, underscores or hyphens.");
   }
   return normalized;
@@ -87,10 +88,13 @@ export class ProfileService {
     return this.repository.listAccessibleProfiles(authenticatedAccountId);
   }
 
-  async switchProfile(authenticatedAccountId: string, targetProfileId: string): Promise<ProfileSwitchResult> {
+  async switchProfile(authenticatedAccountId: string, sessionId: string, targetProfileId: string): Promise<ProfileSwitchResult> {
     const access=await this.repository.findProfileAccess(authenticatedAccountId,targetProfileId);
     const decision=evaluateProfileSwitch(access,authenticatedAccountId as ProfileAccessRecord["accountId"],targetProfileId as ProfileAccessRecord["profile"]["id"]);
     if(!decision.allowed) throw new ProfileAccessDeniedError(decision.reason);
-    return {activeProfile:decision.context,contextVersion:randomUUID()};
+    const contextVersion=randomUUID();
+    const persisted=await this.repository.setActiveProfileContext(authenticatedAccountId,sessionId,targetProfileId,contextVersion);
+    if(!persisted) throw new ProfileAccessDeniedError("The authenticated session could not enter this profile context.");
+    return {activeProfile:decision.context,contextVersion};
   }
 }
