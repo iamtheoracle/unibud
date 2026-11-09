@@ -14,7 +14,7 @@ class MemoryAuthRepository implements AuthRepository {
   async registerPending(input:Parameters<AuthRepository["registerPending"]>[0]){
     this.created=input;this.challengeAccount=input.accountId;return true;
   }
-  async findLoginAccount(){return this.account;}
+  async findLoginAccount(identifier:string){return identifier==="missing@example.com"?null:this.account;}
   async findRecoveryTarget(){return this.recovery;}
   async findChallengeAccount(){return this.challengeAccount;}
   async completePasswordReset(_id:string,hash:string){this.resetHash=hash;return true;}
