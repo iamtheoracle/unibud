@@ -19,6 +19,7 @@
 - [Security Baseline](security/SECURITY-BASELINE.md)
 - [PostgreSQL Ownership and Database Security](security/POSTGRESQL-OWNERSHIP-AND-SECURITY.md)
 - [Identity and Onboarding Architecture](security/IDENTITY-ARCHITECTURE.md)
+- [Identity Persistence Migration and Synthetic Data Policy](security/IDENTITY-PERSISTENCE-MIGRATION.md)
 - [Identity and Profile Service Contracts](security/IDENTITY-CONTRACTS.md)
 - [Private Education Identity Boundaries](security/EDUCATION-IDENTITY-BOUNDARIES.md)
 - [Profile Context and Switching](security/PROFILE-CONTEXT-SWITCHING.md)
