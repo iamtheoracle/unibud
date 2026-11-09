@@ -9,6 +9,17 @@ INSERT INTO profiles (id,owner_account_id,kind,handle,handle_normalized,display_
  ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000002','personal','isolation-b','isolation-b','Isolation B');
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES ('ci-test-key',decode(repeat('5a',32),'hex'));
+DO $key_invariant$
+BEGIN
+  BEGIN
+    INSERT INTO unibud_private.context_signing_keys(key_id,secret)
+    VALUES ('second-active-key',decode(repeat('6b',32),'hex'));
+    RAISE EXCEPTION 'A second active context key was accepted';
+  EXCEPTION WHEN unique_violation THEN
+    NULL;
+  END;
+END;
+$key_invariant$;
 
 -- Sign account A context using the CI-only synthetic key before assuming app role.
 WITH context AS (
@@ -50,6 +61,13 @@ BEGIN
   SELECT count(*) INTO visible_accounts FROM accounts;
   IF visible_accounts <> 0 THEN
     RAISE EXCEPTION 'Forged account context exposed rows';
+  END IF;
+
+  -- A modified signature must deny all account-scoped reads.
+  PERFORM set_config('unibud.account_id', '10000000-0000-4000-8000-000000000001', true);
+  PERFORM set_config('unibud.context_signature', repeat('0', 64), true);
+  IF unibud_private.current_account_id() IS NOT NULL OR (SELECT count(*) FROM accounts) <> 0 THEN
+    RAISE EXCEPTION 'Tampered signature exposed account rows';
   END IF;
 
   -- Missing signature must also deny all account-scoped reads.
