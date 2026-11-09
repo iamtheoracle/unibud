@@ -12,6 +12,9 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
 }
 class Repo implements ProfileRepository{
  record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null; updateInput:ProfileUpdateInput|null=null; permissionAllowed=false; managedInput:unknown=null; cancelledInput:unknown=null;
+ async listLifecycleNotifications(){return [{id:"80000000-0000-4000-8000-000000000001",profileId,eventType:"profile_archived" as const,createdAt:new Date(0).toISOString(),readAt:null,details:{profileName:"Creator"}}];}
+ async markLifecycleNotificationRead(_account:string,_id:string){return true;}
+ async getAccountClosurePreflight(){return {canClose:false,ownedProfiles:2,activeOwnedProfiles:1,archivedOwnedProfiles:1,delegatedRelationships:0,requiresOwnershipTransferWorkflow:true,requiresDelegationRelease:false};}
  async listArchivedOwnedProfiles(){return this.record.profile.status==="archived"?[this.record]:[];}
  async archiveOwnedProfile(accountId:string,id:string){if(accountId!==owner||id!==profileId)return false;this.record={...this.record,profile:{...this.record.profile,status:"archived"}};return true;}
  async restoreOwnedProfile(accountId:string,id:string){if(accountId!==owner||id!==profileId)return false;this.record={...this.record,profile:{...this.record.profile,status:"active"}};return true;}
@@ -184,4 +187,21 @@ test("profile recovery history is visible only to the active owner",async()=>{
  assert.equal(history[0]?.action,"profile.archive");
  repo.record={...repo.record,relationship:"delegated",accountId:delegate as ProfileAccessRecord["accountId"]};
  await assert.rejects(()=>service.listProfileLifecycleHistory(delegate,profileId),ProfileAccessDeniedError);
+});
+
+
+test("recovery notifications are account-scoped and can be marked read",async()=>{
+ const service=new ProfileService(new Repo());
+ const notifications=await service.listLifecycleNotifications(owner);
+ assert.equal(notifications[0]?.eventType,"profile_archived");
+ assert.equal(await service.markLifecycleNotificationRead(owner,"80000000-0000-4000-8000-000000000001"),true);
+ await assert.rejects(()=>service.markLifecycleNotificationRead(delegate,"not-a-uuid"),ProfileAccessDeniedError);
+});
+
+test("account closure preflight reports owned and archived profiles as blockers",async()=>{
+ const preflight=await new ProfileService(new Repo()).getAccountClosurePreflight(owner);
+ assert.equal(preflight.canClose,false);
+ assert.equal(preflight.ownedProfiles,2);
+ assert.equal(preflight.archivedOwnedProfiles,1);
+ assert.equal(preflight.requiresOwnershipTransferWorkflow,true);
 });
