@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from "next/server";
-import {createConfiguredIdentityServices} from "../../../../../../lib/server/identity/identity-runtime";
-import {ProfileAccessDeniedError} from "../../../../../../lib/server/profiles/profile-service-core";
-import {hasSameOrigin,readJsonObject,readSessionCookie,routeError} from "../../../../../../lib/server/identity/http";
+import {createConfiguredIdentityServices} from "../../../../../lib/server/identity/identity-runtime";
+import {ProfileAccessDeniedError} from "../../../../../lib/server/profiles/profile-service-core";
+import {hasSameOrigin,readJsonObject,readSessionCookie,routeError} from "../../../../../lib/server/identity/http";
 type Context={params:Promise<{transferId:string}>};
 
 export async function POST(request:NextRequest,context:Context){
