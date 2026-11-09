@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ProfileOwnershipTransferPanel } from "./profile-ownership-transfer-panel";
 
 type ProfileKind = "personal" | "creator" | "page_community";
 type ProfileRecord = {
@@ -325,6 +326,8 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
           </div>
         )}
       </section>
+
+      <ProfileOwnershipTransferPanel profiles={profiles} />
 
       <section className="profile-section">
         <div className="profile-section-heading"><div><p className="eyebrow">Profile recovery</p><h2>Archived profiles</h2></div><span className="profile-count">{archivedProfiles.length} archived</span></div>
