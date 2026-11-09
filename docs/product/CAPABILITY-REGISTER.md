@@ -17,7 +17,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 
 | Capability | Scope to preserve | Initial state |
 |---|---|---|
-| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Contracts and initial schema implemented; runtime and database verification pending |
+| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Contracts and identity schema implemented; PostgreSQL 16 migration and signed-context RLS tests added to CI; runtime credential/session services pending |
 | Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Designed |
 | Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Designed |
 | Discovery and search | People, profiles, communities, institutions, creators, services, opportunities, activities, content | Target |
