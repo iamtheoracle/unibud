@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { checkOracleArcConnection } from "../src/lib/server/oracle-arc-core.ts";
+import { checkOracleArcConnection, isIntegrationOperatorRequest } from "../src/lib/server/oracle-arc-core.ts";
 
 const settingKeys = [
   "ORACLE_ARC_API_URL",
@@ -156,4 +156,21 @@ test("non-HTTPS remote URLs are rejected before making a request", async t => {
   const result = await checkOracleArcConnection();
   assert.equal(result.state, "misconfigured");
   assert.equal(called, false);
+});
+
+
+test("operator diagnostic gate requires the configured bearer credential", t => {
+  const previous = process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN;
+  t.after(() => {
+    if (previous === undefined) delete process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN;
+    else process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN = previous;
+  });
+  delete process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN;
+  assert.equal(isIntegrationOperatorRequest("Bearer any-token"), false);
+  process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN = "operator-test-token-with-sufficient-entropy";
+  assert.equal(isIntegrationOperatorRequest(null), false);
+  assert.equal(isIntegrationOperatorRequest("Basic operator-test-token-with-sufficient-entropy"), false);
+  assert.equal(isIntegrationOperatorRequest("Bearer wrong-token"), false);
+  assert.equal(isIntegrationOperatorRequest("Bearer operator-test-token-with-sufficient-entropy extra"), false);
+  assert.equal(isIntegrationOperatorRequest("Bearer operator-test-token-with-sufficient-entropy"), true);
 });
