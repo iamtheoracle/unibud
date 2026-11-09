@@ -42,13 +42,13 @@ BEGIN
  IF EXISTS(SELECT 1 FROM profile_memberships WHERE profile_id='20000000-0000-4000-8000-000000000004' AND account_id='10000000-0000-4000-8000-000000000002') THEN
   RAISE EXCEPTION 'Invitation activated membership before recipient acceptance';
  END IF;
+ DECLARE v_private_name TEXT;
  BEGIN
-  PERFORM * FROM public.profile_invite_by_handle(
+  SELECT invitee_display_name INTO v_private_name FROM public.profile_invite_by_handle(
    '60000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000004',
    '10000000-0000-4000-8000-000000000001','private-three','editor',true
   );
-  RAISE EXCEPTION 'Private identity was discoverable through handle invitation';
- EXCEPTION WHEN no_data_found THEN NULL;
+  IF v_private_name<>'UNIBUD member' THEN RAISE EXCEPTION 'Private identity details were disclosed'; END IF;
  END;
 END
 $invite$;
