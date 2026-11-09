@@ -84,6 +84,24 @@ END;
 $function$;
 ALTER FUNCTION public.profile_list_lifecycle_history(UUID,UUID) OWNER TO unibud_profile_owner;
 
+-- Direct app SQL must not bypass the serialized archive/restore procedures.
+CREATE OR REPLACE FUNCTION public.reject_profile_status_change()
+RETURNS trigger LANGUAGE plpgsql
+SET search_path=pg_catalog,public
+AS $function$
+BEGIN
+ IF NEW.status IS DISTINCT FROM OLD.status AND current_user<>'unibud_profile_owner' THEN
+  RAISE EXCEPTION 'Profile lifecycle state can change only through an approved owner procedure'
+   USING ERRCODE='55000';
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+CREATE TRIGGER profiles_status_change_requires_procedure
+BEFORE UPDATE OF status ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.reject_profile_status_change();
+REVOKE ALL ON FUNCTION public.reject_profile_status_change() FROM PUBLIC;
+
 -- The immutable-owner trigger permits a change only while executing the
 -- dedicated SECURITY DEFINER transfer procedure under its non-login owner.
 CREATE OR REPLACE FUNCTION public.reject_profile_owner_change()
