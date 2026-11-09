@@ -48,12 +48,33 @@ try {
     });
     await openProfiles(page);
     await page.getByLabel("Profile type").selectOption("page_community");
-    await page.getByLabel("Display name").fill("New Campus");
+    await page.getByPlaceholder("Community or page name").fill("New Campus");
     await page.getByLabel("Unique handle").fill("new.campus");
     await page.getByRole("button", { name: "Create profile" }).click();
     await page.getByText("Your new profile has been created.").waitFor();
     await page.getByRole("heading", { name: "New Campus" }).waitFor();
     assert.deepEqual(createPayload, { kind: "page_community", handle: "new.campus", displayName: "New Campus", visibility: "private" });
+    await page.close();
+  }
+
+  // Profile editing is scoped to the selected owned creator/page identity.
+  {
+    const page = await newPage();
+    let updatePayload;
+    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, creator] }));
+    await page.route("**/api/profiles/" + creatorId, async route => {
+      updatePayload = route.request().postDataJSON();
+      return json(route, 200, { ok: true, profile: { ...creator, profile: { ...creator.profile, ...updatePayload } } });
+    });
+    await openProfiles(page);
+    const editForm = page.locator("form").filter({ hasText: "Profile to edit" });
+    await editForm.getByLabel("Profile to edit").selectOption(creatorId);
+    await editForm.getByLabel("Display name").fill("Oracle Studio");
+    await editForm.getByLabel("Handle").fill("oracle.studio");
+    await editForm.getByLabel("Visibility").selectOption("public");
+    await editForm.getByRole("button", { name: "Save profile changes" }).click();
+    await page.getByText("Profile details updated.").waitFor();
+    assert.deepEqual(updatePayload, { displayName: "Oracle Studio", handle: "oracle.studio", visibility: "public" });
     await page.close();
   }
 
