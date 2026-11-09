@@ -2,7 +2,8 @@ import type {
   AccountId,
   ProfileId,
   ProfileKind,
-  ProfileSummary
+  ProfileSummary,
+  GrantRole
 } from "./identity.ts";
 
 export interface ProfileContext {
@@ -32,6 +33,7 @@ export interface ProfileAccessRecord {
   profile: ProfileSummary;
   accountId: AccountId;
   relationship: "owner" | "delegated";
+  role: GrantRole;
   membershipStatus: "active" | "pending" | "suspended" | "revoked";
   /** Must be derived from an active, server-verified ownership or delegation record. */
   canSwitchToProfile: boolean;
