@@ -1,14 +1,14 @@
 import "server-only";
 
-import { AuthenticationService, type AuthRateLimiter } from "./authentication-core";
-import { VerificationChallengeService, type VerificationDelivery, type VerificationRateLimiter } from "./verification-core";
-import { SessionService } from "./session-core";
-import { createAuthRpcRepository } from "./auth-rpc-repository-core";
-import type { SqlPool } from "../database/account-context-core";
-import { ProfileService } from "../profiles/profile-service-core";
-import { ProfileProcedureRepository } from "../profiles/profile-procedure-repository";
-import { OnboardingService } from "../onboarding/onboarding-core";
-import { OnboardingProcedureRepository } from "../onboarding/onboarding-repository-core";
+import { AuthenticationService, type AuthRateLimiter } from "./authentication-core.ts";
+import { VerificationChallengeService, type VerificationDelivery, type VerificationRateLimiter } from "./verification-core.ts";
+import { SessionService } from "./session-core.ts";
+import { createAuthRpcRepository } from "./auth-rpc-repository-core.ts";
+import type { SqlPool } from "../database/account-context-core.ts";
+import { ProfileService } from "../profiles/profile-service-core.ts";
+import { ProfileProcedureRepository } from "../profiles/profile-procedure-repository.ts";
+import { OnboardingService } from "../onboarding/onboarding-core.ts";
+import { OnboardingProcedureRepository } from "../onboarding/onboarding-repository-core.ts";
 
 function readRuntimeKey(name:string):Buffer {
  const value=process.env[name]?.trim()??"";
