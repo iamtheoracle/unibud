@@ -45,6 +45,38 @@ BEGIN
 END;
 $function$;
 
+CREATE OR REPLACE FUNCTION public.profile_revoke_delegated_access(
+  p_profile_id UUID,p_owner_account_id UUID,p_delegate_account_id UUID,p_revoked_at TIMESTAMPTZ
+)
+RETURNS BOOLEAN
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+BEGIN
+  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
+     OR p_revoked_at IS NULL
+     OR NOT EXISTS (
+       SELECT 1 FROM public.profiles p
+       JOIN public.profile_memberships owner_membership
+         ON owner_membership.profile_id=p.id
+        AND owner_membership.account_id=p_owner_account_id
+        AND owner_membership.relationship='owner'
+        AND owner_membership.role='owner'
+        AND owner_membership.status='active'
+       WHERE p.id=p_profile_id AND p.owner_account_id=p_owner_account_id
+         AND p.kind='page_community' AND p.status='active'
+     ) THEN
+    RAISE EXCEPTION 'Only the active page owner may revoke delegated access' USING ERRCODE='42501';
+  END IF;
+  UPDATE public.profile_memberships
+    SET status='revoked',revoked_at=p_revoked_at
+    WHERE profile_id=p_profile_id AND account_id=p_delegate_account_id
+      AND profile_owner_account_id=p_owner_account_id
+      AND relationship='delegated' AND status IN ('active','suspended')
+      AND revoked_at IS NULL;
+  RETURN FOUND;
+END;
+$function$;
 CREATE OR REPLACE FUNCTION public.profile_cancel_invitation(
   p_invitation_id UUID,p_owner_account_id UUID
 )
