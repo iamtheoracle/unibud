@@ -61,7 +61,7 @@ export type ProviderLookupOutcome =
 
 export type ProviderVerificationOutcome =
   | { state: "verified"; evidence: ProviderVerificationEvidence }
-  | { state: "unknown"; reason: "provider_not_registered" | "verification_failed" | "invalid_verification_evidence" };
+  | { state: "unknown"; reason: "provider_not_registered" | "verification_failed" | "invalid_verification_evidence" | "verification_stale" };
 
 export class ExternalDependencyProviderRegistry {
   private readonly adapters: ReadonlyMap<string, ExternalDependencyProviderAdapter>;
@@ -113,8 +113,12 @@ export class ExternalDependencyProviderRegistry {
     try {
       const evidence = await adapter.verify(request);
       const verifiedAt = Date.parse(evidence.verifiedAt);
-      if (!evidence.providerIdentity.trim() || !Number.isFinite(verifiedAt) || verifiedAt > this.now()) {
+      if (!evidence.providerIdentity.trim() || !Number.isFinite(verifiedAt) || verifiedAt > this.now()
+        || !["runtime_attestation", "provider_confirmation", "operator_review"].includes(evidence.evidenceSource)) {
         return { state: "unknown", reason: "invalid_verification_evidence" };
+      }
+      if (this.now() - verifiedAt > this.maxEvidenceAgeMs) {
+        return { state: "unknown", reason: "verification_stale" };
       }
       return { state: "verified", evidence: { ...evidence, verifiedAt: new Date(verifiedAt).toISOString() } };
     } catch {
