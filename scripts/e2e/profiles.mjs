@@ -207,7 +207,7 @@ try {
     await page.route("**/api/profile-ownership-transfers", route => json(route, 200, { ok: true, transfers: [] }));
     await page.route("**/api/profiles/" + creatorId + "/ownership-transfer", async route => {
       if (route.request().method() === "GET") return json(route, 200, { ok: true,
-        preflight: { canTransfer: true, activeOwnedProfiles: 2, activeDelegatedRelationships: 0, pendingInvitations: 0, openTransferRequests: 0, personalIdentityAvailable: true },
+        preflight: { canTransfer: true, activeOwnedProfiles: 2, activeDelegatedRelationships: 0, pendingInvitations: 0, openTransferRequests: 0, personalIdentityAvailable: true, verifiedIdentityAvailable: true },
         transfers: transferState === "completed" ? [] : [{ transferId, recipientHandle: "new.owner", status: transferState, createdAt: new Date().toISOString(), expiresAt: new Date(Date.now()+86400000).toISOString() }]
       });
       requestPayload = route.request().postDataJSON();
