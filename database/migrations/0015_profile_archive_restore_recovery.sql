@@ -119,9 +119,9 @@ BEGIN
   UPDATE public.profiles SET status='active',updated_at=clock_timestamp()
    WHERE id=p_profile_id AND owner_account_id=p_owner_account_id;
   INSERT INTO public.security_audit_events(
-    actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data
+    id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data
   ) VALUES (
-    p_owner_account_id,'unibud','profile.restore','success','profile',p_profile_id,
+    gen_random_uuid(),p_owner_account_id,'unibud','profile.restore','success','profile',p_profile_id,
     'owner_requested',
     jsonb_build_object('profile_kind',v_profile.kind,'previous_status','archived','new_status','active')
   );
