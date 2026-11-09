@@ -85,8 +85,8 @@ DECLARE v_count INTEGER; v_status TEXT; v_audit INTEGER; v_notifications INTEGER
 BEGIN
  PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000003',
   '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
-  'transfer-recipient',clock_timestamp()+interval '1 millisecond');
- PERFORM pg_sleep(0.02);
+  'transfer-recipient',clock_timestamp()+interval '1 second');
+ PERFORM pg_sleep(1.1);
  SELECT count(*) INTO v_count FROM public.profile_ownership_transfer_list_outgoing(
   '17000000-0000-4000-8000-000000000001','37000000-0000-4000-8000-000000000005');
  SELECT status INTO v_status FROM public.profile_ownership_transfers WHERE id='57000000-0000-4000-8000-000000000003';
