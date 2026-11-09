@@ -226,7 +226,7 @@ export function isIntegrationOperatorRequest(authorization: string | null): bool
   const match = /^Bearer ([^\s]+)$/i.exec(authorization);
   if (!match) return false;
 
-  // Require high-entropy server configuration and compare equal-length bytes in constant time.
+  // Require a minimum-length server configuration and compare equal-length bytes in constant time.
   const supplied = Buffer.from(match[1], "utf8");
   const configured = Buffer.from(expected, "utf8");
   return supplied.length === configured.length && timingSafeEqual(supplied, configured);
