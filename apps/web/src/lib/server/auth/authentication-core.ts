@@ -87,7 +87,7 @@ export class AuthenticationService {
   }
   async login(input:{channel:VerificationChannel;identifier:string;password:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
-    await this.limiter.assertAllowed({action:"login",identifierDigest:this.digestIdentifier(identifier),now:now.toISOString()});
+    await this.limiter.assertAllowed({action:"login",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const account=await this.repository.findLoginAccount(identifier,input.channel);
     const passwordValid=await verifyPassword(input.password,account?.credentialHash??DUMMY_VERIFIER);
     if(!account || !passwordValid || !account.identityVerifiedAt || account.status!=="active") {
@@ -98,7 +98,7 @@ export class AuthenticationService {
   }
   async requestRecovery(input:{channel:VerificationChannel;identifier:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
-    await this.limiter.assertAllowed({action:"recovery",identifierDigest:this.digestIdentifier(identifier),now:now.toISOString()});
+    await this.limiter.assertAllowed({action:"recovery",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const target=await this.repository.findRecoveryTarget(identifier,input.channel);
     if(target) await this.challenges.issue({
       accountId:target.accountId,identityId:target.identityId,channel:target.channel,
