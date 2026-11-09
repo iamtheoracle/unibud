@@ -195,8 +195,8 @@ BEGIN
   RAISE EXCEPTION 'This profile cannot be restored through profile recovery' USING ERRCODE='55000';
  END IF;
  UPDATE public.profiles SET status='active',updated_at=clock_timestamp() WHERE id=p_profile_id;
- INSERT INTO public.security_audit_events(actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
- VALUES(p_owner_account_id,'unibud','profile.restore','success','profile',p_profile_id,'owner_requested',
+ INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+ VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.restore','success','profile',p_profile_id,'owner_requested',
   jsonb_build_object('profile_kind',v_profile.kind,'previous_status','archived','new_status','active'));
  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
  VALUES(p_owner_account_id,p_profile_id,'profile_restored',jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle));
