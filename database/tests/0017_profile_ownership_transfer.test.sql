@@ -54,7 +54,7 @@ BEGIN
  BEGIN
   PERFORM * FROM public.profile_ownership_transfer_request(gen_random_uuid(),
    '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
-   'transfer-recipient',clock_timestamp()+interval '1 day');
+   'transfer-recipient');
   RAISE EXCEPTION 'Transfer unexpectedly allowed while delegate remains active';
  EXCEPTION WHEN check_violation THEN
   IF SQLERRM NOT LIKE 'Resolve delegated access%' THEN RAISE; END IF;
@@ -85,7 +85,9 @@ DECLARE v_count INTEGER; v_status TEXT; v_audit INTEGER; v_notifications INTEGER
 BEGIN
  PERFORM * FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000003',
   '37000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000001',
-  'transfer-recipient',clock_timestamp()+interval '1 second');
+  'transfer-recipient');
+ UPDATE public.profile_ownership_transfers SET expires_at=clock_timestamp()+interval '1 second'
+  WHERE id='57000000-0000-4000-8000-000000000003';
  PERFORM pg_sleep(1.1);
  SELECT count(*) INTO v_count FROM public.profile_ownership_transfer_list_outgoing(
   '17000000-0000-4000-8000-000000000001','37000000-0000-4000-8000-000000000005');
@@ -124,7 +126,7 @@ BEGIN
  SELECT transfer_id,recipient_handle INTO v_id,v_handle
  FROM public.profile_ownership_transfer_request('57000000-0000-4000-8000-000000000001',
   '37000000-0000-4000-8000-000000000002','17000000-0000-4000-8000-000000000001',
-  ' @Transfer-Recipient ',clock_timestamp()+interval '1 day');
+  ' @Transfer-Recipient ');
  IF v_id<>'57000000-0000-4000-8000-000000000001' OR v_handle<>'transfer-recipient' THEN
   RAISE EXCEPTION 'Unexpected transfer request result';
  END IF;
