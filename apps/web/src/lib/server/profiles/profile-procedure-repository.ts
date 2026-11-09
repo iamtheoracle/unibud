@@ -112,11 +112,11 @@ export class ProfileProcedureRepository implements ProfileRepository {
     });
   }
 
-  async requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string,expiresAt:string):Promise<{id:string;recipientHandle:string}>{
+  async requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string):Promise<{id:string;recipientHandle:string}>{
     return this.inAccountContext(ownerAccountId,async client=>{
       const result=await client.query<{transfer_id:string;recipient_handle:string}>(
-        "SELECT * FROM public.profile_ownership_transfer_request($1,$2,$3,$4,$5)",
-        [transferId,profileId,ownerAccountId,recipientHandle,expiresAt]);
+        "SELECT * FROM public.profile_ownership_transfer_request($1,$2,$3,$4)",
+        [transferId,profileId,ownerAccountId,recipientHandle]);
       const row=result.rows[0];if(!row) throw new Error("Ownership transfer request was not created.");
       return {id:row.transfer_id,recipientHandle:row.recipient_handle};
     });
