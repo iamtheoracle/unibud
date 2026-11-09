@@ -17,7 +17,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 
 | Capability | Scope to preserve | Initial state |
 |---|---|---|
-| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Migrations 0001–0010 and PostgreSQL 16 auth/RLS/rate-limit tests added; scrypt, verification, session lifecycle, registration/login/recovery orchestration, encrypted identifier protection, dual role-specific PostgreSQL pools, RPC adapters, database-backed rate limiting, HTTP verification gateway, auth routes, and secure cookie handling implemented; production database credentials, delivery gateway configuration, and deployment verification pending |
+| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Migrations 0001–0010 and PostgreSQL 16 auth/RLS/rate-limit tests added; scrypt, verification, session lifecycle, registration/login/recovery orchestration, encrypted identifier protection, dual role-specific PostgreSQL pools, RPC adapters, database-backed rate limiting, HTTP verification gateway, auth routes, secure cookie handling, and first-party sign-up/login/verification/recovery screens implemented; legal policy pages are drafts and production onboarding fails closed until approved policy versions are configured; production database credentials, delivery gateway configuration, and deployment verification pending |
 | Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Contracts and server-side profile service implemented; one-personal-profile invariant and delegated owner binding migrated; PostgreSQL 16 owner/delegate/outsider tests added; PostgreSQL profile RPC adapter and authenticated list/create/delegation/switch routes implemented; production database credentials and deployment verification pending |
 | Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Exact-profile grant/revoke service implemented; delegated rows bound to canonical owner and grantor; owner/delegate/unrelated-account isolation test added |
 | Discovery and search | People, profiles, communities, institutions, creators, services, opportunities, activities, content | Target |
@@ -34,7 +34,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 - First-party email/phone registration and login; no Google or Apple sign-up.
 - Versioned terms and privacy acceptance; account identity is resolved from a verified session, never a caller-supplied account ID.
 - Personal profile and owner membership are created idempotently; creator and page/community profiles remain separate profile families.
-- **Status:** onboarding orchestration, explicit policy acceptance, PostgreSQL transactional adapter, and verified-session completion route implemented; production database credentials and deployment verification pending.
+- **Status:** onboarding orchestration, explicit policy acceptance, PostgreSQL transactional adapter, verified-session completion route, and personal-profile setup screen implemented; legal text remains draft and production onboarding is gated pending legal approval.
 
 ## Education identities — private future capability
 
