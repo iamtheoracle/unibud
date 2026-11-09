@@ -19,6 +19,7 @@ type ProfileRecord = {
     status: string;
   };
 };
+type IncomingInvitation = { id:string; profileId:string; profileName:string; profileHandle:string; ownerDisplayName:string; ownerHandle:string; role:string; canSwitchToProfile:boolean; createdAt:string; expiresAt:string };
 type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
 
 const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "professional", "student", "staff", "operator", "viewer"];
@@ -45,7 +46,8 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   const [visibility, setVisibility] = useState<"private" | "limited" | "public">("private");
   const [selectedDelegationProfile, setSelectedDelegationProfile] = useState("");
   const [delegates, setDelegates] = useState<ProfileRecord[]>([]);
-  const [delegateAccountId, setDelegateAccountId] = useState("");
+  const [inviteeHandle, setInviteeHandle] = useState("");
+  const [incomingInvitations, setIncomingInvitations] = useState<IncomingInvitation[]>([]);
   const [delegateRole, setDelegateRole] = useState<DelegateRole>("editor");
   const [canDelegateSwitch, setCanDelegateSwitch] = useState(false);
 
@@ -67,6 +69,19 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   }, []);
 
   useEffect(() => { void loadProfiles(); }, [loadProfiles]);
+
+  const loadIncomingInvitations = useCallback(async () => {
+    try {
+      const response = await fetch("/api/profile-invitations", { cache: "no-store" });
+      if (!response.ok) throw new Error(await readError(response));
+      const body = await response.json() as { invitations: IncomingInvitation[] };
+      setIncomingInvitations(body.invitations ?? []);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not load invitations.");
+    }
+  }, []);
+
+  useEffect(() => { void loadIncomingInvitations(); }, [loadIncomingInvitations]);
 
   const loadDelegates = useCallback(async (profileId: string) => {
     if (!profileId) { setDelegates([]); return; }
@@ -120,16 +135,28 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       const response = await fetch("/api/profiles/delegations", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          profileId: selectedDelegationProfile, delegateAccountId: delegateAccountId.trim(),
+          profileId: selectedDelegationProfile, inviteeHandle: inviteeHandle.trim(),
           role: delegateRole, canSwitchToProfile: canDelegateSwitch
         })
       });
       if (!response.ok) throw new Error(await readError(response));
-      setDelegateAccountId(""); setNotice("Delegated access granted.");
+      setInviteeHandle(""); setNotice("Invitation sent. Access stays pending until the recipient accepts.");
       await loadDelegates(selectedDelegationProfile);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Could not grant access.");
     } finally { setBusy(false); }
+  }
+
+
+  async function respondToInvitation(invitationId:string, accept:boolean) {
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/profile-invitations", { method:"POST", headers:{"content-type":"application/json"}, body:JSON.stringify({invitationId,accept}) });
+      if(!response.ok) throw new Error(await readError(response));
+      setNotice(accept ? "Invitation accepted. The page is now available in your profile switcher." : "Invitation declined.");
+      await Promise.all([loadIncomingInvitations(),loadProfiles()]);
+    } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not respond to invitation."); }
+    finally { setBusy(false); }
   }
 
   async function revokeDelegate(delegateId: string) {
@@ -194,6 +221,19 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       </section>
 
       <section className="profile-section">
+        <div className="profile-section-heading"><div><p className="eyebrow">Your invitations</p><h2>Page access requests</h2></div><span className="profile-count">{incomingInvitations.length} pending</span></div>
+        {incomingInvitations.length===0 ? <p className="profile-muted">No pending page invitations.</p> : <div className="delegate-list">
+          {incomingInvitations.map((invitation) => <article className="delegate-row" key={invitation.id}>
+            <div><strong>{invitation.ownerDisplayName} (@{invitation.ownerHandle})</strong><small>Invited you to manage {invitation.profileName} (@{invitation.profileHandle}) as {invitation.role}. Expires {new Date(invitation.expiresAt).toLocaleDateString()}.</small></div>
+            <div className="profile-invitation-actions">
+              <button className="profile-text-action" type="button" disabled={busy} onClick={() => void respondToInvitation(invitation.id,true)}>Accept</button>
+              <button className="profile-text-action" type="button" disabled={busy} onClick={() => void respondToInvitation(invitation.id,false)}>Decline</button>
+            </div>
+          </article>)}
+        </div>}
+      </section>
+
+      <section className="profile-section">
         <div className="profile-section-heading"><div><p className="eyebrow">Shared management</p><h2>Page administrators</h2></div></div>
         <p className="profile-muted">Grant access to a page or community without sharing your personal account. A delegate only receives the selected profile access.</p>
         {ownedProfiles.filter((item) => item.profile.kind === "page_community").length === 0 ? <p className="profile-empty">Create a page/community profile before adding administrators.</p> : <>
@@ -202,10 +242,11 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
             {delegates.length === 0 ? <p className="profile-muted">No delegated members for this profile yet.</p> : delegates.map((delegate) => <article className="delegate-row" key={delegate.accountId}><div><strong>Account {delegate.accountId}</strong><small>Access to {delegate.profile.displayName} · {delegate.membershipStatus}</small></div><button className="profile-text-action" type="button" disabled={busy} onClick={() => void revokeDelegate(delegate.accountId)}>Revoke</button></article>)}
           </div>
           <form className="profile-form delegate-form" onSubmit={grantDelegate}>
-            <label>Delegate’s UNIBUD account ID<input value={delegateAccountId} onChange={(event) => setDelegateAccountId(event.target.value)} required placeholder="Account ID supplied by the person" /></label>
-            <label>Role<select value={delegateRole} onChange={(event) => setDelegateRole(event.target.value as DelegateRole)}>{roleOptions.map((role, index) => <option key={role + index} value={role}>{role}</option>)}</select></label>
-            <label className="profile-check"><input type="checkbox" checked={canDelegateSwitch} onChange={(event) => setCanDelegateSwitch(event.target.checked)} /> Allow this delegate to switch into this page profile</label>
-            <button className="profile-secondary" type="submit" disabled={busy}>Grant page access</button>
+            <label>Find a UNIBUD identity<input value={inviteeHandle} onChange={(event) => setInviteeHandle(event.target.value)} required minLength={3} maxLength={31} placeholder="@username" /></label>
+            <small>Use the person’s UNIBUD personal-profile handle. Their account ID stays private. They must accept before access is activated.</small>
+            <label>Role<select value={delegateRole} onChange={(event) => setDelegateRole(event.target.value as DelegateRole)}>{roleOptions.map((role) => <option key={role} value={role}>{role}</option>)}</select></label>
+            <label className="profile-check"><input type="checkbox" checked={canDelegateSwitch} onChange={(event) => setCanDelegateSwitch(event.target.checked)} /> Allow this person to switch into this page profile after accepting</label>
+            <button className="profile-secondary" type="submit" disabled={busy}>Send invitation</button>
           </form>
         </>}
       </section>
