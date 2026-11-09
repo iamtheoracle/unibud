@@ -15,7 +15,9 @@ import type {
   ProfileInvitationInput,
   ProfileInvitationRecord,
   ProfileRepository,
-  ProfileLifecycleEvent
+  ProfileLifecycleEvent,
+  ProfileLifecycleNotification,
+  ProfileClosurePreflight
 } from "./profile-service-core";
 
 interface ProfileJoinRow {
@@ -73,6 +75,29 @@ export class ProfileProcedureRepository implements ProfileRepository {
       createSignedAccountContextFromEnvironment(accountId),
       work
     );
+  }
+
+  async listLifecycleNotifications(accountId: string): Promise<ProfileLifecycleNotification[]> {
+    return this.inAccountContext(accountId, async client => {
+      const result=await client.query<{id:string;profile_id:string;event_type:ProfileLifecycleNotification["eventType"];created_at:Date;read_at:Date|null;details:Record<string,unknown>}>(
+        "SELECT * FROM public.profile_list_lifecycle_notifications($1)",[accountId]);
+      return result.rows.map(row=>({id:row.id,profileId:row.profile_id,eventType:row.event_type,createdAt:row.created_at.toISOString(),readAt:row.read_at?.toISOString()??null,details:row.details}));
+    });
+  }
+
+  async markLifecycleNotificationRead(accountId: string, notificationId: string): Promise<boolean> {
+    return this.inAccountContext(accountId, async client => {
+      const result=await client.query<{marked:boolean}>("SELECT public.profile_mark_lifecycle_notification_read($1,$2) AS marked",[accountId,notificationId]);
+      return result.rows[0]?.marked===true;
+    });
+  }
+
+  async getAccountClosurePreflight(accountId: string): Promise<ProfileClosurePreflight> {
+    return this.inAccountContext(accountId, async client => {
+      const result=await client.query<{preflight:ProfileClosurePreflight}>("SELECT public.account_profile_closure_preflight($1) AS preflight",[accountId]);
+      if(!result.rows[0]) throw new Error("Account closure preflight returned no result.");
+      return result.rows[0].preflight;
+    });
   }
 
   async listArchivedOwnedProfiles(ownerAccountId: string): Promise<ProfileAccessRecord[]> {
