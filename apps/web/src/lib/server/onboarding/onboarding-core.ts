@@ -1,4 +1,4 @@
-import { SessionService } from "../auth/session-core";
+import { SessionService } from "../auth/session-core.ts";
 
 export interface OnboardingProfile {
   id: string;
