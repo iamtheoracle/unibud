@@ -57,6 +57,33 @@ GRANT SELECT ON public.authentication_identities TO unibud_profile_owner;
 GRANT DELETE ON public.profile_memberships TO unibud_profile_owner;
 GRANT SELECT,UPDATE ON public.resource_grants TO unibud_profile_owner;
 
+-- Extend owner-visible lifecycle history to include transfer requests,
+-- recipient consent, cancellation and completion audit events.
+CREATE OR REPLACE FUNCTION public.profile_list_lifecycle_history(
+  p_profile_id UUID,p_owner_account_id UUID
+)
+RETURNS TABLE(
+  id UUID,occurred_at TIMESTAMPTZ,action TEXT,outcome TEXT,reason_code TEXT,event_data JSONB
+)
+LANGUAGE plpgsql STABLE SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+BEGIN
+ IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
+  OR NOT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m
+   ON m.profile_id=p.id AND m.account_id=p_owner_account_id AND m.relationship='owner'
+    AND m.role='owner' AND m.status='active'
+   WHERE p.id=p_profile_id AND p.owner_account_id=p_owner_account_id)
+ THEN RAISE EXCEPTION 'Only the active profile owner may view lifecycle history' USING ERRCODE='42501'; END IF;
+ RETURN QUERY SELECT e.id,e.occurred_at,e.action,e.outcome,e.reason_code,e.event_data
+ FROM public.security_audit_events e
+ WHERE e.resource_type='profile' AND e.resource_id=p_profile_id AND e.application_id='unibud'
+  AND (e.action IN('profile.archive','profile.restore') OR e.action LIKE 'profile.ownership_transfer.%')
+ ORDER BY e.occurred_at DESC;
+END;
+$function$;
+ALTER FUNCTION public.profile_list_lifecycle_history(UUID,UUID) OWNER TO unibud_profile_owner;
+
 -- The immutable-owner trigger permits a change only while executing the
 -- dedicated SECURITY DEFINER transfer procedure under its non-login owner.
 CREATE OR REPLACE FUNCTION public.reject_profile_owner_change()
