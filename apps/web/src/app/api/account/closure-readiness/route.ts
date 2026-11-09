@@ -21,8 +21,14 @@ export async function GET(request: NextRequest) {
     ]);
 
     const owned = accessible.filter((entry) => entry.relationship === "owner" && entry.profile.ownerAccountId === accountId);
-    const delegatedLists = await Promise.all(owned.map((entry) => profiles.listDelegatedAccess(accountId, entry.profile.id)));
-    const outgoingLists = await Promise.all(owned.map((entry) => profiles.listOutgoingOwnershipTransfers(accountId, entry.profile.id)));
+    const allOwned = [...owned, ...archived];
+    const [delegatedLists, outgoingLists] = await Promise.all([
+      Promise.all(allOwned.map((entry) => profiles.listDelegatedAccess(accountId, entry.profile.id))),
+      Promise.all(allOwned.map(async (entry) => ({
+        profile: entry.profile,
+        transfers: await profiles.listOutgoingOwnershipTransfers(accountId, entry.profile.id)
+      })))
+    ]);
 
     const snapshot: ClosureReadinessSnapshot = {
       preflight,
@@ -42,13 +48,11 @@ export async function GET(request: NextRequest) {
         transferId: entry.transferId, profileName: entry.profileName,
         profileHandle: entry.profileHandle, ownerHandle: entry.ownerHandle, expiresAt: entry.expiresAt
       })),
-      outgoingTransfers: outgoingLists.flat().map((entry) => ({
-        profileId: owned.find((profile) => profile.profile.id === entry.transferId)?.profile.id ?? "",
-        profileName: owned.find((profile) => profile.profile.id === entry.transferId)?.profile.displayName ?? "Profile",
-        profileHandle: owned.find((profile) => profile.profile.id === entry.transferId)?.profile.handle ?? "",
+      outgoingTransfers: outgoingLists.flatMap(({ profile, transfers }) => transfers.map((entry) => ({
+        profileId: profile.id, profileName: profile.displayName, profileHandle: profile.handle,
         transferId: entry.transferId, recipientHandle: entry.recipientHandle,
         status: entry.status, expiresAt: entry.expiresAt
-      }))
+      })))
     };
     const readiness = buildClosureReadiness(snapshot);
     return NextResponse.json({ ok: true, readiness, snapshot }, { headers: { "Cache-Control": "no-store" } });
