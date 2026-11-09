@@ -224,6 +224,7 @@ try {
     await page.getByLabel("Recipient's UNIBUD username").fill("@new.owner");
     await page.getByLabel("Account email").fill("owner@example.com");
     await page.getByLabel("Account password").fill("owner-password");
+    await page.getByText("Eligible to request transfer").waitFor();
     await page.getByRole("button", { name: "Request ownership transfer" }).click();
     await page.getByText("Transfer request sent. Ownership has not changed; the recipient must accept and you must finalize it.").waitFor();
     assert.deepEqual(requestPayload, { recipientHandle: "@new.owner", channel: "email", identifier: "owner@example.com", password: "owner-password" });
