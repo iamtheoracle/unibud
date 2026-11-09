@@ -9,6 +9,8 @@ export async function GET(request:NextRequest){
   const {sessions,profiles}=createConfiguredIdentityServices();
   const validation=await sessions.validate(token);
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+  const profileId=new URL(request.url).searchParams.get("profileId");
+  if(profileId) return NextResponse.json({ok:true,invitations:await profiles.listOutgoingInvitations(validation.account.id,profileId)});
   return NextResponse.json({ok:true,invitations:await profiles.listIncomingInvitations(validation.account.id)});
  }catch(error){return routeError(error);}
 }
@@ -26,5 +28,21 @@ export async function POST(request:NextRequest){
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
   const responded=await profiles.respondToInvitation(validation.account.id,body.invitationId,body.accept);
   return NextResponse.json({ok:responded},{status:responded?200:404});
+ }catch(error){return routeError(error);}
+}
+
+export async function DELETE(request:NextRequest){
+ if(!hasSameOrigin(request)) return NextResponse.json({ok:false,error:"Forbidden."},{status:403});
+ const token=readSessionCookie(request);
+ if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+ const body=await readJsonObject(request);
+ if(!body||typeof body.invitationId!=="string")
+  return NextResponse.json({ok:false,error:"Invalid invitation cancellation."},{status:400});
+ try{
+  const {sessions,profiles}=createConfiguredIdentityServices();
+  const validation=await sessions.validate(token);
+  if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+  const cancelled=await profiles.cancelInvitation(validation.account.id,body.invitationId);
+  return NextResponse.json({ok:cancelled},{status:cancelled?200:404});
  }catch(error){return routeError(error);}
 }
