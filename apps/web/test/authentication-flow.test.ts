@@ -86,18 +86,21 @@ test("password recovery response does not reveal whether an identity exists",asy
  const absent=await service.requestRecovery({channel:"email",identifier:"nobody@example.com",now});
  auth.recovery={accountId:"10000000-0000-4000-8000-000000000001",identityId:"20000000-0000-4000-8000-000000000001",channel:"email",destination:"person@example.com"};
  const present=await service.requestRecovery({channel:"email",identifier:"person@example.com",now});
- assert.deepEqual(absent,{ok:true,state:"accepted"});
- assert.deepEqual(present,{ok:true,state:"accepted"});
+ assert.equal(absent.ok,true);assert.equal(present.ok,true);
+ assert.equal(absent.state,"accepted");assert.equal(present.state,"accepted");
+ assert.equal(typeof absent.challengeId,"string");assert.equal(typeof present.challengeId,"string");
+ assert.notEqual(absent.challengeId,present.challengeId);
  assert.equal(challengeRepo.stored.size,1);
+ assert.equal(challengeRepo.stored.has(present.challengeId!),true);
+ assert.equal(challengeRepo.stored.has(absent.challengeId!),false);
 });
 
 test("verified password recovery stores a new adaptive verifier through the atomic repository operation",async()=>{
  const {service,auth,challengeRepo}=makeService();
  auth.challengeAccount="10000000-0000-4000-8000-000000000001";
  auth.recovery={accountId:auth.challengeAccount,identityId:"20000000-0000-4000-8000-000000000001",channel:"email",destination:"person@example.com"};
- await service.requestRecovery({channel:"email",identifier:"person@example.com",now});
- const latest=[...challengeRepo.stored.values()].at(-1)!;
- const result=await service.completeRecovery({challengeId:latest.id,code:challengeRepo.code,newPassword:"a much stronger replacement password",now});
+ const recovery=await service.requestRecovery({channel:"email",identifier:"person@example.com",now});
+ const result=await service.completeRecovery({challengeId:recovery.challengeId!,code:challengeRepo.code,newPassword:"a much stronger replacement password",now});
  assert.deepEqual(result,{ok:true,state:"accepted"});
  assert.match(auth.resetHash??"",/^scrypt\$/);
 });
