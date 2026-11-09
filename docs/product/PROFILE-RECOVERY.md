@@ -6,7 +6,7 @@ Archiving is a reversible visibility/lifecycle state, not deletion, transfer, re
 
 Only the authenticated account that owns a Creator or Page/Community profile can archive or restore it. Delegated administrators, moderators, editors, and members cannot perform owner lifecycle actions. The personal profile is not archivable through this flow.
 
-Ownership is immutable in the current implementation. A future transfer must be a separate, explicit workflow with verified consent from the current owner and recipient, eligibility checks, conflict handling, a complete grant/session review, and durable audit history. No archive, restore, account closure, or administrator role can imply transfer.
+Ownership cannot be changed directly. A verified two-party transfer is implemented as a separate, explicit workflow with consent from the current owner and recipient, eligibility checks, grant/session review, and durable audit history. No archive, restore, account closure, or administrator role can imply transfer.
 
 ## Access preservation
 
@@ -45,4 +45,4 @@ Permanent profile deletion is not implemented. It must not be represented as arc
 
 ## Verification
 
-Migrations 0015–0017 add PostgreSQL lifecycle procedures, notifications, ownership immutability, database-enforced lifecycle state transitions, automatic cancellation of open transfers when a profile becomes inactive, account-closure guards, and two-party ownership transfer. Transfer requires fresh password reauthentication by both parties and owner reauthentication again at finalization. Service, PostgreSQL and browser tests cover transfer eligibility, consent, ownership mutation, stale-grant revocation, session-context clearing, audit history and account-access safeguards. CI verification for the latest transfer milestone is pending; no production deployment is implied.
+Migrations 0015–0017 add PostgreSQL lifecycle procedures, notifications, ownership immutability, database-enforced lifecycle state transitions, automatic cancellation of open transfers when a profile becomes inactive, account-closure guards, and two-party ownership transfer. Transfer requires fresh password reauthentication by both parties and owner reauthentication again at finalization. Service, PostgreSQL and browser tests cover transfer eligibility, consent, ownership mutation, stale-grant revocation, session-context clearing, audit history and account-access safeguards. CI verification is being run against the current foundation branch; no production deployment is implied.
