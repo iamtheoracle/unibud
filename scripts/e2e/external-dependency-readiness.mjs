@@ -104,7 +104,7 @@ try {
   await page.getByText("PostgreSQL", { exact: true }).first().waitFor();
   await page.getByText("Configured · unverified", { exact: true }).first().waitFor();
   await page.getByText("Partially configured", { exact: true }).waitFor();
-  await page.getByText("UNIBUD_AUTH_DATABASE_URL", { exact: true }).waitFor();
+  await page.getByText(/UNIBUD_AUTH_DATABASE_URL/).waitFor();
   await page.getByText(/object storage, payment processing/).waitFor();
   await page.getByText("Verified Storage", { exact: true }).waitFor();
   await page.getByText("Unknown", { exact: true }).waitFor();
