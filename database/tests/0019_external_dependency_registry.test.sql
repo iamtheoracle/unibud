@@ -75,6 +75,20 @@ BEGIN
    RAISE EXCEPTION 'Repository declarations must not imply provider verification or deletion capability';
  END IF;
 
+ IF has_table_privilege('unibud_app','public.account_external_dependency_refs','SELECT')
+   OR has_table_privilege('unibud_app','public.account_external_dependency_refs','INSERT')
+ THEN
+   RAISE EXCEPTION 'Application role must not directly read or write opaque external references';
+ END IF;
+
+ BEGIN
+   UPDATE public.external_dependency_integrations
+   SET supports_delete = TRUE
+   WHERE integration_key = 'verification_delivery_gateway';
+   RAISE EXCEPTION 'Unverified provider unexpectedly gained deletion capability';
+ EXCEPTION WHEN check_violation THEN NULL;
+ END;
+
  IF v::text LIKE '%' || encode(decode(repeat('a1',32),'hex'),'hex') || '%' THEN
    RAISE EXCEPTION 'Opaque external reference digest leaked into discovery response';
  END IF;
