@@ -43,7 +43,9 @@ BEGIN
 END;
 $roles$;
 
+GRANT SELECT ON accounts TO unibud_profile_owner;
 GRANT SELECT, INSERT, UPDATE ON profiles, profile_memberships, account_sessions TO unibud_profile_owner;
+GRANT USAGE ON SCHEMA unibud_private TO unibud_profile_owner;
 GRANT EXECUTE ON FUNCTION unibud_private.current_account_id() TO unibud_profile_owner;
 GRANT CREATE ON SCHEMA public TO unibud_profile_owner;
 
@@ -112,8 +114,8 @@ AS $function$
 DECLARE membership_id UUID := gen_random_uuid();
 BEGIN
   IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
-     OR p_delegate_account_id = p_owner_account_id
-     OR p_role NOT IN ('admin','moderator','editor','member','seller','provider','professional','student','staff','operator','viewer')
+     OR p_delegate_account_id IS NULL OR p_delegate_account_id = p_owner_account_id
+     OR p_role IS NULL OR p_role NOT IN ('admin','moderator','editor','member','seller','provider','professional','student','staff','operator','viewer')
      OR NOT EXISTS (
        SELECT 1 FROM public.profiles p
        JOIN public.profile_memberships owner_membership
@@ -218,7 +220,8 @@ BEGIN
   WHERE id=p_session_id AND account_id=p_account_id
     AND status='active' AND revoked_at IS NULL
     AND idle_expires_at > clock_timestamp()
-    AND absolute_expires_at > clock_timestamp();
+    AND absolute_expires_at > clock_timestamp()
+    AND EXISTS (SELECT 1 FROM public.accounts a WHERE a.id=p_account_id AND a.status='active');
   RETURN FOUND;
 END;
 $function$;
