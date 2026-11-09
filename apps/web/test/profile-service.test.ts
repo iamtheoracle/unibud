@@ -112,3 +112,21 @@ test("requireAction denies unauthorized profile actions at the server boundary",
  await assert.rejects(()=>service.requireAction(delegate,profileId,"members.view"),ProfileAccessDeniedError);
  await assert.rejects(()=>service.requireAction("","", "profile.read"),ProfileAccessDeniedError);
 });
+
+
+test("public profile invitations reject future education and institutional roles",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"page_community"}};
+ await assert.rejects(
+  ()=>service.inviteDelegateByHandle(owner,{profileId,inviteeHandle:"future.tutor",role:"tutor" as never,canSwitchToProfile:false}),
+  /supported public page role/
+ );
+ await assert.rejects(
+  ()=>service.inviteDelegateByHandle(owner,{profileId,inviteeHandle:"future.student",role:"student" as never,canSwitchToProfile:false}),
+  /supported public page role/
+ );
+ await assert.rejects(
+  ()=>service.inviteDelegateByHandle(owner,{profileId,inviteeHandle:"future.staff",role:"staff" as never,canSwitchToProfile:false}),
+  /supported public page role/
+ );
+});
