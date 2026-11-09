@@ -55,7 +55,7 @@ export class OnboardingProcedureRepository implements OnboardingRepository {
 
         if (!profile) {
           result = await client.query<ProfileRow>(
-            "SELECT * FROM public.profile_create_owned($1,$2,$3,$4,$5,$6,$7,$8)",
+            "SELECT profile_id AS id,kind,handle,display_name,status FROM public.profile_create_owned($1,$2,$3,$4,$5,$6,$7,$8)",
             [
               randomUUID(),randomUUID(),accountId,"personal",
               input.handle,input.handle,input.displayName,"private"
