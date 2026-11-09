@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ProfileAccessDeniedError, ProfileService, type ProfileRepository } from "../src/lib/server/profiles/profile-service-core.ts";
+import { ProfileAccessDeniedError, ProfileService, type DelegatedProfileGrantInput, type ProfileCreateInput, type ProfileRepository } from "../src/lib/server/profiles/profile-service-core.ts";
 import type { ProfileAccessRecord } from "../../../packages/contracts/src/profile.ts";
 
 const owner="10000000-0000-4000-8000-000000000001";
@@ -12,8 +12,8 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
 }
 class Repo implements ProfileRepository{
  record=access(); grants=0; revoked=0;
- async createOwnedProfile(accountId:string,input:any){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
- async grantDelegatedAccess(_owner:string,input:any){this.grants++;return access(input.delegateAccountId,"delegated",input.canSwitchToProfile);}
+ async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
+ async grantDelegatedAccess(_owner:string,input:DelegatedProfileGrantInput){this.grants++;return access(input.delegateAccountId,"delegated",input.canSwitchToProfile);}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async findProfileAccess(accountId:string){return this.record.accountId===accountId?this.record:undefined;}
