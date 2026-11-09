@@ -23,6 +23,17 @@ One account may own a personal profile, one or more creator profiles, and manage
 - Sensitive profile actions are audited.
 - Public visibility, discoverability, and contact permissions are independently configurable where appropriate.
 
+## Private education identities — not public profiles
+
+Tutor, student, and institution identities belong to a separate education domain. They must not be modelled as additional public profile families.
+
+- A student has a distinct student assignment and student-specific permissions.
+- A tutor has a distinct tutor assignment, approval state, teaching scope, and tutor-specific permissions.
+- An account can hold both only through separately authorised assignments; one role does not imply the other.
+- An institution is a private education record in the current phase. It may be authorised to manage student records and tutor records separately.
+- Institution, tutor, and student records are not publicly discoverable or listed in the current release.
+- A future public-facing institution page, if desired, is a separate deliberate page/community profile with separate ownership, visibility and publication approval. It does not expose private education records.
+
 ## Additional specialised identities
 
 Seller, school, service provider, professional, and staff identities may be specialised profile capabilities. They must not be collapsed into one overloaded personal profile or silently inherit permissions.
