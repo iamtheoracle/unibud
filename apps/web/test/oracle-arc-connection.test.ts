@@ -124,6 +124,17 @@ test("invalid content type and malformed JSON are rejected without exposing upst
   assert.equal(JSON.stringify(jsonResult).includes("not-json"), false);
 });
 
+test("oversized upstream status bodies are rejected", async t => {
+  configure(baseConfig, t);
+  fakeFetch(async () => new Response("x".repeat(8193), {
+    status: 200,
+    headers: { "content-type": "application/json" }
+  }), t);
+  const result = await checkOracleArcConnection();
+  assert.equal(result.state, "misconfigured");
+  assert.equal(result.inference, "unknown");
+});
+
 test("unauthorized credentials and non-success provider responses remain distinct", async t => {
   configure(baseConfig, t);
   fakeFetch(async () => statusResponse({ detail: "private auth details" }, 401), t);
