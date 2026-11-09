@@ -84,12 +84,15 @@ $archive_cancel$;
 
 -- Archiving suspends active delegates; restoration never silently reactivates them.
 DO $delegate_archive$
-DECLARE v_status TEXT; v_owner_notice INTEGER; v_delegate_notice INTEGER; v_invitation_status TEXT; v_invite_notice INTEGER;
+DECLARE v_status TEXT; v_owner_notice INTEGER; v_delegate_notice INTEGER; v_invitation_status TEXT; v_invite_notice INTEGER; v_grant_revoked TIMESTAMPTZ;
 BEGIN
  INSERT INTO public.profile_invitations(id,profile_id,owner_account_id,invitee_account_id,role,status,expires_at)
  VALUES('97000000-0000-4000-8000-000000000002','37000000-0000-4000-8000-000000000007',
   '17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000002',
   'editor','pending',clock_timestamp()+interval '1 day');
+ INSERT INTO public.resource_grants(id,subject_account_id,application_id,resource_type,resource_id,role,actions,issuer_account_id)
+ VALUES('87000000-0000-4000-8000-000000000002','17000000-0000-4000-8000-000000000003','unibud','profile',
+  '37000000-0000-4000-8000-000000000007','editor',ARRAY['read','update'],'17000000-0000-4000-8000-000000000001');
  PERFORM public.profile_archive_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
  SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
  IF v_status<>'suspended' THEN RAISE EXCEPTION 'Archive did not suspend delegated access'; END IF;
@@ -101,10 +104,11 @@ BEGIN
  SELECT count(*) INTO v_delegate_notice FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000003'
   AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='delegated_access_suspended';
  SELECT status INTO v_invitation_status FROM public.profile_invitations WHERE id='97000000-0000-4000-8000-000000000002';
+ SELECT revoked_at INTO v_grant_revoked FROM public.resource_grants WHERE id='87000000-0000-4000-8000-000000000002';
  SELECT count(*) INTO v_invite_notice FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000002'
   AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='profile_invitation_cancelled_by_archive';
- IF v_owner_notice<>1 OR v_delegate_notice<>1 OR v_invitation_status<>'cancelled' OR v_invite_notice<>1 THEN
-  RAISE EXCEPTION 'Archive must notify owner, suspended delegate and cancelled invitee';
+ IF v_owner_notice<>1 OR v_delegate_notice<>1 OR v_invitation_status<>'cancelled' OR v_invite_notice<>1 OR v_grant_revoked IS NULL THEN
+  RAISE EXCEPTION 'Archive must revoke scoped grants and notify owner, delegate and cancelled invitee';
  END IF;
  IF NOT EXISTS(SELECT 1 FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000003'
   AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='delegated_access_review_required') THEN
