@@ -25,7 +25,6 @@ export interface ProfileRepository {
   revokeDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string): Promise<boolean>;
   listAccessibleProfiles(accountId: string): Promise<ProfileAccessRecord[]>;
   findProfileAccess(accountId: string, profileId: string): Promise<ProfileAccessRecord | undefined>;
-  setActiveContext(accountId: string, sessionId: string, profileId: string, contextVersion: string): Promise<boolean>;
   setActiveProfileContext(accountId: string, sessionId: string, profileId: string, contextVersion: string): Promise<boolean>;
 }
 
