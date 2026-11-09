@@ -31,7 +31,7 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry'
  set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('9c',32),'hex'),'sha256'),'hex'),true) FROM x;
 SET LOCAL ROLE unibud_app;
 DO $archive_restore$
-DECLARE v_status TEXT; v_history_count INTEGER;
+DECLARE v_status TEXT; v_history_count INTEGER; v_notification_count INTEGER;
 BEGIN
  IF public.profile_archive_owned('23000000-0000-4000-8000-000000000002','13000000-0000-4000-8000-000000000001') IS NOT TRUE THEN
   RAISE EXCEPTION 'Owner could not archive creator profile';
@@ -49,6 +49,8 @@ BEGIN
  SELECT count(*) INTO v_history_count FROM public.profile_list_lifecycle_history(
   '23000000-0000-4000-8000-000000000002','13000000-0000-4000-8000-000000000001');
  IF v_history_count<>2 THEN RAISE EXCEPTION 'Expected append-only archive and restore history, got %',v_history_count; END IF;
+ SELECT count(*) INTO v_notification_count FROM public.profile_list_lifecycle_notifications('13000000-0000-4000-8000-000000000001') WHERE profile_id='23000000-0000-4000-8000-000000000002';
+ IF v_notification_count<>2 THEN RAISE EXCEPTION 'Expected archive and restore notifications, got %',v_notification_count; END IF;
  BEGIN
   PERFORM public.profile_archive_owned('23000000-0000-4000-8000-000000000001','13000000-0000-4000-8000-000000000001');
   RAISE EXCEPTION 'Personal identity archive was unexpectedly allowed';
