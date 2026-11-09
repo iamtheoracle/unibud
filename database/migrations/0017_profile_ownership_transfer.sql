@@ -306,22 +306,9 @@ DECLARE v_recipient UUID; v_handle TEXT; v_profile public.profiles%ROWTYPE; v_ow
 BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
     OR p_recipient_handle IS NULL OR length(trim(p_recipient_handle)) NOT BETWEEN 3 AND 30
-    THEN
-  RAISE EXCEPTION 'Invalid ownership transfer request' USING ERRCODE='22023';
- END IF;
- PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
- UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp()
-  WHERE profile_id=p_profile_id AND status IN('pending_recipient','recipient_accepted') AND expires_at<=clock_timestamp();
- UPDATE public.profile_invitations SET status='expired',responded_at=clock_timestamp()
-  WHERE profile_id=p_profile_id AND status='pending' AND expires_at<=clock_timestamp();
- IF NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active') THEN
-  RAISE EXCEPTION 'Active owner account required' USING ERRCODE='42501';
- END IF;
- SELECT * INTO v_profile FROM public.profiles WHERE id=p_profile_id AND owner_account_id=p_owner_account_id FOR UPDATE;
- IF NOT FOUND OR v_profile.kind NOT IN('creator','page_community') OR v_profile.status<>'active'
-  OR NOT EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id
-   AND m.account_id=p_owner_account_id AND m.relationship='owner' AND m.role='owner' AND m.status='active')
- THEN RAISE EXCEPTION 'Only the owner of an active creator or page/community profile may transfer it' USING ERRCODE='42501'; END IF;
+ THEN RAISE EXCEPTION 'Invalid ownership transfer request' USING ERRCODE='22023'; END IF;
+
+ -- Resolve the intended account, then lock both participants in a stable order.
  SELECT a.id,p.handle INTO v_recipient,v_handle
  FROM public.profiles p JOIN public.accounts a ON a.id=p.owner_account_id
  WHERE p.kind='personal' AND p.status='active' AND a.status='active'
@@ -329,8 +316,33 @@ BEGIN
  IF v_recipient IS NULL OR v_recipient=p_owner_account_id
   OR NOT EXISTS(SELECT 1 FROM public.authentication_identities i
    WHERE i.account_id=v_recipient AND i.status='active' AND i.verified_at IS NOT NULL)
-  OR EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id AND m.account_id=v_recipient)
  THEN RAISE EXCEPTION 'Recipient identity is not eligible for this transfer' USING ERRCODE='P0002'; END IF;
+
+ PERFORM pg_advisory_xact_lock(LEAST(hashtextextended(p_owner_account_id::text,0),hashtextextended(v_recipient::text,0)));
+ PERFORM pg_advisory_xact_lock(GREATEST(hashtextextended(p_owner_account_id::text,0),hashtextextended(v_recipient::text,0)));
+ SELECT * INTO v_profile FROM public.profiles WHERE id=p_profile_id AND owner_account_id=p_owner_account_id FOR UPDATE;
+ IF NOT FOUND OR v_profile.kind NOT IN('creator','page_community') OR v_profile.status<>'active'
+  OR NOT EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id
+   AND m.account_id=p_owner_account_id AND m.relationship='owner' AND m.role='owner' AND m.status='active')
+ THEN RAISE EXCEPTION 'Only the owner of an active creator or page/community profile may transfer it' USING ERRCODE='42501'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active')
+  OR NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=v_recipient AND status='active')
+  OR NOT EXISTS(SELECT 1 FROM public.authentication_identities i
+   WHERE i.account_id=v_recipient AND i.status='active' AND i.verified_at IS NOT NULL)
+  OR NOT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m
+   ON m.profile_id=p.id AND m.account_id=v_recipient AND m.relationship='owner'
+    AND m.role='owner' AND m.status='active'
+   WHERE p.owner_account_id=v_recipient AND p.kind='personal' AND p.status='active')
+ THEN RAISE EXCEPTION 'Owner or recipient account eligibility changed; authenticate again and retry' USING ERRCODE='23514'; END IF;
+ IF EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id AND m.account_id=v_recipient)
+ THEN RAISE EXCEPTION 'Recipient identity is not eligible for this transfer' USING ERRCODE='P0002'; END IF;
+
+ -- Expire stale rows only after participant/profile locks serialize this request.
+ UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp()
+  WHERE profile_id=p_profile_id AND status IN('pending_recipient','recipient_accepted') AND expires_at<=clock_timestamp();
+ UPDATE public.profile_invitations SET status='expired',responded_at=clock_timestamp()
+  WHERE profile_id=p_profile_id AND status='pending' AND expires_at<=clock_timestamp();
+
  SELECT count(*) INTO v_owned FROM public.profiles p JOIN public.profile_memberships m
  ON m.profile_id=p.id AND m.account_id=p_owner_account_id AND m.relationship='owner'
   AND m.role='owner' AND m.status='active'
