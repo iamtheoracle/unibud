@@ -18,6 +18,7 @@ class Repo implements ProfileRepository{
  async getOwnershipTransferPreflight(){return {profileId,profileKind:"creator" as const,profileStatus:"active" as const,activeOwnedProfiles:2,activeDelegatedRelationships:0,pendingInvitations:0,openTransferRequests:0,personalIdentityAvailable:true,canTransfer:true};}
  async requestOwnershipTransfer(_owner:string,_profile:string,recipientHandle:string,id:string){return {id,recipientHandle};}
  async listIncomingOwnershipTransfers(){return [{transferId:"90000000-0000-4000-8000-000000000001",profileId,profileName:"Creator",profileHandle:"creator",ownerHandle:"owner",createdAt:new Date(0).toISOString(),expiresAt:new Date(Date.now()+10000).toISOString()}];}
+ async listOutgoingOwnershipTransfers(){return [{transferId:"90000000-0000-4000-8000-000000000001",recipientHandle:"recipient",status:"recipient_accepted" as const,createdAt:new Date(0).toISOString(),expiresAt:new Date(Date.now()+10000).toISOString()}];}
  async respondToOwnershipTransfer(_account:string,id:string,accept:boolean){this.invitationResponse={id,accept};return true;}
  async cancelOwnershipTransfer(){return true;}
  async completeOwnershipTransfer(){return true;}
