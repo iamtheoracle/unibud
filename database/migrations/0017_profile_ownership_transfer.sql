@@ -132,6 +132,8 @@ ALTER FUNCTION public.profile_cancel_open_transfer_on_inactive() OWNER TO unibud
 CREATE TRIGGER profiles_cancel_open_transfer_when_inactive
 AFTER UPDATE OF status ON public.profiles
 FOR EACH ROW EXECUTE FUNCTION public.profile_cancel_open_transfer_on_inactive();
+REVOKE ALL ON FUNCTION public.profile_cancel_open_transfer_on_inactive() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.reject_profile_owner_change() FROM PUBLIC;
 
 CREATE OR REPLACE FUNCTION public.profile_ownership_transfer_preflight(
  p_profile_id UUID,p_owner_account_id UUID
