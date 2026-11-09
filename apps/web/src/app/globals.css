@@ -131,3 +131,27 @@ footer { padding: 42px 0 30px; color: var(--muted); font-size: 12px; }
 .profile-check{grid-column:1/-1;display:flex!important;flex-direction:row!important;align-items:flex-start;font-weight:500!important;line-height:1.5}
 .profile-check input{margin-top:2px;accent-color:var(--accent)}
 @media(max-width:620px){.profile-intro{padding:58px 0 40px}.profile-form{grid-template-columns:1fr}.profile-form label:has(+button){grid-column:auto}.profile-card{align-items:flex-start;flex-wrap:wrap}.profile-action{margin-left:59px}.profile-section-heading h2{font-size:23px}}
+
+
+.profile-experience{margin:0 0 42px;padding:25px;border:1px solid var(--line);border-radius:16px;background:#fff}
+.profile-experience-head{display:flex;align-items:center;gap:16px}
+.profile-experience-avatar{width:62px;height:62px;flex:0 0 62px;display:grid;place-items:center;border-radius:16px;background:#e8f0ea;color:var(--accent);font-size:25px;font-weight:750}
+.profile-experience-creator .profile-experience-avatar{border-radius:50%;background:#f1ece4;color:#735d3b}
+.profile-experience-page_community .profile-experience-avatar{border-radius:12px;background:#e9edf4;color:#425b80}
+.profile-experience-heading{min-width:0;flex:1}
+.profile-experience-heading .eyebrow{margin:0 0 6px}
+.profile-experience-heading h2{margin:0;font-size:25px;letter-spacing:-.045em}
+.profile-experience-heading p:last-child{margin:5px 0 0;color:var(--muted);font-size:12px}
+.profile-experience-kind{padding:7px 10px;border:1px solid var(--line);border-radius:99px;color:var(--muted);font-size:11px;white-space:nowrap}
+.profile-experience-purpose{max-width:690px;margin:21px 0;color:var(--muted);font-size:14px;line-height:1.7}
+.profile-experience-nav{display:flex;gap:7px;overflow-x:auto;padding:0 0 13px;border-bottom:1px solid var(--line)}
+.profile-experience-nav button{flex:0 0 auto;padding:9px 12px;border:1px solid transparent;border-radius:8px;background:#f4f6f4;color:var(--muted);font:inherit;font-size:12px;font-weight:650;cursor:pointer}
+.profile-experience-nav button.is-selected{border-color:#b7c9bc;background:#eaf1eb;color:var(--accent)}
+.profile-experience-content{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:25px 2px 5px}
+.profile-experience-content>div{max-width:610px}
+.profile-experience-content .eyebrow{margin:0 0 7px}
+.profile-experience-content h3{margin:0 0 9px;font-size:21px;letter-spacing:-.035em}
+.profile-experience-content p:last-child{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+.profile-experience-status{padding:7px 9px;border-radius:7px;background:#edf4ee;color:#315c48;font-size:10px;font-weight:700;white-space:nowrap}
+.profile-experience-status.is-planned{background:#f3f1ec;color:#786b4e}
+@media(max-width:620px){.profile-experience{padding:18px}.profile-experience-head{align-items:flex-start;flex-wrap:wrap}.profile-experience-kind{margin-left:78px}.profile-experience-content{flex-direction:column}.profile-experience-heading h2{font-size:21px}}
