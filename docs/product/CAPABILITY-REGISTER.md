@@ -30,6 +30,10 @@ The initial repository foundation is documentation and service scaffolding. The 
 | Accessibility and localisation | Responsive layouts, accessible interaction, language/currency/time-zone support | Target |
 | Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | Target |
 
+## Education identities — private future capability
+
+Tutors, students, and institutions are distinct education-domain identities, not public profile types. An institution may hold separate, explicit authority to manage tutor records and student records. One authority never implies the other. Tutor and institution records remain private and non-discoverable in the current phase. See [Private Education Identity Boundaries](../security/EDUCATION-IDENTITY-BOUNDARIES.md). This is planned scope, not a released feature.
+
 ## Consumer and ecosystem spaces
 
 ### Connect
