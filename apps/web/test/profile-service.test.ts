@@ -18,7 +18,6 @@ class Repo implements ProfileRepository{
  async listAccessibleProfiles(){return [this.record];}
  async findProfileAccess(accountId:string){return this.record.accountId===accountId?this.record:undefined;}
  async setActiveProfileContext(){this.activeContext=true;return true;}
- async setActiveProfileContext(){return true;}
 }
 
 test("creates profiles with normalized handle and safe defaults",async()=>{
