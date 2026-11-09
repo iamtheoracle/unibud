@@ -16,7 +16,6 @@ import {
 import {
   VerificationChallengeService,
   type VerificationChannel,
-  type VerificationPurpose
 } from "./verification-core";
 
 const SESSION_IDLE_SECONDS = 30 * 60;
@@ -259,10 +258,15 @@ export class AuthService {
     };
   }
 
-  async verifyRegistration(input: { challengeId: string; code: string; now?: Date }) {
+  async verifyRegistration(input: {
+    challengeId: string;
+    code: string;
+    purpose: "email_verification" | "phone_verification";
+    now?: Date;
+  }) {
     return this.challenges.verify({
       challengeId: input.challengeId,
-      purpose: "email_verification",
+      purpose: input.purpose,
       code: input.code,
       now: input.now
     });
