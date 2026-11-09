@@ -1,6 +1,24 @@
 import { NextRequest,NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "../../../../lib/server/identity/identity-runtime";
+import { ProfileAccessDeniedError } from "../../../../lib/server/profiles/profile-service-core";
 import { hasSameOrigin,readJsonObject,readSessionCookie,routeError } from "../../../../lib/server/identity/http";
+
+export async function GET(request:NextRequest){
+ const token=readSessionCookie(request);
+ const profileId=new URL(request.url).searchParams.get("profileId");
+ if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+ if(!profileId) return NextResponse.json({ok:false,error:"A profile ID is required."},{status:400});
+ try{
+  const {sessions,profiles}=createConfiguredIdentityServices();
+  const validation=await sessions.validate(token);
+  if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+  const access=await profiles.listDelegatedAccess(validation.account.id,profileId);
+  return NextResponse.json({ok:true,delegatedAccess:access});
+ }catch(error){
+  if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
+  return routeError(error);
+ }
+}
 
 export async function POST(request:NextRequest){
  if(!hasSameOrigin(request)) return NextResponse.json({ok:false,error:"Forbidden."},{status:403});
@@ -21,7 +39,10 @@ export async function POST(request:NextRequest){
    canSwitchToProfile:body.canSwitchToProfile
   });
   return NextResponse.json({ok:true,access},{status:201});
- }catch(error){return routeError(error);}
+ }catch(error){
+  if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
+  return routeError(error);
+ }
 }
 
 export async function DELETE(request:NextRequest){
@@ -38,5 +59,8 @@ export async function DELETE(request:NextRequest){
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
   const revoked=await profiles.revokeDelegatedAccess(validation.account.id,body.profileId,body.delegateAccountId);
   return NextResponse.json({ok:revoked},{status:revoked?200:404});
- }catch(error){return routeError(error);}
+ }catch(error){
+  if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
+  return routeError(error);
+ }
 }
