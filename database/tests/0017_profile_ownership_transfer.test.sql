@@ -84,8 +84,12 @@ $archive_cancel$;
 
 -- Archiving suspends active delegates; restoration never silently reactivates them.
 DO $delegate_archive$
-DECLARE v_status TEXT; v_owner_notice INTEGER; v_delegate_notice INTEGER;
+DECLARE v_status TEXT; v_owner_notice INTEGER; v_delegate_notice INTEGER; v_invitation_status TEXT; v_invite_notice INTEGER;
 BEGIN
+ INSERT INTO public.profile_invitations(id,profile_id,owner_account_id,invitee_account_id,role,status,expires_at)
+ VALUES('97000000-0000-4000-8000-000000000002','37000000-0000-4000-8000-000000000007',
+  '17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000002',
+  'editor','pending',clock_timestamp()+interval '1 day');
  PERFORM public.profile_archive_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
  SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
  IF v_status<>'suspended' THEN RAISE EXCEPTION 'Archive did not suspend delegated access'; END IF;
@@ -96,7 +100,12 @@ BEGIN
   AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='profile_archived';
  SELECT count(*) INTO v_delegate_notice FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000003'
   AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='delegated_access_suspended';
- IF v_owner_notice<>1 OR v_delegate_notice<>1 THEN RAISE EXCEPTION 'Archive must notify the owner and suspended delegate'; END IF;
+ SELECT status INTO v_invitation_status FROM public.profile_invitations WHERE id='97000000-0000-4000-8000-000000000002';
+ SELECT count(*) INTO v_invite_notice FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000002'
+  AND profile_id='37000000-0000-4000-8000-000000000007' AND event_type='profile_invitation_cancelled_by_archive';
+ IF v_owner_notice<>1 OR v_delegate_notice<>1 OR v_invitation_status<>'cancelled' OR v_invite_notice<>1 THEN
+  RAISE EXCEPTION 'Archive must notify owner, suspended delegate and cancelled invitee';
+ END IF;
 END
 $delegate_archive$;
 
