@@ -14,7 +14,7 @@ const inviteId = "60000000-0000-4000-8000-000000000001";
 
 function profile(id, kind, handle, displayName) {
   return {
-    accountId: owner, relationship: "owner", membershipStatus: "active", canSwitchToProfile: true,
+    accountId: owner, relationship: "owner", role: "owner", membershipStatus: "active", canSwitchToProfile: true,
     profile: { id, ownerAccountId: owner, kind, handle, displayName, visibility: "private", status: "active" }
   };
 }
@@ -78,7 +78,39 @@ try {
     await page.close();
   }
 
-  // Public page delegation must not expose future tutor/student/institutional roles.\n  {\n    const page = await newPage();\n    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, community] }));\n    await page.route("**/api/profiles/delegations**", route => json(route, 200, { ok: true, delegatedAccess: [] }));\n    await page.route("**/api/profile-invitations", route => json(route, 200, { ok: true, invitations: [] }));\n    await openProfiles(page);\n    const roleSelect = page.getByLabel("Role");\n    const values = await roleSelect.locator("option").evaluateAll(options => options.map(option => option.value));\n    for (const reservedRole of ["student", "tutor", "staff", "operator", "professional"]) assert.equal(values.includes(reservedRole), false);\n    for (const supportedRole of ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"]) assert.equal(values.includes(supportedRole), true);\n    await page.close();\n  }\n\n  // Switching sends only the target profile ID; the server remains the authority.
+  // Owners can change a delegate role, suspend/restore access, and cancel pending invitations.
+  {
+    const page = await newPage();
+    const delegate = { ...profile("20000000-0000-4000-8000-000000000005", "page_community", "campus.community", "Campus Community"), accountId: "10000000-0000-4000-8000-000000000002", relationship: "delegated", role: "editor" };
+    let membershipPayloads = [];
+    let cancellationPayload;
+    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, community] }));
+    await page.route("**/api/profiles/delegations**", async route => {
+      if (route.request().method() === "GET") return json(route, 200, { ok: true, delegatedAccess: [delegate] });
+      if (route.request().method() === "PATCH") { membershipPayloads.push(route.request().postDataJSON()); return json(route, 200, { ok: true }); }
+      return json(route, 200, { ok: true });
+    });
+    await page.route("**/api/profile-invitations**", async route => {
+      if (route.request().method() === "GET") return json(route, 200, { ok: true, invitations: [{ id: inviteId, profileId: pageId, inviteeHandle: "campus.editor", role: "editor", status: "pending", createdAt: new Date().toISOString(), expiresAt: new Date(Date.now()+86400000).toISOString() }] });
+      cancellationPayload = route.request().postDataJSON();
+      return json(route, 200, { ok: true });
+    });
+    page.on("dialog", dialog => dialog.accept());
+    await openProfiles(page);
+    const roleSelect = page.locator(".delegate-row").filter({ hasText: "UNIBUD member" }).getByLabel("Role");
+    await roleSelect.selectOption("moderator");
+    await page.getByRole("button", { name: "Suspend" }).click();
+    await page.getByRole("button", { name: "Restore" }).click();
+    await page.getByRole("button", { name: "Cancel invitation" }).click();
+    assert.equal(membershipPayloads.length, 3);
+    assert.deepEqual(membershipPayloads[0], { profileId: pageId, delegateAccountId: delegate.accountId, role: "moderator", status: "active" });
+    assert.equal(membershipPayloads[1].status, "suspended");
+    assert.equal(membershipPayloads[2].status, "active");
+    assert.deepEqual(cancellationPayload, { invitationId: inviteId });
+    await page.close();
+  }
+
+  // Switching sends only the target profile ID; the server remains the authority.
   {
     const page = await newPage();
     await page.route("**/home", route => route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Home workspace</h1>" }));
@@ -142,7 +174,7 @@ try {
     await page.close();
   }
 
-  process.stdout.write("PASS: profile create, edit, switch, public-role boundary, handle invitation and recipient acceptance browser workflows.\\n");
+  process.stdout.write("PASS: profile create, edit, switch, handle invitation, recipient acceptance, role change, suspension, restoration and invitation cancellation browser workflows.\\n");
 } finally {
   await browser.close();
 }
