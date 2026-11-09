@@ -29,8 +29,6 @@ GRANT SELECT, INSERT, UPDATE ON
   verification_challenges, account_sessions
 TO unibud_auth_owner;
 GRANT USAGE ON SCHEMA unibud_private TO unibud_auth_owner;
-GRANT EXECUTE ON FUNCTION unibud_private.secure_bytea_equal(BYTEA, BYTEA) TO unibud_auth_owner;
-
 CREATE OR REPLACE FUNCTION unibud_private.secure_bytea_equal(left_value BYTEA, right_value BYTEA)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -73,8 +71,8 @@ BEGIN
   IF p_method NOT IN ('email','phone')
      OR p_subject IS NULL OR length(p_subject) < 16
      OR p_identifier_ciphertext IS NULL
-     OR octet_length(p_identifier_lookup_digest) <> 32
-     OR p_password_hash !~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$' THEN
+     OR p_identifier_lookup_digest IS NULL OR octet_length(p_identifier_lookup_digest) <> 32
+     OR p_password_hash IS NULL OR p_password_hash !~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$' THEN
     RAISE EXCEPTION 'Invalid account registration payload' USING ERRCODE = '22023';
   END IF;
 
@@ -149,8 +147,8 @@ BEGIN
      OR (p_purpose = 'email_verification' AND p_channel <> 'email')
      OR (p_purpose = 'phone_verification' AND p_channel <> 'phone')
      OR p_channel NOT IN ('email','phone')
-     OR octet_length(p_target_digest) <> 32
-     OR octet_length(p_code_digest) <> 32
+     OR p_target_digest IS NULL OR octet_length(p_target_digest) <> 32
+     OR p_code_digest IS NULL OR octet_length(p_code_digest) <> 32
      OR p_expires_at <= p_created_at
      OR p_max_attempts NOT BETWEEN 1 AND 10 THEN
     RAISE EXCEPTION 'Invalid verification challenge payload' USING ERRCODE = '22023';
@@ -203,7 +201,7 @@ BEGIN
   IF challenge.expires_at <= p_now THEN RETURN 'expired'; END IF;
   IF challenge.attempts >= challenge.max_attempts THEN RETURN 'locked'; END IF;
 
-  IF NOT unibud_private.secure_bytea_equal(challenge.code_digest,p_code_digest) THEN
+  IF p_code_digest IS NULL OR NOT unibud_private.secure_bytea_equal(challenge.code_digest,p_code_digest) THEN
     UPDATE public.verification_challenges
     SET attempts = attempts + 1
     WHERE id = p_id;
@@ -246,7 +244,7 @@ SET search_path = pg_catalog, public
 AS $function$
 DECLARE challenge public.verification_challenges%ROWTYPE;
 BEGIN
-  IF p_new_password_hash !~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$' THEN
+  IF p_new_password_hash IS NULL OR p_new_password_hash !~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$' THEN
     RETURN FALSE;
   END IF;
   SELECT * INTO challenge
@@ -293,7 +291,7 @@ SECURITY DEFINER
 SET search_path = pg_catalog, public
 AS $function$
 BEGIN
-  IF octet_length(p_credential_digest) <> 32
+  IF p_credential_digest IS NULL OR octet_length(p_credential_digest) <> 32
      OR p_idle_expires_at <= p_issued_at
      OR p_absolute_expires_at < p_idle_expires_at
      OR p_absolute_expires_at <= p_issued_at
@@ -379,7 +377,7 @@ BEGIN
      OR old_session.revoked_at IS NOT NULL
      OR old_session.idle_expires_at <= p_now
      OR old_session.absolute_expires_at <= p_now
-     OR octet_length(p_new_credential_digest) <> 32
+     OR p_new_credential_digest IS NULL OR octet_length(p_new_credential_digest) <> 32
      OR p_idle_expires_at <= p_now
      OR p_absolute_expires_at < p_idle_expires_at
      OR NOT EXISTS (SELECT 1 FROM public.accounts WHERE id = old_session.account_id AND status = 'active') THEN
