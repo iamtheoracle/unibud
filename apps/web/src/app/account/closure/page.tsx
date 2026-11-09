@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { ClosureReadinessSnapshot } from "../../../lib/account/closure-readiness";
+import type { AccountDependencyDomain } from "../../../lib/account/dependency-inventory";
 
 type ResponseBody = { ok: true; readiness: {
   status: "blocked" | "eligible_for_policy_review";
@@ -11,7 +12,7 @@ type ResponseBody = { ok: true; readiness: {
   blockers: { ownedProfiles: number; activeOwnedProfiles: number; archivedOwnedProfiles: number; delegatedRelationships: number; incomingTransfers: number; outgoingTransfers: number };
   policyGate: { status: "not_approved"; message: string };
   explanation: string;
-}; snapshot: ClosureReadinessSnapshot } | { ok: false; error: string };
+}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } } } | { ok: false; error: string };
 
 export default function AccountClosureReadinessPage() {
   const [data, setData] = useState<Extract<ResponseBody, { ok: true }> | null>(null);
@@ -78,6 +79,28 @@ export default function AccountClosureReadinessPage() {
             </li>)}
           </ul>
         )}
+      </section>
+
+      <section aria-labelledby="dependencies-heading" className="mt-8">
+        <h2 id="dependencies-heading" className="text-xl font-semibold">Account data and dependencies</h2>
+        <p className="mt-2 text-sm text-slate-600">This inventory distinguishes database records that exist from product areas that are planned but do not yet have persisted schemas. It is not a count of every record.</p>
+        <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-xl border p-3"><dt className="text-xs text-slate-600">Domains reviewed</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{data.dependencies.summary.totalDomains}</dd></div>
+          <div className="rounded-xl border p-3"><dt className="text-xs text-slate-600">Schema registered</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{data.dependencies.summary.registeredDomains}</dd></div>
+          <div className="rounded-xl border p-3"><dt className="text-xs text-slate-600">Not implemented</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{data.dependencies.summary.unimplementedDomains}</dd></div>
+          <div className="rounded-xl border p-3"><dt className="text-xs text-slate-600">Policy unapproved</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{data.dependencies.summary.unclassifiedRegisteredDomains}</dd></div>
+        </dl>
+        <ul className="mt-4 space-y-3">
+          {data.dependencies.domains.map((domain) => <li key={domain.id} className="rounded-xl border p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h3 className="font-semibold">{domain.label}</h3>
+              <span className="rounded-full border px-2 py-1 text-xs">{domain.status === "registered_unclassified" ? "Schema registered · policy unapproved" : "Not implemented · blocks closure"}</span>
+            </div>
+            <p className="mt-2 text-sm text-slate-600">{domain.explanation}</p>
+            <p className="mt-2 text-xs text-slate-500">{domain.sourceTables.length ? `Verified tables: ${domain.sourceTables.join(", ")}` : "No persisted domain tables verified in migrations 0001–0017."}</p>
+          </li>)}
+        </ul>
+        <p className="mt-4 text-sm font-medium" role="status">{data.dependencies.policy.reason}</p>
       </section>
 
       <section aria-labelledby="policy-heading" className="mt-8 rounded-2xl border p-5">
