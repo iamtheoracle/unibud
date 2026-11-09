@@ -17,6 +17,7 @@ class Repo implements ProfileRepository{
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async findProfileAccess(accountId:string){return this.record.accountId===accountId?this.record:undefined;}
+ async setActiveProfileContext(){return true;}
 }
 
 test("creates profiles with normalized handle and safe defaults",async()=>{
@@ -38,8 +39,8 @@ test("only the actual active owner may grant or revoke delegated access",async()
 });
 test("switching requires repository-backed membership and explicit switch permission",async()=>{
  const repo=new Repo(),service=new ProfileService(repo);
- const result=await service.switchProfile(owner,profileId);
+ const result=await service.switchProfile(owner,"40000000-0000-4000-8000-000000000001",profileId);
  assert.equal(result.activeProfile.activeProfileId,profileId);
  repo.record=access(delegate,"delegated",false);
- await assert.rejects(()=>service.switchProfile(delegate,profileId),ProfileAccessDeniedError);
+ await assert.rejects(()=>service.switchProfile(delegate,"40000000-0000-4000-8000-000000000002",profileId),ProfileAccessDeniedError);
 });
