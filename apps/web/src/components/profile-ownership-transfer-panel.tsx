@@ -36,12 +36,12 @@ export function ProfileOwnershipTransferPanel({profiles}:{profiles:TransferProfi
  async function cancel(transfer:Outgoing){if(!window.confirm("Cancel this ownership transfer request?"))return;setBusy(true);setError("");setNotice("");try{const r=await fetch("/api/profiles/"+encodeURIComponent(profileId)+"/ownership-transfer",{method:"DELETE",headers:{"content-type":"application/json"},body:JSON.stringify({transferId:transfer.transferId,channel,identifier,password})});if(!r.ok)throw new Error(await errorText(r));setPassword("");setNotice("Transfer request cancelled.");await refresh();}catch(e){setError(e instanceof Error?e.message:"Could not cancel transfer.");}finally{setBusy(false);}}
  return <section className="profile-section">
   <div className="profile-section-heading"><div><p className="eyebrow">Ownership and recovery</p><h2>Transfer profile ownership</h2></div></div>
-  <p className="profile-muted">Creator and Page/Community profiles can be transferred with both parties' consent. Personal profiles cannot be transferred. Each sensitive step requires the account password again.</p>
+  <p className="profile-muted">Creator and Page/Community profiles can be transferred with both parties&apos; consent. Personal profiles cannot be transferred. Each sensitive step requires the account password again.</p>
   {eligible.length===0?<p className="profile-muted">You do not currently own an active creator or page/community profile eligible for transfer.</p>:<>
    <form className="profile-form" onSubmit={createTransfer}>
     <label>Profile to transfer<select value={profileId} onChange={e=>setProfileId(e.target.value)}>{eligible.map(p=><option key={p.profile.id} value={p.profile.id}>{p.profile.displayName} · {p.profile.kind==="creator"?"Creator":"Page / community"}</option>)}</select></label>
     {preflight&&<div className="profile-transfer-preflight"><strong>{preflight.canTransfer?"Eligible to request transfer":"Transfer currently blocked"}</strong><small>{preflight.activeOwnedProfiles} active owned profiles · {preflight.activeDelegatedRelationships} active/suspended delegates · {preflight.pendingInvitations} pending invitations</small>{!preflight.personalIdentityAvailable&&<small>Your active personal identity must remain available.</small>}</div>}
-    <label>Recipient's UNIBUD username<input value={recipientHandle} onChange={e=>setRecipientHandle(e.target.value)} required minLength={3} maxLength={31} placeholder="@username"/></label>
+    <label>Recipient&apos;s UNIBUD username<input value={recipientHandle} onChange={e=>setRecipientHandle(e.target.value)} required minLength={3} maxLength={31} placeholder="@username"/></label>
     <button className="profile-primary" type="submit" disabled={busy||!preflight?.canTransfer}>{busy?"Please wait…":"Request ownership transfer"}</button>
    </form>
   </>}
