@@ -54,7 +54,7 @@ export async function PATCH(request:NextRequest){
  const token=readSessionCookie(request);
  if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
  const body=await readJsonObject(request);
- const roles=["admin","moderator","editor","member","seller","provider","professional","student","staff","operator","viewer"];
+ const roles=["admin","moderator","editor","member","seller","provider","viewer"];
  if(!body||typeof body.profileId!=="string"||typeof body.delegateAccountId!=="string"||
     typeof body.role!=="string"||!roles.includes(body.role)||
     (body.status!=="active"&&body.status!=="suspended")){
@@ -66,7 +66,7 @@ export async function PATCH(request:NextRequest){
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
   const updated=await profiles.manageDelegatedAccess(
    validation.account.id,body.profileId,body.delegateAccountId,
-   body.role as "admin"|"moderator"|"editor"|"member"|"seller"|"provider"|"professional"|"student"|"staff"|"operator"|"viewer",
+   body.role as "admin"|"moderator"|"editor"|"member"|"seller"|"provider"|"viewer",
    body.status
   );
   return NextResponse.json({ok:updated},{status:updated?200:404});
