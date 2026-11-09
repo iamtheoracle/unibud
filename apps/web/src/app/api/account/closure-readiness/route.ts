@@ -4,6 +4,8 @@ import { ProfileAccessDeniedError } from "../../../../lib/server/profiles/profil
 import { readSessionCookie, routeError } from "../../../../lib/server/identity/http";
 import { buildClosureReadiness, type ClosureReadinessSnapshot } from "../../../../lib/account/closure-readiness";
 import { buildAccountDependencyInventory } from "../../../../lib/account/dependency-inventory";
+import { getAppDatabasePool } from "../../../../lib/server/database/postgres-pool";
+import { AccountExternalDependencyRepository } from "../../../../lib/server/account/account-external-dependency-repository";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -14,12 +16,14 @@ export async function GET(request: NextRequest) {
     if (!validation.valid) return NextResponse.json({ ok: false, error: "Authentication required." }, { status: 401 });
 
     const accountId = validation.account.id;
-    const [preflight, accessible, archived, incomingTransfers, dependencyDiscovery] = await Promise.all([
+    const externalDependencies = new AccountExternalDependencyRepository(getAppDatabasePool());
+    const [preflight, accessible, archived, incomingTransfers, dependencyDiscovery, externalDependencyDiscovery] = await Promise.all([
       profiles.getAccountClosurePreflight(accountId),
       profiles.listAccessibleProfiles(accountId),
       profiles.listArchivedOwnedProfiles(accountId),
       profiles.listIncomingOwnershipTransfers(accountId),
-      accountDependencies.getForAccount(accountId)
+      accountDependencies.getForAccount(accountId),
+      externalDependencies.getForAccount(accountId)
     ]);
 
     const owned = accessible.filter((entry) => entry.relationship === "owner" && entry.profile.ownerAccountId === accountId);
@@ -58,7 +62,7 @@ export async function GET(request: NextRequest) {
     };
     const readiness = buildClosureReadiness(snapshot);
     const dependencies = buildAccountDependencyInventory();
-    return NextResponse.json({ ok: true, readiness, snapshot, dependencies, dependencyDiscovery }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json({ ok: true, readiness, snapshot, dependencies, dependencyDiscovery, externalDependencyDiscovery }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof ProfileAccessDeniedError) return NextResponse.json({ ok: false, error: "Account access denied." }, { status: 403 });
     return routeError(error);
