@@ -12,11 +12,11 @@ import type { AccountStatus } from "../../../../../../packages/contracts/src/ide
 import {
   hashPassword,
   verifyPassword
-} from "./credential-core";
+} from "./credential-core.ts";
 import {
   VerificationChallengeService,
   type VerificationChannel,
-} from "./verification-core";
+} from "./verification-core.ts";
 
 const SESSION_IDLE_SECONDS = 30 * 60;
 const SESSION_ABSOLUTE_SECONDS = 12 * 60 * 60;
