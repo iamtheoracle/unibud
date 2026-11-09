@@ -15,6 +15,12 @@ class Repo implements ProfileRepository{
  async listLifecycleNotifications(){return [{id:"80000000-0000-4000-8000-000000000001",profileId,eventType:"profile_archived" as const,createdAt:new Date(0).toISOString(),readAt:null,details:{profileName:"Creator"}}];}
  async markLifecycleNotificationRead(_account:string,_id:string){return true;}
  async getAccountClosurePreflight(){return {canClose:false,ownedProfiles:2,activeOwnedProfiles:1,archivedOwnedProfiles:1,delegatedRelationships:0,requiresOwnershipTransferWorkflow:true,requiresDelegationRelease:false};}
+ async getOwnershipTransferPreflight(){return {profileId,profileKind:"creator" as const,profileStatus:"active" as const,activeOwnedProfiles:2,activeDelegatedRelationships:0,pendingInvitations:0,openTransferRequests:0,personalIdentityAvailable:true,canTransfer:true};}
+ async requestOwnershipTransfer(_owner:string,_profile:string,recipientHandle:string,id:string){return {id,recipientHandle};}
+ async listIncomingOwnershipTransfers(){return [{transferId:"90000000-0000-4000-8000-000000000001",profileId,profileName:"Creator",profileHandle:"creator",ownerHandle:"owner",createdAt:new Date(0).toISOString(),expiresAt:new Date(Date.now()+10000).toISOString()}];}
+ async respondToOwnershipTransfer(_account:string,id:string,accept:boolean){this.invitationResponse={id,accept};return true;}
+ async cancelOwnershipTransfer(){return true;}
+ async completeOwnershipTransfer(){return true;}
  async listArchivedOwnedProfiles(){return this.record.profile.status==="archived"?[this.record]:[];}
  async archiveOwnedProfile(accountId:string,id:string){if(accountId!==owner||id!==profileId)return false;this.record={...this.record,profile:{...this.record.profile,status:"archived"}};return true;}
  async restoreOwnedProfile(accountId:string,id:string){if(accountId!==owner||id!==profileId)return false;this.record={...this.record,profile:{...this.record.profile,status:"active"}};return true;}
@@ -204,4 +210,26 @@ test("account closure preflight reports owned and archived profiles as blockers"
  assert.equal(preflight.ownedProfiles,2);
  assert.equal(preflight.archivedOwnedProfiles,1);
  assert.equal(preflight.requiresOwnershipTransferWorkflow,true);
+});
+
+
+test("ownership transfer is limited to an active owner and normalized UNIBUD recipient handle",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"creator"}};
+ const preflight=await service.getOwnershipTransferPreflight(owner,profileId);
+ assert.equal(preflight.canTransfer,true);
+ const requested=await service.requestOwnershipTransfer(owner,profileId," @New.Owner ");
+ assert.equal(requested.recipientHandle,"new.owner");
+ assert.match(requested.id,/^[0-9a-f-]{36}$/i);
+ await assert.rejects(()=>service.requestOwnershipTransfer(delegate,profileId,"new.owner"),ProfileAccessDeniedError);
+});
+
+test("only the intended authenticated recipient can respond and owners can finalize or cancel",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ const incoming=await service.listIncomingOwnershipTransfers(delegate);
+ assert.equal(incoming[0]?.ownerHandle,"owner");
+ assert.equal(await service.respondToOwnershipTransfer(delegate,incoming[0]!.transferId,true),true);
+ await assert.rejects(()=>service.respondToOwnershipTransfer(owner,"bad-id",true),ProfileAccessDeniedError);
+ assert.equal(await service.completeOwnershipTransfer(owner,incoming[0]!.transferId),true);
+ assert.equal(await service.cancelOwnershipTransfer(owner,incoming[0]!.transferId),true);
 });
