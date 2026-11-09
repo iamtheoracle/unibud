@@ -140,7 +140,7 @@ BEGIN
  SELECT a.id,p.handle INTO v_recipient,v_handle
  FROM public.profiles p JOIN public.accounts a ON a.id=p.owner_account_id
  WHERE p.kind='personal' AND p.status='active' AND a.status='active'
-  AND p.handle_normalized=lower(trim(leading '@' from p_recipient_handle)) LIMIT 1;
+  AND p.handle_normalized=lower(trim(leading '@' from trim(p_recipient_handle))) LIMIT 1;
  IF v_recipient IS NULL OR v_recipient=p_owner_account_id
   OR NOT EXISTS(SELECT 1 FROM public.authentication_identities i
    WHERE i.account_id=v_recipient AND i.status='active' AND i.verified_at IS NOT NULL)
