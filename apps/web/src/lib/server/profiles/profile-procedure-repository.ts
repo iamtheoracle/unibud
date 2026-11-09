@@ -28,6 +28,7 @@ interface ProfileJoinRow {
   account_id: string;
   relationship: ProfileAccessRecord["relationship"];
   membership_status: ProfileAccessRecord["membershipStatus"];
+  role: ProfileAccessRecord["role"];
   can_switch_to_profile: boolean;
 }
 
@@ -36,6 +37,7 @@ function mapAccess(row: ProfileJoinRow): ProfileAccessRecord {
     accountId: row.account_id as ProfileAccessRecord["accountId"],
     relationship: row.relationship,
     membershipStatus: row.membership_status,
+    role: row.role,
     canSwitchToProfile: row.can_switch_to_profile,
     profile: {
       id: row.profile_id as ProfileAccessRecord["profile"]["id"],
@@ -52,7 +54,7 @@ function mapAccess(row: ProfileJoinRow): ProfileAccessRecord {
 const PROFILE_SELECT = `
   SELECT p.id AS profile_id,p.owner_account_id,p.kind,p.handle,p.display_name,
          p.visibility,p.status AS profile_status,m.account_id,m.relationship,
-         m.status AS membership_status,m.can_switch_to_profile
+         m.status AS membership_status,m.role,m.can_switch_to_profile
   FROM public.profile_memberships m
   JOIN public.profiles p ON p.id=m.profile_id
 `;
@@ -86,7 +88,7 @@ export class ProfileProcedureRepository implements ProfileRepository {
       if(!row) throw new Error("Profile update did not return a persisted profile.");
       return {
         accountId:ownerAccountId as ProfileAccessRecord["accountId"],relationship:"owner",
-        membershipStatus:"active",canSwitchToProfile:true,
+        membershipStatus:"active",role:"owner",canSwitchToProfile:true,
         profile:{id:row.profile_id as ProfileAccessRecord["profile"]["id"],
           ownerAccountId:row.owner_account_id as ProfileAccessRecord["profile"]["ownerAccountId"],
           kind:row.kind,handle:row.handle,displayName:row.display_name,
@@ -129,6 +131,7 @@ export class ProfileProcedureRepository implements ProfileRepository {
         accountId: ownerAccountId as ProfileAccessRecord["accountId"],
         relationship: "owner",
         membershipStatus: "active",
+        role: "owner",
         canSwitchToProfile: true,
         profile: {
           id: row.profile_id as ProfileAccessRecord["profile"]["id"],
@@ -140,6 +143,38 @@ export class ProfileProcedureRepository implements ProfileRepository {
           status: row.status
         }
       };
+    });
+  }
+
+  async manageDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string, role: ProfileInvitationInput["role"], status: "active" | "suspended"): Promise<boolean> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{ managed: boolean }>(
+        "SELECT public.profile_manage_delegated_access($1,$2,$3,$4,$5) AS managed",
+        [profileId,ownerAccountId,delegateAccountId,role,status]
+      );
+      return result.rows[0]?.managed === true;
+    });
+  }
+
+  async cancelInvitation(ownerAccountId: string, invitationId: string): Promise<boolean> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{ cancelled: boolean }>(
+        "SELECT public.profile_cancel_invitation($1,$2) AS cancelled",[invitationId,ownerAccountId]
+      );
+      return result.rows[0]?.cancelled === true;
+    });
+  }
+
+  async listOutgoingInvitations(ownerAccountId: string, profileId: string) {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<{
+        id:string; profile_id:string; invitee_handle:string; role:ProfileInvitationInput["role"];
+        status:"pending"|"expired"; created_at:Date; expires_at:Date;
+      }>("SELECT * FROM public.profile_list_outgoing_invitations($1,$2)",[ownerAccountId,profileId]);
+      return result.rows.map(row=>({
+        id:row.id,profileId:row.profile_id,inviteeHandle:row.invitee_handle,role:row.role,
+        status:row.status,createdAt:row.created_at.toISOString(),expiresAt:row.expires_at.toISOString()
+      }));
     });
   }
 
