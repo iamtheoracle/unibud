@@ -129,6 +129,31 @@ BEGIN
 END
 $request$;
 
+-- A transfer in progress freezes new delegated access and pending invitations.
+DO $freeze$
+BEGIN
+ BEGIN
+  INSERT INTO public.profile_memberships(id,profile_id,account_id,owner_account_id,profile_owner_account_id,
+   relationship,role,status,can_switch_to_profile,granted_by_account_id)
+  VALUES('47000000-0000-4000-8000-000000000008','37000000-0000-4000-8000-000000000002',
+   '17000000-0000-4000-8000-000000000003',NULL,'17000000-0000-4000-8000-000000000001',
+   'delegated','editor','active',false,'17000000-0000-4000-8000-000000000001');
+  RAISE EXCEPTION 'Delegated membership unexpectedly added during transfer';
+ EXCEPTION WHEN check_violation THEN
+  IF SQLERRM NOT LIKE 'Delegated access cannot be added%' THEN RAISE; END IF;
+ END;
+ BEGIN
+  INSERT INTO public.profile_invitations(id,profile_id,owner_account_id,invitee_account_id,role,status,expires_at)
+  VALUES('97000000-0000-4000-8000-000000000001','37000000-0000-4000-8000-000000000002',
+   '17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000003',
+   'editor','pending',clock_timestamp()+interval '1 day');
+  RAISE EXCEPTION 'Pending invitation unexpectedly created during transfer';
+ EXCEPTION WHEN check_violation THEN
+  IF SQLERRM NOT LIKE 'New invitations are blocked%' THEN RAISE; END IF;
+ END;
+END
+$freeze$;
+
 -- The intended recipient alone can inspect and accept the request.
 WITH x AS (
  SELECT '17000000-0000-4000-8000-000000000002'::text a,
