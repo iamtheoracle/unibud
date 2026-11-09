@@ -17,7 +17,6 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry'
  set_config('unibud.context_nonce',n,true),
  set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('ad',32),'hex'),'sha256'),'hex'),true) FROM x;
 
-SET LOCAL ROLE unibud_app;
 DO $closure$
 DECLARE v JSONB;
 BEGIN
