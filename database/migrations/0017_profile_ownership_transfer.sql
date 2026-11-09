@@ -19,7 +19,7 @@ ALTER TABLE public.profile_lifecycle_notifications
   CHECK(event_type IN(
     'profile_archived','profile_restored',
     'ownership_transfer_requested','ownership_transfer_accepted',
-    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired','delegated_access_suspended'
+    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired','delegated_access_suspended','profile_invitation_cancelled_by_archive'
   ));
 
 CREATE TABLE public.profile_ownership_transfers(
@@ -65,7 +65,7 @@ CREATE OR REPLACE FUNCTION public.profile_archive_owned(
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
 AS $function$
-DECLARE v_profile public.profiles%ROWTYPE; v_active_owned_count INTEGER; v_suspended_delegate_ids UUID[];
+DECLARE v_profile public.profiles%ROWTYPE; v_active_owned_count INTEGER; v_suspended_delegate_ids UUID[]; v_cancelled_invitee_ids UUID[];
 BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
   RAISE EXCEPTION 'Authenticated profile owner required' USING ERRCODE='42501';
@@ -101,19 +101,31 @@ BEGIN
   RETURNING account_id
  )
  SELECT COALESCE(array_agg(account_id),ARRAY[]::UUID[]) INTO v_suspended_delegate_ids FROM suspended;
+ WITH cancelled AS (
+  UPDATE public.profile_invitations SET status='cancelled',responded_at=clock_timestamp()
+  WHERE profile_id=p_profile_id AND status='pending'
+  RETURNING invitee_account_id
+ )
+ SELECT COALESCE(array_agg(invitee_account_id),ARRAY[]::UUID[]) INTO v_cancelled_invitee_ids FROM cancelled;
  UPDATE public.account_sessions SET active_profile_id=NULL,profile_context_version=NULL
  WHERE account_id=p_owner_account_id AND active_profile_id=p_profile_id AND status='active';
  INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
  VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,
   'owner_requested',jsonb_build_object('profile_kind',v_profile.kind,'previous_status',v_profile.status,
-   'new_status','archived','suspended_delegate_account_ids',to_jsonb(v_suspended_delegate_ids)));
+   'new_status','archived','suspended_delegate_account_ids',to_jsonb(v_suspended_delegate_ids),
+   'cancelled_invitee_account_ids',to_jsonb(v_cancelled_invitee_ids)));
  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
  VALUES(p_owner_account_id,p_profile_id,'profile_archived',
-  jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle));
+  jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle,
+   'suspendedDelegateCount',cardinality(v_suspended_delegate_ids),'cancelledInvitationCount',cardinality(v_cancelled_invitee_ids)));
  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
  SELECT delegate_account,p_profile_id,'delegated_access_suspended',
   jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle,'reason','profile_archived')
  FROM unnest(v_suspended_delegate_ids) AS delegate_account;
+ INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+ SELECT invitee_account,p_profile_id,'profile_invitation_cancelled_by_archive',
+  jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle,'reason','profile_archived')
+ FROM unnest(v_cancelled_invitee_ids) AS invitee_account;
  RETURN TRUE;
 END;
 $function$;
