@@ -79,7 +79,7 @@ CREATE OR REPLACE FUNCTION public.profile_ownership_transfer_preflight(
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
 AS $function$
-DECLARE v_profile public.profiles%ROWTYPE; v_owned INTEGER; v_delegated INTEGER; v_pending INTEGER; v_open INTEGER;
+DECLARE v_profile public.profiles%ROWTYPE; v_owned INTEGER; v_delegated INTEGER; v_pending INTEGER; v_open INTEGER; v_personal BOOLEAN;
 BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
   RAISE EXCEPTION 'Transfer preflight denied' USING ERRCODE='42501';
@@ -98,15 +98,15 @@ BEGIN
  WHERE profile_id=p_profile_id AND status='pending' AND expires_at>clock_timestamp();
  SELECT count(*) INTO v_open FROM public.profile_ownership_transfers
  WHERE profile_id=p_profile_id AND status IN('pending_recipient','recipient_accepted') AND expires_at>clock_timestamp();
+ SELECT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m ON m.profile_id=p.id
+  AND m.account_id=p_owner_account_id AND m.relationship='owner' AND m.role='owner' AND m.status='active'
+  WHERE p.owner_account_id=p_owner_account_id AND p.kind='personal' AND p.status='active') INTO v_personal;
  RETURN jsonb_build_object(
   'profileId',p_profile_id,'profileKind',v_profile.kind,'profileStatus',v_profile.status,
   'activeOwnedProfiles',v_owned,'activeDelegatedRelationships',v_delegated,
   'pendingInvitations',v_pending,'openTransferRequests',v_open,
-  'personalIdentityAvailable',EXISTS(SELECT 1 FROM public.profiles p
-   JOIN public.profile_memberships m ON m.profile_id=p.id AND m.account_id=p_owner_account_id
-    AND m.relationship='owner' AND m.role='owner' AND m.status='active'
-   WHERE p.owner_account_id=p_owner_account_id AND p.kind='personal' AND p.status='active'),
-  'canTransfer',v_profile.status='active' AND v_owned>1 AND v_delegated=0 AND v_pending=0 AND v_open=0
+  'personalIdentityAvailable',v_personal,
+  'canTransfer',v_profile.status='active' AND v_owned>1 AND v_personal AND v_delegated=0 AND v_pending=0 AND v_open=0
  );
 END;
 $function$;
