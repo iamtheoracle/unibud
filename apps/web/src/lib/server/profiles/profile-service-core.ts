@@ -96,6 +96,13 @@ export class ProfileService {
     return this.repository.authorizeAction(accountId, profileId, permission);
   }
 
+  /** Use at every server-side profile action boundary; UI visibility is never authorization. */
+  async requireAction(accountId: string, profileId: string, permission: ProfilePermission): Promise<void> {
+    if (!(await this.authorizeAction(accountId, profileId, permission))) {
+      throw new ProfileAccessDeniedError("You do not have permission to perform this action on this profile.");
+    }
+  }
+
   async createOwnedProfile(accountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord> {
     if(!accountId) throw new Error("Authenticated account is required.");
     const handle=normalizeHandle(input.handle);
