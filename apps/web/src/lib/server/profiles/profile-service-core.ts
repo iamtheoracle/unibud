@@ -72,6 +72,15 @@ export interface ProfileLifecycleNotification {
   readAt: string | null;
   details: Record<string, unknown>;
 }
+export interface ProfileOwnershipTransferPreflight {
+  profileId:string; profileKind:"creator"|"page_community"; profileStatus:"active"|"restricted"|"archived";
+  activeOwnedProfiles:number; activeDelegatedRelationships:number; pendingInvitations:number;
+  openTransferRequests:number; personalIdentityAvailable:boolean; canTransfer:boolean;
+}
+export interface IncomingProfileOwnershipTransfer {
+  transferId:string; profileId:string; profileName:string; profileHandle:string;
+  ownerHandle:string; createdAt:string; expiresAt:string;
+}
 export interface ProfileClosurePreflight {
   canClose: boolean;
   ownedProfiles: number;
@@ -85,6 +94,12 @@ export interface ProfileRepository {
   listLifecycleNotifications(accountId: string): Promise<ProfileLifecycleNotification[]>;
   markLifecycleNotificationRead(accountId: string, notificationId: string): Promise<boolean>;
   getAccountClosurePreflight(accountId: string): Promise<ProfileClosurePreflight>;
+  getOwnershipTransferPreflight(ownerAccountId:string,profileId:string):Promise<ProfileOwnershipTransferPreflight>;
+  requestOwnershipTransfer(ownerAccountId:string,profileId:string,recipientHandle:string,transferId:string,expiresAt:string):Promise<{id:string;recipientHandle:string}>;
+  listIncomingOwnershipTransfers(recipientAccountId:string):Promise<IncomingProfileOwnershipTransfer[]>;
+  respondToOwnershipTransfer(recipientAccountId:string,transferId:string,accept:boolean):Promise<boolean>;
+  cancelOwnershipTransfer(ownerAccountId:string,transferId:string):Promise<boolean>;
+  completeOwnershipTransfer(ownerAccountId:string,transferId:string):Promise<boolean>;
   listArchivedOwnedProfiles(ownerAccountId: string): Promise<ProfileAccessRecord[]>;
   archiveOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
   restoreOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
@@ -134,6 +149,39 @@ export class ProfileService {
     if (!accountId) throw new ProfileAccessDeniedError();
     return this.repository.getAccountClosurePreflight(accountId);
   }
+  async getOwnershipTransferPreflight(accountId:string,profileId:string):Promise<ProfileOwnershipTransferPreflight>{
+    if(!accountId||!/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
+    const access=await this.repository.findProfileAccess(accountId,profileId);
+    if(!access||access.relationship!=="owner"||access.membershipStatus!=="active"||access.profile.ownerAccountId!==accountId||!["creator","page_community"].includes(access.profile.kind))
+      throw new ProfileAccessDeniedError("Only the active owner may review profile transfer eligibility.");
+    return this.repository.getOwnershipTransferPreflight(accountId,profileId);
+  }
+  async requestOwnershipTransfer(accountId:string,profileId:string,recipientHandle:string):Promise<{id:string;recipientHandle:string}>{
+    if(!accountId||!/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
+    const access=await this.repository.findProfileAccess(accountId,profileId);
+    if(!access||access.relationship!=="owner"||access.membershipStatus!=="active"||access.profile.ownerAccountId!==accountId||access.profile.status!=="active"||!["creator","page_community"].includes(access.profile.kind))
+      throw new ProfileAccessDeniedError("Only the owner may transfer an active creator or page/community profile.");
+    const handle=recipientHandle.trim().replace(/^@/,"").toLowerCase();
+    if(!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(handle)) throw new Error("Enter a valid UNIBUD username.");
+    return this.repository.requestOwnershipTransfer(accountId,profileId,handle,randomUUID(),new Date(Date.now()+7*24*60*60*1000).toISOString());
+  }
+  async listIncomingOwnershipTransfers(accountId:string):Promise<IncomingProfileOwnershipTransfer[]>{
+    if(!accountId) throw new ProfileAccessDeniedError();
+    return this.repository.listIncomingOwnershipTransfers(accountId);
+  }
+  async respondToOwnershipTransfer(accountId:string,transferId:string,accept:boolean):Promise<boolean>{
+    if(!accountId||!/^[0-9a-f-]{36}$/i.test(transferId)||typeof accept!=="boolean") throw new ProfileAccessDeniedError();
+    return this.repository.respondToOwnershipTransfer(accountId,transferId,accept);
+  }
+  async cancelOwnershipTransfer(accountId:string,transferId:string):Promise<boolean>{
+    if(!accountId||!/^[0-9a-f-]{36}$/i.test(transferId)) throw new ProfileAccessDeniedError();
+    return this.repository.cancelOwnershipTransfer(accountId,transferId);
+  }
+  async completeOwnershipTransfer(accountId:string,transferId:string):Promise<boolean>{
+    if(!accountId||!/^[0-9a-f-]{36}$/i.test(transferId)) throw new ProfileAccessDeniedError();
+    return this.repository.completeOwnershipTransfer(accountId,transferId);
+  }
+
   async listArchivedOwnedProfiles(accountId: string): Promise<ProfileAccessRecord[]> {
     if (!accountId) throw new ProfileAccessDeniedError();
     return this.repository.listArchivedOwnedProfiles(accountId);
