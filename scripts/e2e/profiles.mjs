@@ -24,6 +24,11 @@ const community = profile(pageId, "page_community", "campus.community", "Campus 
 
 async function newPage() { return browser.newPage(); }
 async function openProfiles(page) {
+  await page.route("**/api/profile-lifecycle/notifications", route =>
+    route.request().method() === "GET"
+      ? json(route, 200, { ok: true, notifications: [] })
+      : json(route, 200, { ok: true, marked: true })
+  );
   await page.goto(baseURL + "/e2e/profiles");
   await page.getByRole("heading", { name: "Switch identity" }).waitFor();
 }
