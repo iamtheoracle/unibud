@@ -2,7 +2,7 @@
 
 ## Scope
 
-This contract defines server-side evaluation of trusted session metadata. It does not authenticate a presented cookie, validate a bearer token, store a session, or issue credentials.
+This contract began as server-side evaluation of trusted session metadata. The current implementation now adds first-party credential verification, opaque session issuance, database lookup, rotation, idle renewal, revocation, and secure browser-cookie routes. It is still not a production deployment.
 
 ## Required lifecycle
 
@@ -22,6 +22,15 @@ This contract defines server-side evaluation of trusted session metadata. It doe
 - All missing, mismatched, revoked, malformed or expired sessions deny access.
 - Tests use synthetic identifiers and deterministic timestamps.
 
-## Not implemented yet
+## Implemented service boundary
 
-No session database table, credential hashing/lookup, cookie issuance, rotation endpoint, CSRF middleware, logout endpoint, device/session management UI, global revocation workflow, or production key management is implemented by this contract.
+- `SessionService` issues 256-bit opaque credentials and persists only SHA-256 digests through restricted auth procedures.
+- Validation checks account status, revocation, issue time, idle expiry and absolute expiry; renewal is an atomic procedure.
+- Rotation preserves the absolute expiry and the persisted active-profile context; the old credential is revoked atomically.
+- Browser routes issue HTTP-only, same-site cookies, expose logout and rotation, and validate session state server-side.
+- Cookie-authenticated state-changing routes check the request Origin against the request origin.
+- Password recovery revokes all active sessions for the account.
+
+## Remaining work
+
+No production session keys, database LOGIN credentials, secret-manager rotation, deployment verification, user-facing device/session management, IP/device abuse detection, or incident alerting is configured. The service has CI evidence against disposable PostgreSQL 16 only; this is not production verification.
