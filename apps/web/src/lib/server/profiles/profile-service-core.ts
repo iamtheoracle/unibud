@@ -67,7 +67,7 @@ export interface ProfileLifecycleEvent {
 export interface ProfileLifecycleNotification {
   id: string;
   profileId: string;
-  eventType: "profile_archived" | "profile_restored" | "ownership_transfer_requested" | "ownership_transfer_accepted" | "ownership_transfer_completed" | "ownership_transfer_cancelled" | "ownership_transfer_expired";
+  eventType: "profile_archived" | "profile_restored" | "ownership_transfer_requested" | "ownership_transfer_accepted" | "ownership_transfer_completed" | "ownership_transfer_cancelled" | "ownership_transfer_expired" | "delegated_access_suspended";
   createdAt: string;
   readAt: string | null;
   details: Record<string, unknown>;
