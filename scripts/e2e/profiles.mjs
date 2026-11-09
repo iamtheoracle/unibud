@@ -249,6 +249,7 @@ try {
       if (route.request().method() === "GET") return json(route, 200, { ok: true, transfers: pending });
       responsePayload = route.request().postDataJSON(); pending = []; return json(route, 200, { ok: true });
     });
+    page.on("dialog", dialog => dialog.accept());
     await openProfiles(page);
     await page.getByLabel("Account email").fill("recipient@example.com");
     await page.getByLabel("Account password").fill("recipient-password");
