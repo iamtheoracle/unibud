@@ -21,11 +21,11 @@ export interface PersistedSession {
 export interface SessionRepository {
   create(session: PersistedSession): Promise<void>;
   findByCredentialDigest(digest: Buffer): Promise<{ session: PersistedSession; account: SessionAccount } | null>;
-  touch(sessionId: string, lastSeenAt: string, idleExpiresAt: string): Promise<boolean>;
-  revoke(sessionId: string, revokedAt: string, reason: string): Promise<void>;
+  touch(credentialDigest: Buffer, lastSeenAt: string, idleExpiresAt: string): Promise<boolean>;
+  revoke(credentialDigest: Buffer, revokedAt: string, reason: string): Promise<void>;
   revokeAll(accountId: string, revokedAt: string, reason: string): Promise<void>;
   /** Must atomically revoke the old session and persist its replacement. */
-  rotate(oldSessionId: string, replacement: PersistedSession, revokedAt: string): Promise<boolean>;
+  rotate(oldCredentialDigest: Buffer, replacement: PersistedSession, revokedAt: string): Promise<boolean>;
 }
 
 export interface SessionPolicy {
@@ -124,7 +124,7 @@ export class SessionService {
         now.getTime() + this.policy.idleLifetimeSeconds * 1000,
         absolute
       )).toISOString();
-      const touched = await this.repository.touch(found.session.id, now.toISOString(), idleExpiry);
+      const touched = await this.repository.touch(found.session.credentialDigest, now.toISOString(), idleExpiry);
       if (!touched) return { valid: false, reason: "revoked" };
     }
     return { valid: true, account: found.account, session: found.session };
@@ -150,7 +150,7 @@ export class SessionService {
     if (Date.parse(replacement.idleExpiresAt) > Date.parse(replacement.absoluteExpiresAt)) {
       replacement.idleExpiresAt = replacement.absoluteExpiresAt;
     }
-    const rotated = await this.repository.rotate(old.id, replacement, now.toISOString());
+    const rotated = await this.repository.rotate(old.credentialDigest, replacement, now.toISOString());
     return rotated ? { token: nextToken, session: replacement } : null;
   }
 
@@ -159,7 +159,7 @@ export class SessionService {
     const found = await this.repository.findByCredentialDigest(digestCredential(token));
     if (!found || !constantTimeEqual(found.session.credentialDigest, digestCredential(token))) return false;
     if (found.session.status !== "active") return false;
-    await this.repository.revoke(found.session.id, now.toISOString(), reason);
+    await this.repository.revoke(found.session.credentialDigest, now.toISOString(), reason);
     return true;
   }
 
