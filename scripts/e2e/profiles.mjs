@@ -29,6 +29,16 @@ async function openProfiles(page) {
       ? json(route, 200, { ok: true, notifications: [] })
       : json(route, 200, { ok: true, marked: true })
   );
+  await page.route("**/api/profile-ownership-transfers", route =>
+    route.request().method() === "GET"
+      ? json(route, 200, { ok: true, transfers: [] })
+      : json(route, 200, { ok: true })
+  );
+  await page.route("**/api/profiles/*/ownership-transfer", route =>
+    route.request().method() === "GET"
+      ? json(route, 200, { ok: true, preflight: { canTransfer: false, activeOwnedProfiles: 1, activeDelegatedRelationships: 0, pendingInvitations: 0, openTransferRequests: 0, personalIdentityAvailable: true }, transfers: [] })
+      : json(route, 200, { ok: true, transfer: { id: "90000000-0000-4000-8000-000000000001" } })
+  );
   await page.goto(baseURL + "/e2e/profiles");
   await page.getByRole("heading", { name: "Switch identity" }).waitFor();
 }
