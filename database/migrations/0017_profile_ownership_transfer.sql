@@ -244,6 +244,41 @@ AFTER UPDATE OF status ON public.accounts
 FOR EACH ROW EXECUTE FUNCTION public.profile_cancel_transfers_for_inactive_account();
 REVOKE ALL ON FUNCTION public.profile_cancel_transfers_for_inactive_account() FROM PUBLIC;
 
+-- Losing the last verified sign-in identity also invalidates open consent.
+CREATE OR REPLACE FUNCTION public.profile_cancel_transfers_for_unverified_identity()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+DECLARE v_transfer public.profile_ownership_transfers%ROWTYPE;
+BEGIN
+ IF NOT EXISTS(SELECT 1 FROM public.authentication_identities i
+  WHERE i.account_id=NEW.account_id AND i.status='active' AND i.verified_at IS NOT NULL) THEN
+  FOR v_transfer IN
+   UPDATE public.profile_ownership_transfers AS transfer
+    SET status='cancelled',cancelled_at=clock_timestamp()
+    WHERE transfer.status IN('pending_recipient','recipient_accepted')
+     AND (transfer.current_owner_account_id=NEW.account_id OR transfer.recipient_account_id=NEW.account_id)
+    RETURNING *
+  LOOP
+   INSERT INTO public.security_audit_events(id,actor_service,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+   VALUES(gen_random_uuid(),'unibud_profile_transfer_guard','unibud','profile.ownership_transfer.cancelled','success','profile',v_transfer.profile_id,
+    'participant_identity_unverified',jsonb_build_object('transfer_id',v_transfer.id,'affected_account_id',NEW.account_id));
+   INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+   VALUES(v_transfer.current_owner_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+     jsonb_build_object('transferId',v_transfer.id,'reason','participant_identity_unverified')),
+    (v_transfer.recipient_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+     jsonb_build_object('transferId',v_transfer.id,'reason','participant_identity_unverified'));
+  END LOOP;
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.profile_cancel_transfers_for_unverified_identity() OWNER TO unibud_profile_owner;
+CREATE TRIGGER authentication_identity_cancel_profile_transfers_when_unverified
+AFTER UPDATE OF status,verified_at ON public.authentication_identities
+FOR EACH ROW EXECUTE FUNCTION public.profile_cancel_transfers_for_unverified_identity();
+REVOKE ALL ON FUNCTION public.profile_cancel_transfers_for_unverified_identity() FROM PUBLIC;
+
 -- Archiving or restricting a profile invalidates any outstanding transfer
 -- consent. A pending acceptance must never survive a profile becoming inactive.
 CREATE OR REPLACE FUNCTION public.profile_cancel_open_transfer_on_inactive()
