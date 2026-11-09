@@ -146,6 +146,19 @@ export class ProfileProcedureRepository implements ProfileRepository {
     });
   }
 
+  async listDelegatedAccess(ownerAccountId: string, profileId: string): Promise<ProfileAccessRecord[]> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<ProfileJoinRow>(
+        `${PROFILE_SELECT}
+         WHERE p.id=$1 AND m.profile_owner_account_id=$2
+           AND m.relationship='delegated'
+         ORDER BY m.granted_at ASC`,
+        [profileId,ownerAccountId]
+      );
+      return result.rows.map(mapAccess);
+    });
+  }
+
   async findProfileAccess(accountId: string, profileId: string): Promise<ProfileAccessRecord | undefined> {
     return this.inAccountContext(accountId, async client => {
       const result = await client.query<ProfileJoinRow>(
