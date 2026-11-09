@@ -43,6 +43,7 @@ test("verification codes are delivered once and only keyed digests are persisted
   );
   const issued = await service.issue({
     accountId: "10000000-0000-4000-8000-000000000001",
+    identityId: "20000000-0000-4000-8000-000000000001",
     channel: "email",
     purpose: "email_verification",
     destination: "Person@Example.com",
@@ -78,6 +79,7 @@ test("delivery failure revokes the persisted challenge", async () => {
   );
   await assert.rejects(() => service.issue({
     accountId: "10000000-0000-4000-8000-000000000001",
+    identityId: "20000000-0000-4000-8000-000000000001",
     channel: "phone",
     purpose: "phone_verification",
     destination: "+2348012345678"
