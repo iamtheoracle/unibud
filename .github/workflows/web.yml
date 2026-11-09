@@ -44,6 +44,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0011_profile_invitations.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0012_profile_editing_and_role_permissions.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0013_fail_closed_profile_permission_checks.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0014_profile_delegation_lifecycle.sql
       - name: Verify identity constraints and audit immutability
         env:
           PGPASSWORD: unibud_test_only
@@ -60,6 +61,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0010_auth_rate_limiting.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0011_profile_invitations.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0012_profile_editing_and_role_permissions.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0013_profile_delegation_lifecycle.test.sql
   web-checks:
     name: Web build and type checks
     runs-on: ubuntu-24.04
