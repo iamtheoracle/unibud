@@ -19,7 +19,7 @@ ALTER TABLE public.profile_lifecycle_notifications
   CHECK(event_type IN(
     'profile_archived','profile_restored',
     'ownership_transfer_requested','ownership_transfer_accepted',
-    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired','delegated_access_suspended','profile_invitation_cancelled_by_archive'
+    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired','delegated_access_suspended','delegated_access_review_required','profile_invitation_cancelled_by_archive'
   ));
 
 CREATE TABLE public.profile_ownership_transfers(
@@ -130,6 +130,51 @@ BEGIN
 END;
 $function$;
 ALTER FUNCTION public.profile_archive_owned(UUID,UUID) OWNER TO unibud_profile_owner;
+
+-- Restoring a profile does not revive suspended access. Notify each suspended
+-- delegate that the profile is back but their grant still needs owner review.
+CREATE OR REPLACE FUNCTION public.profile_restore_owned(
+ p_profile_id UUID,p_owner_account_id UUID
+) RETURNS BOOLEAN
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+DECLARE v_profile public.profiles%ROWTYPE;
+BEGIN
+ IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
+  RAISE EXCEPTION 'Authenticated profile owner required' USING ERRCODE='42501';
+ END IF;
+ PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
+ IF NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active') THEN
+  RAISE EXCEPTION 'Active account required' USING ERRCODE='42501';
+ END IF;
+ SELECT p.* INTO v_profile FROM public.profiles p
+ WHERE p.id=p_profile_id AND p.owner_account_id=p_owner_account_id FOR UPDATE;
+ IF NOT FOUND THEN RETURN FALSE; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id AND m.account_id=p_owner_account_id
+  AND m.relationship='owner' AND m.role='owner' AND m.status='active') THEN
+  RAISE EXCEPTION 'Only the owning account may restore this profile' USING ERRCODE='42501';
+ END IF;
+ IF v_profile.status='active' THEN RETURN TRUE; END IF;
+ IF v_profile.status<>'archived' OR v_profile.kind NOT IN('creator','page_community') THEN
+  RAISE EXCEPTION 'This profile cannot be restored through profile recovery' USING ERRCODE='55000';
+ END IF;
+ UPDATE public.profiles SET status='active',updated_at=clock_timestamp() WHERE id=p_profile_id;
+ INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+ VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.restore','success','profile',p_profile_id,'owner_requested',
+  jsonb_build_object('profile_kind',v_profile.kind,'previous_status','archived','new_status','active',
+   'suspended_delegate_account_ids',(SELECT COALESCE(jsonb_agg(account_id),'[]'::jsonb)
+    FROM public.profile_memberships WHERE profile_id=p_profile_id AND relationship='delegated' AND status='suspended')));
+ INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+ VALUES(p_owner_account_id,p_profile_id,'profile_restored',jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle));
+ INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+ SELECT account_id,p_profile_id,'delegated_access_review_required',
+  jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle,'reason','profile_restored_owner_review')
+ FROM public.profile_memberships WHERE profile_id=p_profile_id AND relationship='delegated' AND status='suspended';
+ RETURN TRUE;
+END;
+$function$;
+ALTER FUNCTION public.profile_restore_owned(UUID,UUID) OWNER TO unibud_profile_owner;
 
 -- Extend owner-visible lifecycle history to include transfer requests,
 -- recipient consent, cancellation and completion audit events.
