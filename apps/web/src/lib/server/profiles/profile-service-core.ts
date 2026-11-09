@@ -58,7 +58,7 @@ export interface ProfileOutgoingInvitationRecord {
 export interface ProfileLifecycleEvent {
   id: string;
   occurredAt: string;
-  action: "profile.archive" | "profile.restore" | "profile.ownership_transfer.requested" | "profile.ownership_transfer.recipient_response" | "profile.ownership_transfer.cancelled" | "profile.ownership_transfer.completed";
+  action: "profile.archive" | "profile.restore" | "profile.ownership_transfer.requested" | "profile.ownership_transfer.recipient_response" | "profile.ownership_transfer.cancelled" | "profile.ownership_transfer.completed" | "profile.ownership_transfer.expired";
   outcome: "success" | "failure" | "denied";
   reasonCode: string | null;
   eventData: Record<string, unknown>;
