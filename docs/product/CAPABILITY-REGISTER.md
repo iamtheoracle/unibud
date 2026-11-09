@@ -18,7 +18,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 | Capability | Scope to preserve | Initial state |
 |---|---|---|
 | Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Migrations 0001–0008 and PostgreSQL 16 auth/RLS tests added; scrypt, verification, session lifecycle, registration/login/recovery orchestration, encrypted identifier protection and narrow PostgreSQL RPC adapter implemented; concrete pool, rate limiter, delivery provider, routes, and cookie wiring pending |
-| Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Contracts and server-side profile service implemented; one-personal-profile invariant and delegated owner binding migrated; PostgreSQL 16 owner/delegate/outsider tests added; production profile repository adapter pending |
+| Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Contracts and server-side profile service implemented; one-personal-profile invariant and delegated owner binding migrated; PostgreSQL 16 owner/delegate/outsider tests added; PostgreSQL profile RPC adapter implemented; concrete runtime pool and route wiring pending |
 | Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Exact-profile grant/revoke service implemented; delegated rows bound to canonical owner and grantor; owner/delegate/unrelated-account isolation test added |
 | Discovery and search | People, profiles, communities, institutions, creators, services, opportunities, activities, content | Target |
 | Messaging | Direct and contextual conversations, attachments, voice messages, safety controls | Target |
@@ -34,7 +34,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 - First-party email/phone registration and login; no Google or Apple sign-up.
 - Versioned terms and privacy acceptance; account identity is resolved from a verified session, never a caller-supplied account ID.
 - Personal profile and owner membership are created idempotently; creator and page/community profiles remain separate profile families.
-- **Status:** onboarding orchestration and acceptance persistence implemented; production repository adapter, route handlers, delivery provider, and cookie integration pending.
+- **Status:** onboarding orchestration and acceptance persistence implemented; PostgreSQL onboarding RPC adapter implemented; concrete runtime pool, route handlers, delivery provider, and cookie integration pending.
 
 ## Education identities — private future capability
 
