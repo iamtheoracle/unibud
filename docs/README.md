@@ -11,6 +11,7 @@
 - [Data Architecture](architecture/DATA-ARCHITECTURE.md)
 - [Cross-Space Flows and Ownership Boundaries](architecture/CROSS-SPACE-FLOWS.md)
 - [Integration Register](architecture/INTEGRATION-REGISTER.md)
+- [Identity and Persistence Recommendation — proposed, provider not selected](architecture/IDENTITY-AND-PERSISTENCE-RECOMMENDATION.md)
 - [Decision 0001: Monorepo and Service Boundaries](decisions/0001-monorepo-and-service-boundaries.md)
 - [Decision Log](decisions/DECISION-LOG.md)
 
