@@ -243,9 +243,14 @@ CREATE OR REPLACE FUNCTION public.guard_profile_membership_during_transfer()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public
 AS $function$
+DECLARE v_profile_status TEXT;
 BEGIN
  IF NEW.relationship='delegated' AND NEW.status IN('active','suspended') THEN
-  PERFORM 1 FROM public.profiles WHERE id=NEW.profile_id FOR UPDATE;
+  SELECT status INTO v_profile_status FROM public.profiles WHERE id=NEW.profile_id FOR UPDATE;
+  IF NEW.status='active' AND v_profile_status IS DISTINCT FROM 'active' THEN
+   RAISE EXCEPTION 'Active profile required for delegated access'
+    USING ERRCODE='23514';
+  END IF;
   IF EXISTS(SELECT 1 FROM public.profile_ownership_transfers
    WHERE profile_id=NEW.profile_id AND status IN('pending_recipient','recipient_accepted')
     AND expires_at>clock_timestamp()) THEN
@@ -295,9 +300,14 @@ CREATE OR REPLACE FUNCTION public.guard_profile_invitation_during_transfer()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public
 AS $function$
+DECLARE v_profile_status TEXT;
 BEGIN
  IF NEW.status='pending' THEN
-  PERFORM 1 FROM public.profiles WHERE id=NEW.profile_id FOR UPDATE;
+  SELECT status INTO v_profile_status FROM public.profiles WHERE id=NEW.profile_id FOR UPDATE;
+  IF v_profile_status IS DISTINCT FROM 'active' THEN
+   RAISE EXCEPTION 'Active profile required for a new invitation'
+    USING ERRCODE='23514';
+  END IF;
   IF EXISTS(SELECT 1 FROM public.profile_ownership_transfers
    WHERE profile_id=NEW.profile_id AND status IN('pending_recipient','recipient_accepted')
     AND expires_at>clock_timestamp()) THEN
