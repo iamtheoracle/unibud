@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { createConfiguredIdentityServices } from "../lib/server/identity/identity-runtime";
+import { sessionCookieName } from "../lib/server/identity/http";
 
 const spaces = [
   { name: "Connect", description: "People, communities, opportunities and services" },
@@ -9,7 +13,17 @@ const spaces = [
   { name: "Wayward", description: "Discover, organise and join experiences" }
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const token=(await cookies()).get(sessionCookieName())?.value;
+  if(token){
+    let destination:string|undefined;
+    try{
+      const {sessions}=createConfiguredIdentityServices();
+      const validation=await sessions.validate(token);
+      if(validation.valid) destination=validation.session.activeProfileId?"/home":"/onboarding";
+    }catch{}
+    if(destination) redirect(destination);
+  }
   return (
     <main className="shell">
       <header className="topbar">
