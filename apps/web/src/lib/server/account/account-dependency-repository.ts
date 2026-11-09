@@ -2,7 +2,7 @@ import {
   createSignedAccountContextFromEnvironment,
   withSignedAccountTransaction,
   type SqlPool
-} from "../database/account-context-core";
+} from "../database/account-context-core.ts";
 
 export interface AccountDependencyDiscovery {
   version: string;
