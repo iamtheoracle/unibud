@@ -11,7 +11,8 @@ export function ProfileOwnershipTransferPanel({profiles}:{profiles:TransferProfi
  const eligible=profiles.filter(p=>p.relationship==="owner"&&(p.profile.kind==="creator"||p.profile.kind==="page_community")&&p.profile.status==="active");
  const [profileId,setProfileId]=useState(eligible[0]?.profile.id??"");
  const eligibleIds=eligible.map(p=>p.profile.id).join("|");
- useEffect(()=>{if(!eligible.some(p=>p.profile.id===profileId))setProfileId(eligible[0]?.profile.id??"");},[eligibleIds,profileId]);
+ const firstEligibleId=eligible[0]?.profile.id??"";
+ useEffect(()=>{if(!eligibleIds.split("|").includes(profileId))setProfileId(firstEligibleId);},[eligibleIds,firstEligibleId,profileId]);
  const [recipientHandle,setRecipientHandle]=useState("");
  const [channel,setChannel]=useState<"email"|"phone">("email");
  const [identifier,setIdentifier]=useState("");
