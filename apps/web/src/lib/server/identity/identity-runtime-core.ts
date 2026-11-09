@@ -1,9 +1,9 @@
 import "server-only";
 
-import { AuthenticationService, type AuthRateLimiter } from "./authentication-core.ts";
-import { VerificationChallengeService, type VerificationDelivery, type VerificationRateLimiter } from "./verification-core.ts";
-import { SessionService } from "./session-core.ts";
-import { createAuthRpcRepository } from "./auth-rpc-repository-core.ts";
+import { AuthenticationService } from "../auth/authentication-core.ts";
+import { VerificationChallengeService, type VerificationDelivery } from "../auth/verification-core.ts";
+import { SessionService } from "../auth/session-core.ts";
+import { createAuthRpcRepository } from "../auth/auth-rpc-repository-core.ts";
 import type { SqlPool } from "../database/account-context-core.ts";
 import { ProfileService } from "../profiles/profile-service-core.ts";
 import { ProfileProcedureRepository } from "../profiles/profile-procedure-repository.ts";
@@ -21,8 +21,6 @@ export interface IdentityRuntimeDependencies {
  authPool:SqlPool;
  /** Must authenticate as a dedicated LOGIN principal granted unibud_app. */
  appPool:SqlPool;
- authRateLimiter:AuthRateLimiter;
- verificationRateLimiter:VerificationRateLimiter;
  verificationDelivery:VerificationDelivery;
 }
 
@@ -30,13 +28,13 @@ export function createIdentityServices(dependencies:IdentityRuntimeDependencies)
  if(dependencies.authPool===dependencies.appPool) throw new Error("Authentication and application database pools must be separate role-bound pools.");
  const authRepository=createAuthRpcRepository(dependencies.authPool);
  const verification=new VerificationChallengeService(
-  authRepository,dependencies.verificationRateLimiter,dependencies.verificationDelivery,
-  readRuntimeKey("UNIBUD_VERIFICATION_DIGEST_KEY")
+  authRepository,authRepository,dependencies.verificationDelivery,
+  readRuntimeKey("UNIBUD_VERIFICATION_HMAC_KEY")
  );
  const sessions=new SessionService(authRepository);
  const authentication=new AuthenticationService(
-  authRepository,dependencies.authRateLimiter,verification,sessions,
-  readRuntimeKey("UNIBUD_RATE_LIMIT_DIGEST_KEY")
+  authRepository,authRepository,verification,sessions,
+  readRuntimeKey("UNIBUD_RATE_LIMIT_HMAC_KEY")
  );
  const profiles=new ProfileService(new ProfileProcedureRepository(dependencies.appPool));
  const onboarding=new OnboardingService(
