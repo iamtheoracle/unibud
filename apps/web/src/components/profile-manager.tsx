@@ -294,6 +294,25 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
     } finally { setBusy(false); }
   }
 
+  async function viewProfileHistory(profileId: string) {
+    setError(""); setNotice("");
+    try {
+      const response=await fetch("/api/profiles/"+encodeURIComponent(profileId)+"/history",{cache:"no-store"});
+      if(!response.ok) throw new Error(await readError(response));
+      const body=await response.json() as {history:Array<{action:string;occurredAt:string;outcome:string;reasonCode:string|null}>};
+      const labels:Record<string,string>={
+        "profile.archive":"Profile archived","profile.restore":"Profile restored",
+        "profile.ownership_transfer.requested":"Ownership transfer requested",
+        "profile.ownership_transfer.recipient_response":"Recipient responded to transfer",
+        "profile.ownership_transfer.cancelled":"Ownership transfer cancelled",
+        "profile.ownership_transfer.completed":"Ownership transfer completed",
+        "profile.ownership_transfer.expired":"Ownership transfer expired"
+      };
+      setNotice(body.history.map(event=>(labels[event.action]??event.action)+" · "+new Date(event.occurredAt).toLocaleString()+
+        (event.reasonCode?" · "+event.reasonCode:"")).join(" | ")||"No lifecycle history is available.");
+    } catch(cause) { setError(cause instanceof Error?cause.message:"Could not load profile lifecycle history."); }
+  }
+
   return (
     <div className="profile-page">
       <section className="profile-intro">
@@ -320,7 +339,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
                 </div>
                 <button className="profile-action" type="button" disabled={busy || active || !item.canSwitchToProfile || item.membershipStatus !== "active"} onClick={() => void switchProfile(item.profile.id)}>
                   {active ? "Active" : "Switch"}
-                </button>{item.relationship === "owner" && (item.profile.kind === "creator" || item.profile.kind === "page_community") && <button className="profile-text-action" type="button" disabled={busy} onClick={() => void archiveProfile(item.profile.id)}>Archive</button>}
+                </button>{item.relationship === "owner" && <button className="profile-text-action" type="button" disabled={busy} onClick={() => void viewProfileHistory(item.profile.id)}>History</button>}{item.relationship === "owner" && (item.profile.kind === "creator" || item.profile.kind === "page_community") && <button className="profile-text-action" type="button" disabled={busy} onClick={() => void archiveProfile(item.profile.id)}>Archive</button>}
               </article>;
             })}
           </div>
@@ -333,7 +352,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
         <div className="profile-section-heading"><div><p className="eyebrow">Profile recovery</p><h2>Archived profiles</h2></div><span className="profile-count">{archivedProfiles.length} archived</span></div>
         <div className="profile-notification-list" aria-label="Profile recovery notifications">{lifecycleNotifications.length===0 ? <p className="profile-muted">No profile recovery notifications.</p> : lifecycleNotifications.map(notification=><article className="profile-notification" key={notification.id}><div><strong>{{profile_archived:"Profile archived",profile_restored:"Profile restored",ownership_transfer_requested:"Ownership transfer requested",ownership_transfer_accepted:"Ownership transfer accepted",ownership_transfer_completed:"Ownership transfer completed",ownership_transfer_cancelled:"Ownership transfer cancelled",ownership_transfer_expired:"Ownership transfer expired"}[notification.eventType]}</strong><p>{String(notification.details.profileName??"Your profile")} · {new Date(notification.createdAt).toLocaleString()}</p><small>{notification.readAt?"Read":"Unread"}</small></div>{!notification.readAt&&<button className="profile-text-action" type="button" onClick={()=>void markLifecycleNotificationRead(notification.id)}>Mark read</button>}</article>)}</div>
         <p className="profile-muted">Archived profiles are hidden from discovery and switching. Their identity and content are retained; only the owning account can restore them.</p>
-        {archivedProfiles.length === 0 ? <p className="profile-muted">You have no archived profiles.</p> : <div className="profile-list">{archivedProfiles.map((item) => <article className="profile-card" key={item.profile.id}><div className="profile-avatar" aria-hidden="true">{item.profile.displayName.slice(0,1).toUpperCase()}</div><div className="profile-card-copy"><h3>{item.profile.displayName}</h3><p>@{item.profile.handle} · {item.profile.kind === "creator" ? "Creator" : "Page / community"}</p><small>Archived · owned by you · hidden from discovery and switching</small></div><button className="profile-action" type="button" disabled={busy} onClick={() => void restoreProfile(item.profile.id)}>Restore</button><button className="profile-text-action" type="button" disabled={busy} onClick={async () => { try { const response=await fetch("/api/profiles/"+encodeURIComponent(item.profile.id)+"/history",{cache:"no-store"}); if(!response.ok) throw new Error(await readError(response)); const body=await response.json() as {history:Array<{action:string;occurredAt:string}>}; setNotice(body.history.map(event => event.action+" · "+new Date(event.occurredAt).toLocaleString()).join(" | ") || "No lifecycle history is available."); } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not load recovery history."); } }}>History</button></article>)}</div>}
+        {archivedProfiles.length === 0 ? <p className="profile-muted">You have no archived profiles.</p> : <div className="profile-list">{archivedProfiles.map((item) => <article className="profile-card" key={item.profile.id}><div className="profile-avatar" aria-hidden="true">{item.profile.displayName.slice(0,1).toUpperCase()}</div><div className="profile-card-copy"><h3>{item.profile.displayName}</h3><p>@{item.profile.handle} · {item.profile.kind === "creator" ? "Creator" : "Page / community"}</p><small>Archived · owned by you · hidden from discovery and switching</small></div><button className="profile-action" type="button" disabled={busy} onClick={() => void restoreProfile(item.profile.id)}>Restore</button><button className="profile-text-action" type="button" disabled={busy} onClick={() => void viewProfileHistory(item.profile.id)}>History</button></article>)}</div>}
       </section>
 
       <section className="profile-section">
