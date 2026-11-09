@@ -36,7 +36,6 @@ $closure$;
 RESET ROLE;
 
 -- Profile owner principal bypasses RLS but cannot silently change legal ownership.
-SET LOCAL ROLE unibud_app;
 DO $ownership$
 BEGIN
  BEGIN
