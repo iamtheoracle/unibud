@@ -281,22 +281,24 @@ try {
       archivedProfiles = [...archivedProfiles, { ...creator, profile: { ...creator.profile, status: "archived" } }];
       return json(route, 200, { ok: true, profileLifecycleUpdated: true });
     });
-    await page.route("**/api/profiles/" + archivedProfiles[0].profile.id + "/restore", async route => {
+    await page.route("**/api/profiles/*/restore", async route => {
       restored = true;
-      archivedProfiles = archivedProfiles.filter(item => item.profile.id !== archivedProfiles[0].profile.id);
+      const profileId = new URL(route.request().url()).pathname.split("/").at(-2);
+      archivedProfiles = archivedProfiles.filter(item => item.profile.id !== profileId);
       return json(route, 200, { ok: true, profileLifecycleUpdated: true });
     });
     await page.route("**/api/profiles/delegations**", route => json(route, 200, { ok: true, delegatedAccess: [] }));
-    await page.route("**/api/profiles/" + archivedProfiles[0].profile.id + "/history", route => json(route, 200, { ok: true, history: [{ action: "profile.archive", occurredAt: new Date(0).toISOString() }] }));
+    await page.route("**/api/profiles/*/history", route => json(route, 200, { ok: true, history: [{ action: "profile.archive", occurredAt: new Date(0).toISOString(), outcome: "success", reasonCode: "owner_requested" }] }));
     page.on("dialog", dialog => dialog.accept());
     await openProfiles(page);
     await page.getByRole("button", { name: "Archive" }).click();
     await page.getByText("Profile archived. Your personal identity and other active profiles remain available.").waitFor();
     assert.equal(archived, true);
     await page.getByRole("heading", { name: "Archived profiles" }).waitFor();
-    await page.getByRole("button", { name: "History" }).first().click();
+    const archivedCreatorCard = page.locator(".profile-card").filter({ hasText: creator.profile.displayName });
+    await archivedCreatorCard.getByRole("button", { name: "History" }).click();
     await page.getByText(/Profile archived/).waitFor();
-    await page.getByRole("button", { name: "Restore" }).first().click();
+    await archivedCreatorCard.getByRole("button", { name: "Restore" }).click();
     await page.getByText("Profile restored. Any previously delegated access remains suspended until you review and reactivate it.").waitFor();
     assert.equal(restored, true);
     await page.close();
