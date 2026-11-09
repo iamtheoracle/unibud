@@ -19,7 +19,7 @@ ALTER TABLE public.profile_lifecycle_notifications
   CHECK(event_type IN(
     'profile_archived','profile_restored',
     'ownership_transfer_requested','ownership_transfer_accepted',
-    'ownership_transfer_completed','ownership_transfer_cancelled'
+    'ownership_transfer_completed','ownership_transfer_cancelled','ownership_transfer_expired'
   ));
 
 CREATE TABLE public.profile_ownership_transfers(
@@ -117,6 +117,63 @@ BEGIN
  RETURN NEW;
 END;
 $function$;
+
+-- Expiry and participant-account deactivation are terminal, audited transfer
+-- outcomes. Both parties receive durable notifications.
+CREATE OR REPLACE FUNCTION public.profile_audit_expired_ownership_transfer()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+BEGIN
+ IF NEW.status='expired' AND OLD.status IN('pending_recipient','recipient_accepted') THEN
+  INSERT INTO public.security_audit_events(id,actor_service,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+  VALUES(gen_random_uuid(),'unibud_profile_transfer_guard','unibud','profile.ownership_transfer.expired','success','profile',NEW.profile_id,
+   'transfer_window_elapsed',jsonb_build_object('transfer_id',NEW.id,'owner_account_id',NEW.current_owner_account_id,'recipient_account_id',NEW.recipient_account_id));
+  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+  VALUES(NEW.current_owner_account_id,NEW.profile_id,'ownership_transfer_expired',jsonb_build_object('transferId',NEW.id)),
+   (NEW.recipient_account_id,NEW.profile_id,'ownership_transfer_expired',jsonb_build_object('transferId',NEW.id));
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.profile_audit_expired_ownership_transfer() OWNER TO unibud_profile_owner;
+CREATE TRIGGER profile_ownership_transfer_expiry_audit
+AFTER UPDATE OF status ON public.profile_ownership_transfers
+FOR EACH ROW EXECUTE FUNCTION public.profile_audit_expired_ownership_transfer();
+REVOKE ALL ON FUNCTION public.profile_audit_expired_ownership_transfer() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION public.profile_cancel_transfers_for_inactive_account()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+DECLARE v_transfer public.profile_ownership_transfers%ROWTYPE;
+BEGIN
+ IF OLD.status='active' AND NEW.status<>'active' THEN
+  FOR v_transfer IN
+   UPDATE public.profile_ownership_transfers AS transfer
+    SET status='cancelled',cancelled_at=clock_timestamp()
+    WHERE transfer.status IN('pending_recipient','recipient_accepted')
+     AND (transfer.current_owner_account_id=NEW.id OR transfer.recipient_account_id=NEW.id)
+    RETURNING *
+  LOOP
+   INSERT INTO public.security_audit_events(id,actor_service,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+   VALUES(gen_random_uuid(),'unibud_profile_transfer_guard','unibud','profile.ownership_transfer.cancelled','success','profile',v_transfer.profile_id,
+    'participant_account_inactive',jsonb_build_object('transfer_id',v_transfer.id,'affected_account_id',NEW.id));
+   INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+   VALUES(v_transfer.current_owner_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+     jsonb_build_object('transferId',v_transfer.id,'reason','participant_account_inactive')),
+    (v_transfer.recipient_account_id,v_transfer.profile_id,'ownership_transfer_cancelled',
+     jsonb_build_object('transferId',v_transfer.id,'reason','participant_account_inactive'));
+  END LOOP;
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.profile_cancel_transfers_for_inactive_account() OWNER TO unibud_profile_owner;
+CREATE TRIGGER accounts_cancel_profile_transfers_when_inactive
+AFTER UPDATE OF status ON public.accounts
+FOR EACH ROW EXECUTE FUNCTION public.profile_cancel_transfers_for_inactive_account();
+REVOKE ALL ON FUNCTION public.profile_cancel_transfers_for_inactive_account() FROM PUBLIC;
 
 -- Archiving or restricting a profile invalidates any outstanding transfer
 -- consent. A pending acceptance must never survive a profile becoming inactive.
