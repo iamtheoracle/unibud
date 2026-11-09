@@ -176,7 +176,28 @@ try {
     await page.close();
   }
 
-  process.stdout.write("PASS: profile create, edit, switch, handle invitation, recipient acceptance, role change, suspension, restoration and invitation cancellation browser workflows.\\n");
+  // The active profile shell changes its navigation and identity framing by family.
+  {
+    const cases = [
+      { kind: "personal", name: "Personal profile", nav: ["Connections", "Highlights"], absent: "Publishing" },
+      { kind: "creator", name: "Creator profile", nav: ["Publishing", "Featured work", "Audience", "Insights"], absent: "Members" },
+      { kind: "page_community", name: "Page / community", nav: ["Announcements", "Members", "Events", "Rules", "Administrators"], absent: "Featured work" }
+    ];
+    for (const item of cases) {
+      const page = await newPage();
+      const active = profile(personalId, item.kind, "identity.handle", "Distinct Identity");
+      await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [active] }));
+      await openProfiles(page);
+      const navigation = page.getByRole("navigation", { name: item.name + " sections" });
+      await navigation.waitFor();
+      for (const label of item.nav) await navigation.getByRole("button", { name: label }).waitFor();
+      await assert.rejects(async () => navigation.getByRole("button", { name: item.absent, exact: true }).waitFor({ timeout: 150 }));
+      await page.getByRole("heading", { name: "Distinct Identity" }).waitFor();
+      await page.close();
+    }
+  }
+
+  process.stdout.write("PASS: profile create, edit, switch, family-specific navigation, handle invitation, recipient acceptance, role change, suspension, restoration and invitation cancellation browser workflows.\\n");
 } finally {
   await browser.close();
 }
