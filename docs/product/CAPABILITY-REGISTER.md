@@ -17,7 +17,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 
 | Capability | Scope to preserve | Initial state |
 |---|---|---|
-| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Target |
+| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Designed; persistence schema proposed |
 | Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Designed |
 | Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Designed |
 | Discovery and search | People, profiles, communities, institutions, creators, services, opportunities, activities, content | Target |
