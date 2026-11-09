@@ -19,19 +19,19 @@ test("onboarding derives account from a verified session and persists policy ver
  const sessions=new Sessions(),sessionService=new SessionService(sessions),store=new OnboardingStore();
  const issued=await sessionService.issue({id:"10000000-0000-4000-8000-000000000001",status:"active"},new Date("2026-11-09T06:00:00Z"));
  const service=new OnboardingService(sessionService,store);
- const result=await service.complete({sessionToken:issued.token,handle:" Oracle ",displayName:"Oracle",termsVersion:"terms-v1",privacyVersion:"privacy-v1",now:new Date("2026-11-09T06:01:00Z")});
+ const result=await service.complete({sessionToken:issued.token,handle:" Oracle ",displayName:"Oracle",termsVersion:"terms-v1",privacyVersion:"privacy-v1",acceptTerms:true,acceptPrivacy:true,now:new Date("2026-11-09T06:01:00Z")});
  assert.equal(result.ok,true);assert.equal(store.lastAccount,"10000000-0000-4000-8000-000000000001");
  assert.equal(result.ok&&result.profile.handle,"oracle");assert.equal(store.calls,1);
 });
 test("onboarding rejects missing or expired sessions and never accepts a caller account ID",async()=>{
  const sessions=new Sessions(),service=new OnboardingService(new SessionService(sessions),new OnboardingStore());
- const result=await service.complete({sessionToken:"not-a-session",handle:"oracle",displayName:"Oracle",termsVersion:"v1",privacyVersion:"v1"});
+ const result=await service.complete({sessionToken:"not-a-session",handle:"oracle",displayName:"Oracle",termsVersion:"v1",privacyVersion:"v1",acceptTerms:true,acceptPrivacy:true});
  assert.deepEqual(result,{ok:false,reason:"invalid_session"});
 });
 test("onboarding validates handle, display name and policy versions",async()=>{
  const sessions=new Sessions(),ss=new SessionService(sessions),store=new OnboardingStore();
  const issued=await ss.issue({id:"10000000-0000-4000-8000-000000000001",status:"active"});
  const service=new OnboardingService(ss,store);
- await assert.rejects(()=>service.complete({sessionToken:issued.token,handle:"bad handle",displayName:"Oracle",termsVersion:"v1",privacyVersion:"v1"}));
+ await assert.rejects(()=>service.complete({sessionToken:issued.token,handle:"bad handle",displayName:"Oracle",termsVersion:"v1",privacyVersion:"v1",acceptTerms:true,acceptPrivacy:true}));
  await assert.rejects(()=>service.complete({sessionToken:issued.token,handle:"oracle",displayName:" ",termsVersion:"v1",privacyVersion:"v1"}));
 });
