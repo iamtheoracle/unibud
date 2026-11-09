@@ -78,14 +78,39 @@ BEGIN
   '10000000-0000-4000-8000-000000000002',
   'creator','owner-b-two','owner-b-two','Owner B Two','private'
  );
- PERFORM public.profile_grant_delegated_access(
+ PERFORM * FROM public.profile_invite_by_handle(
+  '60000000-0000-4000-8000-000000000001',
   '20000000-0000-4000-8000-000000000002',
   '10000000-0000-4000-8000-000000000002',
-  '10000000-0000-4000-8000-000000000001',
-  'editor',TRUE
+  'owner-a','editor',TRUE
  );
 END;
 $create_b$;
+RESET ROLE;
+
+-- The intended recipient accepts the pending invitation while authenticated.
+WITH context AS (
+ SELECT '10000000-0000-4000-8000-000000000001'::TEXT AS account_id,
+ floor(extract(epoch FROM clock_timestamp()) + 60)::BIGINT::TEXT AS expiry,
+ 'abababab-abab-4bab-8bab-abababababab'::TEXT AS nonce
+)
+SELECT
+ set_config('unibud.account_id',account_id,true),
+ set_config('unibud.context_expiry',expiry,true),
+ set_config('unibud.context_nonce',nonce,true),
+ set_config('unibud.context_signature',encode(public.hmac(
+  convert_to(account_id || ':' || expiry || ':' || nonce,'UTF8'),
+  decode(repeat('5a',32),'hex'),'sha256'),'hex'),true)
+FROM context;
+SET LOCAL ROLE unibud_app;
+DO $accept_profile_invite$
+BEGIN
+ IF public.profile_respond_to_invitation(
+  '60000000-0000-4000-8000-000000000001',
+  '10000000-0000-4000-8000-000000000001',TRUE
+ ) IS NOT TRUE THEN RAISE EXCEPTION 'Invitee could not accept page delegation'; END IF;
+END;
+$accept_profile_invite$;
 RESET ROLE;
 
 -- A sees its own profile and the explicitly delegated B profile, not B's other profile.
