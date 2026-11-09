@@ -30,11 +30,9 @@ INSERT INTO public.profile_role_permissions(role,permission) VALUES
  ('moderator','profile.read'),('moderator','content.moderate'),('moderator','members.view'),
  ('editor','profile.read'),('editor','content.create'),('editor','content.update'),('editor','content.publish'),
  ('member','profile.read'),('viewer','profile.read'),
- ('seller','profile.read'),('seller','marketplace.manage_listing'),
- ('provider','profile.read'),('provider','service.manage_availability'),
- ('professional','profile.read'),('professional','education.manage_assigned_records'),
- ('student','profile.read'),('staff','profile.read'),('operator','profile.read'),
- ('staff','operations.view_assigned_work'),('operator','operations.view_assigned_work');
+ ('seller','profile.read'),('provider','profile.read'),
+ ('professional','profile.read'),('student','profile.read'),
+ ('staff','profile.read'),('operator','profile.read');
 
 CREATE OR REPLACE FUNCTION public.profile_authorize_action(
   p_profile_id UUID,p_account_id UUID,p_permission TEXT
