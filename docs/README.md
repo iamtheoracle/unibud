@@ -19,6 +19,7 @@
 - [Security Baseline](security/SECURITY-BASELINE.md)
 - [PostgreSQL Ownership and Database Security](security/POSTGRESQL-OWNERSHIP-AND-SECURITY.md)
 - [Trusted PostgreSQL Access and Account Isolation](security/TRUSTED-DATABASE-ACCESS.md)
+- [First-party Authentication and Onboarding](security/FIRST-PARTY-AUTHENTICATION.md)
 - [Identity and Onboarding Architecture](security/IDENTITY-ARCHITECTURE.md)
 - [Identity Persistence Migration and Synthetic Data Policy](security/IDENTITY-PERSISTENCE-MIGRATION.md)
 - [Session Lifecycle Contract](security/SESSION-LIFECYCLE.md)
