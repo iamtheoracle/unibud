@@ -51,6 +51,35 @@ test("production rejects insecure HTTP and short gateway credentials", () => {
   assert.equal(shortToken.state, "misconfigured");
 });
 
+test("endpoint rejects embedded credentials, query strings and fragments", () => {
+  for (const endpoint of [
+    "https://user:password@gateway.example.test/send",
+    "https://gateway.example.test/send?token=secret",
+    "https://gateway.example.test/send#secret"
+  ]) {
+    const result = buildVerificationDeliveryStatus({
+      ...valid,
+      UNIBUD_VERIFICATION_DELIVERY_URL: endpoint
+    }, "production");
+    assert.equal(result.state, "misconfigured");
+    assert.equal(JSON.stringify(result).includes("secret"), false);
+  }
+});
+
+test("non-production HTTP is limited to loopback development endpoints", () => {
+  const local = buildVerificationDeliveryStatus({
+    ...valid,
+    UNIBUD_VERIFICATION_DELIVERY_URL: "http://localhost:8080/send"
+  }, "development");
+  assert.equal(local.state, "configured_unverified");
+
+  const remote = buildVerificationDeliveryStatus({
+    ...valid,
+    UNIBUD_VERIFICATION_DELIVERY_URL: "http://gateway.example.test/send"
+  }, "development");
+  assert.equal(remote.state, "misconfigured");
+});
+
 test("invalid endpoint URL is classified without exposing its value", () => {
   const result = buildVerificationDeliveryStatus({
     ...valid,
