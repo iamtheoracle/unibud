@@ -13,7 +13,7 @@ export default function OnboardingPage(){
   event.preventDefault();setBusy(true);setError("");
   try{
    const response=await fetch("/api/onboarding/complete",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
-    handle,displayName,termsVersion:"terms-draft-2026-11",privacyVersion:"privacy-draft-2026-11",acceptTerms,acceptPrivacy
+    handle,displayName,termsVersion:process.env.NEXT_PUBLIC_UNIBUD_TERMS_VERSION??"terms-draft-2026-11",privacyVersion:process.env.NEXT_PUBLIC_UNIBUD_PRIVACY_VERSION??"privacy-draft-2026-11",acceptTerms,acceptPrivacy
    })});
    const result=await response.json();if(!response.ok||!result.ok) throw new Error(result.error??"Profile setup could not be completed.");
    router.replace("/");
