@@ -17,9 +17,9 @@ The initial repository foundation is documentation and service scaffolding. The 
 
 | Capability | Scope to preserve | Initial state |
 |---|---|---|
-| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Contracts and identity schema implemented; PostgreSQL 16 migration and signed-context RLS tests added to CI; runtime credential/session services pending |
-| Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Designed |
-| Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Designed |
+| Account and identity | Registration, login, recovery, sessions, verification, account lifecycle, device/session controls | Migrations 0001–0004 and PostgreSQL 16 auth/RLS tests added; scrypt, verification, session, and registration/login/recovery orchestration cores implemented; production RPC adapters, routes, delivery, and cookie wiring pending |
+| Profile families | Personal, creator, page/community; one account may own/manage several; explicit switching | Contracts and server-side profile service implemented; one-personal-profile invariant and delegated owner binding migrated; PostgreSQL 16 role-isolation tests pending latest CI; production repository adapter pending |
+| Delegated access | Page admins, moderators, school/seller/provider roles; scoped grants and revocation | Exact-profile grant/revoke service implemented; delegated rows bound to canonical owner and grantor; owner/delegate/unrelated-account isolation test added |
 | Discovery and search | People, profiles, communities, institutions, creators, services, opportunities, activities, content | Target |
 | Messaging | Direct and contextual conversations, attachments, voice messages, safety controls | Target |
 | Notifications | Meaningful, preference-aware, space-specific events; no noisy blanket notifications | Target |
@@ -29,6 +29,12 @@ The initial repository foundation is documentation and service scaffolding. The 
 | AI assistance | Oracle Arc integration with scoped memory, agent permissions, confirmation and audit | Designed |
 | Accessibility and localisation | Responsive layouts, accessible interaction, language/currency/time-zone support | Target |
 | Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | Target |
+
+### Identity onboarding
+- First-party email/phone registration and login; no Google or Apple sign-up.
+- Versioned terms and privacy acceptance; account identity is resolved from a verified session, never a caller-supplied account ID.
+- Personal profile and owner membership are created idempotently; creator and page/community profiles remain separate profile families.
+- **Status:** onboarding orchestration and acceptance persistence implemented; production repository adapter, route handlers, delivery provider, and cookie integration pending.
 
 ## Education identities — private future capability
 
