@@ -64,7 +64,27 @@ export interface ProfileLifecycleEvent {
   eventData: Record<string, unknown>;
 }
 
+export interface ProfileLifecycleNotification {
+  id: string;
+  profileId: string;
+  eventType: "profile_archived" | "profile_restored";
+  createdAt: string;
+  readAt: string | null;
+  details: Record<string, unknown>;
+}
+export interface ProfileClosurePreflight {
+  canClose: boolean;
+  ownedProfiles: number;
+  activeOwnedProfiles: number;
+  archivedOwnedProfiles: number;
+  delegatedRelationships: number;
+  requiresOwnershipTransferWorkflow: boolean;
+  requiresDelegationRelease: boolean;
+}
 export interface ProfileRepository {
+  listLifecycleNotifications(accountId: string): Promise<ProfileLifecycleNotification[]>;
+  markLifecycleNotificationRead(accountId: string, notificationId: string): Promise<boolean>;
+  getAccountClosurePreflight(accountId: string): Promise<ProfileClosurePreflight>;
   listArchivedOwnedProfiles(ownerAccountId: string): Promise<ProfileAccessRecord[]>;
   archiveOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
   restoreOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
@@ -102,6 +122,18 @@ export class ProfileService {
 
   constructor(repository: ProfileRepository) { this.repository=repository; }
 
+  async listLifecycleNotifications(accountId: string): Promise<ProfileLifecycleNotification[]> {
+    if (!accountId) throw new ProfileAccessDeniedError();
+    return this.repository.listLifecycleNotifications(accountId);
+  }
+  async markLifecycleNotificationRead(accountId: string, notificationId: string): Promise<boolean> {
+    if (!accountId || !/^[0-9a-f-]{36}$/i.test(notificationId)) throw new ProfileAccessDeniedError();
+    return this.repository.markLifecycleNotificationRead(accountId, notificationId);
+  }
+  async getAccountClosurePreflight(accountId: string): Promise<ProfileClosurePreflight> {
+    if (!accountId) throw new ProfileAccessDeniedError();
+    return this.repository.getAccountClosurePreflight(accountId);
+  }
   async listArchivedOwnedProfiles(accountId: string): Promise<ProfileAccessRecord[]> {
     if (!accountId) throw new ProfileAccessDeniedError();
     return this.repository.listArchivedOwnedProfiles(accountId);
