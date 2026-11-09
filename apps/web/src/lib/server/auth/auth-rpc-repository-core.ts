@@ -129,7 +129,7 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
    status:asString(row.session_status) as PersistedSession["status"],
    issuedAt:asDateString(row.issued_at),lastSeenAt:asNullableDateString(row.last_seen_at),
    idleExpiresAt:asDateString(row.idle_expires_at),absoluteExpiresAt:asDateString(row.absolute_expires_at),
-   revokedAt:asNullableString(row.revoked_at),rotatedFromSessionId:null
+   revokedAt:asNullableDateString(row.revoked_at),rotatedFromSessionId:null
   };
   return {session,account:{id:session.accountId,status:asString(row.account_status) as SessionAccount["status"]}};
  }
