@@ -38,7 +38,7 @@ class MemorySessionRepository implements SessionRepository {
     return session?{session,account:{id:session.accountId,status:"active" as const}}:null;
   }
   async touch(){return true;}
-  async revoke(id:string,at:string){const s=this.rows.get(id);if(s){s.status="revoked";s.revokedAt=at;}}
+  async revoke(digest:Buffer,at:string){const s=[...this.rows.values()].find(x=>x.credentialDigest.equals(digest));if(s){s.status="revoked";s.revokedAt=at;}}
   async revokeAll(id:string,at:string){for(const s of this.rows.values())if(s.accountId===id){s.status="revoked";s.revokedAt=at;}}
   async rotate(){return false;}
 }
