@@ -15,6 +15,7 @@
 
 ## Security
 - [Security Baseline](security/SECURITY-BASELINE.md)
+- [Identity and Onboarding Architecture](security/IDENTITY-ARCHITECTURE.md)
 
 ## Oracle Arc
 - [Independent AI Core Specification](oracle-arc/ORACLE-ARC-SPEC.md)
