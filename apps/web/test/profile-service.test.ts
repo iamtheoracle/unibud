@@ -16,6 +16,7 @@ class Repo implements ProfileRepository{
  async grantDelegatedAccess(_owner:string,input:DelegatedProfileGrantInput){this.grants++;return access(input.delegateAccountId,"delegated",input.canSwitchToProfile);}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
+ async listDelegatedAccess(){return [access(delegate,"delegated",true)];}
  async findProfileAccess(accountId:string){return this.record.accountId===accountId?this.record:undefined;}
  async setActiveProfileContext(){this.activeContext=true;return true;}
 }
