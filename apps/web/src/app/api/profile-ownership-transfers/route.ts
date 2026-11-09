@@ -22,6 +22,6 @@ export async function POST(request:NextRequest){
   const verified=await authentication.verifyCredentialsForAccount({accountId:session.account.id,channel:body.channel,identifier:body.identifier,password:body.password});
   if(!verified)return NextResponse.json({ok:false,error:"Fresh account verification was not accepted."},{status:401});
   const responded=await profiles.respondToOwnershipTransfer(session.account.id,body.transferId,body.accept);
-  return NextResponse.json({ok:responded},{status:responded?200:404});
+  return responded?NextResponse.json({ok:true}):NextResponse.json({ok:false,error:"This transfer request is no longer open or has expired."},{status:409});
  }catch(error){if(error instanceof ProfileAccessDeniedError)return NextResponse.json({ok:false,error:"Transfer access denied."},{status:403});return routeError(error);}
 }
