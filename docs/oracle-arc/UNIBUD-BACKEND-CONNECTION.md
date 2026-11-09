@@ -52,3 +52,6 @@ Automated tests cover missing configuration, HTTPS enforcement, authenticated id
 ### Temporary operator bearer-token floor
 
 The temporary internal diagnostics bearer gate now fails closed unless the configured token contains at least 32 UTF-8 bytes. It accepts exactly one RFC-style bearer token without tabs, extra fields or whitespace and compares equal-length byte sequences in constant time. This is a minimum configuration safeguard, not operator identity, role-based access control, rotation, revocation, or an acceptable substitute for session-derived operator authorisation. Keep internal diagnostics unavailable to ordinary account sessions until that RBAC boundary exists.
+
+
+Generate a deployment token with a cryptographically secure random source, for example `openssl rand -base64 32 | tr '+/' '-_' | tr -d '='`. Store the result only in the deployment secret manager. Do not use repeated characters or a human-created passphrase; the server validates the canonical 43-character base64url shape, not randomness itself.
