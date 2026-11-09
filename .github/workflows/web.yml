@@ -78,5 +78,32 @@ jobs:
         run: pnpm --filter @unibud/web test
       - name: Lint
         run: pnpm lint
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --global playwright@1.56.1
+          playwright install --with-deps chromium
+      - name: Profile browser end-to-end tests
+        env:
+          UNIBUD_E2E_TEST_MODE: "true"
+          PLAYWRIGHT_MODULE: /usr/local/lib/node_modules/playwright/index.mjs
+          UNIBUD_E2E_BASE_URL: http://127.0.0.1:3100
+        run: |
+          set -euo pipefail
+          pnpm --filter @unibud/web dev -- --hostname 127.0.0.1 --port 3100 > /tmp/unibud-e2e-next.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          READY=0
+          for attempt in $(seq 1 60); do
+            if curl --silent --fail http://127.0.0.1:3100/__e2e/profiles > /dev/null; then
+              READY=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/unibud-e2e-next.log
+            exit 1
+          fi
+          node scripts/e2e/profiles.mjs
       - name: Build
         run: pnpm build
