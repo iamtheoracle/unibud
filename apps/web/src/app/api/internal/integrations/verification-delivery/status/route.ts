@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.json(buildVerificationDeliveryStatus(process.env), {
+  return NextResponse.json(buildVerificationDeliveryStatus(process.env, process.env.NODE_ENV), {
     headers: { "Cache-Control": "no-store" }
   });
 }
