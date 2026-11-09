@@ -31,6 +31,59 @@ AS $function$
  LIMIT 1
 $function$;
 
+DROP FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ);
+CREATE FUNCTION public.auth_rotate_session(
+ p_old_credential_digest BYTEA,
+ p_new_session_id UUID,
+ p_new_credential_digest BYTEA,
+ p_now TIMESTAMPTZ,
+ p_idle_expires_at TIMESTAMPTZ,
+ p_absolute_expires_at TIMESTAMPTZ
+)
+RETURNS TABLE(session_id UUID,account_id UUID)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+DECLARE old_session public.account_sessions%ROWTYPE;
+BEGIN
+ IF p_old_credential_digest IS NULL OR octet_length(p_old_credential_digest)<>32
+    OR p_new_session_id IS NULL OR p_new_credential_digest IS NULL
+    OR octet_length(p_new_credential_digest)<>32 OR p_now IS NULL
+    OR p_idle_expires_at IS NULL OR p_absolute_expires_at IS NULL
+    OR p_idle_expires_at<=p_now OR p_absolute_expires_at<p_idle_expires_at THEN
+   RETURN;
+ END IF;
+
+ SELECT * INTO old_session
+ FROM public.account_sessions
+ WHERE credential_digest=p_old_credential_digest
+ FOR UPDATE;
+
+ IF NOT FOUND OR old_session.status<>'active' OR old_session.revoked_at IS NOT NULL
+    OR old_session.issued_at>p_now OR old_session.idle_expires_at<=p_now
+    OR old_session.absolute_expires_at<=p_now
+    OR NOT EXISTS(SELECT 1 FROM public.accounts a WHERE a.id=old_session.account_id AND a.status='active') THEN
+   RETURN;
+ END IF;
+
+ UPDATE public.account_sessions
+ SET status='revoked',revoked_at=p_now,revocation_reason='rotated'
+ WHERE id=old_session.id;
+
+ INSERT INTO public.account_sessions(
+  id,account_id,credential_digest,issued_at,last_seen_at,idle_expires_at,
+  absolute_expires_at,rotated_from_session_id,active_profile_id,profile_context_version
+ ) VALUES (
+  p_new_session_id,old_session.account_id,p_new_credential_digest,p_now,p_now,
+  LEAST(p_idle_expires_at,p_absolute_expires_at),p_absolute_expires_at,
+  old_session.id,old_session.active_profile_id,old_session.profile_context_version
+ );
+
+ RETURN QUERY SELECT p_new_session_id,old_session.account_id;
+END;
+$function$;
+
 CREATE OR REPLACE FUNCTION public.auth_lookup_challenge_account(p_challenge_id UUID)
 RETURNS TABLE(account_id UUID, identity_id UUID, purpose TEXT)
 LANGUAGE sql
@@ -86,16 +139,19 @@ $function$;
 
 GRANT CREATE ON SCHEMA public TO unibud_auth_owner;
 ALTER FUNCTION public.auth_lookup_session(BYTEA) OWNER TO unibud_auth_owner;
+ALTER FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) OWNER TO unibud_auth_owner;
 ALTER FUNCTION public.auth_lookup_challenge_account(UUID) OWNER TO unibud_auth_owner;
 REVOKE CREATE ON SCHEMA public FROM unibud_auth_owner;
 ALTER FUNCTION public.auth_touch_session(BYTEA,TIMESTAMPTZ,TIMESTAMPTZ) OWNER TO unibud_auth_owner;
 ALTER FUNCTION public.auth_revoke_all_sessions(UUID,TIMESTAMPTZ,TEXT) OWNER TO unibud_auth_owner;
 
 REVOKE ALL ON FUNCTION public.auth_lookup_session(BYTEA) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_lookup_challenge_account(UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_touch_session(BYTEA,TIMESTAMPTZ,TIMESTAMPTZ) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_revoke_all_sessions(UUID,TIMESTAMPTZ,TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.auth_lookup_session(BYTEA) TO unibud_auth;
+GRANT EXECUTE ON FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_lookup_challenge_account(UUID) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_touch_session(BYTEA,TIMESTAMPTZ,TIMESTAMPTZ) TO unibud_auth;
 GRANT EXECUTE ON FUNCTION public.auth_revoke_all_sessions(UUID,TIMESTAMPTZ,TEXT) TO unibud_auth;
