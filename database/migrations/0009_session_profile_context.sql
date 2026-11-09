@@ -14,6 +14,7 @@ RETURNS TABLE(
   idle_expires_at TIMESTAMPTZ,
   absolute_expires_at TIMESTAMPTZ,
   revoked_at TIMESTAMPTZ,
+  rotated_from_session_id UUID,
   active_profile_id UUID,
   profile_context_version UUID
 )
@@ -24,7 +25,7 @@ SET search_path=pg_catalog,public
 AS $function$
  SELECT s.id,s.account_id,s.status,a.status,s.issued_at,s.last_seen_at,
         s.idle_expires_at,s.absolute_expires_at,s.revoked_at,
-        s.active_profile_id,s.profile_context_version
+        s.rotated_from_session_id,s.active_profile_id,s.profile_context_version
  FROM public.account_sessions s
  JOIN public.accounts a ON a.id=s.account_id
  WHERE s.credential_digest=p_credential_digest
@@ -46,6 +47,14 @@ SET search_path=pg_catalog,public
 AS $function$
 DECLARE old_session public.account_sessions%ROWTYPE;
 BEGIN
+ IF p_old_credential_digest IS NULL OR octet_length(p_old_credential_digest)<>32
+    OR p_new_session_id IS NULL OR p_new_credential_digest IS NULL
+    OR octet_length(p_new_credential_digest)<>32 OR p_now IS NULL
+    OR p_idle_expires_at IS NULL OR p_absolute_expires_at IS NULL
+    OR p_idle_expires_at<=p_now THEN
+   RETURN;
+ END IF;
+
  SELECT * INTO old_session
  FROM public.account_sessions
  WHERE credential_digest=p_old_credential_digest
@@ -53,12 +62,10 @@ BEGIN
 
  IF NOT FOUND OR old_session.status<>'active'
     OR old_session.revoked_at IS NOT NULL
+    OR old_session.issued_at>p_now
     OR old_session.idle_expires_at<=p_now
     OR old_session.absolute_expires_at<=p_now
-    OR p_new_credential_digest IS NULL OR octet_length(p_new_credential_digest)<>32
-    OR p_idle_expires_at<=p_now
-    OR p_absolute_expires_at< p_idle_expires_at
-    OR p_absolute_expires_at>old_session.absolute_expires_at
+    OR p_absolute_expires_at<>old_session.absolute_expires_at
     OR NOT EXISTS(SELECT 1 FROM public.accounts a WHERE a.id=old_session.account_id AND a.status='active') THEN
    RETURN;
  END IF;
@@ -82,8 +89,10 @@ BEGIN
 END;
 $function$;
 
+GRANT CREATE ON SCHEMA public TO unibud_auth_owner;
 ALTER FUNCTION public.auth_lookup_session(BYTEA) OWNER TO unibud_auth_owner;
 ALTER FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) OWNER TO unibud_auth_owner;
+REVOKE CREATE ON SCHEMA public FROM unibud_auth_owner;
 REVOKE ALL ON FUNCTION public.auth_lookup_session(BYTEA) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.auth_rotate_session(BYTEA,UUID,BYTEA,TIMESTAMPTZ,TIMESTAMPTZ,TIMESTAMPTZ) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.auth_lookup_session(BYTEA) TO unibud_auth;
