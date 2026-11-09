@@ -1,3 +1,10 @@
 import "server-only";
 
-export { createProfileRuntime } from "./runtime-core";
+import { getAppDatabasePool } from "../database/postgres-pool";
+import { createProfileRuntime } from "./runtime-core";
+
+export { createProfileRuntime };
+
+export function createConfiguredProfileRuntime() {
+  return createProfileRuntime(getAppDatabasePool());
+}
