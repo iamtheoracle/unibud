@@ -85,7 +85,7 @@ END
 $editor$;
 RESET ROLE;
 
--- A provider gets only the provider-specific permission, never page administration.
+-- A provider profile label is not a provider-service grant and never grants page administration.
 WITH x AS (
  SELECT '11000000-0000-4000-8000-000000000004'::text a,
  floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
@@ -97,7 +97,7 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry'
 SET LOCAL ROLE unibud_app;
 DO $provider$
 BEGIN
- IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000004','service.manage_availability') IS NOT TRUE THEN RAISE EXCEPTION 'Provider permission missing'; END IF;
+ IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000004','service.manage_availability') IS NOT FALSE THEN RAISE EXCEPTION 'Profile role incorrectly created a service-provider grant'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000004','members.view') IS NOT FALSE THEN RAISE EXCEPTION 'Provider inherited member administration'; END IF;
 END
 $provider$;
