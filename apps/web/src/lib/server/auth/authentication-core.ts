@@ -33,7 +33,7 @@ export interface AuthRateLimiter {
 }
 export type AuthResult =
   | { ok: true; state: "verification_required"; challengeId: string; expiresAt: string }
-  | { ok: true; state: "authenticated"; token: string; accountId: string }
+  | { ok: true; state: "authenticated"; token: string; accountId: string; expiresAt: string }
   | { ok: true; state: "accepted" }
   | { ok: false; state: "invalid_credentials" | "verification_failed" };
 
@@ -94,7 +94,7 @@ export class AuthenticationService {
       return {ok:false,state:"invalid_credentials"};
     }
     const session=await this.sessions.issue({id:account.id,status:account.status},now);
-    return {ok:true,state:"authenticated",token:session.token,accountId:account.id};
+    return {ok:true,state:"authenticated",token:session.token,accountId:account.id,expiresAt:session.session.absoluteExpiresAt};
   }
   async requestRecovery(input:{channel:VerificationChannel;identifier:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
