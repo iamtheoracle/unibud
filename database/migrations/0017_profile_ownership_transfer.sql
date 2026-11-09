@@ -27,7 +27,7 @@ CREATE TABLE public.profile_ownership_transfers(
  profile_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE RESTRICT,
  current_owner_account_id UUID NOT NULL REFERENCES public.accounts(id) ON DELETE RESTRICT,
  recipient_account_id UUID NOT NULL REFERENCES public.accounts(id) ON DELETE RESTRICT,
- status TEXT NOT NULL CHECK(status IN('pending_recipient','recipient_accepted','recipient_declined','cancelled','expired','completed')),
+ status TEXT NOT NULL DEFAULT 'pending_recipient' CHECK(status IN('pending_recipient','recipient_accepted','recipient_declined','cancelled','expired','completed')),
  created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
  expires_at TIMESTAMPTZ NOT NULL,
  recipient_responded_at TIMESTAMPTZ,
