@@ -78,7 +78,7 @@ try {
     await page.close();
   }
 
-  // Switching sends only the target profile ID; the server remains the authority.
+  // Public page delegation must not expose future tutor/student/institutional roles.\n  {\n    const page = await newPage();\n    await page.route("**/api/profiles", route => json(route, 200, { ok: true, profiles: [personal, community] }));\n    await page.route("**/api/profiles/delegations**", route => json(route, 200, { ok: true, delegatedAccess: [] }));\n    await page.route("**/api/profile-invitations", route => json(route, 200, { ok: true, invitations: [] }));\n    await openProfiles(page);\n    const roleSelect = page.getByLabel("Role");\n    const values = await roleSelect.locator("option").evaluateAll(options => options.map(option => option.value));\n    for (const reservedRole of ["student", "tutor", "staff", "operator", "professional"]) assert.equal(values.includes(reservedRole), false);\n    for (const supportedRole of ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"]) assert.equal(values.includes(supportedRole), true);\n    await page.close();\n  }\n\n  // Switching sends only the target profile ID; the server remains the authority.
   {
     const page = await newPage();
     await page.route("**/home", route => route.fulfill({ status: 200, contentType: "text/html", body: "<h1>Home workspace</h1>" }));
@@ -142,7 +142,7 @@ try {
     await page.close();
   }
 
-  process.stdout.write("PASS: profile create, switch, handle invitation and recipient acceptance browser workflows.\\n");
+  process.stdout.write("PASS: profile create, edit, switch, public-role boundary, handle invitation and recipient acceptance browser workflows.\\n");
 } finally {
   await browser.close();
 }
