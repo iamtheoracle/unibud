@@ -9,15 +9,20 @@ export async function POST(request:NextRequest){
  const body=await readJsonObject(request);
  if(!body) return NextResponse.json({ok:false,error:"Invalid JSON request."},{status:400});
  if(typeof body.handle!=="string"||typeof body.displayName!=="string"||
-   typeof body.termsVersion!=="string"||typeof body.privacyVersion!=="string"||
    body.acceptTerms!==true||body.acceptPrivacy!==true){
   return NextResponse.json({ok:false,error:"Complete the required profile and policy steps."},{status:400});
+ }
+ const termsVersion=process.env.UNIBUD_TERMS_VERSION?.trim()??"terms-draft-2026-11";
+ const privacyVersion=process.env.UNIBUD_PRIVACY_VERSION?.trim()??"privacy-draft-2026-11";
+ if(process.env.NODE_ENV==="production"&&(/draft/i.test(termsVersion)||/draft/i.test(privacyVersion)||
+   !process.env.UNIBUD_TERMS_VERSION?.trim()||!process.env.UNIBUD_PRIVACY_VERSION?.trim())){
+  return NextResponse.json({ok:false,error:"Account setup is temporarily unavailable while the final legal policies are reviewed."},{status:503});
  }
  try{
   const {onboarding}=createConfiguredIdentityServices();
   const result=await onboarding.complete({
    sessionToken:token,handle:body.handle,displayName:body.displayName,
-   termsVersion:body.termsVersion,privacyVersion:body.privacyVersion,
+   termsVersion,privacyVersion,
    acceptTerms:true,acceptPrivacy:true
   });
   return NextResponse.json(result,{status:result.ok?201:401});
