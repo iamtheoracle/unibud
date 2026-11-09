@@ -26,5 +26,8 @@ export async function POST(request:NextRequest){
    acceptTerms:true,acceptPrivacy:true
   });
   return NextResponse.json(result,{status:result.ok?201:401});
- }catch(error){return routeError(error);}
+ }catch(error){
+  if(error instanceof Error&&/handle|display name|profile/i.test(error.message)) return NextResponse.json({ok:false,error:error.message},{status:400});
+  return routeError(error);
+ }
 }
