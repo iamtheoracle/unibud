@@ -77,4 +77,6 @@ Do not silently substitute Clerk, Supabase Auth, Firebase Auth, Cognito, or a se
 
 ## Current implementation status
 
-This document records a recommendation only. PostgreSQL is not provisioned, Auth0 is not connected, no production authentication flow exists, and no database-backed authorisation service is implied. Existing TypeScript contracts are not a substitute for these services or their tests.
+The initial provider-independent first-party authentication path is now implemented in code: email/phone registration and verification, password login/recovery, scrypt verifiers, keyed/encrypted identifier protection, database-backed rate limits, opaque session lifecycle, HTTP-only same-site cookies, and session-bound onboarding/profile context. Auth0 remains unselected and is not required by this first-party flow; any later OIDC provider must remain behind the same UNIBUD account boundary.
+
+Disposable PostgreSQL 16 migrations and synthetic security tests cover the auth procedures, signed account context, RLS, owner/delegate isolation, profile switching, onboarding acceptance, session maintenance and rate limits. This does not mean a production database or production auth system is live. No production PostgreSQL instance, role credentials, secrets-manager bindings, delivery provider, operational monitoring, backup/restore drill, or approved final legal text has been provisioned. CI evidence is not production verification.
