@@ -100,7 +100,7 @@ export default function AccountClosureReadinessPage() {
               <span className="rounded-full border px-2 py-1 text-xs">{domain.status === "registered_unclassified" ? "Schema registered · policy unapproved" : "Not implemented · blocks closure"}</span>
             </div>
             <p className="mt-2 text-sm text-slate-600">{domain.explanation}</p>
-            <p className="mt-2 text-xs text-slate-500">{domain.sourceTables.length ? `Verified tables: ${domain.sourceTables.join(", ")}` : "No persisted domain tables verified in migrations 0001–0017."}</p>
+            <p className="mt-2 text-xs text-slate-500">{domain.sourceTables.length ? `Registered tables: ${domain.sourceTables.join(", ")}` : "No persisted domain tables registered in migrations 0001–0019."}</p>
           </li>)}
         </ul>
         <p className="mt-4 text-sm font-medium" role="status">{data.dependencies.policy.reason}</p>
