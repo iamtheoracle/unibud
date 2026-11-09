@@ -9,7 +9,8 @@ export async function GET(request:NextRequest,context:Context){
  try{
   const {profileId}=await context.params;const {sessions,profiles}=createConfiguredIdentityServices();
   const session=await sessions.validate(token);if(!session.valid)return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
-  return NextResponse.json({ok:true,preflight:await profiles.getOwnershipTransferPreflight(session.account.id,profileId)});
+  const [preflight,transfers]=await Promise.all([profiles.getOwnershipTransferPreflight(session.account.id,profileId),profiles.listOutgoingOwnershipTransfers(session.account.id,profileId)]);
+  return NextResponse.json({ok:true,preflight,transfers});
  }catch(error){if(error instanceof ProfileAccessDeniedError)return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});return routeError(error);}
 }
 
