@@ -1,7 +1,7 @@
 import { createCipheriv, createHmac, randomBytes } from "node:crypto";
 import type { SqlClient, SqlPool } from "../database/account-context-core.ts";
-import type { AuthRepository, AuthAccountRecord, RecoveryTarget } from "./authentication-core.ts";
-import type { NewVerificationChallenge, VerificationChallengeRepository, ChallengeVerificationResult } from "./verification-core.ts";
+import type { AuthRepository, AuthAccountRecord, RecoveryTarget, AuthRateLimiter } from "./authentication-core.ts";
+import type { NewVerificationChallenge, VerificationChallengeRepository, ChallengeVerificationResult, VerificationRateLimiter } from "./verification-core.ts";
 import type { PersistedSession, SessionAccount, SessionRepository } from "./session-core.ts";
 
 interface Row { [key: string]: unknown }
@@ -40,10 +40,42 @@ export class IdentifierProtector {
  * as a dedicated LOGIN principal granted unibud_auth, never as a table owner,
  * superuser, BYPASSRLS role, or unibud_app.
  */
-export class AuthRpcRepository implements AuthRepository,VerificationChallengeRepository,SessionRepository {
+export class AuthRateLimitExceededError extends Error {
+ constructor(){super("Too many attempts. Please wait before trying again.");this.name="AuthRateLimitExceededError";}
+}
+
+export class AuthRpcRepository implements AuthRepository,VerificationChallengeRepository,SessionRepository,AuthRateLimiter,VerificationRateLimiter {
  private readonly pool:SqlPool;
  private readonly identifiers:IdentifierProtector;
- constructor(pool:SqlPool,identifiers:IdentifierProtector){this.pool=pool;this.identifiers=identifiers;}
+ private readonly rateLimitKey:Uint8Array;
+ constructor(pool:SqlPool,identifiers:IdentifierProtector,rateLimitKey:Uint8Array){
+  if(rateLimitKey.byteLength<32) throw new Error("Rate-limit HMAC key must contain at least 32 bytes.");
+  this.pool=pool;this.identifiers=identifiers;this.rateLimitKey=rateLimitKey;
+ }
+
+ private async consumeRateLimit(action:"register"|"login"|"recovery"|"verification",digest:Uint8Array,now:string,maxAttempts:number):Promise<void>{
+  if(digest.byteLength!==32) throw new Error("Invalid rate-limit digest.");
+  const rows=await this.query<{allowed:boolean}>(
+   "SELECT public.auth_consume_rate_limit($1,$2,$3,$4,$5,$6) AS allowed",
+   [action,digest,now,900,maxAttempts,1800]
+  );
+  if(rows[0]?.allowed!==true) throw new AuthRateLimitExceededError();
+ }
+
+ async assertAllowed(input:Parameters<AuthRateLimiter["assertAllowed"]>[0]):Promise<void>;
+ async assertAllowed(input:Parameters<VerificationRateLimiter["assertAllowed"]>[0]):Promise<void>;
+ async assertAllowed(input:Parameters<AuthRateLimiter["assertAllowed"]>[0]|Parameters<VerificationRateLimiter["assertAllowed"]>[0]):Promise<void>{
+  if("identifierDigest" in input){
+   if(!/^[0-9a-f]{64}$/i.test(input.identifierDigest)) throw new Error("Invalid identifier rate-limit digest.");
+   const limit=input.action==="login"?10:3;
+   await this.consumeRateLimit(input.action,Buffer.from(input.identifierDigest,"hex"),input.now,limit);
+   return;
+  }
+  const digest=createHmac("sha256",this.rateLimitKey)
+   .update("verification:"+input.accountId+":"+input.channel+":"+input.purpose+":","utf8")
+   .update(input.targetDigest).digest();
+  await this.consumeRateLimit("verification",digest,input.now,3);
+ }
 
  private async query<T=Row>(sql:string,values:readonly unknown[]=[]):Promise<T[]>{
   const client:SqlClient=await this.pool.connect();
@@ -157,5 +189,5 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
 export function createAuthRpcRepository(pool:SqlPool):AuthRpcRepository {
  return new AuthRpcRepository(pool,new IdentifierProtector(
   readKey("UNIBUD_IDENTITY_ENCRYPTION_KEY"),readKey("UNIBUD_IDENTITY_LOOKUP_HMAC_KEY")
- ));
+ ),readKey("UNIBUD_RATE_LIMIT_HMAC_KEY"));
 }
