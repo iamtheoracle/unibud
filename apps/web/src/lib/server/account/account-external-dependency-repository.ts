@@ -14,6 +14,7 @@ export interface AccountExternalDependencyDiscovery {
     unknownDispositionReferences: number;
     unavailableReferences: number;
     staleReferences: number;
+    sharedReferences: number;
   };
   countsByDomain: Record<string, number>;
   integrations: Array<{

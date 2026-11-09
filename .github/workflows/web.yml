@@ -116,5 +116,6 @@ jobs:
             exit 1
           fi
           PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/profiles.mjs
+          PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/external-dependency-readiness.mjs
       - name: Build
         run: pnpm build

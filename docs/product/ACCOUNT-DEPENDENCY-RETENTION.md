@@ -83,3 +83,14 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - SQL tests cover aggregate counts, opaque-digest non-disclosure, unknown disposition, unverified provider state, fail-closed policy and cross-account denial. Web repository tests cover signed context, commit/rollback and client release. The Foundation workflow is updated to apply migrations 0018 and 0019 and execute both SQL tests. The earlier Foundation workflow stopped at 0017, so its prior green run did not verify migration 0018.
 - **Not implemented yet:** provider-specific lookup adapters, object-storage inventory, event-bus/webhook scans, payment or identity processor API calls, export/deletion execution, provider receipts, backup expiry checks, and a UI presentation for this new registry response. No live provider is queried by this migration.
 - Registry capability flags default to false. A provider may be marked verified only with explicit evidence and a verification timestamp. Permanent closure remains disabled; no retention durations or legal conclusions are encoded.
+
+
+## External dependency readiness experience and provider contracts
+
+- The account closure readiness page now displays registered integrations with distinct **verified**, **unknown**, **unavailable** and **unclassified** states. Missing policy domains are shown separately as policy gaps; they are not conflated with integration state.
+- The page shows aggregate external-reference counts for unverified, unknown-disposition, stale, unavailable and shared relationships. No opaque reference digest or raw provider identifier is displayed.
+- Migration 0019's discovery result includes a shared-reference count for `participant` and `shared_participant` relationships. SQL coverage now includes stale and unavailable references and a shared participant.
+- `external-dependency-provider.ts` defines read-only lookup and verification contracts. It accepts only account-scoped opaque digests, rejects provider results containing unrequested digests, rejects stale/invalid verification evidence, and converts missing adapters or provider failures into explicit unavailable/unknown outcomes.
+- The adapter contract intentionally has **no export or delete method**. The readiness projection hard-codes export, deletion and account closure to false, regardless of provider lookup success.
+- Automated tests cover missing adapters, stale lookup evidence, stale verification evidence, failed provider lookups, unexpected provider references, shared relationships, state classification and the permanent export/deletion/closure prohibition.
+- **Not implemented:** no concrete provider adapter is registered, no provider is contacted by this change, and the current integration registry remains unknown until separately verified. This is contract and visibility groundwork, not live provider discovery.

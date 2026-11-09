@@ -133,7 +133,8 @@ BEGIN
     'unverifiedReferences', count(*) FILTER (WHERE evidence_state <> 'provider_confirmed'),
     'unknownDispositionReferences', count(*) FILTER (WHERE disposition_state = 'unknown'),
     'unavailableReferences', count(*) FILTER (WHERE evidence_state = 'unavailable'),
-    'staleReferences', count(*) FILTER (WHERE evidence_state = 'stale')
+    'staleReferences', count(*) FILTER (WHERE evidence_state = 'stale'),
+    'sharedReferences', count(*) FILTER (WHERE relationship_kind IN ('participant','shared_participant'))
   )
   INTO v_counts
   FROM public.account_external_dependency_refs

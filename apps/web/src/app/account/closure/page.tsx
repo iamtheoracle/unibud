@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { ClosureReadinessSnapshot } from "../../../lib/account/closure-readiness";
 import type { AccountDependencyDomain } from "../../../lib/account/dependency-inventory";
+import type { AccountExternalDependencyDiscovery } from "../../../lib/server/account/account-external-dependency-repository";
+import { buildExternalDependencyReadiness } from "../../../lib/account/external-dependency-readiness";
 
 type ResponseBody = { ok: true; readiness: {
   status: "blocked" | "eligible_for_policy_review";
@@ -12,7 +14,7 @@ type ResponseBody = { ok: true; readiness: {
   blockers: { ownedProfiles: number; activeOwnedProfiles: number; archivedOwnedProfiles: number; delegatedRelationships: number; incomingTransfers: number; outgoingTransfers: number };
   policyGate: { status: "not_approved"; message: string };
   explanation: string;
-}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } }; dependencyDiscovery: { version: string; generatedAt: string; counts: Record<string, number>; sharedOwnership: Record<string, number>; foreignKeys: Array<{ constraint: string; fromTable: string; toTable: string; definition: string }>; coverage: { registeredTables: string[]; notImplementedDomains: string[]; unknownExternalDependenciesBlockClosure: true }; policy: { status: "not_approved"; missingPolicyDomains: string[]; canClose: false } } } | { ok: false; error: string };
+}; snapshot: ClosureReadinessSnapshot; dependencies: { version: string; domains: AccountDependencyDomain[]; summary: { totalDomains: number; registeredDomains: number; unimplementedDomains: number; unclassifiedRegisteredDomains: number; unregisteredDomainsBlockClosure: number }; policy: { status: "not_approved"; canClose: false; reason: string } }; dependencyDiscovery: { version: string; generatedAt: string; counts: Record<string, number>; sharedOwnership: Record<string, number>; foreignKeys: Array<{ constraint: string; fromTable: string; toTable: string; definition: string }>; coverage: { registeredTables: string[]; notImplementedDomains: string[]; unknownExternalDependenciesBlockClosure: true }; policy: { status: "not_approved"; missingPolicyDomains: string[]; canClose: false } }; externalDependencyDiscovery: AccountExternalDependencyDiscovery } | { ok: false; error: string };
 
 export default function AccountClosureReadinessPage() {
   const [data, setData] = useState<Extract<ResponseBody, { ok: true }> | null>(null);
@@ -40,6 +42,7 @@ export default function AccountClosureReadinessPage() {
 
   const { readiness } = data;
   const counts = readiness.blockers;
+  const externalReadiness = buildExternalDependencyReadiness(data.externalDependencyDiscovery);
   return (
     <main className="mx-auto max-w-3xl px-5 py-10">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm"><Link href="/profiles" className="underline">Profiles</Link><span aria-hidden="true"> / </span><span>Account closure</span></nav>
@@ -97,7 +100,7 @@ export default function AccountClosureReadinessPage() {
               <span className="rounded-full border px-2 py-1 text-xs">{domain.status === "registered_unclassified" ? "Schema registered · policy unapproved" : "Not implemented · blocks closure"}</span>
             </div>
             <p className="mt-2 text-sm text-slate-600">{domain.explanation}</p>
-            <p className="mt-2 text-xs text-slate-500">{domain.sourceTables.length ? `Verified tables: ${domain.sourceTables.join(", ")}` : "No persisted domain tables verified in migrations 0001–0017."}</p>
+            <p className="mt-2 text-xs text-slate-500">{domain.sourceTables.length ? `Registered tables: ${domain.sourceTables.join(", ")}` : "No persisted domain tables registered in migrations 0001–0019."}</p>
           </li>)}
         </ul>
         <p className="mt-4 text-sm font-medium" role="status">{data.dependencies.policy.reason}</p>
@@ -127,6 +130,60 @@ export default function AccountClosureReadinessPage() {
         <h3 className="mt-6 font-semibold">Unapproved policy domains</h3>
         <p className="mt-1 text-sm text-slate-600">{data.dependencyDiscovery.policy.missingPolicyDomains.join(", ")}</p>
         <p className="mt-2 text-sm font-medium" role="status">Permanent closure remains blocked. Unknown external dependencies are also blockers.</p>
+      </section>
+
+
+      <section aria-labelledby="external-dependencies-heading" className="mt-8">
+        <h2 id="external-dependencies-heading" className="text-xl font-semibold">External services and shared data</h2>
+        <p className="mt-2 text-sm text-slate-600">This view reports only dependencies registered and evidenced by UNIBUD; it does not claim that every external copy has been discovered. Integration verification state is platform-wide, while reference counts below are scoped to your signed-in account. No live provider check is performed by this screen yet. Export and deletion are unavailable.</p>
+        <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+          {[
+            ["Verified integrations", externalReadiness.counts.verified],
+            ["Unknown integrations", externalReadiness.counts.unknown],
+            ["Unavailable integrations", externalReadiness.counts.unavailable],
+            ["Unclassified integrations", externalReadiness.counts.unclassified],
+            ["Policy gaps", externalReadiness.counts.policyGaps]
+          ].map(([label, value]) => <div key={label} className="rounded-xl border p-3"><dt className="text-xs text-slate-600">{label}</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{value}</dd></div>)}
+        </dl>
+        <h3 className="mt-6 font-semibold">External references associated with this account</h3>
+        <dl className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {[
+            ["References", externalReadiness.references.total],
+            ["Not provider-verified", externalReadiness.references.unverified],
+            ["Unknown disposition", externalReadiness.references.unknownDisposition],
+            ["Unavailable references", externalReadiness.references.unavailable],
+            ["Stale evidence", externalReadiness.references.stale],
+            ["Shared relationships", externalReadiness.references.shared]
+          ].map(([label, value]) => <div key={label} className="rounded-xl border p-3"><dt className="text-xs text-slate-600">{label}</dt><dd className="mt-1 text-lg font-semibold tabular-nums">{value}</dd></div>)}
+        </dl>
+        <h3 className="mt-6 font-semibold">Registered integrations</h3>
+        {externalReadiness.integrations.length === 0 ? (
+          <p className="mt-3 rounded-xl border p-4 text-sm" role="status">No external integration has been registered. This is unclassified coverage, not proof that no external dependencies exist.</p>
+        ) : (
+          <ul className="mt-3 space-y-3">
+            {externalReadiness.integrations.map((integration) => (
+              <li key={integration.integrationKey} className="rounded-xl border p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h4 className="font-semibold">{integration.provider ?? integration.integrationKey}</h4>
+                  <span className="rounded-full border px-2 py-1 text-xs" data-state={integration.state}>{integration.state === "verified" ? "Verified" : integration.state === "unknown" ? "Unknown" : integration.state === "unavailable" ? "Unavailable" : "Unclassified"}</span>
+                </div>
+                <p className="mt-2 text-sm text-slate-600">{integration.explanation}</p>
+                <p className="mt-2 text-xs text-slate-500">Domain: {integration.domain} · Lookup: {integration.lookupAvailable ? "available by verified contract" : "not available"}</p>
+                {integration.lastVerifiedAt ? <p className="mt-1 text-xs text-slate-500">Last verified: {new Date(integration.lastVerifiedAt).toLocaleString()}</p> : null}
+                <p className="mt-2 text-xs font-medium">Export: unavailable · Deletion: unavailable</p>
+              </li>
+            ))}
+          </ul>
+        )}
+        <h3 className="mt-6 font-semibold">Unapproved policy domains</h3>
+        {externalReadiness.unclassifiedDomains.length === 0 ? (
+          <p className="mt-2 text-sm text-slate-600">No missing policy-domain labels were returned. This alone does not establish complete provider coverage.</p>
+        ) : (
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-600">
+            {externalReadiness.unclassifiedDomains.map(domain => <li key={domain}>{domain}</li>)}
+          </ul>
+        )}
+        <p className="mt-4 rounded-xl border p-4 text-sm" role="status">Export and deletion are disabled. Unknown, stale, unavailable and shared dependencies remain visible blockers. Permanent account closure remains disabled.</p>
       </section>
 
       <section aria-labelledby="policy-heading" className="mt-8 rounded-2xl border p-5">
