@@ -65,6 +65,7 @@ export interface ProfileLifecycleEvent {
 }
 
 export interface ProfileRepository {
+  listArchivedOwnedProfiles(ownerAccountId: string): Promise<ProfileAccessRecord[]>;
   archiveOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
   restoreOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean>;
   listProfileLifecycleHistory(ownerAccountId: string, profileId: string): Promise<ProfileLifecycleEvent[]>;
@@ -100,6 +101,11 @@ export class ProfileService {
   private readonly repository: ProfileRepository;
 
   constructor(repository: ProfileRepository) { this.repository=repository; }
+
+  async listArchivedOwnedProfiles(accountId: string): Promise<ProfileAccessRecord[]> {
+    if (!accountId) throw new ProfileAccessDeniedError();
+    return this.repository.listArchivedOwnedProfiles(accountId);
+  }
 
   async archiveOwnedProfile(accountId: string, profileId: string): Promise<boolean> {
     if (!accountId || !/^[0-9a-f-]{36}$/i.test(profileId)) throw new ProfileAccessDeniedError();
