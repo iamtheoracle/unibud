@@ -17,7 +17,7 @@ function LoginForm(){
    const result=await response.json();
    if(!response.ok||result.state!=="authenticated") throw new Error(result.error??"Sign-in failed.");
    const next=search.get("next");
-   router.replace(next&&next.startsWith("/")&&!next.startsWith("//")?next:"/");
+   router.replace(next&&next.startsWith("/")&&!next.startsWith("//")?next:"/home");
   }catch(e){setError(e instanceof Error?e.message:"Sign-in is temporarily unavailable.");}
   finally{setBusy(false);}
  }
