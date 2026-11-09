@@ -297,7 +297,7 @@ END;
 $function$;
 
 CREATE OR REPLACE FUNCTION public.profile_ownership_transfer_request(
- p_transfer_id UUID,p_profile_id UUID,p_owner_account_id UUID,p_recipient_handle TEXT,p_expires_at TIMESTAMPTZ
+ p_transfer_id UUID,p_profile_id UUID,p_owner_account_id UUID,p_recipient_handle TEXT
 ) RETURNS TABLE(transfer_id UUID,recipient_handle TEXT)
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
@@ -306,7 +306,7 @@ DECLARE v_recipient UUID; v_handle TEXT; v_profile public.profiles%ROWTYPE; v_ow
 BEGIN
  IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
     OR p_recipient_handle IS NULL OR length(trim(p_recipient_handle)) NOT BETWEEN 3 AND 30
-    OR p_expires_at IS NULL OR p_expires_at<=clock_timestamp() THEN
+    THEN
   RAISE EXCEPTION 'Invalid ownership transfer request' USING ERRCODE='22023';
  END IF;
  PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
@@ -349,7 +349,7 @@ BEGIN
  THEN RAISE EXCEPTION 'Resolve delegated access, pending invitations and open transfers before requesting transfer' USING ERRCODE='23514'; END IF;
 
  INSERT INTO public.profile_ownership_transfers(id,profile_id,current_owner_account_id,recipient_account_id,expires_at)
- VALUES(p_transfer_id,p_profile_id,p_owner_account_id,v_recipient,LEAST(p_expires_at,clock_timestamp()+interval '7 days'));
+ VALUES(p_transfer_id,p_profile_id,p_owner_account_id,v_recipient,clock_timestamp()+interval '7 days');
  INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
  VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.ownership_transfer.requested','success','profile',p_profile_id,
   'owner_requested',jsonb_build_object('transfer_id',p_transfer_id,'recipient_account_id',v_recipient,'profile_kind',v_profile.kind));
@@ -589,7 +589,7 @@ BEGIN
 END;
 $ownership$;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_preflight(UUID,UUID) FROM PUBLIC;
-REVOKE ALL ON FUNCTION public.profile_ownership_transfer_request(UUID,UUID,UUID,TEXT,TIMESTAMPTZ) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.profile_ownership_transfer_request(UUID,UUID,UUID,TEXT) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_list_incoming(UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_list_outgoing(UUID,UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_respond(UUID,UUID,BOOLEAN) FROM PUBLIC;
