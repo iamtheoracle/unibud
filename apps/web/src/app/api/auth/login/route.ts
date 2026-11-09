@@ -13,7 +13,7 @@ export async function POST(request:NextRequest){
   const {authentication}=createConfiguredIdentityServices();
   const result=await authentication.login({channel:body.channel,identifier:body.identifier,password:body.password});
   if(result.state!=="authenticated") return NextResponse.json({ok:false,error:"The sign-in details were not accepted."},{status:401});
-  const response=NextResponse.json({ok:true,accountId:result.accountId});
+  const response=NextResponse.json({ok:true,state:"authenticated",accountId:result.accountId});
   setSessionCookie(response,result.token,result.expiresAt);
   return response;
  }catch(error){
