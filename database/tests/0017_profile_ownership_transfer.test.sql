@@ -104,6 +104,25 @@ BEGIN
  EXCEPTION WHEN check_violation THEN
   IF SQLERRM NOT LIKE 'Active profile required%' THEN RAISE; END IF;
  END;
+ BEGIN
+  INSERT INTO public.profile_memberships(id,profile_id,account_id,owner_account_id,profile_owner_account_id,
+   relationship,role,status,can_switch_to_profile,granted_by_account_id)
+  VALUES('47000000-0000-4000-8000-000000000011','37000000-0000-4000-8000-000000000007',
+   '17000000-0000-4000-8000-000000000002',NULL,'17000000-0000-4000-8000-000000000001',
+   'delegated','viewer','active',false,'17000000-0000-4000-8000-000000000001');
+  RAISE EXCEPTION 'Delegated membership unexpectedly added to archived profile';
+ EXCEPTION WHEN check_violation THEN
+  IF SQLERRM NOT LIKE 'Active profile required for delegated access%' THEN RAISE; END IF;
+ END;
+ BEGIN
+  INSERT INTO public.profile_invitations(id,profile_id,owner_account_id,invitee_account_id,role,status,expires_at)
+  VALUES('97000000-0000-4000-8000-000000000003','37000000-0000-4000-8000-000000000007',
+   '17000000-0000-4000-8000-000000000001','17000000-0000-4000-8000-000000000002',
+   'viewer','pending',clock_timestamp()+interval '1 day');
+  RAISE EXCEPTION 'Pending invitation unexpectedly created for archived profile';
+ EXCEPTION WHEN check_violation THEN
+  IF SQLERRM NOT LIKE 'Active profile required for a new invitation%' THEN RAISE; END IF;
+ END;
  SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
  IF v_status<>'suspended' THEN RAISE EXCEPTION 'Archive did not suspend delegated access'; END IF;
  PERFORM public.profile_restore_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
