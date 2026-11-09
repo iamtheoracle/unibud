@@ -195,6 +195,29 @@ BEGIN
 END;
 $function$;
 
+CREATE OR REPLACE FUNCTION public.profile_ownership_transfer_list_outgoing(
+ p_owner_account_id UUID,p_profile_id UUID
+) RETURNS TABLE(transfer_id UUID,recipient_handle TEXT,status TEXT,created_at TIMESTAMPTZ,expires_at TIMESTAMPTZ)
+LANGUAGE plpgsql STABLE SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+BEGIN
+ IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
+  OR NOT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m
+   ON m.profile_id=p.id AND m.account_id=p_owner_account_id AND m.relationship='owner'
+    AND m.role='owner' AND m.status='active'
+   WHERE p.id=p_profile_id AND p.owner_account_id=p_owner_account_id)
+ THEN RAISE EXCEPTION 'Only the active owner may view outgoing transfer requests' USING ERRCODE='42501'; END IF;
+ RETURN QUERY SELECT t.id,recipient.handle,t.status,t.created_at,t.expires_at
+ FROM public.profile_ownership_transfers t
+ JOIN public.profiles recipient ON recipient.owner_account_id=t.recipient_account_id
+  AND recipient.kind='personal' AND recipient.status='active'
+ WHERE t.profile_id=p_profile_id AND t.current_owner_account_id=p_owner_account_id
+  AND t.status IN('pending_recipient','recipient_accepted')
+ ORDER BY t.created_at DESC;
+END;
+$function$;
+
 CREATE OR REPLACE FUNCTION public.profile_ownership_transfer_respond(
  p_transfer_id UUID,p_recipient_account_id UUID,p_accept BOOLEAN
 ) RETURNS BOOLEAN
@@ -361,7 +384,7 @@ BEGIN
   SELECT p.oid::regprocedure::TEXT FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
   WHERE n.nspname='public' AND p.proname IN(
    'profile_ownership_transfer_preflight','profile_ownership_transfer_request',
-   'profile_ownership_transfer_list_incoming','profile_ownership_transfer_respond',
+   'profile_ownership_transfer_list_incoming','profile_ownership_transfer_list_outgoing','profile_ownership_transfer_respond',
    'profile_ownership_transfer_cancel','profile_ownership_transfer_complete'
   )
  LOOP EXECUTE format('ALTER FUNCTION %s OWNER TO unibud_profile_owner',signature); END LOOP;
@@ -370,12 +393,14 @@ $ownership$;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_preflight(UUID,UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_request(UUID,UUID,UUID,TEXT,TIMESTAMPTZ) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_list_incoming(UUID) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.profile_ownership_transfer_list_outgoing(UUID,UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_respond(UUID,UUID,BOOLEAN) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_cancel(UUID,UUID) FROM PUBLIC;
 REVOKE ALL ON FUNCTION public.profile_ownership_transfer_complete(UUID,UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_preflight(UUID,UUID) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_request(UUID,UUID,UUID,TEXT,TIMESTAMPTZ) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_list_incoming(UUID) TO unibud_app;
+GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_list_outgoing(UUID,UUID) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_respond(UUID,UUID,BOOLEAN) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_cancel(UUID,UUID) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.profile_ownership_transfer_complete(UUID,UUID) TO unibud_app;
