@@ -16,6 +16,8 @@ export interface PersistedSession {
   absoluteExpiresAt: string;
   revokedAt: string | null;
   rotatedFromSessionId: string | null;
+  activeProfileId: string | null;
+  profileContextVersion: string | null;
 }
 
 export interface SessionRepository {
@@ -99,7 +101,9 @@ export class SessionService {
       idleExpiresAt: addSeconds(now, this.policy.idleLifetimeSeconds),
       absoluteExpiresAt: addSeconds(now, this.policy.absoluteLifetimeSeconds),
       revokedAt: null,
-      rotatedFromSessionId: null
+      rotatedFromSessionId: null,
+      activeProfileId: null,
+      profileContextVersion: null
     };
     await this.repository.create(session);
     return { token, session };
@@ -145,7 +149,9 @@ export class SessionService {
       idleExpiresAt: addSeconds(now, this.policy.idleLifetimeSeconds),
       absoluteExpiresAt: old.absoluteExpiresAt,
       revokedAt: null,
-      rotatedFromSessionId: old.id
+      rotatedFromSessionId: old.id,
+      activeProfileId: old.activeProfileId,
+      profileContextVersion: old.profileContextVersion
     };
     if (Date.parse(replacement.idleExpiresAt) > Date.parse(replacement.absoluteExpiresAt)) {
       replacement.idleExpiresAt = replacement.absoluteExpiresAt;
