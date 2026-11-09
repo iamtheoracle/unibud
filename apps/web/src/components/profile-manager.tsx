@@ -7,6 +7,7 @@ type ProfileKind = "personal" | "creator" | "page_community";
 type ProfileRecord = {
   accountId: string;
   relationship: "owner" | "delegated";
+  role: string;
   membershipStatus: "active" | "pending" | "suspended" | "revoked";
   canSwitchToProfile: boolean;
   profile: {
@@ -20,9 +21,10 @@ type ProfileRecord = {
   };
 };
 type IncomingInvitation = { id:string; profileId:string; profileName:string; profileHandle:string; ownerDisplayName:string; ownerHandle:string; role:string; canSwitchToProfile:boolean; createdAt:string; expiresAt:string };
-type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "viewer";
+type DelegateRole = "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
+type OutgoingInvitation = { id:string; profileId:string; inviteeHandle:string; role:DelegateRole; status:"pending"|"expired"; createdAt:string; expiresAt:string };
 
-const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"];
+const roleOptions: DelegateRole[] = ["admin", "moderator", "editor", "member", "seller", "provider", "professional", "student", "staff", "operator", "viewer"];
 
 async function readError(response: Response): Promise<string> {
   try {
@@ -48,6 +50,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   const [delegates, setDelegates] = useState<ProfileRecord[]>([]);
   const [inviteeHandle, setInviteeHandle] = useState("");
   const [incomingInvitations, setIncomingInvitations] = useState<IncomingInvitation[]>([]);
+  const [outgoingInvitations, setOutgoingInvitations] = useState<OutgoingInvitation[]>([]);
   const [delegateRole, setDelegateRole] = useState<DelegateRole>("editor");
   const [canDelegateSwitch, setCanDelegateSwitch] = useState(false);
   const [editingProfileId, setEditingProfileId] = useState("");
@@ -108,6 +111,17 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
   }, []);
 
   useEffect(() => { void loadDelegates(selectedDelegationProfile); }, [selectedDelegationProfile, loadDelegates]);
+
+  const loadOutgoingInvitations = useCallback(async (profileId: string) => {
+    if (!profileId) { setOutgoingInvitations([]); return; }
+    try {
+      const response = await fetch("/api/profile-invitations?profileId=" + encodeURIComponent(profileId), { cache: "no-store" });
+      if (!response.ok) throw new Error(await readError(response));
+      const body = await response.json() as { invitations: OutgoingInvitation[] };
+      setOutgoingInvitations(body.invitations ?? []);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not load outgoing invitations."); }
+  }, []);
+  useEffect(() => { void loadOutgoingInvitations(selectedDelegationProfile); }, [selectedDelegationProfile, loadOutgoingInvitations]);
 
   async function switchProfile(profileId: string) {
     setBusy(true); setError(""); setNotice("");
@@ -184,6 +198,29 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       setNotice(accept ? "Invitation accepted. The page is now available in your profile switcher." : "Invitation declined.");
       await Promise.all([loadIncomingInvitations(),loadProfiles()]);
     } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not respond to invitation."); }
+    finally { setBusy(false); }
+  }
+
+  async function manageDelegate(delegate: ProfileRecord, role: DelegateRole, status: "active"|"suspended") {
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/profiles/delegations", { method:"PATCH", headers:{"content-type":"application/json"}, body:JSON.stringify({profileId:selectedDelegationProfile,delegateAccountId:delegate.accountId,role,status}) });
+      if(!response.ok) throw new Error(await readError(response));
+      setNotice(status==="suspended" ? "Access suspended." : "Delegated access updated.");
+      await loadDelegates(selectedDelegationProfile);
+    } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not update delegated access."); }
+    finally { setBusy(false); }
+  }
+
+  async function cancelOutgoingInvitation(invitationId:string) {
+    if(!window.confirm("Cancel this pending invitation?")) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response=await fetch("/api/profile-invitations",{method:"DELETE",headers:{"content-type":"application/json"},body:JSON.stringify({invitationId})});
+      if(!response.ok) throw new Error(await readError(response));
+      setNotice("Invitation cancelled.");
+      await loadOutgoingInvitations(selectedDelegationProfile);
+    } catch(cause) { setError(cause instanceof Error ? cause.message : "Could not cancel invitation."); }
     finally { setBusy(false); }
   }
 
@@ -282,7 +319,13 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
         {ownedProfiles.filter((item) => item.profile.kind === "page_community").length === 0 ? <p className="profile-empty">Create a page/community profile before adding administrators.</p> : <>
           <label className="profile-field">Choose a page or community<select value={selectedDelegationProfile} onChange={(event) => setSelectedDelegationProfile(event.target.value)}>{ownedProfiles.filter((item) => item.profile.kind === "page_community").map((item) => <option key={item.profile.id} value={item.profile.id}>{item.profile.displayName}</option>)}</select></label>
           <div className="delegate-list">
-            {delegates.length === 0 ? <p className="profile-muted">No delegated members for this profile yet.</p> : delegates.map((delegate) => <article className="delegate-row" key={delegate.accountId}><div><strong>UNIBUD member</strong><small>Access to {delegate.profile.displayName} · {delegate.membershipStatus}</small></div><button className="profile-text-action" type="button" disabled={busy} onClick={() => void revokeDelegate(delegate.accountId)}>Revoke</button></article>)}
+            {delegates.length === 0 ? <p className="profile-muted">No delegated members for this profile yet.</p> : delegates.map((delegate) => <article className="delegate-row" key={delegate.accountId}><div><strong>UNIBUD member</strong><small>Access to {delegate.profile.displayName} · {delegate.role} · {delegate.membershipStatus}</small><label className="profile-field">Role<select value={delegate.role} disabled={busy || delegate.membershipStatus==="revoked"} onChange={(event)=>void manageDelegate(delegate,event.target.value as DelegateRole,delegate.membershipStatus==="suspended"?"suspended":"active")}>{roleOptions.map((role)=><option key={role} value={role}>{role}</option>)}</select></label></div><div className="profile-invitation-actions">{delegate.membershipStatus==="active" && <button className="profile-text-action" type="button" disabled={busy} onClick={()=>void manageDelegate(delegate,delegate.role as DelegateRole,"suspended")}>Suspend</button>}{delegate.membershipStatus==="suspended" && <button className="profile-text-action" type="button" disabled={busy} onClick={()=>void manageDelegate(delegate,delegate.role as DelegateRole,"active")}>Restore</button>}{delegate.membershipStatus!=="revoked" && <button className="profile-text-action" type="button" disabled={busy} onClick={() => void revokeDelegate(delegate.accountId)}>Revoke</button>}</div></article>)}
+          </div>
+          <div className="delegate-list">
+            {outgoingInvitations.length===0 ? <p className="profile-muted">No outstanding invitations.</p> : outgoingInvitations.map((invitation)=><article className="delegate-row" key={invitation.id}>
+              <div><strong>@{invitation.inviteeHandle}</strong><small>{invitation.role} · {invitation.status} · expires {new Date(invitation.expiresAt).toLocaleDateString()}</small></div>
+              {invitation.status==="pending" && <button className="profile-text-action" type="button" disabled={busy} onClick={()=>void cancelOutgoingInvitation(invitation.id)}>Cancel invitation</button>}
+            </article>)}
           </div>
           <form className="profile-form delegate-form" onSubmit={grantDelegate}>
             <label>Find a UNIBUD identity<input value={inviteeHandle} onChange={(event) => setInviteeHandle(event.target.value)} required minLength={3} maxLength={31} placeholder="@username" /></label>
