@@ -162,8 +162,8 @@ BEGIN
  UPDATE public.profiles SET status='archived',updated_at=clock_timestamp() WHERE id=p_profile_id;
  UPDATE public.account_sessions SET active_profile_id=NULL,profile_context_version=NULL
   WHERE account_id=p_owner_account_id AND active_profile_id=p_profile_id AND status='active';
- INSERT INTO public.security_audit_events(actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
- VALUES(p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,'owner_requested',
+ INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+ VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,'owner_requested',
   jsonb_build_object('profile_kind',v_profile.kind,'previous_status',v_profile.status,'new_status','archived'));
  INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
  VALUES(p_owner_account_id,p_profile_id,'profile_archived',jsonb_build_object('profileName',v_profile.display_name,'handle',v_profile.handle));
