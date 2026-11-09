@@ -22,11 +22,10 @@ const personal = profile(personalId, "personal", "oracle", "Oracle");
 const creator = profile(creatorId, "creator", "oracle.creates", "Oracle Creates");
 const community = profile(pageId, "page_community", "campus.community", "Campus Community");
 
-async function newPage() {
-  const page = await browser.newPage();
+async function newPage() { return browser.newPage(); }
+async function openProfiles(page) {
   await page.goto(baseURL + "/__e2e/profiles");
   await page.getByRole("heading", { name: "Switch identity" }).waitFor();
-  return page;
 }
 async function json(route, status, body, headers = {}) {
   await route.fulfill({ status, contentType: "application/json", headers, body: JSON.stringify(body) });
@@ -47,6 +46,7 @@ try {
       }
       return json(route, 405, { ok: false });
     });
+    await openProfiles(page);
     await page.getByLabel("Profile type").selectOption("page_community");
     await page.getByLabel("Display name").fill("New Campus");
     await page.getByLabel("Unique handle").fill("new.campus");
@@ -67,6 +67,7 @@ try {
       switchPayload = route.request().postDataJSON();
       return json(route, 200, { ok: true, activeProfile: { activeProfileId: creatorId } });
     });
+    await openProfiles(page);
     await page.getByRole("button", { name: "Switch" }).click();
     await page.getByRole("heading", { name: "Home workspace" }).waitFor();
     assert.deepEqual(switchPayload, { profileId: creatorId });
@@ -87,7 +88,8 @@ try {
       return json(route, 405, { ok: false });
     });
     await page.route("**/api/profile-invitations", route => json(route, 200, { ok: true, invitations: [] }));
-    await page.getByLabel("UNIBUD handle").fill("@campus.editor");
+    await openProfiles(page);
+    await page.getByLabel("Find a UNIBUD identity").fill("@campus.editor");
     await page.getByRole("button", { name: "Send invitation" }).click();
     await page.getByText("Invitation sent. Access stays pending until the recipient accepts.").waitFor();
     assert.deepEqual(invitePayload, { profileId: pageId, inviteeHandle: "@campus.editor", role: "editor", canSwitchToProfile: false });
@@ -112,6 +114,7 @@ try {
       pending = [];
       return json(route, 200, { ok: true });
     });
+    await openProfiles(page);
     await page.getByRole("button", { name: "Accept" }).click();
     await page.getByText("Invitation accepted. The page is now available in your profile switcher.").waitFor();
     assert.deepEqual(responsePayload, { invitationId: inviteId, accept: true });
