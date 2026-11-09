@@ -155,3 +155,9 @@ footer { padding: 42px 0 30px; color: var(--muted); font-size: 12px; }
 .profile-experience-status{padding:7px 9px;border-radius:7px;background:#edf4ee;color:#315c48;font-size:10px;font-weight:700;white-space:nowrap}
 .profile-experience-status.is-planned{background:#f3f1ec;color:#786b4e}
 @media(max-width:620px){.profile-experience{padding:18px}.profile-experience-head{align-items:flex-start;flex-wrap:wrap}.profile-experience-kind{margin-left:78px}.profile-experience-content{flex-direction:column}.profile-experience-heading h2{font-size:21px}}
+
+
+.profile-notification-list{display:grid;gap:10px;margin:14px 0 20px}
+.profile-notification{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 14px;border:1px solid var(--border-subtle,#e5e7eb);border-radius:12px;background:var(--surface-muted,#fafafa)}
+.profile-notification p{margin:4px 0;color:var(--text-muted,#667085);font-size:.9rem}
+.profile-notification small{color:var(--text-muted,#667085)}
