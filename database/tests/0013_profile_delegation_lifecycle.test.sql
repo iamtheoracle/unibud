@@ -2,11 +2,13 @@
 BEGIN;
 INSERT INTO accounts(id,status) VALUES
  ('12000000-0000-4000-8000-000000000001','active'),
- ('12000000-0000-4000-8000-000000000002','active');
+ ('12000000-0000-4000-8000-000000000002','active'),
+ ('12000000-0000-4000-8000-000000000003','active');
 INSERT INTO profiles(id,owner_account_id,kind,handle,handle_normalized,display_name,visibility)
 VALUES
  ('22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001','page_community','lifecycle-page','lifecycle-page','Lifecycle Page','private'),
- ('22000000-0000-4000-8000-000000000002','12000000-0000-4000-8000-000000000002','personal','lifecycle-person','lifecycle-person','Lifecycle Person','public');
+ ('22000000-0000-4000-8000-000000000002','12000000-0000-4000-8000-000000000002','personal','lifecycle-person','lifecycle-person','Lifecycle Person','public'),
+ ('22000000-0000-4000-8000-000000000003','12000000-0000-4000-8000-000000000003','personal','lifecycle-other','lifecycle-other','Lifecycle Other','public');
 INSERT INTO profile_memberships(
  id,profile_id,account_id,owner_account_id,profile_owner_account_id,
  relationship,role,status,can_switch_to_profile,granted_by_account_id
@@ -16,7 +18,7 @@ INSERT INTO profile_memberships(
 INSERT INTO profile_invitations(id,profile_id,owner_account_id,invitee_account_id,role,status)
 VALUES
  ('42000000-0000-4000-8000-000000000001','22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000002','viewer','pending'),
- ('42000000-0000-4000-8000-000000000002','22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000002','viewer','pending');
+ ('42000000-0000-4000-8000-000000000002','22000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000001','12000000-0000-4000-8000-000000000003','viewer','pending');
 UPDATE profile_invitations SET expires_at=clock_timestamp()-interval '1 minute'
  WHERE id='42000000-0000-4000-8000-000000000002';
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
