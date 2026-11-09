@@ -174,7 +174,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       setNotice("Profile restored. Any previously delegated access remains suspended until you review and reactivate it.");
       const restored=archivedProfiles.find(item=>item.profile.id===profileId);
       await Promise.all([loadProfiles(),loadArchivedProfiles(),loadLifecycleNotifications()]);
-      if(restored?.profile.kind==="page_community"){setSelectedDelegationProfile(profileId);await loadDelegates(profileId);}
+      if(restored&&(restored.profile.kind==="page_community"||restored.profile.kind==="creator")){setSelectedDelegationProfile(profileId);await loadDelegates(profileId);}
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not restore profile."); }
     finally { setBusy(false); }
   }
