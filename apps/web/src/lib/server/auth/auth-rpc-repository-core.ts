@@ -17,8 +17,11 @@ function readKey(name:string):Buffer {
 
 /** Encrypts identifier material and creates a keyed lookup digest. */
 export class IdentifierProtector {
- constructor(private readonly encryptionKey:Uint8Array,private readonly lookupKey:Uint8Array){
+ private readonly encryptionKey:Uint8Array;
+ private readonly lookupKey:Uint8Array;
+ constructor(encryptionKey:Uint8Array,lookupKey:Uint8Array){
   if(encryptionKey.byteLength!==32||lookupKey.byteLength<32) throw new Error("Invalid identifier protection key material.");
+  this.encryptionKey=encryptionKey;this.lookupKey=lookupKey;
  }
  protect(identifier:string,method:"email"|"phone"):{ciphertext:Buffer;lookupDigest:Buffer}{
   const iv=randomBytes(12),cipher=createCipheriv("aes-256-gcm",this.encryptionKey,iv);
@@ -71,7 +74,7 @@ export class AuthRpcRepository implements AuthRepository,VerificationChallengeRe
  }
 
  async findRecoveryTarget(identifier:string,channel:"email"|"phone"):Promise<RecoveryTarget|null>{
-  const rows=await this.query("SELECT * FROM public.auth_lookup_identity($1,$2)",[channel,this.identifiers.digest(identifier)]);
+  const rows=await this.query("SELECT * FROM public.auth_lookup_identity($1,$2)",[channel,this.identifiers.digest(identifier,channel)]);
   const row=rows[0];if(!row)return null;
   if(asString(row.account_status)!=="active" || !asNullableDateString(row.verified_at)) return null;
   return {accountId:asString(row.account_id),identityId:asString(row.identity_id),channel,destination:identifier};
