@@ -235,7 +235,7 @@ try {
     await page.getByLabel("Account password").fill("owner-password");
     await page.getByRole("button", { name: "Finalize" }).click();
     assert.deepEqual(completionPayload, { channel: "email", identifier: "owner@example.com", password: "owner-password" });
-    await page.getByRole("button", { name: "History" }).first().click();
+    await page.getByRole("button", { name: "History" }).last().click();
     await page.getByText(/Ownership transfer completed/).waitFor();
     await page.close();
   }
