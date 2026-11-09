@@ -12,7 +12,7 @@ interface ProfileRow {
   kind: "personal";
   handle: string;
   display_name: string;
-  status: "active";
+  status: string;
 }
 
 /**
