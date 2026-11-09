@@ -24,13 +24,14 @@ SET search_path=pg_catalog,public
 AS $function$
 BEGIN
  IF p_credential_digest IS NULL OR octet_length(p_credential_digest)<>32
- OR p_idle_expires_at<=p_now THEN RETURN FALSE; END IF;
+ OR p_now IS NULL OR p_idle_expires_at IS NULL OR p_idle_expires_at<=p_now THEN RETURN FALSE; END IF;
  UPDATE public.account_sessions
  SET last_seen_at=p_now,
      idle_expires_at=LEAST(p_idle_expires_at,absolute_expires_at)
  WHERE credential_digest=p_credential_digest
    AND status='active' AND revoked_at IS NULL
-   AND idle_expires_at>p_now AND absolute_expires_at>p_now;
+   AND issued_at<=p_now AND idle_expires_at>p_now AND absolute_expires_at>p_now
+   AND EXISTS(SELECT 1 FROM public.accounts a WHERE a.id=account_sessions.account_id AND a.status='active');
  RETURN FOUND;
 END;
 $function$;
