@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { AccountDependencyRepository } from "../src/lib/server/account/account-dependency-repository.ts";
 
+process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = "b8".repeat(32);
+
 process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = "ab".repeat(32);
 
 test("dependency repository signs trusted account context and returns aggregates only", async () => {
