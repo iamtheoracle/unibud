@@ -140,7 +140,7 @@ export class ProfileService {
   }
 
   async respondToInvitation(inviteeAccountId: string, invitationId: string, accept: boolean) {
-    if (!inviteeAccountId || !invitationId) throw new ProfileAccessDeniedError();
+    if (!inviteeAccountId || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(invitationId)) throw new ProfileAccessDeniedError();
     return this.repository.respondToInvitation(inviteeAccountId, invitationId, accept);
   }
 
