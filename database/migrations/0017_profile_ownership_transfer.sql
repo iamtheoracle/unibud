@@ -102,6 +102,54 @@ BEFORE UPDATE OF status ON public.profiles
 FOR EACH ROW EXECUTE FUNCTION public.reject_profile_status_change();
 REVOKE ALL ON FUNCTION public.reject_profile_status_change() FROM PUBLIC;
 
+-- Serialize invitation and delegated-membership mutations against transfer
+-- request/finalization by locking the same profile row before checking open consent.
+CREATE OR REPLACE FUNCTION public.guard_profile_membership_during_transfer()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+BEGIN
+ IF NEW.relationship='delegated' AND NEW.status IN('active','suspended') THEN
+  PERFORM 1 FROM public.profiles WHERE id=NEW.profile_id FOR UPDATE;
+  IF EXISTS(SELECT 1 FROM public.profile_ownership_transfers
+   WHERE profile_id=NEW.profile_id AND status IN('pending_recipient','recipient_accepted')
+    AND expires_at>clock_timestamp()) THEN
+   RAISE EXCEPTION 'Delegated access cannot be added or reactivated while profile ownership transfer consent is open'
+    USING ERRCODE='23514';
+  END IF;
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.guard_profile_membership_during_transfer() OWNER TO unibud_profile_owner;
+CREATE TRIGGER profile_memberships_block_access_during_transfer
+BEFORE INSERT OR UPDATE OF relationship,status ON public.profile_memberships
+FOR EACH ROW EXECUTE FUNCTION public.guard_profile_membership_during_transfer();
+REVOKE ALL ON FUNCTION public.guard_profile_membership_during_transfer() FROM PUBLIC;
+
+CREATE OR REPLACE FUNCTION public.guard_profile_invitation_during_transfer()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+BEGIN
+ IF NEW.status='pending' THEN
+  PERFORM 1 FROM public.profiles WHERE id=NEW.profile_id FOR UPDATE;
+  IF EXISTS(SELECT 1 FROM public.profile_ownership_transfers
+   WHERE profile_id=NEW.profile_id AND status IN('pending_recipient','recipient_accepted')
+    AND expires_at>clock_timestamp()) THEN
+   RAISE EXCEPTION 'New invitations are blocked while profile ownership transfer consent is open'
+    USING ERRCODE='23514';
+  END IF;
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.guard_profile_invitation_during_transfer() OWNER TO unibud_profile_owner;
+CREATE TRIGGER profile_invitations_block_new_pending_during_transfer
+BEFORE INSERT OR UPDATE OF status ON public.profile_invitations
+FOR EACH ROW EXECUTE FUNCTION public.guard_profile_invitation_during_transfer();
+REVOKE ALL ON FUNCTION public.guard_profile_invitation_during_transfer() FROM PUBLIC;
+
 -- The immutable-owner trigger permits a change only while executing the
 -- dedicated SECURITY DEFINER transfer procedure under its non-login owner.
 CREATE OR REPLACE FUNCTION public.reject_profile_owner_change()
