@@ -34,6 +34,7 @@ ALTER TABLE public.profile_memberships
       relationship='delegated'
       AND owner_account_id IS NOT NULL
       AND owner_account_id<>account_id
+      AND granted_by_account_id IS NOT NULL
       AND granted_by_account_id=owner_account_id
     )
   );
