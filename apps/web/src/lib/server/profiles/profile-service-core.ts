@@ -12,6 +12,26 @@ export interface ProfileCreateInput {
   visibility?: "private" | "limited" | "public";
 }
 
+export interface ProfileInvitationInput {
+  profileId: string;
+  inviteeHandle: string;
+  role: "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
+  canSwitchToProfile: boolean;
+}
+
+export interface ProfileInvitationRecord {
+  id: string;
+  profileId: string;
+  profileName: string;
+  profileHandle: string;
+  ownerDisplayName: string;
+  ownerHandle: string;
+  role: ProfileInvitationInput["role"];
+  canSwitchToProfile: boolean;
+  createdAt: string;
+  expiresAt: string;
+}
+
 export interface DelegatedProfileGrantInput {
   profileId: string;
   delegateAccountId: string;
@@ -26,6 +46,9 @@ export interface ProfileRepository {
   listAccessibleProfiles(accountId: string): Promise<ProfileAccessRecord[]>;
   listDelegatedAccess(ownerAccountId: string, profileId: string): Promise<ProfileAccessRecord[]>;
   findProfileAccess(accountId: string, profileId: string): Promise<ProfileAccessRecord | undefined>;
+  inviteDelegateByHandle(ownerAccountId: string, input: ProfileInvitationInput): Promise<{ id: string; inviteeHandle: string; inviteeDisplayName: string }>;
+  listIncomingInvitations(inviteeAccountId: string): Promise<ProfileInvitationRecord[]>;
+  respondToInvitation(inviteeAccountId: string, invitationId: string, accept: boolean): Promise<boolean>;
   setActiveProfileContext(accountId: string, sessionId: string, profileId: string, contextVersion: string): Promise<boolean>;
 }
 
@@ -96,6 +119,29 @@ export class ProfileService {
       throw new ProfileAccessDeniedError("Only the active profile owner may view delegated access.");
     }
     return this.repository.listDelegatedAccess(authenticatedOwnerAccountId,profileId);
+  }
+
+  async inviteDelegateByHandle(ownerAccountId: string, input: ProfileInvitationInput) {
+    const profile = await this.repository.findProfileAccess(ownerAccountId, input.profileId);
+    if (!profile || profile.profile.ownerAccountId !== ownerAccountId ||
+        profile.profile.kind !== "page_community" || profile.relationship !== "owner" ||
+        profile.membershipStatus !== "active") {
+      throw new ProfileAccessDeniedError("Only the active page owner may invite a delegate.");
+    }
+    const inviteeHandle = input.inviteeHandle.trim().replace(/^@/, "").toLowerCase();
+    if (!/^[a-z0-9][a-z0-9._-]{1,28}[a-z0-9]$/.test(inviteeHandle)) {
+      throw new Error("Enter a valid UNIBUD username or handle.");
+    }
+    return this.repository.inviteDelegateByHandle(ownerAccountId, { ...input, inviteeHandle });
+  }
+
+  async listIncomingInvitations(inviteeAccountId: string) {
+    return this.repository.listIncomingInvitations(inviteeAccountId);
+  }
+
+  async respondToInvitation(inviteeAccountId: string, invitationId: string, accept: boolean) {
+    if (!inviteeAccountId || !invitationId) throw new ProfileAccessDeniedError();
+    return this.repository.respondToInvitation(inviteeAccountId, invitationId, accept);
   }
 
   async switchProfile(authenticatedAccountId: string, sessionId: string, targetProfileId: string): Promise<ProfileSwitchResult> {
