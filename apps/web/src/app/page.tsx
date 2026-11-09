@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const spaces = [
   { name: "Connect", description: "People, communities, opportunities and services" },
   { name: "Bud", description: "Your academic companion and digital campus" },
@@ -11,7 +13,7 @@ export default function HomePage() {
   return (
     <main className="shell">
       <header className="topbar">
-        <a className="wordmark" href="/" aria-label="UNIBUD home">unibud<span>.</span></a>
+        <Link className="wordmark" href="/" aria-label="UNIBUD home">unibud<span>.</span></Link>
         <span className="eyebrow">A connected ecosystem</span>
       </header>
 
