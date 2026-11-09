@@ -41,6 +41,13 @@ test("student and tutor roles require distinct assignments", () => {
   ), true);
 });
 
+test("pending or ended assignments cannot establish active dual roles", () => {
+  const pendingTutor = { ...assignment("pending-tutor", "tutor"), status: "pending" as const };
+  const endedTutor = { ...assignment("ended-tutor", "tutor"), status: "ended" as const };
+  assert.equal(areDistinctEducationRoles(assignment("student", "student"), pendingTutor), false);
+  assert.equal(areDistinctEducationRoles(assignment("student", "student"), endedTutor), false);
+});
+
 test("same assignment cannot represent both roles", () => {
   assert.equal(areDistinctEducationRoles(
     assignment("same", "student"),
