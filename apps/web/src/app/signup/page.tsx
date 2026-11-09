@@ -11,8 +11,20 @@ export default function SignupPage(){
  const [identifier,setIdentifier]=useState("");
  const [password,setPassword]=useState("");
  const [busy,setBusy]=useState(false);
+ const [resending,setResending]=useState(false);
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
+ async function resend(){
+  setResending(true);setError("");
+  try{
+   const response=await fetch("/api/auth/verification/resend",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier})});
+   const result=await response.json();if(!response.ok) throw new Error(result.error??"Verification resend failed.");
+   if(typeof result.challengeId==="string"){
+    router.push("/verify?challengeId="+encodeURIComponent(result.challengeId)+"&purpose="+(channel==="email"?"email_verification":"phone_verification"));
+   }
+  }catch(e){setError(e instanceof Error?e.message:"Verification resend is temporarily unavailable.");}
+  finally{setResending(false);}
+ }
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError("");setNotice("");
   try{
@@ -23,7 +35,7 @@ export default function SignupPage(){
     router.push("/verify?challengeId="+encodeURIComponent(result.challengeId)+"&purpose="+(channel==="email"?"email_verification":"phone_verification"));
     return;
    }
-   setNotice("If this identity is already registered, sign in or use password recovery. We do not disclose account existence.");
+   setNotice("If an unverified account matches, fresh verification instructions will be sent. Account existence is not disclosed.");
   }catch(e){setError(e instanceof Error?e.message:"Registration is temporarily unavailable.");}
   finally{setBusy(false);}
  }
@@ -44,7 +56,7 @@ export default function SignupPage(){
     <button className="auth-submit" disabled={busy}>{busy?"Creating account…":"Create account"}</button>
    </form>
    {error&&<p className="auth-error" role="alert">{error}</p>}
-   {notice&&<p className="auth-notice" role="status">{notice}</p>}
+   {notice&&<><p className="auth-notice" role="status">{notice}</p><button type="button" className="auth-submit" onClick={resend} disabled={resending}>{resending?"Requesting…":"Resend verification instructions"}</button></>}
    <p className="auth-switch">Already have an account? <Link href="/login">Sign in</Link></p>
    <p className="auth-legal">By continuing, you will review and accept the current Terms and Privacy Notice during profile setup.</p>
   </section>
