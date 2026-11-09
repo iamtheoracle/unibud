@@ -18,11 +18,10 @@ BEGIN
     RAISE EXCEPTION 'Authenticated profile owner required' USING ERRCODE='42501';
   END IF;
 
-  -- Serialize lifecycle changes for one account to prevent concurrent requests
-  -- from archiving every remaining usable profile.
-  PERFORM 1 FROM public.accounts
-   WHERE id=p_owner_account_id AND status='active' FOR UPDATE;
-  IF NOT FOUND THEN
+  -- Serialize lifecycle changes for one account without granting the procedure
+  -- owner broad UPDATE rights on the accounts table.
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
+  IF NOT EXISTS (SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active') THEN
     RAISE EXCEPTION 'Active account required' USING ERRCODE='42501';
   END IF;
 
@@ -97,9 +96,8 @@ BEGIN
   IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
     RAISE EXCEPTION 'Authenticated profile owner required' USING ERRCODE='42501';
   END IF;
-  PERFORM 1 FROM public.accounts
-   WHERE id=p_owner_account_id AND status='active' FOR UPDATE;
-  IF NOT FOUND THEN
+  PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
+  IF NOT EXISTS (SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active') THEN
     RAISE EXCEPTION 'Active account required' USING ERRCODE='42501';
   END IF;
   SELECT p.* INTO v_profile FROM public.profiles p
