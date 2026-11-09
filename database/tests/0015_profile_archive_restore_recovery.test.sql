@@ -49,9 +49,11 @@ BEGIN
  SELECT count(*) INTO v_history_count FROM public.profile_list_lifecycle_history(
   '23000000-0000-4000-8000-000000000002','13000000-0000-4000-8000-000000000001');
  IF v_history_count<>2 THEN RAISE EXCEPTION 'Expected append-only archive and restore history, got %',v_history_count; END IF;
- IF public.profile_archive_owned('23000000-0000-4000-8000-000000000001','13000000-0000-4000-8000-000000000001') IS NOT TRUE THEN
-  RAISE EXCEPTION 'Personal identity archive is expected to be rejected';
- END IF;
+ BEGIN
+  PERFORM public.profile_archive_owned('23000000-0000-4000-8000-000000000001','13000000-0000-4000-8000-000000000001');
+  RAISE EXCEPTION 'Personal identity archive was unexpectedly allowed';
+ EXCEPTION WHEN insufficient_privilege THEN NULL;
+ END;
 END
 $archive_restore$;
 RESET ROLE;
