@@ -1,3 +1,7 @@
 import "server-only";
 
-export { AuthenticationRateLimitError, PostgresAuthRateLimiter } from "./rate-limiter-core";
+export {
+  AuthenticationRateLimitError,
+  PostgresAuthRateLimiter,
+  PostgresVerificationRateLimiter
+} from "./rate-limiter-core";
