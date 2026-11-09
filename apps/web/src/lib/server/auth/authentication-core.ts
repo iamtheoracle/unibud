@@ -34,7 +34,7 @@ export interface AuthRateLimiter {
 export type AuthResult =
   | { ok: true; state: "verification_required"; challengeId: string; expiresAt: string }
   | { ok: true; state: "authenticated"; token: string; accountId: string; expiresAt: string }
-  | { ok: true; state: "accepted" }
+  | { ok: true; state: "accepted"; challengeId?: string }
   | { ok: false; state: "invalid_credentials" | "verification_failed" };
 
 const DUMMY_VERIFIER = "scrypt$ln=17,r=8,p=1$AAAAAAAAAAAAAAAAAAAAAA$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -100,11 +100,13 @@ export class AuthenticationService {
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
     await this.limiter.assertAllowed({action:"recovery",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const target=await this.repository.findRecoveryTarget(identifier,input.channel);
+    const challengeId=randomUUID();
     if(target) await this.challenges.issue({
-      accountId:target.accountId,identityId:target.identityId,channel:target.channel,
+      challengeId,accountId:target.accountId,identityId:target.identityId,channel:target.channel,
       purpose:"password_reset",destination:target.destination,now
     });
-    return {ok:true,state:"accepted"};
+    // Return the same response shape for present and absent identities.
+    return {ok:true,state:"accepted",challengeId};
   }
   async completeRecovery(input:{challengeId:string;code:string;newPassword:string;now?:Date}):Promise<AuthResult>{
     const verified=await this.challenges.verify({
