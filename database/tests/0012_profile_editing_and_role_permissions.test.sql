@@ -58,7 +58,7 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.context_expiry'
 SET LOCAL ROLE unibud_app;
 DO $admin$
 BEGIN
- IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000002','profile.update_identity') IS NOT TRUE THEN RAISE EXCEPTION 'Admin identity permission missing'; END IF;
+ IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000002','profile.update_identity') IS NOT FALSE THEN RAISE EXCEPTION 'Admin inherited owner-only identity authority'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000002','members.view') IS NOT TRUE THEN RAISE EXCEPTION 'Admin member view permission missing'; END IF;
  IF public.profile_authorize_action('21000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000002','manage_billing') IS NOT FALSE THEN RAISE EXCEPTION 'Admin inherited billing authority'; END IF;
 END
