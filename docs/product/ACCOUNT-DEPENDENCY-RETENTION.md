@@ -112,3 +112,12 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - The verification-delivery gateway exposes only a POST delivery contract in this repository. No read-only health endpoint or vendor identity is defined. A separate operator-only metadata diagnostic therefore reports configuration completeness while keeping provider identity and connectivity unknown; it sends no test email/SMS, recipient, challenge or verification code.
 - A real verification-gateway connectivity check requires a documented, authenticated, side-effect-free health contract and confirmed downstream vendor identity. Do not probe the delivery POST route as a health check.
 - Account-level external references remain undiscovered until a provider-specific, account-scoped adapter can safely resolve approved opaque reference digests. Unknown remains a blocker.
+
+
+## Integration diagnostic security evidence
+
+- Oracle Arc authenticated status checks are server-side and require configured deployment credentials; mocked CI responses do not prove deployed reachability.
+- Verification gateway metadata diagnostics never make a delivery request. Provider identity remains unknown and connectivity remains `not_tested` until a documented read-only provider health contract exists.
+- The temporary operator bearer gate's 32-byte minimum is not a substitute for authenticated staff/operator identities, scoped roles, revocation, audit history or step-up authentication.
+- Verification gateway URL configuration must not contain embedded credentials, query strings or fragments. Production uses HTTPS; development HTTP is allowed only for loopback hosts.
+- None of this evidence changes account closure, export, deletion or retention policy. Those remain unavailable and fail closed.
