@@ -44,4 +44,4 @@ The pure readiness builder is covered for:
 - Active and suspended delegated relationships.
 - Incoming and outgoing transfer review items.
 
-The authenticated route must also remain covered by repository CI's typecheck, lint and production build. Production database and deployment verification are separate release gates.
+The authenticated route passed repository CI at code commit `b2204d568635db570924572c5f4c8b501abdff46`: PostgreSQL 16 migration/RLS, Oracle Arc API, typecheck, contract tests, server security tests, lint, profile browser E2E and production build. Production database and deployment verification are separate release gates.
