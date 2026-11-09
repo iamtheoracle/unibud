@@ -3,6 +3,7 @@ import { createConfiguredIdentityServices } from "../../../../lib/server/identit
 import { ProfileAccessDeniedError } from "../../../../lib/server/profiles/profile-service-core";
 import { readSessionCookie, routeError } from "../../../../lib/server/identity/http";
 import { buildClosureReadiness, type ClosureReadinessSnapshot } from "../../../../lib/account/closure-readiness";
+import { buildAccountDependencyInventory } from "../../../../lib/account/dependency-inventory";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -55,7 +56,8 @@ export async function GET(request: NextRequest) {
       })))
     };
     const readiness = buildClosureReadiness(snapshot);
-    return NextResponse.json({ ok: true, readiness, snapshot }, { headers: { "Cache-Control": "no-store" } });
+    const dependencies = buildAccountDependencyInventory();
+    return NextResponse.json({ ok: true, readiness, snapshot, dependencies }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     if (error instanceof ProfileAccessDeniedError) return NextResponse.json({ ok: false, error: "Account access denied." }, { status: 403 });
     return routeError(error);
