@@ -20,6 +20,7 @@
 
 ## Oracle Arc
 - [Independent AI Core Specification](oracle-arc/ORACLE-ARC-SPEC.md)
+- [UNIBUD Integration Contract and Connection Settings](oracle-arc/UNIBUD-INTEGRATION.md)
 
 ## Concierge
 - [Concierge Specification](concierge/CONCIERGE-SPEC.md)
