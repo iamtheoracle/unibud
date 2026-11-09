@@ -75,6 +75,13 @@ export class ProfileProcedureRepository implements ProfileRepository {
     );
   }
 
+  async listArchivedOwnedProfiles(ownerAccountId: string): Promise<ProfileAccessRecord[]> {
+    return this.inAccountContext(ownerAccountId, async client => {
+      const result = await client.query<ProfileJoinRow>(`${PROFILE_SELECT}\n       WHERE p.owner_account_id=$1 AND m.account_id=$1 AND m.relationship='owner'\n         AND m.status='active' AND p.status='archived'\n       ORDER BY p.updated_at DESC`, [ownerAccountId]);
+      return result.rows.map(mapAccess);
+    });
+  }
+
   async archiveOwnedProfile(ownerAccountId: string, profileId: string): Promise<boolean> {
     return this.inAccountContext(ownerAccountId, async client => {
       const result = await client.query<{ archived: boolean }>("SELECT public.profile_archive_owned($1,$2) AS archived", [profileId,ownerAccountId]);
