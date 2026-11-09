@@ -48,6 +48,34 @@ export async function POST(request:NextRequest){
  }
 }
 
+
+export async function PATCH(request:NextRequest){
+ if(!hasSameOrigin(request)) return NextResponse.json({ok:false,error:"Forbidden."},{status:403});
+ const token=readSessionCookie(request);
+ if(!token) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+ const body=await readJsonObject(request);
+ const roles=["admin","moderator","editor","member","seller","provider","professional","student","staff","operator","viewer"];
+ if(!body||typeof body.profileId!=="string"||typeof body.delegateAccountId!=="string"||
+    typeof body.role!=="string"||!roles.includes(body.role)||
+    (body.status!=="active"&&body.status!=="suspended")){
+  return NextResponse.json({ok:false,error:"Invalid delegated access update."},{status:400});
+ }
+ try{
+  const {sessions,profiles}=createConfiguredIdentityServices();
+  const validation=await sessions.validate(token);
+  if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+  const updated=await profiles.manageDelegatedAccess(
+   validation.account.id,body.profileId,body.delegateAccountId,
+   body.role as "admin"|"moderator"|"editor"|"member"|"seller"|"provider"|"professional"|"student"|"staff"|"operator"|"viewer",
+   body.status
+  );
+  return NextResponse.json({ok:updated},{status:updated?200:404});
+ }catch(error){
+  if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
+  return routeError(error);
+ }
+}
+
 export async function DELETE(request:NextRequest){
  if(!hasSameOrigin(request)) return NextResponse.json({ok:false,error:"Forbidden."},{status:403});
  const token=readSessionCookie(request);
