@@ -37,6 +37,7 @@ jobs:
         run: |
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0001_identity_foundation.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0002_identity_access_control.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0003_credentials_and_verification.sql
       - name: Verify identity constraints
         env:
           PGPASSWORD: unibud_test_only
@@ -45,6 +46,7 @@ jobs:
         env:
           PGPASSWORD: unibud_test_only
         run: psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0002_identity_access_control.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0003_credentials_and_verification.test.sql
   foundation-integrity:
     name: Foundation integrity
     runs-on: ubuntu-latest
