@@ -262,6 +262,35 @@ BEFORE INSERT OR UPDATE OF relationship,status ON public.profile_memberships
 FOR EACH ROW EXECUTE FUNCTION public.guard_profile_membership_during_transfer();
 REVOKE ALL ON FUNCTION public.guard_profile_membership_during_transfer() FROM PUBLIC;
 
+-- Profile-scoped resource grants share the same lifecycle lock. This blocks
+-- grants from racing archive or appearing while transfer consent is open.
+CREATE OR REPLACE FUNCTION public.guard_profile_resource_grant_lifecycle()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+DECLARE v_profile_status TEXT;
+BEGIN
+ IF NEW.resource_type<>'profile' OR NEW.revoked_at IS NOT NULL THEN RETURN NEW; END IF;
+ SELECT status INTO v_profile_status FROM public.profiles WHERE id=NEW.resource_id FOR UPDATE;
+ IF v_profile_status IS DISTINCT FROM 'active' THEN
+  RAISE EXCEPTION 'Active profile required for a new or updated profile-scoped grant'
+   USING ERRCODE='23514';
+ END IF;
+ IF EXISTS(SELECT 1 FROM public.profile_ownership_transfers
+  WHERE profile_id=NEW.resource_id AND status IN('pending_recipient','recipient_accepted')
+   AND expires_at>clock_timestamp()) THEN
+  RAISE EXCEPTION 'Profile-scoped grants are blocked while ownership transfer consent is open'
+   USING ERRCODE='23514';
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.guard_profile_resource_grant_lifecycle() OWNER TO unibud_profile_owner;
+CREATE TRIGGER resource_grants_profile_lifecycle_guard
+BEFORE INSERT OR UPDATE ON public.resource_grants
+FOR EACH ROW EXECUTE FUNCTION public.guard_profile_resource_grant_lifecycle();
+REVOKE ALL ON FUNCTION public.guard_profile_resource_grant_lifecycle() FROM PUBLIC;
+
 CREATE OR REPLACE FUNCTION public.guard_profile_invitation_during_transfer()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
 SET search_path=pg_catalog,public
