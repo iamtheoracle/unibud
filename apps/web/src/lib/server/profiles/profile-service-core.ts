@@ -32,16 +32,8 @@ export interface ProfileInvitationRecord {
   expiresAt: string;
 }
 
-export interface DelegatedProfileGrantInput {
-  profileId: string;
-  delegateAccountId: string;
-  role: "admin" | "moderator" | "editor" | "member" | "seller" | "provider" | "professional" | "student" | "staff" | "operator" | "viewer";
-  canSwitchToProfile: boolean;
-}
-
 export interface ProfileRepository {
   createOwnedProfile(ownerAccountId: string, input: ProfileCreateInput): Promise<ProfileAccessRecord>;
-  grantDelegatedAccess(ownerAccountId: string, input: DelegatedProfileGrantInput): Promise<ProfileAccessRecord>;
   revokeDelegatedAccess(ownerAccountId: string, profileId: string, delegateAccountId: string): Promise<boolean>;
   listAccessibleProfiles(accountId: string): Promise<ProfileAccessRecord[]>;
   listDelegatedAccess(ownerAccountId: string, profileId: string): Promise<ProfileAccessRecord[]>;
@@ -77,22 +69,6 @@ export class ProfileService {
     return this.repository.createOwnedProfile(accountId,{
       ...input,handle,displayName,visibility:input.visibility??"private"
     });
-  }
-
-  async grantDelegatedAccess(
-    authenticatedOwnerAccountId: string,
-    input: DelegatedProfileGrantInput
-  ): Promise<ProfileAccessRecord> {
-    if(!authenticatedOwnerAccountId || !input.delegateAccountId ||
-       authenticatedOwnerAccountId===input.delegateAccountId) {
-      throw new ProfileAccessDeniedError("A distinct owner and delegate account are required.");
-    }
-    const profile=await this.repository.findProfileAccess(authenticatedOwnerAccountId,input.profileId);
-    if(!profile || profile.profile.ownerAccountId!==authenticatedOwnerAccountId ||
-       profile.relationship!=="owner" || profile.membershipStatus!=="active") {
-      throw new ProfileAccessDeniedError("Only the active profile owner may delegate access.");
-    }
-    return this.repository.grantDelegatedAccess(authenticatedOwnerAccountId,input);
   }
 
   async revokeDelegatedAccess(
