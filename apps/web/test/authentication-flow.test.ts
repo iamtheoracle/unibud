@@ -104,3 +104,18 @@ test("verified password recovery stores a new adaptive verifier through the atom
  assert.deepEqual(result,{ok:true,state:"accepted"});
  assert.match(auth.resetHash??"",/^scrypt\$/);
 });
+
+
+test("fresh password reauthentication is bound to the exact active verified account",async()=>{
+ const {service,auth,sessionRepo}=makeService();
+ const password="correct horse battery staple";
+ const credentialHash=await (await import("../src/lib/server/auth/credential-core.ts")).hashPassword(password);
+ auth.account={id:"10000000-0000-4000-8000-000000000001",status:"active",
+  identityId:"20000000-0000-4000-8000-000000000001",identityVerifiedAt:now.toISOString(),credentialHash};
+ assert.equal(await service.verifyCredentialsForAccount({accountId:auth.account.id,channel:"email",identifier:"person@example.com",password,now}),true);
+ assert.equal(await service.verifyCredentialsForAccount({accountId:"10000000-0000-4000-8000-000000000002",channel:"email",identifier:"person@example.com",password,now}),false);
+ assert.equal(await service.verifyCredentialsForAccount({accountId:auth.account.id,channel:"email",identifier:"person@example.com",password:"incorrect password",now}),false);
+ auth.account.status="suspended";
+ assert.equal(await service.verifyCredentialsForAccount({accountId:auth.account.id,channel:"email",identifier:"person@example.com",password,now}),false);
+ assert.equal(sessionRepo.rows.size,0,"reauthentication must not create another session");
+});
