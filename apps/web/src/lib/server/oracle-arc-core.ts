@@ -220,15 +220,16 @@ export async function checkOracleArcConnection(): Promise<OracleArcConnectionRes
 
 export function isIntegrationOperatorRequest(authorization: string | null): boolean {
   const expected = process.env.UNIBUD_INTEGRATION_ADMIN_TOKEN?.trim() ?? "";
-  if (!expected || !authorization) return false;
+  if (!authorization || Buffer.byteLength(expected, "utf8") < 32) return false;
 
-  const [scheme, token, extra] = authorization.split(" ");
-  if (scheme?.toLowerCase() !== "bearer" || !token || extra) return false;
+  // Accept exactly one bearer token; reject tabs, extra fields and whitespace.
+  const match = /^Bearer ([^\s]+)$/i.exec(authorization);
+  if (!match) return false;
 
-  // Constant-time comparison for equal-length UTF-8 credentials.
-  const left = Buffer.from(token);
-  const right = Buffer.from(expected);
-  return left.length === right.length && timingSafeEqual(left, right);
+  // Require a minimum-length server configuration and compare equal-length bytes in constant time.
+  const supplied = Buffer.from(match[1], "utf8");
+  const configured = Buffer.from(expected, "utf8");
+  return supplied.length === configured.length && timingSafeEqual(supplied, configured);
 }
 
 import { timingSafeEqual } from "node:crypto";
