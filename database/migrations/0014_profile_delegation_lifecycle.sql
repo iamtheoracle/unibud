@@ -16,8 +16,7 @@ BEGIN
   IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id()
      OR p_delegate_account_id IS NULL OR p_delegate_account_id=p_owner_account_id
      OR p_role IS NULL OR p_role NOT IN (
-       'admin','moderator','editor','member','seller','provider',
-       'professional','student','staff','operator','viewer'
+       'admin','moderator','editor','member','seller','provider','viewer'
      )
      OR p_status IS NULL OR p_status NOT IN ('active','suspended')
      OR NOT EXISTS (
