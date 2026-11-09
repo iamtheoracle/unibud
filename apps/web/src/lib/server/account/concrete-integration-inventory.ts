@@ -26,7 +26,7 @@ function configured(env: Environment, key: string): boolean {
   return typeof env[key] === "string" && env[key]!.trim().length > 0;
 }
 
-function entry(input: Omit<ConcreteIntegrationInventoryEntry, "state" | "configuredSettings" | "missingSettings"> & {
+function entry(input: Omit<ConcreteIntegrationInventoryEntry, "state" | "configuredSettings" | "missingSettings" | "explanation"> & {
   requiredSettings: string[];
 }, env: Environment): ConcreteIntegrationInventoryEntry {
   const configuredSettings = input.requiredSettings.filter(key => configured(env, key));
