@@ -96,6 +96,14 @@ BEGIN
  ('87000000-0000-4000-8000-000000000003','17000000-0000-4000-8000-000000000002','unibud','profile',
   '37000000-0000-4000-8000-000000000007','viewer',ARRAY['read'],'17000000-0000-4000-8000-000000000001');
  PERFORM public.profile_archive_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
+ BEGIN
+  INSERT INTO public.resource_grants(id,subject_account_id,application_id,resource_type,resource_id,role,actions,issuer_account_id)
+  VALUES('87000000-0000-4000-8000-000000000005','17000000-0000-4000-8000-000000000002','unibud','profile',
+   '37000000-0000-4000-8000-000000000007','viewer',ARRAY['read'],'17000000-0000-4000-8000-000000000001');
+  RAISE EXCEPTION 'Profile-scoped grant unexpectedly created for archived profile';
+ EXCEPTION WHEN check_violation THEN
+  IF SQLERRM NOT LIKE 'Active profile required%' THEN RAISE; END IF;
+ END;
  SELECT status INTO v_status FROM public.profile_memberships WHERE id='47000000-0000-4000-8000-000000000010';
  IF v_status<>'suspended' THEN RAISE EXCEPTION 'Archive did not suspend delegated access'; END IF;
  PERFORM public.profile_restore_owned('37000000-0000-4000-8000-000000000007','17000000-0000-4000-8000-000000000001');
