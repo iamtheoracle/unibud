@@ -49,6 +49,7 @@ export interface VerificationRateLimiter {
 
 export interface VerificationDelivery {
   deliver(input: {
+    challengeId: string;
     channel: VerificationChannel;
     destination: string;
     code: string;
@@ -156,6 +157,7 @@ export class VerificationChallengeService {
 
     try {
       await this.delivery.deliver({
+        challengeId: id,
         channel: input.channel,
         destination,
         code,
