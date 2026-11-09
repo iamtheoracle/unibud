@@ -101,6 +101,16 @@ export class AuthenticationService {
     const result=await this.challenges.verify({challengeId:input.challengeId,purpose:input.purpose,code:input.code,now:input.now});
     return result==="verified"?{ok:true,state:"accepted"}:{ok:false,state:"verification_failed"};
   }
+  /** Verifies fresh possession of this exact account's password without issuing another session. */
+  async verifyCredentialsForAccount(input:{accountId:string;channel:VerificationChannel;identifier:string;password:string;now?:Date}):Promise<boolean>{
+    if(!input.accountId || typeof input.password!=="string" || input.password.length>128) return false;
+    const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
+    await this.limiter.assertAllowed({action:"login",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
+    const account=await this.repository.findLoginAccount(identifier,input.channel);
+    const valid=await verifyPassword(input.password,account?.credentialHash??DUMMY_VERIFIER);
+    return Boolean(account && account.id===input.accountId && account.status==="active" &&
+      account.identityVerifiedAt && valid);
+  }
   async login(input:{channel:VerificationChannel;identifier:string;password:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
     await this.limiter.assertAllowed({action:"login",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
