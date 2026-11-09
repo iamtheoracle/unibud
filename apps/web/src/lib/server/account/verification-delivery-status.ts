@@ -86,10 +86,14 @@ export function buildVerificationDeliveryStatus(
     };
   }
 
+  const isLoopback =
+    parsed.hostname === "localhost" ||
+    parsed.hostname === "127.0.0.1" ||
+    parsed.hostname === "::1";
   const invalidTransport = !["https:", "http:"].includes(parsed.protocol)
     || !parsed.hostname
-    || Boolean(parsed.username || parsed.password)
-    || (nodeEnv === "production" && parsed.protocol !== "https:");
+    || Boolean(parsed.username || parsed.password || parsed.search || parsed.hash)
+    || (parsed.protocol === "http:" && (nodeEnv === "production" || !isLoopback));
   if (invalidTransport || token.length < 32) {
     return {
       integrationKey: "verification_delivery_gateway",
