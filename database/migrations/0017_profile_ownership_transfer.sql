@@ -73,6 +73,39 @@ BEGIN
 END;
 $function$;
 
+-- Archiving or restricting a profile invalidates any outstanding transfer
+-- consent. A pending acceptance must never survive a profile becoming inactive.
+CREATE OR REPLACE FUNCTION public.profile_cancel_open_transfer_on_inactive()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public
+AS $function$
+DECLARE v_transfer public.profile_ownership_transfers%ROWTYPE;
+BEGIN
+ IF OLD.status='active' AND NEW.status<>'active' THEN
+  FOR v_transfer IN
+   UPDATE public.profile_ownership_transfers
+    SET status='cancelled',cancelled_at=clock_timestamp()
+    WHERE profile_id=NEW.id AND status IN('pending_recipient','recipient_accepted')
+    RETURNING *
+  LOOP
+   INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+   VALUES(gen_random_uuid(),NEW.owner_account_id,'unibud','profile.ownership_transfer.cancelled','success','profile',NEW.id,
+    'profile_became_inactive',jsonb_build_object('transfer_id',v_transfer.id,'recipient_account_id',v_transfer.recipient_account_id));
+   INSERT INTO public.profile_lifecycle_notifications(account_id,profile_id,event_type,details)
+   VALUES(v_transfer.current_owner_account_id,NEW.id,'ownership_transfer_cancelled',
+     jsonb_build_object('transferId',v_transfer.id,'reason','profile_became_inactive')),
+    (v_transfer.recipient_account_id,NEW.id,'ownership_transfer_cancelled',
+     jsonb_build_object('transferId',v_transfer.id,'reason','profile_became_inactive'));
+  END LOOP;
+ END IF;
+ RETURN NEW;
+END;
+$function$;
+ALTER FUNCTION public.profile_cancel_open_transfer_on_inactive() OWNER TO unibud_profile_owner;
+CREATE TRIGGER profiles_cancel_open_transfer_when_inactive
+AFTER UPDATE OF status ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.profile_cancel_open_transfer_on_inactive();
+
 CREATE OR REPLACE FUNCTION public.profile_ownership_transfer_preflight(
  p_profile_id UUID,p_owner_account_id UUID
 ) RETURNS JSONB
