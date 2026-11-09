@@ -321,6 +321,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
         <p className="eyebrow">Your identities</p>
         <h1>One account.<br />Different sides of you.</h1>
         <p className="lead">Keep your personal identity, creator work and communities distinct. Switch context without creating another account.</p>
+        <p className="profile-muted"><a href="/account/closure" className="profile-text-action">Review account closure readiness and outstanding obligations</a></p>
       </section>
 
       {error && <p className="profile-alert profile-error" role="alert">{error}</p>}

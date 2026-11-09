@@ -1,0 +1,102 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import type { ClosureReadinessSnapshot } from "../../../lib/account/closure-readiness";
+
+type ResponseBody = { ok: true; readiness: {
+  status: "blocked" | "eligible_for_policy_review";
+  canClose: false;
+  items: Array<{ id: string; title: string; description: string; action: string; href: string; blocking: boolean }>;
+  blockers: { ownedProfiles: number; activeOwnedProfiles: number; archivedOwnedProfiles: number; delegatedRelationships: number; incomingTransfers: number; outgoingTransfers: number };
+  policyGate: { status: "not_approved"; message: string };
+  explanation: string;
+}; snapshot: ClosureReadinessSnapshot } | { ok: false; error: string };
+
+export default function AccountClosureReadinessPage() {
+  const [data, setData] = useState<Extract<ResponseBody, { ok: true }> | null>(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/account/closure-readiness", { cache: "no-store" })
+      .then(async (response) => {
+        const body = await response.json() as ResponseBody;
+        if (!response.ok || !body.ok) throw new Error(body.ok ? "Could not load account closure readiness." : body.error);
+        if (active) setData(body);
+      })
+      .catch((cause: unknown) => {
+        if (active) setError(cause instanceof Error ? cause.message : "Could not load account closure readiness.");
+      })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  if (loading) return <main className="mx-auto max-w-3xl px-5 py-12" aria-busy="true"><p role="status">Checking account obligations…</p></main>;
+  if (error) return <main className="mx-auto max-w-3xl px-5 py-12"><h1 className="text-2xl font-semibold">Account closure readiness</h1><p role="alert" className="mt-4">{error}</p><button className="mt-5 rounded-lg border px-4 py-2" onClick={() => window.location.reload()}>Try again</button></main>;
+  if (!data) return null;
+
+  const { readiness } = data;
+  const counts = readiness.blockers;
+  return (
+    <main className="mx-auto max-w-3xl px-5 py-10">
+      <nav aria-label="Breadcrumb" className="mb-6 text-sm"><Link href="/profiles" className="underline">Profiles</Link><span aria-hidden="true"> / </span><span>Account closure</span></nav>
+      <header>
+        <p className="text-sm font-medium text-slate-600">ACCOUNT &amp; SECURITY</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Account closure readiness</h1>
+        <p className="mt-3 text-slate-600">{readiness.explanation}</p>
+      </header>
+
+      <section aria-labelledby="status-heading" className="mt-8 rounded-2xl border p-5">
+        <h2 id="status-heading" className="text-lg font-semibold">Current status</h2>
+        <p className="mt-2 font-medium">{readiness.status === "blocked" ? "Not ready — outstanding obligations" : "Profile checks clear — policy review still required"}</p>
+        <p className="mt-2 text-sm text-slate-600">Permanent account closure is not available from this page. No data or profile has been deleted or transferred.</p>
+      </section>
+
+      <section aria-labelledby="counts-heading" className="mt-8">
+        <h2 id="counts-heading" className="text-xl font-semibold">What is attached to this account</h2>
+        <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {[
+            ["Owned profiles", counts.ownedProfiles],
+            ["Active profiles", counts.activeOwnedProfiles],
+            ["Archived profiles", counts.archivedOwnedProfiles],
+            ["Delegated relationships", counts.delegatedRelationships],
+            ["Incoming transfers", counts.incomingTransfers],
+            ["Outgoing transfers", counts.outgoingTransfers]
+          ].map(([label, value]) => <div key={label} className="rounded-xl border p-4"><dt className="text-sm text-slate-600">{label}</dt><dd className="mt-1 text-2xl font-semibold tabular-nums">{value}</dd></div>)}
+        </dl>
+      </section>
+
+      <section aria-labelledby="actions-heading" className="mt-8">
+        <h2 id="actions-heading" className="text-xl font-semibold">Items to review</h2>
+        {readiness.items.length === 0 ? <p className="mt-3 text-sm text-slate-600">No profile or delegated-access items were returned by the current checks.</p> : (
+          <ul className="mt-4 space-y-3">
+            {readiness.items.map((item) => <li key={item.id} className="rounded-xl border p-4">
+              <h3 className="font-semibold">{item.title}</h3><p className="mt-1 text-sm text-slate-600">{item.description}</p>
+              <Link href={item.href} className="mt-3 inline-block text-sm font-medium underline underline-offset-4">{item.action}</Link>
+            </li>)}
+          </ul>
+        )}
+      </section>
+
+      <section aria-labelledby="policy-heading" className="mt-8 rounded-2xl border p-5">
+        <h2 id="policy-heading" className="text-lg font-semibold">Before permanent closure can be offered</h2>
+        <p className="mt-2 text-sm text-slate-600">{readiness.policyGate.message}</p>
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-sm">
+          <li>Retention periods and records that must legally remain available.</li>
+          <li>Clear notice explaining what happens to profile content and account data.</li>
+          <li>Ownership and transfer rules for dependent records, services and transactions.</li>
+          <li>A defined recovery window, identity re-verification and support process.</li>
+          <li>Audited deletion, export, backup-expiry and incident-recovery procedures.</li>
+        </ul>
+        <p className="mt-4 text-sm font-medium">Closure action: unavailable by design.</p>
+      </section>
+
+      <footer className="mt-10 border-t pt-5 text-sm text-slate-600">
+        <p>Review profile and delegation settings before requesting account closure support.</p>
+        <Link href="/profiles" className="mt-2 inline-block font-medium underline underline-offset-4">Open profile management</Link>
+      </footer>
+    </main>
+  );
+}

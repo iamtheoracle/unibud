@@ -171,3 +171,11 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 3. Mark integrations as unavailable until their external provider and credentials are actually configured.
 4. Do not describe a placeholder, design document, mock screen or passing narrow test as a complete feature.
 5. Update this register when scope changes; record deliberate removals or deferrals with rationale rather than silently dropping them.
+
+
+## Account lifecycle and closure readiness
+- **Implemented on the feature branch:** authenticated `GET /api/account/closure-readiness` derives identity from the validated session, aggregates the database closure preflight with owned/archived profiles, delegated relationships and incoming/outgoing profile transfers, and returns non-cacheable account-scoped data.
+- **Implemented on the feature branch:** accessible account closure readiness page with blocker inventory, profile-management actions, loading/error/empty states and an explicit permanent-closure policy gate. Profile management links to the new experience.
+- **Verified:** readiness builder tests cover active/archived profiles, active/suspended delegation, incoming/outgoing transfers, and the invariant that permanent closure remains disabled even when profile checks are clear. Full CI passed at code commit `b2204d568635db570924572c5f4c8b501abdff46` (PostgreSQL 16 migration/RLS, Oracle Arc API, typecheck, contract tests, server security tests, lint, profile browser E2E and production build).
+- **Not implemented / not approved:** permanent account closure, deletion, data export, retention schedules, legal notices, content ownership rules, dependent transaction/provider record disposition, backup expiry, cooling-off/recovery windows, and production support operations. The page must never be treated as a closure authorization.
+- **Release boundary:** no production deployment or production database change is part of this milestone. Full CI must pass on the feature branch before this work is considered verified.
