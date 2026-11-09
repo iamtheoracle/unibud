@@ -144,7 +144,6 @@ export class VerificationChallengeService {
     await this.repository.create({
       id,
       accountId: input.accountId,
-      identityId: input.identityId,
       channel: input.channel,
       purpose: input.purpose,
       targetDigest,
