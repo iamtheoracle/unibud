@@ -8,6 +8,7 @@ This migration establishes the first provider-neutral PostgreSQL persistence bou
 
 - `accounts`: canonical account lifecycle.
 - `authentication_identities`: issuer-scoped login subjects mapped to accounts.
+- `account_sessions`: opaque session-credential digests, expiry and revocation metadata.
 - `profiles`: personal, creator, and page/community profile records.
 - `profile_memberships`: exact-profile ownership and delegated membership.
 - `resource_grants`: explicit application/resource/action permissions.
@@ -18,7 +19,7 @@ This migration establishes the first provider-neutral PostgreSQL persistence bou
 1. Account IDs are independent of email addresses, phone numbers, usernames, and external authentication subjects.
 2. Authentication identity uniqueness is scoped to the issuer and subject.
 3. Email/phone lookup material is represented as encrypted bytes plus a keyed lookup digest. Never use an unkeyed hash for low-entropy identifiers.
-4. Password verifiers, passkey private material, OTPs, recovery codes, bearer tokens, and session secrets are not stored in this table. They need a separately reviewed credential/session design.
+4. Password verifiers, passkey private material, OTPs, recovery codes, raw bearer tokens, and raw session secrets are not stored in these tables. The session table stores only a SHA-256 digest of a high-entropy random opaque credential; low-entropy identifiers require keyed digests.
 5. Membership and grants are scoped to exact accounts, profiles, applications, resources, and actions. A role name alone is not permission.
 6. Audit event payloads must be minimised. Never log passwords, verification secrets, session tokens, private message bodies, or full financial payloads.
 7. Foreign-key deletion is restricted so account closure/deletion must use an explicit retention and erasure workflow rather than cascading through records.
