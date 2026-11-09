@@ -452,6 +452,13 @@ BEGIN
  IF p_recipient_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
   RAISE EXCEPTION 'Only the intended recipient may respond to this transfer' USING ERRCODE='42501';
  END IF;
+ -- Participant locks precede the transfer row, matching account/identity/profile
+ -- eligibility triggers and the owner finalization lock order.
+ SELECT * INTO v_transfer FROM public.profile_ownership_transfers
+ WHERE id=p_transfer_id AND recipient_account_id=p_recipient_account_id;
+ IF NOT FOUND OR v_transfer.status<>'pending_recipient' THEN RETURN FALSE; END IF;
+ PERFORM pg_advisory_xact_lock(LEAST(hashtextextended(v_transfer.current_owner_account_id::text,0),hashtextextended(p_recipient_account_id::text,0)));
+ PERFORM pg_advisory_xact_lock(GREATEST(hashtextextended(v_transfer.current_owner_account_id::text,0),hashtextextended(p_recipient_account_id::text,0)));
  SELECT * INTO v_transfer FROM public.profile_ownership_transfers
  WHERE id=p_transfer_id AND recipient_account_id=p_recipient_account_id FOR UPDATE;
  IF NOT FOUND OR v_transfer.status<>'pending_recipient' THEN RETURN FALSE; END IF;
@@ -459,11 +466,16 @@ BEGIN
   UPDATE public.profile_ownership_transfers SET status='expired',cancelled_at=clock_timestamp() WHERE id=p_transfer_id;
   RETURN FALSE;
  END IF;
- SELECT * INTO v_profile FROM public.profiles WHERE id=v_transfer.profile_id AND owner_account_id=v_transfer.current_owner_account_id;
- IF NOT FOUND OR v_profile.status<>'active' OR NOT EXISTS(
-  SELECT 1 FROM public.accounts WHERE id=v_transfer.current_owner_account_id AND status='active')
+ SELECT * INTO v_profile FROM public.profiles
+ WHERE id=v_transfer.profile_id AND owner_account_id=v_transfer.current_owner_account_id;
+ IF NOT FOUND OR v_profile.status<>'active'
+  OR NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=v_transfer.current_owner_account_id AND status='active')
   OR NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_recipient_account_id AND status='active')
   OR NOT EXISTS(SELECT 1 FROM public.authentication_identities WHERE account_id=p_recipient_account_id AND status='active' AND verified_at IS NOT NULL)
+  OR NOT EXISTS(SELECT 1 FROM public.profiles p JOIN public.profile_memberships m
+   ON m.profile_id=p.id AND m.account_id=p_recipient_account_id AND m.relationship='owner'
+    AND m.role='owner' AND m.status='active'
+   WHERE p.owner_account_id=p_recipient_account_id AND p.kind='personal' AND p.status='active')
  THEN
   UPDATE public.profile_ownership_transfers SET status='cancelled',cancelled_at=clock_timestamp() WHERE id=p_transfer_id;
   INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
