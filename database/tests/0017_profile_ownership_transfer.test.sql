@@ -258,6 +258,14 @@ BEGIN
  SELECT count(*) INTO v_notifications FROM public.profile_lifecycle_notifications
   WHERE profile_id='37000000-0000-4000-8000-000000000002';
  IF v_notifications<4 THEN RAISE EXCEPTION 'Expected request, acceptance and both completion notifications, got %',v_notifications; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000001'
+  AND profile_id='37000000-0000-4000-8000-000000000002' AND event_type='ownership_transfer_completed'
+  AND details->>'newOwnerHandle'='transfer-recipient')
+ OR NOT EXISTS(SELECT 1 FROM public.profile_lifecycle_notifications WHERE account_id='17000000-0000-4000-8000-000000000002'
+  AND profile_id='37000000-0000-4000-8000-000000000002' AND event_type='ownership_transfer_completed'
+  AND details->>'previousOwnerHandle'='transfer-owner') THEN
+  RAISE EXCEPTION 'Completion notifications must identify the other party to both accounts';
+ END IF;
 END
 $complete$;
 -- The new owner can review the append-only ownership transfer audit history.
