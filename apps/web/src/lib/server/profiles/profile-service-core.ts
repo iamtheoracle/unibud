@@ -140,6 +140,10 @@ export class ProfileService {
   }
 
   async inviteDelegateByHandle(ownerAccountId: string, input: ProfileInvitationInput) {
+    const publicRoles: readonly string[] = ["admin", "moderator", "editor", "member", "seller", "provider", "viewer"];
+    if (!publicRoles.includes(input.role) || typeof input.canSwitchToProfile !== "boolean") {
+      throw new Error("Choose a supported public page role and switching preference.");
+    }
     const profile = await this.repository.findProfileAccess(ownerAccountId, input.profileId);
     if (!profile || profile.profile.ownerAccountId !== ownerAccountId ||
         profile.profile.kind !== "page_community" || profile.relationship !== "owner" ||
