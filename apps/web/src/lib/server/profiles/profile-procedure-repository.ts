@@ -9,7 +9,6 @@ import {
 } from "../database/account-context-core";
 import type { ProfileAccessRecord } from "../../../../../../packages/contracts/src/profile.ts";
 import type {
-  DelegatedProfileGrantInput,
   ProfileCreateInput,
   ProfileInvitationInput,
   ProfileInvitationRecord,
@@ -107,22 +106,6 @@ export class ProfileProcedureRepository implements ProfileRepository {
           status: row.status
         }
       };
-    });
-  }
-
-  async grantDelegatedAccess(ownerAccountId: string, input: DelegatedProfileGrantInput): Promise<ProfileAccessRecord> {
-    return this.inAccountContext(ownerAccountId, async client => {
-      await client.query(
-        "SELECT public.profile_grant_delegated_access($1,$2,$3,$4,$5)",
-        [input.profileId,ownerAccountId,input.delegateAccountId,input.role,input.canSwitchToProfile]
-      );
-      const result = await client.query<ProfileJoinRow>(
-        `${PROFILE_SELECT}
-         WHERE p.id=$1 AND m.account_id=$2 AND m.relationship='delegated'`,
-        [input.profileId,input.delegateAccountId]
-      );
-      if (!result.rows[0]) throw new Error("Delegated profile access was not persisted.");
-      return mapAccess(result.rows[0]);
     });
   }
 
