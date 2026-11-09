@@ -60,12 +60,12 @@ export class AuthenticationService {
     this.repository=repository;this.limiter=limiter;this.challenges=challenges;
     this.sessions=sessions;this.identifierDigestKey=identifierDigestKey;
   }
-  private digestIdentifier(identifier:string):string {
-    return createHmac("sha256",this.identifierDigestKey).update(identifier,"utf8").digest("hex");
+  private digestIdentifier(identifier:string,channel:VerificationChannel):string {
+    return createHmac("sha256",this.identifierDigestKey).update("identifier:"+channel+":"+identifier,"utf8").digest("hex");
   }
   async register(input:{channel:VerificationChannel;identifier:string;password:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
-    await this.limiter.assertAllowed({action:"register",identifierDigest:this.digestIdentifier(identifier),now:now.toISOString()});
+    await this.limiter.assertAllowed({action:"register",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const accountId=randomUUID(),identityId=randomUUID(),passwordHash=await hashPassword(input.password);
     const created=await this.repository.registerPending({
       accountId,identityId,issuer:"urn:unibud:first-party",subject:identityId,method:input.channel,
