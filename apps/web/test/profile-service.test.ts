@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { ProfileAccessDeniedError, ProfileService, type ProfileCreateInput, type ProfileRepository } from "../src/lib/server/profiles/profile-service-core.ts";
+import { ProfileAccessDeniedError, ProfileService, type ProfileCreateInput, type ProfileUpdateInput, type ProfilePermission, type ProfileRepository } from "../src/lib/server/profiles/profile-service-core.ts";
 import type { ProfileAccessRecord } from "../../../packages/contracts/src/profile.ts";
 
 const owner="10000000-0000-4000-8000-000000000001";
@@ -11,8 +11,8 @@ function access(accountId=owner,relationship:"owner"|"delegated"="owner",canSwit
  profile:{id:profileId as ProfileAccessRecord["profile"]["id"],ownerAccountId:owner as ProfileAccessRecord["profile"]["ownerAccountId"],kind:"personal",handle:"oracle",displayName:"Oracle",visibility:"private",status:"active"}};
 }
 class Repo implements ProfileRepository{
- record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null;
- async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
+ record=access(); revoked=0; activeContext=false; invitationInput:unknown=null; invitationResponse:unknown=null; updateInput:ProfileUpdateInput|null=null; permissionAllowed=false;
+ async updateOwnedProfile(accountId:string,input:ProfileUpdateInput){this.updateInput=input;return {...access(accountId),profile:{...access(accountId).profile,kind:"creator",handle:input.handle,displayName:input.displayName,visibility:input.visibility}};}\n async authorizeAction(_account:string,_profile:string,_permission:ProfilePermission){return this.permissionAllowed;}\n async createOwnedProfile(accountId:string,input:ProfileCreateInput){return {...access(accountId),profile:{...access(accountId).profile,kind:input.kind,handle:input.handle,displayName:input.displayName}};}
  async revokeDelegatedAccess(){this.revoked++;return true;}
  async listAccessibleProfiles(){return [this.record];}
  async listDelegatedAccess(){return [access(delegate,"delegated",true)];}
@@ -76,4 +76,27 @@ test("profile switching rejects another account and revoked memberships",async()
  await assert.rejects(()=>service.switchProfile(delegate,"40000000-0000-4000-8000-000000000002",profileId),ProfileAccessDeniedError);
  repo.record={...access(),membershipStatus:"revoked"};
  await assert.rejects(()=>service.switchProfile(owner,"40000000-0000-4000-8000-000000000001",profileId),ProfileAccessDeniedError);
+});
+
+test("only an owner can update a creator or page identity",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.record={...access(),profile:{...access().profile,kind:"creator"}};
+ const updated=await service.updateOwnedProfile(owner,{profileId,displayName:"  New Creator  ",handle:" New.Creator ",visibility:"public"});
+ assert.equal(updated.profile.displayName,"New Creator");
+ assert.equal(updated.profile.handle,"new.creator");
+ assert.equal(repo.updateInput?.visibility,"public");
+ repo.record={...repo.record,relationship:"delegated",accountId:delegate as ProfileAccessRecord["accountId"]};
+ await assert.rejects(()=>service.updateOwnedProfile(delegate,{profileId,displayName:"Hijack",handle:"hijack.name",visibility:"public"}),ProfileAccessDeniedError);
+});
+test("personal profile identity cannot be edited through creator/page editor",async()=>{
+ const service=new ProfileService(new Repo());
+ await assert.rejects(()=>service.updateOwnedProfile(owner,{profileId,displayName:"Personal",handle:"personal.new",visibility:"private"}),ProfileAccessDeniedError);
+});
+test("profile permissions are delegated to the repository policy evaluator",async()=>{
+ const repo=new Repo(),service=new ProfileService(repo);
+ repo.permissionAllowed=true;
+ assert.equal(await service.authorizeAction(delegate,profileId,"content.publish"),true);
+ repo.permissionAllowed=false;
+ assert.equal(await service.authorizeAction(delegate,profileId,"members.view"),false);
+ assert.equal(await service.authorizeAction("","", "profile.read"),false);
 });
