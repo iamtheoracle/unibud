@@ -27,6 +27,7 @@ export interface IdentityRuntimeDependencies {
 }
 
 export function createIdentityServices(dependencies:IdentityRuntimeDependencies){
+ if(dependencies.authPool===dependencies.appPool) throw new Error("Authentication and application database pools must be separate role-bound pools.");
  const authRepository=createAuthRpcRepository(dependencies.authPool);
  const verification=new VerificationChallengeService(
   authRepository,dependencies.verificationRateLimiter,dependencies.verificationDelivery,
