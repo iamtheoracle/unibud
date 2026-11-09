@@ -59,6 +59,7 @@ export interface VerificationDelivery {
 }
 
 export interface IssueVerificationInput {
+  challengeId?: string;
   accountId: string;
   identityId: string;
   channel: VerificationChannel;
@@ -129,7 +130,7 @@ export class VerificationChallengeService {
     const destination = normalizeDestination(input.channel, input.destination);
     const createdAt = now.toISOString();
     const expiresAt = new Date(now.getTime() + lifetime * 1000).toISOString();
-    const id = randomUUID();
+    const id = input.challengeId ?? randomUUID();
     const code = String(randomInt(0, 1_000_000)).padStart(6, "0");
     const targetDigest = keyedDigest(this.digestKey, "target", destination);
     const codeDigest = keyedDigest(this.digestKey, "challenge", `${id}:${input.purpose}:${code}`);
