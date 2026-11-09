@@ -30,7 +30,9 @@ The initial repository foundation is documentation and service scaffolding. The 
 | Accessibility and localisation | Responsive layouts, accessible interaction, language/currency/time-zone support | Target |
 | Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | Target |
 
-### Identity onboarding
+#| Profile experience layer | Separate Personal, Creator, and Page/Community identity purposes, primary sections, and management areas; family metadata is presentation-only and never grants permissions | Shared typed presentation contract and focused contract tests added; publishing, insights, monetisation, moderation, membership workflows and lifecycle remain separately staged |
+
+## Identity onboarding
 - First-party email/phone registration and login; no Google or Apple sign-up.
 - Versioned terms and privacy acceptance; account identity is resolved from a verified session, never a caller-supplied account ID.
 - Personal profile and owner membership are created idempotently; creator and page/community profiles remain separate profile families.
