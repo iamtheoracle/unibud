@@ -135,12 +135,12 @@ export default function AccountClosureReadinessPage() {
 
       <section aria-labelledby="external-dependencies-heading" className="mt-8">
         <h2 id="external-dependencies-heading" className="text-xl font-semibold">External services and shared data</h2>
-        <p className="mt-2 text-sm text-slate-600">This view reports only dependencies registered and evidenced by UNIBUD. It does not claim that every external copy has been discovered. Provider checks are read-only; export and deletion are not available here.</p>
+        <p className="mt-2 text-sm text-slate-600">This view reports only dependencies registered and evidenced by UNIBUD; it does not claim that every external copy has been discovered. Integration verification state is platform-wide, while reference counts below are scoped to your signed-in account. No live provider check is performed by this screen yet. Export and deletion are unavailable.</p>
         <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
           {[
-            ["Verified providers", externalReadiness.counts.verified],
-            ["Unknown providers", externalReadiness.counts.unknown],
-            ["Unavailable providers", externalReadiness.counts.unavailable],
+            ["Verified integrations", externalReadiness.counts.verified],
+            ["Unknown integrations", externalReadiness.counts.unknown],
+            ["Unavailable integrations", externalReadiness.counts.unavailable],
             ["Unclassified integrations", externalReadiness.counts.unclassified],
             ["Policy gaps", externalReadiness.counts.policyGaps]
           ].map(([label, value]) => <div key={label} className="rounded-xl border p-3"><dt className="text-xs text-slate-600">{label}</dt><dd className="mt-1 text-xl font-semibold tabular-nums">{value}</dd></div>)}
