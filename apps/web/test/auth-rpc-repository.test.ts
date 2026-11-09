@@ -5,7 +5,7 @@ import { IdentifierProtector } from "../src/lib/server/auth/auth-rpc-repository-
 test("identifier protection encrypts raw identifiers and produces stable keyed lookup digests",()=>{
  const protector=new IdentifierProtector(Buffer.alloc(32,0x11),Buffer.alloc(32,0x22));
  const first=protector.protect("person@example.com","email");
- const second=protector.protect("person@example.com");
+ const second=protector.protect("person@example.com","email");
  assert.notDeepEqual(first.ciphertext,second.ciphertext);
  assert.equal(first.lookupDigest.length,32);
  assert.deepEqual(first.lookupDigest,second.lookupDigest);
