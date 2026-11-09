@@ -161,7 +161,7 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
       const response = await fetch("/api/profiles/" + encodeURIComponent(profileId) + "/archive", { method: "POST" });
       if (!response.ok) throw new Error(await readError(response));
       setNotice("Profile archived. Your personal identity and other active profiles remain available.");
-      await loadProfiles();
+      await Promise.all([loadProfiles(),loadArchivedProfiles(),loadLifecycleNotifications()]);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not archive profile."); }
     finally { setBusy(false); }
   }
@@ -171,8 +171,10 @@ export function ProfileManager({ activeProfileId }: { activeProfileId: string | 
     try {
       const response = await fetch("/api/profiles/" + encodeURIComponent(profileId) + "/restore", { method: "POST" });
       if (!response.ok) throw new Error(await readError(response));
-      setNotice("Profile restored. It is available in your profile switcher again.");
-      await loadProfiles();
+      setNotice("Profile restored. Its previous delegates remain suspended until you review and reactivate them.");
+      const restored=archivedProfiles.find(item=>item.profile.id===profileId);
+      await Promise.all([loadProfiles(),loadArchivedProfiles(),loadLifecycleNotifications()]);
+      if(restored?.profile.kind==="page_community"){setSelectedDelegationProfile(profileId);await loadDelegates(profileId);}
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not restore profile."); }
     finally { setBusy(false); }
   }
