@@ -57,6 +57,61 @@ GRANT SELECT ON public.authentication_identities TO unibud_profile_owner;
 GRANT DELETE ON public.profile_memberships TO unibud_profile_owner;
 GRANT SELECT,UPDATE ON public.resource_grants TO unibud_profile_owner;
 
+-- Archiving suspends active delegated memberships. Restore deliberately leaves
+-- them suspended so the owner must explicitly review and reactivate access.
+CREATE OR REPLACE FUNCTION public.profile_archive_owned(
+ p_profile_id UUID,p_owner_account_id UUID
+) RETURNS BOOLEAN
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+DECLARE v_profile public.profiles%ROWTYPE; v_active_owned_count INTEGER; v_suspended_delegate_ids UUID[];
+BEGIN
+ IF p_owner_account_id IS DISTINCT FROM unibud_private.current_account_id() THEN
+  RAISE EXCEPTION 'Authenticated profile owner required' USING ERRCODE='42501';
+ END IF;
+ PERFORM pg_advisory_xact_lock(hashtextextended(p_owner_account_id::text,0));
+ IF NOT EXISTS(SELECT 1 FROM public.accounts WHERE id=p_owner_account_id AND status='active') THEN
+  RAISE EXCEPTION 'Active account required' USING ERRCODE='42501';
+ END IF;
+ SELECT p.* INTO v_profile FROM public.profiles p
+ WHERE p.id=p_profile_id AND p.owner_account_id=p_owner_account_id FOR UPDATE;
+ IF NOT FOUND THEN RETURN FALSE; END IF;
+ IF v_profile.kind NOT IN('creator','page_community') OR NOT EXISTS(
+  SELECT 1 FROM public.profile_memberships m WHERE m.profile_id=p_profile_id AND m.account_id=p_owner_account_id
+   AND m.relationship='owner' AND m.role='owner' AND m.status='active')
+ THEN RAISE EXCEPTION 'Only the owning account may archive an owned creator or page profile' USING ERRCODE='42501'; END IF;
+ IF v_profile.status='archived' THEN RETURN TRUE; END IF;
+ IF v_profile.status<>'active' THEN RAISE EXCEPTION 'Only an active profile can be archived' USING ERRCODE='55000'; END IF;
+ SELECT count(*) INTO v_active_owned_count FROM public.profiles p JOIN public.profile_memberships m
+ ON m.profile_id=p.id AND m.account_id=p_owner_account_id AND m.relationship='owner'
+  AND m.role='owner' AND m.status='active'
+ WHERE p.owner_account_id=p_owner_account_id AND p.status='active';
+ IF v_active_owned_count<=1 OR NOT EXISTS(
+  SELECT 1 FROM public.profiles p JOIN public.profile_memberships m ON m.profile_id=p.id
+   AND m.account_id=p_owner_account_id AND m.relationship='owner' AND m.role='owner' AND m.status='active'
+  WHERE p.owner_account_id=p_owner_account_id AND p.kind='personal' AND p.status='active')
+ THEN RAISE EXCEPTION 'At least one active owned profile and the personal identity must remain available' USING ERRCODE='23514'; END IF;
+
+ UPDATE public.profiles SET status='archived',updated_at=clock_timestamp()
+ WHERE id=p_profile_id AND owner_account_id=p_owner_account_id;
+ WITH suspended AS (
+  UPDATE public.profile_memberships SET status='suspended'
+  WHERE profile_id=p_profile_id AND relationship='delegated' AND status='active'
+  RETURNING account_id
+ )
+ SELECT COALESCE(array_agg(account_id),ARRAY[]::UUID[]) INTO v_suspended_delegate_ids FROM suspended;
+ UPDATE public.account_sessions SET active_profile_id=NULL,profile_context_version=NULL
+ WHERE account_id=p_owner_account_id AND active_profile_id=p_profile_id AND status='active';
+ INSERT INTO public.security_audit_events(id,actor_account_id,application_id,action,outcome,resource_type,resource_id,reason_code,event_data)
+ VALUES(gen_random_uuid(),p_owner_account_id,'unibud','profile.archive','success','profile',p_profile_id,
+  'owner_requested',jsonb_build_object('profile_kind',v_profile.kind,'previous_status',v_profile.status,
+   'new_status','archived','suspended_delegate_account_ids',to_jsonb(v_suspended_delegate_ids)));
+ RETURN TRUE;
+END;
+$function$;
+ALTER FUNCTION public.profile_archive_owned(UUID,UUID) OWNER TO unibud_profile_owner;
+
 -- Extend owner-visible lifecycle history to include transfer requests,
 -- recipient consent, cancellation and completion audit events.
 CREATE OR REPLACE FUNCTION public.profile_list_lifecycle_history(
