@@ -67,7 +67,7 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 
 ### Important limits
 
-- Counts cover only the explicitly registered tables in migration 0018. They do not establish completeness for future product spaces, object storage, event streams, payment processors, email/SMS providers, analytics, backups or manually held support records.
+- Counts cover only the explicitly registered tables in migration 0018, including password credential and verification-challenge record counts (never credential hashes, challenge digests or challenge payloads). They do not establish completeness for future product spaces, object storage, event streams, payment processors, email/SMS providers, analytics, backups or manually held support records.
 - Foreign-key metadata cannot reveal dependencies stored only in JSON, text, external services or untracked object stores.
 - The current `missingPolicyDomains` list is deliberately fail-closed; no retention duration, legal basis, export/deletion action or external processor clearance is inferred.
 - Permanent account closure remains disabled. The discovery RPC is read-only and exposes no record contents.
