@@ -228,3 +228,5 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - CI has been extended to apply migration 0020 and run PostgreSQL authorization tests for allowed access, unassigned permissions, another account, revoked sessions, audit events and denied direct role-table access.
 - **Not yet verified:** the exact branch CI must pass before this work is considered tested. The migration has not been run against production. Initial operator provisioning remains a controlled database administration task; there is no self-service role elevation endpoint.
 - Provider identity and a documented read-only verification-delivery health operation remain unknown. No provider request or verification message is sent. Account export, deletion and closure remain disabled.
+
+- **Operations access-control runbook:** controlled provisioning, least-privilege permissions, expiry, audited revocation and session invalidation are documented in [Operations Access Control](../operations/OPERATIONS-ACCESS-CONTROL.md). The example SQL is documentation only and has not been executed.
