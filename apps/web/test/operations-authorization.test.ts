@@ -50,6 +50,8 @@ test("unauthenticated audit records cannot claim an account identity", () => {
   assert.match(remediation, /v_actor IS NULL AND p_outcome <> 'unauthenticated'/);
   assert.match(remediation, /v_actor IS NOT NULL AND p_outcome = 'unauthenticated'/);
   assert.match(route, /recordUnauthenticated\(requestId\)/);
+  assert.match(route, /recordAuthenticatedError\(authenticatedAccountId, requestId\)/);
+  assert.match(route, /\[REQUIRED_PERMISSION, "error", requestId\]/);
 });
 
 test("profile-level roles are not used as Operations authorization", () => {
