@@ -6,6 +6,15 @@ BEGIN;
 INSERT INTO public.accounts(id,status)
 VALUES ('f0200000-0000-4000-8000-000000000001','active');
 
+INSERT INTO public.account_sessions(
+ id,account_id,credential_digest,issued_at,last_seen_at,idle_expires_at,absolute_expires_at
+) VALUES (
+ 'f0200000-0000-4000-8000-000000000011',
+ 'f0200000-0000-4000-8000-000000000001',decode(repeat('20',32),'hex'),
+ clock_timestamp()-interval '1 minute',clock_timestamp(),
+ clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'
+);
+
 INSERT INTO public.unibud_operator_grants(
   account_id,operator_role,permissions,granted_by,expires_at
 ) VALUES (
@@ -24,14 +33,19 @@ WITH x AS (
  SELECT
   'f0200000-0000-4000-8000-000000000001'::text AS a,
   floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
-  'c0c0c0c0-c0c0-40c0-80c0-c0c0c0c0c0c1'::text AS n
+  'c0c0c0c0-c0c0-40c0-80c0-c0c0c0c0c0c1'::text AS n,
+  'f0200000-0000-4000-8000-000000000011'::text AS s
 )
 SELECT
  set_config('unibud.account_id',a,true),
+ set_config('unibud.session_id',s,true),
  set_config('unibud.context_expiry',e,true),
  set_config('unibud.context_nonce',n,true),
  set_config('unibud.context_signature',
   encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 
 -- Runtime role has only EXECUTE, not direct access to grant or audit records.
@@ -95,7 +109,8 @@ WITH x AS (
  SELECT
   'f0200000-0000-4000-8000-000000000001'::text AS a,
   floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
-  'c0c0c0c0-c0c0-40c0-80c0-c0c0c0c0c0c2'::text AS n
+  'c0c0c0c0-c0c0-40c0-80c0-c0c0c0c0c0c2'::text AS n,
+  'f0200000-0000-4000-8000-000000000011'::text AS s
 )
 SELECT
  set_config('unibud.account_id',a,true),
@@ -103,6 +118,10 @@ SELECT
  set_config('unibud.context_nonce',n,true),
  set_config('unibud.context_signature',
   encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
+ set_config('unibud.session_id',s,true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 
 SET LOCAL ROLE unibud_app;
