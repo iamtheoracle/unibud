@@ -121,3 +121,12 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - The temporary operator bearer gate's 32-byte minimum is not a substitute for authenticated staff/operator identities, scoped roles, revocation, audit history or step-up authentication.
 - Verification gateway URL configuration must not contain embedded credentials, query strings or fragments. Production uses HTTPS; development HTTP is allowed only for loopback hosts.
 - None of this evidence changes account closure, export, deletion or retention policy. Those remain unavailable and fail closed.
+
+
+## Session-derived Operations access boundary
+
+- Internal verification-delivery diagnostics now require a valid first-party session and a separate global Operations permission; profile membership roles are never interpreted as global authority.
+- The app database login can execute only narrow permission-check and audit-record functions. Operator grant and audit tables are not directly accessible to the app role.
+- Grants are provisioned/revoked out-of-band by a controlled database administrator, with explicit permissions, expiry and revocation. No grants are seeded automatically.
+- Access attempts are recorded without session tokens, contact identifiers, provider URLs or request bodies. Audit records are append-only through database triggers.
+- The new migration and route remain unmerged and unverified until exact-head CI and PostgreSQL migration tests pass. Production rollout remains blocked pending review.
