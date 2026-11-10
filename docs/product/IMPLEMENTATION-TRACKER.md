@@ -244,3 +244,13 @@ At every development stage:
 - **Key management prerequisite:** the eventual runtime must receive two separate 32-byte keys (AES-GCM seed-encryption key and recovery-code HMAC key) from the approved secret manager. Keys must not be stored in PostgreSQL, source control, browser code, logs or generated provisioning links. Key rotation needs a versioned envelope and documented re-encryption/recovery plan.
 - **Next substage:** add operator-only MFA credential and recovery-code persistence, database procedures for pending enrollment/confirmation/disable and atomic TOTP-step/recovery-code consumption, then bind verified step-up to the exact session and enforce it on every Operations endpoint. Require recent password reauthentication for enrollment/disable/recovery regeneration, deny all Operations access until enrolled and stepped up, and audit all security-state transitions.
 - **Verification:** the MFA commits above are newer than the last observed all-green PR checks. Fresh exact-head CI is required before treating this cryptographic-core slice as verified.
+
+
+## Latest checkpoint — 2026-11-10
+
+- **Branch head:** `e559cbb01394fb1eee7cf76a9bb3faf92fc65d3e`.
+- **Operations authorization:** the earlier code head `6658dd12` passed all three workflows: Web/Database `42923367543`, Foundation `42923367792`, Oracle Arc API `42923367566`. The full Web job including browser E2E and production build completed successfully; Foundation ran PostgreSQL 16 migrations 0001–0021 and the migration-0021 SQL tests successfully.
+- **MFA cryptographic slice:** `e65b894e` adds the RFC 6238 TOTP, AES-256-GCM seed protection, provisioning URI and recovery-code primitives; `c9f386f2` adds six unit tests; `e559cbb0` adds explicit previous/current/next time-step tolerance assertions.
+- **Latest CI:** fresh runs for `e559cbb0` are underway: Foundation `42924175017`, Web/Database `42924174799`, Oracle Arc API `42924174741`. PostgreSQL migration validation, TypeScript, contract tests, 94 existing security unit tests and lint had passed in the earlier run for `c9f386f2`; the latest expanded TOTP suite and full build/E2E remain pending exact-head completion.
+- **MFA state:** cryptographic core only. There is no persistent enrollment, no active operator second factor, no replay-safe database update, no one-time recovery redemption, no login challenge or session step-up enforcement. MFA remains disabled/not implemented end-to-end.
+- **Security/release state:** PR #15 remains OPEN and DRAFT; Issue #16 remains OPEN pending independent security review and the required key-provisioning/recovery operational review. No merge, production migration or deployment has occurred.
