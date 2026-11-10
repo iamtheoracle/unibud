@@ -280,3 +280,11 @@ At every development stage:
 - Migration 0022 now requires an active credential to carry both a confirmation timestamp and the initially consumed TOTP step. This prevents a future activation path from creating an active credential with no replay baseline.
 - The PostgreSQL test now rejects both an impossible pending/confirmed state and an active credential missing its initial consumed step, in addition to checking app-role access denial and recovery digest length.
 - Latest code/test commit at this checkpoint: `7e07be7cac4685add57184d0a91657f463c7d1ea`. The Foundation workflow is wired to apply migration 0022 and execute test 0022. Exact-head workflow results have not yet been returned; do not report this migration/test as passing until those results are inspected.
+
+
+### CI checkpoint for the persistence branch — 2026-11-11
+
+- PR synchronization run at the earlier branch checkpoint: Foundation run `42925437299` completed successfully. Its PostgreSQL job applied migrations through 0022 and ran SQL tests through 0022 successfully; Foundation integrity also passed. Oracle Arc API run `42925437321` passed.
+- Web/Database run `42925437404`: PostgreSQL migration validation passed; type check, contract tests, server security unit tests and lint passed. At the last inspection, profile browser E2E was still running and production build had not started.
+- **Important exact-head caveat:** these run IDs were created for the earlier branch checkpoint `d762585cb1ce6304f522c0690520e05ecae5e392`. The later refinement requiring active credentials to include their initial consumed TOTP step was committed as `2cb7d003dcf37795bd130e1de0f135e7b7bae101`, with its negative test in `7e07be7cac4685add57184d0a91657f463c7d1ea`; the latest documentation checkpoint is `29fa74c11a5310ab94b0a7f71fbad6b29a09cf0b`. No workflow runs were returned for that latest head at inspection. The final refinement is therefore **not yet CI-verified**, even though the preceding version of migration/test 0022 passed Foundation PostgreSQL CI.
+- PR #15 is still open and draft; GitHub currently reports `mergeable: false`. Do not merge. Issue #16 remains open.
