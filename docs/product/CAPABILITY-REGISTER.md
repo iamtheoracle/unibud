@@ -247,3 +247,8 @@ Implementation order: finish Operations security PR; establish module-specific c
 ## Central unfinished-work tracker
 
 See [IMPLEMENTATION-TRACKER.md](./IMPLEMENTATION-TRACKER.md) for the cross-project status ledger, evidence requirements, external blockers, module-by-module unfinished work and mandatory definition of done. The tracker must be reviewed and updated at every implementation stage; it does not replace this capability register.
+
+
+## Security hold — PR #15 database actor provenance
+
+A high-priority database trust-boundary finding is tracked in [Issue #16](https://github.com/iamtheoracle/unibud/issues/16). Although the HTTP route uses a validated session account, migration 0020 exposes SECURITY DEFINER functions that accept caller-supplied account UUIDs. The app database role can therefore query permissions for another account directly and can forge actor attribution in audit calls. This does not meet the requirement for non-forgeable account context. PR #15 must remain unmerged until the database interface derives/verifies actor identity from a cryptographically trusted context and PostgreSQL negative impersonation/audit-forgery tests pass.
