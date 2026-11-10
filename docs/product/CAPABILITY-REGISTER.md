@@ -293,3 +293,11 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 - Added [Operations MFA: session-bound step-up protocol](../security/OPERATIONS-MFA-SESSION-STEP-UP.md). The protocol requires versioned HMAC-authenticated account+session context, exact live-session binding, server-signed single-use TOTP assertions, atomic replay prevention, one-time recovery, reauthentication, lockout, negative/concurrency tests and per-request server-side enforcement.
 - **Status: DESIGN ONLY.** The existing signed account context does not bind a session. Do not enable Operations MFA or claim step-up protection until the new session-bound context and database verifier, MFA procedures, server routes, UI, audit, tests and operational controls are implemented and reviewed.
 - Next code slice: session-bound signed context plus PostgreSQL migration/negative tests. Do not proceed to MFA RPCs until that trust boundary is proven.
+
+
+### Session-bound context implementation slice — 2026-11-11
+
+- Added a server-only core primitive to create a versioned HMAC assertion binding account ID, persisted session ID, expiry and nonce; added a transaction helper to set both account and session claims locally in one transaction.
+- Added unit tests for claim binding, invalid IDs/keys, transaction-local propagation, commit and rollback.
+- **Not yet secure/active:** PostgreSQL does not yet verify the new session assertion; no database accessor or route integration exists. GUC values remain untrusted until the matching database verifier is implemented and tested.
+- Code commit `a1a5d15e92828c043bfc81a6e7a396f8c322ac3e`; exact-head CI is pending. Next slice is the private PostgreSQL verifier/accessor plus negative SQL tests. No Operations MFA is enabled.
