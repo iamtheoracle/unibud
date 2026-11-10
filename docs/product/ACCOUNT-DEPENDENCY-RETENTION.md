@@ -130,3 +130,19 @@ The inventory policy is `not_approved` and `canClose=false`. Every registered do
 - Grants are provisioned/revoked out-of-band by a controlled database administrator, with explicit permissions, expiry and revocation. No grants are seeded automatically.
 - Access attempts are recorded without session tokens, contact identifiers, provider URLs or request bodies. Audit records are append-only through database triggers.
 - The new migration and route remain unmerged and unverified until exact-head CI and PostgreSQL migration tests pass. Production rollout remains blocked pending review.
+
+
+## Expanded regulated-service dependency register
+
+The detailed capability target is in `docs/product/EXPANDED_FINANCIAL_AI_AND_PLATFORM_CAPABILITY_SCOPE.md`. The following are dependencies, not presumed integrations:
+
+- **Banking and deposits:** confirmed licensed bank/financial institution, account/custody model, settlement rails, safeguarding, reconciliation, complaints and service-level contracts.
+- **Debit/credit cards:** issuer/BIN sponsor, processor, card network, tokenization/wallet provider where applicable, PCI scope determination, dispute/chargeback handling and card lifecycle APIs.
+- **Loans, overdrafts, salary advance and BNPL:** jurisdiction-specific permissions/regulated lender, underwriting and affordability, credit bureau where lawful, pricing/disclosure, collections/hardship, refund and repayment allocation.
+- **Savings and investments:** deposit/custody partner, broker/exchange/market-data provider as applicable, execution/corporate-action/statement feeds, suitability and investor disclosures, asset segregation and reconciliation.
+- **FX and remittance:** executable quote/market data, licensed FX/remittance partners, approved corridors, spread/fee disclosure, sanctions/AML, settlement and refund/recall paths.
+- **Gambling:** explicitly excluded from UNIBUD teen/student release. Any future adult product needs separate product identity and jurisdictional licence, age assurance, geofencing, KYC/AML, segregated funds, approved rails and responsible-gambling controls.
+- **AI interfaces:** governed Oracle Arc model gateway, app-scoped identity/memory, model/provider contracts, tool registry, permission grants/revocation, file scanning/storage/retention, voice/multimodal providers, source/research services, usage metering and safety monitoring.
+- **Website/platform operations:** hosting/CDN/DNS, email and notification delivery, observability, backup/restore, incident response, support, analytics/consent, accessibility and security review.
+
+No provider, licence, payment rail, card issuance, loan disbursement, investment execution, FX conversion, gambling authorisation or AI provider capability should be marked active without verified contracts, credentials, integration tests and operational evidence. Do not store provider secrets in frontend code or commit history.
