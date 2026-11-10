@@ -284,3 +284,12 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 - **Important boundary:** MFA remains disabled/not implemented end-to-end. Migration 0022 grants no application access to the MFA tables and exposes no enrollment, confirmation, verification, replay-prevention or recovery-consumption procedures. The TOTP cryptographic library and protected storage do not constitute an active second factor.
 - Issue #16 still requires independent security review, secret-manager configuration review and production-like migration/recovery review. PR #15 remains open/draft/unmerged; no deployment or production migration is authorised.
 - Next work is to inspect the actual session lifecycle and design a session-bound MFA challenge/assertion protocol before adding database procedures or routes. Do not accept account/session IDs or TOTP steps supplied by the client as trusted evidence.
+
+
+### Operations MFA session-bound protocol — design checkpoint (2026-11-11)
+
+- Current PR #15 head before this documentation update: `49cdefc2f1cd93c4783daabface3070c6dcd62dc`; all three exact-head workflows passed (Oracle Arc API `42925990785`, Foundation `42925990948`, UNIBUD Web and Database `42925990790`).
+- Inspected the actual SessionService, session repository, auth RPC adapter, signed account-context helper, session routes, migrations 0001/0004/0008/0021/0022 and session lifecycle contract.
+- Added [Operations MFA: session-bound step-up protocol](../security/OPERATIONS-MFA-SESSION-STEP-UP.md). The protocol requires versioned HMAC-authenticated account+session context, exact live-session binding, server-signed single-use TOTP assertions, atomic replay prevention, one-time recovery, reauthentication, lockout, negative/concurrency tests and per-request server-side enforcement.
+- **Status: DESIGN ONLY.** The existing signed account context does not bind a session. Do not enable Operations MFA or claim step-up protection until the new session-bound context and database verifier, MFA procedures, server routes, UI, audit, tests and operational controls are implemented and reviewed.
+- Next code slice: session-bound signed context plus PostgreSQL migration/negative tests. Do not proceed to MFA RPCs until that trust boundary is proven.
