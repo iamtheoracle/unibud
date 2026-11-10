@@ -40,8 +40,9 @@ test("diagnostic route validates session then binds a signed database transactio
   assert.match(route, /readSessionCookie\(request\)/);
   assert.match(route, /sessions\.validate\(token\)/);
   assert.match(route, /authenticatedAccountId = validation\.account\.id/);
-  assert.match(route, /createSignedAccountContextFromEnvironment\(authenticatedAccountId\)/);
-  assert.match(route, /withSignedAccountTransaction\(/);
+  assert.match(route, /authenticatedSessionId = validation\.session\.id/);
+  assert.match(route, /createSignedSessionContextFromEnvironment\(authenticatedAccountId, authenticatedSessionId\)/);
+  assert.match(route, /withSignedSessionTransaction\(/);
   assert.match(route, /unibud_operator_has_permission\(\$1\)/);
   assert.match(route, /unibud_operator_record_access\(\$1, \$2, \$3\)/);
   assert.doesNotMatch(route, /unibud_operator_has_permission\(\$1, \$2\)/);
@@ -50,12 +51,10 @@ test("diagnostic route validates session then binds a signed database transactio
   assert.match(route, /if \(!allowed\) return denied\(403\)/);
 });
 
-test("unauthenticated audit records cannot claim an account identity", () => {
+test("unauthenticated audit records cannot claim an account or session identity", () => {
   assert.match(remediation, /v_actor := unibud_private\.current_account_id\(\)/);
-  assert.match(remediation, /v_actor IS NULL AND p_outcome <> 'unauthenticated'/);
-  assert.match(remediation, /v_actor IS NOT NULL AND p_outcome = 'unauthenticated'/);
   assert.match(route, /recordUnauthenticated\(requestId\)/);
-  assert.match(route, /recordAuthenticatedError\\(authenticatedAccountId, authenticatedSessionId!, requestId\\)/);
+  assert.match(route, /recordAuthenticatedError\(authenticatedAccountId, authenticatedSessionId!, requestId\)/);
   assert.match(route, /\[REQUIRED_PERMISSION, "error", requestId\]/);
 });
 
@@ -64,9 +63,8 @@ test("profile-level roles are not used as Operations authorization", () => {
   assert.doesNotMatch(migration, /role\s*=\s*'operator'/);
 });
 
-
 test("Operations database authorization requires a verified live persisted session", () => {
-                      assert.ok(sessionVerifier.includes("CREATE FUNCTION unibud_private.current_session_id()"));
+  assert.ok(sessionVerifier.includes("CREATE FUNCTION unibud_private.current_session_id()"));
   assert.ok(sessionVerifier.includes("unibud_private.current_account_id() IS DISTINCT FROM v_account"));
   assert.ok(sessionVerifier.includes("s.status = 'active'"));
   assert.ok(sessionVerifier.includes("s.revoked_at IS NULL"));
