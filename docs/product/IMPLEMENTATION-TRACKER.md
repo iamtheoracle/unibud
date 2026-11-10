@@ -1,6 +1,6 @@
 # UNIBUD / My Realm Network implementation tracker
 
-Last verified: 2026-11-10
+Last verified: 2026-11-11
 Repository: `iamtheoracle/unibud`
 Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED**, or **NOT VERIFIED** until its backend, authorization, user experience, tests, documentation and operational evidence are all present. A screen, schema, mock, CI run or plan alone does not establish production capability.
 
@@ -19,8 +19,8 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 - State: OPEN, DRAFT, NOT MERGED.
 - Branch: `foundation/session-derived-operations-rbac-v2`.
-- Latest inspected head: `74a8d21cadd1b02675978b22ab8a9c9e2ad163f1`.
-- Exact-head GitHub Actions at `74a8d21cadd1b02675978b22ab8a9c9e2ad163f1`: **PASS** for Foundation checks (run `42886319998`), Oracle Arc API (run `42886319999`), and UNIBUD Web and Database (run `42886320098`).
+- Latest inspected head: `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`.
+- Exact-head GitHub Actions at `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`: **PASS** for Foundation checks (run `42925640430`), Oracle Arc API (run `42925640442`), and UNIBUD Web and Database (run `42925640425`). The Web workflow completed type check, contract tests, server security unit tests, lint, profile browser E2E and production build; PostgreSQL migration validation passed. Foundation applied all identity/auth migrations and passed PostgreSQL 16 RLS isolation and foundation integrity.
 - Review submissions and inline review threads: none returned by the latest inspection.
 - Merge/deploy/production migration: not performed.
 - Scope: session-derived actor for verification-delivery metadata diagnostics; global Operations grant table; allow-listed permissions, expiry and revocation; narrow database functions; append-only audit; PostgreSQL 16 CI migration/test; runbook and capability documentation.
@@ -288,3 +288,22 @@ At every development stage:
 - Web/Database run `42925437404`: PostgreSQL migration validation passed; type check, contract tests, server security unit tests and lint passed. At the last inspection, profile browser E2E was still running and production build had not started.
 - **Important exact-head caveat:** these run IDs were created for the earlier branch checkpoint `d762585cb1ce6304f522c0690520e05ecae5e392`. The later refinement requiring active credentials to include their initial consumed TOTP step was committed as `2cb7d003dcf37795bd130e1de0f135e7b7bae101`, with its negative test in `7e07be7cac4685add57184d0a91657f463c7d1ea`; the latest documentation checkpoint is `29fa74c11a5310ab94b0a7f71fbad6b29a09cf0b`. No workflow runs were returned for that latest head at inspection. The final refinement is therefore **not yet CI-verified**, even though the preceding version of migration/test 0022 passed Foundation PostgreSQL CI.
 - PR #15 is still open and draft; GitHub currently reports `mergeable: false`. Do not merge. Issue #16 remains open.
+
+
+## Verified checkpoint — 2026-11-11 (PR #15 head c16e9e8)
+
+- **Repository/branch:** `iamtheoracle/unibud`, `foundation/session-derived-operations-rbac-v2`.
+- **PR #15:** OPEN, DRAFT, NOT MERGED. GitHub reported mergeable at this inspection; this is not approval to merge. No production migration or deployment occurred.
+- **Exact inspected head:** `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`.
+- **Exact-head CI: all three workflows PASS.**
+  - Foundation checks — run `42925640430`: PostgreSQL 16 migration and RLS isolation job passed; Foundation integrity job passed.
+  - Oracle Arc API — run `42925640442`: API tests passed.
+  - UNIBUD Web and Database — run `42925640425`: PostgreSQL migration validation passed; type check, contract tests, server security unit tests, lint, profile browser E2E and production build all passed.
+- **Operations actor provenance:** migration 0021 replaces the unsafe actor-UUID-taking permission/audit functions with functions deriving actor identity through the existing HMAC-verified transaction context. The PostgreSQL test covers valid signed context, removal of legacy APIs, forged account GUC denial, audit actor provenance, unattributed unauthenticated events and immediate revocation. This is CI-verified at the exact head; independent security review, secret-manager configuration review and production-like migration/recovery review remain outstanding. Issue #16 remains a release blocker until those reviews are complete.
+- **Operations MFA cryptographic core:** implemented and unit-tested, but this is not active MFA.
+- **Operations MFA persistence:** migration 0022 and its PostgreSQL test are now included in the passing exact-head Foundation workflow. The tables are protected from direct application-role access. This verifies storage structure and role boundaries only.
+- **MFA is still NOT ENABLED.** No application RPCs/procedures, enrollment or confirmation endpoints, TOTP verification challenge, atomic replay-step consumption, one-time recovery redemption, session-bound step-up claim, password reauthentication, lockout/rate limiting, UI, audit lifecycle or end-to-end MFA journey is implemented.
+- **Immediate next implementation:** inspect and document the existing session schema, revocation semantics, signed transaction context, and identity runtime. Then design the complete session-bound MFA state machine and trusted server-to-database assertion contract before writing SECURITY DEFINER procedures. Never accept caller-supplied account IDs, session IDs, TOTP time steps, or plain GUC values as proof. Add PostgreSQL negative tests before exposing any procedure.
+- **Other Operations work remaining:** dual-control operator grant provisioning/revocation, no-self-grant controls, accessible grant-management UI, audit search/filter/export, security alert routing and tested incident runbooks; actual verification provider identity/read-only health contract remains unknown.
+- **Release status:** PR #15 remains open/draft/unmerged. No production rollout is authorised.
+
