@@ -74,14 +74,17 @@ Review operator grants at least monthly and after role changes, contract termina
 
 The intended operator second factor is an authenticator-app TOTP credential (RFC 6238, SHA-1, six digits, 30-second period) with one time-step of clock tolerance. TOTP seeds are encrypted using AES-256-GCM and account-bound associated data. Recovery codes are random, shown once, and stored only as account-bound keyed digests. Accepted TOTP steps must be persisted atomically to prevent replay; recovery-code redemption must be atomic and single-use.
 
-The cryptographic implementation currently exists only as a tested library. Before enabling MFA:
+Cryptographic primitives and protected persistence schema now exist, but the storage migration is not yet wired to application procedures. Migration 0022 creates pending/active credential rows and recovery-code digest rows; both tables are owned by the non-login Operations owner and have no direct grants to application roles. The Foundation workflow now includes migration 0022 and its PostgreSQL test, pending exact-head CI.
+
+Before enabling MFA:
 1. Provision separate 32-byte seed-encryption and recovery-code HMAC keys from the approved secret manager. Never store these keys in source control, PostgreSQL or browser code.
-2. Add protected pending/active MFA credential persistence and recovery-code digests.
-3. Implement enrollment confirmation, step-up, recovery, disable and regeneration procedures with atomic attempt limits and replay prevention.
-4. Bind step-up assurance to the exact authenticated session and require a recent step-up for every privileged Operations action.
-5. Require fresh password verification for enrollment, disable and recovery-code regeneration.
-6. Audit enrollment, successful/failed step-up, recovery redemption, disable, key rotation and operator lockout.
-7. Test cross-account isolation, replay, concurrent redemption, expired challenges, throttling, lockout and session revocation.
-8. Complete independent security review before activation.
+2. Add narrow account-bound database procedures using only the HMAC-verified transaction identity; no caller-supplied account UUID or caller-settable GUC is trusted.
+3. Add a server-authenticated proof for TOTP acceptance and exact-session step-up; do not accept a caller-supplied time-step as proof.
+4. Implement atomic monotonic TOTP replay prevention and atomic single-use recovery-code redemption.
+5. Implement enrollment confirmation, login challenge, recovery, disable and regeneration routes with password reauthentication, attempt limits, throttling and lockout.
+6. Bind recent MFA assurance to the exact authenticated session and require it on every privileged Operations endpoint.
+7. Audit enrollment, successful/failed step-up, recovery redemption, disable, key rotation and operator lockout.
+8. Test cross-account isolation, replay, concurrent redemption, expired challenges, throttling, lockout and session revocation.
+9. Complete independent security review before activation.
 
 MFA is currently **not enabled**. No current operator is to be treated as protected by this feature.
