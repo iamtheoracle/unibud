@@ -254,3 +254,11 @@ At every development stage:
 - **Latest CI:** fresh runs for `e559cbb0` are underway: Foundation `42924175017`, Web/Database `42924174799`, Oracle Arc API `42924174741`. PostgreSQL migration validation, TypeScript, contract tests, 94 existing security unit tests and lint had passed in the earlier run for `c9f386f2`; the latest expanded TOTP suite and full build/E2E remain pending exact-head completion.
 - **MFA state:** cryptographic core only. There is no persistent enrollment, no active operator second factor, no replay-safe database update, no one-time recovery redemption, no login challenge or session step-up enforcement. MFA remains disabled/not implemented end-to-end.
 - **Security/release state:** PR #15 remains OPEN and DRAFT; Issue #16 remains OPEN pending independent security review and the required key-provisioning/recovery operational review. No merge, production migration or deployment has occurred.
+
+
+### MFA exact-head CI progress — `e559cbb01394fb1eee7cf76a9bb3faf92fc65d3e`
+
+- Foundation run `42924175017`: passed.
+- Oracle Arc API run `42924174741`: passed.
+- Web/Database run `42924174799`: PostgreSQL migration validation passed; TypeScript, contract tests, 94 server security unit tests and lint passed. Playwright installation was in progress at last inspection; browser E2E and production build had not started.
+- Therefore the new MFA crypto unit tests have passed the web type-check, test and lint stages, but **full exact-head CI is still pending**. Do not mark the MFA slice fully verified until browser E2E and production build finish successfully.
