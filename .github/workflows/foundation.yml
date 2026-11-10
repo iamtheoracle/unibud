@@ -56,6 +56,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0019_external_dependency_registry.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0020_session_derived_operations_rbac.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0021_non_forgeable_operations_actor.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0022_operations_mfa_storage.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -80,6 +81,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0019_external_dependency_registry.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0020_session_derived_operations_rbac.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0021_non_forgeable_operations_actor.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0022_operations_mfa_storage.test.sql
   foundation-integrity:
     name: Foundation integrity
     runs-on: ubuntu-latest
