@@ -35,7 +35,8 @@ test("the remediation removes caller-selected actor parameters", () => {
 test("diagnostic route validates session then binds a signed database transaction", () => {
   assert.match(route, /readSessionCookie\(request\)/);
   assert.match(route, /sessions\.validate\(token\)/);
-  assert.match(route, /createSignedAccountContextFromEnvironment\(validation\.account\.id\)/);
+  assert.match(route, /authenticatedAccountId = validation\.account\.id/);
+  assert.match(route, /createSignedAccountContextFromEnvironment\(authenticatedAccountId\)/);
   assert.match(route, /withSignedAccountTransaction\(/);
   assert.match(route, /unibud_operator_has_permission\(\$1\)/);
   assert.match(route, /unibud_operator_record_access\(\$1, \$2, \$3\)/);
