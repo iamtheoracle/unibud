@@ -10,6 +10,10 @@ const remediation = readFileSync(
   new URL("../../../database/migrations/0021_non_forgeable_operations_actor.sql", import.meta.url),
   "utf8"
 );
+const sessionVerifier = readFileSync(
+  new URL("../../../database/migrations/0023_operations_session_context_verifier.sql", import.meta.url),
+  "utf8"
+);
 const route = readFileSync(
   new URL("../src/app/api/internal/integrations/verification-delivery/status/route.ts", import.meta.url),
   "utf8"
@@ -58,4 +62,19 @@ test("unauthenticated audit records cannot claim an account identity", () => {
 test("profile-level roles are not used as Operations authorization", () => {
   assert.doesNotMatch(migration, /profile_memberships/);
   assert.doesNotMatch(migration, /role\s*=\s*'operator'/);
+});
+
+
+test("Operations database authorization requires a verified live persisted session", () => {
+  assert.match(sessionVerifier, /CREATE FUNCTION unibud_private\\.current_session_id\\(\\)/);
+  assert.match(sessionVerifier, /unibud_private\\.current_account_id\\(\\) IS DISTINCT FROM v_account/);
+  assert.match(sessionVerifier, /s\\.status = 'active'/);
+  assert.match(sessionVerifier, /s\\.revoked_at IS NULL/);
+  assert.match(sessionVerifier, /s\\.idle_expires_at > statement_timestamp\\(\\)/);
+  assert.match(sessionVerifier, /s\\.absolute_expires_at > statement_timestamp\\(\\)/);
+  assert.match(sessionVerifier, /session_context_signature/);
+  assert.match(sessionVerifier, /GRANT EXECUTE ON FUNCTION unibud_private\\.current_session_id\\(\\) TO unibud_ops_owner/);
+  assert.match(sessionVerifier, /ADD COLUMN session_id UUID REFERENCES public\\.account_sessions/);
+  assert.match(sessionVerifier, /actor_account_id, session_id, permission, outcome, request_id/);
+  assert.doesNotMatch(sessionVerifier, /GRANT EXECUTE ON FUNCTION unibud_private\\.current_session_id\\(\\) TO unibud_app/);
 });
