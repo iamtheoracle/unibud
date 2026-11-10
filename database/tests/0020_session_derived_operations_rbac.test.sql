@@ -1,11 +1,13 @@
--- PostgreSQL integration tests for migration 0020.
+-- PostgreSQL integration tests for the Operations grant and audit schema.
+-- The API contract is supplied by migration 0021 and requires signed context.
 \set ON_ERROR_STOP on
+BEGIN;
 
-INSERT INTO public.accounts(id, status)
-VALUES ('f0200000-0000-4000-8000-000000000001', 'active');
+INSERT INTO public.accounts(id,status)
+VALUES ('f0200000-0000-4000-8000-000000000001','active');
 
 INSERT INTO public.unibud_operator_grants(
-  account_id, operator_role, permissions, granted_by, expires_at
+  account_id,operator_role,permissions,granted_by,expires_at
 ) VALUES (
   'f0200000-0000-4000-8000-000000000001',
   'integration_operator',
@@ -14,21 +16,35 @@ INSERT INTO public.unibud_operator_grants(
   clock_timestamp() + interval '1 day'
 );
 
+INSERT INTO unibud_private.context_signing_keys(key_id,secret)
+VALUES ('ci-operations-grant-key',decode(repeat('c0',32),'hex'));
+
+-- Bind the database transaction to the authenticated test account.
+WITH x AS (
+ SELECT
+  'f0200000-0000-4000-8000-000000000001'::text AS a,
+  floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
+  'c0c0c0c0-c0c0-40c0-80c0-c0c0c0c0c0c1'::text AS n
+)
+SELECT
+ set_config('unibud.account_id',a,true),
+ set_config('unibud.context_expiry',e,true),
+ set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+
 -- Runtime role has only EXECUTE, not direct access to grant or audit records.
-SET ROLE unibud_app;
+SET LOCAL ROLE unibud_app;
 DO $test$
 BEGIN
   IF NOT public.unibud_operator_has_permission(
-    'f0200000-0000-4000-8000-000000000001',
     'integrations.verification_delivery.read'
   ) THEN
     RAISE EXCEPTION 'Expected active operator permission to be true';
   END IF;
 
-  IF public.unibud_operator_has_permission(
-    'f0200000-0000-4000-8000-000000000001',
-    'integrations.oracle_arc.read'
-  ) THEN
+  IF public.unibud_operator_has_permission('integrations.oracle_arc.read') THEN
     RAISE EXCEPTION 'Unexpected permission was granted';
   END IF;
 
@@ -40,7 +56,6 @@ BEGIN
   END;
 
   PERFORM public.unibud_operator_record_access(
-    'f0200000-0000-4000-8000-000000000001',
     'integrations.verification_delivery.read',
     'allowed',
     'f0200000-0000-4000-8000-000000000099'
@@ -54,8 +69,8 @@ DO $test$
 BEGIN
   BEGIN
     UPDATE public.unibud_operator_audit_events
-    SET outcome = 'denied'
-    WHERE request_id = 'f0200000-0000-4000-8000-000000000099';
+    SET outcome='denied'
+    WHERE request_id='f0200000-0000-4000-8000-000000000099';
     RAISE EXCEPTION 'Audit update unexpectedly succeeded';
   EXCEPTION WHEN SQLSTATE '55000' THEN
     NULL;
@@ -63,7 +78,7 @@ BEGIN
 
   BEGIN
     DELETE FROM public.unibud_operator_audit_events
-    WHERE request_id = 'f0200000-0000-4000-8000-000000000099';
+    WHERE request_id='f0200000-0000-4000-8000-000000000099';
     RAISE EXCEPTION 'Audit delete unexpectedly succeeded';
   EXCEPTION WHEN SQLSTATE '55000' THEN
     NULL;
@@ -71,16 +86,29 @@ BEGIN
 END
 $test$;
 
--- Revocation takes effect on the next permission check; no cached session role.
 UPDATE public.unibud_operator_grants
-SET revoked_at = clock_timestamp(), revocation_reason = 'test_revocation'
-WHERE account_id = 'f0200000-0000-4000-8000-000000000001';
+SET revoked_at=clock_timestamp(),revocation_reason='test_revocation'
+WHERE account_id='f0200000-0000-4000-8000-000000000001';
 
-SET ROLE unibud_app;
+-- Use a fresh signed context to prove revocation is effective on the next call.
+WITH x AS (
+ SELECT
+  'f0200000-0000-4000-8000-000000000001'::text AS a,
+  floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
+  'c0c0c0c0-c0c0-40c0-80c0-c0c0c0c0c0c2'::text AS n
+)
+SELECT
+ set_config('unibud.account_id',a,true),
+ set_config('unibud.context_expiry',e,true),
+ set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+
+SET LOCAL ROLE unibud_app;
 DO $test$
 BEGIN
   IF public.unibud_operator_has_permission(
-    'f0200000-0000-4000-8000-000000000001',
     'integrations.verification_delivery.read'
   ) THEN
     RAISE EXCEPTION 'Revoked operator permission remained active';
@@ -94,9 +122,11 @@ DECLARE event_count BIGINT;
 BEGIN
   SELECT count(*) INTO event_count
   FROM public.unibud_operator_audit_events
-  WHERE request_id = 'f0200000-0000-4000-8000-000000000099';
+  WHERE request_id='f0200000-0000-4000-8000-000000000099';
   IF event_count <> 1 THEN
-    RAISE EXCEPTION 'Expected exactly one append-only audit event, found %', event_count;
+    RAISE EXCEPTION 'Expected exactly one append-only audit event, found %',event_count;
   END IF;
 END
 $test$;
+
+ROLLBACK;
