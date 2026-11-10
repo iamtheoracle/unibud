@@ -323,3 +323,15 @@ At every development stage:
 - **Next implementation:** implement the versioned signed session context and database verification/accessor first, with migration and PostgreSQL negative tests proving forged session GUCs, wrong account/session pairings, expired/revoked sessions and missing session context all fail. Only after that foundation passes CI should MFA persistence procedures and routes be added.
 - Issue #16 still requires independent security review, secret-manager configuration review and production-like migration/recovery review. PR #15 must remain draft/open until security and MFA acceptance gates are satisfied.
 
+
+
+## Session-bound MFA implementation slice — 2026-11-11
+
+- **Code added:** `apps/web/src/lib/server/database/session-context-core.ts` creates a versioned HMAC-signed claim binding account UUID, persisted session UUID, expiry and nonce. It creates the existing signed account claim as well, so existing account isolation and the new session claim can be independently verified.
+- **Transaction helper added:** `withSignedSessionTransaction` binds both claims transaction-locally in one database transaction, rolls back on failure and releases the connection.
+- **Tests added:** `apps/web/test/session-context.test.ts` covers account/session/expiry/nonce binding, malformed identifiers, weak keys, transaction-local GUC transport, commit and rollback behavior.
+- **Critical limitation:** these GUCs remain untrusted transport until a PostgreSQL migration adds the matching HMAC verifier/accessor. No route uses the helper yet. No session-bound database authorization exists yet. Do not enable Operations MFA.
+- **Current code head:** `a1a5d15e92828c043bfc81a6e7a396f8c322ac3e`. Exact-head CI results have not yet been returned. This slice is not yet CI-verified.
+- **Next:** implement the matching private PostgreSQL session-context verifier/accessor and its SQL tests. Tests must prove forged session GUCs, account/session mismatches, missing/expired signatures and revoked/expired sessions fail closed. Then run exact-head CI before integrating this context into any Operations endpoint.
+- PR #15 remains OPEN/DRAFT/NOT MERGED. No production migration or deployment. Issue #16 independent review and secret-manager/recovery review remain outstanding.
+
