@@ -252,3 +252,10 @@ See [IMPLEMENTATION-TRACKER.md](./IMPLEMENTATION-TRACKER.md) for the cross-proje
 ## Security hold — PR #15 database actor provenance
 
 A high-priority database trust-boundary finding is tracked in [Issue #16](https://github.com/iamtheoracle/unibud/issues/16). Although the HTTP route uses a validated session account, migration 0020 exposes SECURITY DEFINER functions that accept caller-supplied account UUIDs. The app database role can therefore query permissions for another account directly and can forge actor attribution in audit calls. This does not meet the requirement for non-forgeable account context. PR #15 must remain unmerged until the database interface derives/verifies actor identity from a cryptographically trusted context and PostgreSQL negative impersonation/audit-forgery tests pass.
+
+
+### Operations actor provenance remediation — pending verification
+
+- Migration 0021 and the verification-delivery diagnostic route now use the existing HMAC-verified transaction context to derive the Operations actor. The application cannot pass an arbitrary account UUID to the permission or audit procedures.
+- PostgreSQL tests cover forged account GUC rejection, audit attribution, unauthenticated unattributed audit events and revocation. The older migration-0020 SQL test has also been updated to the replacement function signatures.
+- **Not yet verified:** the first PR merge-ref Foundation run failed because that older SQL test still used the removed API. Its correction is committed; a fresh exact-head PostgreSQL run and full CI are still required. Issue #16 remains open, PR #15 remains draft/open/unmerged, and no production rollout is authorised.
