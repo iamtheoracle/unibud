@@ -217,3 +217,13 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Implemented on the next stacked feature branch:** verification gateway endpoint validation rejects embedded URL credentials, query strings and fragments; production requires HTTPS; non-production HTTP is limited to loopback development hosts. Focused tests cover these boundaries and verify that endpoint secrets are not exposed in diagnostic output.
 - **Provider evidence remains unknown:** no vendor identity is inferred, no POST delivery is used as a health probe, and no email/SMS or verification code is sent. A provider-specific adapter and documented read-only health contract are still required before connectivity can be tested.
 - **Release boundary:** all changes remain on unmerged feature branches. No production deployment, production credentials, production data, or `main` change is included.
+
+
+### Session-derived Operations authorization (PR under review)
+
+- Global Operations grants are stored separately from profile memberships. Tutor, Student, Institution, Creator, Page/Community and other profile roles do not grant internal Operations access.
+- The verification-delivery metadata diagnostic now derives the actor only from the existing validated first-party session cookie, then checks the narrowly scoped database permission `integrations.verification_delivery.read`.
+- Operator grants are provisioned and revoked only through a controlled database-administrator process. They support explicit role, permission allow-list, expiry and revocation. No public grant-management endpoint is introduced.
+- Every diagnostic authorization decision is recorded through a narrow database function in an append-only audit table. The application role has no direct table access.
+- **Not yet verified:** PR-specific CI and PostgreSQL execution of migration 0020. No operator grant is provisioned by the migration and no production rollout is authorised.
+- **Still outstanding:** MFA/step-up, grant-management UI/workflow, audit search/export and alerting, independent live PostgreSQL migration/RLS proof, and actual provider identity/read-only health contract.
