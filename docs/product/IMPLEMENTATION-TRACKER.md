@@ -206,3 +206,16 @@ At every development stage:
 5. Add newly discovered requirements without deleting previously approved ones.
 6. Keep blocked external dependencies visible with the exact decision/evidence needed to unblock them.
 7. Report what changed, what passed, what failed, what remains and the next implementation.
+
+
+## Newly discovered security blocker — Issue #16
+
+<badge>HIGH PRIORITY — BLOCKS PR #15 MERGE</badge>
+
+- Issue: [#16 — Bind Operations authorization and audit actor to non-forgeable database identity](https://github.com/iamtheoracle/unibud/issues/16).
+- Finding: the route derives the account UUID from a validated session, but migration 0020 exposes SECURITY DEFINER functions to `unibud_app` that accept arbitrary actor UUID parameters. A caller running as the app database role can supply a different known account UUID directly to the permission function and can forge the actor UUID in audit records.
+- Consequence: route-level correctness does not satisfy the database-level non-forgeable identity requirement. This must be fixed before PR #15 is merged or deployed.
+- Required: inspect the existing identity/session database trust architecture; implement cryptographically verifiable actor propagation or another equivalently non-forgeable design; remove unsafe function signatures/grants; derive audit actor from verified context; add PostgreSQL negative tests for impersonation and audit forgery; rerun all exact-head CI.
+- Do not use a plain caller-settable PostgreSQL GUC/session variable as proof of identity.
+- PR #15 remains OPEN, DRAFT and NOT MERGED. No production deployment or migration is authorised.
+
