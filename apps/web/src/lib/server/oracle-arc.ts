@@ -1,8 +1,7 @@
 import "server-only";
 
 export {
-  checkOracleArcConnection,
-  isIntegrationOperatorRequest
+  checkOracleArcConnection
 } from "./oracle-arc-core.ts";
 export type {
   OracleArcConnectionState,
