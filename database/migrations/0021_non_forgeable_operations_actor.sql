@@ -74,6 +74,7 @@ BEGIN
        'operations.audit.read',
        'operations.accounts.support_read'
      )
+     OR p_outcome IS NULL
      OR p_outcome NOT IN ('allowed','denied','unauthenticated','error')
      OR p_request_id IS NULL THEN
     RAISE EXCEPTION 'Invalid operator audit event' USING ERRCODE = '22023';
