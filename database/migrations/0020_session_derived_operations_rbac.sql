@@ -42,6 +42,8 @@ CREATE POLICY operations_role_assignments_deny_app
   USING (false) WITH CHECK (false);
 
 ALTER TABLE public.operations_role_assignments OWNER TO unibud_profile_owner;
+GRANT SELECT ON public.accounts, public.account_sessions TO unibud_profile_owner;
+GRANT INSERT ON public.security_audit_events TO unibud_profile_owner;
 REVOKE ALL ON public.operations_role_assignments FROM PUBLIC, unibud_app, unibud_readonly, unibud_auth;
 
 CREATE OR REPLACE FUNCTION public.operations_authorize_session(
