@@ -100,9 +100,13 @@ SELECT public.unibud_operator_record_access(
 RESET ROLE;
 
 DO $test$
-DECLARE actor UUID; outcome TEXT;
+DECLARE actor UUID; event_outcome TEXT;
 BEGIN
- SELECT actor_account_id,outcome INTO actor,outcome
+ SELECT audit.actor_account_id,audit.outcome INTO actor,event_outcome
+ FROM public.unibud_operator_audit_events AS audit
+ WHERE audit.request_id='f0210000-0000-4000-8000-000000000099';
+ /* replaced query below */
+ --
  FROM public.unibud_operator_audit_events
  WHERE request_id='f0210000-0000-4000-8000-000000000099';
  IF actor IS DISTINCT FROM 'f0210000-0000-4000-8000-000000000001'::uuid
