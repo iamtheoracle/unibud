@@ -273,3 +273,10 @@ At every development stage:
 - **Current state:** persistence schema and its SQL test have been committed, but the updated Foundation workflow has not yet completed on the new branch head. Do not call this storage migration verified until the exact-head PostgreSQL workflow passes. MFA remains **not enabled**; no enrollment, login challenge, recovery redemption, session step-up or endpoint enforcement exists.
 - **Next:** add narrow SECURITY DEFINER procedures that derive the account exclusively from the verified signed transaction context; add server-authenticated proofs for TOTP acceptance and exact-session step-up; implement atomic TOTP replay prevention and single-use recovery redemption; then implement enrollment/challenge routes, password reauthentication, lockout/throttling, audit, UI and end-to-end tests. Do not let a caller-supplied time-step or a caller-settable GUC stand in for a cryptographic proof.
 - **Release state:** PR #15 remains open/draft/unmerged. Issue #16 remains open pending independent security review. No production migration or deployment has occurred.
+
+
+### Follow-up integrity refinement — 2026-11-11
+
+- Migration 0022 now requires an active credential to carry both a confirmation timestamp and the initially consumed TOTP step. This prevents a future activation path from creating an active credential with no replay baseline.
+- The PostgreSQL test now rejects both an impossible pending/confirmed state and an active credential missing its initial consumed step, in addition to checking app-role access denial and recovery digest length.
+- Latest code/test commit at this checkpoint: `7e07be7cac4685add57184d0a91657f463c7d1ea`. The Foundation workflow is wired to apply migration 0022 and execute test 0022. Exact-head workflow results have not yet been returned; do not report this migration/test as passing until those results are inspected.
