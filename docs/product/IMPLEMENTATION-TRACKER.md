@@ -219,3 +219,14 @@ At every development stage:
 - Do not use a plain caller-settable PostgreSQL GUC/session variable as proof of identity.
 - PR #15 remains OPEN, DRAFT and NOT MERGED. No production deployment or migration is authorised.
 
+
+
+## Issue #16 remediation — implementation started, verification pending
+
+- **Implemented on the existing PR branch:** migration `0021_non_forgeable_operations_actor.sql` removes the UUID-accepting Operations permission and audit functions and replaces them with narrow signatures that derive the actor through `unibud_private.current_account_id()`.
+- **Trust mechanism:** the existing database HMAC verifier validates the short-lived transaction context. A caller-settable account GUC without a matching server-generated HMAC fails closed. The Operations owner receives only the schema/function privileges needed to invoke that verifier.
+- **Route updated:** the verification-delivery metadata diagnostic validates the first-party session, creates the signed context from that server-derived account ID, and performs the permission check plus audit write in one signed transaction. Unauthenticated audit events are explicitly unattributed; the caller cannot supply an actor ID.
+- **Tests added:** PostgreSQL migration test for valid session context, removed legacy UUID-taking APIs, forged-account GUC denial, audit actor provenance, unattributed unauthenticated events and immediate revocation. Web contract tests cover the route's signed-context usage. Foundation CI now applies and tests migration 0021.
+- **Current status: IN PROGRESS / NOT VERIFIED.** These changes have been committed to the PR branch, but no CI result for the new exact head has yet been established. The SQL test has not yet been independently executed against PostgreSQL outside CI. Do not close Issue #16, mark the finding resolved, merge or deploy until the full exact-head workflows pass and the migration/test receive review.
+- **Operational prerequisite:** the app signer and database verifier must be provisioned with the same environment-specific HMAC key through separate secret-manager bindings. No key is stored in the repository or migration. Existing production-like environments must be checked for this configuration before any rollout.
+- **Next verification:** inspect the complete new diff, run exact-head CI, fix all failures, verify migration ordering and rollback/recovery, then request independent security review. PR #15 remains OPEN, DRAFT and NOT MERGED.
