@@ -14,6 +14,9 @@ test("TOTP allows adjacent clock step and rejects replay",()=>{
  const secret=Buffer.alloc(20,0x45),now=1_800_000_000_000;
  const code=calculateTotpCode(secret,now),step=Math.floor(now/30_000);
  assert.deepEqual(verifyTotpCode(secret,code,now),{acceptedStep:step});
+ const previous=calculateTotpCode(secret,now-30_000),next=calculateTotpCode(secret,now+30_000);
+ assert.deepEqual(verifyTotpCode(secret,previous,now),{acceptedStep:step-1});
+ assert.deepEqual(verifyTotpCode(secret,next,now),{acceptedStep:step+1});
  assert.equal(verifyTotpCode(secret,code,now,step),null);
  assert.equal(verifyTotpCode(secret,"bad-code",now),null);
  assert.equal(verifyTotpCode(secret,"123456",now+600_000),null);
