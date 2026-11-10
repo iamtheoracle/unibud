@@ -3,7 +3,8 @@
 BEGIN;
 
 INSERT INTO public.accounts(id,status) VALUES
- ('f0220000-0000-4000-8000-000000000001','active');
+ ('f0220000-0000-4000-8000-000000000001','active'),
+ ('f0220000-0000-4000-8000-000000000002','active');
 
 SET LOCAL ROLE unibud_ops_owner;
 INSERT INTO public.unibud_operator_mfa_credentials(
@@ -63,12 +64,12 @@ BEGIN
   INSERT INTO public.unibud_operator_mfa_credentials(
    account_id,encrypted_totp_secret,state,enrollment_expires_at,confirmed_at
   ) VALUES (
-   'f0220000-0000-4000-8000-000000000001',
+   'f0220000-0000-4000-8000-000000000002',
    'v1.'||repeat('A',16)||'.'||repeat('B',22)||'.'||repeat('C',27),
    'pending',clock_timestamp()+interval '10 minutes',clock_timestamp()
   );
   RAISE EXCEPTION 'Pending credential with confirmation timestamp was accepted';
- EXCEPTION WHEN unique_violation THEN
+ EXCEPTION WHEN check_violation THEN
   NULL;
  END;
 END
