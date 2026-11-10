@@ -117,7 +117,7 @@ BEGIN
    RAISE EXCEPTION 'Unauthenticated audit event must not claim an actor';
  END IF;
 END
-$test$;;
+$test$;
 
 -- Revoke immediately and prove the next signed-context check denies access.
 UPDATE public.unibud_operator_grants
