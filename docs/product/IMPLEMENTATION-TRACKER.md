@@ -307,3 +307,19 @@ At every development stage:
 - **Other Operations work remaining:** dual-control operator grant provisioning/revocation, no-self-grant controls, accessible grant-management UI, audit search/filter/export, security alert routing and tested incident runbooks; actual verification provider identity/read-only health contract remains unknown.
 - **Release status:** PR #15 remains open/draft/unmerged. No production rollout is authorised.
 
+
+
+## Latest checkpoint — 2026-11-11 (PR #15 head `49cdefc2f1cd93c4783daabface3070c6dcd62dc`)
+
+- PR #15 remains **OPEN, DRAFT, NOT MERGED**. GitHub reports mergeable, but this is not merge approval. No production migration or deployment occurred.
+- All three workflows passed at this exact head:
+  - Oracle Arc API run `42925990785`.
+  - Foundation checks run `42925990948`.
+  - UNIBUD Web and Database run `42925990790`.
+- This exact-head run verifies the documentation checkpoint and all implementation through migrations 0021 and 0022. Foundation PostgreSQL 16 migration/RLS and Foundation integrity jobs passed; the web/database workflow completed its PostgreSQL validation, type/contract/security tests, lint, profile browser E2E and production build.
+- Session architecture inspection is complete for design purposes: opaque 256-bit session credentials with SHA-256 digests; server-side account/session validation; active-account, revocation, issue-time, idle and absolute-expiry checks; atomic rotation; single-session and account-wide revocation; separate LOGIN pools for `unibud_auth` and `unibud_app`; HMAC-verified transaction-local account context.
+- **New design artifact:** [Operations MFA: session-bound step-up protocol](../security/OPERATIONS-MFA-SESSION-STEP-UP.md). It specifies a versioned HMAC-authenticated account+session context, exact-session step-up, enrollment, TOTP assertion consumption, replay prevention, one-time recovery, reauthentication, lockout, procedure boundaries, negative/concurrency tests, API/UI and release gates.
+- **This is design only.** No session-bound context code, migration 0023, MFA procedures, routes, UI or step-up enforcement have been implemented. MFA remains disabled/not active.
+- **Next implementation:** implement the versioned signed session context and database verification/accessor first, with migration and PostgreSQL negative tests proving forged session GUCs, wrong account/session pairings, expired/revoked sessions and missing session context all fail. Only after that foundation passes CI should MFA persistence procedures and routes be added.
+- Issue #16 still requires independent security review, secret-manager configuration review and production-like migration/recovery review. PR #15 must remain draft/open until security and MFA acceptance gates are satisfied.
+
