@@ -274,3 +274,13 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 - The tables are owned by the non-login Operations owner role; the application, readonly, auth and PUBLIC roles receive no direct table privileges.
 - PostgreSQL integration tests and Foundation CI wiring are added. Exact-head CI for the new migration is pending.
 - This is storage only. No application procedures, enrollment endpoints, session-bound step-up, replay-proof assertion, recovery consumption, UI or active MFA enforcement exists. Treat Operations MFA as **not enabled**.
+
+
+### Exact-head verification update — 2026-11-11
+
+- PR #15 branch head inspected: `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`.
+- Exact-head CI passed: Foundation run `42925640430` (PostgreSQL 16 migrations/RLS isolation and Foundation integrity), Oracle Arc API run `42925640442`, and UNIBUD Web and Database run `42925640425` (PostgreSQL migration validation, type check, contract tests, server security unit tests, lint, profile browser E2E and production build).
+- Migration 0021's signed-context Operations actor provenance remediation and migration 0022's protected MFA storage schema/test are included in that verified head.
+- **Important boundary:** MFA remains disabled/not implemented end-to-end. Migration 0022 grants no application access to the MFA tables and exposes no enrollment, confirmation, verification, replay-prevention or recovery-consumption procedures. The TOTP cryptographic library and protected storage do not constitute an active second factor.
+- Issue #16 still requires independent security review, secret-manager configuration review and production-like migration/recovery review. PR #15 remains open/draft/unmerged; no deployment or production migration is authorised.
+- Next work is to inspect the actual session lifecycle and design a session-bound MFA challenge/assertion protocol before adding database procedures or routes. Do not accept account/session IDs or TOTP steps supplied by the client as trusted evidence.
