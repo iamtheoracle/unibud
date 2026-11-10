@@ -55,7 +55,7 @@ test("unauthenticated audit records cannot claim an account identity", () => {
   assert.match(remediation, /v_actor IS NULL AND p_outcome <> 'unauthenticated'/);
   assert.match(remediation, /v_actor IS NOT NULL AND p_outcome = 'unauthenticated'/);
   assert.match(route, /recordUnauthenticated\(requestId\)/);
-  assert.match(route, /recordAuthenticatedError\(authenticatedAccountId, requestId\)/);
+  assert.match(route, /recordAuthenticatedError\\(authenticatedAccountId, authenticatedSessionId!, requestId\\)/);
   assert.match(route, /\[REQUIRED_PERMISSION, "error", requestId\]/);
 });
 
@@ -66,15 +66,15 @@ test("profile-level roles are not used as Operations authorization", () => {
 
 
 test("Operations database authorization requires a verified live persisted session", () => {
-  assert.match(sessionVerifier, /CREATE FUNCTION unibud_private\\.current_session_id\\(\\)/);
-  assert.match(sessionVerifier, /unibud_private\\.current_account_id\\(\\) IS DISTINCT FROM v_account/);
-  assert.match(sessionVerifier, /s\\.status = 'active'/);
-  assert.match(sessionVerifier, /s\\.revoked_at IS NULL/);
-  assert.match(sessionVerifier, /s\\.idle_expires_at > statement_timestamp\\(\\)/);
-  assert.match(sessionVerifier, /s\\.absolute_expires_at > statement_timestamp\\(\\)/);
-  assert.match(sessionVerifier, /session_context_signature/);
-  assert.match(sessionVerifier, /GRANT EXECUTE ON FUNCTION unibud_private\\.current_session_id\\(\\) TO unibud_ops_owner/);
-  assert.match(sessionVerifier, /ADD COLUMN session_id UUID REFERENCES public\\.account_sessions/);
-  assert.match(sessionVerifier, /actor_account_id, session_id, permission, outcome, request_id/);
-  assert.doesNotMatch(sessionVerifier, /GRANT EXECUTE ON FUNCTION unibud_private\\.current_session_id\\(\\) TO unibud_app/);
+                      assert.ok(sessionVerifier.includes("CREATE FUNCTION unibud_private.current_session_id()"));
+  assert.ok(sessionVerifier.includes("unibud_private.current_account_id() IS DISTINCT FROM v_account"));
+  assert.ok(sessionVerifier.includes("s.status = 'active'"));
+  assert.ok(sessionVerifier.includes("s.revoked_at IS NULL"));
+  assert.ok(sessionVerifier.includes("s.idle_expires_at > statement_timestamp()"));
+  assert.ok(sessionVerifier.includes("s.absolute_expires_at > statement_timestamp()"));
+  assert.ok(sessionVerifier.includes("session_context_signature"));
+  assert.ok(sessionVerifier.includes("GRANT EXECUTE ON FUNCTION unibud_private.current_session_id() TO unibud_ops_owner"));
+  assert.ok(sessionVerifier.includes("ADD COLUMN session_id UUID REFERENCES public.account_sessions"));
+  assert.ok(sessionVerifier.includes("actor_account_id, session_id, permission, outcome, request_id"));
+  assert.ok(!sessionVerifier.includes("GRANT EXECUTE ON FUNCTION unibud_private.current_session_id() TO unibud_app"));
 });
