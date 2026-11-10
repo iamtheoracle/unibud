@@ -105,23 +105,19 @@ BEGIN
  SELECT audit.actor_account_id,audit.outcome INTO actor,event_outcome
  FROM public.unibud_operator_audit_events AS audit
  WHERE audit.request_id='f0210000-0000-4000-8000-000000000099';
- /* replaced query below */
- --
- FROM public.unibud_operator_audit_events
- WHERE request_id='f0210000-0000-4000-8000-000000000099';
  IF actor IS DISTINCT FROM 'f0210000-0000-4000-8000-000000000001'::uuid
-    OR outcome <> 'allowed' THEN
+    OR event_outcome <> 'allowed' THEN
    RAISE EXCEPTION 'Audit actor was not derived from verified signed context';
  END IF;
 
- SELECT actor_account_id INTO actor
- FROM public.unibud_operator_audit_events
- WHERE request_id='f0210000-0000-4000-8000-000000000097';
+ SELECT audit.actor_account_id INTO actor
+ FROM public.unibud_operator_audit_events AS audit
+ WHERE audit.request_id='f0210000-0000-4000-8000-000000000097';
  IF actor IS NOT NULL THEN
    RAISE EXCEPTION 'Unauthenticated audit event must not claim an actor';
  END IF;
 END
-$test$;
+$test$;;
 
 -- Revoke immediately and prove the next signed-context check denies access.
 UPDATE public.unibud_operator_grants
