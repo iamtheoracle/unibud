@@ -54,6 +54,7 @@ CREATE TABLE public.unibud_operator_audit_events (
 CREATE INDEX unibud_operator_audit_actor_time_idx
   ON public.unibud_operator_audit_events(actor_account_id, occurred_at DESC);
 
+GRANT SELECT ON public.accounts TO unibud_ops_owner;
 ALTER TABLE public.unibud_operator_grants OWNER TO unibud_ops_owner;
 ALTER TABLE public.unibud_operator_audit_events OWNER TO unibud_ops_owner;
 REVOKE ALL ON public.unibud_operator_grants, public.unibud_operator_audit_events FROM PUBLIC, unibud_app, unibud_readonly, unibud_auth;
