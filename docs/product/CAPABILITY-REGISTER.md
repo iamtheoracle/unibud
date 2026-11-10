@@ -217,3 +217,14 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Implemented on the next stacked feature branch:** verification gateway endpoint validation rejects embedded URL credentials, query strings and fragments; production requires HTTPS; non-production HTTP is limited to loopback development hosts. Focused tests cover these boundaries and verify that endpoint secrets are not exposed in diagnostic output.
 - **Provider evidence remains unknown:** no vendor identity is inferred, no POST delivery is used as a health probe, and no email/SMS or verification code is sent. A provider-specific adapter and documented read-only health contract are still required before connectivity can be tested.
 - **Release boundary:** all changes remain on unmerged feature branches. No production deployment, production credentials, production data, or `main` change is included.
+
+
+### Session-derived Operations RBAC — implementation in progress
+
+- Migration 0020 introduces a global Operations assignment table, explicitly separate from profile membership and profile-scoped roles. No Tutor, Student, Institution, Creator, Page/Community or delegated profile role confers platform Operations authority.
+- The integration diagnostics now require the HttpOnly UNIBUD session cookie. The server validates the opaque session using the existing session service and derives account/session IDs only from that validation result; browser-supplied account IDs, profile roles, authorization headers and request-body claims are not trusted.
+- PostgreSQL authorization checks the active account, exact active session, expiry and explicit permission assignment on every request. Allowed and denied decisions are written to the append-only security audit stream.
+- Role assignments are not directly readable or writable by the application database role. Privileged revocation is withheld from the application role; the controlled database security procedure revokes all Operations assignments and active sessions for the account.
+- CI has been extended to apply migration 0020 and run PostgreSQL authorization tests for allowed access, unassigned permissions, another account, revoked sessions, audit events and denied direct role-table access.
+- **Not yet verified:** the exact branch CI must pass before this work is considered tested. The migration has not been run against production. Initial operator provisioning remains a controlled database administration task; there is no self-service role elevation endpoint.
+- Provider identity and a documented read-only verification-delivery health operation remain unknown. No provider request or verification message is sent. Account export, deletion and closure remain disabled.
