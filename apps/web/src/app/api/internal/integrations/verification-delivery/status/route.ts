@@ -4,9 +4,9 @@ import { createConfiguredIdentityServices } from "@/lib/server/identity/identity
 import { readSessionCookie, routeError } from "@/lib/server/identity/http";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
 import {
-  createSignedAccountContextFromEnvironment,
-  withSignedAccountTransaction
-} from "@/lib/server/database/account-context";
+  createSignedSessionContextFromEnvironment,
+  withSignedSessionTransaction
+} from "@/lib/server/database/session-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,7 +19,7 @@ const REQUIRED_PERMISSION = "integrations.verification_delivery.read";
  */
 export async function GET(request: NextRequest) {
   const requestId = randomUUID();
-  let authenticatedAccountId: string | null = null;
+  let authenticatedAccountId: string | null = null;\n  let authenticatedSessionId: string | null = null;
 
   try {
     const token = readSessionCookie(request);
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     // the account already obtained from the validated session.
     if (authenticatedAccountId) {
       try {
-        await recordAuthenticatedError(authenticatedAccountId, requestId);
+        await recordAuthenticatedError(authenticatedAccountId, authenticatedSessionId!, requestId);
       } catch {
         // Fail closed and preserve the original request failure.
       }
