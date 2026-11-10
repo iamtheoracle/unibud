@@ -23,7 +23,7 @@ CREATE TABLE public.unibud_operator_mfa_credentials (
   CHECK (
     (state = 'pending' AND confirmed_at IS NULL AND last_accepted_totp_step IS NULL)
     OR
-    (state = 'active' AND confirmed_at IS NOT NULL)
+    (state = 'active' AND confirmed_at IS NOT NULL AND last_accepted_totp_step IS NOT NULL)
   ),
   CHECK (last_accepted_totp_step IS NULL OR last_accepted_totp_step >= 0)
 );
