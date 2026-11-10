@@ -266,3 +266,11 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 - Implemented RFC 6238 TOTP primitives, encrypted seed envelopes using AES-256-GCM with account-bound associated data, provisioning URI generation, recovery-code generation and keyed recovery-code digests.
 - Added unit coverage for RFC vectors, clock tolerance, replay-step handling, seed confidentiality/integrity, account binding, recovery-code uniqueness and malformed inputs.
 - This is a cryptographic library only. Persistence, atomic replay prevention, single-use recovery redemption, enrollment and step-up routes, session assurance, operator UI, throttling, lockout, audit and end-to-end enforcement remain unimplemented. Operations MFA must be treated as **not enabled** until those layers are complete and verified.
+
+
+### Operations MFA persistence schema — implemented, not active
+
+- Added protected credential and recovery-digest tables in migration 0022. The schema supports pending/active credential state, enrollment expiry, confirmed timestamp, last accepted TOTP step, failed-attempt count/lock expiry and one-time recovery redemption timestamps.
+- The tables are owned by the non-login Operations owner role; the application, readonly, auth and PUBLIC roles receive no direct table privileges.
+- PostgreSQL integration tests and Foundation CI wiring are added. Exact-head CI for the new migration is pending.
+- This is storage only. No application procedures, enrollment endpoints, session-bound step-up, replay-proof assertion, recovery consumption, UI or active MFA enforcement exists. Treat Operations MFA as **not enabled**.
