@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { readSessionCookie, routeError } from "@/lib/server/identity/http";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
+import {
+  createSignedAccountContextFromEnvironment,
+  withSignedAccountTransaction
+} from "@/lib/server/database/account-context";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,36 +19,41 @@ const REQUIRED_PERMISSION = "integrations.verification_delivery.read";
  */
 export async function GET(request: NextRequest) {
   const requestId = randomUUID();
-  let actorAccountId: string | null = null;
 
   try {
     const token = readSessionCookie(request);
     if (!token) {
-      await recordAttempt(null, "unauthenticated", requestId);
+      await recordUnauthenticated(requestId);
       return denied(401);
     }
 
     const { sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) {
-      await recordAttempt(null, "unauthenticated", requestId);
+      await recordUnauthenticated(requestId);
       return denied(401);
     }
 
-    actorAccountId = validation.account.id;
-    const client = await getAppDatabasePool().connect();
-    let allowed = false;
-    try {
-      const result = await client.query<{ allowed: boolean }>(
-        "SELECT public.unibud_operator_has_permission($1, $2) AS allowed",
-        [actorAccountId, REQUIRED_PERMISSION]
-      );
-      allowed = result.rows[0]?.allowed === true;
-    } finally {
-      client.release();
-    }
+    // The account ID is obtained only from the validated server-side session.
+    // The database independently verifies its HMAC-bound transaction context.
+    const context = createSignedAccountContextFromEnvironment(validation.account.id);
+    const allowed = await withSignedAccountTransaction(
+      getAppDatabasePool(),
+      context,
+      async (client) => {
+        const result = await client.query<{ allowed: boolean }>(
+          "SELECT public.unibud_operator_has_permission($1) AS allowed",
+          [REQUIRED_PERMISSION]
+        );
+        const permitted = result.rows[0]?.allowed === true;
+        await client.query(
+          "SELECT public.unibud_operator_record_access($1, $2, $3)",
+          [REQUIRED_PERMISSION, permitted ? "allowed" : "denied", requestId]
+        );
+        return permitted;
+      }
+    );
 
-    await recordAttempt(actorAccountId, allowed ? "allowed" : "denied", requestId);
     if (!allowed) return denied(403);
 
     const { buildVerificationDeliveryStatus } = await import(
@@ -55,27 +64,27 @@ export async function GET(request: NextRequest) {
       { headers: { "Cache-Control": "no-store" } }
     );
   } catch (error) {
-    // Fail closed. Audit failures must not turn into an allow decision.
-    try {
-      await recordAttempt(actorAccountId, "error", requestId);
-    } catch {
-      // Do not leak database details or mask the original service failure.
-    }
+    // Never fall back to caller-supplied actor IDs or an unsigned audit call.
     return routeError(error);
   }
 }
 
-async function recordAttempt(
-  actorAccountId: string | null,
-  outcome: "allowed" | "denied" | "unauthenticated" | "error",
-  requestId: string
-): Promise<void> {
+async function recordUnauthenticated(requestId: string): Promise<void> {
   const client = await getAppDatabasePool().connect();
   try {
+    await client.query("BEGIN");
     await client.query(
-      "SELECT public.unibud_operator_record_access($1, $2, $3, $4)",
-      [actorAccountId, REQUIRED_PERMISSION, outcome, requestId]
+      "SELECT public.unibud_operator_record_access($1, $2, $3)",
+      [REQUIRED_PERMISSION, "unauthenticated", requestId]
     );
+    await client.query("COMMIT");
+  } catch (error) {
+    try {
+      await client.query("ROLLBACK");
+    } catch {
+      // Preserve the original audit failure.
+    }
+    throw error;
   } finally {
     client.release();
   }
