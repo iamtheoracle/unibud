@@ -4,7 +4,7 @@
 
 Operations access is a global account-level grant, not a profile membership. Student, tutor, institution representative, creator, page/community administrator, moderator, seller, provider, professional or other profile roles do not confer Operations authority.
 
-The application authenticates the opaque session cookie through the existing first-party session service. The account ID passed to the database permission function is taken only from that validated server-side session. The browser cannot submit an account ID, role or permission to this route.
+The application authenticates the opaque session cookie through the existing first-party session service. The route establishes a short-lived HMAC-signed transaction context from the validated server-side session; the database independently verifies that context and derives the actor. The Operations permission and audit functions accept no caller-supplied account UUID. The browser cannot submit an account ID, role or permission to this route.
 
 The app database principal can execute only the narrow permission and audit functions. It has no direct table access to operator grants or audit events. The non-login `unibud_ops_owner` role owns the protected tables and SECURITY DEFINER functions; it is BYPASSRLS but has no LOGIN and is not an application connection role.
 
@@ -66,5 +66,22 @@ Review operator grants at least monthly and after role changes, contract termina
 - The endpoint does not call the delivery provider and sends no email, SMS or verification code.
 - Provider identity and a read-only health contract remain unresolved.
 - No operator grant is provisioned by this migration.
-- MFA/step-up authentication, a full Operations UI, grant-management workflow, audit search/export, alerting and independent PostgreSQL integration tests remain follow-up requirements.
+- Operations MFA/step-up authentication, a full Operations UI, grant-management workflow, audit search/export, alerting and independent security review remain outstanding. A TOTP/recovery-code cryptographic library has been added, but it is not connected to persistence, login, sessions or Operations routes; MFA is NOT enabled. Do not grant or imply MFA-protected access until enrollment, atomic replay/recovery-code consumption, session step-up enforcement, throttling, audit and end-to-end tests are implemented.
 - Do not run this migration in production until it has passed the PostgreSQL migration suite and received an authorised database change review.
+
+
+## Operations MFA design and current status
+
+The intended operator second factor is an authenticator-app TOTP credential (RFC 6238, SHA-1, six digits, 30-second period) with one time-step of clock tolerance. TOTP seeds are encrypted using AES-256-GCM and account-bound associated data. Recovery codes are random, shown once, and stored only as account-bound keyed digests. Accepted TOTP steps must be persisted atomically to prevent replay; recovery-code redemption must be atomic and single-use.
+
+The cryptographic implementation currently exists only as a tested library. Before enabling MFA:
+1. Provision separate 32-byte seed-encryption and recovery-code HMAC keys from the approved secret manager. Never store these keys in source control, PostgreSQL or browser code.
+2. Add protected pending/active MFA credential persistence and recovery-code digests.
+3. Implement enrollment confirmation, step-up, recovery, disable and regeneration procedures with atomic attempt limits and replay prevention.
+4. Bind step-up assurance to the exact authenticated session and require a recent step-up for every privileged Operations action.
+5. Require fresh password verification for enrollment, disable and recovery-code regeneration.
+6. Audit enrollment, successful/failed step-up, recovery redemption, disable, key rotation and operator lockout.
+7. Test cross-account isolation, replay, concurrent redemption, expired challenges, throttling, lockout and session revocation.
+8. Complete independent security review before activation.
+
+MFA is currently **not enabled**. No current operator is to be treated as protected by this feature.
