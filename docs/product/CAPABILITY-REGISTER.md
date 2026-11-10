@@ -225,7 +225,7 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - The verification-delivery metadata diagnostic now derives the actor only from the existing validated first-party session cookie, then checks the narrowly scoped database permission `integrations.verification_delivery.read`.
 - Operator grants are provisioned and revoked only through a controlled database-administrator process. They support explicit role, permission allow-list, expiry and revocation. No public grant-management endpoint is introduced.
 - Every diagnostic authorization decision is recorded through a narrow database function in an append-only audit table. The application role has no direct table access.
-- **Not yet verified:** PR-specific CI and PostgreSQL execution of migration 0020. No operator grant is provisioned by the migration and no production rollout is authorised.
+- **Verified at PR head `ba2c48a90ad0508b1fcb13991d277e87bcbe5432`:** Oracle Arc API, Foundation checks, and UNIBUD Web and Database GitHub Actions all completed successfully (run IDs 42885594693, 42885594784, 42885594658). The PR remains open/draft/unmerged; no production rollout is authorised. No operator grant is provisioned by the migration.
 - **Still outstanding:** MFA/step-up, grant-management UI/workflow, audit search/export and alerting, independent live PostgreSQL migration/RLS proof, and actual provider identity/read-only health contract.
 
 
@@ -242,3 +242,8 @@ The complete requirements and release boundaries are recorded in [EXPANDED_FINAN
 - **Profile boundaries:** Student, Tutor and Institution remain distinct; Tutor and Institution remain non-public until their planned release gate. Institutions can manage eligible tutors and students only through explicit scoped delegation.
 
 Implementation order: finish Operations security PR; establish module-specific capability matrices; build Flow's ledger/reconciliation and authorization before payment/card/credit UX; then regulated provider integrations; then The Quarter; then distinct AI interfaces; keep Wayward non-wagering. Each item requires tests, docs and exact-head CI.
+
+
+## Central unfinished-work tracker
+
+See [IMPLEMENTATION-TRACKER.md](./IMPLEMENTATION-TRACKER.md) for the cross-project status ledger, evidence requirements, external blockers, module-by-module unfinished work and mandatory definition of done. The tracker must be reviewed and updated at every implementation stage; it does not replace this capability register.
