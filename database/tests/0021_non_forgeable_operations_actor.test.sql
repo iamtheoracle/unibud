@@ -6,6 +6,15 @@ INSERT INTO public.accounts(id,status) VALUES
  ('f0210000-0000-4000-8000-000000000001','active'),
  ('f0210000-0000-4000-8000-000000000002','active');
 
+INSERT INTO public.account_sessions(
+ id,account_id,credential_digest,issued_at,last_seen_at,idle_expires_at,absolute_expires_at
+) VALUES (
+ 'f0210000-0000-4000-8000-000000000011',
+ 'f0210000-0000-4000-8000-000000000001',decode(repeat('21',32),'hex'),
+ clock_timestamp()-interval '1 minute',clock_timestamp(),
+ clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'
+);
+
 INSERT INTO public.unibud_operator_grants(
   account_id,operator_role,permissions,granted_by,expires_at
 ) VALUES (
@@ -24,14 +33,19 @@ WITH x AS (
  SELECT
   'f0210000-0000-4000-8000-000000000001'::text AS a,
   floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
-  'c1c1c1c1-c1c1-41c1-81c1-c1c1c1c1c1c1'::text AS n
+  'c1c1c1c1-c1c1-41c1-81c1-c1c1c1c1c1c1'::text AS n,
+  'f0210000-0000-4000-8000-000000000011'::text AS s
 )
 SELECT
  set_config('unibud.account_id',a,true),
+ set_config('unibud.session_id',s,true),
  set_config('unibud.context_expiry',e,true),
  set_config('unibud.context_nonce',n,true),
  set_config('unibud.context_signature',
   encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c1',32),'hex'),'sha256'),'hex'),true)
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('c1',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 
 SET LOCAL ROLE unibud_app;
@@ -91,7 +105,9 @@ SELECT
  set_config('unibud.account_id','',true),
  set_config('unibud.context_expiry','',true),
  set_config('unibud.context_nonce','',true),
- set_config('unibud.context_signature','',true);
+ set_config('unibud.context_signature','',true),
+ set_config('unibud.session_id','',true),
+ set_config('unibud.session_context_signature','',true);
 SET LOCAL ROLE unibud_app;
 SELECT public.unibud_operator_record_access(
  'integrations.verification_delivery.read','unauthenticated',
@@ -128,7 +144,8 @@ WITH x AS (
  SELECT
   'f0210000-0000-4000-8000-000000000001'::text AS a,
   floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
-  'c1c1c1c1-c1c1-41c1-81c1-c1c1c1c1c1c2'::text AS n
+  'c1c1c1c1-c1c1-41c1-81c1-c1c1c1c1c1c2'::text AS n,
+  'f0210000-0000-4000-8000-000000000011'::text AS s
 )
 SELECT
  set_config('unibud.account_id',a,true),
@@ -136,6 +153,10 @@ SELECT
  set_config('unibud.context_nonce',n,true),
  set_config('unibud.context_signature',
   encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c1',32),'hex'),'sha256'),'hex'),true)
+ set_config('unibud.session_id',s,true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('c1',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
