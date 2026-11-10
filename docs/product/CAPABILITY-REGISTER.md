@@ -227,3 +227,18 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - Every diagnostic authorization decision is recorded through a narrow database function in an append-only audit table. The application role has no direct table access.
 - **Not yet verified:** PR-specific CI and PostgreSQL execution of migration 0020. No operator grant is provisioned by the migration and no production rollout is authorised.
 - **Still outstanding:** MFA/step-up, grant-management UI/workflow, audit search/export and alerting, independent live PostgreSQL migration/RLS proof, and actual provider identity/read-only health contract.
+
+
+## Expanded product scope — Flow, The Quarter, AI interfaces and platform-wide requirements
+
+The complete requirements and release boundaries are recorded in [EXPANDED_FINANCIAL_AI_AND_PLATFORM_CAPABILITY_SCOPE.md](./EXPANDED_FINANCIAL_AI_AND_PLATFORM_CAPABILITY_SCOPE.md). This is a preserved capability target, not a claim of implementation or live financial rails.
+
+- **Flow:** full student banking target including accounts, ledger/reconciliation, transfers, virtual/physical debit cards, conditional credit cards, loans, savings, flex-money classification, buy-now-pay-later, FX and investments. Real issuance, lending, execution, custody and settlement require verified regulated partners, permissions, disclosures and production evidence.
+- **The Quarter:** separate marketplace/order/merchant/refund domain; eligible pay-later checkout integrates with a regulated credit product without merging marketplace records into Flow's bank ledger.
+- **Bud, The Concierge and The Fixer:** three distinct AI application interfaces with shared governed chat, multimodal, voice, search, tools, memory, privacy, safety and usage capabilities; each has separate role/tool grants and confirmation policy.
+- **Oracle Arc:** remains the separate My Realm Network AI core; it is not a replacement name for the three interfaces.
+- **Wayward:** non-wagering games/prize experiences only within UNIBUD. Real-money gambling is excluded from the teen/student product; any adult gambling service requires a separate 18+ product, independent licence/jurisdiction checks, identity, funds, compliance and responsible-gambling controls.
+- **Every public app/site:** accessibility, responsive design, security, privacy, account/session lifecycle, support, observability, backup/recovery, testing, operational readiness and auditable admin separation are explicit platform capabilities.
+- **Profile boundaries:** Student, Tutor and Institution remain distinct; Tutor and Institution remain non-public until their planned release gate. Institutions can manage eligible tutors and students only through explicit scoped delegation.
+
+Implementation order: finish Operations security PR; establish module-specific capability matrices; build Flow's ledger/reconciliation and authorization before payment/card/credit UX; then regulated provider integrations; then The Quarter; then distinct AI interfaces; keep Wayward non-wagering. Each item requires tests, docs and exact-head CI.
