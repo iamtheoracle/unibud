@@ -19,8 +19,8 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 - State: OPEN, DRAFT, NOT MERGED.
 - Branch: `foundation/session-derived-operations-rbac-v2`.
-- Latest inspected head: `ba2c48a90ad0508b1fcb13991d277e87bcbe5432`.
-- Exact-head GitHub Actions: **PASS** for Oracle Arc API, Foundation checks, and UNIBUD Web and Database (run IDs 42885594693, 42885594784, 42885594658).
+- Latest inspected head: `74a8d21cadd1b02675978b22ab8a9c9e2ad163f1`.
+- Exact-head GitHub Actions at `74a8d21cadd1b02675978b22ab8a9c9e2ad163f1`: **PASS** for Foundation checks (run `42886319998`), Oracle Arc API (run `42886319999`), and UNIBUD Web and Database (run `42886320098`).
 - Review submissions and inline review threads: none returned by the latest inspection.
 - Merge/deploy/production migration: not performed.
 - Scope: session-derived actor for verification-delivery metadata diagnostics; global Operations grant table; allow-listed permissions, expiry and revocation; narrow database functions; append-only audit; PostgreSQL 16 CI migration/test; runbook and capability documentation.
