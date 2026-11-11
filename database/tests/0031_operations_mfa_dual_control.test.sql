@@ -48,17 +48,23 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,t
  set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('c2',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 SET LOCAL ROLE unibud_app;
-SELECT set_config('test.request_id',public.unibud_operator_mfa_request_security_change(
- 'f0310000-0000-4000-8000-000000000002','reset','lost_device',
- floor(extract(epoch FROM clock_timestamp()))::BIGINT,
- floor(extract(epoch FROM clock_timestamp()))::BIGINT+60,
- 'f0310000-0000-4000-8000-000000000032',
- encode(public.hmac(convert_to(
+DO $request$
+DECLARE issued BIGINT; expires BIGINT; nonce UUID; sig TEXT; rid UUID;
+BEGIN
+ issued:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; expires:=issued+60;
+ nonce:='f0310000-0000-4000-8000-000000000032';
+ sig:=encode(public.hmac(convert_to(
   'v1:f0310000-0000-4000-8000-000000000001:f0310000-0000-4000-8000-000000000011:password_reauth:'||
-  floor(extract(epoch FROM clock_timestamp()))::BIGINT::TEXT||':'||
-  (floor(extract(epoch FROM clock_timestamp()))::BIGINT+60)::TEXT||
-  ':f0310000-0000-4000-8000-000000000032:-','UTF8'),
-  decode(repeat('c3',32),'hex'),'sha256'),'hex'))::TEXT,true);
+  issued::TEXT||':'||expires::TEXT||':'||nonce::TEXT||':-','UTF8'),
+  decode(repeat('c3',32),'hex'),'sha256'),'hex');
+ rid:=public.unibud_operator_mfa_request_security_change(
+  'f0310000-0000-4000-8000-000000000002','reset','lost_device',
+  issued,expires,nonce,sig
+ );
+ IF rid IS NULL THEN RAISE EXCEPTION 'Valid dual-control request was not created'; END IF;
+ PERFORM set_config('test.request_id',rid::TEXT,true);
+END
+$request$;
 
 -- Requester cannot approve their own request, even though they hold both permissions.
 DO $test$
