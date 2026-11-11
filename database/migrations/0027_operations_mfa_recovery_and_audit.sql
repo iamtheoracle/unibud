@@ -54,7 +54,8 @@ BEGIN
     INSERT INTO public.unibud_operator_mfa_events(actor_account_id,session_id,event_type)
     VALUES (v_actor,v_session,v_event);
   END IF;
-  RETURN COALESCE(NEW,OLD);
+  IF TG_OP = 'DELETE' THEN RETURN OLD; END IF;
+  RETURN NEW;
 END
 $function$;
 ALTER FUNCTION unibud_private.audit_operations_mfa_credential_change() OWNER TO unibud_ops_owner;
