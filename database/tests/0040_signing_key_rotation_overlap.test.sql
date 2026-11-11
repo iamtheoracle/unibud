@@ -62,6 +62,31 @@ BEGIN
 END
 $mfa_helper_overlap$;
 
+-- Verification key material and the shared verifier remain unavailable to
+-- application/read-only roles; only the NOLOGIN Operations owner can verify MFA.
+DO $key_privileges$
+BEGIN
+  IF has_table_privilege('unibud_app','unibud_private.context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_app','unibud_private.session_context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_app','unibud_private.operations_mfa_assertion_signing_keys','SELECT')
+     OR has_table_privilege('unibud_readonly','unibud_private.context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_readonly','unibud_private.session_context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_readonly','unibud_private.operations_mfa_assertion_signing_keys','SELECT') THEN
+    RAISE EXCEPTION 'Application or read-only role can read signing key material';
+  END IF;
+  IF has_function_privilege('unibud_app',
+       'unibud_private.verify_operations_mfa_assertion_signature(text,text)','EXECUTE')
+     OR has_function_privilege('unibud_readonly',
+       'unibud_private.verify_operations_mfa_assertion_signature(text,text)','EXECUTE') THEN
+    RAISE EXCEPTION 'Application or read-only role can invoke the private MFA verifier directly';
+  END IF;
+  IF NOT has_function_privilege('unibud_ops_owner',
+       'unibud_private.verify_operations_mfa_assertion_signature(text,text)','EXECUTE') THEN
+    RAISE EXCEPTION 'Operations owner cannot invoke the shared MFA verifier';
+  END IF;
+END
+$key_privileges$;
+
 DO $limit$
 BEGIN
   BEGIN
