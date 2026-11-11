@@ -19,7 +19,7 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 - State: OPEN, DRAFT, NOT MERGED.
 - Branch: `foundation/session-derived-operations-rbac-v2`.
-- Latest inspected head before local QR work: `683fdef5eb8716748c6ca7a4fa6311954cac0877`; QR enhancement is now in progress on this branch.
+- Latest inspected and verified code head: `9cf961e4658146b3bc24fe50a238aa9f7f144178`.
 - Exact-head GitHub Actions at `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`: **PASS** for Foundation checks (run `42925640430`), Oracle Arc API (run `42925640442`), and UNIBUD Web and Database (run `42925640425`). The Web workflow completed type check, contract tests, server security unit tests, lint, profile browser E2E and production build; PostgreSQL migration validation passed. Foundation applied all identity/auth migrations and passed PostgreSQL 16 RLS isolation and foundation integrity.
 - Review submissions and inline review threads: none returned by the latest inspection.
 - Merge/deploy/production migration: not performed.
@@ -30,7 +30,7 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 | Requirement | Status | Acceptance evidence still required |
 |---|---|---|
-| MFA / step-up authentication for privileged actions | IN PROGRESS / NOT RELEASE-READY | TOTP enrollment, confirmation, challenge, exact-session step-up, recovery redemption/regeneration, status/resume, lockout, protected audit, UI and PostgreSQL concurrency tests exist; still require QR/E2E verification, disable/reset dual control, lifecycle notifications, operational key provisioning/rotation, cleanup/retention and independent security review |
+| MFA / step-up authentication for privileged actions | IN PROGRESS / NOT RELEASE-READY | TOTP enrollment, confirmation, challenge, exact-session step-up, recovery redemption/regeneration, status/resume, lockout, protected audit, UI and PostgreSQL concurrency tests exist; still require disable/reset dual control, lifecycle notifications, operational key provisioning/rotation, cleanup/retention and independent security review |
 | Operator provisioning and revocation workflow | IN PROGRESS (DBA-only runbook exists) | Dual-control approval, verified identity, least privilege, expiry, revocation, audit, tests; no self-grant |
 | Operations grant-management UI | NOT STARTED | Accessible UI, server-side authorization, approval lifecycle, negative tests |
 | Audit search, filtering and export | NOT STARTED | Read-only permission, privacy minimization, tamper evidence, pagination, export tests |
@@ -475,5 +475,12 @@ At every development stage:
 - Added the `qrcode` browser library and local QR generation to the authenticated MFA setup interface. The QR is rendered from the in-memory provisioning URI in the browser; no third-party QR endpoint receives the authenticator seed. The manual setup key remains available as an accessible fallback if QR generation fails or the operator cannot scan.
 - Added responsive QR styling, UI assertions and a real Playwright MFA workflow assertion that the QR image is rendered during enrollment.
 - The provisioning URI and QR data URL remain in component memory only; no localStorage, sessionStorage or IndexedDB persistence was added.
-- **Verification pending:** package installation, TypeScript, lint, unit tests, MFA browser E2E and production build must all pass on the exact resulting branch head. Do not claim the QR feature is verified until those workflows finish.
+- **Exact-head verification: PASS** at `9cf961e4658146b3bc24fe50a238aa9f7f144178`: Foundation run `42966207133`, Oracle Arc API run `42966207125`, and UNIBUD Web and Database run `42966207290`. Web typecheck, contract tests, server security tests, lint, PostgreSQL migration validation, profile and MFA browser E2E, and production build all completed successfully.
 - **MFA remains not production-ready:** controlled disable/reset with dual approval, notifications, session/account lifecycle invalidation evidence, key provisioning/rotation/recovery, cleanup/retention, production-like database review and independent security review remain outstanding.
+
+
+### Exact-head QR verification — 2026-11-11
+
+The local authenticator QR implementation is verified at code head `9cf961e4658146b3bc24fe50a238aa9f7f144178`. All three GitHub workflows completed successfully: Foundation `42966207133`, Oracle Arc API `42966207125`, and UNIBUD Web and Database `42966207290`. The Web/Database run passed dependency installation, typecheck, contract tests, server security tests, lint, profile + MFA browser E2E and production build. Foundation passed migrations through 0030, RLS/isolation checks and both MFA concurrency scripts.
+
+The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA is still not production-enabled because operational key provisioning/rotation/recovery, disable/reset dual control, lifecycle notifications/cleanup, independent security review and production-like migration/rollback approval remain.
