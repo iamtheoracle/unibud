@@ -67,9 +67,9 @@ INSERT INTO public.unibud_operator_mfa_assertion_nonces(
  ('$REQUESTER_STEP_NONCE','$REQUESTER','$REQUESTER_SESSION','step_up',clock_timestamp()+interval '10 minutes'),
  ('$APPROVER_STEP_NONCE','$APPROVER','$APPROVER_SESSION','step_up',clock_timestamp()+interval '10 minutes');
 
-INSERT INTO public.unibud_operator_mfa_step_up_sessions(session_id,account_id,expires_at,assertion_nonce) VALUES
- ('$REQUESTER_SESSION','$REQUESTER',clock_timestamp()+interval '10 minutes','$REQUESTER_STEP_NONCE'),
- ('$APPROVER_SESSION','$APPROVER',clock_timestamp()+interval '10 minutes','$APPROVER_STEP_NONCE');
+INSERT INTO public.unibud_operator_mfa_step_up_sessions(session_id,account_id,verified_at,expires_at,assertion_nonce) VALUES
+ ('$REQUESTER_SESSION','$REQUESTER',clock_timestamp(),clock_timestamp()+interval '10 minutes','$REQUESTER_STEP_NONCE'),
+ ('$APPROVER_SESSION','$APPROVER',clock_timestamp(),clock_timestamp()+interval '10 minutes','$APPROVER_STEP_NONCE');
 
 UPDATE unibud_private.context_signing_keys SET active=false;
 UPDATE unibud_private.session_context_signing_keys SET active=false;
@@ -163,14 +163,6 @@ SET LOCAL ROLE unibud_ops_owner;
 SELECT unibud_private.expire_operations_mfa_security_requests(10);
 COMMIT;
 SQL
-}
-
-assert_one_winner() {
-  local first="$1" second="$2" label="$3"
-  local first_out second_out
-  first_out="$(mktemp)"; second_out="$(mktemp)"
-  "$@" >/dev/null 2>&1 || true
-  rm -f "$first_out" "$second_out"
 }
 
 first_output="$(mktemp)"
