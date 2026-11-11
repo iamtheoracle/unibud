@@ -71,8 +71,8 @@ export function createOperationsMfaAssertion(
   }
   const unsigned = {
     version: VERSION,
-    accountId: input.accountId,
-    sessionId: input.sessionId,
+    accountId: input.accountId.toLowerCase(),
+    sessionId: input.sessionId.toLowerCase(),
     purpose: input.purpose,
     issuedAt,
     expiresAt: issuedAt + ttlSeconds,
