@@ -112,3 +112,21 @@ test("environment signer requires its own configured secret", () => {
     else process.env.UNIBUD_OPERATIONS_MFA_ASSERTION_HMAC_KEY = previous;
   }
 });
+
+
+test("recovery assertion is purpose-bound and carries no TOTP step", () => {
+  const assertion = createOperationsMfaAssertion({
+    accountId, sessionId, purpose: "recovery", matchedTotpStep: null,
+    issuedAt: 1_800_000_000, ttlSeconds: 45, nonce
+  }, key);
+  assert.equal(assertion.matchedTotpStep, null);
+  assert.equal(verifyOperationsMfaAssertion(assertion, key, 1_800_000_020, {
+    accountId, sessionId, purpose: "recovery"
+  }), true);
+  assert.equal(verifyOperationsMfaAssertion(assertion, key, 1_800_000_020, {
+    purpose: "step_up"
+  }), false);
+  assert.throws(() => createOperationsMfaAssertion({
+    accountId, sessionId, purpose: "recovery", matchedTotpStep: 1
+  }, key));
+});
