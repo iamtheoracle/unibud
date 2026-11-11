@@ -58,8 +58,9 @@ try{
  await page.getByLabel("Target account ID").fill("a1000000-0000-4000-8000-000000000004");
  await page.getByLabel("Reason code",{exact:true}).fill("lost_device");
  await page.getByLabel("Your account email").fill("requester@example.com");
- await page.getByLabel("Current password").fill("test-password");
- await page.getByRole("button",{name:"Submit for independent approval"}).click();
+ const requestForm=page.locator("form").filter({has:page.getByLabel("Target account ID")});
+ await requestForm.getByLabel("Current password").fill("test-password");
+ await requestForm.getByRole("button",{name:"Submit for independent approval"}).click();
  await page.getByText("Security-change request submitted. It requires a separate authorised approver.").waitFor();
  assert.equal(calls.filter(x=>x.path.endsWith("/decision")).length,1);
  assert.equal(calls.filter(x=>x.path.endsWith("/cancel")).length,1);
