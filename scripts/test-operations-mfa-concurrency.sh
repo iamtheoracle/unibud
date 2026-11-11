@@ -32,6 +32,9 @@ INSERT INTO public.unibud_operator_mfa_credentials(
  '$ACCOUNT','v1.'||repeat('A',16)||'.'||repeat('B',22)||'.'||repeat('C',27),
  'active',clock_timestamp()+interval '1 day',clock_timestamp(),1000
 );
+UPDATE unibud_private.context_signing_keys SET active=false;
+UPDATE unibud_private.session_context_signing_keys SET active=false;
+UPDATE unibud_private.operations_mfa_assertion_signing_keys SET active=false;
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES ('ci-mfa-concurrency-account',decode(repeat('51',32),'hex'));
 INSERT INTO unibud_private.session_context_signing_keys(key_id,secret)
