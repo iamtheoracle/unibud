@@ -388,3 +388,11 @@ At every development stage:
 - Added unit, route-contract and PostgreSQL tests for forged/expired/replayed reauthentication, non-operator denial, protected secret reads and pending enrollment persistence.
 - Added migration 0025 and its PostgreSQL test to Foundation CI. Exact-head CI for this route/migration slice is pending.
 - Still incomplete: enrollment confirmation and activation, recovery-code digest persistence/display, TOTP challenge/step-up route integration, failure counters/lockout, recovery/redemption, disable/reset, UI/QR, notifications, rate limiting beyond the existing password verifier limiter, operational key provisioning/rotation, concurrency proof for enrollment nonce, E2E and independent review. A pending enrollment is not active MFA.
+
+
+## Password-reauthenticated enrollment CI checkpoint — 2026-11-11
+
+- At code checkpoint 17f1ee53a5dbcb5f61ac0c01d37860cbda035ea4, Foundation PostgreSQL 16 migrations/tests including migration 0025 and concurrent step-up replay test passed; Oracle Arc API tests passed.
+- Web PostgreSQL migration validation passed. Web typecheck, contract tests, server security tests and lint passed. Browser E2E and production build remained in progress at the time of this tracker update.
+- CI workflow initially invoked migration 0025 twice; the duplicate migration and test invocations were removed before this checkpoint. The corrected workflow applies each migration/test once.
+- This does not activate MFA. Enrollment confirmation, TOTP activation, recovery-code storage/display, challenge route, lockout, recovery and production secret provisioning remain outstanding.
