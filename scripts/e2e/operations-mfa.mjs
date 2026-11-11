@@ -13,6 +13,7 @@ async function reply(route,status,body){await route.fulfill({status,contentType:
 await page.route("**/api/internal/operations/mfa/**",async route=>{
  const path=new URL(route.request().url()).pathname,method=route.request().method();
  if(path.endsWith("/status")&&method==="GET") return reply(route,200,{ok:true,status:state});
+ if(path.endsWith("/requests")&&method==="GET") return reply(route,200,{ok:true,viewerAccountId:"e1000000-0000-4000-8000-000000000001",requests:[]});
  const body=route.request().postDataJSON(); calls.push({path,body});
  if(path.endsWith("/enrollment/start")){state={...state,credentialState:"pending"};return reply(route,200,{ok:true,provisioningUri:uri});}
  if(path.endsWith("/enrollment/resume")) return reply(route,200,{ok:true,provisioningUri:uri});
