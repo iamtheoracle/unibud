@@ -546,3 +546,12 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Added Operations UI for submitting reset/disable requests, viewing the permitted queue, reviewing requests, entering fresh approver credentials, approving/rejecting, and cancelling one's own request. The UI distinguishes requester actions from independent approver actions using the server-returned viewer account ID; PostgreSQL remains authoritative and denies self-approval.
 - Added database tests for requester-only list/detail visibility and static API/UI boundary tests.
 - **Status: implementation committed; exact-head CI pending.** Dedicated API rate-limit policy, route integration tests, complete browser E2E, verified notifications, scheduled expiry worker, grant management, audit search/export, operational secrets and independent review remain outstanding. No production enablement.
+
+
+### Operations MFA dual-control request console — latest checkpoint (2026-11-11)
+
+- The current branch includes migrations 0033 and 0034, authenticated GET list/detail, bounded cursor pagination, requester-only visibility for request-permission holders, and the Operations request/review UI. These are present in code; do not repeat or recreate them.
+- Exact-head run 42974033173 Foundation checks passed; 42974033157 Oracle Arc API passed; PostgreSQL migration validation passed in Web/Database run 42974033180.
+- Web/Database run 42974033180 failed in Playwright MFA E2E because getByLabel("Current password") matched both the enrollment password and the dual-control request form. Profile browser workflows passed. Typecheck, contract tests, server security tests and lint passed; production build was skipped after the E2E failure.
+- Corrected the two enrollment password labels to Authenticator setup password and updated the MFA E2E selectors to target that distinct label. UI commit 21b6a549609d923f39c69dd05010f494d615a78d; E2E selector commit 2e304b2c2d09b4ee98630aee48300e10c49f0bf3.
+- Status: fix committed; exact-head rerun pending. Do not mark the browser workflow passed until the rerun completes. The dual-control request console remains not production-enabled.
