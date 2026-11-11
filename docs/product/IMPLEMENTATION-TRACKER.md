@@ -592,3 +592,11 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 
 
 - Added `docs/product/DECISION-HISTORY.md` at commit `0b81e7391c6ad55fd7658f0cfd522577912cd2f9`. It records the reconstructed approved product decisions from the 2026-11-08 to 2026-11-09 project discussions, with explicit date ranges where exact timestamps are unavailable, and defines an append-only process for future decisions. This is a reconstructed decision register, not a substitute for original chat transcripts or operational audit logs.
+
+
+### Operations dual-control browser test accounting correction (2026-11-11)
+
+- Latest observed Web/Database run `42978530254` passed PostgreSQL migration validation, typecheck, contract tests, server security tests and lint, then failed the dual-control Playwright script at the assertion expecting two request-creation POSTs when the scenario intentionally creates one. The queue refreshes are GETs and are not part of the mutation count.
+- Corrected `scripts/e2e/operations-mfa-dual-control.mjs` to assert exactly one request-creation mutation, while retaining the exact one-approval and one-cancellation assertions.
+- Fix commit: `31ac46fe1a99da74173cedff3cc0646ed113ff31`.
+- **Exact-head CI pending.** The prior browser run failed and its production build was skipped; do not mark this workflow passed until the rerun completes.
