@@ -561,3 +561,12 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 
 
 - Latest E2E rerun at commit 1baac0491106deb9b66cc4d66e999cd5ec684044 confirms the duplicate password-label issue is resolved; it now reaches the end of the MFA browser flow and fails at the old `calls.length === 6` assertion because the request-console UI also performs read-only GET queue refreshes (observed total 10 calls). This is a test-accounting defect, not evidence of a server/API failure. The assertion must count the six POST mutation calls separately from GET list refreshes; do not weaken it to a generic minimum. The exact-head Web/Database workflow therefore remains failed and the production build is skipped until corrected. Foundation and Oracle Arc API passed for the code fix; PostgreSQL migration validation passed.
+
+
+### Operations MFA request queue and browser verification
+
+- Added bounded, cursor-paginated request list and detail read model in migrations 0033/0034. Current-MFA approvers can inspect the pending queue; request-permission holders can inspect only their own requests. The projection omits persisted session identifiers, credentials and recovery material.
+- Added authenticated no-store GET route with server-derived session context, bounded page size and cursor validation.
+- Added the Operations dual-control panel for request submission, separate approval/rejection and requester-only cancellation, backed by authenticated API data.
+- Added a Playwright dual-control workflow covering queue review, independent approval, own-request cancellation and request creation; wired it into Web CI.
+- **Verification caveat:** latest observed Web E2E run failed in the older MFA lifecycle script because it asserted exactly six intercepted requests while the new request panel also performs list GETs. Profile browser workflows passed. The test harness must distinguish GET reads from POST actions and rerun on exact head. No claim of passing full Web CI.
