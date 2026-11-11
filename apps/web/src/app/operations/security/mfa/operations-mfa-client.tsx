@@ -336,6 +336,7 @@ function OperationsMfaRequestsPanel() {
     completed_at: string | null;
   };
   const [requests, setRequests] = useState<SecurityRequest[]>([]);
+  const [viewerAccountId, setViewerAccountId] = useState("");
   const [targetAccountId, setTargetAccountId] = useState("");
   const [action, setAction] = useState<"disable" | "reset">("reset");
   const [reasonCode, setReasonCode] = useState("lost_device");
@@ -353,8 +354,9 @@ function OperationsMfaRequestsPanel() {
     const response = await fetch("/api/internal/operations/mfa/requests?limit=50", {
       method: "GET", credentials: "same-origin", cache: "no-store"
     });
-    const data = await response.json() as { ok?: boolean; error?: string; requests?: SecurityRequest[] };
+    const data = await response.json() as { ok?: boolean; error?: string; viewerAccountId?: string; requests?: SecurityRequest[] };
     if (!response.ok || !data.ok) throw new Error(data.error || "The approval queue is unavailable.");
+    setViewerAccountId(data.viewerAccountId || "");
     setRequests(Array.isArray(data.requests) ? data.requests : []);
   }
 
@@ -363,9 +365,12 @@ function OperationsMfaRequestsPanel() {
     fetch("/api/internal/operations/mfa/requests?limit=50", {
       method: "GET", credentials: "same-origin", cache: "no-store"
     }).then(async response => {
-      const data = await response.json() as { ok?: boolean; error?: string; requests?: SecurityRequest[] };
+      const data = await response.json() as { ok?: boolean; error?: string; viewerAccountId?: string; requests?: SecurityRequest[] };
       if (!response.ok || !data.ok) throw new Error(data.error || "The approval queue is unavailable.");
-      if (active) setRequests(Array.isArray(data.requests) ? data.requests : []);
+      if (active) {
+        setViewerAccountId(data.viewerAccountId || "");
+        setRequests(Array.isArray(data.requests) ? data.requests : []);
+      }
     }).catch(reason => {
       if (active) setError(reason instanceof Error ? reason.message : "The approval queue is unavailable.");
     }).finally(() => { if (active) setLoading(false); });
@@ -447,9 +452,9 @@ function OperationsMfaRequestsPanel() {
         <p className="mfa-small">Requester: <code>{item.requester_account_id}</code></p>
         <p className="mfa-small">Reason: {item.reason_code} · Expires: {new Date(item.expires_at).toLocaleString()}</p>
         {item.state === "pending" && <>
-          <button className="mfa-secondary" type="button" disabled={busy} onClick={() => setSelectedRequest(selectedRequest === item.request_id ? "" : item.request_id)}>Review decision</button>
-          <button className="mfa-secondary" type="button" disabled={busy} onClick={() => void cancel(item.request_id)}>Cancel my request</button>
-          {selectedRequest === item.request_id && <div className="mfa-form">
+          {item.requester_account_id !== viewerAccountId && <button className="mfa-secondary" type="button" disabled={busy} onClick={() => setSelectedRequest(selectedRequest === item.request_id ? "" : item.request_id)}>Review decision</button>}
+          {item.requester_account_id === viewerAccountId && <button className="mfa-secondary" type="button" disabled={busy} onClick={() => void cancel(item.request_id)}>Cancel my request</button>}
+          {selectedRequest === item.request_id && item.requester_account_id !== viewerAccountId && <div className="mfa-form">
             <label>Decision reason code<input value={decisionReason} onChange={e => setDecisionReason(e.target.value)} required minLength={3} maxLength={48} pattern="[a-z][a-z0-9_]{2,47}"/></label>
             <label>Approver account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
             <label>{channel === "email" ? "Approver account email" : "Approver account phone"}<input value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254} autoComplete="username"/></label>
