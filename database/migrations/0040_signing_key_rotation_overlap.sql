@@ -337,8 +337,6 @@ GRANT EXECUTE ON FUNCTION unibud_private.verify_operations_mfa_assertion_signatu
 
 DO $rotate_existing_mfa_verifiers$
 DECLARE
-  v_signature TEXT;
-  v_payload TEXT;
   v_definition TEXT;
   v_replaced TEXT;
   v_item RECORD;
@@ -346,30 +344,29 @@ BEGIN
   FOR v_item IN
     SELECT * FROM (VALUES
       ('public.unibud_operator_mfa_begin_enrollment(text,bigint,bigint,uuid,text)'::regprocedure,
-       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':password_reauth:'' ||' ||
-       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-' ),
+       $payload$'v1:' || v_account::TEXT || ':' || v_session::TEXT || ':password_reauth:' ||
+         p_issued_at::TEXT || ':' || p_expires_at::TEXT || ':' || p_nonce::TEXT || ':-'$payload$),
       ('public.unibud_operator_mfa_confirm_enrollment(bigint,bigint,uuid,bigint,text,text[])'::regprocedure,
-       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':enrollment_confirm:'' ||' ||
-       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':'' || p_matched_totp_step::TEXT'),
+       $payload$'v1:' || v_account::TEXT || ':' || v_session::TEXT || ':enrollment_confirm:' ||
+         p_issued_at::TEXT || ':' || p_expires_at::TEXT || ':' || p_nonce::TEXT || ':' ||
+         p_matched_totp_step::TEXT$payload$),
       ('public.unibud_operator_mfa_redeem_recovery_code(text,bigint,bigint,uuid,text)'::regprocedure,
-       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':recovery:'' ||' ||
-       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-'),
+       $payload$'v1:' || v_account::TEXT || ':' || v_session::TEXT || ':recovery:' ||
+         p_issued_at::TEXT || ':' || p_expires_at::TEXT || ':' || p_nonce::TEXT || ':-'$payload$),
       ('public.unibud_operator_mfa_regenerate_recovery_codes(bigint,bigint,uuid,text,text[])'::regprocedure,
-       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':password_reauth:'' ||' ||
-       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-'),
+       $payload$'v1:' || v_account::TEXT || ':' || v_session::TEXT || ':password_reauth:' ||
+         p_issued_at::TEXT || ':' || p_expires_at::TEXT || ':' || p_nonce::TEXT || ':-'$payload$),
       ('unibud_private.consume_operations_password_reauth_assertion(bigint,bigint,uuid,text)'::regprocedure,
-       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':password_reauth:'' ||' ||
-       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-')
+       $payload$'v1:' || v_account::TEXT || ':' || v_session::TEXT || ':password_reauth:' ||
+         p_issued_at::TEXT || ':' || p_expires_at::TEXT || ':' || p_nonce::TEXT || ':-'$payload$)
     ) AS items(function_oid,payload_template)
   LOOP
     v_definition := pg_get_functiondef(v_item.function_oid);
-    -- Replace the old single-key lookup, HMAC calculation and comparison in
-    -- one operation. A migration must fail rather than silently skip a verifier.
     v_replaced := regexp_replace(
       v_definition,
       'SELECT secret INTO v_key.*?IF v_diff[[:space:]]*<>[[:space:]]*0 THEN RETURN FALSE; END IF;',
       'IF NOT unibud_private.verify_operations_mfa_assertion_signature(' ||
-      v_item.payload_template || ',p_signature) THEN RETURN FALSE; END IF;',
+        v_item.payload_template || ',p_signature) THEN RETURN FALSE; END IF;',
       'n'
     );
     IF v_replaced = v_definition THEN
