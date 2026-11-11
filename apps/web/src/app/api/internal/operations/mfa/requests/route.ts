@@ -99,6 +99,9 @@ export async function GET(request: NextRequest) {
     const { sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
+    if (!await consumeOperationsMfaApiRateLimit(validation.account.id, validation.session.id, "request_read")) {
+      return response({ ok: false, error: "Too many request-list reads. Wait before refreshing." }, 429);
+    }
     const context = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
     const rows = await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
       const result = await client.query<SecurityRequestRow>(
