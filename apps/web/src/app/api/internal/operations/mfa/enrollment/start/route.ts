@@ -11,18 +11,18 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   if (!hasSameOrigin(request)) {
-    return NextResponse.json({ ok: false, error: "Forbidden." }, { status: 403 });
+    return noStoreJson({ ok: false, error: "Forbidden." }, 403);
   }
   const body = await readJsonObject(request);
   if (!body || (body.channel !== "email" && body.channel !== "phone")
       || typeof body.identifier !== "string" || typeof body.password !== "string"
       || body.identifier.length > 254 || body.password.length > 128) {
-    return NextResponse.json({ ok: false, error: "Invalid authenticator enrollment request." }, { status: 400 });
+    return noStoreJson({ ok: false, error: "Invalid authenticator enrollment request." }, 400);
   }
 
   const token = readSessionCookie(request);
   if (!token) {
-    return NextResponse.json({ ok: false, error: "Authentication is required." }, { status: 401 });
+    return noStoreJson({ ok: false, error: "Authentication is required." }, 401);
   }
 
   try {
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       password: body.password
     });
     if (!passwordVerified) {
-      return NextResponse.json({ ok: false, error: "The sign-in details were not accepted." }, { status: 401 });
+      return noStoreJson({ ok: false, error: "The sign-in details were not accepted." }, 401);
     }
 
     const cryptography = createOperationsMfaCryptographyFromEnvironment();
@@ -78,21 +78,28 @@ export async function POST(request: NextRequest) {
     );
 
     if (!started) {
-      return NextResponse.json(
+      return noStoreJson(
         { ok: false, error: "Authenticator enrollment is unavailable for this account." },
-        { status: 403, headers: { "Cache-Control": "no-store" } }
+        403
       );
     }
 
-    return NextResponse.json(
-      {
-        ok: true,
-        state: "pending_confirmation",
-        provisioningUri: cryptography.provisioningUri(validation.account.id, secretBase32)
-      },
-      { headers: { "Cache-Control": "no-store", Pragma: "no-cache" } }
-    );
+    return noStoreJson({
+      ok: true,
+      state: "pending_confirmation",
+      provisioningUri: cryptography.provisioningUri(validation.account.id, secretBase32)
+    });
   } catch (error) {
-    return routeError(error);
+    const response = routeError(error);
+    response.headers.set("Cache-Control", "no-store");
+    response.headers.set("Pragma", "no-cache");
+    return response;
   }
+}
+
+function noStoreJson(body: Record<string, unknown>, status = 200): NextResponse {
+  return NextResponse.json(body, {
+    status,
+    headers: { "Cache-Control": "no-store", Pragma: "no-cache" }
+  });
 }
