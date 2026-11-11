@@ -26,14 +26,14 @@ try{
  await page.goto(process.env.UNIBUD_E2E_BASE_URL+"/e2e/operations-mfa");
  await page.getByRole("heading",{name:"Set up an authenticator"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.getByLabel("Current password").fill("test-password");
+ await page.getByLabel("Authenticator setup password").fill("test-password");
  await page.getByRole("button",{name:"Begin authenticator setup"}).click();
  await page.getByRole("heading",{name:"Add the authenticator"}).waitFor();
  await page.getByRole("img",{name:"Authenticator setup QR code"}).waitFor();
  await page.reload();
  await page.getByRole("heading",{name:"Continue your pending enrollment"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.getByLabel("Current password").fill("test-password");
+ await page.getByLabel("Authenticator setup password").fill("test-password");
  await page.getByRole("button",{name:"Resume pending setup"}).click();
  await page.getByLabel("Six-digit authenticator code").fill("123456");
  await page.getByRole("button",{name:"Confirm and activate"}).click();
