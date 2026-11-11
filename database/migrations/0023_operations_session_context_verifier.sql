@@ -85,7 +85,7 @@ BEGIN
   END IF;
 
   SELECT secret INTO v_key
-  FROM unibud_private.context_signing_keys
+  FROM unibud_private.session_context_signing_keys
   WHERE active
   ORDER BY created_at DESC
   LIMIT 1;
