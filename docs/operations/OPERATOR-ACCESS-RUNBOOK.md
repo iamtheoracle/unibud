@@ -132,3 +132,10 @@ A previous recovery-code set is invalid as soon as regeneration commits. Operato
 Exact head bee8603a832fe09307384e4a8faa2820ed9ec394 passed all three workflows. Foundation PostgreSQL 16 migration/RLS tests passed through migration 0030, including the concurrent recovery-code redemption test. Oracle Arc API passed. Web typecheck, contract/security tests, lint, existing profile E2E and production build passed. The browser E2E does not cover MFA UI flows. Do not infer MFA end-to-end readiness from this CI result; the MFA interface still lacks browser E2E and local QR display. PR #15 remains draft and undeployed pending review.
 
 Session step-up is invalidated by the database's verified session binding: revoked/expired sessions, account suspension and rotated-out sessions cannot use a previous step-up, and a new session does not inherit it. Expired assertion and step-up row cleanup remains to be scheduled and monitored.
+
+
+### Local authenticator QR checkpoint — 2026-11-11
+
+The MFA setup UI now generates a QR image locally from the short-lived provisioning URI using the `qrcode` package. The QR is a browser data URL held only in component state; it is not uploaded to an external QR provider and is not stored in browser persistence. A manual setup key remains visible for fallback. The Playwright MFA flow now checks for the accessible QR image before continuing enrollment.
+
+This UI improvement does not change the backend trust model or activate MFA by itself. Exact-head CI is pending. Outstanding release controls include dual-approved disable/reset, configured notifications, lifecycle invalidation/cleanup, secret-manager provisioning and key rotation/recovery, production-like migration review and independent security review.
