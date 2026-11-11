@@ -43,7 +43,7 @@ try{
  await page.getByRole("heading",{name:"Authenticator security requests"}).waitFor();
  await page.getByText("Pending approval queue").waitFor();
  // Independent approval: the requester's own request must never expose decision controls.
- const otherItem=page.locator("li").filter({hasText:"a2000000-0000-4000-8000-000000000001"});
+ const otherItem=page.locator("li").filter({hasText:other});
  await otherItem.getByRole("button",{name:"Review decision"}).click();
  await page.getByLabel("Decision reason code").fill("reviewed_and_verified");
  await page.getByLabel("Approver account email").fill("approver@example.com");
@@ -51,7 +51,7 @@ try{
  await otherItem.getByRole("button",{name:"Approve and complete"}).click();
  await page.getByText("The approved security change was completed.").waitFor();
  // Requester cancellation is available only on the request owned by this viewer.
- const ownItem=page.locator("li").filter({hasText:"a2000000-0000-4000-8000-000000000002"});
+ const ownItem=page.locator("li").filter({hasText:viewer});
  await ownItem.getByRole("button",{name:"Cancel my request"}).click();
  await page.getByText("Your pending request was cancelled.").waitFor();
  // Creating a request remains a separate action and must not be mistaken for approval.
