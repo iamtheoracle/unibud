@@ -346,3 +346,8 @@ Added a same-origin server route that validates the current persisted session, d
 ### Operations MFA recovery and lifecycle audit
 
 Migration 0027 adds single-use recovery-code redemption bound to the validated account/session. Successful recovery invalidates every step-up session, deletes the old authenticator and all old recovery codes, and requires fresh password-reauthenticated enrollment; it does not grant Operations access. A protected append-only audit records enrollment, challenge failure/success, lockout and credential removal without storing secrets. The new recovery route and PostgreSQL test are wired into Foundation CI. **Status: implemented; exact-head CI and browser E2E pending.** Recovery-code regeneration, disable/reset, UI/acknowledgement, notifications, lifecycle invalidation, concurrent redemption proof, key management and independent review remain incomplete.
+
+
+### Operations MFA status, resume and user interface
+
+Added a current-session-only MFA status accessor and authenticated status endpoint. Added a password-reauthenticated, single-use pending enrollment resume path so a closed setup screen can continue without exposing active credentials. The first /operations/security/mfa interface supports enrollment, resume, activation, recovery-code acknowledgement, TOTP challenge and recovery redemption without browser storage. It currently uses manual authenticator setup; a local QR generator is not yet included. **Status: implemented; exact-head CI and MFA browser E2E pending.** Recovery-code regeneration, controlled disable/reset, notification delivery, lifecycle invalidation, key operations and independent review remain outstanding.
