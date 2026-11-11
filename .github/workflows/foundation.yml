@@ -96,6 +96,10 @@ jobs:
         env:
           PGPASSWORD: unibud_test_only
         run: bash scripts/test-operations-mfa-concurrency.sh
+      - name: Verify concurrent MFA recovery redemption
+        env:
+          PGPASSWORD: unibud_test_only
+        run: bash scripts/test-operations-mfa-recovery-concurrency.sh
   foundation-integrity:
     name: Foundation integrity
     runs-on: ubuntu-latest
