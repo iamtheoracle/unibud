@@ -536,3 +536,13 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Added authenticated GET `/api/internal/operations/mfa/requests` for list/detail, using the HTTP-only session, server-derived signed database context, bounded query validation and no-store responses. A supplied foreign Origin is rejected; origin-less safe GETs are allowed.
 - Added PostgreSQL permission/data-minimisation tests and static API boundary tests. Migration 0033 and its test are wired into Foundation CI.
 - **Exact-head verification pending.** No Operations review UI, dedicated API rate limit, live PostgreSQL API integration tests or browser E2E have been completed.
+
+
+### Operations MFA dual-control request console — implementation checkpoint (2026-11-11)
+
+- Migration 0033 adds a permission-gated, bounded pending-request read model with a minimal projection that excludes persisted session identifiers and credentials.
+- The authenticated GET endpoint supports bounded pagination and request detail; it derives viewer identity from the validated HTTP-only session and uses a signed database session transaction.
+- Migration 0034 extends read visibility: approvers with current MFA step-up can inspect the pending queue; request-permission holders can inspect only their own pending requests. This is required so requesters can see and cancel their own pending requests without gaining access to other operators' requests.
+- Added Operations UI for submitting reset/disable requests, viewing the permitted queue, reviewing requests, entering fresh approver credentials, approving/rejecting, and cancelling one's own request. The UI distinguishes requester actions from independent approver actions using the server-returned viewer account ID; PostgreSQL remains authoritative and denies self-approval.
+- Added database tests for requester-only list/detail visibility and static API/UI boundary tests.
+- **Status: implementation committed; exact-head CI pending.** Dedicated API rate-limit policy, route integration tests, complete browser E2E, verified notifications, scheduled expiry worker, grant management, audit search/export, operational secrets and independent review remain outstanding. No production enablement.
