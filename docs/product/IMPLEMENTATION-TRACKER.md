@@ -676,3 +676,15 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **External delivery is not implemented.** This feature creates in-app notices only. It does not send email, SMS, push or webhooks and makes no external delivery claim. The existing verification-delivery gateway is not assumed to be a security-notification provider.
 - **CI status: pending for the new notification slice.** Migration 0039 and its test have been wired into Foundation CI; API/UI changes have been wired into Web CI. Await the current branch-head workflows before marking the slice verified.
 - Notification retention is currently durable with no cleanup schedule. A bounded retention policy must be designed with the audit-retention requirements before deletion is introduced.
+
+
+### Signing-key rotation overlap — implementation checkpoint (2026-11-11)
+
+- Added migration 0040 with a maximum-two-active-key overlap for account transaction context, exact persisted-session context and Operations MFA assertions. Each purpose retains an independent key table and independent application secret binding.
+- Updated account and session verifiers to evaluate every active candidate and complete fixed-length HMAC comparisons without early return. Added a shared verifier for password reauthentication, enrollment confirmation, recovery redemption and recovery-code regeneration; the MFA step-up verifier has its own overlap-aware comparison.
+- Added a transaction-serialized trigger enforcing the two-key ceiling for each key purpose. No keys are generated, seeded or rotated by the migration.
+- Application signing bindings identified from source: `UNIBUD_DB_CONTEXT_HMAC_KEY`, `UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY` and `UNIBUD_OPERATIONS_MFA_ASSERTION_HMAC_KEY`. The existing signer reads these bindings; production values have not been changed.
+- Added PostgreSQL test 0040 for old/new signature acceptance during overlap, third-key rejection, retired-key rejection, tampered signatures and confirmation that every existing Operations MFA assertion verifier uses the overlap-aware helper. Updated test 0002 for the two-key policy.
+- Wired migration 0040 and its test into Foundation CI. Added `docs/security/SIGNING-KEY-ROTATION.md` with staged provisioning, signer rollout, TTL/drain wait, retirement, rollback and incident boundaries.
+- **CI status: pending on the current branch head.** Do not mark the migration/test verified until the exact-head Foundation run passes. Any regex-based conversion failure in migration 0040 must stop the migration; it is deliberately fail-closed rather than silently leaving a single-key verifier.
+- **Production rotation is not performed.** No production key material, secret-manager binding, application deployment, session revocation or key retirement was changed. PR #15 remains draft/open/unmerged; independent review remains outstanding.
