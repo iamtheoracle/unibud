@@ -28,7 +28,10 @@ test("MFA interface supports enrollment, resume, confirmation, challenge and rec
 test("MFA UI does not persist provisioning secrets or recovery codes in browser storage", () => {
   assert.doesNotMatch(client, /localStorage|sessionStorage|indexedDB/);
   assert.match(client, /cache: "no-store"/);
-  assert.match(client, /QR scanning is not available in this build/);
+  assert.match(client, /QRCode\.toDataURL\(provisioningUri/);
+  assert.match(client, /alt="Authenticator setup QR code"/);
+  assert.match(client, /manual setup key in your authenticator app/);
+  assert.doesNotMatch(client, /QR scanning is not available in this build/);
 });
 
 
