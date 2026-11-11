@@ -9,12 +9,21 @@ let state={operator:true,credentialState:"none",locked:false,stepUpExpiresAt:nul
 const codes=["ABCDE-00001-FGHIJ-KLMNO","ABCDE-00002-FGHIJ-KLMNO","ABCDE-00003-FGHIJ-KLMNO","ABCDE-00004-FGHIJ-KLMNO","ABCDE-00005-FGHIJ-KLMNO","ABCDE-00006-FGHIJ-KLMNO","ABCDE-00007-FGHIJ-KLMNO","ABCDE-00008-FGHIJ-KLMNO"];
 const uri="otpauth://totp/UNIBUD?secret=JBSWY3DPEHPK3PXP&issuer=UNIBUD";
 const calls=[];
+let notifications=[{notification_id:"e1000000-0000-4000-8000-000000000091",event_type:"security_reset_approved",created_at:new Date().toISOString(),read_at:null,security_request_id:"e1000000-0000-4000-8000-000000000092"}];
 async function reply(route,status,body){await route.fulfill({status,contentType:"application/json",headers:{"Cache-Control":"no-store"},body:JSON.stringify(body)});}
 await page.route("**/api/internal/operations/mfa/**",async route=>{
  const path=new URL(route.request().url()).pathname,method=route.request().method();
  if(path.endsWith("/status")&&method==="GET") return reply(route,200,{ok:true,status:state});
- if(path.endsWith("/notifications")&&method==="GET") return reply(route,200,{ok:true,notifications:[],unreadCount:0});
- if(path.endsWith("/notifications")&&method==="PATCH") return reply(route,200,{ok:true,marked:true});
+ if(path.endsWith("/notifications")&&method==="GET") return reply(route,200,{ok:true,notifications,unreadCount:notifications.filter(item=>item.read_at===null).length});
+ if(path.endsWith("/notifications")&&method==="PATCH"){
+  const noticeBody=route.request().postDataJSON();
+  let marked=false;
+  notifications=notifications.map(item=>{
+   if(item.notification_id!==noticeBody.notificationId)return item;
+   marked=true;return {...item,read_at:new Date().toISOString()};
+  });
+  return reply(route,200,{ok:true,marked});
+ }
  if(path.endsWith("/requests")&&method==="GET") return reply(route,200,{ok:true,viewerAccountId:"e1000000-0000-4000-8000-000000000001",requests:[]});
  const body=route.request().postDataJSON(); calls.push({path,body});
  if(path.endsWith("/enrollment/start")){state={...state,credentialState:"pending"};return reply(route,200,{ok:true,provisioningUri:uri});}
@@ -28,7 +37,9 @@ await page.route("**/api/internal/operations/mfa/**",async route=>{
 try{
  await page.goto(process.env.UNIBUD_E2E_BASE_URL+"/e2e/operations-mfa");
  await page.getByRole("heading",{name:"Security notifications"}).waitFor();
- await page.getByText("No security notifications yet.").waitFor();
+ await page.getByText("An Operations security change was approved").waitFor();
+ await page.getByRole("button",{name:"Mark as read"}).click();
+ await page.getByRole("button",{name:"Mark as read"}).waitFor({state:"detached"});
  await page.getByRole("heading",{name:"Set up an authenticator"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
  await page.getByLabel("Authenticator setup password").fill("test-password");
