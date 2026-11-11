@@ -429,3 +429,11 @@ At every development stage:
 
 
 - Added `scripts/test-operations-mfa-recovery-concurrency.sh` and wired it after the existing step-up replay test in Foundation CI. It races two independent PostgreSQL sessions against the same recovery digest and signed assertion and requires exactly one redemption. The first CI attempt exposed test-fixture key collisions (multiple active verifier keys); the fixture now explicitly rotates the active test keys before creating its isolated recovery-race keys. The corrected exact-head run is pending.
+
+
+## Recovery assertion correction and exact-head verification checkpoint — 2026-11-11
+
+- The first recovery assertion unit-test run found that the constructor accepted a step-free recovery assertion but the verifier still required a numeric TOTP step. Corrected the verifier so both `password_reauth` and `recovery` purposes require a null TOTP step; the recovery assertion remains distinct by purpose and signature.
+- At exact code head `d94be2d971848f009f189a0117fcccbbe80acdec`: Foundation checks passed, including all PostgreSQL 16 migrations/tests through 0027 and both concurrent step-up/recovery redemption scripts. Oracle Arc API tests passed. Web typecheck, contract tests, server-security tests and lint passed. Browser E2E and production build were still running at the last check.
+- The earlier recovery concurrency failure was a test-fixture collision between active signing-key rows, not a recovery-procedure failure. The fixture now deactivates prior test keys before creating isolated keys; the corrected Foundation run passed the concurrency test.
+- Do not mark the complete web workflow green until browser E2E and production build complete on the latest exact head. The recovery route has no browser UI/E2E yet.
