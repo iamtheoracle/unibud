@@ -19,6 +19,8 @@ test("MFA interface supports enrollment, resume, confirmation, challenge and rec
   assert.match(client, /\/api\/internal\/operations\/mfa\/enrollment\/confirm/);
   assert.match(client, /\/api\/internal\/operations\/mfa\/challenge/);
   assert.match(client, /\/api\/internal\/operations\/mfa\/recovery\/redeem/);
+  assert.match(client, /\/api\/internal\/operations\/mfa\/recovery\/regenerate/);
+  assert.match(client, /status\.stepUpExpiresAt/);
   assert.match(client, /recoveryCodesShownOnce/);
   assert.match(client, /I have saved these recovery codes/);
 });
