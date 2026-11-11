@@ -697,3 +697,9 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - The Web CI Playwright install step used `--with-deps`, which invokes the hosted runner's apt package installation. The run failed in that dependency-install step before browser E2E or production build. Changed the step to install the Chromium browser without invoking apt; the hosted Ubuntu runner supplies the system libraries. The E2E suite itself must still pass on the new exact head before this is considered verified.
 - **Current exact head:** `9e2634bb19d33d9592596abf7c3208a1a0a710c5`. Foundation, Web/Database and Oracle Arc API workflows were queued at the last status check. No success is claimed for this checkpoint.
 - These are CI/test-harness corrections only. They do not alter production data, secrets, scheduler activation, deployment state or PR approval boundaries.
+
+### Security-notification fixture correction — 2026-11-11
+
+- Foundation PostgreSQL CI reached migration 0039 and exposed a fixture mismatch: the approval audit event referenced request `f039...0201`, but only the separate expiry request `f039...0202` existed. The notification trigger correctly could not resolve the missing requester's account, so the test observed three notices rather than four.
+- Added the missing pending request 0201 with the expected requester account/session and target. Kept the expiry request 0202 as a separate expired record. The expected requester/target/approver notification coverage remains unchanged; no production trigger behavior was weakened.
+- **Correction commit:** `bcd619504084d38d0ee989c8e25b81e6f3a00993`. Exact-head Foundation, Web/Database and Oracle Arc API CI must complete before this slice is marked verified.
