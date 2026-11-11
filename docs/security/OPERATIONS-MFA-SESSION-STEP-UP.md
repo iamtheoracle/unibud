@@ -1,6 +1,6 @@
 # Operations MFA: session-bound step-up protocol
 
-**Status: MFA design checkpoint. The signed account+session trust boundary and its Operations-route integration are implemented in migration 0023 and the existing verification-delivery diagnostic route. No MFA enrollment/challenge/recovery procedures, step-up records, MFA routes, or MFA enforcement are implemented yet.**
+**Status: MFA design checkpoint. The signed account+session trust boundary and its Operations-route integration are implemented in migration 0023 and the existing verification-delivery diagnostic route. Migration 0024 now adds protected assertion-nonce and exact-session step-up storage, one-time server-assertion consumption, monotonic TOTP-step advancement, and database permission enforcement requiring active MFA plus a live step-up. The server assertion-signing helper and unit tests are present. Enrollment, challenge, recovery and reauthentication routes/UI are not implemented; MFA is not operational end-to-end.**
 
 ## 1. Existing architecture inspected
 
@@ -32,7 +32,7 @@ The design must extend, not replace, the existing first-party identity stack:
 
 The existing signed account context is account-bound; migration 0023 adds a separate versioned signed session claim rather than trusting a new untrusted `unibud.session_id` GUC. The database verifier checks both signatures and the exact live persisted session.
 
-**Implemented in migration 0023 and the server session-context helper:**
+**Implemented in migrations 0023–0024 and server helpers:**
 
 - Introduce a versioned context payload containing account UUID, persisted session UUID, expiry, nonce and protocol version.
 - Sign the complete canonical payload with a dedicated server-held HMAC key; verify it in a private database function using a verifier key unavailable to `unibud_app`.
@@ -144,7 +144,7 @@ Unit tests must cover TOTP vectors, time-window boundaries, encrypted-seed accou
 
 ## 9. Operational and release gates
 
-- Provision distinct environment-specific keys for account context (`UNIBUD_DB_CONTEXT_HMAC_KEY`), session context/step-up assertions (`UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY`), TOTP seed encryption and recovery-code digests. No key is stored in source control, PostgreSQL data, browser code, logs or deployment artifacts.
+- Provision distinct environment-specific keys for account context (`UNIBUD_DB_CONTEXT_HMAC_KEY`), session context (`UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY`), MFA assertion signing (`UNIBUD_OPERATIONS_MFA_ASSERTION_HMAC_KEY`), TOTP seed encryption and recovery-code digests. No key is stored in source control, PostgreSQL data, browser code, logs or deployment artifacts.
 - Document key ownership, rotation, backup, loss/recovery, versioned envelope migration and incident response.
 - Review database owner role memberships and function EXECUTE grants.
 - Run migrations and negative tests against disposable PostgreSQL 16 in CI; separately review production-like migration/rollback/recovery before rollout.
