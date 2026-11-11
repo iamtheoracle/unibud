@@ -186,7 +186,10 @@ export default function OperationsMfaClient() {
     {error && <p className="mfa-alert mfa-error" role="alert">{error}</p>}
     {notice && <p className="mfa-alert mfa-notice" role="status">{notice}</p>}
 
-    {!status?.operator ? <section className="mfa-card">
+    {!status ? <section className="mfa-card">
+      <h2>Security status unavailable</h2>
+      <p>The server could not confirm this account's Operations status. No privileged access is granted by this screen.</p>
+    </section> : !status.operator ? <section className="mfa-card">
       <h2>Operations access not assigned</h2>
       <p>This account does not have an active Operations grant. Student, tutor, institution, creator, page and community roles do not provide Operations access.</p>
     </section> : <>
