@@ -51,11 +51,11 @@ FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
 BEGIN
- IF NOT public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
-   RAISE EXCEPTION 'Valid account+session proof did not authorize active operator';
+ IF public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
+   RAISE EXCEPTION 'Session proof alone bypassed required MFA step-up';
  END IF;
  PERFORM public.unibud_operator_record_access(
-  'integrations.verification_delivery.read','allowed',
+  'integrations.verification_delivery.read','denied',
   'f0230000-0000-4000-8000-000000000091'
  );
  -- The app cannot call the internal verifier or read signing material.
