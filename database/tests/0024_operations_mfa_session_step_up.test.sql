@@ -71,6 +71,12 @@ BEGIN
   convert_to('v1:f0240000-0000-4000-8000-000000000001:f0240000-0000-4000-8000-000000000011:step_up:'||
    issued::TEXT||':'||expires::TEXT||':'||nonce::TEXT||':1001','UTF8'),
   decode(repeat('43',32),'hex'),'sha256'),'hex');
+ IF public.unibud_operator_mfa_consume_step_up(issued,expires,nonce,1001,repeat('0',64)) THEN
+  RAISE EXCEPTION 'Forged MFA assertion signature was accepted';
+ END IF;
+ IF public.unibud_operator_mfa_consume_step_up(issued-200,expires-200,nonce,1001,signature) THEN
+  RAISE EXCEPTION 'Expired MFA assertion was accepted';
+ END IF;
  accepted := public.unibud_operator_mfa_consume_step_up(issued,expires,nonce,1001,signature);
  IF accepted IS DISTINCT FROM TRUE THEN
   RAISE EXCEPTION 'Valid signed MFA step-up assertion was not consumed';
@@ -112,6 +118,11 @@ BEGIN
     OR has_table_privilege(current_user,'unibud_private.operations_mfa_assertion_signing_keys','SELECT') THEN
   RAISE EXCEPTION 'Application role can directly inspect protected MFA state';
  END IF;
+ BEGIN
+  EXECUTE 'SELECT unibud_private.current_session_has_mfa_step_up()';
+  RAISE EXCEPTION 'Application role directly executed private MFA step-up verifier';
+ EXCEPTION WHEN insufficient_privilege THEN NULL;
+ END;
 END
 $test$;
 RESET ROLE;
