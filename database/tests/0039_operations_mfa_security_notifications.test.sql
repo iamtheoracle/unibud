@@ -104,6 +104,13 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,t
  set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
  set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d5',32),'hex'),'sha256'),'hex'),true)
 FROM x;
+-- Capture the other account's notification identifier as the privileged test
+-- harness before switching to the application role. The app must not read this table.
+SELECT set_config('test.other_notification',(
+ SELECT notification_id::text FROM public.unibud_operator_mfa_notifications
+ WHERE account_id='f0390000-0000-4000-8000-000000000002'
+   AND event_type='security_reset_requested'
+),true);
 SET LOCAL ROLE unibud_app;
 DO $account_one$
 DECLARE v_rows INTEGER; v_own UUID; v_other UUID;
@@ -125,11 +132,6 @@ BEGIN
  IF NOT public.unibud_operator_mfa_mark_notification_read(v_own) THEN
   RAISE EXCEPTION 'Account 1 could not mark its own notification read';
  END IF;
- PERFORM set_config('test.other_notification',(
-  SELECT notification_id::text FROM public.unibud_operator_mfa_notifications
-  WHERE account_id='f0390000-0000-4000-8000-000000000002'
-    AND event_type='security_reset_requested'
- ),true);
  IF public.unibud_operator_mfa_mark_notification_read(current_setting('test.other_notification')::UUID) THEN
   RAISE EXCEPTION 'Account 1 marked account 2 notification read';
  END IF;
