@@ -87,6 +87,7 @@ BEGIN
  END IF;
 END
 $test$;
+RESET ROLE;
 
 -- Database-derived audit outcomes cannot be caller-forged.
 DO $test$
@@ -103,6 +104,7 @@ END
 $test$;
 
 -- App role cannot inspect step-up state or the assertion verifier key.
+SET LOCAL ROLE unibud_app;
 DO $test$
 BEGIN
  IF has_table_privilege(current_user,'public.unibud_operator_mfa_step_up_sessions','SELECT')
