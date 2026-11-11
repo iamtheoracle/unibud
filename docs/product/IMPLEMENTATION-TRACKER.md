@@ -367,3 +367,12 @@ At every development stage:
 - Added PostgreSQL 16 integration test for pre-step-up denial, valid assertion consumption, replay/TOTP-step rejection, app-role isolation and no step-up inheritance by another session.
 - Added migration 0024 and its test to Foundation CI.
 - **Not yet proven:** exact-head CI for this migration/test is pending. PostgreSQL concurrency testing, enrollment, challenge, reauthentication, recovery, lockout routes/UI, notifications, operational key provisioning/rotation and independent review remain outstanding. MFA is not operational end-to-end.
+
+
+## MFA step-up audit and concurrency hardening — 2026-11-11
+
+- Migration 0024 now replaces the Operations audit writer so an app caller cannot label an event "allowed" unless the database permission function confirms active grant, active/unlocked MFA and exact-session step-up. An attempted false "allowed" event is recorded as denied.
+- PostgreSQL test 0024 covers forged audit outcomes before and after MFA step-up.
+- Added `scripts/test-operations-mfa-concurrency.sh` and wired it into Foundation CI. It opens two independent PostgreSQL connections concurrently with the same signed assertion and requires exactly one success and one rejection.
+- Legacy migrations 0020/0021/0023 tests were updated to assert that signed session context alone does not bypass the new MFA gate.
+- Exact-head CI for this audit/concurrency refinement is pending. The prior PostgreSQL pass did not include this final audit/concurrency addition.
