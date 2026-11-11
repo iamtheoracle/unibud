@@ -346,3 +346,12 @@ At every development stage:
 - Current verification status: latest changes have been committed to the PR branch; exact-head CI for the final checkpoint has not yet been confirmed. Do not call this slice verified until all workflows and PostgreSQL tests pass at the same head.
 - Important limitation: session context is now implemented and wired into the existing metadata diagnostic route, but MFA is still not active. No MFA enrollment/confirmation, TOTP challenge, replay-safe step-up, recovery-code redemption, step-up session claim, route-level MFA gate, or operator UI has been implemented.
 - Production secret-manager configuration, independent review of the role/ownership boundary, and production-like migration/recovery review remain outstanding.
+
+
+## Independent signing-key separation refinement — 2026-11-11
+
+- Account context and session context now use distinct server-side keys: UNIBUD_DB_CONTEXT_HMAC_KEY and UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY.
+- Migration 0023 creates a dedicated private session_context_signing_keys verifier table. Only the NOLOGIN Operations owner can read it; unibud_app cannot execute the verifier or read either key table.
+- The server helper refuses to create a session claim unless both independent keys are present and at least 32 random bytes (hex encoded).
+- PostgreSQL test fixtures use different account/session keys and verify mismatched account/session pairs and expired signed claims are rejected.
+- This refinement supersedes the earlier same-key session-context implementation. Exact-head CI for this key-separated version is pending; do not treat the previous checkpoint's green results as proof for this new head.
