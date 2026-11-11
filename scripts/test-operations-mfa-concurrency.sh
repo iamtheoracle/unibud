@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${PGHOST:=localhost}"
-: "${PGPORT:=5432}"
-: "${PGUSER:=unibud_test}"
-: "${PGDATABASE:=unibud_test}"
+export PGHOST="${PGHOST:-localhost}"
+export PGPORT="${PGPORT:-5432}"
+export PGUSER="${PGUSER:-unibud_test}"
+export PGDATABASE="${PGDATABASE:-unibud_test}"
 : "${PGPASSWORD:?PGPASSWORD must be set for the disposable PostgreSQL test database}"
 
 ACCOUNT="f0250000-0000-4000-8000-000000000001"
