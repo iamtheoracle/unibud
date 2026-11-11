@@ -376,3 +376,15 @@ At every development stage:
 - Added `scripts/test-operations-mfa-concurrency.sh` and wired it into Foundation CI. It opens two independent PostgreSQL connections concurrently with the same signed assertion and requires exactly one success and one rejection.
 - Legacy migrations 0020/0021/0023 tests were updated to assert that signed session context alone does not bypass the new MFA gate.
 - Exact-head CI for this audit/concurrency refinement is pending. The prior PostgreSQL pass did not include this final audit/concurrency addition.
+
+
+## Password-reauthenticated MFA enrollment start — 2026-11-11
+
+- Extended the versioned MFA assertion protocol with a distinct password_reauth purpose and a null TOTP-step sentinel; it remains bound to the validated account and exact session.
+- Added migration 0025: PostgreSQL consumes the signed one-time password-reauth assertion, requires an active Operations grant, stores only a structurally validated encrypted TOTP envelope as a ten-minute pending enrollment, and refuses replacement of an active credential or an unexpired pending enrollment.
+- Added a narrow encrypted-secret accessor that requires the verified current account/session and active Operations grant; it returns ciphertext only for server-side decryption.
+- Added createOperationsMfaCryptographyFromEnvironment using separate seed-encryption and recovery-code HMAC keys.
+- Added POST /api/internal/operations/mfa/enrollment/start: same-origin request, HTTP-only session validation, current-account password reauthentication using the existing auth service/rate limiter, server-side seed generation/encryption, signed reauthentication assertion, PostgreSQL pending enrollment, and no-store provisioning URI response.
+- Added unit, route-contract and PostgreSQL tests for forged/expired/replayed reauthentication, non-operator denial, protected secret reads and pending enrollment persistence.
+- Added migration 0025 and its PostgreSQL test to Foundation CI. Exact-head CI for this route/migration slice is pending.
+- Still incomplete: enrollment confirmation and activation, recovery-code digest persistence/display, TOTP challenge/step-up route integration, failure counters/lockout, recovery/redemption, disable/reset, UI/QR, notifications, rate limiting beyond the existing password verifier limiter, operational key provisioning/rotation, concurrency proof for enrollment nonce, E2E and independent review. A pending enrollment is not active MFA.
