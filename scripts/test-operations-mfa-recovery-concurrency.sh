@@ -31,6 +31,9 @@ INSERT INTO public.unibud_operator_mfa_credentials(
  'active',clock_timestamp()+interval '1 day',clock_timestamp(),1000);
 INSERT INTO public.unibud_operator_mfa_recovery_codes(account_id,code_digest)
 VALUES ('$ACCOUNT',decode('$DIGEST','hex'));
+UPDATE unibud_private.context_signing_keys SET active=false;
+UPDATE unibud_private.session_context_signing_keys SET active=false;
+UPDATE unibud_private.operations_mfa_assertion_signing_keys SET active=false;
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES ('ci-mfa-recovery-race-account',decode(repeat('a2',32),'hex'));
 INSERT INTO unibud_private.session_context_signing_keys(key_id,secret)
