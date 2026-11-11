@@ -76,7 +76,7 @@ export function createOperationsMfaAssertion(
     purpose: input.purpose,
     issuedAt,
     expiresAt: issuedAt + ttlSeconds,
-    nonce,
+    nonce: nonce.toLowerCase(),
     matchedTotpStep: input.matchedTotpStep
   } as const;
   const signature = createHmac("sha256", key)
