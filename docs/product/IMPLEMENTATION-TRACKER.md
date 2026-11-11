@@ -355,3 +355,15 @@ At every development stage:
 - The server helper refuses to create a session claim unless both independent keys are present and at least 32 random bytes (hex encoded).
 - PostgreSQL test fixtures use different account/session keys and verify mismatched account/session pairs and expired signed claims are rejected.
 - This refinement supersedes the earlier same-key session-context implementation. Exact-head CI for this key-separated version is pending; do not treat the previous checkpoint's green results as proof for this new head.
+
+
+## Operations MFA exact-session step-up implementation — 2026-11-11
+
+- Added `operations-mfa-assertions.ts`: versioned HMAC assertions bind account, exact session, purpose, issue/expiry, nonce and matched TOTP step. A separate server secret is required; UUIDs are canonicalized for PostgreSQL.
+- Added unit tests for assertion creation, cross-account/session/purpose denial, expiry/future issue time, tampering, wrong key, invalid input and environment secret requirements.
+- Added migration 0024: protected assertion-signing verifier key table, one-time assertion nonce ledger and exact-session step-up table.
+- Added `unibud_operator_mfa_consume_step_up`: PostgreSQL verifies the server signature, checks the current signed/live session, consumes nonce and advances the TOTP counter atomically, then creates a five-minute exact-session step-up.
+- Updated Operations permission checks to require an active, unlocked MFA credential and unexpired step-up for the exact session. Until enrollment/challenge routes are completed, Operations permissions deliberately fail closed rather than falling back to session-only access.
+- Added PostgreSQL 16 integration test for pre-step-up denial, valid assertion consumption, replay/TOTP-step rejection, app-role isolation and no step-up inheritance by another session.
+- Added migration 0024 and its test to Foundation CI.
+- **Not yet proven:** exact-head CI for this migration/test is pending. PostgreSQL concurrency testing, enrollment, challenge, reauthentication, recovery, lockout routes/UI, notifications, operational key provisioning/rotation and independent review remain outstanding. MFA is not operational end-to-end.
