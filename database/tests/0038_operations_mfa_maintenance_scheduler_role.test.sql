@@ -1,5 +1,5 @@
 -- Verify the trusted scheduler execution role is non-login and function-only.
-\\set ON_ERROR_STOP on
+\set ON_ERROR_STOP on
 BEGIN;
 
 DO $role_contract$
