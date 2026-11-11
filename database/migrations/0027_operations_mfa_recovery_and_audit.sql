@@ -64,6 +64,22 @@ CREATE TRIGGER unibud_operator_mfa_credential_audit
 AFTER INSERT OR UPDATE OR DELETE ON public.unibud_operator_mfa_credentials
 FOR EACH ROW EXECUTE FUNCTION unibud_private.audit_operations_mfa_credential_change();
 
+
+CREATE FUNCTION unibud_private.reject_operations_mfa_event_mutation()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+BEGIN
+  RAISE EXCEPTION 'Operations MFA audit events are append-only' USING ERRCODE = '42501';
+END
+$function$;
+ALTER FUNCTION unibud_private.reject_operations_mfa_event_mutation() OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION unibud_private.reject_operations_mfa_event_mutation() FROM PUBLIC;
+CREATE TRIGGER unibud_operator_mfa_events_append_only
+BEFORE UPDATE OR DELETE ON public.unibud_operator_mfa_events
+FOR EACH ROW EXECUTE FUNCTION unibud_private.reject_operations_mfa_event_mutation();
+
 CREATE FUNCTION public.unibud_operator_mfa_redeem_recovery_code(
   p_digest TEXT,
   p_issued_at BIGINT,
