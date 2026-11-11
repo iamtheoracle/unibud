@@ -97,3 +97,10 @@ Migration 0026 adds `unibud_operator_mfa_confirm_enrollment`. It verifies the si
 The new `POST /api/internal/operations/mfa/enrollment/confirm` route verifies TOTP on the server and returns recovery codes once after the database transaction commits. **Do not treat activation as privileged access:** this route does not create a step-up session. The follow-on TOTP challenge route must consume a separate signed `step_up` assertion before Operations permissions can succeed.
 
 The migration and PostgreSQL test are wired into Foundation CI. Verify all workflows on the latest PR head before accepting this checkpoint. MFA remains not operational end-to-end and must not be enabled for production operators.
+
+
+### Exact-session TOTP challenge checkpoint — 2026-11-11
+
+The new `POST /api/internal/operations/mfa/challenge` route validates the current HTTP-only session and same-origin request, verifies the TOTP code server-side and submits a signed assertion bound to the exact account/session. Migration 0024 consumes the assertion once, enforces monotonic TOTP-step replay prevention and creates a five-minute step-up record for that exact session. The route returns no-store responses. A code already consumed during enrollment or an earlier challenge cannot be reused. Invalid codes increment the database failure counter and can trigger the 15-minute lockout.
+
+This is a server route only; accessible setup/challenge screens and browser E2E are not yet proven. Recovery redemption/regeneration, disable/reset, MFA status, dedicated MFA audit/notifications, lifecycle invalidation, key provisioning/rotation and independent review remain required. Keep Operations access denied until the complete flow is verified.
