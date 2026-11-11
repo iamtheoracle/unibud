@@ -212,6 +212,6 @@ GRANT EXECUTE ON FUNCTION public.unibud_operator_mfa_cancel_security_change(UUID
 COMMENT ON FUNCTION public.unibud_operator_mfa_decide_security_change(UUID,TEXT,TEXT,BIGINT,BIGINT,UUID,TEXT) IS
 'Performs one dual-control terminal transition under a row lock. Revalidates expiry, actor session, grant and MFA step-up using wall-clock time after lock acquisition; approval invalidates target MFA state atomically.';
 COMMENT ON FUNCTION public.unibud_operator_mfa_cancel_security_change(UUID,TEXT) IS
-'Cancels only the original requester's pending request on the same live exact session. Expiry, grant, authenticator and MFA step-up are revalidated after acquiring the request row lock.';
+'Cancels only the original requester pending request on the same live exact session. Expiry, grant, authenticator and MFA step-up are revalidated after acquiring the request row lock.';
 
 COMMIT;
