@@ -11,7 +11,7 @@ if [[ ! "$BATCH_SIZE" =~ ^[0-9]+$ ]] || (( BATCH_SIZE < 1 || BATCH_SIZE > 1000 )
   exit 2
 fi
 
-for dependency in psql python3; do
+for dependency in psql python3 timeout; do
   if ! command -v "$dependency" >/dev/null 2>&1; then
     echo "$dependency is required by the Operations maintenance worker." >&2
     exit 127
@@ -77,11 +77,12 @@ export PGPASSWORD="${_PG_CONNECTION[3]}"
 export PGDATABASE="${_PG_CONNECTION[4]}"
 export PGSSLMODE
 export PGAPPNAME="unibud-operations-mfa-maintenance"
+export PGCONNECT_TIMEOUT=10
 unset DATABASE_URL _PG_CONNECTION _PG_URI_SSLMODE
 
 # Do not enable shell tracing: connection credentials are held in environment
 # variables for libpq and are not exposed as psql command-line arguments.
-psql \
+timeout --signal=TERM --kill-after=5s 45s psql \
   --no-psqlrc \
   --no-password \
   --set=ON_ERROR_STOP=1 \
