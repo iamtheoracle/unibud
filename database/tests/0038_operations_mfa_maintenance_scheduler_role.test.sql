@@ -36,21 +36,6 @@ BEGIN
   END IF;
 
   IF pg_has_role('unibud_ops_scheduler','unibud_ops_owner','MEMBER')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_security_requests','SELECT')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_step_up_sessions','SELECT')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_assertion_nonces','SELECT')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_api_rate_limits','SELECT')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_security_requests','DELETE')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_step_up_sessions','DELETE')
-     OR has_table_privilege('unibud_ops_scheduler',
-      'public.unibud_operator_mfa_assertion_nonces','DELETE')
-     OR has_table_privilege('unibud_ops_scheduler',
      OR has_table_privilege('unibud_ops_scheduler','public.unibud_operator_mfa_security_requests','SELECT')
      OR has_table_privilege('unibud_ops_scheduler','public.unibud_operator_mfa_security_requests','INSERT')
      OR has_table_privilege('unibud_ops_scheduler','public.unibud_operator_mfa_security_requests','UPDATE')
@@ -67,7 +52,7 @@ BEGIN
      OR has_table_privilege('unibud_ops_scheduler','public.unibud_operator_mfa_api_rate_limits','INSERT')
      OR has_table_privilege('unibud_ops_scheduler','public.unibud_operator_mfa_api_rate_limits','UPDATE')
      OR has_table_privilege('unibud_ops_scheduler','public.unibud_operator_mfa_api_rate_limits','DELETE') THEN
-    RAISE EXCEPTION 'Scheduler role has direct access to protected MFA tables';
+    RAISE EXCEPTION 'Scheduler role has direct access to protected MFA tables or the Operations owner role';
   END IF;
 
   IF has_function_privilege(
