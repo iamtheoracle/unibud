@@ -245,7 +245,7 @@ grep -q '^LOCKED$' "$lock_output" || { echo "Could not acquire expiry-race row l
 run_decision "$REQUEST_C" approve f0370000-0000-4000-8000-000000000054 >"$first_output" &
 decision_pid=$!
 sleep 6
-skipped="$(run_expiry | tail -n 1 | tr -d '[:space:]')"
+skipped="$(run_expiry | grep -E '^[0-9]+)"
 [[ "$skipped" == "0" ]] || { echo "Expiry worker did not safely skip the locked request (returned $skipped)"; exit 1; }
 wait "$lock_pid"
 wait "$decision_pid"
@@ -254,6 +254,52 @@ if ! grep -qx 'f' "$first_output"; then
  cat "$first_output"; exit 1;
 fi
 expired="$(run_expiry | tail -n 1 | tr -d '[:space:]')"
+[[ "$expired" == "1" ]] || { echo "Expiry worker did not expire the unlocked due request (returned $expired)"; exit 1; }
+
+psql -v ON_ERROR_STOP=1 <<SQL
+DO \$check\$
+DECLARE v_state text; v_events integer;
+BEGIN
+ SELECT state INTO v_state FROM public.unibud_operator_mfa_security_requests WHERE request_id='$REQUEST_C';
+ SELECT count(*) INTO v_events FROM public.unibud_operator_mfa_events
+  WHERE security_request_id='$REQUEST_C' AND event_type='security_reset_expired'
+    AND actor_account_id IS NULL AND session_id IS NULL;
+ IF v_state<>'expired' OR v_events<>1 THEN
+  RAISE EXCEPTION 'Expiry race did not leave one system-attributed terminal audit';
+ END IF;
+END
+\$check\$;
+SQL
+
+echo "PASS: dual-control approve/reject, approve/cancel and approval/expiry races used independent PostgreSQL connections; exactly one terminal transition and audit event won each race."
+ | tail -n 1 | tr -d '[:space:]')"
+[[ "$skipped" == "0" ]] || { echo "Expiry worker did not safely skip the locked request (returned $skipped)"; exit 1; }
+wait "$lock_pid"
+wait "$decision_pid"
+if ! grep -qx 'f' "$first_output"; then
+ echo "Approval succeeded after the request expiry deadline."
+ cat "$first_output"; exit 1;
+fi
+expired="$(run_expiry | grep -E '^[0-9]+)"
+[[ "$expired" == "1" ]] || { echo "Expiry worker did not expire the unlocked due request (returned $expired)"; exit 1; }
+
+psql -v ON_ERROR_STOP=1 <<SQL
+DO \$check\$
+DECLARE v_state text; v_events integer;
+BEGIN
+ SELECT state INTO v_state FROM public.unibud_operator_mfa_security_requests WHERE request_id='$REQUEST_C';
+ SELECT count(*) INTO v_events FROM public.unibud_operator_mfa_events
+  WHERE security_request_id='$REQUEST_C' AND event_type='security_reset_expired'
+    AND actor_account_id IS NULL AND session_id IS NULL;
+ IF v_state<>'expired' OR v_events<>1 THEN
+  RAISE EXCEPTION 'Expiry race did not leave one system-attributed terminal audit';
+ END IF;
+END
+\$check\$;
+SQL
+
+echo "PASS: dual-control approve/reject, approve/cancel and approval/expiry races used independent PostgreSQL connections; exactly one terminal transition and audit event won each race."
+ | tail -n 1 | tr -d '[:space:]')"
 [[ "$expired" == "1" ]] || { echo "Expiry worker did not expire the unlocked due request (returned $expired)"; exit 1; }
 
 psql -v ON_ERROR_STOP=1 <<SQL
