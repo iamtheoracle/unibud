@@ -316,7 +316,8 @@ export default function OperationsMfaClient() {
         </form>
       </section>}
     </>}
-    {status?.operator && <OperationsMfaRequestsPanel />}\n    <footer className="mfa-footer"><Link href="/home">Return to UNIBUD</Link><span>Security changes are enforced by the server and database, not this screen.</span></footer>
+    {status?.operator && <OperationsMfaRequestsPanel />}
+    <footer className="mfa-footer"><Link href="/home">Return to UNIBUD</Link><span>Security changes are enforced by the server and database, not this screen.</span></footer>
   </main>;
 }
 
