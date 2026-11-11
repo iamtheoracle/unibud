@@ -412,3 +412,12 @@ A permission-gated database read model and authenticated API GET now support a b
 - An Operations interface now supports request submission, queue review, independent approval/rejection and requester cancellation. UI controls suppress decision actions on the requester's own request; the database independently enforces this boundary.
 - PostgreSQL requester-scope test and static API/UI boundary test added. Exact-head CI pending.
 - Remaining: dedicated rate limiting, API integration tests, browser E2E, accessibility review, scheduled expiry worker, verified notifications, operational key management, grant-management and audit interfaces, independent security review.
+
+
+### Operations MFA dual-control request console — current implementation correction (2026-11-11)
+
+The current branch already contains migrations 0033/0034, the authenticated bounded GET list/detail endpoint, requester-only read scope, and the Operations request/review UI. Earlier capability entries describing these as absent are historical checkpoints and are superseded by the implementation tracker.
+
+At exact head 78cf131c4b98d3c35aaa6cef7d2f9202c404f195, Foundation and Oracle Arc API passed; PostgreSQL migration validation passed. Web/Database failed only in the Playwright MFA E2E because the enrollment test's generic Current password selector matched a second password field in the dual-control request form. Profile browser workflows, typecheck, contract tests, server security tests and lint passed; build was skipped after E2E failure. The enrollment password labels and E2E selectors have now been made distinct in commits 21b6a549609d923f39c69dd05010f494d615a78d and 2e304b2c2d09b4ee98630aee48300e10c49f0bf3. Exact-head rerun is pending.
+
+Still outstanding: dedicated route rate limits, live API integration tests, full browser coverage for request/approve/reject/cancel and permissions, accessibility review, scheduled expiry worker, verified notifications, secret/key operations, grant-management UI, audit search/export, independent security review and production rollout.
