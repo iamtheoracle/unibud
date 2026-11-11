@@ -161,3 +161,15 @@ Migration `0033_operations_mfa_request_read_api.sql` adds a protected, bounded r
 The authenticated GET endpoint is `/api/internal/operations/mfa/requests`. It supports a pending list (page size 1–100 with stable cursor) and `requestId` detail retrieval. It uses the HTTP-only session cookie, signed database context and no-store responses. A supplied foreign Origin is rejected; an Origin header is not mandatory for a safe GET because browsers may omit it.
 
 PostgreSQL permission/data-minimisation tests and static route-boundary tests have been added and wired into Foundation CI. Exact-head CI is pending. The UI, dedicated rate limits, live API integration tests and browser E2E are not implemented yet.
+
+
+## Request list/read and Operations review UI checkpoint
+
+Migration `0033_operations_mfa_request_read_api.sql` adds a bounded, permission-gated request list/detail function with a minimal return projection. Migration `0034_operations_mfa_requester_read_scope.sql` permits:
+- operators with `operations.mfa.security.approve` and current session MFA step-up to read the pending approval queue and request details;
+- operators with `operations.mfa.security.request` and current session MFA step-up to read only requests they personally submitted;
+- no direct application-role access to the underlying request table.
+
+The GET endpoint returns the validated viewer account ID for UI action separation, but not persisted session identifiers or credentials. The Operations UI supports request submission, independent review/approval/rejection, and cancellation of one's own request. A requester is not offered approval controls for their own request; PostgreSQL still enforces the rule independently.
+
+Added PostgreSQL requester-scope tests and static route/UI boundary tests. Exact-head CI for migration 0034 and the UI changes is pending. Dedicated rate limiting, route integration tests, full browser E2E, accessibility review, expiry scheduling, verified notifications, key management and independent review remain outstanding. No production enablement.
