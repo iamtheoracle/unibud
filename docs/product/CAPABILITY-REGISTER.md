@@ -311,3 +311,8 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 ### Independent Operations signing-key separation — 2026-11-11
 
 The account context signer and session context signer are now separate. The app requires both UNIBUD_DB_CONTEXT_HMAC_KEY and UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY; PostgreSQL verifies them using separate private key tables. Only the NOLOGIN Operations owner can read the session verifier key table and execute the session accessor. PostgreSQL tests now use different test keys and reject a correctly signed but cross-account session pair and expired signed claims. Exact-head CI for this refinement is pending.
+
+
+### Operations MFA session-bound step-up — 2026-11-11
+
+Server-side signed MFA assertions now bind account, exact persisted session, purpose, time window, nonce and matched TOTP step using a distinct assertion key. Migration 0024 adds private assertion-key storage, protected nonce consumption and exact-session step-up records. The database consumes the assertion and advances the TOTP counter atomically; Operations permissions now fail closed without an active, unlocked MFA credential and current session step-up. PostgreSQL integration coverage is added to Foundation CI but exact-head CI is pending. Enrollment/challenge/reauthentication/recovery routes and UI, concurrency proof, lockout, key provisioning/rotation and independent security review are still incomplete. This is not an end-to-end active MFA service.
