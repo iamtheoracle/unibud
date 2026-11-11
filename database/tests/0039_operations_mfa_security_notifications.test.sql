@@ -78,12 +78,16 @@ BEGIN
   RAISE EXCEPTION 'Account-bound notification read throttle incorrectly requires Operations MFA step-up';
  END IF;
  SELECT count(*) INTO v_rows FROM public.unibud_operator_mfa_list_notifications(50);
- IF v_rows<>2 THEN RAISE EXCEPTION 'Account 1 expected two notices, received %',v_rows; END IF;
+ IF v_rows<>3 THEN RAISE EXCEPTION 'Account 1 expected enrollment, request and decision notices, received %',v_rows; END IF;
  SELECT notification_id INTO v_own FROM public.unibud_operator_mfa_list_notifications(50)
   WHERE event_type='enrollment_confirmed';
  SELECT notification_id INTO v_other FROM public.unibud_operator_mfa_list_notifications(50)
   WHERE event_type='security_reset_requested';
  IF v_own IS NULL OR v_other IS NULL THEN RAISE EXCEPTION 'Expected own notifications are missing'; END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.unibud_operator_mfa_list_notifications(50)
+   WHERE event_type='security_reset_approved') THEN
+  RAISE EXCEPTION 'Requester did not receive the independent approval notice';
+ END IF;
  IF NOT public.unibud_operator_mfa_mark_notification_read(v_own) THEN
   RAISE EXCEPTION 'Account 1 could not mark its own notification read';
  END IF;
