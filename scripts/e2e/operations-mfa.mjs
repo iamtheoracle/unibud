@@ -29,6 +29,7 @@ try{
  await page.getByLabel("Current password").fill("test-password");
  await page.getByRole("button",{name:"Begin authenticator setup"}).click();
  await page.getByRole("heading",{name:"Add the authenticator"}).waitFor();
+ await page.getByRole("img",{name:"Authenticator setup QR code"}).waitFor();
  await page.reload();
  await page.getByRole("heading",{name:"Continue your pending enrollment"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
