@@ -66,3 +66,53 @@ export async function POST(request: NextRequest) {
     return result;
   }
 }
+
+
+export async function GET(request: NextRequest) {
+  if (!hasSameOrigin(request)) return response({ ok: false, error: "Forbidden." }, 403);
+  const token = readSessionCookie(request);
+  if (!token) return response({ ok: false, error: "Authentication is required." }, 401);
+
+  const params = request.nextUrl.searchParams;
+  const requestId = params.get("requestId");
+  const limitRaw = params.get("limit");
+  const beforeCreatedAt = params.get("beforeCreatedAt");
+  const beforeRequestId = params.get("beforeRequestId");
+  const limit = limitRaw === null ? 50 : Number(limitRaw);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100
+      || (requestId !== null && !UUID.test(requestId))
+      || ((beforeCreatedAt === null) !== (beforeRequestId === null))
+      || (beforeCreatedAt !== null && (!Number.isFinite(Date.parse(beforeCreatedAt))
+        || new Date(beforeCreatedAt).toISOString() !== beforeCreatedAt || !beforeRequestId || !UUID.test(beforeRequestId)))) {
+    return response({ ok: false, error: "Invalid request query." }, 400);
+  }
+
+  try {
+    const { sessions } = createConfiguredIdentityServices();
+    const validation = await sessions.validate(token);
+    if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
+    const context = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
+    const rows = await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
+      const result = await client.query(
+        "SELECT * FROM public.unibud_operator_mfa_list_security_requests($1,$2,$3,$4)",
+        [requestId, limit, beforeCreatedAt, beforeRequestId]
+      );
+      return result.rows;
+    });
+    return response({
+      ok: true,
+      requests: rows,
+      nextCursor: requestId || rows.length < limit
+        ? null
+        : {
+            beforeCreatedAt: rows[rows.length - 1]?.created_at ?? null,
+            beforeRequestId: rows[rows.length - 1]?.request_id ?? null
+          }
+    });
+  } catch (error) {
+    const result = routeError(error);
+    result.headers.set("Cache-Control", "no-store");
+    result.headers.set("Pragma", "no-cache");
+    return result;
+  }
+}
