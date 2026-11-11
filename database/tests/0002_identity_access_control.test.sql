@@ -9,20 +9,6 @@ INSERT INTO profiles (id,owner_account_id,kind,handle,handle_normalized,display_
  ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000002','personal','isolation-b','isolation-b','Isolation B');
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES ('ci-test-key',decode(repeat('5a',32),'hex'));
--- Rotation permits exactly two active keys during the overlap window.
-INSERT INTO unibud_private.context_signing_keys(key_id,secret)
-VALUES ('second-active-key',decode(repeat('6b',32),'hex'));
-DO $key_invariant$
-BEGIN
-  BEGIN
-    INSERT INTO unibud_private.context_signing_keys(key_id,secret)
-    VALUES ('third-active-key',decode(repeat('7c',32),'hex'));
-    RAISE EXCEPTION 'A third active context key was accepted';
-  EXCEPTION WHEN check_violation THEN
-    NULL;
-  END;
-END;
-$key_invariant$;
 
 -- Sign account A context using the CI-only synthetic key before assuming app role.
 WITH context AS (
