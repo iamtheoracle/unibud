@@ -117,7 +117,7 @@ SELECT
  set_config('unibud.context_expiry',e,true),
  set_config('unibud.context_nonce',n,true),
  set_config('unibud.context_signature',
-  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c0',32),'hex'),'sha256'),'hex'),true)
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c0',32),'hex'),'sha256'),'hex'),true),
  set_config('unibud.session_id',s,true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
