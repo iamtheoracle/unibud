@@ -440,3 +440,10 @@ Bounded, permission-gated request list/detail database function (migrations 0033
 - `docs/product/UNIBUD-ORACLE-ARC-MASTER-PLAN.md` is the consolidated description of what UNIBUD and Oracle Arc are, their module boundaries, shared platform architecture, AI core, safety and financial constraints, roadmap and production acceptance gates.
 - `docs/product/DECISION-HISTORY.md` preserves the reconstructed approved decisions from the 2026-11-08 to 2026-11-09 discussions and defines the append-only decision-record process.
 - The capability register remains the implementation-status index. The master plan and decision history do not upgrade planned capabilities to implemented or production-ready.
+
+
+### Operations MFA ephemeral maintenance
+
+- **IN PROGRESS / NOT PRODUCTION SCHEDULED:** bounded database maintenance worker exists in migration 0036. It expires dual-control requests, deletes expired step-up rows, applies a 24-hour post-expiry assertion-nonce retention window, and deletes rate-limit buckets inactive for 24 hours.
+- **Acceptance still required:** exact-head PostgreSQL CI; trusted recurring scheduler/worker; monitoring and alerting; operational credentials and rotation; failure/retry tests; production runbook and independent review.
+- A callable maintenance function is not an automatic scheduled job.
