@@ -33,6 +33,20 @@ INSERT INTO public.unibud_operator_mfa_security_requests(
  clock_timestamp()-interval '30 minutes',
  clock_timestamp()-interval '30 minutes'
 );
+-- The request/approval events below share request 201. The requester
+-- must exist so the notification trigger can resolve and notify that account.
+INSERT INTO public.unibud_operator_mfa_security_requests(
+ request_id,target_account_id,requested_action,state,requester_account_id,
+ requester_session_id,reason_code,created_at,expires_at
+) VALUES(
+ 'f0390000-0000-4000-8000-000000000201',
+ 'f0390000-0000-4000-8000-000000000002',
+ 'reset','pending',
+ 'f0390000-0000-4000-8000-000000000001',
+ 'f0390000-0000-4000-8000-000000000011',
+ 'approval_test',clock_timestamp()-interval '1 minute',
+ clock_timestamp()+interval '30 minutes'
+);
 INSERT INTO public.unibud_operator_mfa_events(
  event_id,actor_account_id,target_account_id,security_request_id,event_type
 ) VALUES(
