@@ -20,6 +20,26 @@ VALUES('ci-mfa-notify-session',decode(repeat('d5',32),'hex'));
 -- These events are written by the privileged database audit owner. The trigger
 -- must enqueue notices for the actor, target and both sides of dual control.
 SET LOCAL ROLE unibud_ops_owner;
+INSERT INTO public.unibud_operator_mfa_security_requests(
+ request_id,target_account_id,requested_action,state,requester_account_id,
+ requester_session_id,reason_code,created_at,expires_at,decided_at
+) VALUES(
+ 'f0390000-0000-4000-8000-000000000202',
+ 'f0390000-0000-4000-8000-000000000002',
+ 'reset','expired',
+ 'f0390000-0000-4000-8000-000000000001',
+ 'f0390000-0000-4000-8000-000000000011',
+ 'expired_test',clock_timestamp()-interval '1 hour',
+ clock_timestamp()-interval '30 minutes',
+ clock_timestamp()-interval '30 minutes'
+);
+INSERT INTO public.unibud_operator_mfa_events(
+ event_id,actor_account_id,target_account_id,security_request_id,event_type
+) VALUES(
+ 'f0390000-0000-4000-8000-000000000104',
+ NULL,'f0390000-0000-4000-8000-000000000002',
+ 'f0390000-0000-4000-8000-000000000202','security_reset_expired'
+);
 INSERT INTO public.unibud_operator_mfa_events(
  event_id,actor_account_id,event_type
 ) VALUES(
@@ -78,7 +98,7 @@ BEGIN
   RAISE EXCEPTION 'Account-bound notification read throttle incorrectly requires Operations MFA step-up';
  END IF;
  SELECT count(*) INTO v_rows FROM public.unibud_operator_mfa_list_notifications(50);
- IF v_rows<>3 THEN RAISE EXCEPTION 'Account 1 expected enrollment, request and decision notices, received %',v_rows; END IF;
+ IF v_rows<>4 THEN RAISE EXCEPTION 'Account 1 expected enrollment, request, decision and expiry notices, received %',v_rows; END IF;
  SELECT notification_id INTO v_own FROM public.unibud_operator_mfa_list_notifications(50)
   WHERE event_type='enrollment_confirmed';
  SELECT notification_id INTO v_other FROM public.unibud_operator_mfa_list_notifications(50)
@@ -124,10 +144,14 @@ DO $account_two$
 DECLARE v_rows INTEGER;
 BEGIN
  SELECT count(*) INTO v_rows FROM public.unibud_operator_mfa_list_notifications(50);
- IF v_rows<>2 THEN RAISE EXCEPTION 'Account 2 expected two notices, received %',v_rows; END IF;
+ IF v_rows<>3 THEN RAISE EXCEPTION 'Account 2 expected request, approval and expiry notices, received %',v_rows; END IF;
  IF EXISTS (SELECT 1 FROM public.unibud_operator_mfa_list_notifications(50)
    WHERE event_type='enrollment_confirmed') THEN
   RAISE EXCEPTION 'Account 2 saw another account enrollment notice';
+ END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.unibud_operator_mfa_list_notifications(50)
+   WHERE event_type='security_reset_expired') THEN
+  RAISE EXCEPTION 'Target did not receive the expiry notice';
  END IF;
 END
 $account_two$;
