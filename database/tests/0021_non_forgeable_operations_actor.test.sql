@@ -28,6 +28,9 @@ INSERT INTO public.unibud_operator_grants(
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
 VALUES ('ci-operations-actor-key',decode(repeat('c1',32),'hex'));
 
+INSERT INTO unibud_private.session_context_signing_keys(key_id,secret)
+VALUES ('ci-operations-actor-session-key',decode(repeat('c3',32),'hex'));
+
 -- Establish a valid signed context for account A.
 WITH x AS (
  SELECT
@@ -45,7 +48,7 @@ SELECT
   encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('c1',32),'hex'),'sha256'),'hex'),true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
-   decode(repeat('c1',32),'hex'),'sha256'),'hex'),true)
+   decode(repeat('c3',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 
 SET LOCAL ROLE unibud_app;
@@ -156,7 +159,7 @@ SELECT
  set_config('unibud.session_id',s,true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
-   decode(repeat('c1',32),'hex'),'sha256'),'hex'),true)
+   decode(repeat('c3',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
