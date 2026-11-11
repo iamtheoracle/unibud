@@ -55,10 +55,10 @@ FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
 BEGIN
-  IF NOT public.unibud_operator_has_permission(
+  IF public.unibud_operator_has_permission(
     'integrations.verification_delivery.read'
   ) THEN
-    RAISE EXCEPTION 'Expected active operator permission to be true';
+    RAISE EXCEPTION 'Session-only Operations access bypassed required MFA step-up';
   END IF;
 
   IF public.unibud_operator_has_permission('integrations.oracle_arc.read') THEN
@@ -74,7 +74,7 @@ BEGIN
 
   PERFORM public.unibud_operator_record_access(
     'integrations.verification_delivery.read',
-    'allowed',
+    'denied',
     'f0200000-0000-4000-8000-000000000099'
   );
 END
