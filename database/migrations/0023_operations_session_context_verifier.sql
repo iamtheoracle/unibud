@@ -12,9 +12,22 @@ CREATE INDEX unibud_operator_audit_session_time_idx
   ON public.unibud_operator_audit_events(session_id, occurred_at DESC)
   WHERE session_id IS NOT NULL;
 
+-- Session assertions use a separate key from the existing account-context
+-- signer. A compromise of one signing purpose must not automatically forge the other.
+CREATE TABLE unibud_private.session_context_signing_keys (
+  key_id TEXT PRIMARY KEY,
+  secret BYTEA NOT NULL CHECK (octet_length(secret) >= 32),
+  active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX session_context_signing_keys_one_active_idx
+  ON unibud_private.session_context_signing_keys(active) WHERE active;
+REVOKE ALL ON unibud_private.session_context_signing_keys
+  FROM PUBLIC, unibud_app, unibud_readonly, unibud_migrator;
+
 -- The NOLOGIN Operations owner is the only principal allowed to read the
--- verifier key/session row for this narrowly scoped SECURITY DEFINER function.
-GRANT SELECT ON unibud_private.context_signing_keys TO unibud_ops_owner;
+-- dedicated session verifier key and persisted session row.
+GRANT SELECT ON unibud_private.session_context_signing_keys TO unibud_ops_owner;
 GRANT SELECT ON public.account_sessions TO unibud_ops_owner;
 GRANT USAGE ON SCHEMA public TO unibud_ops_owner;
 REVOKE CREATE ON SCHEMA public FROM unibud_ops_owner;
