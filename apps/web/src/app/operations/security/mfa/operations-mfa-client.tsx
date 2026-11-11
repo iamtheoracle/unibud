@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 
 type MfaStatus = {
@@ -193,7 +194,7 @@ export default function OperationsMfaClient() {
 
   return <main className="mfa-shell">
     <header className="mfa-header">
-      <a className="wordmark" href="/home">unibud<span>.</span></a>
+      <Link className="wordmark" href="/home">unibud<span>.</span></Link>
       <p className="eyebrow">Operations security</p>
     </header>
     <section className="mfa-intro">
@@ -247,7 +248,7 @@ export default function OperationsMfaClient() {
         <p className="eyebrow">Step 2</p><h2>Add the authenticator</h2>
         <p className="mfa-muted">Open the authenticator link on this device or enter the setup key manually in your authenticator app. This key is sensitive; do not share it or save it in an unprotected place.</p>
         <a className="mfa-button mfa-link-button" href={provisioningUri}>Open authenticator app</a>
-        <label className="mfa-secret-label">Manual setup key<code className="mfa-secret">{setupSecret}</code></label>
+        <div className="mfa-secret-label"><span>Manual setup key</span><code className="mfa-secret">{setupSecret}</code></div>
         <p className="mfa-small">QR scanning is not available in this build. Manual setup is provided as a temporary fallback.</p>
         <form className="mfa-form" onSubmit={confirmEnrollment}>
           <label>Six-digit authenticator code<input inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={confirmationCode} onChange={e => setConfirmationCode(e.target.value.replace(/\D/g, "").slice(0,6))} required/></label>
@@ -292,6 +293,6 @@ export default function OperationsMfaClient() {
         </form>
       </section>}
     </>}
-    <footer className="mfa-footer"><a href="/home">Return to UNIBUD</a><span>Security changes are enforced by the server and database, not this screen.</span></footer>
+    <footer className="mfa-footer"><Link href="/home">Return to UNIBUD</Link><span>Security changes are enforced by the server and database, not this screen.</span></footer>
   </main>;
 }
