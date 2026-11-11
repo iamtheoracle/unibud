@@ -403,3 +403,12 @@ Migration 0031 and its PostgreSQL test now pass Foundation PostgreSQL 16 migrati
 ### Operations MFA dual-control request reads — partial implementation
 
 A permission-gated database read model and authenticated API GET now support a bounded pending-request list and individual request detail. Database authorization requires the exact validated session, current MFA step-up and `operations.mfa.security.approve`; direct table access remains denied. Results omit persisted session identifiers and secrets. PostgreSQL isolation tests and static route-boundary tests are wired into CI. Exact-head validation is pending. UI, dedicated rate limiting, live API integration tests and browser E2E remain outstanding.
+
+
+### Operations MFA dual-control request experience — building
+
+- Authenticated request creation, approve/reject, cancellation and bounded list/detail endpoints are implemented.
+- Database migration 0034 now permits requesters to read only their own pending requests, while current-MFA approvers retain access to the approval queue. The response projection does not disclose persisted session identifiers or secrets.
+- An Operations interface now supports request submission, queue review, independent approval/rejection and requester cancellation. UI controls suppress decision actions on the requester's own request; the database independently enforces this boundary.
+- PostgreSQL requester-scope test and static API/UI boundary test added. Exact-head CI pending.
+- Remaining: dedicated rate limiting, API integration tests, browser E2E, accessibility review, scheduled expiry worker, verified notifications, operational key management, grant-management and audit interfaces, independent security review.
