@@ -32,7 +32,7 @@ SET LOCAL ROLE unibud_app;
 DO $test$
 DECLARE issued BIGINT; expires BIGINT; nonce UUID; signature TEXT; secret TEXT;
 BEGIN
- issued:=floor(extract(epoch FROM clock_timestamp())::BIGINT; expires:=issued+60;
+ issued:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; expires:=issued+60;
  nonce:='f0290000-0000-4000-8000-000000000031';
  signature:=encode(public.hmac(convert_to(
   'v1:f0290000-0000-4000-8000-000000000001:f0290000-0000-4000-8000-000000000011:password_reauth:'||
