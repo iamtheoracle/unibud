@@ -361,3 +361,11 @@ Added recovery-code regeneration requiring both fresh password reauthentication 
 ### Verified implementation checkpoint — 2026-11-11
 
 At exact head bee8603a832fe09307384e4a8faa2820ed9ec394, all three workflows passed: Foundation PostgreSQL 16 migration/RLS tests through migration 0030 (including concurrent recovery redemption), Oracle Arc API tests, and Web typecheck/contracts/server-security/lint/profile browser E2E/production build. The browser E2E is profile-focused and does not prove MFA UI end-to-end. Session assurance is tied to the verified persisted session and cannot survive session revocation/rotation or transfer to another session; expired-record cleanup remains outstanding. PR #15 is still draft/unmerged/undeployed and independent security review remains a release blocker.
+
+
+### Operations MFA local QR enrollment experience — implemented, CI pending
+
+- The authenticated Operations MFA page now generates its authenticator QR code locally in the browser from the in-memory provisioning URI using the `qrcode` library.
+- The seed is not sent to a third-party QR service. The manual setup key remains available as a fallback. The provisioning URI and generated QR data URL are not persisted in browser storage.
+- UI tests assert local QR generation and the manual fallback; Playwright MFA E2E asserts that the QR image appears during enrollment.
+- Exact-head CI is pending. This does not make MFA production-ready: operational key provisioning/rotation, disable/reset dual control, lifecycle notifications and invalidation, expiry cleanup/retention, independent security review and production rollout gates remain.
