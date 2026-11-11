@@ -335,3 +335,14 @@ At every development stage:
 - **Next:** implement the matching private PostgreSQL session-context verifier/accessor and its SQL tests. Tests must prove forged session GUCs, account/session mismatches, missing/expired signatures and revoked/expired sessions fail closed. Then run exact-head CI before integrating this context into any Operations endpoint.
 - PR #15 remains OPEN/DRAFT/NOT MERGED. No production migration or deployment. Issue #16 independent review and secret-manager/recovery review remain outstanding.
 
+
+
+## Session-bound Operations security checkpoint — 2026-11-11
+
+- Latest implementation slice: database migration `0023_operations_session_context_verifier.sql`, PostgreSQL test `0023_operations_session_context_verifier.test.sql`, signed-session server wrapper, and the verification-delivery Operations route now passes the exact persisted session ID returned by `SessionService.validate`.
+- Database verifier checks a versioned HMAC over account ID + session ID + expiry + nonce, independently validates the signed account claim, and checks that the exact session still belongs to the account, remains active and unrevoked, and has not passed idle or absolute expiry.
+- Operations permission checks now require both verified account and verified live session. Audit rows now carry the verified session reference; unauthenticated events remain explicitly unattributed. The private session verifier is executable by the NOLOGIN Operations owner only, not by `unibud_app`.
+- Existing Operations PostgreSQL tests were updated to establish signed session context; new negative coverage includes a forged session GUC, revoked session, account-only context, direct verifier/key access denial, and unauthenticated audit provenance.
+- Current verification status: latest changes have been committed to the PR branch; exact-head CI for the final checkpoint has not yet been confirmed. Do not call this slice verified until all workflows and PostgreSQL tests pass at the same head.
+- Important limitation: session context is now implemented and wired into the existing metadata diagnostic route, but MFA is still not active. No MFA enrollment/confirmation, TOTP challenge, replay-safe step-up, recovery-code redemption, step-up session claim, route-level MFA gate, or operator UI has been implemented.
+- Production secret-manager configuration, independent review of the role/ownership boundary, and production-like migration/recovery review remain outstanding.
