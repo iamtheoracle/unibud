@@ -4,7 +4,7 @@
 
 Operations access is a global account-level grant, not a profile membership. Student, tutor, institution representative, creator, page/community administrator, moderator, seller, provider, professional or other profile roles do not confer Operations authority.
 
-The application authenticates the opaque session cookie through the existing first-party session service. The route establishes a short-lived HMAC-signed transaction context from the validated server-side session; the database independently verifies that context and derives the actor. The Operations permission and audit functions accept no caller-supplied account UUID. The browser cannot submit an account ID, role or permission to this route.
+The application authenticates the opaque session cookie through the existing first-party session service. The route establishes a short-lived HMAC-signed account claim and a separately signed, versioned account+session claim from the validated server-side session; PostgreSQL independently verifies both claims and the live persisted session before deriving the actor. The account claim uses `UNIBUD_DB_CONTEXT_HMAC_KEY` / `unibud_private.context_signing_keys`; the session claim uses the separate `UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY` / `unibud_private.session_context_signing_keys`. Never reuse one key for both purposes. The Operations permission and audit functions accept no caller-supplied account UUID. The browser cannot submit an account ID, role or permission to this route.
 
 The app database principal can execute only the narrow permission and audit functions. It has no direct table access to operator grants or audit events. The non-login `unibud_ops_owner` role owns the protected tables and SECURITY DEFINER functions; it is BYPASSRLS but has no LOGIN and is not an application connection role.
 
@@ -77,7 +77,7 @@ The intended operator second factor is an authenticator-app TOTP credential (RFC
 Cryptographic primitives and protected persistence schema now exist, but the storage migration is not yet wired to application procedures. Migration 0022 creates pending/active credential rows and recovery-code digest rows; both tables are owned by the non-login Operations owner and have no direct grants to application roles. The Foundation workflow now includes migration 0022 and its PostgreSQL test, pending exact-head CI.
 
 Before enabling MFA:
-1. Provision separate 32-byte seed-encryption and recovery-code HMAC keys from the approved secret manager. Never store these keys in source control, PostgreSQL or browser code.
+1. Provision separate 32-byte account-context (`UNIBUD_DB_CONTEXT_HMAC_KEY`), session-context (`UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY`), TOTP seed-encryption and recovery-code HMAC keys from the approved secret manager. The account and session verifier keys are provisioned into their respective private database key tables through a controlled database-administration procedure; the application receives only the matching server-side secret-manager bindings. Never store keys in source control, browser code, logs or deployment artifacts.
 2. Add narrow account-bound database procedures using only the HMAC-verified transaction identity; no caller-supplied account UUID or caller-settable GUC is trusted.
 3. Add a server-authenticated proof for TOTP acceptance and exact-session step-up; do not accept a caller-supplied time-step as proof.
 4. Implement atomic monotonic TOTP replay prevention and atomic single-use recovery-code redemption.
