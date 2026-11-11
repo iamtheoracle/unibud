@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {calculateTotpCode,OperationsMfaCryptography,verifyTotpCode} from "../src/lib/server/operations/operations-mfa-core.ts";
+import {calculateTotpCode,createOperationsMfaCryptographyFromEnvironment,OperationsMfaCryptography,verifyTotpCode} from "../src/lib/server/operations/operations-mfa-core.ts";
 const encryptionKey=Buffer.alloc(32,0x31),recoveryKey=Buffer.alloc(32,0x72);
 const accountId="10000000-0000-4000-8000-000000000001";
 
@@ -53,4 +53,23 @@ test("weak keys and malformed enrollment parameters are rejected",()=>{
  assert.throws(()=>crypto.decodeSecret("not-a-secret"));
  assert.throws(()=>crypto.generateRecoveryCodes(3));
  assert.throws(()=>crypto.provisioningUri(accountId,"bad"));
+});
+
+test("configured MFA cryptography requires distinct exact-length encryption and recovery keys",()=>{
+ const previousEncryption=process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY;
+ const previousRecovery=process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY;
+ try{
+  process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY=encryptionKey.toString("hex");
+  process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY=recoveryKey.toString("hex");
+  const crypto=createOperationsMfaCryptographyFromEnvironment();
+  const secret=crypto.generateSecret();
+  assert.equal(crypto.decryptSecret(accountId,crypto.encryptSecret(accountId,secret)).equals(secret),true);
+  delete process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY;
+  assert.throws(()=>createOperationsMfaCryptographyFromEnvironment());
+ }finally{
+  if(previousEncryption===undefined) delete process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY;
+  else process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY=previousEncryption;
+  if(previousRecovery===undefined) delete process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY;
+  else process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY=previousRecovery;
+ }
 });
