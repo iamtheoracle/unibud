@@ -398,3 +398,8 @@ Migration 0031 and its PostgreSQL test now pass Foundation PostgreSQL 16 migrati
 - All routes use same-origin checks, HTTP-only session validation, server-derived account/session context and no-store responses. Request creation and decisions require fresh password verification and purpose-bound password-reauth assertions. PostgreSQL remains authoritative for exact-session MFA step-up, scoped permissions, self-approval denial, request state and audit.
 - Static route-boundary tests added. Exact-head CI pending.
 - Pending: approver pending-request list/read API, rate limiting verification, API integration tests, UI, browser E2E, expiry worker schedule, notification delivery, key management and independent security review.
+
+
+### Operations MFA dual-control request reads — partial implementation
+
+A permission-gated database read model and authenticated API GET now support a bounded pending-request list and individual request detail. Database authorization requires the exact validated session, current MFA step-up and `operations.mfa.security.approve`; direct table access remains denied. Results omit persisted session identifiers and secrets. PostgreSQL isolation tests and static route-boundary tests are wired into CI. Exact-head validation is pending. UI, dedicated rate limiting, live API integration tests and browser E2E remain outstanding.
