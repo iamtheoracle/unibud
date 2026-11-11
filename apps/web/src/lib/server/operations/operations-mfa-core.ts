@@ -47,6 +47,20 @@ export function verifyTotpCode(secret:Uint8Array,code:string,timestampMs:number,
   }
   return null;
 }
+export function createOperationsMfaCryptographyFromEnvironment(): OperationsMfaCryptography {
+  const readKey = (name: string): Buffer => {
+    const value = process.env[name]?.trim() ?? "";
+    if (!/^(?:[0-9a-f]{2}){32}$/i.test(value)) {
+      throw new Error(name + " must be exactly 32 random bytes encoded as hex.");
+    }
+    return Buffer.from(value, "hex");
+  };
+  return new OperationsMfaCryptography(
+    readKey("UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY"),
+    readKey("UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY")
+  );
+}
+
 export interface EncryptedTotpSecret {ciphertext:string;}
 export class OperationsMfaCryptography {
   private readonly encryptionKey:Buffer;
