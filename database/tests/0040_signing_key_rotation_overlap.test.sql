@@ -31,6 +31,35 @@ INSERT INTO unibud_private.operations_mfa_assertion_signing_keys(key_id,secret)
 VALUES ('ci-rotation-mfa-old',decode(repeat('71',32),'hex')),
        ('ci-rotation-mfa-new',decode(repeat('72',32),'hex'));
 
+DO $mfa_helper_overlap$
+DECLARE
+  v_payload TEXT := 'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:password_reauth:100:160:f0400000-0000-4000-8000-000000000099:-';
+BEGIN
+  IF NOT unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('71',32),'hex'),'sha256'),'hex')
+  ) OR NOT unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('72',32),'hex'),'sha256'),'hex')
+  ) THEN
+    RAISE EXCEPTION 'Shared MFA verifier did not accept both overlap keys';
+  END IF;
+  IF unibud_private.verify_operations_mfa_assertion_signature(v_payload,repeat('0',64)) THEN
+    RAISE EXCEPTION 'Shared MFA verifier accepted an invalid signature';
+  END IF;
+  IF position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_begin_enrollment(text,bigint,bigint,uuid,text)'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_confirm_enrollment(bigint,bigint,uuid,bigint,text,text[])'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_redeem_recovery_code(text,bigint,bigint,uuid,text)'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_regenerate_recovery_codes(bigint,bigint,uuid,text,text[])'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('unibud_private.consume_operations_password_reauth_assertion(bigint,bigint,uuid,text)'::regprocedure))=0 THEN
+    RAISE EXCEPTION 'An Operations MFA assertion verifier was not converted to overlap mode';
+  END IF;
+END
+$mfa_helper_overlap$;
+
 DO $limit$
 BEGIN
   BEGIN
@@ -164,6 +193,23 @@ BEGIN
 END
 $retired$;
 RESET ROLE;
+
+DO $retired_mfa_helper$
+DECLARE
+  v_payload TEXT := 'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:password_reauth:100:160:f0400000-0000-4000-8000-000000000099:-';
+BEGIN
+  IF unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('71',32),'hex'),'sha256'),'hex')
+  ) THEN
+    RAISE EXCEPTION 'Retired MFA assertion key remained valid';
+  END IF;
+  IF NOT unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('72',32),'hex'),'sha256'),'hex')
+  ) THEN
+    RAISE EXCEPTION 'New MFA assertion key failed after old-key retirement';
+  END IF;
+END
+$retired_mfa_helper$;
 
 -- Retired session/MFA keys also fail; a tampered new signature fails as well.
 WITH x AS (
