@@ -16,10 +16,25 @@ if ! command -v psql >/dev/null 2>&1; then
   exit 127
 fi
 
-# Do not enable shell tracing: DATABASE_URL may contain authentication material.
-export PGAPPNAME="unibud-operations-mfa-maintenance"
+# Require certificate-verified TLS by default. Local disposable CI may opt out
+# explicitly; production schedulers must not set that test-only override.
+PGSSLMODE="${PGSSLMODE:-verify-full}"
+if [[ "$PGSSLMODE" != "verify-full" && "${UNIBUD_ALLOW_INSECURE_LOCAL_TEST:-false}" != "true" ]]; then
+  echo "PGSSLMODE must be verify-full outside an explicitly marked local test." >&2
+  exit 2
+fi
+if [[ "$DATABASE_URL" == *"sslmode="* && "$DATABASE_URL" != *"sslmode=$PGSSLMODE"* ]]; then
+  echo "DATABASE_URL sslmode conflicts with the required PGSSLMODE." >&2
+  exit 2
+fi
 
-psql "$DATABASE_URL" \
+# Keep the connection URI out of process arguments and never enable shell tracing.
+export PGAPPNAME="unibud-operations-mfa-maintenance"
+export PGSSLMODE
+export PGDATABASE="$DATABASE_URL"
+unset DATABASE_URL
+
+psql \
   --no-psqlrc \
   --no-password \
   --set=ON_ERROR_STOP=1 \
