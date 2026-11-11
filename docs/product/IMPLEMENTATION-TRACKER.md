@@ -19,7 +19,7 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 - State: OPEN, DRAFT, NOT MERGED.
 - Branch: `foundation/session-derived-operations-rbac-v2`.
-- Latest inspected head: `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`.
+- Latest inspected head before local QR work: `683fdef5eb8716748c6ca7a4fa6311954cac0877`; QR enhancement is now in progress on this branch.
 - Exact-head GitHub Actions at `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`: **PASS** for Foundation checks (run `42925640430`), Oracle Arc API (run `42925640442`), and UNIBUD Web and Database (run `42925640425`). The Web workflow completed type check, contract tests, server security unit tests, lint, profile browser E2E and production build; PostgreSQL migration validation passed. Foundation applied all identity/auth migrations and passed PostgreSQL 16 RLS isolation and foundation integrity.
 - Review submissions and inline review threads: none returned by the latest inspection.
 - Merge/deploy/production migration: not performed.
@@ -30,7 +30,7 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 | Requirement | Status | Acceptance evidence still required |
 |---|---|---|
-| MFA / step-up authentication for privileged actions | NOT STARTED | Phishing-resistant or approved MFA enrollment, challenge, recovery, session binding, step-up expiry, replay protection, rate limits, tests |
+| MFA / step-up authentication for privileged actions | IN PROGRESS / NOT RELEASE-READY | TOTP enrollment, confirmation, challenge, exact-session step-up, recovery redemption/regeneration, status/resume, lockout, protected audit, UI and PostgreSQL concurrency tests exist; still require QR/E2E verification, disable/reset dual control, lifecycle notifications, operational key provisioning/rotation, cleanup/retention and independent security review |
 | Operator provisioning and revocation workflow | IN PROGRESS (DBA-only runbook exists) | Dual-control approval, verified identity, least privilege, expiry, revocation, audit, tests; no self-grant |
 | Operations grant-management UI | NOT STARTED | Accessible UI, server-side authorization, approval lifecycle, negative tests |
 | Audit search, filtering and export | NOT STARTED | Read-only permission, privacy minimization, tamper evidence, pagination, export tests |
@@ -468,3 +468,12 @@ At every development stage:
 - **Scope of browser proof:** the browser E2E in this workflow is the existing profile E2E; it does not exercise the new MFA page or the MFA flows end-to-end.
 - **Session lifecycle note:** step-up is bound to the verified current persisted session. The database session verifier denies revoked, expired, suspended and rotated-out sessions, and a new session cannot inherit an old step-up. Cleanup/pruning of expired step-up and assertion records remains outstanding.
 - PR #15 remains OPEN and DRAFT, not merged or deployed. Issue #16's independent security review and production-like migration/recovery review remain release blockers.
+
+
+### Operations MFA local QR setup — 2026-11-11
+
+- Added the `qrcode` browser library and local QR generation to the authenticated MFA setup interface. The QR is rendered from the in-memory provisioning URI in the browser; no third-party QR endpoint receives the authenticator seed. The manual setup key remains available as an accessible fallback if QR generation fails or the operator cannot scan.
+- Added responsive QR styling, UI assertions and a real Playwright MFA workflow assertion that the QR image is rendered during enrollment.
+- The provisioning URI and QR data URL remain in component memory only; no localStorage, sessionStorage or IndexedDB persistence was added.
+- **Verification pending:** package installation, TypeScript, lint, unit tests, MFA browser E2E and production build must all pass on the exact resulting branch head. Do not claim the QR feature is verified until those workflows finish.
+- **MFA remains not production-ready:** controlled disable/reset with dual approval, notifications, session/account lifecycle invalidation evidence, key provisioning/rotation/recovery, cleanup/retention, production-like database review and independent security review remain outstanding.
