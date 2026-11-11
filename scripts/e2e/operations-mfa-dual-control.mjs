@@ -64,7 +64,7 @@ try{
  await page.getByText("Security-change request submitted. It requires a separate authorised approver.").waitFor();
  assert.equal(calls.filter(x=>x.path.endsWith("/decision")).length,1);
  assert.equal(calls.filter(x=>x.path.endsWith("/cancel")).length,1);
- assert.equal(calls.filter(x=>x.path.endsWith("/requests")).length,2);
+ assert.equal(calls.filter(x=>x.path.endsWith("/requests")).length,1,"the browser performs one POST request creation; GET queue refreshes are excluded from this mutation count");
  assert.equal(calls.some(x=>x.body.decision==="approve"&&x.body.password==="test-password"),true);
  process.stdout.write("PASS: Operations dual-control queue, independent approval, requester-only cancellation and request creation browser workflows.\\n");
 }finally{await browser.close();}
