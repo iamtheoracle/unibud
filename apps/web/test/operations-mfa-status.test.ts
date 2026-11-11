@@ -20,7 +20,7 @@ test("database status reports only own account and exact-session assurance", () 
   assert.match(migration, /current_account_id\(\)/);
   assert.match(migration, /current_session_id\(\)/);
   assert.match(migration, /g\.account_id=v_account/);
-  assert.match(migration, /step_up\.session_id=v_session/);
+  assert.match(migration, /account_id=v_account AND session_id=v_session/);
   assert.match(migration, /'credentialState'/);
   assert.match(migration, /'stepUpExpiresAt'/);
   assert.match(migration, /REVOKE ALL ON FUNCTION public\.unibud_operator_mfa_get_status/);
