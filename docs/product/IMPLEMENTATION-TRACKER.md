@@ -703,3 +703,8 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Foundation PostgreSQL CI reached migration 0039 and exposed a fixture mismatch: the approval audit event referenced request `f039...0201`, but only the separate expiry request `f039...0202` existed. The notification trigger correctly could not resolve the missing requester's account, so the test observed three notices rather than four.
 - Added the missing pending request 0201 with the expected requester account/session and target. Kept the expiry request 0202 as a separate expired record. The expected requester/target/approver notification coverage remains unchanged; no production trigger behavior was weakened.
 - **Correction commit:** `bcd619504084d38d0ee989c8e25b81e6f3a00993`. Exact-head Foundation, Web/Database and Oracle Arc API CI must complete before this slice is marked verified.
+### Security-notification test privilege correction — 2026-11-11
+
+- The next Foundation run passed the corrected requester fixture and reached the cross-account mark-read assertion. It then correctly denied a direct SELECT against the notification table while the test had assumed the `unibud_app` role.
+- Moved retrieval of the other account's notification UUID into the privileged test harness before `SET LOCAL ROLE unibud_app`. The application-role test now receives only the opaque UUID and proves the mark-read API refuses cross-account ownership without granting direct table access.
+- This preserves the production privilege boundary and strengthens the test: `unibud_app` remains unable to read notification rows directly. Exact-head PostgreSQL CI must be rerun and pass.
