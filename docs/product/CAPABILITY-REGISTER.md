@@ -426,3 +426,10 @@ Still outstanding: dedicated route rate limits, live API integration tests, full
 ### Operations MFA request review experience — implemented, verification pending
 
 Bounded, permission-gated request list/detail database function (migrations 0033/0034), authenticated no-store GET API, and Operations UI for submit/review/approve/reject/cancel are present. A dedicated Playwright workflow is now included in Web CI. Existing E2E has a brittle request-count assertion that counts queue GETs alongside POST actions; fix the harness and obtain exact-head green CI before calling this complete.
+
+### Operations MFA API throttling — building
+
+- Migration 0035 adds fixed database-enforced per-account limits: create 5/15 minutes, decision 10/15 minutes, cancellation 10/15 minutes, reads 60/minute.
+- Permission and exact-session MFA step-up are checked in PostgreSQL; app roles cannot directly access the rate-limit table.
+- All four API action classes use the server adapter before password verification or read execution. PostgreSQL and route-boundary tests are wired into CI.
+- Exact-head verification pending. Still required: distributed edge/IP abuse controls, alerting, dedicated API integration tests, independent security review and production rollout.
