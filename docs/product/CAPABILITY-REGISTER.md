@@ -341,3 +341,8 @@ Migration 0026 and the enrollment-confirm route now implement a database-verifie
 ### Operations MFA TOTP challenge and exact-session step-up
 
 Added a same-origin server route that validates the current persisted session, decrypts the account-bound seed only server-side, verifies TOTP and submits a signed, purpose-bound assertion to PostgreSQL. Migration 0024 consumes the assertion once, advances the accepted TOTP step atomically and creates a five-minute step-up for the exact session. Invalid attempts use migration 0026's failure counter and lockout. **Status: implemented; exact-head CI and browser E2E pending.** This does not complete MFA: user interface, recovery, disable/reset, status, event audit/notifications, operational key management and independent review remain outstanding.
+
+
+### Operations MFA recovery and lifecycle audit
+
+Migration 0027 adds single-use recovery-code redemption bound to the validated account/session. Successful recovery invalidates every step-up session, deletes the old authenticator and all old recovery codes, and requires fresh password-reauthenticated enrollment; it does not grant Operations access. A protected append-only audit records enrollment, challenge failure/success, lockout and credential removal without storing secrets. The new recovery route and PostgreSQL test are wired into Foundation CI. **Status: implemented; exact-head CI and browser E2E pending.** Recovery-code regeneration, disable/reset, UI/acknowledgement, notifications, lifecycle invalidation, concurrent redemption proof, key management and independent review remain incomplete.
