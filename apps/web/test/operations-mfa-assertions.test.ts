@@ -24,6 +24,20 @@ test("assertion binds account, exact session, purpose, time, nonce and matched T
   }), true);
 });
 
+test("assertion canonicalizes UUID text before signing", () => {
+  const upperAccount = accountId.toUpperCase();
+  const upperSession = sessionId.toUpperCase();
+  const upperNonce = nonce.toUpperCase();
+  const assertion = createOperationsMfaAssertion({
+    accountId: upperAccount, sessionId: upperSession, purpose: "step_up",
+    matchedTotpStep: 60_000, issuedAt: 1_800_000_000, nonce: upperNonce
+  }, key);
+  assert.equal(assertion.accountId, accountId);
+  assert.equal(assertion.sessionId, sessionId);
+  assert.equal(assertion.nonce, nonce);
+  assert.equal(verifyOperationsMfaAssertion(assertion, key, 1_800_000_030), true);
+});
+
 test("assertion rejects cross-account, cross-session and wrong-purpose use", () => {
   const assertion = createOperationsMfaAssertion({
     accountId, sessionId, purpose: "step_up", matchedTotpStep: 60_000,
