@@ -135,6 +135,8 @@ jobs:
       - name: Verify bounded Operations maintenance worker entrypoint
         env:
           DATABASE_URL: postgresql://unibud_ops_scheduler_ci:ci_scheduler_only@localhost:5432/unibud_test
+          PGSSLMODE: disable
+          UNIBUD_ALLOW_INSECURE_LOCAL_TEST: "true"
         run: |
           bash -n scripts/run-operations-mfa-maintenance.sh
           BATCH_SIZE=10 bash scripts/run-operations-mfa-maintenance.sh
