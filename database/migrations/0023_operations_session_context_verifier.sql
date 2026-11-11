@@ -31,6 +31,7 @@ GRANT SELECT ON unibud_private.session_context_signing_keys TO unibud_ops_owner;
 GRANT SELECT ON public.account_sessions TO unibud_ops_owner;
 GRANT USAGE ON SCHEMA public TO unibud_ops_owner;
 REVOKE CREATE ON SCHEMA public FROM unibud_ops_owner;
+GRANT USAGE ON SCHEMA unibud_private TO unibud_ops_owner;
 GRANT EXECUTE ON FUNCTION unibud_private.current_account_id() TO unibud_ops_owner;
 
 CREATE FUNCTION unibud_private.current_session_id()
