@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import OperationsMfaClient from "../../../operations/security/mfa/operations-mfa-client";
+import OperationsMfaClient from "../../operations/security/mfa/operations-mfa-client";
 
 /**
  * Isolated MFA browser-test surface. It is unavailable in production and only
