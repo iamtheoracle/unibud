@@ -367,7 +367,7 @@ BEGIN
       'SELECT secret INTO v_key.*?IF v_diff[[:space:]]*<>[[:space:]]*0 THEN RETURN FALSE; END IF;',
       'IF NOT unibud_private.verify_operations_mfa_assertion_signature(' ||
         v_item.payload_template || ',p_signature) THEN RETURN FALSE; END IF;',
-      'n'
+      's'
     );
     IF v_replaced = v_definition THEN
       RAISE EXCEPTION 'Could not safely convert MFA verifier % to overlap mode',
