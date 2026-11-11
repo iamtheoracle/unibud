@@ -152,3 +152,12 @@ Added three same-origin, no-store Operations MFA endpoints:
 A static route-boundary test asserts same-origin validation, server-derived session context, no caller-supplied actor/session/role, and no-store response headers.
 
 The API is an initial action slice, not a complete workflow: there is no pending-request list/read endpoint, Operations UI, integration/E2E coverage or verified dedicated rate-limit policy yet. Exact-head CI is pending. No production enablement.
+
+
+## Request read API implementation checkpoint
+
+Migration `0033_operations_mfa_request_read_api.sql` adds a protected, bounded read model for pending requests and individual request details. It requires a server-validated account/session and current `operations.mfa.security.approve` grant with MFA step-up. The application role receives execute-only access; it does not receive table access. Results exclude persisted session IDs, credentials, recovery data and assertions.
+
+The authenticated GET endpoint is `/api/internal/operations/mfa/requests`. It supports a pending list (page size 1–100 with stable cursor) and `requestId` detail retrieval. It uses the HTTP-only session cookie, signed database context and no-store responses. A supplied foreign Origin is rejected; an Origin header is not mandatory for a safe GET because browsers may omit it.
+
+PostgreSQL permission/data-minimisation tests and static route-boundary tests have been added and wired into Foundation CI. Exact-head CI is pending. The UI, dedicated rate limits, live API integration tests and browser E2E are not implemented yet.
