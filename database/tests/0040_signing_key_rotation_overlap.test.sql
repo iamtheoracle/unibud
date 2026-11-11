@@ -228,16 +228,25 @@ SELECT
 FROM x;
 SET LOCAL ROLE unibud_app;
 DO $retired_session$
+DECLARE
+ issued BIGINT;
+ expires BIGINT;
+ nonce UUID:='f0400000-0000-4000-8000-000000000033';
+ signature TEXT;
 BEGIN
  IF unibud_private.current_account_id() IS NULL THEN
    RAISE EXCEPTION 'New account key unexpectedly failed after retirement';
  END IF;
+ issued:=floor(extract(epoch FROM clock_timestamp()))::bigint;
+ expires:=issued+60;
+ signature:=encode(public.hmac(convert_to(
+  'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:step_up:'||
+  issued::text||':'||expires::text||':'||nonce::text||':1003','UTF8'),
+  decode(repeat('72',32),'hex'),'sha256'),'hex');
  IF public.unibud_operator_mfa_consume_step_up(
-   floor(extract(epoch FROM clock_timestamp()))::bigint,
-   floor(extract(epoch FROM clock_timestamp()))::bigint+60,
-   'f0400000-0000-4000-8000-000000000033',1003,repeat('0',64)
+   issued,expires,nonce,1003,signature
  ) THEN
-   RAISE EXCEPTION 'Invalid/retired session or MFA signature was accepted';
+   RAISE EXCEPTION 'Retired session-context key was accepted';
  END IF;
 END
 $retired_session$;
