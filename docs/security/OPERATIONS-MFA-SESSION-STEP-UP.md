@@ -205,3 +205,10 @@ An authenticated /operations/security/mfa interface now connects status, enrollm
 Migration 0030 adds an atomic recovery-code replacement procedure. It requires a server-signed password_reauth assertion bound to the current account/session and the database-verified five-minute step-up for that exact session. It consumes the nonce, deletes the previous recovery digest set, stores a validated set of distinct new digests and records a protected audit event in one transaction. The route reauthenticates the current password and returns plaintext codes once only after commit. The UI exposes regeneration only when current status reports a step-up; PostgreSQL independently checks expiry.
 
 Exact-head CI and browser E2E for this addition remain pending. Controlled disable/reset requires dual control; no self-service disable path is provided. QR, notifications, lifecycle invalidation, operational key management and independent review remain release blockers.
+
+
+## Verified checkpoint — 2026-11-11
+
+All three GitHub workflows passed on exact head bee8603a832fe09307384e4a8faa2820ed9ec394. Foundation PostgreSQL 16 migration/RLS tests passed through migration 0030, including recovery redemption concurrency and guarded recovery regeneration. Oracle Arc API tests passed. Web typecheck, contract tests, server-security tests, lint, profile browser E2E and production build passed. MFA-specific browser E2E is not included, and QR display remains a known UI gap.
+
+Step-up assurance is bound to the current verified persisted session. The database verifier denies revoked/expired sessions and account suspension; session rotation creates a different session identifier and therefore does not inherit the prior step-up. Expired nonce/step-up cleanup and retention remain operational tasks. PR #15 remains open draft and unmerged; independent review and production-like migration/recovery proof are still required.
