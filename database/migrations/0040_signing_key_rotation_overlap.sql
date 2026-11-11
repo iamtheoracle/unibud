@@ -299,15 +299,7 @@ DECLARE
   v_valid BOOLEAN := FALSE;
 BEGIN
   IF p_payload IS NULL OR p_signature IS NULL
-     OR p_signature !~ '^[0-9a-f]{64}
-'Validates short-lived account context against every active account-context verification key during a maximum-two-key rotation overlap.';
-COMMENT ON FUNCTION unibud_private.current_session_id() IS
-'Validates exact-session context against every active session verification key, then independently checks persisted live session state.';
-COMMENT ON FUNCTION public.unibud_operator_mfa_consume_step_up(BIGINT,BIGINT,UUID,BIGINT,TEXT) IS
-'Consumes a one-time exact-session MFA assertion signed by either active Operations MFA assertion key during the bounded rotation overlap.';
-
-COMMIT;
- THEN
+     OR p_signature !~ '^[0-9a-f]{64}$' THEN
     RETURN FALSE;
   END IF;
   v_supplied := decode(p_signature,'hex');
@@ -378,8 +370,7 @@ BEGIN
 END
 $rotate_existing_mfa_verifiers$;
 
--- Pending-enrollment resume returns NULL (rather than FALSE) on a bad
--- password-reauth assertion; convert it separately while preserving that contract.
+-- Pending-enrollment resume returns NULL on an invalid password-reauth assertion.
 DO $rotate_pending_enrollment_verifier$
 DECLARE
   v_oid REGPROCEDURE := 'public.unibud_operator_mfa_read_pending_secret(bigint,bigint,uuid,text)'::regprocedure;
@@ -391,15 +382,7 @@ BEGIN
     v_definition,
     'SELECT secret INTO v_key.*?IF v_diff[[:space:]]*<>[[:space:]]*0 THEN RETURN NULL; END IF;',
     'IF NOT unibud_private.verify_operations_mfa_assertion_signature(' ||
-      $payload
-'Validates short-lived account context against every active account-context verification key during a maximum-two-key rotation overlap.';
-COMMENT ON FUNCTION unibud_private.current_session_id() IS
-'Validates exact-session context against every active session verification key, then independently checks persisted live session state.';
-COMMENT ON FUNCTION public.unibud_operator_mfa_consume_step_up(BIGINT,BIGINT,UUID,BIGINT,TEXT) IS
-'Consumes a one-time exact-session MFA assertion signed by either active Operations MFA assertion key during the bounded rotation overlap.';
-
-COMMIT;
-v1:' || v_account::TEXT || ':' || v_session::TEXT || ':password_reauth:' ||
+      $payload$'v1:' || v_account::TEXT || ':' || v_session::TEXT || ':password_reauth:' ||
         p_issued_at::TEXT || ':' || p_expires_at::TEXT || ':' || p_nonce::TEXT || ':-'$payload$ ||
       ',p_signature) THEN RETURN NULL; END IF;',
     's'
