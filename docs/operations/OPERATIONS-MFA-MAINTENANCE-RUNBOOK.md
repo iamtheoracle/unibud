@@ -32,8 +32,8 @@ The deployment-specific procedure must:
 1. Create a unique, dedicated login principal for this worker using the selected provider's secret manager or short-lived database identity mechanism. Never place a password in source control, CI logs, this runbook, or an image.
 2. Grant that login only the required database CONNECT privilege and membership in unibud_ops_scheduler, with INHERIT FALSE, SET TRUE (PostgreSQL 16+). The login must explicitly SET ROLE unibud_ops_scheduler, as the checked-in worker does.
 3. Ensure the login has no other role memberships and no direct privileges on protected tables, schemas, or functions.
-4. Require encrypted database transport with certificate/hostname verification where supported, private networking or provider-native secure connectivity, and secret rotation/revocation.
-5. Store the connection binding only in the trusted scheduler's secret manager as DATABASE_URL. Never expose it to the web client, general application runtime, build logs, or user-controlled job parameters.
+4. Require encrypted database transport with certificate and hostname verification. The worker defaults PGSSLMODE to verify-full; provision the provider CA through PGSSLROOTCERT where required. A weaker mode is rejected unless the explicit UNIBUD_ALLOW_INSECURE_LOCAL_TEST=true test-only override is set. Never set that override in a hosted scheduler. Use private networking or provider-native secure connectivity, and rotate/revoke the credential.
+5. Store the connection binding only in the trusted scheduler's secret manager as DATABASE_URL. The script transfers it to libpq through the process environment and removes DATABASE_URL before starting psql so the URI is not placed in psql's command-line arguments. Never expose it to the web client, general application runtime, build logs, or user-controlled job parameters.
 
 The login principal and its credential are environment-specific and are intentionally not created by a migration.
 
