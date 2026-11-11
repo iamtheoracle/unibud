@@ -19,7 +19,8 @@ const REQUIRED_PERMISSION = "integrations.verification_delivery.read";
  */
 export async function GET(request: NextRequest) {
   const requestId = randomUUID();
-  let authenticatedAccountId: string | null = null;\n  let authenticatedSessionId: string | null = null;
+  let authenticatedAccountId: string | null = null;
+  let authenticatedSessionId: string | null = null;
 
   try {
     const token = readSessionCookie(request);
@@ -35,11 +36,15 @@ export async function GET(request: NextRequest) {
       return denied(401);
     }
 
-    // The account ID is obtained only from the validated server-side session.
-    // The database independently verifies its HMAC-bound transaction context.
+    // Both identifiers come only from the server-validated persisted session.
+    // PostgreSQL independently verifies the versioned HMAC and live session.
     authenticatedAccountId = validation.account.id;
-    const context = createSignedAccountContextFromEnvironment(authenticatedAccountId);
-    const allowed = await withSignedAccountTransaction(
+    authenticatedSessionId = validation.session.id;
+    const context = createSignedSessionContextFromEnvironment(
+      authenticatedAccountId,
+      authenticatedSessionId
+    );
+    const allowed = await withSignedSessionTransaction(
       getAppDatabasePool(),
       context,
       async (client) => {
@@ -66,11 +71,10 @@ export async function GET(request: NextRequest) {
       { headers: { "Cache-Control": "no-store" } }
     );
   } catch (error) {
-    // Preserve error audit coverage, but only with a fresh signed context from
-    // the account already obtained from the validated session.
-    if (authenticatedAccountId) {
+    // Preserve error audit coverage using only the exact validated account/session.
+    if (authenticatedAccountId && authenticatedSessionId) {
       try {
-        await recordAuthenticatedError(authenticatedAccountId, authenticatedSessionId!, requestId);
+        await recordAuthenticatedError(authenticatedAccountId, authenticatedSessionId, requestId);
       } catch {
         // Fail closed and preserve the original request failure.
       }
@@ -79,9 +83,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-async function recordAuthenticatedError(accountId: string, requestId: string): Promise<void> {
-  const context = createSignedAccountContextFromEnvironment(accountId);
-  await withSignedAccountTransaction(getAppDatabasePool(), context, async (client) => {
+async function recordAuthenticatedError(
+  accountId: string,
+  sessionId: string,
+  requestId: string
+): Promise<void> {
+  const context = createSignedSessionContextFromEnvironment(accountId, sessionId);
+  await withSignedSessionTransaction(getAppDatabasePool(), context, async (client) => {
     await client.query(
       "SELECT public.unibud_operator_record_access($1, $2, $3)",
       [REQUIRED_PERMISSION, "error", requestId]
