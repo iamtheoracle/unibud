@@ -632,3 +632,14 @@ This addendum supersedes the earlier note that the concurrency implementation an
 - **Verified at exact PR #15 head `308bfe4a92c92d5b97844326f1bcb6432bb1e8f3`:** Foundation checks run `43013208219` PASSED, including PostgreSQL 16 migrations/RLS, the new dual-control race harness, MFA assertion replay concurrency and recovery redemption concurrency. Oracle Arc API run `43013208224` PASSED. UNIBUD Web and Database run `43013208441` was still IN PROGRESS at the time of this update; its E2E/build result is not yet claimed.
 - **Still outstanding:** exact-head Web/Database completion; independent security review and Issue #16 disposition; trusted recurring scheduler for migration 0036 maintenance; verified security notifications; secrets management/rotation; retention and session lifecycle; grant-management UI; audit search/export; alerts and operational runbooks.
 - **Release boundary:** PR #15 remains draft/open/unmerged. No production deployment, production grants, scheduler or Operations enablement is claimed.
+
+
+### CI completion addendum — 2026-11-11
+
+The complete code-change validation checkpoint at commit `308bfe4a92c92d5b97844326f1bcb6432bb1e8f3` is now complete:
+
+- Foundation checks `43013208219`: **PASSED**. PostgreSQL 16 migrations and RLS tests, dual-control approve/reject race, approve/cancel race, approval/expiry lock-wait race, existing MFA assertion replay concurrency and recovery-code redemption concurrency all passed.
+- Oracle Arc API `43013208224`: **PASSED**.
+- UNIBUD Web and Database `43013208441`: **PASSED**. PostgreSQL migration validation, TypeScript typecheck, contract tests, server security tests, lint, profile browser E2E and production build all passed.
+
+The branch subsequently advanced through documentation-only commits to `c0d65a273a025376bd144e184018a8af40e1aa20`. Fresh CI for that documentation-only head was queued/in progress when this addendum was prepared. The three successful runs above validate the code-change head; they do not establish deployment or production verification.
