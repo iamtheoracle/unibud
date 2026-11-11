@@ -14,6 +14,7 @@ function response(body: Record<string, unknown>, status = 200): NextResponse {
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const REASON = /^[a-z][a-z0-9_]{2,47}$/;
+type SecurityRequestRow = { request_id: string; created_at: Date | string; [key: string]: unknown };
 
 export async function POST(request: NextRequest) {
   if (!hasSameOrigin(request)) return response({ ok: false, error: "Forbidden." }, 403);
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
     const context = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
     const rows = await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
-      const result = await client.query(
+      const result = await client.query<SecurityRequestRow>(
         "SELECT * FROM public.unibud_operator_mfa_list_security_requests($1,$2,$3,$4)",
         [requestId, limit, beforeCreatedAt, beforeRequestId]
       );
