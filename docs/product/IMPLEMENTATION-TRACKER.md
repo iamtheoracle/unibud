@@ -507,3 +507,13 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Wired migration 0031 and its test into Foundation CI.
 - **Status: database implementation committed; exact-head CI pending.** No API route, request/approval UI, cancellation/expiry worker, notification delivery, concurrency race script, or independent security review is included yet. Do not call the feature available or production-ready.
 - New grants require trusted DBA provisioning of `operations.mfa.security.request` and `operations.mfa.security.approve`; no grant is provisioned by this migration.
+
+
+### Operations MFA request lifecycle — cancellation and expiry implementation
+
+- Added forward-only migration `0032_operations_mfa_request_lifecycle.sql`.
+- Request cancellation is restricted to the original requester, on the same verified persisted session, with the current Operations MFA step-up and request permission. It locks the request row, only transitions a still-pending, unexpired request, and appends an actor/session-attributed audit event.
+- Added a bounded, idempotent expiry sweep using `FOR UPDATE SKIP LOCKED`, with a maximum batch size of 1,000. It only expires due pending requests and writes explicit system-attributed audit events (NULL actor/session); it is private to the NOLOGIN Operations owner and cannot be invoked by the application role.
+- Added PostgreSQL test `0032_operations_mfa_request_lifecycle.test.sql` for requester cancellation, expired-request cancellation denial, app-role denial of the expiry worker, owner-only expiry, and audit attribution.
+- Wired migration 0032 and its test into Foundation CI.
+- **Status: implementation committed; exact-head CI pending.** No scheduler/worker is configured, so expiry processing does not run automatically yet. No API routes, approver list/read API, UI, notifications or race stress tests exist yet. No production operator grants/secrets or deployment.
