@@ -97,8 +97,8 @@ BEGIN
         failed_attempt_count=0,
         locked_until=NULL,
         updated_at=clock_timestamp()
-  WHERE public.unibud_operator_mfa_credentials.state='pending'
-    AND public.unibud_operator_mfa_credentials.enrollment_expires_at <= statement_timestamp()
+  WHERE unibud_operator_mfa_credentials.state='pending'
+    AND unibud_operator_mfa_credentials.enrollment_expires_at <= statement_timestamp()
   RETURNING account_id INTO v_saved;
   IF v_saved IS NULL THEN RETURN FALSE; END IF;
 
