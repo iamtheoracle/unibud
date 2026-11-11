@@ -93,7 +93,7 @@ jobs:
       - name: Install Playwright and Chromium
         run: |
           npm install --global playwright@1.56.1
-          playwright install --with-deps chromium
+          playwright install chromium
       - name: Profile browser end-to-end tests
         env:
           UNIBUD_E2E_TEST_MODE: "true"
