@@ -125,3 +125,10 @@ The authenticated /operations/security/mfa interface now covers enrollment start
 Migration 0030 and the regeneration route require a current-session password reauthentication assertion plus an unexpired MFA step-up for the exact same persisted session. PostgreSQL consumes the assertion nonce, replaces every recovery digest atomically and writes a recovery_codes_regenerated audit event. The route returns plaintext codes once after commit. The MFA page only offers regeneration when its status shows an active step-up; the database rechecks expiry at execution time.
 
 A previous recovery-code set is invalid as soon as regeneration commits. Operators must save the new set securely. Exact-head CI and browser E2E for this latest addition remain pending. Disable/reset is intentionally not a self-service bypass and requires a separately reviewed dual-control process.
+
+
+### Verified CI checkpoint — 2026-11-11
+
+Exact head bee8603a832fe09307384e4a8faa2820ed9ec394 passed all three workflows. Foundation PostgreSQL 16 migration/RLS tests passed through migration 0030, including the concurrent recovery-code redemption test. Oracle Arc API passed. Web typecheck, contract/security tests, lint, existing profile E2E and production build passed. The browser E2E does not cover MFA UI flows. Do not infer MFA end-to-end readiness from this CI result; the MFA interface still lacks browser E2E and local QR display. PR #15 remains draft and undeployed pending review.
+
+Session step-up is invalidated by the database's verified session binding: revoked/expired sessions, account suspension and rotated-out sessions cannot use a previous step-up, and a new session does not inherit it. Expired assertion and step-up row cleanup remains to be scheduled and monitored.
