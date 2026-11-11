@@ -216,6 +216,56 @@ ALTER FUNCTION public.unibud_operator_has_permission(TEXT) OWNER TO unibud_ops_o
 REVOKE ALL ON FUNCTION public.unibud_operator_has_permission(TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.unibud_operator_has_permission(TEXT) TO unibud_app;
 
+CREATE OR REPLACE FUNCTION public.unibud_operator_record_access(
+  p_permission TEXT,
+  p_outcome TEXT,
+  p_request_id UUID
+) RETURNS VOID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+DECLARE
+  v_actor UUID;
+  v_session UUID;
+  v_outcome TEXT;
+BEGIN
+  IF p_permission IS NULL OR p_permission NOT IN (
+       'integrations.verification_delivery.read',
+       'integrations.oracle_arc.read',
+       'dependencies.read',
+       'operations.audit.read',
+       'operations.accounts.support_read'
+     )
+     OR p_outcome IS NULL
+     OR p_outcome NOT IN ('allowed','denied','unauthenticated','error')
+     OR p_request_id IS NULL THEN
+    RAISE EXCEPTION 'Invalid operator audit event' USING ERRCODE = '22023';
+  END IF;
+
+  v_actor := unibud_private.current_account_id();
+  v_session := unibud_private.current_session_id();
+  IF (v_actor IS NULL AND (p_outcome <> 'unauthenticated' OR v_session IS NOT NULL))
+     OR (v_actor IS NOT NULL AND (p_outcome = 'unauthenticated' OR v_session IS NULL)) THEN
+    RAISE EXCEPTION 'Audit actor/session context is invalid' USING ERRCODE = '42501';
+  END IF;
+
+  v_outcome := p_outcome;
+  -- The caller cannot label an unauthorised request as allowed.
+  IF v_outcome = 'allowed'
+     AND NOT public.unibud_operator_has_permission(p_permission) THEN
+    v_outcome := 'denied';
+  END IF;
+
+  INSERT INTO public.unibud_operator_audit_events(
+    actor_account_id,session_id,permission,outcome,request_id
+  ) VALUES (v_actor,v_session,p_permission,v_outcome,p_request_id);
+END
+$function$;
+ALTER FUNCTION public.unibud_operator_record_access(TEXT,TEXT,UUID) OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION public.unibud_operator_record_access(TEXT,TEXT,UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.unibud_operator_record_access(TEXT,TEXT,UUID) TO unibud_app;
+
 COMMENT ON TABLE public.unibud_operator_mfa_step_up_sessions IS
 'Short-lived Operations MFA step-up bound to one exact persisted session. A new session, rotation, logout or expiry does not inherit this state.';
 COMMENT ON FUNCTION public.unibud_operator_mfa_consume_step_up(BIGINT,BIGINT,UUID,BIGINT,TEXT) IS
