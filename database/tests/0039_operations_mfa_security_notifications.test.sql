@@ -77,6 +77,9 @@ SET LOCAL ROLE unibud_app;
 DO $account_one$
 DECLARE v_rows INTEGER; v_own UUID; v_other UUID;
 BEGIN
+ IF NOT public.unibud_operator_mfa_consume_api_rate_limit('notification_read') THEN
+  RAISE EXCEPTION 'Account-bound notification read throttle incorrectly requires Operations MFA step-up';
+ END IF;
  SELECT count(*) INTO v_rows FROM public.unibud_operator_mfa_list_notifications(50);
  IF v_rows<>2 THEN RAISE EXCEPTION 'Account 1 expected two notices, received %',v_rows; END IF;
  SELECT notification_id INTO v_own FROM public.unibud_operator_mfa_list_notifications(50)
