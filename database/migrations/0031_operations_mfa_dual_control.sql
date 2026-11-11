@@ -167,7 +167,7 @@ BEGIN
   v_actor:=unibud_private.current_account_id();
   v_session:=unibud_private.current_session_id();
   IF v_actor IS NULL OR v_session IS NULL OR p_target_account_id IS NULL
-     OR p_action NOT IN ('disable','reset')
+     OR p_action IS NULL OR p_action NOT IN ('disable','reset')
      OR p_reason_code IS NULL OR p_reason_code !~ '^[a-z][a-z0-9_]{2,47}$'
      OR NOT public.unibud_operator_has_permission('operations.mfa.security.request')
      OR NOT unibud_private.consume_operations_password_reauth_assertion(
@@ -219,7 +219,7 @@ BEGIN
   v_actor:=unibud_private.current_account_id();
   v_session:=unibud_private.current_session_id();
   IF v_actor IS NULL OR v_session IS NULL OR p_request_id IS NULL
-     OR p_decision NOT IN ('approve','reject')
+     OR p_decision IS NULL OR p_decision NOT IN ('approve','reject')
      OR p_reason_code IS NULL OR p_reason_code !~ '^[a-z][a-z0-9_]{2,47}$'
      OR NOT public.unibud_operator_has_permission('operations.mfa.security.approve')
      OR NOT unibud_private.consume_operations_password_reauth_assertion(
