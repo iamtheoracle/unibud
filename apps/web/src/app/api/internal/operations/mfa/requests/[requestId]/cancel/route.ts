@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSignedSessionContextFromEnvironment, withSignedSessionTransaction } from "@/lib/server/database/session-context";
+import { consumeOperationsMfaApiRateLimit } from "@/lib/server/operations/operations-mfa-rate-limit";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { hasSameOrigin, readJsonObject, readSessionCookie, routeError } from "@/lib/server/identity/http";
@@ -28,6 +29,9 @@ export async function POST(request: NextRequest, context: Context) {
     const { sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
+    if (!await consumeOperationsMfaApiRateLimit(validation.account.id, validation.session.id, "request_cancel")) {
+      return response({ ok: false, error: "Too many cancellation attempts. Wait before trying again." }, 429);
+    }
     const sessionContext = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
     const cancelled = await withSignedSessionTransaction(getAppDatabasePool(), sessionContext, async client => {
       const result = await client.query<{ cancelled: boolean }>(
