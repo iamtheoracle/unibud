@@ -306,3 +306,8 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 ## Operations session-context trust boundary — 2026-11-11
 
 **Building; exact-head verification pending.** Migration 0023 adds an independently verified, versioned HMAC claim binding account + persisted session + expiry + nonce. The database checks the signed account context, session ownership, active account, active/unrevoked session, idle expiry and absolute expiry. Operations authorization now requires that verified session, and audit events retain the verified session reference. The application role cannot directly execute the private verifier or read the signing key. The existing diagnostic route now signs context only from the account and session returned by server-side session validation. PostgreSQL tests cover signed context, forged session GUC, revoked session, account-only context, protected verifier/key access and unattributed unauthenticated events. This is not MFA: enrollment, TOTP verification, replay prevention, recovery, step-up expiry and enforcement remain unimplemented. Production key provisioning and independent security review remain pending.
+
+
+### Independent Operations signing-key separation — 2026-11-11
+
+The account context signer and session context signer are now separate. The app requires both UNIBUD_DB_CONTEXT_HMAC_KEY and UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY; PostgreSQL verifies them using separate private key tables. Only the NOLOGIN Operations owner can read the session verifier key table and execute the session accessor. PostgreSQL tests now use different test keys and reject a correctly signed but cross-account session pair and expired signed claims. Exact-head CI for this refinement is pending.
