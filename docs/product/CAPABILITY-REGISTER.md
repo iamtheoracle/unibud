@@ -356,3 +356,8 @@ Added a current-session-only MFA status accessor and authenticated status endpoi
 ### MFA recovery-code regeneration
 
 Added recovery-code regeneration requiring both fresh password reauthentication and a current exact-session five-minute MFA step-up. PostgreSQL atomically replaces the entire digest set, consumes the one-time assertion and records an audit event; the route reveals the new codes once after commit. The MFA page exposes regeneration only while this session has step-up assurance. **Status: implemented; exact-head CI and browser E2E pending.** Controlled disable/reset, QR generation, notifications, lifecycle invalidation and independent review remain outstanding.
+
+
+### Verified implementation checkpoint — 2026-11-11
+
+At exact head bee8603a832fe09307384e4a8faa2820ed9ec394, all three workflows passed: Foundation PostgreSQL 16 migration/RLS tests through migration 0030 (including concurrent recovery redemption), Oracle Arc API tests, and Web typecheck/contracts/server-security/lint/profile browser E2E/production build. The browser E2E is profile-focused and does not prove MFA UI end-to-end. Session assurance is tied to the verified persisted session and cannot survive session revocation/rotation or transfer to another session; expired-record cleanup remains outstanding. PR #15 is still draft/unmerged/undeployed and independent security review remains a release blocker.
