@@ -11,10 +11,12 @@ if [[ ! "$BATCH_SIZE" =~ ^[0-9]+$ ]] || (( BATCH_SIZE < 1 || BATCH_SIZE > 1000 )
   exit 2
 fi
 
-if ! command -v psql >/dev/null 2>&1; then
-  echo "psql is required by the Operations maintenance worker." >&2
-  exit 127
-fi
+for dependency in psql python3; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    echo "$dependency is required by the Operations maintenance worker." >&2
+    exit 127
+  fi
+done
 
 # Require certificate-verified TLS by default. Local disposable CI may opt out
 # explicitly; production schedulers must not set that test-only override.
@@ -23,17 +25,62 @@ if [[ "$PGSSLMODE" != "verify-full" && "${UNIBUD_ALLOW_INSECURE_LOCAL_TEST:-fals
   echo "PGSSLMODE must be verify-full outside an explicitly marked local test." >&2
   exit 2
 fi
-if [[ "$DATABASE_URL" == *"sslmode="* && "$DATABASE_URL" != *"sslmode=$PGSSLMODE"* ]]; then
+
+# Parse the secret URI into libpq environment variables. The URI is read from
+# the process environment, never passed as a command-line argument or written
+# to disk. Only the standard PostgreSQL URI fields and sslmode are accepted.
+mapfile -d '' -t _PG_CONNECTION < <(python3 - <<'PY'
+import os
+import sys
+from urllib.parse import parse_qs, unquote, urlsplit
+
+raw = os.environ.get("DATABASE_URL", "")
+try:
+    parsed = urlsplit(raw)
+    if parsed.scheme not in ("postgres", "postgresql"):
+        raise ValueError("DATABASE_URL must use postgres:// or postgresql://")
+    if not parsed.hostname or not parsed.path or parsed.path == "/":
+        raise ValueError("DATABASE_URL must include a host and database name")
+    query = parse_qs(parsed.query, keep_blank_values=True)
+    if set(query) - {"sslmode"} or any(len(v) != 1 for v in query.values()):
+        raise ValueError("DATABASE_URL supports only one optional sslmode parameter")
+    values = [
+        parsed.hostname,
+        str(parsed.port or 5432),
+        unquote(parsed.username or ""),
+        unquote(parsed.password or ""),
+        unquote(parsed.path[1:]),
+        query.get("sslmode", [""])[0],
+    ]
+    for value in values:
+        sys.stdout.buffer.write(value.encode() + b"\0")
+except Exception as exc:
+    print(f"Invalid DATABASE_URL: {exc}", file=sys.stderr)
+    sys.exit(2)
+PY
+)
+if (( ${#_PG_CONNECTION[@]} != 6 )); then
+  echo "Could not safely parse DATABASE_URL." >&2
+  exit 2
+fi
+
+_PG_URI_SSLMODE="${_PG_CONNECTION[5]}"
+if [[ -n "$_PG_URI_SSLMODE" && "$_PG_URI_SSLMODE" != "$PGSSLMODE" ]]; then
   echo "DATABASE_URL sslmode conflicts with the required PGSSLMODE." >&2
   exit 2
 fi
 
-# Keep the connection URI out of process arguments and never enable shell tracing.
-export PGAPPNAME="unibud-operations-mfa-maintenance"
+export PGHOST="${_PG_CONNECTION[0]}"
+export PGPORT="${_PG_CONNECTION[1]}"
+export PGUSER="${_PG_CONNECTION[2]}"
+export PGPASSWORD="${_PG_CONNECTION[3]}"
+export PGDATABASE="${_PG_CONNECTION[4]}"
 export PGSSLMODE
-export PGDATABASE="$DATABASE_URL"
-unset DATABASE_URL
+export PGAPPNAME="unibud-operations-mfa-maintenance"
+unset DATABASE_URL _PG_CONNECTION _PG_URI_SSLMODE
 
+# Do not enable shell tracing: connection credentials are held in environment
+# variables for libpq and are not exposed as psql command-line arguments.
 psql \
   --no-psqlrc \
   --no-password \
