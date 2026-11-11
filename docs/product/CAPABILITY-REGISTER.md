@@ -351,3 +351,8 @@ Migration 0027 adds single-use recovery-code redemption bound to the validated a
 ### Operations MFA status, resume and user interface
 
 Added a current-session-only MFA status accessor and authenticated status endpoint. Added a password-reauthenticated, single-use pending enrollment resume path so a closed setup screen can continue without exposing active credentials. The first /operations/security/mfa interface supports enrollment, resume, activation, recovery-code acknowledgement, TOTP challenge and recovery redemption without browser storage. It currently uses manual authenticator setup; a local QR generator is not yet included. **Status: implemented; exact-head CI and MFA browser E2E pending.** Recovery-code regeneration, controlled disable/reset, notification delivery, lifecycle invalidation, key operations and independent review remain outstanding.
+
+
+### MFA recovery-code regeneration
+
+Added recovery-code regeneration requiring both fresh password reauthentication and a current exact-session five-minute MFA step-up. PostgreSQL atomically replaces the entire digest set, consumes the one-time assertion and records an audit event; the route reveals the new codes once after commit. The MFA page exposes regeneration only while this session has step-up assurance. **Status: implemented; exact-head CI and browser E2E pending.** Controlled disable/reset, QR generation, notifications, lifecycle invalidation and independent review remain outstanding.
