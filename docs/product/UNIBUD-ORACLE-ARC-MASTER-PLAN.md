@@ -205,3 +205,15 @@ This document does not claim that all modules, integrations, AI models, financia
 At PR #15 head `2b33726b472c80488157037608221d6c20e74935`, the latest Foundation checks (run `42984214254`), Oracle Arc API (run `42984214255`) and UNIBUD Web and Database (run `42984214256`) completed successfully. These exact-head CI results do not establish production readiness. PR #15 remains draft/open/unmerged and Issue #16 remains open for independent security review of the migration-0021 actor-provenance remediation.
 
 The next Operations acceptance gap is true dual-control concurrency. The ordinary SQL tests in migrations 0031–0036 validate lifecycle and permissions but do not race terminal request transitions over independent connections. Migration 0037 and the dedicated concurrency harness are being added to validate approve/reject, approve/cancel and approval/expiry serialization, including wall-clock expiry after row-lock waits.
+
+
+### Verified Operations dual-control concurrency checkpoint — 2026-11-11
+
+This addendum supersedes the earlier note that the concurrency implementation and validation were pending.
+
+- **Implemented:** migration `0037_operations_mfa_dual_control_concurrency.sql` revalidates request expiry and the approver's live exact-session grant/MFA step-up after acquiring the request row lock. It revalidates the requester's persisted account/session/grant/authenticator state using wall-clock time. Approve, reject and cancel terminal updates include a wall-clock expiry predicate. Requester/target self-approval denials remain enforced.
+- **Implemented:** `scripts/test-operations-mfa-dual-control-concurrency.sh` uses independent PostgreSQL connections to race approve/reject, approve/cancel, and approval against expiry while a separate transaction holds the request lock. It verifies one terminal winner and the corresponding audit event.
+- **CI wiring:** Foundation workflow applies migration 0037 and runs the new concurrency harness. The existing assertion-replay concurrency script now deactivates prior test signing keys before seeding its own, preventing cross-suite active-key collisions.
+- **Verified at exact PR #15 head `308bfe4a92c92d5b97844326f1bcb6432bb1e8f3`:** Foundation checks run `43013208219` PASSED, including PostgreSQL 16 migrations/RLS, the new dual-control race harness, MFA assertion replay concurrency and recovery redemption concurrency. Oracle Arc API run `43013208224` PASSED. UNIBUD Web and Database run `43013208441` was still IN PROGRESS at the time of this update; its E2E/build result is not yet claimed.
+- **Still outstanding:** exact-head Web/Database completion; independent security review and Issue #16 disposition; trusted recurring scheduler for migration 0036 maintenance; verified security notifications; secrets management/rotation; retention and session lifecycle; grant-management UI; audit search/export; alerts and operational runbooks.
+- **Release boundary:** PR #15 remains draft/open/unmerged. No production deployment, production grants, scheduler or Operations enablement is claimed.
