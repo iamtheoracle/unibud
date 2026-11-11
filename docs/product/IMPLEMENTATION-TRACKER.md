@@ -526,3 +526,13 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Added requester cancellation route. It validates the HTTP-only session and delegates original requester/exact-session/MFA/pending-state checks to the database procedure.
 - Added route-boundary tests asserting same-origin, session-derived identity, no caller-supplied actor/role fields and no-store responses.
 - **Status: routes and static boundary tests committed; exact-head typecheck/lint/unit tests/E2E pending.** There is not yet an approver pending-request list/read endpoint or Operations UI. No per-route rate-limit policy beyond the underlying authentication verification controls has been added or independently verified.
+
+
+### Operations MFA request read API — implementation slice
+
+- Migration `0033_operations_mfa_request_read_api.sql` adds a SECURITY DEFINER read model for a bounded pending-request page or a single request detail.
+- The database requires a validated account and exact session plus current `operations.mfa.security.approve` permission (which itself requires live MFA step-up); direct application-role table access remains revoked.
+- The response deliberately omits requester/approver session IDs and all credential/assertion material. Pagination uses a stable created-at/request-ID cursor; page size is capped at 100.
+- Added authenticated GET `/api/internal/operations/mfa/requests` for list/detail, using the HTTP-only session, server-derived signed database context, bounded query validation and no-store responses. A supplied foreign Origin is rejected; origin-less safe GETs are allowed.
+- Added PostgreSQL permission/data-minimisation tests and static API boundary tests. Migration 0033 and its test are wired into Foundation CI.
+- **Exact-head verification pending.** No Operations review UI, dedicated API rate limit, live PostgreSQL API integration tests or browser E2E have been completed.
