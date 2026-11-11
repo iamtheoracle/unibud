@@ -26,14 +26,14 @@ SECURITY DEFINER
 SET search_path = pg_catalog, public, unibud_private
 AS $function$
 BEGIN
+  IF p_limit IS NULL OR p_limit<1 OR p_limit>100
+     OR ((p_before_created_at IS NULL)<>(p_before_request_id IS NULL)) THEN
+    RAISE EXCEPTION 'Invalid Operations MFA request query' USING ERRCODE='22023';
+  END IF;
   IF unibud_private.current_account_id() IS NULL
      OR unibud_private.current_session_id() IS NULL
      OR NOT public.unibud_operator_has_permission('operations.mfa.security.approve') THEN
     RETURN;
-  END IF;
-  IF p_limit IS NULL OR p_limit<1 OR p_limit>100
-     OR ((p_before_created_at IS NULL)<>(p_before_request_id IS NULL)) THEN
-    RAISE EXCEPTION 'Invalid Operations MFA request query' USING ERRCODE='22023';
   END IF;
 
   IF p_request_id IS NOT NULL THEN
