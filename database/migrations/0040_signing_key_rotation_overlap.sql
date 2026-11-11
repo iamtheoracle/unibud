@@ -12,7 +12,7 @@ DROP INDEX unibud_private.operations_mfa_assertion_one_active_key_idx;
 CREATE FUNCTION unibud_private.enforce_signing_key_overlap_limit()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-SECURITY DEFINER
+SECURITY INVOKER
 SET search_path = pg_catalog, unibud_private
 AS $function$
 DECLARE
