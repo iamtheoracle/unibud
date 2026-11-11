@@ -385,3 +385,8 @@ No schema, procedure, API, UI, or runtime behavior exists yet for this capabilit
 Migration 0031 adds protected request storage and PostgreSQL request/decision procedures. Request and approval require distinct scoped grants, a live exact-session MFA step-up and a single-use password reauthentication assertion. PostgreSQL rejects requester/target self-approval, rechecks the requester's live session/grant/MFA state, locks the request, and on approval invalidates all target step-ups, recovery digests and authenticator credentials atomically with audit events.
 
 The database test covers the core authorization and invalidation paths. Exact-head CI is pending. Routes, UI, cancellation, expiry worker, notifications, concurrency race tests and independent review remain unimplemented. No operator grants are provisioned; this is not a production-enabled capability.
+
+
+### Operations MFA dual-control — request lifecycle slice
+
+Migration 0031 and its PostgreSQL test now pass Foundation PostgreSQL 16 migration/RLS checks in run `42969658021`; Oracle Arc API tests passed in `42969658009`. Migration 0032 adds same-session requester cancellation and a private bounded expiry sweep with system-attributed audit. The 0032 migration/test are wired into Foundation CI, but exact-head validation is pending. The expiry sweep has no scheduler yet. Routes, pending-request read API, UI, notifications, concurrency race tests, secret-manager operations, independent security review and rollout remain outstanding. This capability is not production-enabled.
