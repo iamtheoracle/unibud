@@ -44,7 +44,7 @@ try{
  await page.getByRole("button",{name:"Verify this session"}).click();
  await page.getByRole("heading",{name:"Regenerate recovery codes"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.getByLabel("Current password").fill("test-password");
+ await page.locator("section").filter({has: page.getByRole("heading",{name:"Regenerate recovery codes"})}).getByLabel("Current password").fill("test-password");
  await page.getByRole("button",{name:"Replace recovery codes"}).click();
  await page.getByRole("heading",{name:"Your recovery codes"}).waitFor();
  await page.getByLabel("I have saved these recovery codes somewhere secure.").check();
