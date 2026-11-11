@@ -182,4 +182,26 @@ COMMENT ON FUNCTION public.unibud_operator_mfa_confirm_enrollment(BIGINT,BIGINT,
 COMMENT ON FUNCTION public.unibud_operator_mfa_record_failed_attempt() IS
 'Atomically increments current operator MFA failures and locks verification for 15 minutes at ten failures.';
 
+
+-- A lockout cannot be cleared by starting a replacement pending enrollment.
+CREATE FUNCTION unibud_private.prevent_mfa_lockout_reset()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+BEGIN
+  IF OLD.locked_until IS NOT NULL AND OLD.locked_until > statement_timestamp()
+     AND (NEW.failed_attempt_count < OLD.failed_attempt_count
+          OR NEW.locked_until IS NULL OR NEW.locked_until <= statement_timestamp()) THEN
+    RAISE EXCEPTION 'Operations MFA lockout is active' USING ERRCODE = '42501';
+  END IF;
+  RETURN NEW;
+END
+$function$;
+ALTER FUNCTION unibud_private.prevent_mfa_lockout_reset() OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION unibud_private.prevent_mfa_lockout_reset() FROM PUBLIC;
+CREATE TRIGGER unibud_operator_mfa_lockout_reset_guard
+BEFORE UPDATE ON public.unibud_operator_mfa_credentials
+FOR EACH ROW EXECUTE FUNCTION unibud_private.prevent_mfa_lockout_reset();
+
 COMMIT;
