@@ -654,3 +654,13 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Wired migration 0038, its role-isolation test and a worker-entrypoint smoke invocation into Foundation PostgreSQL 16 CI.
 - **Status: implementation and CI validation pending.** The repository still has no selected production database host, API runtime or scheduler service. The new role is not a login; no scheduler login, production credential, production grant, recurring schedule, alert route or deployment has been created. The checked-in worker is a secure invocation entrypoint, not proof of an automatic recurring job.
 - **Activation remains blocked** on selecting the hosting/scheduler environment, provisioning a dedicated login with membership in `unibud_ops_scheduler` using `INHERIT FALSE, SET TRUE`, verifying secure connectivity and secret rotation, exercising the worker with that non-superuser login, testing monitoring/retry/overlap behavior, and obtaining independent security review and explicit production change approval.
+
+
+### Operations maintenance worker — CI verification update (2026-11-11)
+
+- The first worker smoke test exposed a connection-handling defect: the PostgreSQL URI was being interpreted by libpq as a database name. This failure was not hidden; the Foundation job failed at the worker invocation after all migrations and existing concurrency tests had passed.
+- Corrected the worker to parse the secret URI from its environment into libpq connection variables, remove the original URI before launching `psql`, reject unsupported URI parameters and conflicting TLS modes, and avoid placing credentials in process arguments or writing them to disk.
+- Added a 10-second connection timeout and a 45-second hard process deadline. SQL remains bounded by 30-second statement, 3-second lock and 10-second idle-in-transaction timeouts.
+- **Verified:** Foundation checks passed on commit `84b81c451c0b597146f48248cd139984e21bdfb7`; the PostgreSQL job specifically passed migration application, RLS isolation, all existing Operations concurrency checks, scheduler-role provisioning and the restricted worker invocation. Oracle Arc API tests also passed on that commit.
+- Web and Database browser/build checks were still running at the last status check. No claim is made that every workflow on the latest branch head has passed.
+- Production recurring execution remains intentionally inactive; the provider, production login, secret binding, alert route and independent review are still outstanding.
