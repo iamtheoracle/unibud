@@ -1,5 +1,5 @@
 -- PostgreSQL tests for Operations MFA security-request cancellation and expiry.
-\\set ON_ERROR_STOP on
+\set ON_ERROR_STOP on
 BEGIN;
 
 INSERT INTO public.accounts(id,status) VALUES
