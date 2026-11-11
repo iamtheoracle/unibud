@@ -17,5 +17,5 @@ export default async function OperationsMfaPage() {
   } catch {
     redirect("/login");
   }
-  return <><OperationsMfaClient /><main className="mfa-shell"><OperationsMfaNotifications /></main></>;
+  return <><OperationsMfaClient /><section className="mfa-shell" aria-label="Security notifications"><OperationsMfaNotifications /></section></>;
 }
