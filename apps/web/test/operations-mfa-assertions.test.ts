@@ -38,6 +38,20 @@ test("assertion canonicalizes UUID text before signing", () => {
   assert.equal(verifyOperationsMfaAssertion(assertion, key, 1_800_000_030), true);
 });
 
+test("password reauthentication assertion has a distinct purpose and no TOTP counter", () => {
+  const assertion = createOperationsMfaAssertion({
+    accountId, sessionId, purpose: "password_reauth", matchedTotpStep: null,
+    issuedAt: 1_800_000_000, ttlSeconds: 45, nonce
+  }, key);
+  assert.equal(assertion.matchedTotpStep, null);
+  assert.equal(verifyOperationsMfaAssertion(assertion, key, 1_800_000_020, {
+    accountId, sessionId, purpose: "password_reauth"
+  }), true);
+  assert.throws(() => createOperationsMfaAssertion({
+    accountId, sessionId, purpose: "password_reauth", matchedTotpStep: 1
+  }, key));
+});
+
 test("assertion rejects cross-account, cross-session and wrong-purpose use", () => {
   const assertion = createOperationsMfaAssertion({
     accountId, sessionId, purpose: "step_up", matchedTotpStep: 60_000,
