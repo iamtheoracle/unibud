@@ -67,7 +67,7 @@ export function createOperationsMfaAssertion(
     throw new Error("Operations MFA assertion lifetime must be between 1 and 120 seconds.");
   }
   if (!UUID.test(nonce)) throw new Error("Invalid Operations MFA assertion nonce.");
-  if (input.purpose === "password_reauth") {
+  if (input.purpose === "password_reauth" || input.purpose === "recovery") {
     if (input.matchedTotpStep !== null) throw new Error("Password reauthentication cannot include a TOTP step.");
   } else if (!Number.isSafeInteger(input.matchedTotpStep) || (input.matchedTotpStep as number) < 0) {
     throw new Error("Invalid matched authenticator time step.");
