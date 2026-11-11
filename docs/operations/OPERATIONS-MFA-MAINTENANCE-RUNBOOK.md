@@ -20,7 +20,7 @@ The database procedure:
 - retains consumed assertion nonces for 24 hours beyond their expiry before deleting them;
 - removes rate-limit buckets that have been untouched for 24 hours.
 
-The procedure is idempotent, uses bounded batches and FOR UPDATE SKIP LOCKED. The hard batch ceiling is 1,000; the worker defaults to 200. The worker sets a 30-second statement timeout, a 3-second lock timeout, a 10-second idle-in-transaction timeout and a stable application name. A non-zero process exit means the invocation failed and must be surfaced to monitoring.
+The procedure is idempotent, uses bounded batches and FOR UPDATE SKIP LOCKED. The hard batch ceiling is 1,000; the worker defaults to 200. The worker sets a 10-second connection timeout, a 30-second statement timeout, a 3-second lock timeout, a 10-second idle-in-transaction timeout, a stable application name and a 45-second hard process deadline. A non-zero process exit means the invocation failed and must be surfaced to monitoring.
 
 ## Database identity and least privilege
 
@@ -42,7 +42,7 @@ The login principal and its credential are environment-specific and are intentio
 After the hosting provider and scheduler are approved, configure a single recurring invocation:
 - Recommended initial cadence: every 5 minutes.
 - Batch size: 200; adjust only from measured backlog/runtime evidence and never above 1,000.
-- Maximum execution time: 45 seconds at the scheduler layer; the SQL statement timeout is 30 seconds.
+- Maximum execution time: 45 seconds at both the worker and scheduler layers; the worker terminates psql after 45 seconds, with a 30-second SQL statement timeout and a 10-second connection timeout.
 - Prevent uncontrolled overlapping invocations. The database's row locks and SKIP LOCKED make concurrent work safe, but do not replace scheduler-level concurrency limits.
 - Retry transient failures with bounded exponential backoff; do not retry indefinitely.
 - Emit structured success/failure logs with the four returned counts, duration, environment and invocation ID. Do not log the connection string, credentials, user data, assertion material or session identifiers.
