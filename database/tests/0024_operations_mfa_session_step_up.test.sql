@@ -59,6 +59,11 @@ BEGIN
  IF public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
   RAISE EXCEPTION 'Operations access was allowed before session MFA step-up';
  END IF;
+ -- A caller cannot forge an "allowed" audit outcome before completing MFA.
+ PERFORM public.unibud_operator_record_access(
+  'integrations.verification_delivery.read','allowed',
+  'f0240000-0000-4000-8000-000000000032'
+ );
  issued := floor(extract(epoch FROM clock_timestamp()))::BIGINT;
  expires := issued + 60;
  nonce := 'f0240000-0000-4000-8000-000000000031';
@@ -73,8 +78,26 @@ BEGIN
  IF NOT public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
   RAISE EXCEPTION 'Exact-session step-up did not enable permitted Operations access';
  END IF;
+ PERFORM public.unibud_operator_record_access(
+  'integrations.verification_delivery.read','allowed',
+  'f0240000-0000-4000-8000-000000000033'
+ );
  IF public.unibud_operator_mfa_consume_step_up(issued,expires,nonce,1001,signature) THEN
   RAISE EXCEPTION 'Replayed assertion/TOTP step was accepted';
+ END IF;
+END
+$test$;
+
+-- Database-derived audit outcomes cannot be caller-forged.
+DO $test$
+DECLARE before_outcome TEXT; after_outcome TEXT;
+BEGIN
+ SELECT outcome INTO before_outcome FROM public.unibud_operator_audit_events
+ WHERE request_id='f0240000-0000-4000-8000-000000000032';
+ SELECT outcome INTO after_outcome FROM public.unibud_operator_audit_events
+ WHERE request_id='f0240000-0000-4000-8000-000000000033';
+ IF before_outcome IS DISTINCT FROM 'denied' OR after_outcome IS DISTINCT FROM 'allowed' THEN
+  RAISE EXCEPTION 'Operations audit outcome did not match database authorization';
  END IF;
 END
 $test$;
