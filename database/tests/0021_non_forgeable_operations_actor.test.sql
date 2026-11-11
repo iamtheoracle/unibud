@@ -55,8 +55,8 @@ SET LOCAL ROLE unibud_app;
 DO $test$
 DECLARE v_actor UUID;
 BEGIN
-  IF NOT public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
-    RAISE EXCEPTION 'Valid signed operator context was not authorised';
+  IF public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
+    RAISE EXCEPTION 'Session-only signed context bypassed required MFA step-up';
   END IF;
 
   -- The unsafe UUID-taking API must no longer exist.
@@ -80,7 +80,7 @@ BEGIN
   END;
 
   PERFORM public.unibud_operator_record_access(
-    'integrations.verification_delivery.read','allowed',
+    'integrations.verification_delivery.read','denied',
     'f0210000-0000-4000-8000-000000000099'
   );
 
@@ -125,7 +125,7 @@ BEGIN
  FROM public.unibud_operator_audit_events AS audit
  WHERE audit.request_id='f0210000-0000-4000-8000-000000000099';
  IF actor IS DISTINCT FROM 'f0210000-0000-4000-8000-000000000001'::uuid
-    OR event_outcome <> 'allowed' THEN
+    OR event_outcome <> 'denied' THEN
    RAISE EXCEPTION 'Audit actor was not derived from verified signed context';
  END IF;
 
