@@ -36,7 +36,7 @@ SET LOCAL ROLE unibud_app;
 DO $test$
 DECLARE issued BIGINT; expires BIGINT; nonce UUID; signature TEXT; activated BOOLEAN; digests TEXT[]; accepted_step BIGINT;
 BEGIN
- issued:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; expires:=issued+60;
+ issued:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; expires:=issued+60; accepted_step:=floor(extract(epoch FROM clock_timestamp())/30)::BIGINT;
  nonce:='f0260000-0000-4000-8000-000000000031';
  signature:=encode(public.hmac(convert_to(
   'v1:f0260000-0000-4000-8000-000000000001:f0260000-0000-4000-8000-000000000011:enrollment_confirm:'||
