@@ -47,5 +47,7 @@ test("isolated browser workflow covers the security inbox without a live notific
  assert.match(fixture,/OperationsMfaNotifications/);
  assert.match(e2e,/path\.endsWith\("\/notifications"\)&&method==="GET"/);
  assert.match(e2e,/Security notifications/);
- assert.match(e2e,/No security notifications yet/);
+ assert.match(e2e,/An Operations security change was approved/);
+ assert.match(e2e,/Mark as read/);
+ assert.match(e2e,/noticeBody\.notificationId/);
 });
