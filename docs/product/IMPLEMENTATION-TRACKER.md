@@ -517,3 +517,12 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Added PostgreSQL test `0032_operations_mfa_request_lifecycle.test.sql` for requester cancellation, expired-request cancellation denial, app-role denial of the expiry worker, owner-only expiry, and audit attribution.
 - Wired migration 0032 and its test into Foundation CI.
 - **Status: implementation committed; exact-head CI pending.** No scheduler/worker is configured, so expiry processing does not run automatically yet. No API routes, approver list/read API, UI, notifications or race stress tests exist yet. No production operator grants/secrets or deployment.
+
+
+### Operations MFA dual-control API action routes — initial slice
+
+- Added same-origin, no-store API route for creating disable/reset requests. It validates the HTTP-only session, verifies the account password without rotating the session, creates a purpose-bound short-lived password-reauth assertion, and invokes the protected PostgreSQL procedure through a signed session transaction.
+- Added approve/reject decision route with the same fresh-password and signed-session pattern. The database procedure remains authoritative for scoped MFA step-up, distinct requester/approver, target restrictions, request expiry and atomic state transition.
+- Added requester cancellation route. It validates the HTTP-only session and delegates original requester/exact-session/MFA/pending-state checks to the database procedure.
+- Added route-boundary tests asserting same-origin, session-derived identity, no caller-supplied actor/role fields and no-store responses.
+- **Status: routes and static boundary tests committed; exact-head typecheck/lint/unit tests/E2E pending.** There is not yet an approver pending-request list/read endpoint or Operations UI. No per-route rate-limit policy beyond the underlying authentication verification controls has been added or independently verified.
