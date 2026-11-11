@@ -37,7 +37,7 @@ Rotate one trust domain at a time. Do not rotate all three together unless an ap
 ## Verification and limitations
 
 - `database/tests/0040_signing_key_rotation_overlap.test.sql` verifies old and new account/session/MFA signatures during overlap, the two-key limit, retired-key rejection, invalid signatures, and conversion of every existing Operations MFA assertion verifier to the shared overlap verifier.
-- `database/tests/0002_identity_access_control.test.sql` now verifies that account-context overlap permits two active keys but rejects a third.
+- `database/tests/0002_identity_access_control.test.sql` remains the baseline identity/RLS test and is run against the original identity migrations; it does not assert the later rotation policy. The two-key overlap and third-key rejection are covered by test 0040 after migration 0040.
 - Foundation CI applies migration 0040 and runs its PostgreSQL 16 integration test.
 - This migration changes database verification only. It does not provision production keys, update secret-manager values, rotate deployed application instances, revoke sessions, or perform a live production rotation.
 - Rotation is not complete until the application signer rollout and post-retirement rejection checks are observed in the target environment. CI is not evidence of production key rotation.
