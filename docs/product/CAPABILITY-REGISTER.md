@@ -390,3 +390,11 @@ The database test covers the core authorization and invalidation paths. Exact-he
 ### Operations MFA dual-control — request lifecycle slice
 
 Migration 0031 and its PostgreSQL test now pass Foundation PostgreSQL 16 migration/RLS checks in run `42969658021`; Oracle Arc API tests passed in `42969658009`. Migration 0032 adds same-session requester cancellation and a private bounded expiry sweep with system-attributed audit. The 0032 migration/test are wired into Foundation CI, but exact-head validation is pending. The expiry sweep has no scheduler yet. Routes, pending-request read API, UI, notifications, concurrency race tests, secret-manager operations, independent security review and rollout remain outstanding. This capability is not production-enabled.
+
+
+### Operations MFA dual-control API — partial
+
+- Added POST endpoints for request creation, approve/reject and requester cancellation.
+- All routes use same-origin checks, HTTP-only session validation, server-derived account/session context and no-store responses. Request creation and decisions require fresh password verification and purpose-bound password-reauth assertions. PostgreSQL remains authoritative for exact-session MFA step-up, scoped permissions, self-approval denial, request state and audit.
+- Static route-boundary tests added. Exact-head CI pending.
+- Pending: approver pending-request list/read API, rate limiting verification, API integration tests, UI, browser E2E, expiry worker schedule, notification delivery, key management and independent security review.
