@@ -180,3 +180,12 @@ This is only enrollment activation. The route does not issue a step-up session. 
 Added a same-origin challenge route that revalidates the persisted HTTP-only session, reads the encrypted TOTP envelope through the protected accessor, verifies the six-digit code on the server and signs the matched step for the validated account and exact session. Migration 0024 verifies and consumes that assertion once, atomically advances the monotonic TOTP step and creates a five-minute step-up bound to that exact session. Invalid codes increment the protected failure counter; migration 0026 locks after ten failures for 15 minutes. The route does not accept caller-supplied account/session IDs or TOTP steps and sends no-store responses.
 
 The challenge route is implemented but exact-head CI and browser E2E remain pending. The complete MFA lifecycle still needs recovery-code redemption/regeneration, disable/reset, status/UI and recovery acknowledgement, dedicated audit/notification events, session lifecycle invalidation, concurrent recovery tests, operational key provisioning/rotation and independent security review.
+
+
+## Implementation checkpoint: recovery and lifecycle audit — 2026-11-11
+
+Migration 0027 adds a protected append-only MFA event table and an account/session-derived credential-change audit trigger. It records enrollment start/confirmation, challenge failure/success, lockout and credential removal without storing secrets, codes, passwords, tokens or request bodies. Application roles have no direct access; update/delete are rejected.
+
+The recovery procedure verifies a signed `recovery` assertion with no TOTP-step claim, consumes one unused account-bound recovery digest exactly once, deletes all session step-up records and removes the old credential and recovery set. It deliberately grants no step-up. The new same-origin recovery route requires the current validated session and directs the operator to password-reauthenticated enrollment. The recovery migration and PostgreSQL integration test are wired into Foundation CI; exact-head CI and browser E2E remain pending.
+
+Recovery-code regeneration, disable/reset, status/UI, acknowledgement, notification delivery, session lifecycle invalidation, concurrent redemption proof, key provisioning/rotation, recovery drills and independent security review remain release blockers.
