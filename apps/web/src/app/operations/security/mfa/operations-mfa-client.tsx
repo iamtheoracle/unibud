@@ -264,7 +264,7 @@ export default function OperationsMfaClient() {
         <button className="mfa-button" type="button" disabled={!acknowledged} onClick={() => { setRecoveryCodes([]); setNotice("Recovery codes acknowledged. Complete a fresh challenge to verify this session."); }}>I have saved my codes</button>
       </section>}
 
-      {status.credentialState === "active" && !status.stepUpExpiresAt && !status.locked && <section className="mfa-card">
+      {status.credentialState === "active" && !status.stepUpExpiresAt && !status.locked && recoveryCodes.length === 0 && <section className="mfa-card">
         <p className="eyebrow">Step 3</p><h2>Verify this session</h2>
         <p className="mfa-muted">Enter the current six-digit code from your authenticator. A successful challenge grants five minutes of assurance to this session only.</p>
         <form className="mfa-form" onSubmit={challenge}>
@@ -273,7 +273,7 @@ export default function OperationsMfaClient() {
         </form>
       </section>}
 
-      {status.credentialState === "active" && status.stepUpExpiresAt && !status.locked && <section className="mfa-card">
+      {status.credentialState === "active" && status.stepUpExpiresAt && !status.locked && recoveryCodes.length === 0 && <section className="mfa-card">
         <p className="eyebrow">Recovery maintenance</p><h2>Regenerate recovery codes</h2>
         <p className="mfa-muted">This replaces every existing recovery code. It requires your password and a fresh authenticator challenge in this exact session.</p>
         <form className="mfa-form" onSubmit={regenerateRecovery}>
@@ -284,7 +284,7 @@ export default function OperationsMfaClient() {
         </form>
       </section>}
 
-      {status.credentialState === "active" && !status.locked && <section className="mfa-card">
+      {status.credentialState === "active" && !status.locked && recoveryCodes.length === 0 && <section className="mfa-card">
         <p className="eyebrow">Lost authenticator</p><h2>Use a recovery code</h2>
         <p className="mfa-muted">A recovery code can be used once. Redeeming it invalidates the old authenticator and every Operations step-up session. You must reauthenticate with your password and enroll a new authenticator.</p>
         <form className="mfa-form" onSubmit={redeemRecovery}>
