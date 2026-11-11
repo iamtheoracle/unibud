@@ -8,7 +8,8 @@ const MAX_ASSERTION_TTL_SECONDS = 120;
 export type OperationsMfaAssertionPurpose =
   | "enrollment_confirm"
   | "step_up"
-  | "recovery";
+  | "recovery"
+  | "password_reauth";
 
 export interface OperationsMfaAssertion {
   version: typeof VERSION;
@@ -18,7 +19,7 @@ export interface OperationsMfaAssertion {
   issuedAt: number;
   expiresAt: number;
   nonce: string;
-  matchedTotpStep: number;
+  matchedTotpStep: number | null;
   signature: string;
 }
 
@@ -31,7 +32,7 @@ function canonicalPayload(assertion: Omit<OperationsMfaAssertion, "signature">):
     String(assertion.issuedAt),
     String(assertion.expiresAt),
     assertion.nonce,
-    String(assertion.matchedTotpStep)
+    assertion.matchedTotpStep === null ? "-" : String(assertion.matchedTotpStep)
   ].join(":");
 }
 
@@ -44,7 +45,7 @@ export function createOperationsMfaAssertion(
     accountId: string;
     sessionId: string;
     purpose: OperationsMfaAssertionPurpose;
-    matchedTotpStep: number;
+    matchedTotpStep: number | null;
     issuedAt?: number;
     ttlSeconds?: number;
     nonce?: string;
@@ -55,7 +56,7 @@ export function createOperationsMfaAssertion(
   if (!UUID.test(input.accountId) || !UUID.test(input.sessionId)) {
     throw new Error("Invalid Operations MFA assertion identity.");
   }
-  if (!["enrollment_confirm", "step_up", "recovery"].includes(input.purpose)) {
+  if (!["enrollment_confirm", "step_up", "recovery", "password_reauth"].includes(input.purpose)) {
     throw new Error("Invalid Operations MFA assertion purpose.");
   }
   const issuedAt = input.issuedAt ?? Math.floor(Date.now() / 1000);
@@ -66,7 +67,9 @@ export function createOperationsMfaAssertion(
     throw new Error("Operations MFA assertion lifetime must be between 1 and 120 seconds.");
   }
   if (!UUID.test(nonce)) throw new Error("Invalid Operations MFA assertion nonce.");
-  if (!Number.isSafeInteger(input.matchedTotpStep) || input.matchedTotpStep < 0) {
+  if (input.purpose === "password_reauth") {
+    if (input.matchedTotpStep !== null) throw new Error("Password reauthentication cannot include a TOTP step.");
+  } else if (!Number.isSafeInteger(input.matchedTotpStep) || (input.matchedTotpStep as number) < 0) {
     throw new Error("Invalid matched authenticator time step.");
   }
   const unsigned = {
@@ -104,9 +107,11 @@ export function verifyOperationsMfaAssertion(
 ): boolean {
   if (!validKey(key) || !assertion || assertion.version !== VERSION) return false;
   if (!UUID.test(assertion.accountId) || !UUID.test(assertion.sessionId) || !UUID.test(assertion.nonce)) return false;
-  if (!["enrollment_confirm", "step_up", "recovery"].includes(assertion.purpose)) return false;
+  if (!["enrollment_confirm", "step_up", "recovery", "password_reauth"].includes(assertion.purpose)) return false;
   if (!Number.isSafeInteger(assertion.issuedAt) || !Number.isSafeInteger(assertion.expiresAt)
-      || !Number.isSafeInteger(assertion.matchedTotpStep) || assertion.matchedTotpStep < 0) return false;
+      || (assertion.purpose === "password_reauth"
+        ? assertion.matchedTotpStep !== null
+        : !Number.isSafeInteger(assertion.matchedTotpStep) || (assertion.matchedTotpStep as number) < 0)) return false;
   if (assertion.expiresAt <= assertion.issuedAt
       || assertion.expiresAt - assertion.issuedAt > MAX_ASSERTION_TTL_SECONDS
       || assertion.issuedAt > nowEpochSeconds + 5
