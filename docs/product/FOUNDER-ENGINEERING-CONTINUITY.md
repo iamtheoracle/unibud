@@ -150,3 +150,12 @@ Do not answer an implementation request with only another high-level plan when r
 The goal is not a convincing demo. The goal is a secure, reliable, maintainable and genuinely production-ready UNIBUD and Oracle Arc ecosystem.
 
 **Never lose sight of the whole product while implementing one part. Never sacrifice the founder's approved vision, user safety or engineering integrity for speed.**
+
+
+### Operations dual-control concurrency and expiry hardening — 2026-11-11
+
+- Added migration `0037_operations_mfa_dual_control_concurrency.sql` to revalidate request expiry, approver account/session/grant/MFA step-up and requester account/session/grant/MFA state after acquiring the security-request row lock.
+- Terminal approval, rejection and cancellation updates now include a wall-clock expiry predicate. This avoids relying on `statement_timestamp()`, which is fixed before a potentially long row-lock wait.
+- Added `scripts/test-operations-mfa-dual-control-concurrency.sh`. It uses independent PostgreSQL connections to race approve versus reject, approve versus requester cancellation, and approval versus expiry while a separate connection holds the request row lock. It checks exactly one terminal state and one corresponding audit event.
+- Wired migration 0037 and the concurrency harness into Foundation PostgreSQL 16 CI.
+- **Status at commit pending:** implementation and CI validation are pending. No production scheduler, secrets or Operations enablement are configured. Issue #16's non-forgeable actor remediation is present in migration 0021; independent security review remains open.

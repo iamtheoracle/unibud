@@ -611,3 +611,12 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Tests cover app-role denial, owner execution, stale-versus-live retention, nonce/step-up foreign-key ordering and batch-size bounds.
 - **Important:** this adds a maintenance worker, not a scheduler. Automatic recurring execution remains NOT IMPLEMENTED until a trusted scheduler/worker identity, credentials, cadence, monitoring and failure alerting are configured and tested.
 - Exact-head CI for the migration/test is pending. No production scheduler or production secrets are configured.
+
+
+### Operations dual-control concurrency and expiry hardening — 2026-11-11
+
+- Added migration `0037_operations_mfa_dual_control_concurrency.sql` to revalidate request expiry, approver account/session/grant/MFA step-up and requester account/session/grant/MFA state after acquiring the security-request row lock.
+- Terminal approval, rejection and cancellation updates now include a wall-clock expiry predicate. This avoids relying on `statement_timestamp()`, which is fixed before a potentially long row-lock wait.
+- Added `scripts/test-operations-mfa-dual-control-concurrency.sh`. It uses independent PostgreSQL connections to race approve versus reject, approve versus requester cancellation, and approval versus expiry while a separate connection holds the request row lock. It checks exactly one terminal state and one corresponding audit event.
+- Wired migration 0037 and the concurrency harness into Foundation PostgreSQL 16 CI.
+- **Status at commit pending:** implementation and CI validation are pending. No production scheduler, secrets or Operations enablement are configured. Issue #16's non-forgeable actor remediation is present in migration 0021; independent security review remains open.

@@ -71,6 +71,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0034_operations_mfa_requester_read_scope.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0035_operations_mfa_api_rate_limits.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0036_operations_mfa_ephemeral_maintenance.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0037_operations_mfa_dual_control_concurrency.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -110,6 +111,10 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0034_operations_mfa_requester_read_scope.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0035_operations_mfa_api_rate_limits.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0036_operations_mfa_ephemeral_maintenance.test.sql
+      - name: Verify concurrent Operations dual-control terminal transitions
+        env:
+          PGPASSWORD: unibud_test_only
+        run: bash scripts/test-operations-mfa-dual-control-concurrency.sh
       - name: Verify concurrent MFA assertion replay prevention
         env:
           PGPASSWORD: unibud_test_only

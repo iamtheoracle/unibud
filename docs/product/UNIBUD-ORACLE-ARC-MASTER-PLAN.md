@@ -198,3 +198,10 @@ The branch/PR state, latest commit and workflow results must be refreshed from G
 ## 10. What this blueprint does not claim
 
 This document does not claim that all modules, integrations, AI models, financial rails, notifications, deployment environments or production operations exist. It records the intended system, boundaries, sequencing and evidence required to build it safely. Every capability must move through designed, implemented, tested, deployed and production-verified states with explicit evidence.
+
+
+## Current repository verification addendum — 2026-11-11
+
+At PR #15 head `2b33726b472c80488157037608221d6c20e74935`, the latest Foundation checks (run `42984214254`), Oracle Arc API (run `42984214255`) and UNIBUD Web and Database (run `42984214256`) completed successfully. These exact-head CI results do not establish production readiness. PR #15 remains draft/open/unmerged and Issue #16 remains open for independent security review of the migration-0021 actor-provenance remediation.
+
+The next Operations acceptance gap is true dual-control concurrency. The ordinary SQL tests in migrations 0031–0036 validate lifecycle and permissions but do not race terminal request transitions over independent connections. Migration 0037 and the dedicated concurrency harness are being added to validate approve/reject, approve/cancel and approval/expiry serialization, including wall-clock expiry after row-lock waits.
