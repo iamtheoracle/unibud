@@ -189,3 +189,10 @@ Migrations 0033 and 0034 add a bounded permission-gated request read model. Appr
 The Operations MFA page now includes request submission, a pending queue, independent review/approve/reject controls and requester-only cancellation. A new Playwright test covers queue review, approval, cancellation and request creation and is wired into Web CI.
 
 **Verification caveat:** the latest observed Web E2E run failed in the existing MFA lifecycle script at an exact intercepted-request count assertion (10 observed versus 6 expected). The profile browser workflows passed, and Foundation integrity/PostgreSQL jobs passed. The MFA E2E harness currently intercepts queue GET requests as if they were POST actions; correct that distinction and rerun all exact-head CI before marking the browser experience verified. No production enablement.
+
+
+## API abuse protection checkpoint
+
+Migration 0035 adds an Operations-owned per-account action limiter with fixed server-side limits: 5 request creations per 15 minutes, 10 decisions per 15 minutes, 10 cancellations per 15 minutes and 60 list/detail reads per minute. The database checks current exact-session MFA step-up and the permission associated with each action. The application role cannot read or modify the limiter table directly.
+
+The authenticated create, decision, cancel and read routes invoke the limiter before password verification or request-list reads. PostgreSQL tests cover action-specific permission boundaries, fixed limits and direct-table denial. Exact-head CI is pending. This does not replace network/edge abuse controls, monitoring or security review.
