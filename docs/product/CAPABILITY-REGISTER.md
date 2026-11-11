@@ -369,3 +369,12 @@ At exact head bee8603a832fe09307384e4a8faa2820ed9ec394, all three workflows pass
 - The seed is not sent to a third-party QR service. The manual setup key remains available as a fallback. The provisioning URI and generated QR data URL are not persisted in browser storage.
 - UI tests assert local QR generation and the manual fallback; Playwright MFA E2E asserts that the QR image appears during enrollment.
 - Exact-head GitHub CI passed at `9cf961e4658146b3bc24fe50a238aa9f7f144178`: Foundation `42966207133`, Oracle Arc API `42966207125`, and Web/Database `42966207290`, including MFA browser E2E and production build. This does not make MFA production-ready: operational key provisioning/rotation, disable/reset dual control, lifecycle notifications and invalidation, expiry cleanup/retention, independent security review and production rollout gates remain.
+
+
+## Operations MFA dual-control disable/reset
+
+**Status: NOT IMPLEMENTED — contract only.**
+
+The security contract is recorded in `docs/security/OPERATIONS-MFA-DISABLE-RESET-DUAL-CONTROL.md` (commit `16dd3596534f9fd77a9501394cd7ab8e2c7b907a`). It specifies distinct requester/approver identities, fresh password reauthentication and exact-session MFA step-up for both actors, database-derived identity, immutable expiring requests, atomic single-use approval, self-approval prevention, complete target step-up/recovery invalidation, and append-only audit.
+
+No schema, procedure, API, UI, or runtime behavior exists yet for this capability. It is not available and is not production-enabled. PostgreSQL negative/concurrency tests, route tests, browser E2E, operational notifications, independent review, and rollout approval remain required.
