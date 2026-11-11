@@ -33,7 +33,7 @@ export async function GET(request:NextRequest){
   const {sessions}=createConfiguredIdentityServices();
   const validation=await sessions.validate(token);
   if(!validation.valid)return response({ok:false,error:"Authentication is required."},401);
-  if(!await consumeOperationsMfaApiRateLimit(validation.account.id,validation.session.id,"request_read")){
+  if(!await consumeOperationsMfaApiRateLimit(validation.account.id,validation.session.id,"notification_read")){
    return response({ok:false,error:"Too many security inbox reads. Wait before refreshing."},429);
   }
   const context=createSignedSessionContextFromEnvironment(validation.account.id,validation.session.id);
@@ -68,7 +68,7 @@ export async function PATCH(request:NextRequest){
   const {sessions}=createConfiguredIdentityServices();
   const validation=await sessions.validate(token);
   if(!validation.valid)return response({ok:false,error:"Authentication is required."},401);
-  if(!await consumeOperationsMfaApiRateLimit(validation.account.id,validation.session.id,"request_read")){
+  if(!await consumeOperationsMfaApiRateLimit(validation.account.id,validation.session.id,"notification_read")){
    return response({ok:false,error:"Too many security inbox updates. Wait before trying again."},429);
   }
   const context=createSignedSessionContextFromEnvironment(validation.account.id,validation.session.id);
