@@ -150,6 +150,25 @@ export default function OperationsMfaClient() {
     } finally { setBusy(false); }
   }
 
+  async function regenerateRecovery(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const data = await post("/api/internal/operations/mfa/recovery/regenerate", {
+        channel, identifier, password
+      });
+      if (data.recoveryCodesShownOnce !== true || !Array.isArray(data.recoveryCodes) || data.recoveryCodes.length < 8) {
+        throw new Error("The replacement recovery codes were not returned. Do not continue without saving them.");
+      }
+      setRecoveryCodes(data.recoveryCodes);
+      setAcknowledged(false);
+      setPassword("");
+      setNotice(data.message || "Recovery codes regenerated. Save the new set now.");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Recovery codes could not be regenerated.");
+    } finally { setBusy(false); }
+  }
+
   async function redeemRecovery(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true); setError(""); setNotice("");
@@ -250,6 +269,17 @@ export default function OperationsMfaClient() {
         <form className="mfa-form" onSubmit={challenge}>
           <label>Six-digit authenticator code<input inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={challengeCode} onChange={e => setChallengeCode(e.target.value.replace(/\D/g, "").slice(0,6))} required/></label>
           <button className="mfa-button" type="submit" disabled={busy || challengeCode.length !== 6}>{busy ? "Verifying…" : "Verify this session"}</button>
+        </form>
+      </section>}
+
+      {status.credentialState === "active" && status.stepUpExpiresAt && !status.locked && <section className="mfa-card">
+        <p className="eyebrow">Recovery maintenance</p><h2>Regenerate recovery codes</h2>
+        <p className="mfa-muted">This replaces every existing recovery code. It requires your password and a fresh authenticator challenge in this exact session.</p>
+        <form className="mfa-form" onSubmit={regenerateRecovery}>
+          <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
+          <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
+          <label>Current password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
+          <button className="mfa-secondary" type="submit" disabled={busy}>{busy ? "Please wait…" : "Replace recovery codes"}</button>
         </form>
       </section>}
 
