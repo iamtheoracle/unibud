@@ -198,3 +198,10 @@ Migration 0028 adds a no-identity-argument status function deriving account and 
 Migration 0029 adds a pending-only encrypted-secret accessor. It verifies and consumes a short-lived password_reauth assertion for the current account/session and returns ciphertext only for a live, unlocked pending enrollment. The resume route also reauthenticates the account password before reconstructing the provisioning URI, allowing recovery from a closed setup screen without making active credentials readable through this path.
 
 An authenticated /operations/security/mfa interface now connects status, enrollment start/resume, confirmation, recovery-code acknowledgement, challenge and recovery redemption. It keeps secrets in component memory only. QR generation and MFA browser E2E are still outstanding; manual setup is clearly marked as a temporary fallback. Recovery-code regeneration, controlled disable/reset, notifications, lifecycle invalidation, key management and independent review remain release blockers.
+
+
+## Implementation checkpoint: recovery-code regeneration — 2026-11-11
+
+Migration 0030 adds an atomic recovery-code replacement procedure. It requires a server-signed password_reauth assertion bound to the current account/session and the database-verified five-minute step-up for that exact session. It consumes the nonce, deletes the previous recovery digest set, stores a validated set of distinct new digests and records a protected audit event in one transaction. The route reauthenticates the current password and returns plaintext codes once only after commit. The UI exposes regeneration only when current status reports a step-up; PostgreSQL independently checks expiry.
+
+Exact-head CI and browser E2E for this addition remain pending. Controlled disable/reset requires dual control; no self-service disable path is provided. QR, notifications, lifecycle invalidation, operational key management and independent review remain release blockers.
