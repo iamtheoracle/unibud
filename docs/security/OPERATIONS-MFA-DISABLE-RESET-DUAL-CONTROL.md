@@ -173,3 +173,10 @@ Migration `0033_operations_mfa_request_read_api.sql` adds a bounded, permission-
 The GET endpoint returns the validated viewer account ID for UI action separation, but not persisted session identifiers or credentials. The Operations UI supports request submission, independent review/approval/rejection, and cancellation of one's own request. A requester is not offered approval controls for their own request; PostgreSQL still enforces the rule independently.
 
 Added PostgreSQL requester-scope tests and static route/UI boundary tests. Exact-head CI for migration 0034 and the UI changes is pending. Dedicated rate limiting, route integration tests, full browser E2E, accessibility review, expiry scheduling, verified notifications, key management and independent review remain outstanding. No production enablement.
+
+
+## Latest request-console verification and E2E correction (2026-11-11)
+
+The branch now contains the protected request read model (migrations 0033/0034), authenticated bounded GET list/detail endpoint, requester-only read visibility, and Operations request/review UI. Do not treat earlier paragraphs saying these are absent as current state.
+
+At head 78cf131c4b98d3c35aaa6cef7d2f9202c404f195, Foundation and Oracle Arc API workflows passed and PostgreSQL migration validation passed. Web/Database failed in the Playwright MFA E2E because a generic Current password locator matched the enrollment form and the dual-control request form. Profile E2E passed; typecheck, contracts, server security tests and lint passed; build was skipped after the E2E failure. The enrollment fields now have the distinct accessible name Authenticator setup password, and the E2E selectors use it. Fix commits: 21b6a549609d923f39c69dd05010f494d615a78d and 2e304b2c2d09b4ee98630aee48300e10c49f0bf3. Exact-head rerun is pending. No production enablement.
