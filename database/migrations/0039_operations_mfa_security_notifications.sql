@@ -125,11 +125,20 @@ BEGIN
     WHEN 'security_reset_requested' THEN
       v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id];
     WHEN 'security_reset_approved' THEN
-      v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id];
+      SELECT r.requester_account_id INTO v_requester
+      FROM public.unibud_operator_mfa_security_requests r
+      WHERE r.request_id=NEW.security_request_id;
+      v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id,v_requester];
     WHEN 'security_reset_rejected' THEN
-      v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id];
+      SELECT r.requester_account_id INTO v_requester
+      FROM public.unibud_operator_mfa_security_requests r
+      WHERE r.request_id=NEW.security_request_id;
+      v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id,v_requester];
     WHEN 'security_credential_disabled' THEN
-      v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id];
+      SELECT r.requester_account_id INTO v_requester
+      FROM public.unibud_operator_mfa_security_requests r
+      WHERE r.request_id=NEW.security_request_id;
+      v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id,v_requester];
     WHEN 'security_reset_cancelled' THEN
       v_recipients:=ARRAY[NEW.actor_account_id,NEW.target_account_id];
     WHEN 'security_reset_expired' THEN
