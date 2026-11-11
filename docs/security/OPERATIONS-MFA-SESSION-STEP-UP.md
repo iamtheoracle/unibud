@@ -173,3 +173,10 @@ Migration 0026 now implements the enrollment-confirmation database boundary. The
 The server route validates the same-origin request and persisted HTTP-only session, decrypts the encrypted seed server-side, verifies the six-digit TOTP, signs the accepted step for the exact session and displays recovery codes only once after commit. Ten failed attempts trigger a 15-minute lockout. The encrypted-secret accessor denies locked credentials, and a trigger prevents replacement enrollment from clearing a live lockout.
 
 This is only enrollment activation. The route does not issue a step-up session. Until the separate challenge route consumes a signed `step_up` assertion and creates the exact-session five-minute step-up, every Operations permission remains denied. Recovery redemption/regeneration, disable/reset, UI, notifications, audit lifecycle, concurrency/E2E proof, key provisioning/rotation and independent security review remain release blockers.
+
+
+## Implementation checkpoint: TOTP challenge and exact-session step-up — 2026-11-11
+
+Added a same-origin challenge route that revalidates the persisted HTTP-only session, reads the encrypted TOTP envelope through the protected accessor, verifies the six-digit code on the server and signs the matched step for the validated account and exact session. Migration 0024 verifies and consumes that assertion once, atomically advances the monotonic TOTP step and creates a five-minute step-up bound to that exact session. Invalid codes increment the protected failure counter; migration 0026 locks after ten failures for 15 minutes. The route does not accept caller-supplied account/session IDs or TOTP steps and sends no-store responses.
+
+The challenge route is implemented but exact-head CI and browser E2E remain pending. The complete MFA lifecycle still needs recovery-code redemption/regeneration, disable/reset, status/UI and recovery acknowledgement, dedicated audit/notification events, session lifecycle invalidation, concurrent recovery tests, operational key provisioning/rotation and independent security review.
