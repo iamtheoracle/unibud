@@ -708,3 +708,9 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - The next Foundation run passed the corrected requester fixture and reached the cross-account mark-read assertion. It then correctly denied a direct SELECT against the notification table while the test had assumed the `unibud_app` role.
 - Moved retrieval of the other account's notification UUID into the privileged test harness before `SET LOCAL ROLE unibud_app`. The application-role test now receives only the opaque UUID and proves the mark-read API refuses cross-account ownership without granting direct table access.
 - This preserves the production privilege boundary and strengthens the test: `unibud_app` remains unable to read notification rows directly. Exact-head PostgreSQL CI must be rerun and pass.
+
+### Identity RLS CI fixture correction — 2026-11-11
+
+- Exact-head Web/Database PostgreSQL validation exposed that baseline test 0002 attempted to insert a second active account-context signing key. The baseline migration already provisions one active key and enforces a single-active-key unique index.
+- Updated the isolated test transaction to deactivate the seeded key before installing its CI-only synthetic active key. The test's final `ROLLBACK` restores the original baseline state; production migrations and key material are unchanged.
+- **Correction commit:** `3c352a508e2a0466d876487367de18e8043452b2`. Exact-head Foundation and Web/Database CI must verify the correction. The independent migration 0039 notification assertion failure and hosted-runner browser dependency failure remain separate items to validate against the new head.
