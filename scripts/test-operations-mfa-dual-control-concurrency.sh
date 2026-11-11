@@ -245,7 +245,7 @@ grep -q '^LOCKED$' "$lock_output" || { echo "Could not acquire expiry-race row l
 run_decision "$REQUEST_C" approve f0370000-0000-4000-8000-000000000054 >"$first_output" &
 decision_pid=$!
 sleep 6
-skipped="$(run_expiry | grep -E '^[0-9]+)"
+skipped="$(run_expiry | grep -E '^[0-9]+$' | tail -n 1 | tr -d '[:space:]')"
 [[ "$skipped" == "0" ]] || { echo "Expiry worker did not safely skip the locked request (returned $skipped)"; exit 1; }
 wait "$lock_pid"
 wait "$decision_pid"
@@ -253,7 +253,7 @@ if ! grep -qx 'f' "$first_output"; then
  echo "Approval succeeded after the request expiry deadline."
  cat "$first_output"; exit 1;
 fi
-expired="$(run_expiry | tail -n 1 | tr -d '[:space:]')"
+expired="$(run_expiry | grep -E '^[0-9]+$' | tail -n 1 | tr -d '[:space:]')"
 [[ "$expired" == "1" ]] || { echo "Expiry worker did not expire the unlocked due request (returned $expired)"; exit 1; }
 
 psql -v ON_ERROR_STOP=1 <<SQL
