@@ -56,7 +56,7 @@ Verify that the permission function returns false for every revoked grant. Sessi
 
 ## Audit and review
 
-Every request to the verification-delivery status endpoint records an append-only event with a random request UUID, permission name, outcome, timestamp and (when authenticated) account UUID. No session token, email, phone, provider URL, credential or request body is stored.
+Every request to the verification-delivery status endpoint records an append-only event with a random request UUID, permission name, outcome, timestamp and (when authenticated) the database-verified account and exact session UUID. No session token, email, phone, provider URL, credential or request body is stored.
 
 Review operator grants at least monthly and after role changes, contract termination or suspected compromise. Review audit events through a separately authorised read-only operational process; no audit-read endpoint is exposed by this change.
 
@@ -66,7 +66,7 @@ Review operator grants at least monthly and after role changes, contract termina
 - The endpoint does not call the delivery provider and sends no email, SMS or verification code.
 - Provider identity and a read-only health contract remain unresolved.
 - No operator grant is provisioned by this migration.
-- Operations MFA/step-up authentication, a full Operations UI, grant-management workflow, audit search/export, alerting and independent security review remain outstanding. A TOTP/recovery-code cryptographic library has been added, but it is not connected to persistence, login, sessions or Operations routes; MFA is NOT enabled. Do not grant or imply MFA-protected access until enrollment, atomic replay/recovery-code consumption, session step-up enforcement, throttling, audit and end-to-end tests are implemented.
+- Operations MFA enrollment/challenge/recovery routes and UI, password reauthentication, failure counters/lockout, atomic recovery-code redemption, audit lifecycle, grant-management workflow, audit search/export, alerting and independent security review remain outstanding. Migration 0024 now adds a protected assertion nonce ledger and exact-session step-up table; a signed server assertion is consumed by PostgreSQL, which atomically advances the TOTP step and creates a five-minute step-up. The Operations permission function now fails closed without an active, unlocked MFA credential and current exact-session step-up. Until the enrollment/challenge routes are complete, existing Operations endpoints are intentionally denied rather than falling back to session-only access. MFA is NOT operational end-to-end.
 - Do not run this migration in production until it has passed the PostgreSQL migration suite and received an authorised database change review.
 
 
@@ -74,10 +74,10 @@ Review operator grants at least monthly and after role changes, contract termina
 
 The intended operator second factor is an authenticator-app TOTP credential (RFC 6238, SHA-1, six digits, 30-second period) with one time-step of clock tolerance. TOTP seeds are encrypted using AES-256-GCM and account-bound associated data. Recovery codes are random, shown once, and stored only as account-bound keyed digests. Accepted TOTP steps must be persisted atomically to prevent replay; recovery-code redemption must be atomic and single-use.
 
-Cryptographic primitives and protected persistence schema now exist, but the storage migration is not yet wired to application procedures. Migration 0022 creates pending/active credential rows and recovery-code digest rows; both tables are owned by the non-login Operations owner and have no direct grants to application roles. The Foundation workflow now includes migration 0022 and its PostgreSQL test, pending exact-head CI.
+Cryptographic primitives and protected persistence now exist. Migration 0022 creates pending/active credential and recovery-code storage; migration 0024 adds assertion nonce consumption and exact-session step-up records. The server assertion helper binds account, session, purpose, issue/expiry, nonce and matched TOTP step with a distinct HMAC key. PostgreSQL verifies and consumes the assertion and updates the monotonic TOTP counter in one transaction. The Foundation workflow includes the migrations and PostgreSQL tests; exact-head CI must pass before this checkpoint is accepted.
 
 Before enabling MFA:
-1. Provision separate 32-byte account-context (`UNIBUD_DB_CONTEXT_HMAC_KEY`), session-context (`UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY`), TOTP seed-encryption and recovery-code HMAC keys from the approved secret manager. The account and session verifier keys are provisioned into their respective private database key tables through a controlled database-administration procedure; the application receives only the matching server-side secret-manager bindings. Never store keys in source control, browser code, logs or deployment artifacts.
+1. Provision separate 32-byte account-context (`UNIBUD_DB_CONTEXT_HMAC_KEY`), session-context (`UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY`), MFA assertion (`UNIBUD_OPERATIONS_MFA_ASSERTION_HMAC_KEY`), TOTP seed-encryption and recovery-code HMAC keys from the approved secret manager. Provision matching database verifier copies into the respective private key tables through a controlled database-administration procedure. The account and session verifier keys are provisioned into their respective private database key tables through a controlled database-administration procedure; the application receives only the matching server-side secret-manager bindings. Never store keys in source control, browser code, logs or deployment artifacts.
 2. Add narrow account-bound database procedures using only the HMAC-verified transaction identity; no caller-supplied account UUID or caller-settable GUC is trusted.
 3. Add a server-authenticated proof for TOTP acceptance and exact-session step-up; do not accept a caller-supplied time-step as proof.
 4. Implement atomic monotonic TOTP replay prevention and atomic single-use recovery-code redemption.
