@@ -447,3 +447,13 @@ At every development stage:
 - Added route/UI contract tests and wired migrations 0028–0029 and their PostgreSQL tests into Foundation CI.
 - **Verification:** migration 0028 and its SQL test passed in the Foundation workflow; Oracle Arc API passed; web typecheck, contract tests, server-security tests and lint passed before the 0029/UI additions. The 0029 and UI exact-head workflows are pending. Browser E2E for MFA is not implemented; existing browser E2E covers profiles only.
 - **Still outstanding:** local QR generation, browser E2E for MFA end-to-end, recovery-code regeneration, controlled disable/reset with dual control, audit notification delivery, session lifecycle invalidation, key provisioning/rotation and disaster-recovery drills, independent security review, and production-like migration/recovery review. MFA is not production-ready.
+
+
+## MFA recovery-code regeneration — 2026-11-11
+
+- Added migration 0030 and a regeneration procedure requiring both a fresh password_reauth assertion for the current account/session and an unexpired MFA step-up for that exact session. PostgreSQL atomically consumes the assertion nonce, replaces the complete recovery digest set and records a recovery_codes_regenerated event. A stale or different-session step-up cannot authorize regeneration.
+- Added POST /api/internal/operations/mfa/recovery/regenerate. It validates the same-origin request and current session, reauthenticates the account password, generates a new recovery set server-side, and returns plaintext codes once only after database commit.
+- Added the regeneration flow to the MFA security page. It is shown only when the status reports an active exact-session step-up, and the replacement codes use the same explicit acknowledgement screen. The server remains authoritative if the five-minute step-up expires while the page is open.
+- Added PostgreSQL tests for forged/replayed assertions, replacement of old digests, audit, application-role isolation and denial without current-session step-up; added route/UI contract tests. Foundation CI applies migration 0030 and its test.
+- **Verification:** exact-head CI for the 0030 route, migration, UI and tests is pending. The prior status migration/test passed; that does not prove this newer checkpoint.
+- **Still outstanding:** controlled MFA disable/reset with dual control, QR generation, full browser E2E for enrollment/challenge/recovery/regeneration, notification delivery, session lifecycle invalidation, key provisioning/rotation and disaster-recovery drills, independent security review and production-like migration/recovery review.
