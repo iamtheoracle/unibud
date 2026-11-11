@@ -171,11 +171,20 @@ BEGIN
      AND event_type='security_reset_approved') THEN
    RAISE EXCEPTION 'Approval audit event missing';
  END IF;
+END
+$verify$;
+
+-- The privilege assertion must execute as the application role, not the
+-- superuser used by the migration test harness.
+SET LOCAL ROLE unibud_app;
+DO $privilege$
+BEGIN
  BEGIN
   EXECUTE 'SELECT request_id FROM public.unibud_operator_mfa_security_requests';
   RAISE EXCEPTION 'Application role directly read protected reset requests';
  EXCEPTION WHEN insufficient_privilege THEN NULL;
  END;
 END
-$verify$;
+$privilege$;
+RESET ROLE;
 ROLLBACK;
