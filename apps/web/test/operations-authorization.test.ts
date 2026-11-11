@@ -73,6 +73,7 @@ test("Operations database authorization requires a verified live persisted sessi
   assert.ok(sessionVerifier.includes("session_context_signature"));
   assert.ok(sessionVerifier.includes("CREATE TABLE unibud_private.session_context_signing_keys"));
   assert.ok(sessionVerifier.includes("GRANT SELECT ON unibud_private.session_context_signing_keys TO unibud_ops_owner"));
+  assert.ok(sessionVerifier.includes("FROM unibud_private.session_context_signing_keys"));
   assert.ok(sessionVerifier.includes("GRANT EXECUTE ON FUNCTION unibud_private.current_session_id() TO unibud_ops_owner"));
   assert.ok(sessionVerifier.includes("ADD COLUMN session_id UUID REFERENCES public.account_sessions"));
   assert.ok(sessionVerifier.includes("actor_account_id, session_id, permission, outcome, request_id"));
