@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import QRCode from "qrcode";
 import { FormEvent, useEffect, useState } from "react";
 
 type MfaStatus = {
@@ -34,6 +35,8 @@ export default function OperationsMfaClient() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [provisioningUri, setProvisioningUri] = useState("");
+  const [qrDataUrl, setQrDataUrl] = useState("");
+  const [qrError, setQrError] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [challengeCode, setChallengeCode] = useState("");
   const [recoveryCode, setRecoveryCode] = useState("");
@@ -72,6 +75,25 @@ export default function OperationsMfaClient() {
     });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    setQrDataUrl("");
+    setQrError("");
+    if (!provisioningUri) return () => { active = false; };
+    // Generate the QR locally. The provisioning URI and seed never leave this
+    // browser session through a third-party QR service or remote image request.
+    QRCode.toDataURL(provisioningUri, {
+      errorCorrectionLevel: "M",
+      margin: 2,
+      width: 240
+    }).then(dataUrl => {
+      if (active) setQrDataUrl(dataUrl);
+    }).catch(() => {
+      if (active) setQrError("The QR image could not be generated. Use the manual setup key below.");
+    });
+    return () => { active = false; };
+  }, [provisioningUri]);
 
   async function post(path: string, body: Record<string, string>): Promise<ApiResult> {
     const response = await fetch(path, {
@@ -248,8 +270,9 @@ export default function OperationsMfaClient() {
         <p className="eyebrow">Step 2</p><h2>Add the authenticator</h2>
         <p className="mfa-muted">Open the authenticator link on this device or enter the setup key manually in your authenticator app. This key is sensitive; do not share it or save it in an unprotected place.</p>
         <a className="mfa-button mfa-link-button" href={provisioningUri}>Open authenticator app</a>
+        {qrDataUrl ? <div className="mfa-qr-wrap"><img src={qrDataUrl} alt="Authenticator setup QR code" width={240} height={240} /></div> : <p className="mfa-small" role={qrError ? "status" : undefined}>{qrError || "Preparing your secure setup QR code…"}</p>}
         <div className="mfa-secret-label"><span>Manual setup key</span><code className="mfa-secret">{setupSecret}</code></div>
-        <p className="mfa-small">QR scanning is not available in this build. Manual setup is provided as a temporary fallback.</p>
+        <p className="mfa-small">If you cannot scan the QR code, enter the manual setup key in your authenticator app instead.</p>
         <form className="mfa-form" onSubmit={confirmEnrollment}>
           <label>Six-digit authenticator code<input inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={confirmationCode} onChange={e => setConfirmationCode(e.target.value.replace(/\D/g, "").slice(0,6))} required/></label>
           <button className="mfa-button" type="submit" disabled={busy || confirmationCode.length !== 6}>{busy ? "Verifying…" : "Confirm and activate"}</button>
