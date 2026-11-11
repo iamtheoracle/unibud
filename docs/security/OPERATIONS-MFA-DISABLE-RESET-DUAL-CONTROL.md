@@ -140,3 +140,15 @@ Migration `0032_operations_mfa_request_lifecycle.sql` adds:
 - system-attributed expiry audit events with NULL actor/session rather than inventing a human actor.
 
 PostgreSQL test `0032_operations_mfa_request_lifecycle.test.sql` covers cancellation, expiry denial, app-role execution denial, owner execution and audit attribution. Foundation CI now applies migration 0032 and runs its test. **Exact-head CI is pending.** The expiry worker is not scheduled, and no routes, pending-request read API, UI, notifications or concurrency stress tests have been implemented. No production enablement is authorised.
+
+
+## API implementation checkpoint — create, decide and cancel
+
+Added three same-origin, no-store Operations MFA endpoints:
+- `POST /api/internal/operations/mfa/requests`: validates the HTTP-only session, verifies the current account password, creates a 60-second purpose-bound password-reauth assertion, and invokes the database request procedure using a signed session transaction.
+- `POST /api/internal/operations/mfa/requests/[requestId]/decision`: performs fresh password verification and delegates approval/rejection to the database procedure, which enforces exact-session MFA step-up, scoped approval permission, distinct identities, expiry and atomic decision.
+- `POST /api/internal/operations/mfa/requests/[requestId]/cancel`: validates the current HTTP-only session and delegates same-requester, same-original-session, MFA-step-up and pending-state checks to PostgreSQL.
+
+A static route-boundary test asserts same-origin validation, server-derived session context, no caller-supplied actor/session/role, and no-store response headers.
+
+The API is an initial action slice, not a complete workflow: there is no pending-request list/read endpoint, Operations UI, integration/E2E coverage or verified dedicated rate-limit policy yet. Exact-head CI is pending. No production enablement.
