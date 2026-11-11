@@ -74,6 +74,9 @@ RESET ROLE;
 DO $test$
 DECLARE actor UUID; session UUID;
 BEGIN
+ IF has_schema_privilege('unibud_ops_owner','public','CREATE') THEN
+  RAISE EXCEPTION 'Operations function owner retains unnecessary public-schema CREATE';
+ END IF;
  SELECT actor_account_id,session_id INTO actor,session
  FROM public.unibud_operator_audit_events
  WHERE request_id='f0230000-0000-4000-8000-000000000091';
@@ -103,6 +106,78 @@ BEGIN
 END
 $test$;
 RESET ROLE;
+
+-- A valid HMAC cannot bind account A to account B's persisted session.
+WITH x AS (
+ SELECT 'f0230000-0000-4000-8000-000000000001'::text AS a,
+        'f0230000-0000-4000-8000-000000000012'::text AS s,
+        current_setting('unibud.context_expiry',true) AS e,
+        current_setting('unibud.context_nonce',true) AS n
+)
+SELECT
+ set_config('unibud.session_id',s,true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $test$
+BEGIN
+ IF public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
+  RAISE EXCEPTION 'A signed account/session pair belonging to different accounts was accepted';
+ END IF;
+END
+$test$;
+RESET ROLE;
+
+-- An expired but correctly signed account/session claim is still invalid.
+WITH x AS (
+ SELECT 'f0230000-0000-4000-8000-000000000001'::text AS a,
+        'f0230000-0000-4000-8000-000000000011'::text AS s,
+        floor(extract(epoch FROM clock_timestamp())-10)::bigint::text AS e,
+        '23232323-2323-4323-8323-232323232324'::text AS n
+)
+SELECT
+ set_config('unibud.account_id',a,true),
+ set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),
+ set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),
+   decode(repeat('23',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $test$
+BEGIN
+ IF public.unibud_operator_has_permission('integrations.verification_delivery.read') THEN
+  RAISE EXCEPTION 'Expired signed account/session context was accepted';
+ END IF;
+END
+$test$;
+RESET ROLE;
+
+-- Restore the original live signed context before testing persisted revocation.
+WITH x AS (
+ SELECT 'f0230000-0000-4000-8000-000000000001'::text AS a,
+        'f0230000-0000-4000-8000-000000000011'::text AS s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text AS e,
+        '23232323-2323-4323-8323-232323232325'::text AS n
+)
+SELECT
+ set_config('unibud.account_id',a,true),
+ set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),
+ set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),
+   decode(repeat('23',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
+   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+FROM x;
 
 -- A validly signed claim cannot revive a revoked persisted session.
 SELECT set_config('unibud.session_id','f0230000-0000-4000-8000-000000000011',true);
