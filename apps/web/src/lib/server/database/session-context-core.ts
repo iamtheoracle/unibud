@@ -14,12 +14,14 @@ export interface SignedSessionContext extends SignedAccountContext {
 /**
  * Creates two independently verifiable claims for one transaction:
  * the existing account claim and a versioned claim binding that account to
- * one persisted session. Call only with IDs returned by SessionService.validate.
+ * one persisted session. Account and session claims use separate HMAC keys.
+ * Call only with IDs returned by SessionService.validate.
  */
 export function createSignedSessionContext(
   accountId: string,
   sessionId: string,
-  key: Uint8Array,
+  accountKey: Uint8Array,
+  sessionKey: Uint8Array,
   nowEpochSeconds = Math.floor(Date.now() / 1000),
   ttlSeconds = 60,
   nonce = randomUUID()
@@ -27,7 +29,16 @@ export function createSignedSessionContext(
   if (!UUID_PATTERN.test(accountId) || !UUID_PATTERN.test(sessionId)) {
     throw new Error("Invalid trusted session identity.");
   }
-  const accountContext = createSignedAccountContext(accountId, key, nowEpochSeconds, ttlSeconds, nonce);
+  if (sessionKey.byteLength < 32) {
+    throw new Error("Session-context signing key must contain at least 32 bytes.");
+  }
+  const accountContext = createSignedAccountContext(
+    accountId,
+    accountKey,
+    nowEpochSeconds,
+    ttlSeconds,
+    nonce
+  );
   const payload = [
     SESSION_CONTEXT_VERSION,
     accountId,
@@ -35,7 +46,7 @@ export function createSignedSessionContext(
     accountContext.expiryEpoch,
     nonce
   ].join(":");
-  const sessionSignature = createHmac("sha256", key).update(payload, "utf8").digest("hex");
+  const sessionSignature = createHmac("sha256", sessionKey).update(payload, "utf8").digest("hex");
   return { ...accountContext, sessionId, sessionSignature };
 }
 
@@ -45,17 +56,27 @@ export function createSignedSessionContextFromEnvironment(
   nowEpochSeconds?: number,
   ttlSeconds = 60
 ): SignedSessionContext {
-  const raw = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY?.trim() ?? "";
-  if (!HEX_PATTERN.test(raw)) {
+  const accountRaw = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY?.trim() ?? "";
+  const sessionRaw = process.env.UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY?.trim() ?? "";
+  if (!HEX_PATTERN.test(accountRaw)) {
     throw new Error("UNIBUD_DB_CONTEXT_HMAC_KEY must be at least 32 random bytes encoded as hex.");
   }
-  return createSignedSessionContext(accountId, sessionId, Buffer.from(raw, "hex"), nowEpochSeconds, ttlSeconds);
+  if (!HEX_PATTERN.test(sessionRaw)) {
+    throw new Error("UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY must be at least 32 random bytes encoded as hex.");
+  }
+  return createSignedSessionContext(
+    accountId,
+    sessionId,
+    Buffer.from(accountRaw, "hex"),
+    Buffer.from(sessionRaw, "hex"),
+    nowEpochSeconds,
+    ttlSeconds
+  );
 }
 
 /**
- * Establishes account and exact-session claims in one transaction. The session
- * GUC is untrusted transport until PostgreSQL verifies session_context_signature.
- * This helper is not an authorization check by itself.
+ * Establishes account and exact-session claims in one transaction. GUCs are
+ * untrusted transport until PostgreSQL verifies both independent signatures.
  */
 export async function withSignedSessionTransaction<T>(
   pool: SqlPool,
