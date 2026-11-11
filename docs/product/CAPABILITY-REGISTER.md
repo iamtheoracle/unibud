@@ -321,3 +321,8 @@ Server-side signed MFA assertions now bind account, exact persisted session, pur
 ### MFA audit integrity and concurrent replay test — 2026-11-11
 
 The database now derives the effective Operations audit outcome: app callers cannot write an "allowed" outcome unless current permission (including active MFA and exact-session step-up) is true. Tests cover denied/allowed outcome derivation. A two-connection PostgreSQL concurrency script now attempts the same signed assertion simultaneously and requires one success and one rejection; it is included in Foundation CI. Exact-head CI for this refinement is pending.
+
+
+### Password-reauthenticated MFA enrollment start
+
+A separate signed password_reauth assertion now binds fresh password verification to the validated account and exact session. Migration 0025 adds the protected pending-enrollment procedure and server-only encrypted-secret accessor. The enrollment-start route validates same-origin and the HTTP-only session, reauthenticates the current account using the existing password verifier and login rate limiter, encrypts a new TOTP seed, consumes the signed assertion in PostgreSQL, and returns a no-store provisioning URI. Pending credentials do not authorize Operations. Confirmation/activation, recovery-code persistence/display, challenge and recovery routes, lockout, UI and E2E remain outstanding; exact-head CI is pending.
