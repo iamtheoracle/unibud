@@ -643,3 +643,14 @@ The complete code-change validation checkpoint at commit `308bfe4a92c92d5b978443
 - UNIBUD Web and Database `43013208441`: **PASSED**. PostgreSQL migration validation, TypeScript typecheck, contract tests, server security tests, lint, profile browser E2E and production build all passed.
 
 The branch subsequently advanced through documentation-only commits to `c0d65a273a025376bd144e184018a8af40e1aa20`. Fresh CI for that documentation-only head was queued/in progress when this addendum was prepared. The three successful runs above validate the code-change head; they do not establish deployment or production verification.
+
+
+### Operations MFA maintenance worker — implementation checkpoint (2026-11-11)
+
+- Added migration 0038 with a dedicated `unibud_ops_scheduler` role. It is `NOLOGIN`, non-superuser, non-owner and `NOBYPASSRLS`; it has schema usage and EXECUTE on only the bounded migration-0036 maintenance entry point. It has no direct access to protected MFA tables and cannot invoke the lower-level request-expiry procedure.
+- Added PostgreSQL test 0038 for role attributes, exact function privilege, denial of application-role execution, denial of direct protected-table access and successful invocation through the scheduler role.
+- Added `scripts/run-operations-mfa-maintenance.sh`. It requires a secret-manager-supplied `DATABASE_URL`, validates batch size (default 200, maximum 1,000), explicitly sets the scheduler role, applies bounded SQL timeouts and emits only aggregate cleanup counts.
+- Added `docs/operations/OPERATIONS-MFA-MAINTENANCE-RUNBOOK.md` with DBA provisioning requirements, least-privilege membership, TLS/secret handling, recommended five-minute cadence, retry/overlap controls, alert conditions and activation acceptance tests.
+- Wired migration 0038, its role-isolation test and a worker-entrypoint smoke invocation into Foundation PostgreSQL 16 CI.
+- **Status: implementation and CI validation pending.** The repository still has no selected production database host, API runtime or scheduler service. The new role is not a login; no scheduler login, production credential, production grant, recurring schedule, alert route or deployment has been created. The checked-in worker is a secure invocation entrypoint, not proof of an automatic recurring job.
+- **Activation remains blocked** on selecting the hosting/scheduler environment, provisioning a dedicated login with membership in `unibud_ops_scheduler` using `INHERIT FALSE, SET TRUE`, verifying secure connectivity and secret rotation, exercising the worker with that non-superuser login, testing monitoring/retry/overlap behavior, and obtaining independent security review and explicit production change approval.
