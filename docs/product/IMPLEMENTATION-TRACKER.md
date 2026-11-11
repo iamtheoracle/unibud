@@ -600,3 +600,14 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Corrected `scripts/e2e/operations-mfa-dual-control.mjs` to assert exactly one request-creation mutation, while retaining the exact one-approval and one-cancellation assertions.
 - Fix commit: `31ac46fe1a99da74173cedff3cc0646ed113ff31`.
 - **Exact-head CI pending.** The prior browser run failed and its production build was skipped; do not mark this workflow passed until the rerun completes.
+
+
+### Operations MFA ephemeral-state maintenance (2026-11-11)
+
+- Added migration `0036_operations_mfa_ephemeral_maintenance.sql` at `b193bd4b36cec9f5c2ca22bb3652d62d18c3260f`.
+- Added PostgreSQL test `0036_operations_mfa_ephemeral_maintenance.test.sql` at `1f20ea9d60afbe6592dd7ae7dc7121deab4681d5`.
+- Added both to Foundation PostgreSQL 16 migration/RLS CI at `1075d2d7a63aa4979effe9f871b331ada9b4feb9`.
+- Worker performs bounded, idempotent cleanup: expires pending dual-control requests through the existing expiry procedure; removes expired exact-session step-up rows; retains consumed assertion nonces for 24 hours after expiry before deleting; removes rate-limit buckets untouched for 24 hours. It uses row locking with `SKIP LOCKED`, caps batches at 1,000 and is executable only by the NOLOGIN Operations owner.
+- Tests cover app-role denial, owner execution, stale-versus-live retention, nonce/step-up foreign-key ordering and batch-size bounds.
+- **Important:** this adds a maintenance worker, not a scheduler. Automatic recurring execution remains NOT IMPLEMENTED until a trusted scheduler/worker identity, credentials, cadence, monitoring and failure alerting are configured and tested.
+- Exact-head CI for the migration/test is pending. No production scheduler or production secrets are configured.
