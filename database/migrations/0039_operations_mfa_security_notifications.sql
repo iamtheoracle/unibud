@@ -89,8 +89,7 @@ CREATE TABLE public.unibud_operator_mfa_notifications (
   UNIQUE(account_id,event_id)
 );
 CREATE INDEX unibud_operator_mfa_notifications_inbox_idx
-  ON public.unibud_operator_mfa_notifications(account_id,created_at DESC,notification_id DESC)
-  WHERE read_at IS NULL;
+  ON public.unibud_operator_mfa_notifications(account_id,created_at DESC,notification_id DESC);
 
 ALTER TABLE public.unibud_operator_mfa_notifications OWNER TO unibud_ops_owner;
 ALTER TABLE public.unibud_operator_mfa_notifications ENABLE ROW LEVEL SECURITY;
