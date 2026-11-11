@@ -18,6 +18,14 @@ const route = readFileSync(
   new URL("../src/app/api/internal/integrations/verification-delivery/status/route.ts", import.meta.url),
   "utf8"
 );
+const enrollmentMigration = readFileSync(
+  new URL("../../../database/migrations/0025_operations_mfa_password_reauthenticated_enrollment.sql", import.meta.url),
+  "utf8"
+);
+const enrollmentRoute = readFileSync(
+  new URL("../src/app/api/internal/operations/mfa/enrollment/start/route.ts", import.meta.url),
+  "utf8"
+);
 
 test("Operations grants are global, narrow, expiring and revocable", () => {
   assert.match(migration, /operator_role IN \([\s\S]*'platform_admin'[\s\S]*'integration_operator'/);
@@ -78,4 +86,27 @@ test("Operations database authorization requires a verified live persisted sessi
   assert.ok(sessionVerifier.includes("ADD COLUMN session_id UUID REFERENCES public.account_sessions"));
   assert.ok(sessionVerifier.includes("actor_account_id, session_id, permission, outcome, request_id"));
   assert.ok(!sessionVerifier.includes("GRANT EXECUTE ON FUNCTION unibud_private.current_session_id() TO unibud_app"));
+});
+
+
+test("MFA enrollment requires password reauthentication and the current validated session", () => {
+  assert.match(enrollmentRoute, /hasSameOrigin\(request\)/);
+  assert.match(enrollmentRoute, /readSessionCookie\(request\)/);
+  assert.match(enrollmentRoute, /sessions\.validate\(token\)/);
+  assert.match(enrollmentRoute, /verifyCredentialsForAccount\(/);
+  assert.match(enrollmentRoute, /accountId: validation\.account\.id/);
+  assert.match(enrollmentRoute, /sessionId: validation\.session\.id/);
+  assert.match(enrollmentRoute, /purpose: "password_reauth"/);
+  assert.match(enrollmentRoute, /matchedTotpStep: null/);
+  assert.match(enrollmentRoute, /encryptSecret\(validation\.account\.id, seed\)/);
+  assert.match(enrollmentRoute, /withSignedSessionTransaction\(/);
+  assert.match(enrollmentRoute, /unibud_operator_mfa_begin_enrollment/);
+  assert.match(enrollmentRoute, /Cache-Control.*no-store/);
+  assert.doesNotMatch(enrollmentRoute, /body\.(accountId|sessionId)/);
+  assert.ok(enrollmentMigration.includes("current_session_id()"));
+  assert.ok(enrollmentMigration.includes(":password_reauth:"));
+  assert.ok(enrollmentMigration.includes("cardinality(g.permissions) > 0"));
+  assert.ok(enrollmentMigration.includes("state='pending'"));
+  assert.ok(enrollmentMigration.includes("unibud_operator_mfa_read_encrypted_secret"));
+  assert.ok(enrollmentMigration.includes("REVOKE ALL ON FUNCTION public.unibud_operator_mfa_begin_enrollment"));
 });
