@@ -279,6 +279,108 @@ REVOKE ALL ON FUNCTION public.unibud_operator_mfa_consume_step_up(BIGINT,BIGINT,
 GRANT EXECUTE ON FUNCTION public.unibud_operator_mfa_consume_step_up(BIGINT,BIGINT,UUID,BIGINT,TEXT)
   TO unibud_app;
 
+-- All other Operations MFA assertion consumers share this verifier so enrollment,
+-- recovery and password reauthentication participate in the same overlap window.
+CREATE FUNCTION unibud_private.verify_operations_mfa_assertion_signature(
+  p_payload TEXT,
+  p_signature TEXT
+) RETURNS BOOLEAN
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+DECLARE
+  v_key BYTEA;
+  v_expected BYTEA;
+  v_supplied BYTEA;
+  v_diff INTEGER;
+  v_index INTEGER;
+  v_valid BOOLEAN := FALSE;
+BEGIN
+  IF p_payload IS NULL OR p_signature IS NULL
+     OR p_signature !~ '^[0-9a-f]{64}
+'Validates short-lived account context against every active account-context verification key during a maximum-two-key rotation overlap.';
+COMMENT ON FUNCTION unibud_private.current_session_id() IS
+'Validates exact-session context against every active session verification key, then independently checks persisted live session state.';
+COMMENT ON FUNCTION public.unibud_operator_mfa_consume_step_up(BIGINT,BIGINT,UUID,BIGINT,TEXT) IS
+'Consumes a one-time exact-session MFA assertion signed by either active Operations MFA assertion key during the bounded rotation overlap.';
+
+COMMIT;
+ THEN
+    RETURN FALSE;
+  END IF;
+  v_supplied := decode(p_signature,'hex');
+  IF octet_length(v_supplied) <> 32 THEN RETURN FALSE; END IF;
+  FOR v_key IN
+    SELECT secret FROM unibud_private.operations_mfa_assertion_signing_keys
+    WHERE active ORDER BY key_id
+  LOOP
+    v_expected := public.hmac(convert_to(p_payload,'UTF8'),v_key,'sha256');
+    v_diff := 0;
+    FOR v_index IN 0..31 LOOP
+      v_diff := v_diff | (get_byte(v_expected,v_index) # get_byte(v_supplied,v_index));
+    END LOOP;
+    IF v_diff = 0 THEN v_valid := TRUE; END IF;
+  END LOOP;
+  RETURN v_valid;
+EXCEPTION WHEN OTHERS THEN
+  RETURN FALSE;
+END
+$function$;
+ALTER FUNCTION unibud_private.verify_operations_mfa_assertion_signature(TEXT,TEXT)
+  OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION unibud_private.verify_operations_mfa_assertion_signature(TEXT,TEXT)
+  FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION unibud_private.verify_operations_mfa_assertion_signature(TEXT,TEXT)
+  TO unibud_ops_owner;
+
+DO $rotate_existing_mfa_verifiers$
+DECLARE
+  v_signature TEXT;
+  v_payload TEXT;
+  v_definition TEXT;
+  v_replaced TEXT;
+  v_item RECORD;
+BEGIN
+  FOR v_item IN
+    SELECT * FROM (VALUES
+      ('public.unibud_operator_mfa_begin_enrollment(text,bigint,bigint,uuid,text)'::regprocedure,
+       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':password_reauth:'' ||' ||
+       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-' ),
+      ('public.unibud_operator_mfa_confirm_enrollment(bigint,bigint,uuid,bigint,text,text[])'::regprocedure,
+       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':enrollment_confirm:'' ||' ||
+       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':'' || p_matched_totp_step::TEXT'),
+      ('public.unibud_operator_mfa_redeem_recovery_code(text,bigint,bigint,uuid,text)'::regprocedure,
+       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':recovery:'' ||' ||
+       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-'),
+      ('public.unibud_operator_mfa_regenerate_recovery_codes(bigint,bigint,uuid,text,text[])'::regprocedure,
+       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':password_reauth:'' ||' ||
+       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-'),
+      ('unibud_private.consume_operations_password_reauth_assertion(bigint,bigint,uuid,text)'::regprocedure,
+       'v1:' || ''' || v_account::TEXT || '':'' || v_session::TEXT || '':password_reauth:'' ||' ||
+       ' p_issued_at::TEXT || '':'' || p_expires_at::TEXT || '':'' || p_nonce::TEXT || '':-')
+    ) AS items(function_oid,payload_template)
+  LOOP
+    v_definition := pg_get_functiondef(v_item.function_oid);
+    -- Replace the old single-key lookup, HMAC calculation and comparison in
+    -- one operation. A migration must fail rather than silently skip a verifier.
+    v_replaced := regexp_replace(
+      v_definition,
+      'SELECT secret INTO v_key.*?IF v_diff[[:space:]]*<>[[:space:]]*0 THEN RETURN FALSE; END IF;',
+      'IF NOT unibud_private.verify_operations_mfa_assertion_signature(' ||
+      v_item.payload_template || ',p_signature) THEN RETURN FALSE; END IF;',
+      'n'
+    );
+    IF v_replaced = v_definition THEN
+      RAISE EXCEPTION 'Could not safely convert MFA verifier % to overlap mode',
+        v_item.function_oid::regprocedure;
+    END IF;
+    EXECUTE v_replaced;
+  END LOOP;
+END
+$rotate_existing_mfa_verifiers$;
+
 COMMENT ON FUNCTION unibud_private.current_account_id() IS
 'Validates short-lived account context against every active account-context verification key during a maximum-two-key rotation overlap.';
 COMMENT ON FUNCTION unibud_private.current_session_id() IS
