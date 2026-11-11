@@ -84,6 +84,9 @@ BEGIN
  IF has_schema_privilege('unibud_ops_owner','public','CREATE') THEN
   RAISE EXCEPTION 'Operations function owner retains unnecessary public-schema CREATE';
  END IF;
+ IF NOT has_schema_privilege('unibud_ops_owner','unibud_private','USAGE') THEN
+  RAISE EXCEPTION 'Operations function owner cannot resolve private verifier functions';
+ END IF;
  SELECT actor_account_id,session_id INTO actor,session
  FROM public.unibud_operator_audit_events
  WHERE request_id='f0230000-0000-4000-8000-000000000091';
