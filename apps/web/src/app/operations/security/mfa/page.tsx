@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { sessionCookieName } from "@/lib/server/identity/http";
 import OperationsMfaClient from "./operations-mfa-client";
+import OperationsMfaNotifications from "./operations-mfa-notifications";
 
 export const dynamic = "force-dynamic";
 
@@ -16,5 +17,5 @@ export default async function OperationsMfaPage() {
   } catch {
     redirect("/login");
   }
-  return <OperationsMfaClient />;
+  return <><OperationsMfaClient /><main className="mfa-shell"><OperationsMfaNotifications /></main></>;
 }
