@@ -30,3 +30,12 @@ test("MFA UI does not persist provisioning secrets or recovery codes in browser 
   assert.match(client, /cache: "no-store"/);
   assert.match(client, /QR scanning is not available in this build/);
 });
+
+
+test("MFA browser test fixture is unavailable in production and CI invokes the real UI workflow", () => {
+  const fixture = readFileSync(new URL("../src/app/e2e/operations-mfa/page.tsx", import.meta.url), "utf8");
+  const workflow = readFileSync(new URL("../../../.github/workflows/web.yml", import.meta.url), "utf8");
+  assert.match(fixture, /process\.env\.NODE_ENV === "production"/);
+  assert.match(fixture, /UNIBUD_E2E_TEST_MODE !== "true"/);
+  assert.match(workflow, /scripts\/e2e\/operations-mfa\.mjs/);
+});
