@@ -7,7 +7,8 @@ export type OperationsMfaApiAction =
   | "request_create"
   | "request_decide"
   | "request_cancel"
-  | "request_read";
+  | "request_read"
+  | "notification_read";
 
 /** The database fixes each action's limit and verifies the caller's live grant/MFA step-up. */
 export async function consumeOperationsMfaApiRateLimit(
