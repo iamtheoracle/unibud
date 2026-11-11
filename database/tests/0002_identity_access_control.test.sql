@@ -7,8 +7,11 @@ INSERT INTO accounts (id,status) VALUES
 INSERT INTO profiles (id,owner_account_id,kind,handle,handle_normalized,display_name) VALUES
  ('20000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','personal','isolation-a','isolation-a','Isolation A'),
  ('20000000-0000-4000-8000-000000000002','10000000-0000-4000-8000-000000000002','personal','isolation-b','isolation-b','Isolation B');
-INSERT INTO unibud_private.context_signing_keys(key_id,secret)
-VALUES ('ci-test-key',decode(repeat('5a',32),'hex'));
+-- The foundation migration already installs one active key. Rotate to a CI-only
+-- synthetic key inside this transaction; ROLLBACK restores the original key state.
+UPDATE unibud_private.context_signing_keys SET active=false WHERE active;
+INSERT INTO unibud_private.context_signing_keys(key_id,secret,active)
+VALUES ('ci-test-key',decode(repeat('5a',32),'hex'),true);
 
 -- Sign account A context using the CI-only synthetic key before assuming app role.
 WITH context AS (
