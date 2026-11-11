@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOperationsMfaAssertionFromEnvironment } from "@/lib/server/operations/operations-mfa-assertions";
+import { consumeOperationsMfaApiRateLimit } from "@/lib/server/operations/operations-mfa-rate-limit";
 import { createSignedSessionContextFromEnvironment, withSignedSessionTransaction } from "@/lib/server/database/session-context";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
@@ -34,6 +35,10 @@ export async function POST(request: NextRequest) {
     const { authentication, sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
+    const context = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
+    if (!await consumeOperationsMfaApiRateLimit(validation.account.id, validation.session.id, "request_create")) {
+      return response({ ok: false, error: "Too many security requests. Wait before trying again." }, 429);
+    }
     const passwordVerified = await authentication.verifyCredentialsForAccount({
       accountId: validation.account.id,
       channel: body.channel,
@@ -49,7 +54,6 @@ export async function POST(request: NextRequest) {
       matchedTotpStep: null,
       ttlSeconds: 60
     });
-    const context = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
     const requestId = await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
       const result = await client.query<{ request_id: string | null }>(
         "SELECT public.unibud_operator_mfa_request_security_change($1,$2,$3,$4,$5,$6,$7) AS request_id",
