@@ -457,3 +457,14 @@ At every development stage:
 - Added PostgreSQL tests for forged/replayed assertions, replacement of old digests, audit, application-role isolation and denial without current-session step-up; added route/UI contract tests. Foundation CI applies migration 0030 and its test.
 - **Verification:** exact-head CI for the 0030 route, migration, UI and tests is pending. The prior status migration/test passed; that does not prove this newer checkpoint.
 - **Still outstanding:** controlled MFA disable/reset with dual control, QR generation, full browser E2E for enrollment/challenge/recovery/regeneration, notification delivery, session lifecycle invalidation, key provisioning/rotation and disaster-recovery drills, independent security review and production-like migration/recovery review.
+
+
+## Verified checkpoint — 2026-11-11, exact head bee8603a832fe09307384e4a8faa2820ed9ec394
+
+- All three GitHub workflows completed successfully on this exact head: Foundation checks, Oracle Arc API, and UNIBUD Web and Database.
+- Foundation PostgreSQL 16 migration/RLS job passed all migrations/tests through 0030, including the MFA enrollment, challenge, recovery, status, pending-resume and recovery-regeneration SQL tests, the existing TOTP assertion replay race, and the new concurrent recovery-redemption race.
+- Web workflow passed PostgreSQL migration validation, TypeScript typecheck, contract tests, server-security unit tests, lint, existing profile browser E2E, and production build.
+- Oracle Arc API tests passed. This does not mean local model inference or all Oracle Arc tools are deployed/operational.
+- **Scope of browser proof:** the browser E2E in this workflow is the existing profile E2E; it does not exercise the new MFA page or the MFA flows end-to-end.
+- **Session lifecycle note:** step-up is bound to the verified current persisted session. The database session verifier denies revoked, expired, suspended and rotated-out sessions, and a new session cannot inherit an old step-up. Cleanup/pruning of expired step-up and assertion records remains outstanding.
+- PR #15 remains OPEN and DRAFT, not merged or deployed. Issue #16's independent security review and production-like migration/recovery review remain release blockers.
