@@ -689,3 +689,11 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Wired migration 0040 and its test into Foundation CI. Added `docs/security/SIGNING-KEY-ROTATION.md` with staged provisioning, signer rollout, TTL/drain wait, retirement, rollback and incident boundaries.
 - **CI status: pending on the current branch head.** Do not mark the migration/test verified until the exact-head Foundation run passes. Any regex-based conversion failure in migration 0040 must stop the migration; it is deliberately fail-closed rather than silently leaving a single-key verifier.
 - **Production rotation is not performed.** No production key material, secret-manager binding, application deployment, session revocation or key retirement was changed. PR #15 remains draft/open/unmerged; independent review remains outstanding.
+
+### CI remediation — baseline migration test and browser dependency setup (2026-11-11)
+
+- Exact-head CI for `73faeed7164bf7471afab731746604ce42ae1fc2` exposed two independent validation issues.
+- The Web/Database migration job applies migrations 0001–0017, while the two-active-key policy is introduced only by migration 0040. The earlier edit had placed a migration-0040 assertion in baseline test 0002, making that test depend on a migration that the job had not applied. Removed that misplaced assertion; test 0002 now validates the original single-key baseline, while test 0040 remains the authoritative overlap/third-key/retirement coverage and runs in Foundation CI after migration 0040.
+- The Web CI Playwright install step used `--with-deps`, which invokes the hosted runner's apt package installation. The run failed in that dependency-install step before browser E2E or production build. Changed the step to install the Chromium browser without invoking apt; the hosted Ubuntu runner supplies the system libraries. The E2E suite itself must still pass on the new exact head before this is considered verified.
+- **Current exact head:** `9e2634bb19d33d9592596abf7c3208a1a0a710c5`. Foundation, Web/Database and Oracle Arc API workflows were queued at the last status check. No success is claimed for this checkpoint.
+- These are CI/test-harness corrections only. They do not alter production data, secrets, scheduler activation, deployment state or PR approval boundaries.
