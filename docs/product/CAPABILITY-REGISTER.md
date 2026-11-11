@@ -336,3 +336,8 @@ Foundation PostgreSQL 16 migrations and tests, including migration 0025 and conc
 ### Operations MFA enrollment confirmation and activation
 
 Migration 0026 and the enrollment-confirm route now implement a database-verified, exact-session activation step. The accepted TOTP step, one-time assertion nonce and 8–16 recovery-code digests are persisted atomically; plaintext recovery codes are returned only once after commit. Ten failed attempts trigger a 15-minute lockout, and the pending-enrollment replacement path cannot clear an active lockout. Foundation CI includes the new migration and PostgreSQL test. **Status: implemented; exact-head CI and browser E2E pending.** This is not an end-to-end MFA release: the challenge route must still create the five-minute exact-session step-up, and recovery, disable/reset, UI, audit, operational keys and independent review remain outstanding.
+
+
+### Operations MFA TOTP challenge and exact-session step-up
+
+Added a same-origin server route that validates the current persisted session, decrypts the account-bound seed only server-side, verifies TOTP and submits a signed, purpose-bound assertion to PostgreSQL. Migration 0024 consumes the assertion once, advances the accepted TOTP step atomically and creates a five-minute step-up for the exact session. Invalid attempts use migration 0026's failure counter and lockout. **Status: implemented; exact-head CI and browser E2E pending.** This does not complete MFA: user interface, recovery, disable/reset, status, event audit/notifications, operational key management and independent review remain outstanding.
