@@ -118,3 +118,10 @@ The protected append-only MFA event log records enrollment start/confirmation, c
 Migration 0028 adds a current-session-only status function and the status endpoint. It reports the operator's own credential state, lockout and current exact-session step-up only; it never accepts caller-supplied account/session IDs and does not reveal status to non-operators. Migration 0029 adds a pending-only secret accessor that requires a fresh, one-time password_reauth assertion. The new resume route revalidates the session and password before reissuing provisioning details for a live pending credential; active secrets cannot be read through this accessor.
 
 The authenticated /operations/security/mfa interface now covers enrollment start/resume, confirmation, recovery-code acknowledgement, challenge and recovery redemption. It does not persist provisioning material or recovery codes in browser storage. QR generation is not included yet; manual setup is a temporary fallback. The status/resume migrations and PostgreSQL tests are included in Foundation CI; exact-head CI and browser E2E for this interface must still pass before accepting the checkpoint.
+
+
+### Recovery-code regeneration checkpoint — 2026-11-11
+
+Migration 0030 and the regeneration route require a current-session password reauthentication assertion plus an unexpired MFA step-up for the exact same persisted session. PostgreSQL consumes the assertion nonce, replaces every recovery digest atomically and writes a recovery_codes_regenerated audit event. The route returns plaintext codes once after commit. The MFA page only offers regeneration when its status shows an active step-up; the database rechecks expiry at execution time.
+
+A previous recovery-code set is invalid as soon as regeneration commits. Operators must save the new set securely. Exact-head CI and browser E2E for this latest addition remain pending. Disable/reset is intentionally not a self-service bypass and requires a separately reviewed dual-control process.
