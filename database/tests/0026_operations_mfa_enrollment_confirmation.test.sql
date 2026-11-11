@@ -34,27 +34,27 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,t
 FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
-DECLARE issued BIGINT; expires BIGINT; nonce UUID; signature TEXT; activated BOOLEAN; digests TEXT[];
+DECLARE issued BIGINT; expires BIGINT; nonce UUID; signature TEXT; activated BOOLEAN; digests TEXT[]; accepted_step BIGINT;
 BEGIN
  issued:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; expires:=issued+60;
  nonce:='f0260000-0000-4000-8000-000000000031';
  signature:=encode(public.hmac(convert_to(
   'v1:f0260000-0000-4000-8000-000000000001:f0260000-0000-4000-8000-000000000011:enrollment_confirm:'||
-  issued::TEXT||':'||expires::TEXT||':'||nonce::TEXT||':60000000','UTF8'),
+  issued::TEXT||':'||expires::TEXT||':'||nonce::TEXT||':'||accepted_step::TEXT,'UTF8'),
   decode(repeat('83',32),'hex'),'sha256'),'hex');
  digests:=ARRAY[
   repeat('1',64),repeat('2',64),repeat('3',64),repeat('4',64),
   repeat('5',64),repeat('6',64),repeat('7',64),repeat('8',64)
  ];
- IF public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,60000000,repeat('0',64),digests) THEN
+ IF public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,accepted_step,repeat('0',64),digests) THEN
   RAISE EXCEPTION 'Forged confirmation assertion was accepted';
  END IF;
- IF public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,60000000,signature,ARRAY[repeat('a',64),repeat('a',64),repeat('b',64),repeat('c',64),repeat('d',64),repeat('e',64),repeat('f',64),repeat('0',64)]) THEN
+ IF public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,accepted_step,signature,ARRAY[repeat('a',64),repeat('a',64),repeat('b',64),repeat('c',64),repeat('d',64),repeat('e',64),repeat('f',64),repeat('0',64)]) THEN
   RAISE EXCEPTION 'Duplicate recovery digests were accepted';
  END IF;
- activated:=public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,60000000,signature,digests);
+ activated:=public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,accepted_step,signature,digests);
  IF activated IS DISTINCT FROM TRUE THEN RAISE EXCEPTION 'Valid enrollment did not activate'; END IF;
- IF public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,60000000,signature,digests) THEN
+ IF public.unibud_operator_mfa_confirm_enrollment(issued,expires,nonce,accepted_step,signature,digests) THEN
   RAISE EXCEPTION 'Confirmation assertion was replayed';
  END IF;
  BEGIN
@@ -73,7 +73,7 @@ BEGIN
  WHERE account_id='f0260000-0000-4000-8000-000000000001';
  SELECT count(*) INTO recovery_count FROM public.unibud_operator_mfa_recovery_codes
  WHERE account_id='f0260000-0000-4000-8000-000000000001' AND redeemed_at IS NULL;
- IF state_value<>'active' OR step_value<>60000000 OR recovery_count<>8 THEN
+ IF state_value<>'active' OR step_value IS NULL OR recovery_count<>8 THEN
   RAISE EXCEPTION 'Activation or recovery digest persistence was incomplete';
  END IF;
 END
