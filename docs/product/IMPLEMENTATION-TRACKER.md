@@ -494,3 +494,16 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - **Status: contract/documentation only.** No migration, database procedure, route, UI, notification, or runtime behavior has been implemented or tested for dual-control disable/reset. Do not describe it as available.
 - Next code slice: inspect current migrations 0022–0030 and assertion-purpose handling; add the protected request schema and narrow SECURITY DEFINER procedures; prove requester/approver distinctness and concurrency behavior on PostgreSQL before adding routes or UI.
 - PR #15 remains draft/open/unmerged. Issue #16 remains an independent security blocker. No production migration or deployment is authorised.
+
+
+### Operations MFA dual-control — database foundation added, verification pending
+
+- Added forward-only migration `database/migrations/0031_operations_mfa_dual_control.sql`.
+- Added protected MFA security-request storage with a 30-minute expiry, one pending request per target, requester and exact persisted session attribution, action/reason/policy fields, and separate approver identity/session fields.
+- Added a database-only password reauthentication assertion consumer. It derives account/session from the signed transaction context, verifies the assertion signature and time window, and consumes the nonce once.
+- Added request and decision procedures. Both require the corresponding new scoped grant, exact-session MFA step-up and fresh password reauthentication. PostgreSQL denies requester self-approval and target self-approval, rechecks the requester's live session/grant/MFA state, and row-locks the request before deciding.
+- Approval atomically marks the request complete, removes all target step-ups, recovery digests and authenticator credential, and appends audit events. Rejection is terminal and audited. Application roles have no direct request-table access.
+- Added PostgreSQL test `database/tests/0031_operations_mfa_dual_control.test.sql` for request creation, requester self-approval denial, target self-approval denial, distinct-operator approval, replay/second-decision denial, target credential/recovery/step-up invalidation, audit and app-role isolation.
+- Wired migration 0031 and its test into Foundation CI.
+- **Status: database implementation committed; exact-head CI pending.** No API route, request/approval UI, cancellation/expiry worker, notification delivery, concurrency race script, or independent security review is included yet. Do not call the feature available or production-ready.
+- New grants require trusted DBA provisioning of `operations.mfa.security.request` and `operations.mfa.security.approve`; no grant is provisioned by this migration.
