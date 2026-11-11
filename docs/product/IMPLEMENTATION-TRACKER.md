@@ -581,3 +581,11 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Added PostgreSQL test 0035 for action-specific permission boundaries, fixed-window throttling and denial of direct application-role table access. Added route-boundary assertions and wired migration/test into Foundation CI.
 - Corrected the dual-control Playwright selector to scope the password input to the request form (commit `fa69fd413e3a852dc30396f92ed5df44f44f0486`).
 - **Status: code committed; exact-head CI pending.** No production deployment. Per-account throttling is an additional control, not a substitute for edge/IP abuse controls, alerting or independent review.
+
+
+## UNIBUD / Oracle Arc master blueprint
+
+- Added `docs/product/UNIBUD-ORACLE-ARC-MASTER-PLAN.md` at commit `bda20dcc0468207df869e6af867a16637326279d`.
+- This consolidates the product purpose, module boundaries, identity/profile model, platform architecture, Oracle / SPARK / ORBITS responsibilities, AI agent governance, financial and safety boundaries, history-preservation rules, delivery roadmap and production acceptance gates.
+- It is a scope and architecture reference, not a statement that the entire product is implemented. Future product decisions must be appended to the decision history with rationale and supersession links; never silently overwrite an approved requirement.
+- **Next Operations action:** correct the Playwright test accounting in `scripts/e2e/operations-mfa.mjs`. The latest recorded Web/Database run observed ten intercepted requests after the request console added queue reads, while the legacy assertion expected six. The test must assert the six expected MFA lifecycle mutation endpoints exactly once and account for read-only queue GETs separately. The attempted test-file update has not been committed; do not claim this fix is implemented.
