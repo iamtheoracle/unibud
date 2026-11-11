@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOperationsMfaAssertionFromEnvironment } from "@/lib/server/operations/operations-mfa-assertions";
+import { consumeOperationsMfaApiRateLimit } from "@/lib/server/operations/operations-mfa-rate-limit";
 import { createSignedSessionContextFromEnvironment, withSignedSessionTransaction } from "@/lib/server/database/session-context";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
@@ -34,6 +35,9 @@ export async function POST(request: NextRequest, context: Context) {
     const { authentication, sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
+    if (!await consumeOperationsMfaApiRateLimit(validation.account.id, validation.session.id, "request_decide")) {
+      return response({ ok: false, error: "Too many security decisions. Wait before trying again." }, 429);
+    }
     const passwordVerified = await authentication.verifyCredentialsForAccount({
       accountId: validation.account.id, channel: body.channel,
       identifier: body.identifier, password: body.password
