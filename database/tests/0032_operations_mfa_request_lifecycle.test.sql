@@ -40,10 +40,10 @@ SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,t
 FROM x;
 
 INSERT INTO public.unibud_operator_mfa_security_requests(
- request_id,target_account_id,requested_action,requester_account_id,requester_session_id,reason_code,expires_at
+ request_id,target_account_id,requested_action,requester_account_id,requester_session_id,reason_code,expires_at,created_at
 ) VALUES
  ('f0320000-0000-4000-8000-000000000031','f0320000-0000-4000-8000-000000000002','reset','f0320000-0000-4000-8000-000000000001','f0320000-0000-4000-8000-000000000011','lost_device',clock_timestamp()+interval '20 minutes'),
- ('f0320000-0000-4000-8000-000000000032','f0320000-0000-4000-8000-000000000002','disable','f0320000-0000-4000-8000-000000000001','f0320000-0000-4000-8000-000000000011','lost_device',clock_timestamp()-interval '1 minute');
+ ('f0320000-0000-4000-8000-000000000032','f0320000-0000-4000-8000-000000000002','disable','f0320000-0000-4000-8000-000000000001','f0320000-0000-4000-8000-000000000011','lost_device',clock_timestamp()-interval '1 minute',clock_timestamp()-interval '2 minutes');
 
 SET LOCAL ROLE unibud_app;
 DO $cancel$
