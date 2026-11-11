@@ -96,7 +96,8 @@ BEGIN
 
   IF v_account IS NULL OR v_session IS NULL OR p_issued_at IS NULL
      OR p_expires_at IS NULL OR p_nonce IS NULL OR p_matched_totp_step IS NULL
-     OR p_matched_totp_step < 0 OR p_signature IS NULL OR length(p_signature) <> 64 OR p_signature ~ '[^0-9a-f]' > v_now + 5 OR p_expires_at < v_now
+     OR p_matched_totp_step < 0 OR p_signature IS NULL OR length(p_signature) <> 64 OR p_signature ~ '[^0-9a-f]'
+     OR p_issued_at > v_now + 5 OR p_expires_at < v_now
      OR p_expires_at <= p_issued_at OR p_expires_at - p_issued_at > 120 THEN
     RETURN FALSE;
   END IF;
