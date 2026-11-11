@@ -316,3 +316,8 @@ The account context signer and session context signer are now separate. The app 
 ### Operations MFA session-bound step-up — 2026-11-11
 
 Server-side signed MFA assertions now bind account, exact persisted session, purpose, time window, nonce and matched TOTP step using a distinct assertion key. Migration 0024 adds private assertion-key storage, protected nonce consumption and exact-session step-up records. The database consumes the assertion and advances the TOTP counter atomically; Operations permissions now fail closed without an active, unlocked MFA credential and current session step-up. PostgreSQL integration coverage is added to Foundation CI but exact-head CI is pending. Enrollment/challenge/reauthentication/recovery routes and UI, concurrency proof, lockout, key provisioning/rotation and independent security review are still incomplete. This is not an end-to-end active MFA service.
+
+
+### MFA audit integrity and concurrent replay test — 2026-11-11
+
+The database now derives the effective Operations audit outcome: app callers cannot write an "allowed" outcome unless current permission (including active MFA and exact-session step-up) is true. Tests cover denied/allowed outcome derivation. A two-connection PostgreSQL concurrency script now attempts the same signed assertion simultaneously and requires one success and one rejection; it is included in Foundation CI. Exact-head CI for this refinement is pending.
