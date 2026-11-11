@@ -570,3 +570,14 @@ The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA 
 - Added the Operations dual-control panel for request submission, separate approval/rejection and requester-only cancellation, backed by authenticated API data.
 - Added a Playwright dual-control workflow covering queue review, independent approval, own-request cancellation and request creation; wired it into Web CI.
 - **Verification caveat:** latest observed Web E2E run failed in the older MFA lifecycle script because it asserted exactly six intercepted requests while the new request panel also performs list GETs. Profile browser workflows passed. The test harness must distinguish GET reads from POST actions and rerun on exact head. No claim of passing full Web CI.
+
+
+### Operations MFA API throttling — implementation slice (2026-11-11)
+
+- Added migration `0035_operations_mfa_api_rate_limits.sql` with an Operations-owner-owned, application-inaccessible rate-limit table and SECURITY DEFINER consumer.
+- Limits are fixed in PostgreSQL, not supplied by callers: request creation 5 per 15 minutes; approve/reject 10 per 15 minutes; cancellation 10 per 15 minutes; list/detail reads 60 per minute.
+- Each action maps to its required scoped permission and requires the validated current account/session plus live MFA step-up. Counters are atomic per account and action.
+- Added `operations-mfa-rate-limit.ts` server adapter and wired all four API action classes before expensive password verification or read execution.
+- Added PostgreSQL test 0035 for action-specific permission boundaries, fixed-window throttling and denial of direct application-role table access. Added route-boundary assertions and wired migration/test into Foundation CI.
+- Corrected the dual-control Playwright selector to scope the password input to the request form (commit `fa69fd413e3a852dc30396f92ed5df44f44f0486`).
+- **Status: code committed; exact-head CI pending.** No production deployment. Per-account throttling is an additional control, not a substitute for edge/IP abuse controls, alerting or independent review.
