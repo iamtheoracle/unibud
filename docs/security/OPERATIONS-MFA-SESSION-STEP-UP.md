@@ -189,3 +189,12 @@ Migration 0027 adds a protected append-only MFA event table and an account/sessi
 The recovery procedure verifies a signed `recovery` assertion with no TOTP-step claim, consumes one unused account-bound recovery digest exactly once, deletes all session step-up records and removes the old credential and recovery set. It deliberately grants no step-up. The new same-origin recovery route requires the current validated session and directs the operator to password-reauthenticated enrollment. The recovery migration and PostgreSQL integration test are wired into Foundation CI; exact-head CI and browser E2E remain pending.
 
 Recovery-code regeneration, disable/reset, status/UI, acknowledgement, notification delivery, session lifecycle invalidation, concurrent redemption proof, key provisioning/rotation, recovery drills and independent security review remain release blockers.
+
+
+## Implementation checkpoint: status, pending resume and UI — 2026-11-11
+
+Migration 0028 adds a no-identity-argument status function deriving account and exact session from verified transaction context. It reports only the current operator's own credential state, lockout and current-session step-up. PostgreSQL tests cover a second session not inheriting step-up and a non-operator receiving no Operations state.
+
+Migration 0029 adds a pending-only encrypted-secret accessor. It verifies and consumes a short-lived password_reauth assertion for the current account/session and returns ciphertext only for a live, unlocked pending enrollment. The resume route also reauthenticates the account password before reconstructing the provisioning URI, allowing recovery from a closed setup screen without making active credentials readable through this path.
+
+An authenticated /operations/security/mfa interface now connects status, enrollment start/resume, confirmation, recovery-code acknowledgement, challenge and recovery redemption. It keeps secrets in component memory only. QR generation and MFA browser E2E are still outstanding; manual setup is clearly marked as a temporary fallback. Recovery-code regeneration, controlled disable/reset, notifications, lifecycle invalidation, key management and independent review remain release blockers.
