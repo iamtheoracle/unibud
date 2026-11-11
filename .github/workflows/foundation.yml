@@ -69,6 +69,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0032_operations_mfa_request_lifecycle.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0033_operations_mfa_request_read_api.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0034_operations_mfa_requester_read_scope.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0035_operations_mfa_api_rate_limits.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -106,6 +107,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0032_operations_mfa_request_lifecycle.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0033_operations_mfa_request_read_api.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0034_operations_mfa_requester_read_scope.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0035_operations_mfa_api_rate_limits.test.sql
       - name: Verify concurrent MFA assertion replay prevention
         env:
           PGPASSWORD: unibud_test_only
