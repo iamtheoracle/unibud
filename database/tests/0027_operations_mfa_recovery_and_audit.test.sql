@@ -86,4 +86,18 @@ BEGIN
  END IF;
 END
 $test$;
+
+SET LOCAL ROLE unibud_ops_owner;
+DO $test$
+BEGIN
+ BEGIN
+  UPDATE public.unibud_operator_mfa_events
+  SET event_type='challenge_succeeded'
+  WHERE event_type='recovery_code_redeemed';
+  RAISE EXCEPTION 'MFA audit event mutation unexpectedly succeeded';
+ EXCEPTION WHEN insufficient_privilege THEN NULL;
+ END;
+END
+$test$;
+RESET ROLE;
 ROLLBACK;
