@@ -54,6 +54,8 @@ BEGIN
      OR position('verify_operations_mfa_assertion_signature' IN
       pg_get_functiondef('public.unibud_operator_mfa_regenerate_recovery_codes(bigint,bigint,uuid,text,text[])'::regprocedure))=0
      OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_read_pending_secret(bigint,bigint,uuid,text)'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
       pg_get_functiondef('unibud_private.consume_operations_password_reauth_assertion(bigint,bigint,uuid,text)'::regprocedure))=0 THEN
     RAISE EXCEPTION 'An Operations MFA assertion verifier was not converted to overlap mode';
   END IF;
