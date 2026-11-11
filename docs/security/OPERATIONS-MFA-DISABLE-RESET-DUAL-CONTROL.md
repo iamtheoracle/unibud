@@ -180,3 +180,12 @@ Added PostgreSQL requester-scope tests and static route/UI boundary tests. Exact
 The branch now contains the protected request read model (migrations 0033/0034), authenticated bounded GET list/detail endpoint, requester-only read visibility, and Operations request/review UI. Do not treat earlier paragraphs saying these are absent as current state.
 
 At head 78cf131c4b98d3c35aaa6cef7d2f9202c404f195, Foundation and Oracle Arc API workflows passed and PostgreSQL migration validation passed. Web/Database failed in the Playwright MFA E2E because a generic Current password locator matched the enrollment form and the dual-control request form. Profile E2E passed; typecheck, contracts, server security tests and lint passed; build was skipped after the E2E failure. The enrollment fields now have the distinct accessible name Authenticator setup password, and the E2E selectors use it. Fix commits: 21b6a549609d923f39c69dd05010f494d615a78d and 2e304b2c2d09b4ee98630aee48300e10c49f0bf3. Exact-head rerun is pending. No production enablement.
+
+
+## Request queue/read API and review interface checkpoint
+
+Migrations 0033 and 0034 add a bounded permission-gated request read model. Approvers with current exact-session MFA step-up can read the pending queue and request details; request-permission holders can read only their own requests. The projection excludes persisted session IDs, credentials, MFA seeds and recovery digests. An authenticated, no-store GET endpoint validates pagination and cursor inputs and executes through a server-signed session transaction.
+
+The Operations MFA page now includes request submission, a pending queue, independent review/approve/reject controls and requester-only cancellation. A new Playwright test covers queue review, approval, cancellation and request creation and is wired into Web CI.
+
+**Verification caveat:** the latest observed Web E2E run failed in the existing MFA lifecycle script at an exact intercepted-request count assertion (10 observed versus 6 expected). The profile browser workflows passed, and Foundation integrity/PostgreSQL jobs passed. The MFA E2E harness currently intercepts queue GET requests as if they were POST actions; correct that distinction and rerun all exact-head CI before marking the browser experience verified. No production enablement.
