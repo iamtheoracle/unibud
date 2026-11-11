@@ -484,3 +484,13 @@ At every development stage:
 The local authenticator QR implementation is verified at code head `9cf961e4658146b3bc24fe50a238aa9f7f144178`. All three GitHub workflows completed successfully: Foundation `42966207133`, Oracle Arc API `42966207125`, and UNIBUD Web and Database `42966207290`. The Web/Database run passed dependency installation, typecheck, contract tests, server security tests, lint, profile + MFA browser E2E and production build. Foundation passed migrations through 0030, RLS/isolation checks and both MFA concurrency scripts.
 
 The code is tested in CI, not deployed. PR #15 remains draft/open/unmerged. MFA is still not production-enabled because operational key provisioning/rotation/recovery, disable/reset dual control, lifecycle notifications/cleanup, independent security review and production-like migration/rollback approval remain.
+
+
+### Operations MFA dual-control disable/reset — contract established, code not yet implemented
+
+- Added `docs/security/OPERATIONS-MFA-DISABLE-RESET-DUAL-CONTROL.md` in commit `16dd3596534f9fd77a9501394cd7ab8e2c7b907a`.
+- The contract requires distinct requester and approver identities, fresh password reauthentication and exact-session MFA step-up for both, verified database-derived actor/session identity, immutable request details, expiry, atomic single-use approval, row locking, append-only audit, and complete invalidation of target step-ups and recovery codes.
+- Self-approval is prohibited even across multiple sessions; the target account cannot approve its own reset. The UI is not authoritative. No break-glass bypass is introduced.
+- **Status: contract/documentation only.** No migration, database procedure, route, UI, notification, or runtime behavior has been implemented or tested for dual-control disable/reset. Do not describe it as available.
+- Next code slice: inspect current migrations 0022–0030 and assertion-purpose handling; add the protected request schema and narrow SECURITY DEFINER procedures; prove requester/approver distinctness and concurrency behavior on PostgreSQL before adding routes or UI.
+- PR #15 remains draft/open/unmerged. Issue #16 remains an independent security blocker. No production migration or deployment is authorised.
