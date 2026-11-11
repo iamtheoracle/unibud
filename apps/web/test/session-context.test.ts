@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   createSignedSessionContext,
+  createSignedSessionContextFromEnvironment,
   withSignedSessionTransaction,
   type SignedSessionContext
 } from "../src/lib/server/database/session-context-core.ts";
@@ -76,4 +77,24 @@ test("rolls back and releases the connection after a failed operation", async ()
   assert.equal(calls[0], "BEGIN");
   assert.equal(calls[2], "ROLLBACK");
   assert.equal(released, true);
+});
+
+
+test("environment signing requires distinct account and session secrets", () => {
+  const previousAccount = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
+  const previousSession = process.env.UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY;
+  try {
+    process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = Buffer.alloc(32, 0x11).toString("hex");
+    process.env.UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY = Buffer.alloc(32, 0x22).toString("hex");
+    const context = createSignedSessionContextFromEnvironment(accountA, sessionA, 1_800_000_000, 60);
+    assert.equal(context.signature.length, 64);
+    assert.equal(context.sessionSignature.length, 64);
+    delete process.env.UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY;
+    assert.throws(() => createSignedSessionContextFromEnvironment(accountA, sessionA));
+  } finally {
+    if (previousAccount === undefined) delete process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
+    else process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = previousAccount;
+    if (previousSession === undefined) delete process.env.UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY;
+    else process.env.UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY = previousSession;
+  }
 });
