@@ -128,3 +128,15 @@ This contract is complete only when the migration, procedures, routes, UI, audit
 Migration `0031_operations_mfa_dual_control.sql` and PostgreSQL test `0031_operations_mfa_dual_control.test.sql` have now been added to the PR branch. The database slice includes protected request storage, a 30-minute pending lifetime, request and approve/reject procedures, single-use password-reauth assertion consumption, exact-session MFA step-up checks, scoped request/approval grants, requester and target self-approval denial, request row locking, requester-session/grant/MFA revalidation, and atomic target credential/recovery/step-up invalidation with audit events.
 
 Foundation CI has been wired to apply and test migration 0031. **Exact-head CI has not yet been confirmed.** API routes, review UI, cancellation, expiry processing, notifications, race/concurrency stress tests and independent security review are still outstanding. This is a database foundation, not a complete or production-enabled feature.
+
+
+## Implementation checkpoint — request cancellation and expiry
+
+Migration `0032_operations_mfa_request_lifecycle.sql` adds:
+- cancellation by the original requester only, bound to the same verified account and exact persisted session, with a current MFA step-up and scoped request permission;
+- row locking and a pending/unexpired-state check so a cancellation cannot overwrite an approval, rejection or expiry;
+- append-only cancellation audit attributed to the verified requester and session;
+- a bounded, idempotent expiry function using `FOR UPDATE SKIP LOCKED`, restricted to the NOLOGIN Operations owner; the application role cannot execute it;
+- system-attributed expiry audit events with NULL actor/session rather than inventing a human actor.
+
+PostgreSQL test `0032_operations_mfa_request_lifecycle.test.sql` covers cancellation, expiry denial, app-role execution denial, owner execution and audit attribution. Foundation CI now applies migration 0032 and runs its test. **Exact-head CI is pending.** The expiry worker is not scheduled, and no routes, pending-request read API, UI, notifications or concurrency stress tests have been implemented. No production enablement is authorised.
