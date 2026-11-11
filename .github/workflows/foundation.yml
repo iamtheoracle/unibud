@@ -86,6 +86,10 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0022_operations_mfa_storage.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0023_operations_session_context_verifier.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0024_operations_mfa_session_step_up.test.sql
+      - name: Verify concurrent MFA assertion replay prevention
+        env:
+          PGPASSWORD: unibud_test_only
+        run: bash scripts/test-operations-mfa-concurrency.sh
   foundation-integrity:
     name: Foundation integrity
     runs-on: ubuntu-latest
