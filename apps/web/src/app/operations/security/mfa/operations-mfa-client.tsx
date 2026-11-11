@@ -121,7 +121,10 @@ export default function OperationsMfaClient() {
     setBusy(true); setError(""); setNotice("");
     try {
       const data = await post("/api/internal/operations/mfa/enrollment/confirm", { code: confirmationCode });
-      setRecoveryCodes(data.recoveryCodes || []);
+      if (data.recoveryCodesShownOnce !== true || !Array.isArray(data.recoveryCodes) || data.recoveryCodes.length < 8) {
+        throw new Error("Recovery codes were not returned. Do not continue without saving them.");
+      }
+      setRecoveryCodes(data.recoveryCodes);
       setAcknowledged(false);
       setConfirmationCode("");
       setProvisioningUri("");
