@@ -250,7 +250,7 @@ export default function OperationsMfaClient() {
         <form className="mfa-form" onSubmit={startEnrollment}>
           <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
           <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
-          <label>Current password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
+          <label>Authenticator setup password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
           <button className="mfa-button" type="submit" disabled={busy}>{busy ? "Please wait…" : "Begin authenticator setup"}</button>
         </form>
       </section>}
@@ -261,7 +261,7 @@ export default function OperationsMfaClient() {
         <form className="mfa-form" onSubmit={resumeEnrollment}>
           <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
           <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
-          <label>Current password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
+          <label>Authenticator setup password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
           <button className="mfa-button" type="submit" disabled={busy}>{busy ? "Please wait…" : "Resume pending setup"}</button>
         </form>
       </section>}
