@@ -316,6 +316,148 @@ export default function OperationsMfaClient() {
         </form>
       </section>}
     </>}
-    <footer className="mfa-footer"><Link href="/home">Return to UNIBUD</Link><span>Security changes are enforced by the server and database, not this screen.</span></footer>
+    {status?.operator && <OperationsMfaRequestsPanel />}\n    <footer className="mfa-footer"><Link href="/home">Return to UNIBUD</Link><span>Security changes are enforced by the server and database, not this screen.</span></footer>
   </main>;
+}
+
+
+function OperationsMfaRequestsPanel() {
+  type SecurityRequest = {
+    request_id: string;
+    target_account_id: string;
+    requested_action: "disable" | "reset";
+    state: "pending" | "completed" | "rejected" | "cancelled" | "expired";
+    requester_account_id: string;
+    approver_account_id: string | null;
+    reason_code: string;
+    created_at: string;
+    expires_at: string;
+    decided_at: string | null;
+    completed_at: string | null;
+  };
+  const [requests, setRequests] = useState<SecurityRequest[]>([]);
+  const [targetAccountId, setTargetAccountId] = useState("");
+  const [action, setAction] = useState<"disable" | "reset">("reset");
+  const [reasonCode, setReasonCode] = useState("lost_device");
+  const [decisionReason, setDecisionReason] = useState("reviewed_and_verified");
+  const [channel, setChannel] = useState<"email" | "phone">("email");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [selectedRequest, setSelectedRequest] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  async function loadRequests() {
+    const response = await fetch("/api/internal/operations/mfa/requests?limit=50", {
+      method: "GET", credentials: "same-origin", cache: "no-store"
+    });
+    const data = await response.json() as { ok?: boolean; error?: string; requests?: SecurityRequest[] };
+    if (!response.ok || !data.ok) throw new Error(data.error || "The approval queue is unavailable.");
+    setRequests(Array.isArray(data.requests) ? data.requests : []);
+  }
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/internal/operations/mfa/requests?limit=50", {
+      method: "GET", credentials: "same-origin", cache: "no-store"
+    }).then(async response => {
+      const data = await response.json() as { ok?: boolean; error?: string; requests?: SecurityRequest[] };
+      if (!response.ok || !data.ok) throw new Error(data.error || "The approval queue is unavailable.");
+      if (active) setRequests(Array.isArray(data.requests) ? data.requests : []);
+    }).catch(reason => {
+      if (active) setError(reason instanceof Error ? reason.message : "The approval queue is unavailable.");
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
+
+  async function submit(path: string, body: Record<string, string>) {
+    const response = await fetch(path, {
+      method: "POST", credentials: "same-origin", cache: "no-store",
+      headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
+    });
+    const data = await response.json() as { ok?: boolean; error?: string };
+    if (!response.ok || !data.ok) throw new Error(data.error || "The request could not be completed.");
+    return data;
+  }
+
+  async function createRequest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setBusy(true); setError(""); setNotice("");
+    try {
+      await submit("/api/internal/operations/mfa/requests", {
+        targetAccountId, action, reasonCode, channel, identifier, password
+      });
+      setPassword(""); setTargetAccountId("");
+      setNotice("Security-change request submitted. It requires a separate authorised approver.");
+      await loadRequests();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Request submission failed.");
+    } finally { setBusy(false); }
+  }
+
+  async function decide(requestId: string, decision: "approve" | "reject") {
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await submit(`/api/internal/operations/mfa/requests/${requestId}/decision`, {
+        decision, reasonCode: decisionReason, channel, identifier, password
+      });
+      setPassword("");
+      setNotice(decision === "approve" ? "The approved security change was completed." : "The request was rejected.");
+      setSelectedRequest("");
+      await loadRequests();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "The decision could not be recorded.");
+    } finally { setBusy(false); }
+  }
+
+  async function cancel(requestId: string) {
+    setBusy(true); setError(""); setNotice("");
+    try {
+      await submit(`/api/internal/operations/mfa/requests/${requestId}/cancel`, { reasonCode: "requester_cancelled" });
+      setNotice("Your pending request was cancelled.");
+      await loadRequests();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "The request could not be cancelled.");
+    } finally { setBusy(false); }
+  }
+
+  return <section className="mfa-card" aria-labelledby="mfa-dual-control-heading">
+    <p className="eyebrow">Operations · dual control</p>
+    <h2 id="mfa-dual-control-heading">Authenticator security requests</h2>
+    <p className="mfa-muted">Disable and reset actions require a separate authorised operator. Request and decision permissions are checked again by the database; this interface does not grant access.</p>
+    {error && <p className="mfa-alert mfa-error" role="alert">{error}</p>}
+    {notice && <p className="mfa-alert mfa-notice" role="status">{notice}</p>}
+    <div className="mfa-card-head"><h3>Submit a security request</h3></div>
+    <form className="mfa-form" onSubmit={createRequest}>
+      <label>Target account ID<input value={targetAccountId} onChange={e => setTargetAccountId(e.target.value.trim())} required maxLength={36} pattern="[0-9a-fA-F-]{36}" aria-describedby="mfa-target-help"/></label>
+      <p className="mfa-small" id="mfa-target-help">Use the account identifier from the authorised Operations account record. The server and database verify target eligibility.</p>
+      <label>Requested action<select value={action} onChange={e => setAction(e.target.value as "disable" | "reset")}><option value="reset">Reset authenticator</option><option value="disable">Disable authenticator</option></select></label>
+      <label>Reason code<input value={reasonCode} onChange={e => setReasonCode(e.target.value)} required minLength={3} maxLength={48} pattern="[a-z][a-z0-9_]{2,47}"/></label>
+      <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
+      <label>{channel === "email" ? "Your account email" : "Your account phone"}<input value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254} autoComplete="username"/></label>
+      <label>Current password<input type="password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128} autoComplete="current-password"/></label>
+      <button className="mfa-button" type="submit" disabled={busy}>{busy ? "Submitting…" : "Submit for independent approval"}</button>
+    </form>
+    <div className="mfa-card-head"><h3>Pending approval queue</h3><button className="mfa-secondary" type="button" disabled={busy} onClick={() => { setError(""); void loadRequests().catch(e => setError(e instanceof Error ? e.message : "Refresh failed.")); }}>Refresh queue</button></div>
+    {loading ? <p role="status">Loading requests…</p> : requests.length === 0 ? <p className="mfa-muted">No pending requests are available to this account. The server returns requests only to operators with the required approval permission and current session MFA.</p> :
+      <ul className="mfa-recovery-list">{requests.map(item => <li key={item.request_id}>
+        <div><strong>{item.requested_action === "reset" ? "Authenticator reset" : "Authenticator disable"}</strong> · <span>{item.state}</span></div>
+        <p className="mfa-small">Target: <code>{item.target_account_id}</code></p>
+        <p className="mfa-small">Requester: <code>{item.requester_account_id}</code></p>
+        <p className="mfa-small">Reason: {item.reason_code} · Expires: {new Date(item.expires_at).toLocaleString()}</p>
+        {item.state === "pending" && <>
+          <button className="mfa-secondary" type="button" disabled={busy} onClick={() => setSelectedRequest(selectedRequest === item.request_id ? "" : item.request_id)}>Review decision</button>
+          <button className="mfa-secondary" type="button" disabled={busy} onClick={() => void cancel(item.request_id)}>Cancel my request</button>
+          {selectedRequest === item.request_id && <div className="mfa-form">
+            <label>Decision reason code<input value={decisionReason} onChange={e => setDecisionReason(e.target.value)} required minLength={3} maxLength={48} pattern="[a-z][a-z0-9_]{2,47}"/></label>
+            <label>Approver account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
+            <label>{channel === "email" ? "Approver account email" : "Approver account phone"}<input value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254} autoComplete="username"/></label>
+            <label>Approver current password<input type="password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128} autoComplete="current-password"/></label>
+            <div className="mfa-card-head"><button className="mfa-button" type="button" disabled={busy} onClick={() => void decide(item.request_id, "approve")}>Approve and complete</button><button className="mfa-secondary" type="button" disabled={busy} onClick={() => void decide(item.request_id, "reject")}>Reject request</button></div>
+          </div>}
+        </>}
+      </li>)}</ul>}
+    <p className="mfa-small">The queue is refreshed from authenticated server data. Session identifiers, MFA secrets and recovery digests are never displayed.</p>
+  </section>;
 }
