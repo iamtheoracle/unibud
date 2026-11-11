@@ -121,3 +121,10 @@ Browser E2E:
 ## Completion definition
 
 This contract is complete only when the migration, procedures, routes, UI, audit events, PostgreSQL negative/concurrency tests, server tests, browser E2E, documentation, exact-head CI and independent review all exist and pass. Until then, dual-control disable/reset is **NOT IMPLEMENTED** and Operations MFA is **NOT PRODUCTION-READY**.
+
+
+## Implementation checkpoint — database foundation (2026-11-11)
+
+Migration `0031_operations_mfa_dual_control.sql` and PostgreSQL test `0031_operations_mfa_dual_control.test.sql` have now been added to the PR branch. The database slice includes protected request storage, a 30-minute pending lifetime, request and approve/reject procedures, single-use password-reauth assertion consumption, exact-session MFA step-up checks, scoped request/approval grants, requester and target self-approval denial, request row locking, requester-session/grant/MFA revalidation, and atomic target credential/recovery/step-up invalidation with audit events.
+
+Foundation CI has been wired to apply and test migration 0031. **Exact-head CI has not yet been confirmed.** API routes, review UI, cancellation, expiry processing, notifications, race/concurrency stress tests and independent security review are still outstanding. This is a database foundation, not a complete or production-enabled feature.
