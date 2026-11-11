@@ -54,7 +54,7 @@ test("diagnostic route validates session then binds a signed database transactio
 test("unauthenticated audit records cannot claim an account or session identity", () => {
   assert.match(remediation, /v_actor := unibud_private\.current_account_id\(\)/);
   assert.match(route, /recordUnauthenticated\(requestId\)/);
-  assert.match(route, /recordAuthenticatedError\(authenticatedAccountId, authenticatedSessionId!, requestId\)/);
+  assert.match(route, /recordAuthenticatedError\(authenticatedAccountId, authenticatedSessionId, requestId\)/);
   assert.match(route, /\[REQUIRED_PERMISSION, "error", requestId\]/);
 });
 
