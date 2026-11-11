@@ -7,7 +7,8 @@ import {
 } from "../src/lib/server/database/session-context-core.ts";
 import type { SqlClient, SqlPool } from "../src/lib/server/database/account-context-core.ts";
 
-const accountKey = Buffer.alloc(32, 0x6b);\nconst sessionKey = Buffer.alloc(32, 0x7c);
+const accountKey = Buffer.alloc(32, 0x6b);
+const sessionKey = Buffer.alloc(32, 0x7c);
 const accountA = "10000000-0000-4000-8000-000000000001";
 const accountB = "10000000-0000-4000-8000-000000000002";
 const sessionA = "20000000-0000-4000-8000-000000000001";
@@ -34,8 +35,8 @@ test("changing account, session, expiry or nonce changes the session assertion",
 });
 
 test("rejects malformed account and session identifiers and weak keys", () => {
-  assert.throws(() => createSignedSessionContext("account-a", sessionA, key));
-  assert.throws(() => createSignedSessionContext(accountA, "session-a", key));
+  assert.throws(() => createSignedSessionContext("account-a", sessionA, accountKey, sessionKey));
+  assert.throws(() => createSignedSessionContext(accountA, "session-a", accountKey, sessionKey));
   assert.throws(() => createSignedSessionContext(accountA, sessionA, accountKey, Buffer.alloc(31)));
 });
 
