@@ -59,20 +59,17 @@ END
 $privileges$;
 
 -- Account 1 sees only its enrollment and request notices.
-SELECT set_config('unibud.account_id','f0390000-0000-4000-8000-000000000001',true),
-       set_config('unibud.session_id','f0390000-0000-4000-8000-000000000011',true),
-       set_config('unibud.context_expiry',floor(extract(epoch FROM clock_timestamp())+60)::bigint::text,true),
-       set_config('unibud.context_nonce','f0390000-0000-4000-8000-000000000111',true),
-       set_config('unibud.context_signature',encode(public.hmac(convert_to(
-        'f0390000-0000-4000-8000-000000000001:'||
-        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text||
-        ':f0390000-0000-4000-8000-000000000111','UTF8'),
-        decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
-       set_config('unibud.session_context_signature',encode(public.hmac(convert_to(
-        'v1:f0390000-0000-4000-8000-000000000001:f0390000-0000-4000-8000-000000000011:'||
-        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text||
-        ':f0390000-0000-4000-8000-000000000111','UTF8'),
-        decode(repeat('d5',32),'hex'),'sha256'),'hex'),true);
+WITH x AS (
+ SELECT 'f0390000-0000-4000-8000-000000000001'::text a,
+        'f0390000-0000-4000-8000-000000000011'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0390000-0000-4000-8000-000000000111'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d5',32),'hex'),'sha256'),'hex'),true)
+FROM x;
 SET LOCAL ROLE unibud_app;
 DO $account_one$
 DECLARE v_rows INTEGER; v_own UUID; v_other UUID;
@@ -107,20 +104,17 @@ $account_one$;
 RESET ROLE;
 
 -- Account 2 sees the two target-side dual-control notices and not account 1's.
-SELECT set_config('unibud.account_id','f0390000-0000-4000-8000-000000000002',true),
-       set_config('unibud.session_id','f0390000-0000-4000-8000-000000000012',true),
-       set_config('unibud.context_expiry',floor(extract(epoch FROM clock_timestamp())+60)::bigint::text,true),
-       set_config('unibud.context_nonce','f0390000-0000-4000-8000-000000000112',true),
-       set_config('unibud.context_signature',encode(public.hmac(convert_to(
-        'f0390000-0000-4000-8000-000000000002:'||
-        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text||
-        ':f0390000-0000-4000-8000-000000000112','UTF8'),
-        decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
-       set_config('unibud.session_context_signature',encode(public.hmac(convert_to(
-        'v1:f0390000-0000-4000-8000-000000000002:f0390000-0000-4000-8000-000000000012:'||
-        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text||
-        ':f0390000-0000-4000-8000-000000000112','UTF8'),
-        decode(repeat('d5',32),'hex'),'sha256'),'hex'),true);
+WITH x AS (
+ SELECT 'f0390000-0000-4000-8000-000000000002'::text a,
+        'f0390000-0000-4000-8000-000000000012'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0390000-0000-4000-8000-000000000112'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d5',32),'hex'),'sha256'),'hex'),true)
+FROM x;
 SET LOCAL ROLE unibud_app;
 DO $account_two$
 DECLARE v_rows INTEGER;
@@ -136,20 +130,17 @@ $account_two$;
 RESET ROLE;
 
 -- Account 3 (the independent approver) receives its own approval action notice.
-SELECT set_config('unibud.account_id','f0390000-0000-4000-8000-000000000003',true),
-       set_config('unibud.session_id','f0390000-0000-4000-8000-000000000013',true),
-       set_config('unibud.context_expiry',floor(extract(epoch FROM clock_timestamp())+60)::bigint::text,true),
-       set_config('unibud.context_nonce','f0390000-0000-4000-8000-000000000113',true),
-       set_config('unibud.context_signature',encode(public.hmac(convert_to(
-        'f0390000-0000-4000-8000-000000000003:'||
-        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text||
-        ':f0390000-0000-4000-8000-000000000113','UTF8'),
-        decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
-       set_config('unibud.session_context_signature',encode(public.hmac(convert_to(
-        'v1:f0390000-0000-4000-8000-000000000003:f0390000-0000-4000-8000-000000000013:'||
-        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text||
-        ':f0390000-0000-4000-8000-000000000113','UTF8'),
-        decode(repeat('d5',32),'hex'),'sha256'),'hex'),true);
+WITH x AS (
+ SELECT 'f0390000-0000-4000-8000-000000000003'::text a,
+        'f0390000-0000-4000-8000-000000000013'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0390000-0000-4000-8000-000000000113'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d4',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d5',32),'hex'),'sha256'),'hex'),true)
+FROM x;
 SET LOCAL ROLE unibud_app;
 DO $account_three$
 DECLARE v_rows INTEGER;
