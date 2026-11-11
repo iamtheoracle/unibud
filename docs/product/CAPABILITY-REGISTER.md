@@ -326,3 +326,8 @@ The database now derives the effective Operations audit outcome: app callers can
 ### Password-reauthenticated MFA enrollment start
 
 A separate signed password_reauth assertion now binds fresh password verification to the validated account and exact session. Migration 0025 adds the protected pending-enrollment procedure and server-only encrypted-secret accessor. The enrollment-start route validates same-origin and the HTTP-only session, reauthenticates the current account using the existing password verifier and login rate limiter, encrypts a new TOTP seed, consumes the signed assertion in PostgreSQL, and returns a no-store provisioning URI. Pending credentials do not authorize Operations. Confirmation/activation, recovery-code persistence/display, challenge and recovery routes, lockout, UI and E2E remain outstanding; exact-head CI is pending.
+
+
+### Password-reauthenticated enrollment CI checkpoint
+
+Foundation PostgreSQL 16 migrations and tests, including migration 0025 and concurrent step-up replay proof, passed at checkpoint 17f1ee53a5dbcb5f61ac0c01d37860cbda035ea4. Oracle Arc API tests and web PostgreSQL migration validation passed; web typecheck, contract tests, server security tests and lint passed. Browser E2E and production build were still running. The enrollment route creates only pending MFA; it does not activate MFA or authorize Operations.
