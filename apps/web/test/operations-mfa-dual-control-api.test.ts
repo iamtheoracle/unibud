@@ -55,3 +55,15 @@ test("pending request list and detail reads are session-authenticated, bounded a
   assert.match(requestRoute, /Cache-Control.*no-store/);
   assert.doesNotMatch(requestRoute, /body\.(accountId|sessionId|role|permissions)/);
 });
+
+
+test("Operations review UI distinguishes requester cancellation from independent approval", () => {
+  const client = readFileSync(new URL("../src/app/operations/security/mfa/operations-mfa-client.tsx", import.meta.url), "utf8");
+  assert.match(client, /OperationsMfaRequestsPanel/);
+  assert.match(client, /item\.requester_account_id !== viewerAccountId/);
+  assert.match(client, /item\.requester_account_id === viewerAccountId/);
+  assert.match(client, /Cancel my request/);
+  assert.match(client, /Approve and complete/);
+  assert.match(client, /Reject request/);
+  assert.match(client, /cache: "no-store"/);
+});
