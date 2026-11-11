@@ -38,7 +38,9 @@ BEGIN
   v_now:=clock_timestamp();
   IF v_request.state<>'pending'
      OR v_request.expires_at<=v_now
-     OR to_timestamp(p_expires_at)<=v_now THEN
+     OR to_timestamp(p_expires_at)<=v_now
+     OR v_request.requester_account_id=v_actor
+     OR v_request.target_account_id=v_actor THEN
     RETURN FALSE;
   END IF;
 
