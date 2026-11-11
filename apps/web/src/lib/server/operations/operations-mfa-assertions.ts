@@ -68,7 +68,7 @@ export function createOperationsMfaAssertion(
   }
   if (!UUID.test(nonce)) throw new Error("Invalid Operations MFA assertion nonce.");
   if (input.purpose === "password_reauth" || input.purpose === "recovery") {
-    if (input.matchedTotpStep !== null) throw new Error("Password reauthentication cannot include a TOTP step.");
+    if (input.matchedTotpStep !== null) throw new Error("This MFA assertion purpose cannot include a TOTP step.");
   } else if (!Number.isSafeInteger(input.matchedTotpStep) || (input.matchedTotpStep as number) < 0) {
     throw new Error("Invalid matched authenticator time step.");
   }
@@ -109,7 +109,7 @@ export function verifyOperationsMfaAssertion(
   if (!UUID.test(assertion.accountId) || !UUID.test(assertion.sessionId) || !UUID.test(assertion.nonce)) return false;
   if (!["enrollment_confirm", "step_up", "recovery", "password_reauth"].includes(assertion.purpose)) return false;
   if (!Number.isSafeInteger(assertion.issuedAt) || !Number.isSafeInteger(assertion.expiresAt)
-      || (assertion.purpose === "password_reauth"
+      || (assertion.purpose === "password_reauth" || assertion.purpose === "recovery"
         ? assertion.matchedTotpStep !== null
         : !Number.isSafeInteger(assertion.matchedTotpStep) || (assertion.matchedTotpStep as number) < 0)) return false;
   if (assertion.expiresAt <= assertion.issuedAt
