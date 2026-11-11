@@ -664,3 +664,15 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Verified:** Foundation checks passed on commit `84b81c451c0b597146f48248cd139984e21bdfb7`; the PostgreSQL job specifically passed migration application, RLS isolation, all existing Operations concurrency checks, scheduler-role provisioning and the restricted worker invocation. Oracle Arc API tests also passed on that commit.
 - Web and Database browser/build checks were still running at the last status check. No claim is made that every workflow on the latest branch head has passed.
 - Production recurring execution remains intentionally inactive; the provider, production login, secret binding, alert route and independent review are still outstanding.
+
+
+### Operations MFA in-app security notifications — implementation checkpoint (2026-11-11)
+
+- Added migration 0039 with a forced-RLS, account-scoped notification inbox. Notifications are inserted by a database trigger from the append-only MFA audit stream in the same transaction as the source event.
+- Added recipient rules for enrollment confirmation, lockout, recovery-code use/regeneration and dual-control request/decision/cancel/expiry events. Requester, target and independent approver receive only their relevant notices.
+- Added session-derived database read/mark-read functions. No account ID is accepted from the caller; application roles have no direct table privileges; cross-account marking is denied.
+- Added a dedicated account-level `notification_read` rate limit. It intentionally does not require MFA step-up, allowing a locked-out user to read their own security notices through a validated persisted session. It grants no privileged Operations permission.
+- Added the authenticated API route, notification inbox UI on the Operations authenticator security page, responsive styling, database isolation test, application contract test and notification scope/delivery runbook.
+- **External delivery is not implemented.** This feature creates in-app notices only. It does not send email, SMS, push or webhooks and makes no external delivery claim. The existing verification-delivery gateway is not assumed to be a security-notification provider.
+- **CI status: pending for the new notification slice.** Migration 0039 and its test have been wired into Foundation CI; API/UI changes have been wired into Web CI. Await the current branch-head workflows before marking the slice verified.
+- Notification retention is currently durable with no cleanup schedule. A bounded retention policy must be designed with the audit-retention requirements before deletion is introduced.
