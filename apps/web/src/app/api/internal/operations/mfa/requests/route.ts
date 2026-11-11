@@ -69,7 +69,10 @@ export async function POST(request: NextRequest) {
 
 
 export async function GET(request: NextRequest) {
-  if (!hasSameOrigin(request)) return response({ ok: false, error: "Forbidden." }, 403);
+  // GET is read-only; reject a supplied foreign Origin, but do not require an
+  // Origin header because same-origin browser GET requests may omit it.
+  const origin = request.headers.get("origin");
+  if (origin && !hasSameOrigin(request)) return response({ ok: false, error: "Forbidden." }, 403);
   const token = readSessionCookie(request);
   if (!token) return response({ ok: false, error: "Authentication is required." }, 401);
 
