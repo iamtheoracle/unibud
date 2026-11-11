@@ -24,7 +24,9 @@ VALUES ('f0230000-0000-4000-8000-000000000001','integration_operator',
  'f0230000-0000-4000-8000-000000000001');
 
 INSERT INTO unibud_private.context_signing_keys(key_id,secret)
-VALUES ('ci-operations-session-key',decode(repeat('23',32),'hex'));
+VALUES ('ci-account-context-key',decode(repeat('23',32),'hex'));
+INSERT INTO unibud_private.session_context_signing_keys(key_id,secret)
+VALUES ('ci-operations-session-key',decode(repeat('24',32),'hex'));
 
 -- Set both independently signed account and exact-session claims.
 WITH x AS (
@@ -43,7 +45,7 @@ SELECT
    decode(repeat('23',32),'hex'),'sha256'),'hex'),true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
-   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+   decode(repeat('24',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 
 SET LOCAL ROLE unibud_app;
@@ -64,7 +66,12 @@ BEGIN
  END;
  BEGIN
   EXECUTE 'SELECT secret FROM unibud_private.context_signing_keys';
-  RAISE EXCEPTION 'Application role read context signing key';
+  RAISE EXCEPTION 'Application role read account context signing key';
+ EXCEPTION WHEN insufficient_privilege THEN NULL;
+ END;
+ BEGIN
+  EXECUTE 'SELECT secret FROM unibud_private.session_context_signing_keys';
+  RAISE EXCEPTION 'Application role read session context signing key';
  EXCEPTION WHEN insufficient_privilege THEN NULL;
  END;
 END
@@ -118,7 +125,7 @@ SELECT
  set_config('unibud.session_id',s,true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
-   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+   decode(repeat('24',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
@@ -147,7 +154,7 @@ SELECT
    decode(repeat('23',32),'hex'),'sha256'),'hex'),true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
-   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+   decode(repeat('24',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 SET LOCAL ROLE unibud_app;
 DO $test$
@@ -176,7 +183,7 @@ SELECT
    decode(repeat('23',32),'hex'),'sha256'),'hex'),true),
  set_config('unibud.session_context_signature',
   encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),
-   decode(repeat('23',32),'hex'),'sha256'),'hex'),true)
+   decode(repeat('24',32),'hex'),'sha256'),'hex'),true)
 FROM x;
 
 -- A validly signed claim cannot revive a revoked persisted session.
