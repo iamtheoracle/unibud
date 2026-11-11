@@ -7,7 +7,7 @@ import {
 } from "../src/lib/server/database/session-context-core.ts";
 import type { SqlClient, SqlPool } from "../src/lib/server/database/account-context-core.ts";
 
-const key = Buffer.alloc(32, 0x6b);
+const accountKey = Buffer.alloc(32, 0x6b);\nconst sessionKey = Buffer.alloc(32, 0x7c);
 const accountA = "10000000-0000-4000-8000-000000000001";
 const accountB = "10000000-0000-4000-8000-000000000002";
 const sessionA = "20000000-0000-4000-8000-000000000001";
@@ -15,7 +15,7 @@ const sessionB = "20000000-0000-4000-8000-000000000002";
 const nonce = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 
 test("session context binds version, account, persisted session, expiry and nonce", () => {
-  const context = createSignedSessionContext(accountA, sessionA, key, 1_800_000_000, 60, nonce);
+  const context = createSignedSessionContext(accountA, sessionA, accountKey, sessionKey, 1_800_000_000, 60, nonce);
   assert.equal(context.expiryEpoch, "1800000060");
   assert.equal(context.signature.length, 64);
   assert.equal(context.sessionSignature.length, 64);
@@ -23,12 +23,12 @@ test("session context binds version, account, persisted session, expiry and nonc
 });
 
 test("changing account, session, expiry or nonce changes the session assertion", () => {
-  const base = createSignedSessionContext(accountA, sessionA, key, 1_800_000_000, 60, nonce);
+  const base = createSignedSessionContext(accountA, sessionA, accountKey, sessionKey, 1_800_000_000, 60, nonce);
   const variants = [
-    createSignedSessionContext(accountB, sessionA, key, 1_800_000_000, 60, nonce),
-    createSignedSessionContext(accountA, sessionB, key, 1_800_000_000, 60, nonce),
-    createSignedSessionContext(accountA, sessionA, key, 1_800_000_001, 60, nonce),
-    createSignedSessionContext(accountA, sessionA, key, 1_800_000_000, 60, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+    createSignedSessionContext(accountB, sessionA, accountKey, sessionKey, 1_800_000_000, 60, nonce),
+    createSignedSessionContext(accountA, sessionB, accountKey, sessionKey, 1_800_000_000, 60, nonce),
+    createSignedSessionContext(accountA, sessionA, accountKey, sessionKey, 1_800_000_001, 60, nonce),
+    createSignedSessionContext(accountA, sessionA, accountKey, sessionKey, 1_800_000_000, 60, "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
   ];
   for (const variant of variants) assert.notEqual(variant.sessionSignature, base.sessionSignature);
 });
@@ -36,11 +36,11 @@ test("changing account, session, expiry or nonce changes the session assertion",
 test("rejects malformed account and session identifiers and weak keys", () => {
   assert.throws(() => createSignedSessionContext("account-a", sessionA, key));
   assert.throws(() => createSignedSessionContext(accountA, "session-a", key));
-  assert.throws(() => createSignedSessionContext(accountA, sessionA, Buffer.alloc(31)));
+  assert.throws(() => createSignedSessionContext(accountA, sessionA, accountKey, Buffer.alloc(31)));
 });
 
 test("sets account and session claims transaction-locally and commits", async () => {
-  const context = createSignedSessionContext(accountA, sessionA, key, 1_800_000_000, 60, nonce);
+  const context = createSignedSessionContext(accountA, sessionA, accountKey, sessionKey, 1_800_000_000, 60, nonce);
   const calls: Array<{sql:string;values?:readonly unknown[]}> = [];
   let released = false;
   const client: SqlClient = {
@@ -61,7 +61,7 @@ test("sets account and session claims transaction-locally and commits", async ()
 });
 
 test("rolls back and releases the connection after a failed operation", async () => {
-  const context: SignedSessionContext = createSignedSessionContext(accountA, sessionA, key, 1_800_000_000, 60, nonce);
+  const context: SignedSessionContext = createSignedSessionContext(accountA, sessionA, accountKey, sessionKey, 1_800_000_000, 60, nonce);
   const calls: string[] = [];
   let released = false;
   const client: SqlClient = {
