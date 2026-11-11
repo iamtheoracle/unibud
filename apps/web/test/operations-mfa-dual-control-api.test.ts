@@ -40,3 +40,18 @@ test("request cancellation uses the validated exact session and protected databa
   assert.match(cancelRoute, /Cache-Control.*no-store/);
   assert.doesNotMatch(cancelRoute, /body\.(accountId|sessionId|role|permissions)/);
 });
+
+
+test("pending request list and detail reads are session-authenticated, bounded and database-permission-gated", () => {
+  assert.match(requestRoute, /export async function GET\(request: NextRequest\)/);
+  assert.match(requestRoute, /hasSameOrigin\(request\)/);
+  assert.match(requestRoute, /readSessionCookie\(request\)/);
+  assert.match(requestRoute, /sessions\.validate\(token\)/);
+  assert.match(requestRoute, /createSignedSessionContextFromEnvironment\(/);
+  assert.match(requestRoute, /withSignedSessionTransaction\(/);
+  assert.match(requestRoute, /unibud_operator_mfa_list_security_requests/);
+  assert.match(requestRoute, /limit > 100/);
+  assert.match(requestRoute, /beforeCreatedAt/);
+  assert.match(requestRoute, /Cache-Control.*no-store/);
+  assert.doesNotMatch(requestRoute, /body\.(accountId|sessionId|role|permissions)/);
+});
