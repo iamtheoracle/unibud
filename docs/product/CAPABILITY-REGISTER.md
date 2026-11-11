@@ -301,3 +301,8 @@ A high-priority database trust-boundary finding is tracked in [Issue #16](https:
 - Added unit tests for claim binding, invalid IDs/keys, transaction-local propagation, commit and rollback.
 - **Not yet secure/active:** PostgreSQL does not yet verify the new session assertion; no database accessor or route integration exists. GUC values remain untrusted until the matching database verifier is implemented and tested.
 - Code commit `a1a5d15e92828c043bfc81a6e7a396f8c322ac3e`; exact-head CI is pending. Next slice is the private PostgreSQL verifier/accessor plus negative SQL tests. No Operations MFA is enabled.
+
+
+## Operations session-context trust boundary — 2026-11-11
+
+**Building; exact-head verification pending.** Migration 0023 adds an independently verified, versioned HMAC claim binding account + persisted session + expiry + nonce. The database checks the signed account context, session ownership, active account, active/unrevoked session, idle expiry and absolute expiry. Operations authorization now requires that verified session, and audit events retain the verified session reference. The application role cannot directly execute the private verifier or read the signing key. The existing diagnostic route now signs context only from the account and session returned by server-side session validation. PostgreSQL tests cover signed context, forged session GUC, revoked session, account-only context, protected verifier/key access and unattributed unauthenticated events. This is not MFA: enrollment, TOTP verification, replay prevention, recovery, step-up expiry and enforcement remain unimplemented. Production key provisioning and independent security review remain pending.
