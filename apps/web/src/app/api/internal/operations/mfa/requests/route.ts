@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
     });
     return response({
       ok: true,
+      viewerAccountId: validation.account.id,
       requests: rows,
       nextCursor: requestId || rows.length < limit
         ? null
