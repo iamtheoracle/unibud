@@ -50,7 +50,7 @@ The current active PR chain is a foundation for identity/profile lifecycle, Oper
 2. Resolve Issue #21: generate and commit a real pnpm lockfile using pnpm 10.18.3, enforce frozen installs, and rerun exact-head CI.
 3. Finish Flow abuse controls, security notifications/outbox and authenticated provider lifecycle only after MoneyLead contract and provider identity are independently verified; keep all provider paths fail-closed until then.
 4. Complete identity/profile lifecycle and platform foundations with cross-account/profile negative tests and real PostgreSQL acceptance.
-5. Build each approved UNIBUD space in dependency order, without merging its data ownership or UX boundaries into another space.
+5. Resolve Issue #24 by recovering Quad's exact founder-approved feature contract before implementing Quad; preserve its separate purpose, navigation, interactions, permissions, privacy, safety and lifecycle from Connect. Then build each approved UNIBUD space in dependency order without merging domain ownership or UX boundaries.
 6. Complete Oracle Arc app registration, service authentication, model/provider gateway, agent/tool grants, SPARK memory consent/isolation, ORBITS ingestion controls, evaluation and audit.
 7. Complete accessibility, backup/restore, monitoring, incident response, secret rotation, support and production runbooks before any release claim.
 
