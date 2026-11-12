@@ -26,6 +26,7 @@ test("password policy rejects short and oversized passwords", async () => {
 test("verification codes are delivered once and only keyed digests are persisted", async () => {
   let stored: NewVerificationChallenge | undefined;
   let deliveredCode = "";
+  let deliveredMethod = "";
   let revoked = false;
   const repository: VerificationChallengeRepository = {
     async create(value) { stored = value; },
@@ -38,7 +39,7 @@ test("verification codes are delivered once and only keyed digests are persisted
   const service = new VerificationChallengeService(
     repository,
     { async assertAllowed() {} },
-    { async deliver(value) { deliveredCode = value.code; } },
+    { async deliver(value) { deliveredCode = value.code; deliveredMethod = value.deliveryMethod; } },
     Buffer.alloc(32, 0x61)
   );
   const issued = await service.issue({
@@ -55,6 +56,7 @@ test("verification codes are delivered once and only keyed digests are persisted
   assert.equal("destination" in stored, false);
   assert.equal("code" in issued, false);
   assert.equal(deliveredCode.length, 6);
+  assert.equal(deliveredMethod, "email");
   assert.equal(await service.verify({
     challengeId: issued.challengeId,
     purpose: "email_verification",
@@ -62,6 +64,35 @@ test("verification codes are delivered once and only keyed digests are persisted
     now: new Date("2026-11-09T06:00:30.000Z")
   }), "verified");
   assert.equal(revoked, false);
+});
+
+
+test("phone OTP delivery method is restricted to SMS, WhatsApp or RCS", async () => {
+ const methods:string[]=[];
+ const service=new VerificationChallengeService(
+  {async create(){},async revoke(){},async verifyAndConsume(){return "not_found";}},
+  {async assertAllowed(){}},
+  {async deliver(value){methods.push(value.deliveryMethod);}},
+  Buffer.alloc(32,0x64)
+ );
+ const base={accountId:"10000000-0000-4000-8000-000000000001",identityId:"20000000-0000-4000-8000-000000000001",channel:"phone" as const,purpose:"phone_verification" as const,destination:"+2348012345678"};
+ await service.issue({...base,deliveryMethod:"sms"});
+ await service.issue({...base,deliveryMethod:"whatsapp"});
+ await service.issue({...base,deliveryMethod:"rcs"});
+ assert.deepEqual(methods,["sms","whatsapp","rcs"]);
+ await assert.rejects(()=>service.issue({...base,deliveryMethod:"email"}),/incompatible/);
+ await assert.rejects(()=>service.issue({...base,deliveryMethod:"carrier-pigeon" as never}),/incompatible/);
+});
+
+test("email OTP cannot be routed through phone messaging transports",async()=>{
+ const service=new VerificationChallengeService(
+  {async create(){},async revoke(){},async verifyAndConsume(){return "not_found";}},
+  {async assertAllowed(){}},{async deliver(){}},Buffer.alloc(32,0x65)
+ );
+ await assert.rejects(()=>service.issue({
+  accountId:"10000000-0000-4000-8000-000000000001",identityId:"20000000-0000-4000-8000-000000000001",
+  channel:"email",deliveryMethod:"whatsapp",purpose:"email_verification",destination:"person@example.com"
+ }),/incompatible/);
 });
 
 test("delivery failure revokes the persisted challenge", async () => {
