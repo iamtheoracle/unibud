@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
 import { createFlowDataProtectionFromEnvironment } from "@/lib/server/flow/flow-crypto";
 import { FlowPaymentIntentRepository } from "@/lib/server/flow/flow-payment-intent-repository";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
@@ -32,7 +31,8 @@ export async function POST(request: NextRequest) {
   if (!body ||
       typeof body.flowAccountId !== "string" || !UUID.test(body.flowAccountId) ||
       typeof body.recipientReference !== "string" ||
-      body.recipientReference.length < 1 || body.recipientReference.length > 1024 ||
+      body.recipientReference.length < 1 || Buffer.byteLength(body.recipientReference, "utf8") > 1024 ||
+      body.recipientReference.trim() !== body.recipientReference ||
       typeof body.amount !== "string" || !DECIMAL.test(body.amount) || Number(body.amount) <= 0 ||
       typeof body.currency !== "string" || !CURRENCY.test(body.currency) ||
       (body.feeAmount !== undefined &&
@@ -84,8 +84,7 @@ export async function POST(request: NextRequest) {
         id: paymentIntentId,
         status: "created",
         authorizationRequiredBeforeProcessing: true
-      },
-      requestId: randomUUID()
+      }
     }, 201);
   } catch (error) {
     return routeError(error);
