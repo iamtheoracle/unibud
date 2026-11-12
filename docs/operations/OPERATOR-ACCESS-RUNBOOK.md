@@ -152,3 +152,17 @@ Migration 0043 adds a database-authoritative request/approval lifecycle for ordi
 - Requests expire after 30 minutes. The application role has only narrow SECURITY DEFINER function execution; no direct table access is granted.
 
 The migration and PostgreSQL test are wired into Foundation CI. The HTTP API, operator grant inventory UI, notification delivery, request cancellation/expiry worker, concurrency stress coverage, and independent security review remain outstanding. Existing DBA-controlled provisioning/revocation remains the bootstrap and emergency path until those controls are reviewed. Do not provision bootstrap permissions or apply this migration in production without an approved database change and independent security review.
+
+### Operations grant API and console — implementation checkpoint (2026-11-12)
+
+The protected migration 0043 lifecycle now has authenticated server endpoints and an operator console:
+
+- `GET/POST /api/internal/operations/grants` provides the bounded pending-approval queue, active grant inventory, and grant/revocation request creation.
+- `POST /api/internal/operations/grants/[requestId]/decision` handles approve/reject decisions.
+- `/operations/grants` provides grant request, active inventory, revocation request and reviewer workflows. The audit console links to the grants page.
+- Mutations validate the first-party session, same-origin request, account credentials and a short-lived password reauthentication assertion. The database independently verifies exact-session MFA step-up, permission, request/approver separation, live requester/approver state and target eligibility.
+- The app calls only the narrow SECURITY DEFINER functions. It does not read or mutate the protected grant tables directly. Active grant inventory and pending review queue reads are bounded and database-rate-limited.
+
+Migration 0043 was corrected so rejected requests retain the independent approver identity; cancellation/expiry terminal states retain no approver. The rate-limited queue and inventory read functions are VOLATILE because they update the database throttle bucket.
+
+**Still outstanding:** request cancellation endpoint, bounded expiry worker, grant-specific concurrent-approval/revocation stress harness, notification delivery, UI/browser E2E, accessibility review, and independent security review. The database test now covers grant creation, independent approval, revocation, rejection, self-approval denial, audit attribution, app-role isolation and bootstrap-permission non-escalation. Exact-head CI must pass before this checkpoint is accepted. No bootstrap grants, production migration or deployment have been performed.
