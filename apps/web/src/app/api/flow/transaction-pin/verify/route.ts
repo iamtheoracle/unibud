@@ -52,6 +52,9 @@ export async function POST(request: NextRequest) {
     if (result.state === "not_enrolled") {
       return reply({ ok: false, error: "A transaction PIN has not been enrolled." }, 409);
     }
+    if (result.state === "unavailable") {
+      return reply({ ok: false, error: "Transaction PIN verification is temporarily unavailable." }, 503);
+    }
     return reply({ ok: false, error: "Transaction PIN is incorrect." }, 401);
   } catch (error) {
     if (error instanceof Error && /UNIBUD_(?:FLOW_|DB_)/.test(error.message)) {
