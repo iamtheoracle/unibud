@@ -19,6 +19,11 @@ export interface CreateFlowPaymentIntentInput {
   purposeCode: string;
 }
 
+export interface FlowPaymentIntentResult {
+  id: string;
+  status: string;
+}
+
 export class FlowPaymentIntentRepository {
   private readonly pool: SqlPool;
 
@@ -26,7 +31,7 @@ export class FlowPaymentIntentRepository {
     this.pool = pool;
   }
 
-  async create(input: CreateFlowPaymentIntentInput): Promise<string | null> {
+  async create(input: CreateFlowPaymentIntentInput): Promise<FlowPaymentIntentResult | null> {
     const context = createSignedSessionContextFromEnvironment(
       input.accountId,
       input.sessionId
@@ -47,7 +52,15 @@ export class FlowPaymentIntentRepository {
           input.purposeCode
         ]
       );
-      return result.rows[0]?.payment_intent_id ?? null;
+      const paymentIntentId = result.rows[0]?.payment_intent_id ?? null;
+      if (!paymentIntentId) return null;
+      const current = await client.query<{ status: string }>(
+        `SELECT status FROM public.flow_payment_intents WHERE payment_intent_id=$1::uuid`,
+        [paymentIntentId]
+      );
+      const status = current.rows[0]?.status;
+      if (!status) throw new Error("Created Flow payment intent could not be read in its owner context.");
+      return { id: paymentIntentId, status };
     });
   }
 }
