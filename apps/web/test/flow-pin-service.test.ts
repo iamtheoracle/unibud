@@ -43,7 +43,7 @@ class MemoryPinRepository {
   }
 }
 
-process.env.UNIBUD_FLOW_PIN_STEP_UP_HMAC_KEY = Buffer.alloc(32, 9).toString("hex");
+process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY = Buffer.alloc(32, 9).toString("hex");
 
 const ACCOUNT = "f0500000-0000-4000-8000-000000000001";
 const SESSION = "f0500000-0000-4000-8000-000000000011";
@@ -63,7 +63,7 @@ test("Flow PIN enrollment stores an Argon2id verifier and verifies without retur
   const payloadDigest = createHash("sha256").update(repository.pinHash!, "utf8").digest("hex");
   const message = ["flow-pin-step-up:v1", ACCOUNT, SESSION, "pin_enroll",
     payloadDigest, String(proof.expiresEpoch), proof.nonce].join(":");
-  const expectedSignature = createHmac("sha256", Buffer.from(process.env.UNIBUD_FLOW_PIN_STEP_UP_HMAC_KEY!, "hex"))
+  const expectedSignature = createHmac("sha256", Buffer.from(process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY!, "hex"))
     .update(message, "utf8").digest("hex");
   assert.equal(proof.signature, expectedSignature);
   assert.deepEqual(await service.verify({ accountId: ACCOUNT, sessionId: SESSION, pin: "482917" }), {
