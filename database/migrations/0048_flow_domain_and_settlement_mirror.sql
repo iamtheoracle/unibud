@@ -158,7 +158,7 @@ CREATE TABLE public.flow_journal_entries (
   source_system TEXT NOT NULL CHECK (source_system='moneylead'),
   source_event_ref_digest BYTEA NOT NULL CHECK (octet_length(source_event_ref_digest)=32),
   currency CHAR(3) NOT NULL CHECK (currency ~ '^[A-Z]{3}$'),
-  entry_kind TEXT NOT NULL CHECK (entry_kind IN ('settlement','fee','reversal','adjustment')),
+  entry_kind TEXT NOT NULL CHECK (entry_kind IN ('settlement','fee','refund','reversal','adjustment')),
   effective_at TIMESTAMPTZ NOT NULL,
   recorded_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   FOREIGN KEY(account_id,flow_account_id)
