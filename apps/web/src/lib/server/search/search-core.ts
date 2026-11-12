@@ -1,4 +1,31 @@
 import type { SqlClient } from "../database/account-context-core.ts";
+import { routeSearchIntent, type SearchIntent, type SearchRoute } from "../../../../../../packages/contracts/src/search.ts";
+
+
+/**
+ * Server-owned global-search classifier. Client-supplied route names are never
+ * accepted. Academic intent routes into Board within Bud; dating intent only
+ * produces a gated SouLync destination; all other global discovery goes to
+ * Connect. This classifier is navigation, never authorization.
+ */
+export function classifyGlobalSearchIntent(query: string): SearchIntent {
+  const normalized = query.toLocaleLowerCase("en");
+  if (/\\b(dating|romantic|soulmate|relationship advice|find a date)\\b/u.test(normalized)) {
+    return { kind: "adult_dating" };
+  }
+  if (/\\b(school|campus|university|universities|college|colleges|faculty|department|departments|course|courses|class|classes|exam|exams|assignment|assignments|tutor|tutors|lecturer|lecturers|study group|scholarship|scholarships|lecture|lectures|coursework)\\b/u.test(normalized)) {
+    return { kind: "academic" };
+  }
+  return { kind: "general_discovery" };
+}
+
+export function routeGlobalSearch(query: string): {
+  intent: SearchIntent;
+  route: SearchRoute;
+} {
+  const intent = classifyGlobalSearchIntent(query);
+  return { intent, route: routeSearchIntent(intent) };
+}
 
 export interface PublicProfileSearchResult {
   handle: string;
