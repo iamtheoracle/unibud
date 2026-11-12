@@ -1,4 +1,4 @@
-import { createCipheriv, createHash, createHmac, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const BASE64URL_32 = /^[A-Za-z0-9_-]{43}$/;
@@ -55,6 +55,53 @@ export class FlowDataProtection {
       .update(recipientReference, "utf8")
       .digest();
     return { ciphertext, lookupDigest };
+  }
+
+  unprotectRecipientReference(
+    accountId: string,
+    flowAccountId: string,
+    ciphertext: Uint8Array,
+    expectedLookupDigest: Uint8Array
+  ): string {
+    if (!UUID.test(accountId) || !UUID.test(flowAccountId) ||
+        ciphertext.byteLength < 29 || ciphertext.byteLength > 1053 ||
+        expectedLookupDigest.byteLength !== 32) {
+      throw new Error("Recipient reference could not be verified.");
+    }
+    const packed = Buffer.from(ciphertext);
+    if (packed[0] !== 1) throw new Error("Recipient reference could not be verified.");
+    const aad = Buffer.from(
+      "unibud:flow:recipient:v1:" + accountId.toLowerCase() + ":" + flowAccountId.toLowerCase(),
+      "utf8"
+    );
+    try {
+      const iv = packed.subarray(1, 13);
+      const tag = packed.subarray(13, 29);
+      const encrypted = packed.subarray(29);
+      const decipher = createDecipheriv("aes-256-gcm", this.encryptionKey, iv);
+      decipher.setAAD(aad);
+      decipher.setAuthTag(tag);
+      const plaintext = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+      if (plaintext.byteLength < 1 || plaintext.byteLength > 1024) {
+        throw new Error("invalid length");
+      }
+      const lookupDigest = createHmac("sha256", this.lookupKey)
+        .update(aad)
+        .update(Buffer.from([0]))
+        .update(plaintext)
+        .digest();
+      if (!timingSafeEqual(lookupDigest, Buffer.from(expectedLookupDigest))) {
+        throw new Error("lookup mismatch");
+      }
+      const reference = plaintext.toString("utf8");
+      if (!Buffer.from(reference, "utf8").equals(plaintext) ||
+          reference.trim() !== reference) {
+        throw new Error("invalid encoding");
+      }
+      return reference;
+    } catch {
+      throw new Error("Recipient reference could not be verified.");
+    }
   }
 
   digestIdempotencyKey(value: string): Buffer {
