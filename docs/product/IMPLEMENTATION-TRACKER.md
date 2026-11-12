@@ -4,6 +4,42 @@ Last verified: 2026-11-12
 Repository: `iamtheoracle/unibud`
 Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED**, or **NOT VERIFIED** until its backend, authorization, user experience, tests, documentation and operational evidence are all present. A screen, schema, mock, CI run or plan alone does not establish production capability.
 
+## Current Operations delivery correction — 2026-11-12
+
+This current-state section supersedes older Operations status rows and historical checkpoint wording below wherever they conflict. The historical entries remain for traceability.
+
+### PR #15 and exact-head evidence
+
+- PR #15 is OPEN, DRAFT and NOT MERGED on branch foundation/session-derived-operations-rbac-v2.
+- Code head 302a604b10f44ea8172cb1381850258e04f0eb71 passed Foundation run 43160660473, UNIBUD Web and Database run 43160660441, and Oracle Arc API run 43160660395.
+- The verified Foundation run applied the PostgreSQL 16 migrations and passed RLS isolation, the independent-connection grant lifecycle concurrency harness, MFA replay/recovery concurrency and bounded maintenance checks.
+- The verified Web/Database run passed PostgreSQL migration validation, TypeScript, contract tests, server security tests, lint, browser E2E and production build.
+- Runbook reconciliation commit 91e19ded5c77d94ab4c942dbca9289153c37ef2b is documentation-only; its exact-head Foundation and Web/Database workflows are currently running. Oracle Arc API has passed on that docs commit. Do not report 91e19d as fully green until all runs finish.
+
+### Operations security status
+
+| Requirement | Current status | Evidence / remaining gate |
+|---|---|---|
+| Non-forgeable actor and exact-session provenance (Issue #16) | IMPLEMENTED / CI VERIFIED; independent review OPEN | Migration 0021 removes UUID-taking permission/audit APIs; migration 0023 verifies separate signed account+session context and persisted session state. Tests 0021/0023 cover forged GUCs, cross-account session binding, expired/revoked sessions, signing-key/verifier isolation and audit attribution. Issue #16 remains open until independent review is complete. |
+| Operations MFA | IMPLEMENTED IN CODE / NOT PRODUCTION-READY | Enrollment, confirmation, challenge, exact-session step-up, recovery, regeneration, status, lockout, key rotation and browser E2E exist. Secret-manager provisioning, production key lifecycle, full disable/reset dual control, operational cleanup/retention and independent review remain gates. No production MFA activation. |
+| Grant and revocation lifecycle | IMPLEMENTED / CI VERIFIED | Migrations 0043–0046; request, independent approval/rejection, requester same-session cancellation, bounded expiry and post-lock revalidation. Bootstrap permissions remain DBA-controlled. |
+| Grant lifecycle notifications | IMPLEMENTED / CI VERIFIED | Migration 0047 provides transactional in-app notifications for submit/approve/reject/cancel/expire, with requester/target/approver fan-out as applicable, account-scoped read/mark-read functions and no direct app-table access. No external email/SMS delivery. |
+| Grant concurrency | IMPLEMENTED / CI VERIFIED | Independent PostgreSQL connections race approve/reject, approve/cancel, expired step-up during cancellation lock wait, and approval against bounded expiry. Expiry path asserts requester and target notices. |
+| Grant console and browser E2E | IMPLEMENTED / CI VERIFIED | Request, review, approval/rejection, cancellation, active inventory, notification inbox and mark-read are covered by isolated Playwright E2E. |
+| Targeted accessibility refinements | IMPLEMENTED / CI VERIFIED | Captions, column scopes, keyboard-focusable scroll regions, focus indicators, live unread status and reduced-motion styling. Not a WCAG conformance audit. |
+| Full accessibility audit | NOT VERIFIED | Keyboard-only, screen-reader, contrast, zoom/reflow, error identification and assistive-technology testing remain outstanding. |
+| Security alerting and monitoring | NOT STARTED / NOT VERIFIED | Define signals, alert routing, deduplication, escalation, retention, response runbook and delivery tests. |
+| External notification delivery | NOT STARTED | Provider selection, outbox, retries, receipts, idempotency, secret management and delivery monitoring; do not imply current in-app notices are email/SMS. |
+| Independent security review | BLOCKING | Issue #16 remains open. Review key provisioning/rotation, signed assertion construction, SECURITY DEFINER ownership/search paths, complete role matrix, audit, revocation and migration/rollback plan. |
+| Production rollout / operator activation | BLOCKED | No production migration, signing-key provisioning, bootstrap grants, worker activation, MFA activation, deployment or operator activation. |
+
+### Next implementation priorities
+
+1. Complete an independent security review of Issue #16 and disposition findings before merge or activation.
+2. Perform a full WCAG-oriented audit of Operations MFA, audit and grants screens; add automated accessibility checks only where they provide reliable coverage, then complete manual keyboard/screen-reader review.
+3. Design monitored security event/alert routing and a real external notification outbox only after provider and operational ownership are approved.
+4. Reconcile the complete capability register and implementation tracker against current code without marking unimplemented UNIBUD spaces as complete.
+
 ## Status definitions
 
 - **VERIFIED** — implementation and acceptance evidence exist at the stated commit/environment.
