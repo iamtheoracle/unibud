@@ -61,7 +61,7 @@ test("Flow PIN enrollment stores an Argon2id verifier and verifies without retur
   assert.ok((repository.lastProof?.expiresEpoch ?? 0) > Math.floor(Date.now() / 1000));
   const proof = repository.lastProof!;
   const payloadDigest = createHash("sha256").update(repository.pinHash!, "utf8").digest("hex");
-  const message = ["flow-pin-step-up:v1", ACCOUNT, SESSION, "pin_enroll",
+  const message = ["flow-step-up:v1", ACCOUNT, SESSION, "pin_enroll",
     payloadDigest, String(proof.expiresEpoch), proof.nonce].join(":");
   const expectedSignature = createHmac("sha256", Buffer.from(process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY!, "hex"))
     .update(message, "utf8").digest("hex");
