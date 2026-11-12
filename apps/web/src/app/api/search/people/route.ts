@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
         if (!(await isSearchDiscoveryReady(client))) {
           return { discoveryState: "age_assurance_required" as const, profiles: [] };
         }
-        return { discoveryState: "ready" as const, profiles: await searchPublicProfiles(client, term) };
+        return { discoveryState: "ready" as const, profiles: await searchPublicProfiles(client, term, "people") };
       }
     );
 
