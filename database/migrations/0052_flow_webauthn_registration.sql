@@ -169,7 +169,7 @@ END
 $function$;
 
 CREATE FUNCTION public.flow_webauthn_list_credentials()
-RETURNS TABLE(credential_id BYTEA,transports TEXT[])
+RETURNS TABLE(credential_id BYTEA,public_key_cose BYTEA,signature_counter BIGINT,transports TEXT[])
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
@@ -180,7 +180,7 @@ DECLARE
 BEGIN
   IF v_account IS NULL OR v_session IS NULL THEN RETURN; END IF;
   RETURN QUERY
-  SELECT c.credential_id,c.transports
+  SELECT c.credential_id,c.public_key_cose,c.signature_counter,c.transports
     FROM public.flow_biometric_credentials c
    WHERE c.account_id=v_account AND c.status='active'
    ORDER BY c.created_at;
