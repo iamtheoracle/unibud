@@ -208,3 +208,7 @@ The web CI also runs the isolated Operator grants browser fixture at /e2e/operat
 ### Verified checkpoint — 2026-11-12
 
 Feature-branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation checks run 43159461223, UNIBUD Web and Database run 43159461527, and Oracle Arc API run 43159461117. The Web run includes typecheck, contract/security tests, lint, the Operations grants browser E2E, production build and migration validation. Foundation includes PostgreSQL 16 migration/RLS verification through migration 0047. This is CI verification only; no production deployment, production migration or grant provisioning occurred.
+
+### Grant lifecycle concurrency verification
+
+Foundation CI now runs scripts/test-operations-grant-concurrency.sh against independent PostgreSQL connections. The harness races approval against rejection, approval against same-session requester cancellation, cancellation against expiry of the requester's MFA step-up while blocked on the request row, and approval against bounded request expiry. It asserts one terminal winner, consistent grant creation, one corresponding audit event, and safe SKIP LOCKED expiry behavior. This is a disposable CI fixture, not a production stress test or production operator exercise.
