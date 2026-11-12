@@ -86,6 +86,9 @@ export async function POST(request: NextRequest) {
       }
     });
   } catch (error) {
+    if (error instanceof Error && /UNIBUD_(?:FLOW_|DB_)/.test(error.message)) {
+      return response({ ok: false, error: "Flow payment-intent creation is not configured." }, 503);
+    }
     return routeError(error);
   }
 }
