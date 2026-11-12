@@ -124,6 +124,10 @@ test("grant console browser E2E is isolated from production and runs in web CI",
   assert.match(grantE2e, /Approve/);
   assert.match(grantE2e, /Cancel my request/);
   assert.match(grantE2e, /Submit for independent approval/);
+  assert.match(grantE2e, /Automated semantic accessibility smoke checks/);
+  assert.match(grantE2e, /unnamed/);
+  assert.match(grantE2e, /tablesWithoutHeaders/);
+  assert.match(grantE2e, /mainLandmarks: 1/);
   assert.match(webWorkflow, /scripts\/e2e\/operations-grants\.mjs/);
 });
 
