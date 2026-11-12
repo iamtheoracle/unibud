@@ -46,6 +46,14 @@ export async function consumeSearchRateLimit(client: SqlClient): Promise<void> {
   if (result.rows[0]?.allowed !== true) throw new SearchRateLimitExceededError();
 }
 
+/** Returns a minimal self-read gate; no age or cohort details are exposed. */
+export async function isSearchDiscoveryReady(client: SqlClient): Promise<boolean> {
+  const result = await client.query<{ ready: boolean }>(
+    "SELECT public.account_discovery_viewer_verified() AS ready"
+  );
+  return result.rows[0]?.ready === true;
+}
+
 export interface PublicProfileSearchResult {
   handle: string;
   displayName: string;
