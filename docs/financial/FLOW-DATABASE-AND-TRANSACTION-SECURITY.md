@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migrations 0048–0053, authenticated payment-intent/confirmation/authorization routes, Argon2id PIN lifecycle, platform WebAuthn registration and transaction assertion verification, one-time transaction-bound authorization, and pre-submission cancellation are implemented on the Flow foundation branch. Application/SQL code head `edafb67943eaf616e4489130f62aee56e7e42b04` passed exact-head Foundation `43211209969`, Web/Database `43211209933` and Oracle Arc API `43211210115`. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment submission or settlement is established by this work.
+**Status:** Migrations 0048–0054, authenticated payment-intent/confirmation/authorization routes, Argon2id PIN lifecycle, platform WebAuthn registration and transaction assertion verification, one-time transaction-bound authorization, and pre-submission cancellation are implemented on the Flow foundation branch. Application/SQL code head `edafb67943eaf616e4489130f62aee56e7e42b04` passed exact-head Foundation `43211209969`, Web/Database `43211209933` and Oracle Arc API `43211210115`. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment submission or settlement is established by this work.
 
 ## Ownership boundary
 
@@ -23,7 +23,7 @@
 - Biometric storage contains WebAuthn credential identifiers, public keys, signature counters and supported transport metadata only. Registration requires a platform authenticator and user verification. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
 - Journal postings are append-only and deferred constraint-trigger validation requires at least two postings with equal debit and credit totals per journal entry/currency.
 - Direct app-table access is read-only and column-limited. `unibud_app` has no direct table access to PIN verifiers, step-up assertions, biometric public keys, authorization challenges or rate-limit records; it can invoke only narrowly scoped session-bound procedures. The PIN verification procedure returns the current account's Argon2id verifier only to the trusted server-side caller after atomic database rate limiting.
-- The payment-intent HTTP route validates the active persisted session, derives account/session identity server-side, encrypts recipient references, requires a 32-byte high-entropy idempotency key and returns an instruction state only. It does not process a payment. The confirmation endpoint decrypts the recipient only inside the server boundary and returns the exact immutable details digest. PIN and WebAuthn authorization endpoints require that digest; they do not accept client-supplied recipient, amount, currency, fee or source-account fields. Intent-creation rate limiting is still pending.
+- The payment-intent HTTP route validates the active persisted session, derives account/session identity server-side, encrypts recipient references, requires a 32-byte high-entropy idempotency key and returns an instruction state only. It does not process a payment. The confirmation endpoint decrypts the recipient only inside the server boundary and returns the exact immutable details digest. PIN and WebAuthn authorization endpoints require that digest; they do not accept client-supplied recipient, amount, currency, fee or source-account fields. Migration 0054 enforces an account-wide limit of ten payment-intent creation attempts per fifteen minutes, shared across the account's sessions, with a fifteen-minute lock and audited denial.
 - The `unibud_flow_ingest` role is NOLOGIN and has no table privileges. It is reserved for a future verified gateway; a dedicated integration login, secrets, signed event verification and scoped account resolution are required before any ingestion privilege is granted.
 
 ## Transaction PIN implementation — migration 0051
@@ -65,7 +65,7 @@
 
 ## Deliberate deferrals
 
-1. Payment-intent creation rate limiting, risk-aware abuse controls and customer security notifications.
+1. Risk-aware abuse controls, device/IP anomaly signals and customer security notifications beyond the account-scoped database rate limits.
 2. Submission, acceptance, failure, settlement, refund and reversal transition procedures. These must be driven by authenticated MoneyLead evidence; no Flow-only or client-only status change may claim posting or settlement.
 3. Internal transfers: blocked until MoneyLead provides a verified scoped integration and authoritative posting contract. Flow must not simulate a bank transfer locally.
 4. The MoneyLead adapter implementation and transactional outbox are blocked on repository/API contract verification. The narrow port exists, but the default adapter fails closed.
