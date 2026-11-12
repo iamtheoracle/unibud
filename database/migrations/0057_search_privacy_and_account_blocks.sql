@@ -37,6 +37,7 @@ CREATE POLICY account_blocks_participant_read ON public.account_blocks
 REVOKE ALL ON public.account_blocks FROM PUBLIC, unibud_app, unibud_readonly;
 GRANT SELECT ON public.account_blocks TO unibud_app;
 GRANT SELECT, INSERT, UPDATE ON public.account_blocks TO unibud_profile_owner;
+GRANT INSERT ON public.security_audit_events TO unibud_profile_owner;
 
 CREATE OR REPLACE FUNCTION public.account_block_handle(p_handle TEXT)
 RETURNS BOOLEAN
@@ -69,6 +70,13 @@ BEGIN
   VALUES (v_actor,v_target,'active',clock_timestamp(),NULL)
   ON CONFLICT (blocker_account_id,blocked_account_id)
   DO UPDATE SET status='active',created_at=clock_timestamp(),revoked_at=NULL;
+
+  INSERT INTO public.security_audit_events(
+    id,actor_account_id,application_id,action,outcome,resource_type,resource_id,request_id,event_data
+  ) VALUES (
+    gen_random_uuid(),v_actor,'connect','account.block.create','success','account',v_target,
+    gen_random_uuid()::TEXT,'{}'::jsonb
+  );
   RETURN TRUE;
 END;
 $function$;
@@ -101,7 +109,16 @@ BEGIN
   UPDATE public.account_blocks
   SET status='revoked',revoked_at=clock_timestamp()
   WHERE blocker_account_id=v_actor AND blocked_account_id=v_target AND status='active';
-  RETURN FOUND;
+  IF FOUND THEN
+    INSERT INTO public.security_audit_events(
+      id,actor_account_id,application_id,action,outcome,resource_type,resource_id,request_id,event_data
+    ) VALUES (
+      gen_random_uuid(),v_actor,'connect','account.block.revoke','success','account',v_target,
+      gen_random_uuid()::TEXT,'{}'::jsonb
+    );
+    RETURN TRUE;
+  END IF;
+  RETURN FALSE;
 END;
 $function$;
 
