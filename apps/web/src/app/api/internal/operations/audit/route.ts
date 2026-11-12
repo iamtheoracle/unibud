@@ -4,7 +4,7 @@ import { consumeOperationsMfaApiRateLimit } from "@/lib/server/operations/operat
 import { createSignedSessionContextFromEnvironment, withSignedSessionTransaction } from "@/lib/server/database/session-context";
 import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
-import { readSessionCookie, routeError } from "@/lib/server/identity/http";
+import { hasSameOrigin, readSessionCookie, routeError } from "@/lib/server/identity/http";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,7 +41,7 @@ function validIso(value: string | null): value is string {
 
 export async function GET(request: NextRequest) {
   const origin = request.headers.get("origin");
-  if (origin && origin !== request.nextUrl.origin) return json({ ok: false, error: "Forbidden." }, 403);
+  if (origin && !hasSameOrigin(request)) return json({ ok: false, error: "Forbidden." }, 403);
   const requestId = randomUUID();
   const params = request.nextUrl.searchParams;
   const now = Date.now();
