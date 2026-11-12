@@ -36,7 +36,13 @@ export type SearchRoute =
   | { kind: "space"; space: "bud_board"; parentSpace: "bud" }
   | { kind: "space"; space: "connect" }
   | { kind: "space"; space: "soullync"; requiresAdultEligibility: true; requiresIndependentConsent: true }
-  | { kind: "scoped"; applicationId: ApplicationId; resourceId?: ResourceId };
+  | {
+      kind: "scoped";
+      applicationId: ApplicationId;
+      resourceId?: ResourceId;
+      requiresAdultEligibility?: true;
+      requiresIndependentConsent?: true;
+    };
 
 /**
  * Routes a server-classified intent to its product space. This is navigation
@@ -61,7 +67,10 @@ export function routeSearchIntent(intent: SearchIntent): SearchRoute {
       return {
         kind: "scoped",
         applicationId: intent.applicationId,
-        ...(intent.resourceId ? { resourceId: intent.resourceId } : {})
+        ...(intent.resourceId ? { resourceId: intent.resourceId } : {}),
+        ...(intent.applicationId === "soullync"
+          ? { requiresAdultEligibility: true as const, requiresIndependentConsent: true as const }
+          : {})
       };
   }
 }
