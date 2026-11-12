@@ -855,3 +855,10 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Oracle Arc API:** run 43159461117 passed.
 - **Still outstanding:** dedicated independent-connection grant lifecycle concurrency coverage, external email/SMS delivery infrastructure (not claimed by in-app notifications), and independent security review Issue #16.
 - **Release boundary:** branch/PR CI only; no production migrations, grants, deployment or operator activation.
+
+### Grant lifecycle concurrency harness
+
+- Added scripts/test-operations-grant-concurrency.sh and wired it into Foundation PostgreSQL CI.
+- Uses separate PostgreSQL connections and signed session contexts to race approve/reject, approve/cancel, cancellation after MFA step-up expiry during a lock wait, and approval versus the bounded expiry worker.
+- Asserts exactly one terminal winner, no duplicate/inconsistent grant, correct audit attribution and expiry worker SKIP LOCKED behavior.
+- The test is committed and awaiting CI on the new branch head; it is not yet reported as passed until the workflow completes.
