@@ -33,11 +33,11 @@ export class FlowPinRepository {
     return withSignedSessionTransaction(this.pool, context, work);
   }
 
-  async enroll(accountId: string, sessionId: string, pinHashPhc: string): Promise<boolean> {
+  async enroll(accountId: string, sessionId: string, pinHashPhc: string, proof: { expiresEpoch: number; nonce: string; signature: string }): Promise<boolean> {
     return this.withSession(accountId, sessionId, async client => {
       const result = await client.query<{ enrolled: boolean }>(
-        "SELECT public.flow_pin_enroll($1::text) AS enrolled",
-        [pinHashPhc]
+        "SELECT public.flow_pin_enroll($1::text,$2::bigint,$3::uuid,$4::text) AS enrolled",
+        [pinHashPhc, proof.expiresEpoch, proof.nonce, proof.signature]
       );
       return result.rows[0]?.enrolled === true;
     });
@@ -86,11 +86,11 @@ export class FlowPinRepository {
     });
   }
 
-  async recover(accountId: string, sessionId: string, pinHashPhc: string): Promise<boolean> {
+  async recover(accountId: string, sessionId: string, pinHashPhc: string, proof: { expiresEpoch: number; nonce: string; signature: string }): Promise<boolean> {
     return this.withSession(accountId, sessionId, async client => {
       const result = await client.query<{ recovered: boolean }>(
-        "SELECT public.flow_pin_recover($1::text) AS recovered",
-        [pinHashPhc]
+        "SELECT public.flow_pin_recover($1::text,$2::bigint,$3::uuid,$4::text) AS recovered",
+        [pinHashPhc, proof.expiresEpoch, proof.nonce, proof.signature]
       );
       return result.rows[0]?.recovered === true;
     });
