@@ -194,6 +194,20 @@ export class FlowPaymentIntentRepository {
     });
   }
 
+  async cancelPaymentIntent(
+    accountId: string,
+    sessionId: string,
+    paymentIntentId: string
+  ): Promise<boolean> {
+    return this.withSession(accountId, sessionId, async client => {
+      const result = await client.query<{ cancelled: boolean }>(
+        "SELECT public.flow_cancel_payment_intent($1::uuid) AS cancelled",
+        [paymentIntentId]
+      );
+      return result.rows[0]?.cancelled === true;
+    });
+  }
+
   async authorizePaymentIntent(input: {
     accountId: string;
     sessionId: string;
