@@ -84,6 +84,8 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       - name: Type check
         run: pnpm typecheck
+      - name: Approved space inventory contract
+        run: pnpm check:space-inventory
       - name: Contract tests
         run: pnpm --filter @unibud/contracts test
       - name: Server security unit tests
