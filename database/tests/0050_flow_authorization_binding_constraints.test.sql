@@ -49,6 +49,9 @@ INSERT INTO public.flow_authorization_challenges(
  digest('intent-50-details','sha256'),'transaction_pin',
  clock_timestamp()+interval '2 minutes'
 );
+UPDATE public.flow_authorization_challenges
+   SET consumed_at=clock_timestamp()
+ WHERE authorization_id='f0500000-0000-4000-8000-000000000141';
 
 DO $constraints$
 BEGIN
@@ -83,6 +86,18 @@ BEGIN
     RAISE EXCEPTION 'Challenge with a different transaction digest was accepted';
   EXCEPTION WHEN foreign_key_violation THEN NULL;
   END;
+
+  INSERT INTO public.flow_authorization_challenges(
+    authorization_id,payment_intent_id,account_id,session_id,challenge_digest,
+    details_digest,auth_method,expires_at
+  ) VALUES (
+    'f0500000-0000-4000-8000-000000000142',
+    'f0500000-0000-4000-8000-000000000131',
+    'f0500000-0000-4000-8000-000000000101',
+    'f0500000-0000-4000-8000-000000000111',
+    digest('challenge-50-second-valid','sha256'),
+    digest('intent-50-details','sha256'),'webauthn',clock_timestamp()+interval '2 minutes'
+  );
 
   BEGIN
     INSERT INTO public.flow_authorization_challenges(
