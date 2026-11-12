@@ -435,6 +435,39 @@ REVOKE ALL ON FUNCTION public.unibud_operator_list_grant_requests(UUID,INTEGER,T
 GRANT EXECUTE ON FUNCTION public.unibud_operator_list_grant_requests(UUID,INTEGER,TIMESTAMPTZ,UUID)
   TO unibud_app;
 
+CREATE FUNCTION public.unibud_operator_list_active_grants(
+  p_account_id UUID DEFAULT NULL,p_limit INTEGER DEFAULT 100
+) RETURNS TABLE(
+  grant_id UUID,account_id UUID,operator_role TEXT,permissions TEXT[],
+  granted_by UUID,granted_at TIMESTAMPTZ,expires_at TIMESTAMPTZ
+)
+LANGUAGE plpgsql
+VOLATILE
+SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+BEGIN
+  IF p_limit IS NULL OR p_limit<1 OR p_limit>100 THEN
+    RAISE EXCEPTION 'Invalid active grant query' USING ERRCODE='22023';
+  END IF;
+  IF unibud_private.current_account_id() IS NULL
+     OR unibud_private.current_session_id() IS NULL
+     OR NOT public.unibud_operator_has_permission('operations.grants.approve')
+     OR NOT public.unibud_operator_mfa_consume_api_rate_limit('grant_read') THEN RETURN; END IF;
+  RETURN QUERY SELECT g.id,g.account_id,g.operator_role,g.permissions,
+    g.granted_by,g.granted_at,g.expires_at
+    FROM public.unibud_operator_grants g
+    JOIN public.accounts a ON a.id=g.account_id
+    WHERE a.status='active' AND g.revoked_at IS NULL
+      AND (g.expires_at IS NULL OR g.expires_at>statement_timestamp())
+      AND (p_account_id IS NULL OR g.account_id=p_account_id)
+    ORDER BY g.granted_at DESC,g.id DESC LIMIT p_limit;
+END
+$function$;
+ALTER FUNCTION public.unibud_operator_list_active_grants(UUID,INTEGER) OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION public.unibud_operator_list_active_grants(UUID,INTEGER) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.unibud_operator_list_active_grants(UUID,INTEGER) TO unibud_app;
+
 COMMENT ON TABLE public.unibud_operator_grant_requests IS
 'Protected dual-control grant/revocation requests. App roles have no direct table access; grant creation and revocation occur only in the independently approved SECURITY DEFINER transition.';
 COMMENT ON FUNCTION public.unibud_operator_decide_grant_change(UUID,TEXT,TEXT,BIGINT,BIGINT,UUID,TEXT) IS
