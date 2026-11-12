@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FlowPaymentIntentRepository } from "@/lib/server/flow/flow-payment-intent-repository";
-import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
+import { getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { hasSameOrigin, readSessionCookie, routeError } from "@/lib/server/identity/http";
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest, context: Context) {
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(paymentIntentId)) {
       return NextResponse.json({ ok: false, error: "Invalid payment reference." }, { status: 400 });
     }
-    const repository = new FlowPaymentIntentRepository(getAppDatabasePool());
+    const repository = new FlowPaymentIntentRepository(getAuthDatabasePool());
     const cancelled = await repository.cancelPaymentIntent(
       validation.account.id,validation.session.id,paymentIntentId
     );
