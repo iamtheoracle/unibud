@@ -814,3 +814,16 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Oracle Arc API:** PASSED, run `43146549362`.
 - The first Web typecheck run caught a literal escaped newline in the new grant route type declaration. It was corrected in the verified code head; all three workflows subsequently passed.
 - This verifies the database lifecycle, API contract and build, but does not constitute grant-console browser E2E or independent security review. No bootstrap grant, production migration, production deployment or operator activation occurred.
+
+### Operations grant cancellation and bounded expiry — implementation and exact-head verification — 2026-11-12
+
+- **Same-session requester cancellation:** migration 0044 adds `unibud_operator_cancel_grant_change`, a SECURITY DEFINER transition requiring the original requester account and exact original persisted session, live Operations MFA step-up, a single-use password reauthentication assertion and the dedicated `grant_cancel` rate-limit bucket. It locks and rechecks the pending request before cancellation and writes a system-verified requester audit event.
+- **Requester queue visibility:** request-permission holders can read only their own pending requests from the exact originating session. Approvers retain the bounded review queue. The active grant inventory remains restricted to approvers.
+- **UI/API:** `POST /api/internal/operations/grants/[requestId]/cancel` and the `Cancel my request` control are implemented. The database rejects cancellation from another session even if the account matches.
+- **Bounded expiry:** migration 0045 extends the existing bounded Operations maintenance entry point. It expires at most the configured batch size of pending grant requests using `FOR UPDATE SKIP LOCKED`, marks them `expired`, and records a system-attributed `operations.grants.expire` audit event. It does not create a new scheduler or recurring schedule; the existing trusted scheduler entry point remains the only invocation path.
+- **Database verification:** Foundation CI applies migrations 0044–0045 and tests the cancellation function's SECURITY DEFINER privilege boundary, same-account/session checks, reauthentication, MFA permission and throttle contract. The expiry integration test executes the existing scheduler role and verifies expiry state, reason and system audit attribution.
+- **Verified code head:** `1ec9c88a8db2523a8723154e5870e08bb3caa92b`.
+- **Foundation checks:** PASSED, run `43147456579`; PostgreSQL 16 applied migrations through 0045 and the full database/RLS suite passed, including grant cancellation boundary and bounded grant expiry tests.
+- **UNIBUD Web and Database:** PASSED, run `43147456659`; TypeScript, contract/security tests, lint, existing profile browser E2E, migration validation and production build passed.
+- **Oracle Arc API:** PASSED, run `43147456542`.
+- **Still outstanding:** dedicated browser E2E for the grant console and cancellation, independent-connection race tests specifically for grant approval/rejection/cancellation/expiry, grant notifications, monitoring/alert routing, accessibility review, bootstrap permission provisioning and independent security review. No bootstrap grants, production migration, production deployment or operator activation occurred.
