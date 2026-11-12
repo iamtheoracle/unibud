@@ -16,7 +16,10 @@ export type FlowPinVerificationResult =
   | { state: "unavailable" };
 
 function validateNewPin(pin: string): void {
-  if (!PIN_PATTERN.test(pin) || WEAK_PINS.has(pin)) {
+  const ascending = [...pin].every((digit, index, digits) => index === 0 || Number(digit) === Number(digits[index - 1]) + 1);
+  const descending = [...pin].every((digit, index, digits) => index === 0 || Number(digit) === Number(digits[index - 1]) - 1);
+  const repeated = new Set(pin).size === 1;
+  if (!PIN_PATTERN.test(pin) || WEAK_PINS.has(pin) || ascending || descending || repeated) {
     throw new Error("Choose a six-digit transaction PIN that is not an obvious sequence or repeated pattern.");
   }
 }
@@ -56,8 +59,9 @@ export class FlowPinService {
     pin: string;
   }): Promise<FlowPinVerificationResult> {
     const state = await this.repository.beginVerification(input.accountId, input.sessionId);
+    if (!state.allowed && state.lockedUntil) return { state: "locked", lockedUntil: state.lockedUntil };
     if (!state.pinHashPhc) return { state: "not_enrolled" };
-    if (!state.allowed) return { state: "locked", lockedUntil: state.lockedUntil };
+    if (!state.allowed) return { state: "unavailable" };
 
     let valid = false;
     try {
