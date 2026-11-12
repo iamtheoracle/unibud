@@ -65,3 +65,16 @@ test("all approved Connect search categories remain inside Connect", () => {
     );
   }
 });
+
+
+test("explicit SouLync scope retains independent adult eligibility and consent gates", () => {
+  assert.deepEqual(routeSearchIntent({
+    kind: "space_scoped",
+    applicationId: "soullync" as ApplicationId
+  }), {
+    kind: "scoped",
+    applicationId: "soullync",
+    requiresAdultEligibility: true,
+    requiresIndependentConsent: true
+  });
+});
