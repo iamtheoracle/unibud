@@ -47,6 +47,8 @@ export function verifyTotpCode(secret:Uint8Array,code:string,timestampMs:number,
   }
   return null;
 }
+export interface OperationsMfaEncryptionKey { id: string; key: Uint8Array; }
+
 export function createOperationsMfaCryptographyFromEnvironment(): OperationsMfaCryptography {
   const readKey = (name: string): Buffer => {
     const value = process.env[name]?.trim() ?? "";
@@ -55,19 +57,67 @@ export function createOperationsMfaCryptographyFromEnvironment(): OperationsMfaC
     }
     return Buffer.from(value, "hex");
   };
-  return new OperationsMfaCryptography(
-    readKey("UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY"),
-    readKey("UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY")
-  );
+  const legacyEncryptionKey = readKey("UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY");
+  const recoveryKey = readKey("UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY");
+  const keyringRaw = process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON?.trim();
+  if (!keyringRaw) return new OperationsMfaCryptography(legacyEncryptionKey, recoveryKey);
+
+  let parsed: unknown;
+  try { parsed = JSON.parse(keyringRaw); } catch { throw new Error("Operations MFA encryption keyring must be valid JSON."); }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("Operations MFA encryption keyring has an invalid shape.");
+  }
+  const config = parsed as { activeKeyId?: unknown; keys?: unknown };
+  if (typeof config.activeKeyId !== "string" || !Array.isArray(config.keys)
+      || config.keys.length < 1 || config.keys.length > 2) {
+    throw new Error("Operations MFA encryption keyring must contain one or two keys and an active key ID.");
+  }
+  const keys: OperationsMfaEncryptionKey[] = config.keys.map((item: unknown) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new Error("Operations MFA encryption keyring entry is invalid.");
+    }
+    const entry = item as { id?: unknown; keyHex?: unknown };
+    if (typeof entry.id !== "string" || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(entry.id)
+        || typeof entry.keyHex !== "string" || !/^(?:[0-9a-f]{2}){32}$/i.test(entry.keyHex)) {
+      throw new Error("Operations MFA encryption keyring entry must contain a valid ID and 32-byte hex key.");
+    }
+    return { id: entry.id, key: Buffer.from(entry.keyHex, "hex") };
+  });
+  if (new Set(keys.map(key => key.id)).size !== keys.length
+      || !keys.some(key => key.id === config.activeKeyId)) {
+    throw new Error("Operations MFA encryption keyring IDs must be unique and include the active key.");
+  }
+  return new OperationsMfaCryptography(legacyEncryptionKey, recoveryKey, {
+    activeKeyId: config.activeKeyId, keys
+  });
 }
 
 export interface EncryptedTotpSecret {ciphertext:string;}
+export interface OperationsMfaEncryptionKeyring {
+  activeKeyId: string;
+  keys: OperationsMfaEncryptionKey[];
+}
 export class OperationsMfaCryptography {
-  private readonly encryptionKey:Buffer;
+  private readonly legacyEncryptionKey:Buffer;
   private readonly recoveryKey:Buffer;
-  constructor(encryptionKey:Uint8Array,recoveryKey:Uint8Array){
+  private readonly encryptionKeys:Map<string,Buffer>;
+  private readonly activeEncryptionKeyId:string|null;
+  constructor(encryptionKey:Uint8Array,recoveryKey:Uint8Array,keyring?:OperationsMfaEncryptionKeyring){
     if(encryptionKey.byteLength!==32||recoveryKey.byteLength!==32) throw new Error("Operations MFA keys must each be exactly 32 bytes.");
-    this.encryptionKey=Buffer.from(encryptionKey);this.recoveryKey=Buffer.from(recoveryKey);
+    this.legacyEncryptionKey=Buffer.from(encryptionKey);this.recoveryKey=Buffer.from(recoveryKey);
+    this.encryptionKeys=new Map();
+    this.activeEncryptionKeyId=null;
+    if(keyring){
+      if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(keyring.activeKeyId)
+          ||keyring.keys.length<1||keyring.keys.length>2
+          ||new Set(keyring.keys.map(item=>item.id)).size!==keyring.keys.length
+          ||!keyring.keys.some(item=>item.id===keyring.activeKeyId)
+          ||keyring.keys.some(item=>!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(item.id)||item.key.byteLength!==32)){
+        throw new Error("Invalid Operations MFA encryption keyring.");
+      }
+      for(const item of keyring.keys)this.encryptionKeys.set(item.id,Buffer.from(item.key));
+      this.activeEncryptionKeyId=keyring.activeKeyId;
+    }
   }
   generateSecret():Buffer{return randomBytes(20);}
   encodeSecret(secret:Uint8Array):string{
@@ -81,20 +131,37 @@ export class OperationsMfaCryptography {
   }
   encryptSecret(accountId:string,secret:Uint8Array):EncryptedTotpSecret{
     if(!validAccount(accountId)||secret.byteLength!==20) throw new Error("Invalid Operations MFA enrollment.");
-    const iv=randomBytes(12),cipher=createCipheriv("aes-256-gcm",this.encryptionKey,iv);
-    cipher.setAAD(Buffer.from("unibud:operations-mfa:v1:"+accountId));
+    const keyId=this.activeEncryptionKeyId;
+    const key=keyId?this.encryptionKeys.get(keyId):this.legacyEncryptionKey;
+    if(!key) throw new Error("Operations MFA encryption key is unavailable.");
+    const version=keyId?"v2":"v1";
+    const iv=randomBytes(12),cipher=createCipheriv("aes-256-gcm",key,iv);
+    cipher.setAAD(Buffer.from(keyId
+      ?"unibud:operations-mfa:v2:"+accountId+":"+keyId
+      :"unibud:operations-mfa:v1:"+accountId));
     const ciphertext=Buffer.concat([cipher.update(secret),cipher.final()]);
-    return {ciphertext:[VERSION,iv.toString("base64url"),cipher.getAuthTag().toString("base64url"),ciphertext.toString("base64url")].join(".")};
+    return {ciphertext:(keyId
+      ?["v2",keyId,iv.toString("base64url"),cipher.getAuthTag().toString("base64url"),ciphertext.toString("base64url")]
+      :["v1",iv.toString("base64url"),cipher.getAuthTag().toString("base64url"),ciphertext.toString("base64url")]).join(".")};
   }
   decryptSecret(accountId:string,envelope:EncryptedTotpSecret):Buffer{
     if(!validAccount(accountId)) throw new Error("Invalid Operations MFA account.");
     const parts=envelope.ciphertext.split(".");
-    if(parts.length!==4||parts[0]!==VERSION) throw new Error("Invalid Operations MFA secret envelope.");
+    const isLegacy=parts.length===4&&parts[0]==="v1";
+    const isRotated=parts.length===5&&parts[0]==="v2"
+      &&/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(parts[1]);
+    if(!isLegacy&&!isRotated) throw new Error("Invalid Operations MFA secret envelope.");
+    const key=isLegacy?this.legacyEncryptionKey:this.encryptionKeys.get(parts[1]);
+    if(!key) throw new Error("Operations MFA encryption key is unavailable.");
     try{
-      const iv=Buffer.from(parts[1],"base64url"),tag=Buffer.from(parts[2],"base64url"),data=Buffer.from(parts[3],"base64url");
+      const offset=isLegacy?1:2;
+      const iv=Buffer.from(parts[offset],"base64url"),tag=Buffer.from(parts[offset+1],"base64url"),data=Buffer.from(parts[offset+2],"base64url");
       if(iv.length!==12||tag.length!==16||data.length!==20) throw new Error("Invalid envelope.");
-      const decipher=createDecipheriv("aes-256-gcm",this.encryptionKey,iv);
-      decipher.setAAD(Buffer.from("unibud:operations-mfa:v1:"+accountId));decipher.setAuthTag(tag);
+      const decipher=createDecipheriv("aes-256-gcm",key,iv);
+      decipher.setAAD(Buffer.from(isLegacy
+        ?"unibud:operations-mfa:v1:"+accountId
+        :"unibud:operations-mfa:v2:"+accountId+":"+parts[1]));
+      decipher.setAuthTag(tag);
       const secret=Buffer.concat([decipher.update(data),decipher.final()]);
       if(secret.length!==20) throw new Error("Invalid secret.");
       return secret;
