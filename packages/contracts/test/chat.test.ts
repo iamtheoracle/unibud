@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { evaluateChatAccess, type ChatAuthorizationFacts } from "../src/chat.ts";
+import { evaluateChatAccess, type ChatAuthorizationFacts, type ChatSpaceKey } from "../src/chat.ts";
 
 const permittedFacts: ChatAuthorizationFacts = {
   verifiedSession: true,
@@ -59,4 +59,16 @@ test("Riff remains subject to its own lifecycle adapter", () => {
     ...permittedFacts,
     riffLifecycleAllowed: true
   }), { allowed: true });
+});
+
+
+test("spaces without an approved shared Chat adapter fail closed", () => {
+  assert.deepEqual(evaluateChatAccess("quad" as ChatSpaceKey, permittedFacts), {
+    allowed: false,
+    reason: "space_policy_denied"
+  });
+  assert.deepEqual(evaluateChatAccess("square" as ChatSpaceKey, permittedFacts), {
+    allowed: false,
+    reason: "space_policy_denied"
+  });
 });
