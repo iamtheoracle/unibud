@@ -69,9 +69,8 @@ test("ordinary discovery routes to Connect", () => {
 });
 
 
-test("Search rate limiting sends only a keyed opaque account digest to PostgreSQL", async () => {
-  const previous = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
-  process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = "6a".repeat(32);
+
+test("Search rate limiting delegates opaque account bucket derivation to PostgreSQL", async () => {
   let statement = "";
   let parameters: readonly unknown[] = [];
   const client: SqlClient = {
@@ -82,35 +81,20 @@ test("Search rate limiting sends only a keyed opaque account digest to PostgreSQ
     },
     release() {}
   };
-  try {
-    await consumeSearchRateLimit(client, "51000000-0000-4000-8000-000000000001");
-    assert.match(statement, /search_consume_rate_limit/);
-    assert.equal(parameters.length, 1);
-    assert.ok(parameters[0] instanceof Buffer);
-    assert.equal((parameters[0] as Buffer).length, 32);
-    assert.equal((parameters[0] as Buffer).toString("hex").includes("51000000"), false);
-  } finally {
-    if (previous === undefined) delete process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
-    else process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = previous;
-  }
+  await consumeSearchRateLimit(client);
+  assert.match(statement, /search_consume_rate_limit\(\)/);
+  assert.deepEqual(parameters, []);
 });
 
-test("Search rate limiting fails closed when PostgreSQL denies the account budget", async () => {
-  const previous = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
-  process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = "6a".repeat(32);
+test("Search rate limiting fails closed when PostgreSQL denies the verified account budget", async () => {
   const client: SqlClient = {
     async query<Row = unknown>() {
       return { rows: [{ allowed: false }] as Row[] };
     },
     release() {}
   };
-  try {
-    await assert.rejects(
-      consumeSearchRateLimit(client, "51000000-0000-4000-8000-000000000001"),
-      SearchRateLimitExceededError
-    );
-  } finally {
-    if (previous === undefined) delete process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
-    else process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = previous;
-  }
+  await assert.rejects(
+    consumeSearchRateLimit(client),
+    SearchRateLimitExceededError
+  );
 });
