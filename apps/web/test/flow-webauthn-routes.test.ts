@@ -9,11 +9,11 @@ function source(path: string): string {
 test("WebAuthn registration options require exact-account password step-up and server-derived session", () => {
   const route = source("../src/app/api/flow/biometric/registration/options/route.ts");
   assert.ok(route.includes("hasSameOrigin(request)"));
-  assert.ok(route.includes("getAuthDatabasePool"));
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
   assert.doesNotMatch(route, /getAppDatabasePool/);
   assert.ok(route.includes("readSessionCookie(request)"));
   assert.ok(route.includes("sessions.validate(token)"));
-  assert.ok(route.includes("getAuthDatabasePool"));
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
   assert.doesNotMatch(route, /getAppDatabasePool/);
   assert.ok(route.includes("authentication.verifyCredentialsForAccount"));
   assert.ok(route.includes("accountId: validation.account.id"));
@@ -25,6 +25,8 @@ test("WebAuthn registration verification is bound to active persisted session an
   const route = source("../src/app/api/flow/biometric/registration/verify/route.ts");
   const service = source("../src/lib/server/flow/flow-webauthn-service-core.ts");
   assert.ok(route.includes("hasSameOrigin(request)"));
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
   assert.ok(route.includes("sessions.validate(token)"));
   assert.ok(route.includes("validation.account.id"));
   assert.ok(route.includes("validation.session.id"));
