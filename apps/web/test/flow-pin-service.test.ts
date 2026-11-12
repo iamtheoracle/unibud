@@ -54,6 +54,10 @@ test("Flow PIN enrollment stores an Argon2id verifier and verifies without retur
     accountId: ACCOUNT, sessionId: SESSION, pin: "482917", confirmation: "482917"
   }), true);
   assert.match(repository.pinHash ?? "", /^\$argon2id\$v=19\$m=65536,t=3,p=1\$/);
+  assert.ok(repository.lastProof);
+  assert.match(repository.lastProof?.nonce ?? "", /^[0-9a-f-]{36}$/i);
+  assert.equal(repository.lastProof?.signature.length, 64);
+  assert.ok((repository.lastProof?.expiresEpoch ?? 0) > Math.floor(Date.now() / 1000));
   assert.deepEqual(await service.verify({ accountId: ACCOUNT, sessionId: SESSION, pin: "482917" }), {
     state: "verified"
   });
