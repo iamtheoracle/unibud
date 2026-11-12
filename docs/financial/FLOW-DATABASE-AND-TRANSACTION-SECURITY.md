@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migration and synthetic PostgreSQL tests added on the Flow foundation branch. Not deployed. No live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
+**Status:** Migrations 0048–0049, synthetic PostgreSQL tests, a session-bound payment-intent database procedure and an authenticated payment-intent HTTP endpoint are implemented on the Flow foundation branch. Exact-head CI is pending for the expanded branch. Not merged or deployed. No live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
 
 ## Ownership boundary
 
@@ -15,24 +15,27 @@
 
 - Account ownership is enforced by composite foreign keys and signed-session RLS.
 - Idempotency is scoped to a Flow account and stores only a SHA-256 digest of the caller-provided high-entropy key.
-- Recipient references and MoneyLead identifiers are stored as ciphertext plus keyed lookup digests; the application encryption/key management is a separate deployment requirement.
+- Recipient references and MoneyLead identifiers are stored as ciphertext plus keyed lookup digests. AES-256-GCM and account/Flow-account-scoped HMAC protection are implemented; production key provisioning and rotation remain deployment requirements.
 - Payment payload columns are immutable after intent creation. Lifecycle transitions include settlement, refund, reversal, failure and cancellation; refunds/reversals are represented as separate MoneyLead mirror events.
 - Migration 0049 adds `flow_create_payment_intent`, a SECURITY DEFINER procedure owned by the NOLOGIN Flow owner. It requires both signed account and exact persisted-session context, verifies Flow-account ownership, stores a database-computed transaction digest, audits creation/replay/mismatch and uses a unique constraint plus `ON CONFLICT DO NOTHING` to make concurrent duplicate submissions idempotent. It creates an instruction only; it does not debit, reserve, submit or settle funds.
 - Authorization challenges are single-use, expiry-bound, session-bound and tied to the exact `details_digest` of the intent.
 - PIN storage accepts only an Argon2id PHC hash. PIN verification, enrollment and recovery are not yet wired; never store plaintext PINs.
 - Biometric storage contains WebAuthn public keys and counters only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
 - Journal postings are append-only and deferred constraint-trigger validation requires at least two postings with equal debit and credit totals per journal entry/currency.
-- App runtime access is read-only and column-limited. PIN hashes, biometric public keys, authorization challenges, recovery digests and rate-limit records are not directly readable or writable by `unibud_app`.
+- Direct app-table access is read-only and column-limited; the app role can invoke only the narrow session-bound intent-creation procedure. PIN hashes, biometric public keys, authorization challenges, recovery digests and rate-limit records are not directly readable or writable by `unibud_app`.
+- The payment-intent HTTP route validates the active persisted session, derives account/session identity server-side, encrypts recipient references, requires a 32-byte high-entropy idempotency key and returns an instruction state only. It does not process a payment. The route is not yet wired to PIN/WebAuthn confirmation, and intent-creation rate limiting is not yet enforced.
 - The `unibud_flow_ingest` role is NOLOGIN and has no table privileges. It is reserved for a future verified gateway; a dedicated integration login, secrets, signed event verification and scoped account resolution are required before any ingestion privilege is granted.
 
 ## Deliberate deferrals
 
-1. HTTP payment-intent endpoint and repository adapter for the database procedure: next stage. No payment-intent HTTP route is exposed yet.
-2. Transaction PIN service (Argon2id verification, recovery, lockout and rate limiting): next stage.
+1. Transaction PIN service (Argon2id verification, enrollment, recovery, lockout and database-backed rate limiting): next stage. PIN hash storage exists; no PIN can currently authorize a transaction.
 2. WebAuthn registration/assertion verification and signature-counter handling: next stage. The device performs biometric verification; server receives cryptographic assertions, not biometrics.
-3. Transaction-bound challenge creation/consumption procedures: next stage. The schema binds challenge rows to the payment intent digest and exact session, but no API can approve or post a payment yet.
-4. Payment intent creation, idempotent API and state-transition procedures: next stage.
-5. Internal transfers: blocked until MoneyLead provides a verified scoped integration and its authoritative posting contract. Flow must not simulate a bank transfer locally.
-6. External providers, issuers, settlement adapters and live operations: blocked on verified legal arrangements, provider capabilities, credentials, reconciliation evidence and founder approval.
+3. Transaction-bound challenge creation/consumption procedures: next stage. Challenge storage binds an exact intent digest and persisted session, but no API can approve or post a payment yet.
+4. Payment-intent lifecycle transition procedures and transaction status APIs: next stage. Intent creation is implemented; authorization, submission, acceptance, settlement, cancellation, failure, refund and reversal transitions are not exposed as payment operations.
+5. Intent-creation rate limiting and abuse controls: not yet wired. Rate-limit storage exists; enforce per-account and risk-aware limits before expanding the endpoint.
+6. Internal transfers: blocked until MoneyLead provides a verified scoped integration and its authoritative posting contract. Flow must not simulate a bank transfer locally.
+7. MoneyLead integration gateway: blocked on access to the MoneyLead repository and a verified service contract. The repository lookup returned 404 during this pass.
+8. External providers, issuers, settlement adapters and live operations: blocked on verified legal arrangements, provider capabilities, credentials, webhook verification, reconciliation evidence and founder approval.
+
 
 Concierge, Oracle Arc, plugins and other agents have no database write or approval grant. They may only prepare instructions for the same authenticated Flow confirmation path once that service is implemented.
