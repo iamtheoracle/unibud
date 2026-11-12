@@ -34,6 +34,7 @@ test("people search uses a bound term and returns only safe public profile field
   assert.match(statement, /p\.visibility = 'public'/);
   assert.match(statement, /p\.status = 'active'/);
   assert.match(statement, /p\.kind = \$2/);
+  assert.match(statement, /account_discovery_allowed/);
   assert.match(statement, /account_interaction_blocked/);
   assert.match(statement, /LIMIT 20/);
   assert.deepEqual(results, [{
