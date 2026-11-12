@@ -946,7 +946,7 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 ## Current Flow financial foundation — 2026-11-12
 
 - Branch: `foundation/flow-domain-ledger-v1`, based on the audit branch for PR #18.
-- Migration `0048_flow_domain_and_settlement_mirror.sql` introduces Flow-owned account mapping, payment intents/idempotency, PIN credential storage contract, WebAuthn public-key credential storage, transaction authorization challenge records, rate-limit state, and an immutable balanced settlement-mirror journal.
+- Migrations `0048_flow_domain_and_settlement_mirror.sql` and `0049_flow_payment_intent_procedures.sql` introduce Flow-owned account mapping, payment intents/idempotency, PIN credential storage contract, WebAuthn public-key credential storage, transaction authorization challenge records, rate-limit state, an immutable balanced settlement-mirror journal, and a session-bound intent-creation procedure with concurrent idempotency enforcement.
 - PostgreSQL RLS binds every Flow row to the signed authenticated UNIBUD account. App access is read-only and column-limited; sensitive PIN/biometric/challenge material is not exposed to the app SQL role.
 - Journal entries require at least two postings and equal debit/credit totals at deferred constraint evaluation. Journal records cannot be updated or deleted. They mirror verified MoneyLead settlement events and are not a spendable balance source.
 - Payment intent payload fields are immutable and lifecycle transitions are constrained. No application procedure/API can yet create, authorize, submit or settle an intent.
