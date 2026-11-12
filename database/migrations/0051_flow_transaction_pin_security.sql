@@ -130,7 +130,7 @@ BEGIN
       THEN v_now ELSE current_bucket.window_started_at END,
     request_count=CASE
       WHEN current_bucket.window_started_at+(v_window*interval '1 second')<=v_now
-      THEN 1 ELSE current_bucket.request_count+1 END,
+      THEN 1 ELSE LEAST(current_bucket.request_count+1,v_limit+1) END,
     locked_until=CASE
       WHEN current_bucket.locked_until>v_now THEN current_bucket.locked_until
       WHEN current_bucket.window_started_at+(v_window*interval '1 second')<=v_now THEN NULL
