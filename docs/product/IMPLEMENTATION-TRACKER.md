@@ -947,17 +947,17 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 
 - Branch: `foundation/flow-domain-ledger-v1`, based on the audit branch for PR #18.
 - Migrations `0048_flow_domain_and_settlement_mirror.sql` and `0049_flow_payment_intent_procedures.sql` introduce Flow-owned account mapping, payment intents/idempotency, PIN credential storage contract, WebAuthn public-key credential storage, transaction authorization challenge records, rate-limit state, an immutable balanced settlement-mirror journal, and a session-bound intent-creation procedure with concurrent idempotency enforcement.
-- PostgreSQL RLS binds every Flow row to the signed authenticated UNIBUD account. App access is read-only and column-limited; sensitive PIN/biometric/challenge material is not exposed to the app SQL role.
+- PostgreSQL RLS binds every Flow row to the signed authenticated UNIBUD account. Direct app-table access is read-only and column-limited; the app role can invoke only the narrow session-bound intent-creation procedure. Sensitive PIN/biometric/challenge material is not exposed to the app SQL role.
 - Journal entries require at least two postings and equal debit/credit totals at deferred constraint evaluation. Journal records cannot be updated or deleted. They mirror verified MoneyLead settlement events and are not a spendable balance source.
-- Payment intent payload fields are immutable and lifecycle transitions are constrained. No application procedure/API can yet create, authorize, submit or settle an intent.
+- Payment intent payload fields are immutable and lifecycle transitions are constrained. Migration 0049 and the authenticated `/api/flow/payment-intents` route can create an instruction with database-enforced idempotency; no API can authorize, submit or settle it yet.
 - `unibud_flow_ingest` is NOLOGIN and intentionally has no table privileges until a verified MoneyLead event-authentication gateway exists.
 - MoneyLead repository lookup returned 404 during this pass. No integration endpoint, API credentials, provider, issuer or settlement capability was assumed.
-- **Status:** schema and intent procedure added; exact-head CI for the earlier schema-only head passed, but the expanded 0049 procedure and concurrency harness are awaiting their own exact-head CI. PR #19 remains draft/open/unmerged. Not deployed and not operational.
+- **Status:** schema, idempotent database procedure, encrypted recipient handling, authenticated payment-intent route and independent-session idempotency harness are added. Exact-head CI for the expanded branch is pending; the earlier schema-only head passed. PR #19 remains draft/open/unmerged. Not deployed and not operational.
 
 ### Flow next dependencies
 
 1. Complete exact-head PostgreSQL 16 migration and invariant tests, including CI workflow wiring.
-2. Implement server-side intent creation, idempotency conflict handling and state-transition procedures under authenticated session context.
+2. Add intent-creation rate limiting, then implement PIN verification and transaction-specific authorization procedures under the same authenticated session context.
 3. Implement Argon2id PIN enrollment/verification/recovery and database-backed lockout/rate limiting.
 4. Implement WebAuthn challenge/assertion verification with replay-resistant counters; no biometric template collection.
 5. Implement canonical transaction digest construction and one-use challenge consumption bound to the exact intent and session.
