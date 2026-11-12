@@ -167,4 +167,79 @@ BEGIN
 END
 $bootstrap$;
 RESET ROLE;
+
+-- Revocation is also a two-person request/approval; it never mutates a grant
+-- through the application connection directly.
+WITH x AS (
+ SELECT 'f0430000-0000-4000-8000-000000000001'::text a,
+ 'f0430000-0000-4000-8000-000000000011'::text s,
+ floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+ 'f0430000-0000-4000-8000-000000000061'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d1',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d2',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $revoke_request$
+DECLARE i BIGINT; e BIGINT; n UUID; sig TEXT; rid UUID;
+BEGIN
+ i:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; e:=i+60;
+ n:='f0430000-0000-4000-8000-000000000062';
+ sig:=encode(public.hmac(convert_to(
+  'v1:f0430000-0000-4000-8000-000000000001:f0430000-0000-4000-8000-000000000011:password_reauth:'||
+  i::TEXT||':'||e::TEXT||':'||n::TEXT||':-','UTF8'),decode(repeat('d3',32),'hex'),'sha256'),'hex');
+ rid:=public.unibud_operator_request_grant_change(
+  'revoke','f0430000-0000-4000-8000-000000000003',
+  current_setting('test.created_grant_id')::UUID,NULL,NULL,NULL,'role_change',i,e,n,sig);
+ IF rid IS NULL THEN RAISE EXCEPTION 'Valid grant revocation request was not created'; END IF;
+ PERFORM set_config('test.revoke_request_id',rid::TEXT,true);
+END
+$revoke_request$;
+RESET ROLE;
+
+WITH x AS (
+ SELECT 'f0430000-0000-4000-8000-000000000002'::text a,
+ 'f0430000-0000-4000-8000-000000000012'::text s,
+ floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+ 'f0430000-0000-4000-8000-000000000071'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d1',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d2',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $revoke_approve$
+DECLARE i BIGINT; e BIGINT; n UUID; sig TEXT;
+BEGIN
+ i:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; e:=i+60;
+ n:='f0430000-0000-4000-8000-000000000072';
+ sig:=encode(public.hmac(convert_to(
+  'v1:f0430000-0000-4000-8000-000000000002:f0430000-0000-4000-8000-000000000012:password_reauth:'||
+  i::TEXT||':'||e::TEXT||':'||n::TEXT||':-','UTF8'),decode(repeat('d3',32),'hex'),'sha256'),'hex');
+ IF NOT public.unibud_operator_decide_grant_change(
+  current_setting('test.revoke_request_id')::UUID,'approve','revoked_after_review',i,e,n,sig) THEN
+  RAISE EXCEPTION 'Independent grant revocation approval failed';
+ END IF;
+END
+$revoke_approve$;
+RESET ROLE;
+DO $verify_revoke$
+BEGIN
+ IF NOT EXISTS(SELECT 1 FROM public.unibud_operator_grants
+   WHERE id=current_setting('test.created_grant_id')::UUID
+   AND revoked_at IS NOT NULL AND revocation_reason='revoked_after_review') THEN
+   RAISE EXCEPTION 'Approved revocation did not revoke the intended grant';
+ END IF;
+ IF NOT EXISTS(SELECT 1 FROM public.unibud_operator_grant_requests
+   WHERE request_id=current_setting('test.revoke_request_id')::UUID
+   AND state='approved' AND requested_action='revoke'
+   AND requester_account_id='f0430000-0000-4000-8000-000000000001'
+   AND approver_account_id='f0430000-0000-4000-8000-000000000002') THEN
+   RAISE EXCEPTION 'Revocation request did not preserve independent actors';
+ END IF;
+END
+$verify_revoke$;
 ROLLBACK;
