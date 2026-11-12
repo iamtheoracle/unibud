@@ -51,6 +51,7 @@ test("WebAuthn registration options are RP-bound and require user verification",
   assert.equal(result.registrationId, REGISTRATION);
   assert.equal(result.options.rp.id, "example.test");
   assert.equal(result.options.authenticatorSelection?.userVerification, "required");
+  assert.equal(result.options.authenticatorSelection?.authenticatorAttachment, "platform");
   assert.equal(result.options.attestation, "none");
   assert.equal(result.options.excludeCredentials?.[0]?.id, Buffer.from("existing-credential").toString("base64url"));
   assert.equal(repository.challenge?.challenge.length, 32);
