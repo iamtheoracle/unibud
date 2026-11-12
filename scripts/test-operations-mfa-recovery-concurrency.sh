@@ -67,8 +67,8 @@ SELECT
    decode(repeat('a3',32),'hex'),'sha256'),'hex'),true)
 FROM claim;
 SELECT pg_sleep(0.35);
-SELECT public.unibud_operator_mfa_redeem_recovery_code(
- :'digest',:issued,:expires,:'assertion_nonce'::uuid,
+SELECT public.unibud_operator_mfa_redeem_recovery_code_candidates(
+ ARRAY[:'digest']::text[],:issued,:expires,:'assertion_nonce'::uuid,
  encode(public.hmac(
   convert_to('v1:'||:'account'||':'||:'session'||':recovery:'||
    :issued::text||':'||:expires::text||':'||:'assertion_nonce'||':-','UTF8'),
