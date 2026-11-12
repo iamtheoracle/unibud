@@ -1,5 +1,30 @@
 # UNIBUD Operations access runbook
 
+## Current verified security state — 2026-11-12
+
+This section supersedes older checkpoint language in the historical notes below wherever those notes describe work as still outstanding.
+
+### Non-forgeable actor and session provenance (Issue #16 remediation)
+
+- Migration 0021 drops the actor-selectable unibud_operator_has_permission(UUID,TEXT) and unibud_operator_record_access(UUID,TEXT,TEXT,UUID) signatures, revokes their privileges, and replaces them with narrow interfaces that derive the actor from unibud_private.current_account_id().
+- Migration 0023 independently verifies a separately signed account+session claim against the persisted active session, account ownership and expiry. Caller-settable GUCs are transport only and are not authority.
+- The app role cannot execute the private session verifier or read either account-context or session-context signing key table. Operations authorization also requires the current exact-session MFA step-up through the later MFA migrations.
+- PostgreSQL tests 0021 and 0023 cover removal of unsafe signatures, forged account and session GUCs, cross-account account/session binding, expired signed context, revoked persisted sessions, app-role denial for verifier/key access, audit actor/session attribution, unauthenticated unattributed audit, and immediate grant revocation.
+- Exact-head Foundation CI on 302a604b10f44ea8172cb1381850258e04f0eb71 passed run 43160660473, including PostgreSQL 16 migration/RLS tests and the independent-connection grant lifecycle concurrency harness. Web/Database passed run 43160660441; Oracle Arc API passed run 43160660395.
+
+**Issue #16 is technically remediated in the branch, but remains open for independent security review.** Do not close it, merge PR #15, provision production operator grants, enable Operations MFA, or deploy based only on internal CI. The reviewer must independently inspect the signing-key provisioning/trust boundary, server-side assertion construction, SECURITY DEFINER ownership/search paths, privilege matrix, audit semantics, session revocation behavior and migration/rollback plan.
+
+### Current grant lifecycle state
+
+Migrations 0043–0047 provide dual-control grant/revocation requests, same-session requester cancellation, bounded expiry through the existing trusted maintenance entry point, post-lock cancellation revalidation, and transactional in-app notifications. The independent-connection concurrency harness covers approve/reject, approve/cancel, step-up expiry during cancellation lock wait, and approval versus bounded expiry. The expiry-race assertion also verifies exactly two expiry notices for requester and target.
+
+The notification system is in-app only; external email/SMS delivery is not implemented. Targeted keyboard/table/reduced-motion refinements are present, but a full WCAG and assistive-technology audit remains outstanding.
+
+### Production boundary
+
+All evidence above is source and CI evidence. No production migrations, key provisioning, bootstrap grants, scheduled worker activation, provider delivery, deployment or operator activation is claimed.
+
+
 ## Security model
 
 Operations access is a global account-level grant, not a profile membership. Student, tutor, institution representative, creator, page/community administrator, moderator, seller, provider, professional or other profile roles do not confer Operations authority.
