@@ -181,3 +181,14 @@
 - **Supersedes / superseded by:**
 - **Implementation evidence:**
 ```
+
+### DEC-021 — User-selectable OTP delivery transports
+- **Recorded:** 2026-11-12
+- **Status:** APPROVED
+- **Decision:** Phone-based OTP challenges may be requested over SMS, WhatsApp or RCS; email-based OTP challenges remain email-delivered. The authentication identity remains the verified email address or E.164 phone number and is distinct from the delivery transport. Existing phone flows default to SMS when no transport is specified.
+- **Rationale:** provide accessible delivery choices without coupling account identity to a messaging provider or forcing a single channel.
+- **Alternatives considered:** provider-specific client integrations (rejected; provider credentials and routing remain server-side behind the verification gateway).
+- **Affected areas:** registration, verification resend, password recovery, verification gateway, abuse controls and delivery operations.
+- **Dependencies / risks:** the configured gateway must implement the declared `deliveryMethod` contract and independently verify WhatsApp/RCS sender registration, template/consent requirements, destination eligibility, delivery receipts, retries and regional availability. RCS support varies by carrier/device. No provider has been selected or verified by this code change.
+- **Supersedes / superseded by:** none.
+- **Implementation evidence:** PR #15, OTP delivery-method contract in verification services and signup/recovery interfaces; external provider integration remains NOT VERIFIED.
