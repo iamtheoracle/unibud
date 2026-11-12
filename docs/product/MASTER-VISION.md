@@ -18,18 +18,20 @@ UNIBUD brings together useful digital spaces and real-world services without for
 | Space | Primary purpose |
 |---|---|
 | Connect | Discover and connect with people, communities, institutions, creators, opportunities, and services |
+| Quad | Distinct discovery experience; preserve its separate identity and recover its exact founder-approved feature contract before implementation |
 | Bud | Academic companion, learning, study, and academic resources |
 | Board (inside Bud) | Digital campus: places, school information, academic services, and campus resources |
 | Square | General entertainment, creator media, podcasts, and live content |
 | Flow | Student financial services |
 | The Quarter | Marketplace and fulfilment |
-| SouLync | Adults-only dating and relationships |
+| SouLync | Adults-only dating and relationships, with age assurance, safety controls, and explicit consent boundaries |
 | Wayward | Open experiences, activities, trips, meetups, and participation |
 | Riff | Lightweight public and interest-based discussions |
 | Lync | Purposeful engagement, goals, and streaks |
 | Concierge | Conversational service discovery and authorised service actions |
 | The Fixer | Private personal support and appropriate human pathways |
 | UNIBUD Operations | Internal physical operations and workforce coordination |
+| Oracle Arc | Independent governed AI core: ORACLE reasoning/tools, SPARK user-controlled memory, and ORBITS controlled multimodal media |
 
 ## Cross-space capabilities
 
@@ -40,8 +42,9 @@ Identity, profiles, permissions, messaging, notifications, search, media, paymen
 - Personal profiles represent individuals.
 - Creator profiles represent publishing identities and creator work.
 - Page/community profiles represent institutions, organisations, brands, and communities.
+- Student, Tutor, and Institution are distinct education-domain identities with separate records and permissions. They are private and not launched as public profile families until their dedicated education-domain controls and institution authority model are implemented.
 
-One account may own or manage multiple profile types. Management permissions are scoped to the relevant profile and never imply access to the owner's personal account.
+One account may own or manage multiple profile types. Management permissions are scoped to the relevant profile and never imply access to the owner's personal account. Account, profile, persisted session, and delegated authority remain separate security principals and contexts.
 
 ## Release philosophy
 

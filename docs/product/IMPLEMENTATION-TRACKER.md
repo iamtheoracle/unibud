@@ -1,3 +1,59 @@
+## Current delivery evidence correction — 2026-11-12 (supersedes earlier checkpoint rows)
+
+## Oracle Arc delivery gate — 2026-11-12
+
+- Issue #23 is OPEN and tracks implementation of Oracle Arc as an independent governed AI core: app registration and service identity, model/provider gateway, inference, agent/tool grants, ORACLE reasoning, SPARK user-controlled memory, ORBITS controlled media, evaluation, audit and UNIBUD integrations.
+- Current API evidence remains limited to health/readiness and non-secret integration status. No production model/provider adapter, inference endpoint, app registry, agent runtime, tool dispatch, SPARK memory store, ORBITS media pipeline, quotas/usage, evaluation harness or deployment has been verified.
+- No local inference hardware or production hosting capacity has been confirmed. Remote inference requires explicit provider, privacy, data-residency and cost approval. Consequential actions remain subject to the relevant human authorization and must not be delegated to an autonomous agent.
+- This is an implementation gate, not a claim of completion. Keep Oracle Arc independent from individual UNIBUD spaces and preserve ORACLE, SPARK and ORBITS boundaries.
+
+
+This section is the authoritative repository checkpoint for the active PR stack. Older checkpoint details below are retained as history; where they conflict with this section, use the current evidence here.
+
+### PR #20 — Next.js security dependency update
+
+- State: OPEN, DRAFT, NOT MERGED; stacked on PR #19.
+- Branch: `security/nextjs-15-5-28-flow-stack`.
+- Exact head: `ce8910f7ac0dd0488e54354dee46b0ff0f4d1fb6`.
+- Changes: `next` and `eslint-config-next` upgraded from 15.5.6 to 15.5.28. Other package versions preserved.
+- Exact-head CI: PASS — Oracle Arc API run 43278679196; UNIBUD Web and Database run 43278679208; Foundation run 43278679216.
+- Verified in CI: dependency installation; TypeScript; contract and server-security tests; lint; Playwright profile browser E2E; production build; PostgreSQL migration validation; identity/RLS isolation; concurrent Flow payment-intent idempotency and PIN rate limiting; Operations dual-control and grant lifecycle concurrency; MFA replay/recovery concurrency; bounded maintenance worker safety.
+- No merge, production migration or deployment. Human review remains required.
+- Repository dependency reproducibility gap: no `pnpm-lock.yaml` exists. Issue #21 tracks generating the lockfile using pnpm 10.18.3, switching CI to frozen-lockfile installs and testing manifest/lock drift. Do not fabricate lockfile contents.
+
+### PR #19 — Flow domain and transaction-security foundation
+
+- State: OPEN, DRAFT, NOT MERGED.
+- Branch: `foundation/flow-domain-ledger-v1`; exact head `2270945e40539060afa1080ecc00a77d1bfc6ad1`.
+- Exact-head CI: PASS — Foundation run 43215649501; UNIBUD Web and Database run 43215649663; Oracle Arc API run 43215649514.
+- Migrations 0048–0056 implement Flow customer mapping, immutable/idempotent payment intents, Argon2id transaction PIN, WebAuthn credential and registration records, session-bound transaction authorization challenges, database rate limits, balanced immutable settlement-mirror journal, authorization binding constraints, pre-submission cancellation and a dedicated NOLOGIN `unibud_flow_auth` authorization role.
+- The app can create an instruction and read owner/session-scoped lifecycle status through narrow procedures. Recipient data is protected at rest with AES-256-GCM and looked up through an HMAC digest. Transaction authorization binds the exact intent, recipient digest, source account, amount, currency, fee, purpose, challenge, method, expiry and persisted session.
+- The MoneyLead adapter is fail-closed and unconfigured. No verified provider contract, provider credentials, issuer, live settlement or authenticated external lifecycle/reconciliation exists. An authorized instruction is not submitted, posted, paid or settled. No Flow code debits or credits spendable balances. No production migration or financial activation.
+- Issue #17 remains the tracked follow-up for provider contract, risk/device/IP abuse controls, external lifecycle, notifications and reconciliation.
+
+### PR #15 — Operations authorization and audit
+
+- State: OPEN, DRAFT, NOT MERGED.
+- Branch: `foundation/session-derived-operations-rbac-v2`; current head `fd53be63eafd5dd67f468d4be175512a17b69322`.
+- Exact-head CI: PASS — Foundation run 43176485984; UNIBUD Web and Database run 43176486120; Oracle Arc API run 43176486039.
+- Implemented in code and CI-verified: session-derived Operations authorization, scoped grants, append-only audit, Operations MFA enrollment/confirmation/challenge/recovery/step-up, dual-control grant lifecycle, notifications in-app, audit search/export, grant console and concurrency coverage.
+- Issue #16 remains OPEN for independent security review. No production grants, signing-key provisioning, production migration, MFA/operator activation or deployment. CI passing does not constitute independent approval.
+- Remaining gates include independent review of key lifecycle and assertion construction, SECURITY DEFINER ownership/search paths, complete database role/privilege matrix, audit attribution/retention and revocation semantics; full accessibility audit; security monitoring/alert routing; external notification delivery; production secret-manager provisioning and operational recovery.
+
+### Product completion status — do not overstate
+
+The current active PR chain is a foundation for identity/profile lifecycle, Operations security and Flow transaction authorization. It is **not** a completed UNIBUD application. The approved spaces Connect, Bud, Board, Quad, Square, SouLync, Riff, Wayward, Lync, The Quarter, Flow, Concierge and Fixer remain in scope and must each receive their own domain implementation, access controls, UI, lifecycle, safety/moderation, tests and operational evidence. Oracle Arc remains a separately governed AI core with ORACLE reasoning/tools, SPARK user-controlled memory and ORBITS controlled media. Do not infer a space is implemented from a product specification or a shared platform foundation.
+
+### Next dependency-ordered work
+
+1. Independent security review and disposition of Issue #16 before PR #15 merge or privileged production activation.
+2. Resolve Issue #21: generate and commit a real pnpm lockfile using pnpm 10.18.3, enforce frozen installs, and rerun exact-head CI.
+3. Finish Flow abuse controls, security notifications/outbox and authenticated provider lifecycle only after MoneyLead contract and provider identity are independently verified; keep all provider paths fail-closed until then.
+4. Complete identity/profile lifecycle and platform foundations with cross-account/profile negative tests and real PostgreSQL acceptance.
+5. Resolve Issue #24 by recovering Quad's exact founder-approved feature contract before implementing Quad; preserve its separate purpose, navigation, interactions, permissions, privacy, safety and lifecycle from Connect. Then build each approved UNIBUD space in dependency order without merging domain ownership or UX boundaries.
+6. Complete Oracle Arc app registration, service authentication, model/provider gateway, agent/tool grants, SPARK memory consent/isolation, ORBITS ingestion controls, evaluation and audit.
+7. Complete accessibility, backup/restore, monitoring, incident response, secret rotation, support and production runbooks before any release claim.
+
 # UNIBUD / My Realm Network implementation tracker
 
 Last verified: 2026-11-12

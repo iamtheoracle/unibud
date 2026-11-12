@@ -7,6 +7,7 @@ This repository is the source of truth for the new UNIBUD implementation. It is 
 ## Product spaces
 
 - **Connect** — people, communities, institutions, creators, opportunities, and services.
+- **Quad** — a distinct discovery space with its own product identity, navigation, interactions, permissions, privacy, safety boundaries, and lifecycle; it is not a duplicate or subdivision of Connect. Its detailed feature contract must be recovered from the founder-approved product record before implementation.
 - **Bud** — the academic companion. **Board** lives inside Bud as the digital campus and school workspace.
 - **Flow** — student financial services, subject to regulated-provider and compliance requirements.
 - **Square** — entertainment, creator media, podcasts, and live content.

@@ -55,6 +55,11 @@ Tutors, students, and institutions are distinct education-domain identities, not
 
 ## Consumer and ecosystem spaces
 
+### Quad — distinct discovery space
+- Preserve Quad as a separate space from Connect, with its own purpose, navigation, feature set, interaction model, permissions, privacy settings, safety boundaries, and lifecycle.
+- The exact founder-approved feature contract is not available in the inspected canonical repository records. Recover the original approved specification before designing or implementing Quad-specific behaviour.
+- **Boundary:** do not merge Quad into Connect, rename it, replace it with an invented concept, or infer its feature set from overlapping discovery capabilities.
+
 ### Connect
 - Discover people, friends, communities, towns, institutions, schools, creators, pages, services, jobs, and opportunities.
 - Follow, connect, join, request access, or contact according to the relevant context.
