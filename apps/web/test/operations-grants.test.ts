@@ -19,6 +19,7 @@ const workflow = readFileSync(new URL("../../../.github/workflows/foundation.yml
 const webWorkflow = readFileSync(new URL("../../../.github/workflows/web.yml", import.meta.url), "utf8");
 const grantE2e = readFileSync(new URL("../../../scripts/e2e/operations-grants.mjs", import.meta.url), "utf8");
 const grantE2ePage = readFileSync(new URL("../src/app/e2e/operations-grants/page.tsx", import.meta.url), "utf8");
+const grantConcurrencyScript = readFileSync(new URL("../../../scripts/test-operations-grant-concurrency.sh", import.meta.url), "utf8");
 
 test("grant request API uses a validated same-origin session and fresh password assertion", () => {
   assert.match(grantsRoute, /hasSameOrigin\(request\)/);
@@ -120,4 +121,17 @@ test("grant console browser E2E is isolated from production and runs in web CI",
   assert.match(grantE2e, /Cancel my request/);
   assert.match(grantE2e, /Submit for independent approval/);
   assert.match(webWorkflow, /scripts\/e2e\/operations-grants\.mjs/);
+});
+
+
+test("grant lifecycle concurrency harness exercises independent sessions and all terminal races", () => {
+  assert.match(grantConcurrencyScript, /run_decision "\$REQUEST_A" approve/);
+  assert.match(grantConcurrencyScript, /run_decision "\$REQUEST_A" reject/);
+  assert.match(grantConcurrencyScript, /run_decision "\$REQUEST_B" approve/);
+  assert.match(grantConcurrencyScript, /run_cancel "\$REQUEST_B"/);
+  assert.match(grantConcurrencyScript, /exact-session MFA step-up expired/);
+  assert.match(grantConcurrencyScript, /maintain_operations_mfa_ephemeral_state/);
+  assert.match(grantConcurrencyScript, /FOR UPDATE/);
+  assert.match(grantConcurrencyScript, /SKIP LOCKED/);
+  assert.match(workflow, /test-operations-grant-concurrency\.sh/);
 });
