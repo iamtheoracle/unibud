@@ -34,7 +34,10 @@ BEGIN
     WHEN 'audit_read' THEN v_limit:=30; v_window:=60; v_permission:='operations.audit.read';
     WHEN 'grant_request' THEN v_limit:=5; v_window:=900; v_permission:='operations.grants.request';
     WHEN 'grant_decide' THEN v_limit:=10; v_window:=900; v_permission:='operations.grants.approve';
-    WHEN 'grant_read' THEN v_limit:=60; v_window:=60; v_permission:='operations.grants.approve';
+    WHEN 'grant_read' THEN
+      v_limit:=60; v_window:=60;
+      IF NOT (public.unibud_operator_has_permission('operations.grants.approve')
+        OR public.unibud_operator_has_permission('operations.grants.request')) THEN RETURN FALSE; END IF;
     WHEN 'grant_cancel' THEN v_limit:=10; v_window:=900; v_permission:='operations.grants.request';
     ELSE RETURN FALSE;
   END CASE;
