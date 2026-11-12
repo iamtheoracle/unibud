@@ -153,6 +153,12 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0056_flow_dedicated_authorization_runtime.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0057_search_privacy_and_account_blocks.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0058_search_rate_limiting.test.sql
+      - name: Verify concurrent Search and account-block rate limits
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          bash -n scripts/test-search-rate-limit-concurrency.sh
+          bash scripts/test-search-rate-limit-concurrency.sh
       - name: Verify concurrent Flow payment intent idempotency
         env:
           PGPASSWORD: unibud_test_only
