@@ -216,3 +216,7 @@ Foundation CI now runs scripts/test-operations-grant-concurrency.sh against inde
 ### Grant lifecycle concurrency CI result — 2026-11-12
 
 The grant concurrency harness passed on feature-branch head 89c44575186176c4553db5fb962b90234e58ba83 in Foundation run 43160136952. It exercised approve/reject, approve/cancel, cancellation after the exact-session MFA step-up expired during a request-row lock wait, and approval versus bounded expiry using separate PostgreSQL connections. The harness asserted exactly one terminal winner and consistent grant/audit outcomes. Web and Database run 43160137016 and Oracle Arc API run 43160136965 also passed on that head. This remains disposable CI evidence, not a production stress test.
+
+### Grant console accessibility refinements — 2026-11-12
+
+The grant request and active-grant tables now expose captions, column-header scope and named keyboard-focusable scroll regions for narrow viewports. Keyboard focus indicators are explicit for buttons, links and scroll regions; the unread notification count is announced as a polite status update. Reduced-motion preferences are respected by the Operations styles. These are targeted accessibility improvements, not a completed WCAG conformance audit.
