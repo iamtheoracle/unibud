@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         status: "created",
         authorizationRequiredBeforeProcessing: true
       }
-    }, 201);
+    });
   } catch (error) {
     return routeError(error);
   }
