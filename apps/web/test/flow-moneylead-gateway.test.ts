@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { UnconfiguredFlowMoneyLeadGateway } from "../src/lib/server/flow/flow-moneylead-gateway.ts";
 import type { FlowMoneyLeadGateway } from "../src/lib/server/flow/flow-moneylead-gateway-contract.ts";
 
@@ -35,9 +36,7 @@ test("MoneyLead gateway fails closed until a verified adapter is installed", asy
 });
 
 test("MoneyLead gateway port is limited to authorized instruction submit and idempotency lookup", () => {
-  const contract = `../src/lib/server/flow/flow-moneylead-gateway-contract.ts`;
-  const fs = require("node:fs");
-  const source = fs.readFileSync(new URL(contract, import.meta.url), "utf8");
+  const source = readFileSync(new URL("../src/lib/server/flow/flow-moneylead-gateway-contract.ts", import.meta.url), "utf8");
   assert.ok(source.includes("submitAuthorizedInstruction"));
   assert.ok(source.includes("lookupByIdempotencyKey"));
   assert.doesNotMatch(source, /getBalance|debitAccount|creditAccount|createAccount|settleFunds/i);
