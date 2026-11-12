@@ -5,12 +5,13 @@ import { useState } from "react";
 
 export default function RecoveryPage(){
  const [channel,setChannel]=useState<"email"|"phone">("email");
+ const [deliveryMethod,setDeliveryMethod]=useState<"email"|"sms"|"whatsapp"|"rcs">("email");
  const [identifier,setIdentifier]=useState(""),[challengeId,setChallengeId]=useState(""),[code,setCode]=useState(""),[password,setPassword]=useState("");
  const [busy,setBusy]=useState(false),[error,setError]=useState(""),[notice,setNotice]=useState("");
  async function requestCode(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError("");setNotice("");
   try{
-   const response=await fetch("/api/auth/recovery",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier})});
+   const response=await fetch("/api/auth/recovery",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier,deliveryMethod})});
    const result=await response.json();if(!response.ok) throw new Error(result.error??"Request failed.");
    setChallengeId(result.challengeId);setNotice("If this identity exists, a recovery code has been sent. Continue with the code below.");
   }catch(e){setError(e instanceof Error?e.message:"Recovery is temporarily unavailable.");}
@@ -30,7 +31,8 @@ export default function RecoveryPage(){
   <section className="auth-card"><p className="eyebrow">Account recovery</p><h1>Reset your password</h1>
    {!challengeId?<form className="auth-form" onSubmit={requestCode}>
     <p className="auth-copy">Enter your registered email or phone. We use the same response whether or not an account matches.</p>
-    <div className="auth-tabs"><button type="button" className={channel==="email"?"active":""} onClick={()=>setChannel("email")}>Email</button><button type="button" className={channel==="phone"?"active":""} onClick={()=>setChannel("phone")}>Phone</button></div>
+    <div className="auth-tabs"><button type="button" className={channel==="email"?"active":""} onClick={()=>{setChannel("email");setDeliveryMethod("email");}}>Email</button><button type="button" className={channel==="phone"?"active":""} onClick={()=>{setChannel("phone");setDeliveryMethod("sms");}}>Phone</button></div>
+    {channel==="phone"&&<><label htmlFor="recovery-delivery">Send recovery code by</label><select id="recovery-delivery" value={deliveryMethod==="email"?"sms":deliveryMethod} onChange={e=>setDeliveryMethod(e.target.value as "sms"|"whatsapp"|"rcs")}><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option><option value="rcs">RCS</option></select><p className="field-note">Availability depends on your device, number and configured delivery provider.</p></> }
     <label>{channel==="email"?"Email address":"Phone number"}</label><input required type={channel==="email"?"email":"tel"} value={identifier} onChange={e=>setIdentifier(e.target.value)}/>
     <button className="auth-submit" disabled={busy}>{busy?"Requesting…":"Send recovery code"}</button>
    </form>:<form className="auth-form" onSubmit={complete}>

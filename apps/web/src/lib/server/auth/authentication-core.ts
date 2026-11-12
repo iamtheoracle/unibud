@@ -1,6 +1,6 @@
 import { createHmac, randomUUID } from "node:crypto";
 import { hashPassword, verifyPassword } from "./credential-core.ts";
-import { VerificationChallengeService, type VerificationChannel } from "./verification-core.ts";
+import { VerificationChallengeService, type VerificationChannel, type VerificationDeliveryMethod } from "./verification-core.ts";
 import { SessionService } from "./session-core.ts";
 
 export interface AuthAccountRecord {
@@ -63,7 +63,7 @@ export class AuthenticationService {
   private digestIdentifier(identifier:string,channel:VerificationChannel):string {
     return createHmac("sha256",this.identifierDigestKey).update("identifier:"+channel+":"+identifier,"utf8").digest("hex");
   }
-  async register(input:{channel:VerificationChannel;identifier:string;password:string;now?:Date}):Promise<AuthResult>{
+  async register(input:{channel:VerificationChannel;deliveryMethod?:VerificationDeliveryMethod;identifier:string;password:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
     await this.limiter.assertAllowed({action:"register",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const accountId=randomUUID(),identityId=randomUUID(),passwordHash=await hashPassword(input.password);
@@ -73,20 +73,20 @@ export class AuthenticationService {
     });
     if(!created) return {ok:true,state:"accepted"};
     const challenge=await this.challenges.issue({
-      accountId,identityId,channel:input.channel,
+      accountId,identityId,channel:input.channel,deliveryMethod:input.deliveryMethod,
       purpose:input.channel==="email"?"email_verification":"phone_verification",
       destination:identifier,now
     });
     return {ok:true,state:"verification_required",challengeId:challenge.challengeId,expiresAt:challenge.expiresAt};
   }
-  async resendVerification(input:{channel:VerificationChannel;identifier:string;now?:Date}):Promise<AuthResult>{
+  async resendVerification(input:{channel:VerificationChannel;deliveryMethod?:VerificationDeliveryMethod;identifier:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
     await this.limiter.assertAllowed({action:"register",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const account=await this.repository.findLoginAccount(identifier,input.channel);
     const challengeId=randomUUID();
     if(account && account.status==="pending_verification" && !account.identityVerifiedAt){
       const challenge=await this.challenges.issue({
-        challengeId,accountId:account.id,identityId:account.identityId,channel:input.channel,
+        challengeId,accountId:account.id,identityId:account.identityId,channel:input.channel,deliveryMethod:input.deliveryMethod,
         purpose:input.channel==="email"?"email_verification":"phone_verification",
         destination:identifier,now
       });
@@ -122,14 +122,14 @@ export class AuthenticationService {
     const session=await this.sessions.issue({id:account.id,status:account.status},now);
     return {ok:true,state:"authenticated",token:session.token,accountId:account.id,expiresAt:session.session.absoluteExpiresAt};
   }
-  async requestRecovery(input:{channel:VerificationChannel;identifier:string;now?:Date}):Promise<AuthResult>{
+  async requestRecovery(input:{channel:VerificationChannel;deliveryMethod?:VerificationDeliveryMethod;identifier:string;now?:Date}):Promise<AuthResult>{
     const now=input.now??new Date(),identifier=normalizeIdentifier(input.channel,input.identifier);
     await this.limiter.assertAllowed({action:"recovery",identifierDigest:this.digestIdentifier(identifier,input.channel),now:now.toISOString()});
     const target=await this.repository.findRecoveryTarget(identifier,input.channel);
     const challengeId=randomUUID();
     if(target) await this.challenges.issue({
       challengeId,accountId:target.accountId,identityId:target.identityId,channel:target.channel,
-      purpose:"password_reset",destination:target.destination,now
+      purpose:"password_reset",deliveryMethod:input.deliveryMethod,destination:target.destination,now
     });
     // Return the same response shape for present and absent identities.
     return {ok:true,state:"accepted",challengeId};

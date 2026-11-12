@@ -38,6 +38,7 @@ export class HttpVerificationDelivery implements VerificationDelivery {
   async deliver(input: {
     challengeId: string;
     channel: VerificationChannel;
+    deliveryMethod: "email" | "sms" | "whatsapp" | "rcs";
     destination: string;
     code: string;
     purpose: VerificationPurpose;

@@ -54,6 +54,34 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0017_profile_ownership_transfer.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0018_account_dependency_discovery.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0019_external_dependency_registry.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0020_session_derived_operations_rbac.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0021_non_forgeable_operations_actor.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0022_operations_mfa_storage.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0023_operations_session_context_verifier.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0024_operations_mfa_session_step_up.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0025_operations_mfa_password_reauthenticated_enrollment.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0026_operations_mfa_enrollment_confirmation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0027_operations_mfa_recovery_and_audit.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0028_operations_mfa_status.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0029_operations_mfa_pending_enrollment_resume.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0030_operations_mfa_recovery_regeneration.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0031_operations_mfa_dual_control.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0032_operations_mfa_request_lifecycle.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0033_operations_mfa_request_read_api.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0034_operations_mfa_requester_read_scope.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0035_operations_mfa_api_rate_limits.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0036_operations_mfa_ephemeral_maintenance.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0037_operations_mfa_dual_control_concurrency.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0038_operations_mfa_maintenance_scheduler_role.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0039_operations_mfa_security_notifications.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0040_signing_key_rotation_overlap.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0041_operations_mfa_recovery_key_rotation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0042_operations_audit_search_export.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0043_operations_grant_dual_control.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0044_operations_grant_request_cancellation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0045_operations_grant_request_expiry_maintenance.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0046_operations_grant_cancellation_post_lock_revalidation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0047_operations_grant_notifications.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -76,6 +104,70 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0017_profile_ownership_transfer.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0018_account_dependency_discovery.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0019_external_dependency_registry.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0020_session_derived_operations_rbac.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0021_non_forgeable_operations_actor.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0022_operations_mfa_storage.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0023_operations_session_context_verifier.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0024_operations_mfa_session_step_up.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0025_operations_mfa_password_reauthenticated_enrollment.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0026_operations_mfa_enrollment_confirmation.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0027_operations_mfa_recovery_and_audit.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0028_operations_mfa_status.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0029_operations_mfa_pending_enrollment_resume.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0030_operations_mfa_recovery_regeneration.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0031_operations_mfa_dual_control.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0032_operations_mfa_request_lifecycle.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0033_operations_mfa_request_read_api.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0034_operations_mfa_requester_read_scope.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0035_operations_mfa_api_rate_limits.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0036_operations_mfa_ephemeral_maintenance.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0038_operations_mfa_maintenance_scheduler_role.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0039_operations_mfa_security_notifications.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0040_signing_key_rotation_overlap.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0041_operations_mfa_recovery_key_rotation.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0042_operations_audit_search_export.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0043_operations_grant_dual_control.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0044_operations_grant_request_cancellation.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0045_operations_grant_request_expiry_maintenance.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0046_operations_grant_cancellation_post_lock_revalidation.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0047_operations_grant_notifications.test.sql
+      - name: Verify concurrent Operations dual-control terminal transitions
+        env:
+          PGPASSWORD: unibud_test_only
+        run: bash scripts/test-operations-mfa-dual-control-concurrency.sh
+      - name: Verify concurrent Operations grant lifecycle transitions
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          bash -n scripts/test-operations-grant-concurrency.sh
+          bash scripts/test-operations-grant-concurrency.sh
+      - name: Verify concurrent MFA assertion replay prevention
+        env:
+          PGPASSWORD: unibud_test_only
+        run: bash scripts/test-operations-mfa-concurrency.sh
+      - name: Verify concurrent MFA recovery redemption
+        env:
+          PGPASSWORD: unibud_test_only
+        run: bash scripts/test-operations-mfa-recovery-concurrency.sh
+      - name: Provision disposable least-privilege scheduler login
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -c "CREATE ROLE unibud_ops_scheduler_ci LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT PASSWORD 'ci_scheduler_only';"
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -c "GRANT CONNECT ON DATABASE unibud_test TO unibud_ops_scheduler_ci;"
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -c "GRANT unibud_ops_scheduler TO unibud_ops_scheduler_ci WITH INHERIT FALSE, SET TRUE;"
+      - name: Verify Operations maintenance worker safety contract
+        run: |
+          bash -n scripts/run-operations-mfa-maintenance.sh
+          bash -n scripts/test-operations-mfa-maintenance-worker.sh
+          bash scripts/test-operations-mfa-maintenance-worker.sh
+      - name: Verify bounded Operations maintenance worker entrypoint
+        env:
+          DATABASE_URL: postgresql://unibud_ops_scheduler_ci:ci_scheduler_only@localhost:5432/unibud_test
+          PGSSLMODE: disable
+          UNIBUD_ALLOW_INSECURE_LOCAL_TEST: "true"
+        run: |
+          BATCH_SIZE=10 bash scripts/run-operations-mfa-maintenance.sh
   foundation-integrity:
     name: Foundation integrity
     runs-on: ubuntu-latest

@@ -1,0 +1,282 @@
+-- Verify overlapping old/new keys for each independent signing purpose.
+-- Synthetic key material and accounts are confined to this rolled-back test.
+\set ON_ERROR_STOP on
+BEGIN;
+
+INSERT INTO public.accounts(id,status)
+VALUES ('f0400000-0000-4000-8000-000000000001','active');
+INSERT INTO public.account_sessions(
+ id,account_id,credential_digest,issued_at,last_seen_at,idle_expires_at,absolute_expires_at
+) VALUES (
+ 'f0400000-0000-4000-8000-000000000011',
+ 'f0400000-0000-4000-8000-000000000001',decode(repeat('40',32),'hex'),
+ clock_timestamp()-interval '1 minute',clock_timestamp(),
+ clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'
+);
+INSERT INTO public.unibud_operator_mfa_credentials(
+ account_id,encrypted_totp_secret,state,enrollment_expires_at,confirmed_at,last_accepted_totp_step
+) VALUES (
+ 'f0400000-0000-4000-8000-000000000001',
+ 'v1.'||repeat('A',16)||'.'||repeat('B',22)||'.'||repeat('C',27),
+ 'active',clock_timestamp()+interval '1 day',clock_timestamp(),1000
+);
+
+INSERT INTO unibud_private.context_signing_keys(key_id,secret)
+VALUES ('ci-rotation-account-old',decode(repeat('51',32),'hex')),
+       ('ci-rotation-account-new',decode(repeat('52',32),'hex'));
+INSERT INTO unibud_private.session_context_signing_keys(key_id,secret)
+VALUES ('ci-rotation-session-old',decode(repeat('61',32),'hex')),
+       ('ci-rotation-session-new',decode(repeat('62',32),'hex'));
+INSERT INTO unibud_private.operations_mfa_assertion_signing_keys(key_id,secret)
+VALUES ('ci-rotation-mfa-old',decode(repeat('71',32),'hex')),
+       ('ci-rotation-mfa-new',decode(repeat('72',32),'hex'));
+
+DO $mfa_helper_overlap$
+DECLARE
+  v_payload TEXT := 'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:password_reauth:100:160:f0400000-0000-4000-8000-000000000099:-';
+BEGIN
+  IF NOT unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('71',32),'hex'),'sha256'),'hex')
+  ) OR NOT unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('72',32),'hex'),'sha256'),'hex')
+  ) THEN
+    RAISE EXCEPTION 'Shared MFA verifier did not accept both overlap keys';
+  END IF;
+  IF unibud_private.verify_operations_mfa_assertion_signature(v_payload,repeat('0',64)) THEN
+    RAISE EXCEPTION 'Shared MFA verifier accepted an invalid signature';
+  END IF;
+  IF position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_begin_enrollment(text,bigint,bigint,uuid,text)'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_confirm_enrollment(bigint,bigint,uuid,bigint,text,text[])'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_redeem_recovery_code(text,bigint,bigint,uuid,text)'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_regenerate_recovery_codes(bigint,bigint,uuid,text,text[])'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('public.unibud_operator_mfa_read_pending_secret(bigint,bigint,uuid,text)'::regprocedure))=0
+     OR position('verify_operations_mfa_assertion_signature' IN
+      pg_get_functiondef('unibud_private.consume_operations_password_reauth_assertion(bigint,bigint,uuid,text)'::regprocedure))=0 THEN
+    RAISE EXCEPTION 'An Operations MFA assertion verifier was not converted to overlap mode';
+  END IF;
+END
+$mfa_helper_overlap$;
+
+-- Verification key material and the shared verifier remain unavailable to
+-- application/read-only roles; only the NOLOGIN Operations owner can verify MFA.
+DO $key_privileges$
+BEGIN
+  IF has_table_privilege('unibud_app','unibud_private.context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_app','unibud_private.session_context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_app','unibud_private.operations_mfa_assertion_signing_keys','SELECT')
+     OR has_table_privilege('unibud_readonly','unibud_private.context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_readonly','unibud_private.session_context_signing_keys','SELECT')
+     OR has_table_privilege('unibud_readonly','unibud_private.operations_mfa_assertion_signing_keys','SELECT') THEN
+    RAISE EXCEPTION 'Application or read-only role can read signing key material';
+  END IF;
+  IF has_function_privilege('unibud_app',
+       'unibud_private.verify_operations_mfa_assertion_signature(text,text)','EXECUTE')
+     OR has_function_privilege('unibud_readonly',
+       'unibud_private.verify_operations_mfa_assertion_signature(text,text)','EXECUTE') THEN
+    RAISE EXCEPTION 'Application or read-only role can invoke the private MFA verifier directly';
+  END IF;
+  IF NOT has_function_privilege('unibud_ops_owner',
+       'unibud_private.verify_operations_mfa_assertion_signature(text,text)','EXECUTE') THEN
+    RAISE EXCEPTION 'Operations owner cannot invoke the shared MFA verifier';
+  END IF;
+END
+$key_privileges$;
+
+DO $limit$
+BEGIN
+  BEGIN
+    INSERT INTO unibud_private.context_signing_keys(key_id,secret)
+    VALUES ('ci-rotation-account-third',decode(repeat('53',32),'hex'));
+    RAISE EXCEPTION 'Third active account key was accepted';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+  BEGIN
+    INSERT INTO unibud_private.session_context_signing_keys(key_id,secret)
+    VALUES ('ci-rotation-session-third',decode(repeat('63',32),'hex'));
+    RAISE EXCEPTION 'Third active session key was accepted';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+  BEGIN
+    INSERT INTO unibud_private.operations_mfa_assertion_signing_keys(key_id,secret)
+    VALUES ('ci-rotation-mfa-third',decode(repeat('73',32),'hex'));
+    RAISE EXCEPTION 'Third active MFA key was accepted';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+END
+$limit$;
+
+-- Sign with the OLD key in each purpose while both keys are active.
+WITH x AS (
+ SELECT 'f0400000-0000-4000-8000-000000000001'::text a,
+        'f0400000-0000-4000-8000-000000000011'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0400000-0000-4000-8000-000000000021'::text n
+)
+SELECT
+ set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('51',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('61',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+
+SET LOCAL ROLE unibud_app;
+DO $old_key$
+DECLARE issued BIGINT; expires BIGINT; accepted BOOLEAN;
+BEGIN
+ IF unibud_private.current_account_id() IS DISTINCT FROM
+    'f0400000-0000-4000-8000-000000000001'::uuid THEN
+   RAISE EXCEPTION 'Old account-context key failed during overlap';
+ END IF;
+ issued:=floor(extract(epoch FROM clock_timestamp()))::bigint;
+ expires:=issued+60;
+ accepted:=public.unibud_operator_mfa_consume_step_up(
+   issued,expires,'f0400000-0000-4000-8000-000000000031',1001,
+   encode(public.hmac(convert_to(
+    'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:step_up:'||
+    issued::text||':'||expires::text||':f0400000-0000-4000-8000-000000000031:1001','UTF8'),
+    decode(repeat('71',32),'hex'),'sha256'),'hex')
+ );
+ IF accepted IS DISTINCT FROM TRUE THEN
+   RAISE EXCEPTION 'Old session/MFA keys failed during overlap';
+ END IF;
+END
+$old_key$;
+RESET ROLE;
+
+-- The NEW account, session and MFA keys all verify before retiring the old keys.
+WITH x AS (
+ SELECT 'f0400000-0000-4000-8000-000000000001'::text a,
+        'f0400000-0000-4000-8000-000000000011'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0400000-0000-4000-8000-000000000022'::text n
+)
+SELECT
+ set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('52',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('62',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $new_key$
+DECLARE issued BIGINT; expires BIGINT; accepted BOOLEAN;
+BEGIN
+ IF unibud_private.current_account_id() IS DISTINCT FROM
+    'f0400000-0000-4000-8000-000000000001'::uuid THEN
+   RAISE EXCEPTION 'New account-context key failed during overlap';
+ END IF;
+ issued:=floor(extract(epoch FROM clock_timestamp()))::bigint;
+ expires:=issued+60;
+ accepted:=public.unibud_operator_mfa_consume_step_up(
+   issued,expires,'f0400000-0000-4000-8000-000000000032',1002,
+   encode(public.hmac(convert_to(
+    'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:step_up:'||
+    issued::text||':'||expires::text||':f0400000-0000-4000-8000-000000000032:1002','UTF8'),
+    decode(repeat('72',32),'hex'),'sha256'),'hex')
+ );
+ IF accepted IS DISTINCT FROM TRUE THEN
+   RAISE EXCEPTION 'New session/MFA keys failed during overlap';
+ END IF;
+END
+$new_key$;
+RESET ROLE;
+
+-- Retire old keys only after the overlap; old signatures must now fail closed.
+UPDATE unibud_private.context_signing_keys
+ SET active=FALSE WHERE key_id='ci-rotation-account-old';
+UPDATE unibud_private.session_context_signing_keys
+ SET active=FALSE WHERE key_id='ci-rotation-session-old';
+UPDATE unibud_private.operations_mfa_assertion_signing_keys
+ SET active=FALSE WHERE key_id='ci-rotation-mfa-old';
+
+WITH x AS (
+ SELECT 'f0400000-0000-4000-8000-000000000001'::text a,
+        'f0400000-0000-4000-8000-000000000011'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0400000-0000-4000-8000-000000000023'::text n
+)
+SELECT
+ set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('51',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('61',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $retired$
+BEGIN
+ IF unibud_private.current_account_id() IS NOT NULL THEN
+   RAISE EXCEPTION 'Retired account-context key was accepted';
+ END IF;
+END
+$retired$;
+RESET ROLE;
+
+DO $retired_mfa_helper$
+DECLARE
+  v_payload TEXT := 'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:password_reauth:100:160:f0400000-0000-4000-8000-000000000099:-';
+BEGIN
+  IF unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('71',32),'hex'),'sha256'),'hex')
+  ) THEN
+    RAISE EXCEPTION 'Retired MFA assertion key remained valid';
+  END IF;
+  IF NOT unibud_private.verify_operations_mfa_assertion_signature(
+    v_payload,encode(public.hmac(convert_to(v_payload,'UTF8'),decode(repeat('72',32),'hex'),'sha256'),'hex')
+  ) THEN
+    RAISE EXCEPTION 'New MFA assertion key failed after old-key retirement';
+  END IF;
+END
+$retired_mfa_helper$;
+
+-- Retired session/MFA keys also fail; a tampered new signature fails as well.
+WITH x AS (
+ SELECT 'f0400000-0000-4000-8000-000000000001'::text a,
+        'f0400000-0000-4000-8000-000000000011'::text s,
+        floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+        'f0400000-0000-4000-8000-000000000024'::text n
+)
+SELECT
+ set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('52',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',
+  encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('61',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $retired_session$
+DECLARE
+ issued BIGINT;
+ expires BIGINT;
+ nonce UUID:='f0400000-0000-4000-8000-000000000033';
+ signature TEXT;
+BEGIN
+ IF unibud_private.current_account_id() IS NULL THEN
+   RAISE EXCEPTION 'New account key unexpectedly failed after retirement';
+ END IF;
+ issued:=floor(extract(epoch FROM clock_timestamp()))::bigint;
+ expires:=issued+60;
+ signature:=encode(public.hmac(convert_to(
+  'v1:f0400000-0000-4000-8000-000000000001:f0400000-0000-4000-8000-000000000011:step_up:'||
+  issued::text||':'||expires::text||':'||nonce::text||':1003','UTF8'),
+  decode(repeat('72',32),'hex'),'sha256'),'hex');
+ IF public.unibud_operator_mfa_consume_step_up(
+   issued,expires,nonce,1003,signature
+ ) THEN
+   RAISE EXCEPTION 'Retired session-context key was accepted';
+ END IF;
+END
+$retired_session$;
+RESET ROLE;
+
+ROLLBACK;

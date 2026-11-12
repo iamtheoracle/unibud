@@ -22,6 +22,7 @@ class MemoryAuthRepository implements AuthRepository {
 class MemoryChallengeRepository {
   stored=new Map<string,NewVerificationChallenge>();
   code="";
+  lastDeliveryMethod: string | undefined;
   async create(challenge:NewVerificationChallenge){this.stored.set(challenge.id,challenge);}
   async revoke(id:string){this.stored.delete(id);}
   async verifyAndConsume(input:{challengeId:string;codeDigest:Buffer}){
@@ -46,7 +47,7 @@ function makeService(){
  const auth=new MemoryAuthRepository(),challengeRepo=new MemoryChallengeRepository(),sessionRepo=new MemorySessionRepository();
  const challenges=new VerificationChallengeService(
   challengeRepo,{async assertAllowed(){}},
-  {async deliver(input){challengeRepo.code=input.code;}},
+  {async deliver(input){challengeRepo.code=input.code;challengeRepo.lastDeliveryMethod=input.deliveryMethod;}},
   Buffer.alloc(32,0x61)
  );
  const sessions=new SessionService(sessionRepo);
@@ -68,6 +69,25 @@ test("registration creates server-generated account and identity IDs and issues 
  assert.equal(challenge.accountId,auth.created.accountId);
  assert.equal(challenge.identityId,auth.created.identityId);
  assert.equal(challengeRepo.code.length,6);
+});
+
+
+test("phone verification can request WhatsApp delivery without changing phone identity",async()=>{
+ const {service,auth,challengeRepo}=makeService();
+ const result=await service.register({channel:"phone",deliveryMethod:"whatsapp",identifier:"+2348012345678",password:"correct horse battery staple",now});
+ assert.equal(result.ok,true);
+ assert.equal(result.ok&&result.state,"verification_required");
+ assert.equal(auth.created?.method,"phone");
+ assert.equal(challengeRepo.lastDeliveryMethod,"whatsapp");
+});
+
+test("phone verification can request RCS delivery and defaults remain backward compatible",async()=>{
+ const {service:rcsService,challengeRepo:rcsRepo}=makeService();
+ await rcsService.register({channel:"phone",deliveryMethod:"rcs",identifier:"+2348012345679",password:"correct horse battery staple",now});
+ assert.equal(rcsRepo.lastDeliveryMethod,"rcs");
+ const {service:smsService,challengeRepo:smsRepo}=makeService();
+ await smsService.register({channel:"phone",identifier:"+2348012345680",password:"correct horse battery staple",now});
+ assert.equal(smsRepo.lastDeliveryMethod,"sms");
 });
 
 test("login creates a session only for active accounts with verified identities",async()=>{

@@ -1,6 +1,7 @@
 import { createHmac, randomInt, randomUUID } from "node:crypto";
 
 export type VerificationChannel = "email" | "phone";
+export type VerificationDeliveryMethod = "email" | "sms" | "whatsapp" | "rcs";
 export type VerificationPurpose = "email_verification" | "phone_verification" | "password_reset";
 export type ChallengeVerificationResult =
   | "verified"
@@ -15,6 +16,7 @@ export interface NewVerificationChallenge {
   accountId: string;
   identityId: string;
   channel: VerificationChannel;
+  deliveryMethod?: VerificationDeliveryMethod;
   purpose: VerificationPurpose;
   targetDigest: Buffer;
   codeDigest: Buffer;
@@ -51,6 +53,7 @@ export interface VerificationDelivery {
   deliver(input: {
     challengeId: string;
     channel: VerificationChannel;
+    deliveryMethod: VerificationDeliveryMethod;
     destination: string;
     code: string;
     purpose: VerificationPurpose;
@@ -63,6 +66,7 @@ export interface IssueVerificationInput {
   accountId: string;
   identityId: string;
   channel: VerificationChannel;
+  deliveryMethod?: VerificationDeliveryMethod;
   purpose: VerificationPurpose;
   destination: string;
   now?: Date;
@@ -128,6 +132,11 @@ export class VerificationChallengeService {
     }
 
     const destination = normalizeDestination(input.channel, input.destination);
+    const deliveryMethod = input.deliveryMethod ?? (input.channel === "email" ? "email" : "sms");
+    if ((input.channel === "email" && deliveryMethod !== "email") ||
+        (input.channel === "phone" && !["sms", "whatsapp", "rcs"].includes(deliveryMethod))) {
+      throw new Error("Verification delivery method is incompatible with the registered identity.");
+    }
     const createdAt = now.toISOString();
     const expiresAt = new Date(now.getTime() + lifetime * 1000).toISOString();
     const id = input.challengeId ?? randomUUID();
@@ -160,6 +169,7 @@ export class VerificationChallengeService {
       await this.delivery.deliver({
         challengeId: id,
         channel: input.channel,
+        deliveryMethod,
         destination,
         code,
         purpose: input.purpose,

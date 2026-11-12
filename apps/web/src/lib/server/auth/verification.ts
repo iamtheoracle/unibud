@@ -7,6 +7,7 @@ export type {
   IssuedVerificationChallenge,
   NewVerificationChallenge,
   VerificationChannel,
+  VerificationDeliveryMethod,
   VerificationChallengeRepository,
   VerificationDelivery,
   VerificationPurpose,

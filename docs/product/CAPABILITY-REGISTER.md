@@ -13,6 +13,18 @@ This register is the scope-preservation ledger for the complete UNIBUD ecosystem
 
 The initial repository foundation is documentation and service scaffolding. The spaces below are not represented as fully implemented.
 
+## Current Operations capability status — 2026-11-12
+
+This section supersedes older Operations checkpoint language below wherever historical entries describe implemented work as still absent. Those older entries remain as implementation history.
+
+- **Non-forgeable actor provenance:** migrations 0021 and 0023 replace actor-selectable UUID function signatures with signed account and exact persisted-session verification. Tests 0021/0023 cover forged GUCs, cross-account session binding, expiry, revocation, key/verifier isolation and audit attribution. Issue #16 is technically remediated in code but remains open for independent security review.
+- **MFA and step-up:** enrollment, confirmation, challenge, recovery, regeneration, status, lockout, key rotation, exact-session step-up and browser coverage exist in code. It is not production-enabled; key provisioning, operational lifecycle controls and independent review remain gates.
+- **Grant governance:** migrations 0043–0047 implement dual-control grant/revocation, requester same-session cancellation, bounded expiry, post-lock revalidation and transactional in-app notifications. The browser console supports request/review/decision/cancel, active inventory and notification read state.
+- **Concurrency:** independent-connection PostgreSQL CI races approve/reject, approve/cancel, cancellation after step-up expiry during lock wait, and approval versus bounded expiry; the expiry case also checks requester/target notification fan-out.
+- **Accessibility:** targeted keyboard/table/live-status/reduced-motion improvements are CI-verified. A complete WCAG/assistive-technology audit is not complete.
+- **External delivery and observability:** email/SMS notification delivery, alert routing, monitoring, retry/receipt processing and operational backup/recovery evidence are not implemented or production-verified.
+- **Release boundary:** PR #15 remains draft/open/unmerged. Latest fully verified code head 302a604b10f44ea8172cb1381850258e04f0eb71 passed Foundation 43160660473, Web/Database 43160660441 and Oracle Arc API 43160660395. The later documentation commits 91e19ded5c77d94ab4c942dbca9289153c37ef2b and f698170f434c19bb8c987e2e0127b43cc999c4ee are undergoing their own exact-head CI; do not treat them as fully verified until all workflows finish. No production migrations, signing-key provisioning, grants, worker activation, MFA activation or deployment are claimed.
+
 ## Platform foundations
 
 | Capability | Scope to preserve | Initial state |
@@ -28,7 +40,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 | Payments and bookings | Provider-backed transactions, confirmation, idempotency, reconciliation, refunds and disputes | Target |
 | AI assistance | Oracle Arc integration with scoped memory, agent permissions, confirmation and audit | Designed |
 | Accessibility and localisation | Responsive layouts, accessible interaction, language/currency/time-zone support | Target |
-| Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | Target |
+| Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | In progress — session-derived non-forgeable actor/session context, MFA/step-up, append-only audit/search/export, dual-control grants/revocation, bounded expiry, in-app notifications, grant console and targeted accessibility refinements are implemented and CI-verified on the Operations foundation branch; independent security review, full accessibility audit, alerting/monitoring, external notification delivery, secret-manager/production key provisioning, backup/recovery operations and production rollout remain outstanding |
 
 
 ## Identity onboarding
@@ -217,3 +229,371 @@ Oracle Arc is a separately bounded AI core, not merely a UNIBUD chatbot. It can 
 - **Implemented on the next stacked feature branch:** verification gateway endpoint validation rejects embedded URL credentials, query strings and fragments; production requires HTTPS; non-production HTTP is limited to loopback development hosts. Focused tests cover these boundaries and verify that endpoint secrets are not exposed in diagnostic output.
 - **Provider evidence remains unknown:** no vendor identity is inferred, no POST delivery is used as a health probe, and no email/SMS or verification code is sent. A provider-specific adapter and documented read-only health contract are still required before connectivity can be tested.
 - **Release boundary:** all changes remain on unmerged feature branches. No production deployment, production credentials, production data, or `main` change is included.
+
+
+### Session-derived Operations authorization (PR under review)
+
+- Global Operations grants are stored separately from profile memberships. Tutor, Student, Institution, Creator, Page/Community and other profile roles do not grant internal Operations access.
+- The verification-delivery metadata diagnostic now derives the actor only from the existing validated first-party session cookie, then checks the narrowly scoped database permission `integrations.verification_delivery.read`.
+- Operator grants are provisioned and revoked only through a controlled database-administrator process. They support explicit role, permission allow-list, expiry and revocation. No public grant-management endpoint is introduced.
+- Every diagnostic authorization decision is recorded through a narrow database function in an append-only audit table. The application role has no direct table access.
+- **Verified at PR head `ba2c48a90ad0508b1fcb13991d277e87bcbe5432`:** Oracle Arc API, Foundation checks, and UNIBUD Web and Database GitHub Actions all completed successfully (run IDs 42885594693, 42885594784, 42885594658). The PR remains open/draft/unmerged; no production rollout is authorised. No operator grant is provisioned by the migration.
+- **Still outstanding:** MFA/step-up, grant-management UI/workflow, audit search/export and alerting, independent live PostgreSQL migration/RLS proof, and actual provider identity/read-only health contract.
+
+
+## Expanded product scope — Flow, The Quarter, AI interfaces and platform-wide requirements
+
+The complete requirements and release boundaries are recorded in [EXPANDED_FINANCIAL_AI_AND_PLATFORM_CAPABILITY_SCOPE.md](./EXPANDED_FINANCIAL_AI_AND_PLATFORM_CAPABILITY_SCOPE.md). This is a preserved capability target, not a claim of implementation or live financial rails.
+
+- **Flow:** full student banking target including accounts, ledger/reconciliation, transfers, virtual/physical debit cards, conditional credit cards, loans, savings, flex-money classification, buy-now-pay-later, FX and investments. Real issuance, lending, execution, custody and settlement require verified regulated partners, permissions, disclosures and production evidence.
+- **The Quarter:** separate marketplace/order/merchant/refund domain; eligible pay-later checkout integrates with a regulated credit product without merging marketplace records into Flow's bank ledger.
+- **Bud, The Concierge and The Fixer:** three distinct AI application interfaces with shared governed chat, multimodal, voice, search, tools, memory, privacy, safety and usage capabilities; each has separate role/tool grants and confirmation policy.
+- **Oracle Arc:** remains the separate My Realm Network AI core; it is not a replacement name for the three interfaces.
+- **Wayward:** non-wagering games/prize experiences only within UNIBUD. Real-money gambling is excluded from the teen/student product; any adult gambling service requires a separate 18+ product, independent licence/jurisdiction checks, identity, funds, compliance and responsible-gambling controls.
+- **Every public app/site:** accessibility, responsive design, security, privacy, account/session lifecycle, support, observability, backup/recovery, testing, operational readiness and auditable admin separation are explicit platform capabilities.
+- **Profile boundaries:** Student, Tutor and Institution remain distinct; Tutor and Institution remain non-public until their planned release gate. Institutions can manage eligible tutors and students only through explicit scoped delegation.
+
+Implementation order: finish Operations security PR; establish module-specific capability matrices; build Flow's ledger/reconciliation and authorization before payment/card/credit UX; then regulated provider integrations; then The Quarter; then distinct AI interfaces; keep Wayward non-wagering. Each item requires tests, docs and exact-head CI.
+
+
+## Central unfinished-work tracker
+
+See [IMPLEMENTATION-TRACKER.md](./IMPLEMENTATION-TRACKER.md) for the cross-project status ledger, evidence requirements, external blockers, module-by-module unfinished work and mandatory definition of done. The tracker must be reviewed and updated at every implementation stage; it does not replace this capability register.
+
+
+## Security hold — PR #15 database actor provenance
+
+A high-priority database trust-boundary finding is tracked in [Issue #16](https://github.com/iamtheoracle/unibud/issues/16). Although the HTTP route uses a validated session account, migration 0020 exposes SECURITY DEFINER functions that accept caller-supplied account UUIDs. The app database role can therefore query permissions for another account directly and can forge actor attribution in audit calls. This does not meet the requirement for non-forgeable account context. PR #15 must remain unmerged until the database interface derives/verifies actor identity from a cryptographically trusted context and PostgreSQL negative impersonation/audit-forgery tests pass.
+
+
+### Operations actor provenance remediation — pending verification
+
+- Migration 0021 and the verification-delivery diagnostic route now use the existing HMAC-verified transaction context to derive the Operations actor. The application cannot pass an arbitrary account UUID to the permission or audit procedures.
+- PostgreSQL tests cover forged account GUC rejection, audit attribution, unauthenticated unattributed audit events and revocation. The older migration-0020 SQL test has also been updated to the replacement function signatures.
+- **Verification state:** Foundation PostgreSQL 16 and identity/RLS checks passed in run `42918389218`; Oracle Arc API tests passed in `42918389332`. Web/database migration validation, type checks and contract tests passed in `42918389306`, but server security unit tests failed 1/94 because a route contract assertion expected the validated account ID inline rather than through the correctly assigned `authenticatedAccountId` variable. The assertion was corrected in commit `6658dd12`; fresh exact-head CI is still required. Issue #16 remains open, PR #15 remains draft/open/unmerged, and no production rollout is authorised.
+
+
+### Operations MFA — cryptographic core started, not active
+
+- Implemented RFC 6238 TOTP primitives, encrypted seed envelopes using AES-256-GCM with account-bound associated data, provisioning URI generation, recovery-code generation and keyed recovery-code digests.
+- Added unit coverage for RFC vectors, clock tolerance, replay-step handling, seed confidentiality/integrity, account binding, recovery-code uniqueness and malformed inputs.
+- This is a cryptographic library only. Persistence, atomic replay prevention, single-use recovery redemption, enrollment and step-up routes, session assurance, operator UI, throttling, lockout, audit and end-to-end enforcement remain unimplemented. Operations MFA must be treated as **not enabled** until those layers are complete and verified.
+
+
+### Operations MFA persistence schema — implemented, not active
+
+- Added protected credential and recovery-digest tables in migration 0022. The schema supports pending/active credential state, enrollment expiry, confirmed timestamp, last accepted TOTP step, failed-attempt count/lock expiry and one-time recovery redemption timestamps.
+- The tables are owned by the non-login Operations owner role; the application, readonly, auth and PUBLIC roles receive no direct table privileges.
+- PostgreSQL integration tests and Foundation CI wiring are added. Exact-head CI for the new migration is pending.
+- This is storage only. No application procedures, enrollment endpoints, session-bound step-up, replay-proof assertion, recovery consumption, UI or active MFA enforcement exists. Treat Operations MFA as **not enabled**.
+
+
+### Exact-head verification update — 2026-11-11
+
+- PR #15 branch head inspected: `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`.
+- Exact-head CI passed: Foundation run `42925640430` (PostgreSQL 16 migrations/RLS isolation and Foundation integrity), Oracle Arc API run `42925640442`, and UNIBUD Web and Database run `42925640425` (PostgreSQL migration validation, type check, contract tests, server security unit tests, lint, profile browser E2E and production build).
+- Migration 0021's signed-context Operations actor provenance remediation and migration 0022's protected MFA storage schema/test are included in that verified head.
+- **Important boundary:** MFA remains disabled/not implemented end-to-end. Migration 0022 grants no application access to the MFA tables and exposes no enrollment, confirmation, verification, replay-prevention or recovery-consumption procedures. The TOTP cryptographic library and protected storage do not constitute an active second factor.
+- Issue #16 still requires independent security review, secret-manager configuration review and production-like migration/recovery review. PR #15 remains open/draft/unmerged; no deployment or production migration is authorised.
+- Next work is to inspect the actual session lifecycle and design a session-bound MFA challenge/assertion protocol before adding database procedures or routes. Do not accept account/session IDs or TOTP steps supplied by the client as trusted evidence.
+
+
+### Operations MFA session-bound protocol — design checkpoint (2026-11-11)
+
+- Current PR #15 head before this documentation update: `49cdefc2f1cd93c4783daabface3070c6dcd62dc`; all three exact-head workflows passed (Oracle Arc API `42925990785`, Foundation `42925990948`, UNIBUD Web and Database `42925990790`).
+- Inspected the actual SessionService, session repository, auth RPC adapter, signed account-context helper, session routes, migrations 0001/0004/0008/0021/0022 and session lifecycle contract.
+- Added [Operations MFA: session-bound step-up protocol](../security/OPERATIONS-MFA-SESSION-STEP-UP.md). The protocol requires versioned HMAC-authenticated account+session context, exact live-session binding, server-signed single-use TOTP assertions, atomic replay prevention, one-time recovery, reauthentication, lockout, negative/concurrency tests and per-request server-side enforcement.
+- **Status: DESIGN ONLY.** The existing signed account context does not bind a session. Do not enable Operations MFA or claim step-up protection until the new session-bound context and database verifier, MFA procedures, server routes, UI, audit, tests and operational controls are implemented and reviewed.
+- Next code slice: session-bound signed context plus PostgreSQL migration/negative tests. Do not proceed to MFA RPCs until that trust boundary is proven.
+
+
+### Session-bound context implementation slice — 2026-11-11
+
+- Added a server-only core primitive to create a versioned HMAC assertion binding account ID, persisted session ID, expiry and nonce; added a transaction helper to set both account and session claims locally in one transaction.
+- Added unit tests for claim binding, invalid IDs/keys, transaction-local propagation, commit and rollback.
+- **Not yet secure/active:** PostgreSQL does not yet verify the new session assertion; no database accessor or route integration exists. GUC values remain untrusted until the matching database verifier is implemented and tested.
+- Code commit `a1a5d15e92828c043bfc81a6e7a396f8c322ac3e`; exact-head CI is pending. Next slice is the private PostgreSQL verifier/accessor plus negative SQL tests. No Operations MFA is enabled.
+
+
+## Operations session-context trust boundary — 2026-11-11
+
+**Building; exact-head verification pending.** Migration 0023 adds an independently verified, versioned HMAC claim binding account + persisted session + expiry + nonce. The database checks the signed account context, session ownership, active account, active/unrevoked session, idle expiry and absolute expiry. Operations authorization now requires that verified session, and audit events retain the verified session reference. The application role cannot directly execute the private verifier or read the signing key. The existing diagnostic route now signs context only from the account and session returned by server-side session validation. PostgreSQL tests cover signed context, forged session GUC, revoked session, account-only context, protected verifier/key access and unattributed unauthenticated events. This is not MFA: enrollment, TOTP verification, replay prevention, recovery, step-up expiry and enforcement remain unimplemented. Production key provisioning and independent security review remain pending.
+
+
+### Independent Operations signing-key separation — 2026-11-11
+
+The account context signer and session context signer are now separate. The app requires both UNIBUD_DB_CONTEXT_HMAC_KEY and UNIBUD_DB_SESSION_CONTEXT_HMAC_KEY; PostgreSQL verifies them using separate private key tables. Only the NOLOGIN Operations owner can read the session verifier key table and execute the session accessor. PostgreSQL tests now use different test keys and reject a correctly signed but cross-account session pair and expired signed claims. Exact-head CI for this refinement is pending.
+
+
+### Operations MFA session-bound step-up — 2026-11-11
+
+Server-side signed MFA assertions now bind account, exact persisted session, purpose, time window, nonce and matched TOTP step using a distinct assertion key. Migration 0024 adds private assertion-key storage, protected nonce consumption and exact-session step-up records. The database consumes the assertion and advances the TOTP counter atomically; Operations permissions now fail closed without an active, unlocked MFA credential and current session step-up. PostgreSQL integration coverage is added to Foundation CI but exact-head CI is pending. Enrollment/challenge/reauthentication/recovery routes and UI, concurrency proof, lockout, key provisioning/rotation and independent security review are still incomplete. This is not an end-to-end active MFA service.
+
+
+### MFA audit integrity and concurrent replay test — 2026-11-11
+
+The database now derives the effective Operations audit outcome: app callers cannot write an "allowed" outcome unless current permission (including active MFA and exact-session step-up) is true. Tests cover denied/allowed outcome derivation. A two-connection PostgreSQL concurrency script now attempts the same signed assertion simultaneously and requires one success and one rejection; it is included in Foundation CI. Exact-head CI for this refinement is pending.
+
+
+### Password-reauthenticated MFA enrollment start
+
+A separate signed password_reauth assertion now binds fresh password verification to the validated account and exact session. Migration 0025 adds the protected pending-enrollment procedure and server-only encrypted-secret accessor. The enrollment-start route validates same-origin and the HTTP-only session, reauthenticates the current account using the existing password verifier and login rate limiter, encrypts a new TOTP seed, consumes the signed assertion in PostgreSQL, and returns a no-store provisioning URI. Pending credentials do not authorize Operations. Confirmation/activation, recovery-code persistence/display, challenge and recovery routes, lockout, UI and E2E remain outstanding; exact-head CI is pending.
+
+
+### Password-reauthenticated enrollment CI checkpoint
+
+Foundation PostgreSQL 16 migrations and tests, including migration 0025 and concurrent step-up replay proof, passed at checkpoint 17f1ee53a5dbcb5f61ac0c01d37860cbda035ea4. Oracle Arc API tests and web PostgreSQL migration validation passed; web typecheck, contract tests, server security tests and lint passed. Browser E2E and production build were still running. The enrollment route creates only pending MFA; it does not activate MFA or authorize Operations.
+
+
+### Operations MFA enrollment confirmation and activation
+
+Migration 0026 and the enrollment-confirm route now implement a database-verified, exact-session activation step. The accepted TOTP step, one-time assertion nonce and 8–16 recovery-code digests are persisted atomically; plaintext recovery codes are returned only once after commit. Ten failed attempts trigger a 15-minute lockout, and the pending-enrollment replacement path cannot clear an active lockout. Foundation CI includes the new migration and PostgreSQL test. **Status: implemented; exact-head CI and browser E2E pending.** This is not an end-to-end MFA release: the challenge route must still create the five-minute exact-session step-up, and recovery, disable/reset, UI, audit, operational keys and independent review remain outstanding.
+
+
+### Operations MFA TOTP challenge and exact-session step-up
+
+Added a same-origin server route that validates the current persisted session, decrypts the account-bound seed only server-side, verifies TOTP and submits a signed, purpose-bound assertion to PostgreSQL. Migration 0024 consumes the assertion once, advances the accepted TOTP step atomically and creates a five-minute step-up for the exact session. Invalid attempts use migration 0026's failure counter and lockout. **Status: implemented; exact-head CI and browser E2E pending.** This does not complete MFA: user interface, recovery, disable/reset, status, event audit/notifications, operational key management and independent review remain outstanding.
+
+
+### Operations MFA recovery and lifecycle audit
+
+Migration 0027 adds single-use recovery-code redemption bound to the validated account/session. Successful recovery invalidates every step-up session, deletes the old authenticator and all old recovery codes, and requires fresh password-reauthenticated enrollment; it does not grant Operations access. A protected append-only audit records enrollment, challenge failure/success, lockout and credential removal without storing secrets. The new recovery route and PostgreSQL test are wired into Foundation CI. **Status: implemented; exact-head CI and browser E2E pending.** Recovery-code regeneration, disable/reset, UI/acknowledgement, notifications, lifecycle invalidation, concurrent redemption proof, key management and independent review remain incomplete.
+
+
+### Operations MFA status, resume and user interface
+
+Added a current-session-only MFA status accessor and authenticated status endpoint. Added a password-reauthenticated, single-use pending enrollment resume path so a closed setup screen can continue without exposing active credentials. The first /operations/security/mfa interface supports enrollment, resume, activation, recovery-code acknowledgement, TOTP challenge and recovery redemption without browser storage. It currently uses manual authenticator setup; a local QR generator is not yet included. **Status: implemented; exact-head CI and MFA browser E2E pending.** Recovery-code regeneration, controlled disable/reset, notification delivery, lifecycle invalidation, key operations and independent review remain outstanding.
+
+
+### MFA recovery-code regeneration
+
+Added recovery-code regeneration requiring both fresh password reauthentication and a current exact-session five-minute MFA step-up. PostgreSQL atomically replaces the entire digest set, consumes the one-time assertion and records an audit event; the route reveals the new codes once after commit. The MFA page exposes regeneration only while this session has step-up assurance. **Status: implemented; exact-head CI and browser E2E pending.** Controlled disable/reset, QR generation, notifications, lifecycle invalidation and independent review remain outstanding.
+
+
+### Verified implementation checkpoint — 2026-11-11
+
+At exact head bee8603a832fe09307384e4a8faa2820ed9ec394, all three workflows passed: Foundation PostgreSQL 16 migration/RLS tests through migration 0030 (including concurrent recovery redemption), Oracle Arc API tests, and Web typecheck/contracts/server-security/lint/profile browser E2E/production build. The browser E2E is profile-focused and does not prove MFA UI end-to-end. Session assurance is tied to the verified persisted session and cannot survive session revocation/rotation or transfer to another session; expired-record cleanup remains outstanding. PR #15 is still draft/unmerged/undeployed and independent security review remains a release blocker.
+
+
+### Operations MFA local QR enrollment experience — implemented, CI pending
+
+- The authenticated Operations MFA page now generates its authenticator QR code locally in the browser from the in-memory provisioning URI using the `qrcode` library.
+- The seed is not sent to a third-party QR service. The manual setup key remains available as a fallback. The provisioning URI and generated QR data URL are not persisted in browser storage.
+- UI tests assert local QR generation and the manual fallback; Playwright MFA E2E asserts that the QR image appears during enrollment.
+- Exact-head GitHub CI passed at `9cf961e4658146b3bc24fe50a238aa9f7f144178`: Foundation `42966207133`, Oracle Arc API `42966207125`, and Web/Database `42966207290`, including MFA browser E2E and production build. This does not make MFA production-ready: operational key provisioning/rotation, disable/reset dual control, lifecycle notifications and invalidation, expiry cleanup/retention, independent security review and production rollout gates remain.
+
+
+## Operations MFA dual-control disable/reset
+
+**Status: NOT IMPLEMENTED — contract only.**
+
+The security contract is recorded in `docs/security/OPERATIONS-MFA-DISABLE-RESET-DUAL-CONTROL.md` (commit `16dd3596534f9fd77a9501394cd7ab8e2c7b907a`). It specifies distinct requester/approver identities, fresh password reauthentication and exact-session MFA step-up for both actors, database-derived identity, immutable expiring requests, atomic single-use approval, self-approval prevention, complete target step-up/recovery invalidation, and append-only audit.
+
+No schema, procedure, API, UI, or runtime behavior exists yet for this capability. It is not available and is not production-enabled. PostgreSQL negative/concurrency tests, route tests, browser E2E, operational notifications, independent review, and rollout approval remain required.
+
+
+## Operations MFA dual-control disable/reset — database foundation, CI pending
+
+Migration 0031 adds protected request storage and PostgreSQL request/decision procedures. Request and approval require distinct scoped grants, a live exact-session MFA step-up and a single-use password reauthentication assertion. PostgreSQL rejects requester/target self-approval, rechecks the requester's live session/grant/MFA state, locks the request, and on approval invalidates all target step-ups, recovery digests and authenticator credentials atomically with audit events.
+
+The database test covers the core authorization and invalidation paths. Exact-head CI is pending. Routes, UI, cancellation, expiry worker, notifications, concurrency race tests and independent review remain unimplemented. No operator grants are provisioned; this is not a production-enabled capability.
+
+
+### Operations MFA dual-control — request lifecycle slice
+
+Migration 0031 and its PostgreSQL test now pass Foundation PostgreSQL 16 migration/RLS checks in run `42969658021`; Oracle Arc API tests passed in `42969658009`. Migration 0032 adds same-session requester cancellation and a private bounded expiry sweep with system-attributed audit. The 0032 migration/test are wired into Foundation CI, but exact-head validation is pending. The expiry sweep has no scheduler yet. Routes, pending-request read API, UI, notifications, concurrency race tests, secret-manager operations, independent security review and rollout remain outstanding. This capability is not production-enabled.
+
+
+### Operations MFA dual-control API — partial
+
+- Added POST endpoints for request creation, approve/reject and requester cancellation.
+- All routes use same-origin checks, HTTP-only session validation, server-derived account/session context and no-store responses. Request creation and decisions require fresh password verification and purpose-bound password-reauth assertions. PostgreSQL remains authoritative for exact-session MFA step-up, scoped permissions, self-approval denial, request state and audit.
+- Static route-boundary tests added. Exact-head CI pending.
+- Pending: approver pending-request list/read API, rate limiting verification, API integration tests, UI, browser E2E, expiry worker schedule, notification delivery, key management and independent security review.
+
+
+### Operations MFA dual-control request reads — partial implementation
+
+A permission-gated database read model and authenticated API GET now support a bounded pending-request list and individual request detail. Database authorization requires the exact validated session, current MFA step-up and `operations.mfa.security.approve`; direct table access remains denied. Results omit persisted session identifiers and secrets. PostgreSQL isolation tests and static route-boundary tests are wired into CI. Exact-head validation is pending. UI, dedicated rate limiting, live API integration tests and browser E2E remain outstanding.
+
+
+### Operations MFA dual-control request experience — building
+
+- Authenticated request creation, approve/reject, cancellation and bounded list/detail endpoints are implemented.
+- Database migration 0034 now permits requesters to read only their own pending requests, while current-MFA approvers retain access to the approval queue. The response projection does not disclose persisted session identifiers or secrets.
+- An Operations interface now supports request submission, queue review, independent approval/rejection and requester cancellation. UI controls suppress decision actions on the requester's own request; the database independently enforces this boundary.
+- PostgreSQL requester-scope test and static API/UI boundary test added. Exact-head CI pending.
+- Remaining: dedicated rate limiting, API integration tests, browser E2E, accessibility review, scheduled expiry worker, verified notifications, operational key management, grant-management and audit interfaces, independent security review.
+
+
+### Operations MFA dual-control request console — current implementation correction (2026-11-11)
+
+The current branch already contains migrations 0033/0034, the authenticated bounded GET list/detail endpoint, requester-only read scope, and the Operations request/review UI. Earlier capability entries describing these as absent are historical checkpoints and are superseded by the implementation tracker.
+
+At exact head 78cf131c4b98d3c35aaa6cef7d2f9202c404f195, Foundation and Oracle Arc API passed; PostgreSQL migration validation passed. Web/Database failed only in the Playwright MFA E2E because the enrollment test's generic Current password selector matched a second password field in the dual-control request form. Profile browser workflows, typecheck, contract tests, server security tests and lint passed; build was skipped after E2E failure. The enrollment password labels and E2E selectors have now been made distinct in commits 21b6a549609d923f39c69dd05010f494d615a78d and 2e304b2c2d09b4ee98630aee48300e10c49f0bf3. Exact-head rerun is pending.
+
+Still outstanding: dedicated route rate limits, live API integration tests, full browser coverage for request/approve/reject/cancel and permissions, accessibility review, scheduled expiry worker, verified notifications, secret/key operations, grant-management UI, audit search/export, independent security review and production rollout.
+
+
+### Operations MFA request review experience — implemented, verification pending
+
+Bounded, permission-gated request list/detail database function (migrations 0033/0034), authenticated no-store GET API, and Operations UI for submit/review/approve/reject/cancel are present. A dedicated Playwright workflow is now included in Web CI. Existing E2E has a brittle request-count assertion that counts queue GETs alongside POST actions; fix the harness and obtain exact-head green CI before calling this complete.
+
+### Operations MFA API throttling — building
+
+- Migration 0035 adds fixed database-enforced per-account limits: create 5/15 minutes, decision 10/15 minutes, cancellation 10/15 minutes, reads 60/minute.
+- Permission and exact-session MFA step-up are checked in PostgreSQL; app roles cannot directly access the rate-limit table.
+- All four API action classes use the server adapter before password verification or read execution. PostgreSQL and route-boundary tests are wired into CI.
+- Exact-head verification pending. Still required: distributed edge/IP abuse controls, alerting, dedicated API integration tests, independent security review and production rollout.
+
+
+## Canonical product scope and decision history
+
+- `docs/product/UNIBUD-ORACLE-ARC-MASTER-PLAN.md` is the consolidated description of what UNIBUD and Oracle Arc are, their module boundaries, shared platform architecture, AI core, safety and financial constraints, roadmap and production acceptance gates.
+- `docs/product/DECISION-HISTORY.md` preserves the reconstructed approved decisions from the 2026-11-08 to 2026-11-09 discussions and defines the append-only decision-record process.
+- The capability register remains the implementation-status index. The master plan and decision history do not upgrade planned capabilities to implemented or production-ready.
+
+
+### Operations MFA ephemeral maintenance
+
+- **IN PROGRESS / NOT PRODUCTION SCHEDULED:** bounded database maintenance worker exists in migration 0036. It expires dual-control requests, deletes expired step-up rows, applies a 24-hour post-expiry assertion-nonce retention window, and deletes rate-limit buckets inactive for 24 hours.
+- **Acceptance still required:** exact-head PostgreSQL CI; trusted recurring scheduler/worker; monitoring and alerting; operational credentials and rotation; failure/retry tests; production runbook and independent review.
+- A callable maintenance function is not an automatic scheduled job.
+
+
+### Operations dual-control concurrency and expiry hardening — 2026-11-11
+
+- Added migration `0037_operations_mfa_dual_control_concurrency.sql` to revalidate request expiry, approver account/session/grant/MFA step-up and requester account/session/grant/MFA state after acquiring the security-request row lock.
+- Terminal approval, rejection and cancellation updates now include a wall-clock expiry predicate. This avoids relying on `statement_timestamp()`, which is fixed before a potentially long row-lock wait.
+- Added `scripts/test-operations-mfa-dual-control-concurrency.sh`. It uses independent PostgreSQL connections to race approve versus reject, approve versus requester cancellation, and approval versus expiry while a separate connection holds the request row lock. It checks exactly one terminal state and one corresponding audit event.
+- Wired migration 0037 and the concurrency harness into Foundation PostgreSQL 16 CI.
+- **Status at commit pending:** implementation and CI validation are pending. No production scheduler, secrets or Operations enablement are configured. Issue #16's non-forgeable actor remediation is present in migration 0021; independent security review remains open.
+
+
+### Verified Operations dual-control concurrency checkpoint — 2026-11-11
+
+This addendum supersedes the earlier note that the concurrency implementation and validation were pending.
+
+- **Implemented:** migration `0037_operations_mfa_dual_control_concurrency.sql` revalidates request expiry and the approver's live exact-session grant/MFA step-up after acquiring the request row lock. It revalidates the requester's persisted account/session/grant/authenticator state using wall-clock time. Approve, reject and cancel terminal updates include a wall-clock expiry predicate. Requester/target self-approval denials remain enforced.
+- **Implemented:** `scripts/test-operations-mfa-dual-control-concurrency.sh` uses independent PostgreSQL connections to race approve/reject, approve/cancel, and approval against expiry while a separate transaction holds the request lock. It verifies one terminal winner and the corresponding audit event.
+- **CI wiring:** Foundation workflow applies migration 0037 and runs the new concurrency harness. The existing assertion-replay concurrency script now deactivates prior test signing keys before seeding its own, preventing cross-suite active-key collisions.
+- **Verified at exact PR #15 head `308bfe4a92c92d5b97844326f1bcb6432bb1e8f3`:** Foundation checks run `43013208219` PASSED, including PostgreSQL 16 migrations/RLS, the new dual-control race harness, MFA assertion replay concurrency and recovery redemption concurrency. Oracle Arc API run `43013208224` PASSED. UNIBUD Web and Database run `43013208441` was still IN PROGRESS at the time of this update; its E2E/build result is not yet claimed.
+- **Still outstanding:** exact-head Web/Database completion; independent security review and Issue #16 disposition; trusted recurring scheduler for migration 0036 maintenance; verified security notifications; secrets management/rotation; retention and session lifecycle; grant-management UI; audit search/export; alerts and operational runbooks.
+- **Release boundary:** PR #15 remains draft/open/unmerged. No production deployment, production grants, scheduler or Operations enablement is claimed.
+
+
+### CI completion addendum — 2026-11-11
+
+The complete code-change validation checkpoint at commit `308bfe4a92c92d5b97844326f1bcb6432bb1e8f3` is now complete:
+
+- Foundation checks `43013208219`: **PASSED**. PostgreSQL 16 migrations and RLS tests, dual-control approve/reject race, approve/cancel race, approval/expiry lock-wait race, existing MFA assertion replay concurrency and recovery-code redemption concurrency all passed.
+- Oracle Arc API `43013208224`: **PASSED**.
+- UNIBUD Web and Database `43013208441`: **PASSED**. PostgreSQL migration validation, TypeScript typecheck, contract tests, server security tests, lint, profile browser E2E and production build all passed.
+
+The branch subsequently advanced through documentation-only commits to `c0d65a273a025376bd144e184018a8af40e1aa20`. Fresh CI for that documentation-only head was queued/in progress when this addendum was prepared. The three successful runs above validate the code-change head; they do not establish deployment or production verification.
+
+
+### Exact-head Operations security verification — 2026-11-12
+
+At branch head `12510f70bbdec1300768bc54084e8656ce61d86b`, all three GitHub Actions workflows passed: Foundation `43058291877`, UNIBUD Web and Database `43058291884`, and Oracle Arc API `43058292045`. Foundation executed PostgreSQL 16 migration/RLS tests plus the independent-connection dual-control approve/reject, approve/cancel and approval/expiry races, assertion replay concurrency and recovery-code redemption concurrency. The Web/Database PostgreSQL migration validation and build/type checks passed. This supersedes older pending exact-head CI notes above; it does not supersede the production-readiness blockers.
+
+**Still not production-ready:** PR #15 is draft/open/unmerged; Issue #16 and independent security review remain open; production signing-key provisioning/rotation, a trusted recurring scheduler and its secret binding, monitoring/alert routing and retry verification, notification retention, Operations grant-management UI, audit search/export and security alerting remain outstanding. No production deployment or Operations enablement is claimed.
+
+
+### Operations maintenance worker safety verification — 2026-11-12
+
+The worker safety-contract harness `scripts/test-operations-mfa-maintenance-worker.sh` now checks connection URI parsing, credential isolation, TLS policy, batch bounds, timeout configuration and failure propagation. Foundation CI passed this harness and the disposable least-privilege worker invocation at branch head `4cc1cd09d377933e02c0067b6c94761159db791f` (run `43136999522`); Web/Database (run `43136999469`) and Oracle Arc API (run `43136999501`) also passed. This remains CI evidence, not a production scheduler or secret-manager deployment. Monitoring, retries, alert delivery, recurring schedule, production credentials and independent security review remain outstanding.
+
+
+### Operations MFA key lifecycle and security controls — 2026-11-12
+
+Operations MFA now has checked-in support across migrations 0021–0040 for non-forgeable database actor attribution, session-bound MFA, dual-control lifecycle, bounded maintenance, a restricted non-login scheduler execution role, transactional in-app security notifications, and overlapping database HMAC verification keys. Migrations 0037–0040 have corresponding PostgreSQL tests; the true dual-control races are exercised by the independent-connection Foundation harness.
+
+The web application supports overlapping versioned TOTP seed-encryption keys: legacy v1 ciphertext remains decryptable while configured v2 key IDs are used for new encryption. It also supports overlapping versioned recovery-code HMAC keys: legacy v1 digests remain verifiable while new recovery-code sets use the active v2 key ID. Recovery redemption submits a bounded legacy/v2 candidate set through a PostgreSQL SECURITY DEFINER wrapper; the legacy single-digest entry point is no longer executable by the application role. Migration 0041 and its privilege test are wired into Foundation CI. Exact-head verification at d2a30e19cb46c1f3c80ce88db512f42a7cd91912 passed Foundation run 43142922889, Web/Database run 43142922820 and Oracle Arc API run 43142923010.
+
+**Not production-ready:** no production secret-manager binding or key rotation has been performed; the legacy recovery key must remain available until outstanding legacy recovery-code sets are replaced or redeemed; the scheduler role is not a recurring production scheduler; in-app notifications do not establish external email/SMS delivery; monitoring/alert routing, independent security review, Issue #16 disposition, grant-management UI and audit search/export remain outstanding. PR #15 remains draft/open/unmerged.
+
+
+### Operations audit search and CSV export — implementation checkpoint (2026-11-12)
+
+Migration 0042 adds a permission-gated audit search read model for operations.audit.read, requiring the cryptographically verified current account, persisted session and live MFA step-up. Search filters by time window, permission, outcome and actor, uses keyset pagination, and is bounded to 90 days and 1,000 rows. The API exposes JSON pages capped at 100 and no-store CSV exports capped at 1,000. Audit reads, denied attempts and errors are recorded in the append-only audit stream. A dedicated database rate-limit bucket allows 30 audit reads per minute. /operations/audit provides the filter, result and export interface. PostgreSQL authorization/bounds/table-isolation tests and route contract tests are added to CI.
+
+**Not production-ready:** exact-head CI for migration 0042 and the web console is pending. No operator grants have been provisioned. A self-service grant-management endpoint remains intentionally absent; provisioning and revocation stay under controlled DBA procedures until an independently reviewed, dual-control grant lifecycle is implemented. Secret-manager provisioning, production rollout, independent security review and monitoring remain outstanding.
+
+
+### Operations audit search/export — exact-head verification — 2026-11-12
+
+Code head b944b41be9cdcbcb6cbfac0de9b9f74c4a3d979f passed Foundation checks run 43144303648, UNIBUD Web and Database run 43144297258, and Oracle Arc API run 43144303769. PostgreSQL 16 applied migrations through 0042 and the complete database/RLS suite passed. TypeScript, contract/security unit tests, lint, profile browser E2E and production build passed. The existing account-bound notification_read throttle was explicitly preserved and passed its regression test.
+
+**Release boundary:** this capability is implemented and CI-verified, not production deployed. Audit access still requires an operator grant with operations.audit.read and a live exact-session MFA step-up. No grants have been provisioned. Grant management remains DBA-controlled until a separate, independently reviewed dual-control grant lifecycle is built. PR #15 remains draft/open/unmerged; Issue #16 and independent security review remain open.
+
+## Operations grant lifecycle — implementation checkpoint
+
+- **Implemented on feature branch:** migration 0043 creates a protected dual-control grant/revocation request table and SECURITY DEFINER request, decision and bounded queue-read functions.
+- **Security contract:** signed database account/session identity; separate request/approve permissions; exact-session MFA step-up; single-use password reauthentication; different requester/approver; requester and target cannot approve; original requester and approver session/grant/MFA revalidation; role-specific permission allow-lists; mandatory maximum 90-day grant expiry; bootstrap grant-management permissions cannot be assigned through this workflow; app-role direct table access denied; successful transitions append audit events.
+- **Verification state:** PostgreSQL migration and tests are wired into Foundation CI but exact-head CI for this migration is pending. The workflow does not yet have an HTTP API or operator UI. No production grants, migration or deployment are claimed.
+- **Remaining acceptance:** HTTP/API boundary tests, grant inventory and request/approval UI, cancellation/expiry worker, rate limits, concurrency race tests, notifications, accessibility review and independent security review.
+
+## Operations grant management API and console — 2026-11-12
+
+The migration 0043 dual-control lifecycle now has server API and UI support. Authenticated endpoints create grant/revocation requests, list pending requests, return a bounded active grant inventory, and submit approve/reject decisions. The `/operations/grants` console provides role/permission selection, mandatory expiry, reviewer decisions and revocation initiation. Every mutation verifies the first-party session and password credentials, then delegates the authoritative authorization and transition to PostgreSQL using signed session context and a short-lived password reauthentication assertion. PostgreSQL requires exact-session MFA step-up, separate request/approve permissions, distinct actors, live requester/approver state, role allow-lists, target checks and bounded expiry. Protected grant tables remain inaccessible directly to the app role.
+
+The database tests cover grant, revocation and rejection transitions, independent approver attribution, self-approval denial, audit evidence, direct-table isolation and bootstrap permission non-escalation. Queue/inventory read functions are volatile to support database-enforced throttling. Exact-head CI is pending.
+
+**Not production-ready:** requester cancellation, bounded expiry worker, independent-connection grant concurrency tests, notification delivery, browser E2E for the grant console, accessibility review, independent security review and bootstrap permission provisioning remain outstanding. No production grants, migrations or deployment have been performed.
+
+### Operations grant management — exact code-head verification — 2026-11-12
+
+- **Verified code head:** `8a4ce7d78dac9ad86259ccdc5bd086343b864d6b`.
+- **Foundation checks:** PASSED, run `43146549452`. PostgreSQL 16 applied migrations through 0043 and ran `database/tests/0043_operations_grant_dual_control.test.sql`, covering request creation, self-approval denial, independent approval, grant creation, revocation, rejection/approver attribution, audit evidence, direct-table isolation and bootstrap permission non-escalation. Existing RLS and concurrent Operations/MFA controls passed.
+- **UNIBUD Web and Database:** PASSED, run `43146549394`. TypeScript typecheck, web contract tests (including the grant route/console contracts), server security tests, lint, existing profile browser E2E, PostgreSQL migration validation and production build passed.
+- **Oracle Arc API:** PASSED, run `43146549362`.
+- The first Web typecheck run caught a literal escaped newline in the new grant route type declaration. It was corrected in the verified code head; all three workflows subsequently passed.
+- This verifies the database lifecycle, API contract and build, but does not constitute grant-console browser E2E or independent security review. No bootstrap grant, production migration, production deployment or operator activation occurred.
+
+### Operations grant cancellation and bounded expiry — implementation and exact-head verification — 2026-11-12
+
+- **Same-session requester cancellation:** migration 0044 adds `unibud_operator_cancel_grant_change`, a SECURITY DEFINER transition requiring the original requester account and exact original persisted session, live Operations MFA step-up, a single-use password reauthentication assertion and the dedicated `grant_cancel` rate-limit bucket. It locks and rechecks the pending request before cancellation and writes a system-verified requester audit event.
+- **Requester queue visibility:** request-permission holders can read only their own pending requests from the exact originating session. Approvers retain the bounded review queue. The active grant inventory remains restricted to approvers.
+- **UI/API:** `POST /api/internal/operations/grants/[requestId]/cancel` and the `Cancel my request` control are implemented. The database rejects cancellation from another session even if the account matches.
+- **Bounded expiry:** migration 0045 extends the existing bounded Operations maintenance entry point. It expires at most the configured batch size of pending grant requests using `FOR UPDATE SKIP LOCKED`, marks them `expired`, and records a system-attributed `operations.grants.expire` audit event. It does not create a new scheduler or recurring schedule; the existing trusted scheduler entry point remains the only invocation path.
+- **Database verification:** Foundation CI applies migrations 0044–0045 and tests the cancellation function's SECURITY DEFINER privilege boundary, same-account/session checks, reauthentication, MFA permission and throttle contract. The expiry integration test executes the existing scheduler role and verifies expiry state, reason and system audit attribution.
+- **Verified code head:** `1ec9c88a8db2523a8723154e5870e08bb3caa92b`.
+- **Foundation checks:** PASSED, run `43147456579`; PostgreSQL 16 applied migrations through 0045 and the full database/RLS suite passed, including grant cancellation boundary and bounded grant expiry tests.
+- **UNIBUD Web and Database:** PASSED, run `43147456659`; TypeScript, contract/security tests, lint, existing profile browser E2E, migration validation and production build passed.
+- **Oracle Arc API:** PASSED, run `43147456542`.
+- **Still outstanding:** dedicated browser E2E for the grant console and cancellation, independent-connection race tests specifically for grant approval/rejection/cancellation/expiry, grant notifications, monitoring/alert routing, accessibility review, bootstrap permission provisioning and independent security review. No bootstrap grants, production migration, production deployment or operator activation occurred.
+
+### Operations grant cancellation lock-wait hardening — migration 0046
+
+Migration 0046 corrects the cancellation transition's time-of-check ordering: after it obtains the request row lock, it captures wall-clock time and revalidates request/assertion expiry, the original exact session, active scoped grant, authenticator and exact-session MFA step-up. Foundation CI now applies the migration and checks the function's post-lock ordering, SECURITY DEFINER owner and app-role privilege boundary.
+
+**Verification boundary:** this catalog/function-contract test does not establish concurrent runtime correctness. Independent PostgreSQL connection races for approval/rejection, approval/cancellation, step-up expiry during cancellation and approval versus bounded expiry remain outstanding. No production migration, bootstrap grant or deployment has occurred.
+
+### Operations grant lifecycle notifications — migration 0047
+
+Grant lifecycle events now produce account-scoped in-app notices for submission, approval, rejection, cancellation and expiry. Notices are written in the same transaction as the grant-request lifecycle change, with idempotency by account/request/event. The requester, target and independent approver are the only possible recipients. The notification table is RLS-protected, inaccessible directly to the app role, and read/marked through SECURITY DEFINER functions using verified signed session context and the existing notification-read rate limit.
+
+**Capability boundary:** this is an in-app inbox only. It does not send email or SMS, create an external delivery receipt, or provide provider retry/worker behavior. Grant transition concurrency and dedicated browser E2E remain outstanding.
+
+The grant console now has an isolated browser E2E fixture in web CI covering the notification inbox, mark-read, approval, cancellation and request submission. It is disabled in production and uses mocked API responses; database enforcement is tested separately in Foundation PostgreSQL CI.
+
+### Verification checkpoint — 2026-11-12
+
+Branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation run 43159461223, Web and Database run 43159461527, and Oracle Arc API run 43159461117. The grant notification migration and PostgreSQL test, web contract checks, grant console browser E2E and production build passed. This verifies the feature branch in CI, not production deployment. Independent grant concurrency testing and independent security review remain open.
+
+### Grant lifecycle concurrency coverage
+
+A dedicated Foundation CI harness now exercises approval/rejection, approval/cancellation, cancellation after exact-session MFA step-up expiry during a row-lock wait, and approval versus bounded request expiry using independent PostgreSQL sessions. It asserts one terminal transition, consistent grant/audit outcomes and SKIP LOCKED worker behavior. Verification remains pending until CI for the new commit completes.
+
+### Grant lifecycle concurrency — CI verified
+
+The independent-connection grant lifecycle harness passed on code head 89c44575186176c4553db5fb962b90234e58ba83 (Foundation run 43160136952). It verified approve/reject and approve/cancel serialization, post-lock MFA step-up expiry rejection, and approval versus bounded expiry with SKIP LOCKED behavior. Web and Database run 43160137016 and Oracle Arc API run 43160136965 also passed. These are CI results, not production activation. Independent security review remains open.
+
+### Grant console accessibility refinements
+
+The Operations grants console now has captioned tables with scoped headers, named keyboard-focusable horizontal scroll regions, explicit keyboard focus indicators, polite unread-count announcements and reduced-motion styling. These are targeted improvements; a full WCAG/assistive-technology audit remains outstanding.
+
+ 
+### User-selectable OTP delivery transports — 2026-11-12
+Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delivery preferences; email identities remain email-only. The server validates transport compatibility and passes the selected `deliveryMethod` to the existing authenticated HTTPS verification gateway. The gateway/provider has not yet been verified to implement these transports. No WhatsApp/RCS delivery, template approval, carrier reachability, provider receipts, fallback or production activation is claimed. See DEC-021 and the implementation tracker.

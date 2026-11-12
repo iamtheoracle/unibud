@@ -34,7 +34,8 @@ export function buildVerificationDeliveryStatus(
   const credentialConfigured = token.length > 0;
   const limitations = [
     "The repository defines only an authenticated POST delivery operation; it does not define a read-only health or vendor-identification endpoint.",
-    "The gateway provider and its downstream email/SMS vendors cannot be established from this contract.",
+    "The gateway provider and its downstream email, SMS, WhatsApp or RCS vendors cannot be established from this contract.",
+    "The gateway has not been verified to support SMS, WhatsApp or RCS routing, sender registration, template approval, delivery receipts, retries or fallback.",
     "No delivery request, test message, recipient identifier, or verification code is sent during this diagnostic."
   ];
 

@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Channel="email"|"phone";
+type DeliveryMethod="email"|"sms"|"whatsapp"|"rcs";
 export default function SignupPage(){
  const router=useRouter();
  const [channel,setChannel]=useState<Channel>("email");
+ const [deliveryMethod,setDeliveryMethod]=useState<DeliveryMethod>("email");
  const [identifier,setIdentifier]=useState("");
  const [password,setPassword]=useState("");
  const [busy,setBusy]=useState(false);
@@ -17,7 +19,7 @@ export default function SignupPage(){
  async function resend(){
   setResending(true);setError("");
   try{
-   const response=await fetch("/api/auth/verification/resend",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier})});
+   const response=await fetch("/api/auth/verification/resend",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier,deliveryMethod})});
    const result=await response.json();if(!response.ok) throw new Error(result.error??"Verification resend failed.");
    if(typeof result.challengeId==="string"){
     router.push("/verify?challengeId="+encodeURIComponent(result.challengeId)+"&purpose="+(channel==="email"?"email_verification":"phone_verification"));
@@ -28,7 +30,7 @@ export default function SignupPage(){
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError("");setNotice("");
   try{
-   const response=await fetch("/api/auth/register",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier,password})});
+   const response=await fetch("/api/auth/register",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({channel,identifier,password,deliveryMethod})});
    const result=await response.json();
    if(!response.ok) throw new Error(result.error??"Registration could not be completed.");
    if(result.state==="verification_required"&&result.challengeId){
@@ -44,10 +46,11 @@ export default function SignupPage(){
    <p className="eyebrow">Your account starts here</p><h1>Create your UNIBUD account</h1>
    <p className="auth-copy">One account. Distinct spaces for everything you do. Start with an email address or phone number.</p>
    <div className="auth-tabs" role="group" aria-label="Registration method">
-    <button type="button" className={channel==="email"?"active":""} onClick={()=>setChannel("email")}>Email</button>
-    <button type="button" className={channel==="phone"?"active":""} onClick={()=>setChannel("phone")}>Phone</button>
+    <button type="button" className={channel==="email"?"active":""} onClick={()=>{setChannel("email");setDeliveryMethod("email");}}>Email</button>
+    <button type="button" className={channel==="phone"?"active":""} onClick={()=>{setChannel("phone");setDeliveryMethod("sms");}}>Phone</button>
    </div>
    <form onSubmit={submit} className="auth-form">
+    {channel==="phone"&&<><label htmlFor="otp-delivery">Send verification code by</label><select id="otp-delivery" value={deliveryMethod==="email"?"sms":deliveryMethod} onChange={e=>setDeliveryMethod(e.target.value as DeliveryMethod)}><option value="sms">SMS</option><option value="whatsapp">WhatsApp</option><option value="rcs">RCS</option></select><p className="field-note">WhatsApp and RCS availability depends on your number, device and the configured delivery provider.</p></>}
     <label>{channel==="email"?"Email address":"Phone number"}</label>
     <input required autoComplete={channel==="email"?"email":"tel"} type={channel==="email"?"email":"tel"} value={identifier} onChange={e=>setIdentifier(e.target.value)} placeholder={channel==="email"?"you@example.com":"+234 800 000 0000"}/>
     <label>Password</label>

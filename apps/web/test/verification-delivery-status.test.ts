@@ -31,7 +31,7 @@ test("complete settings remain configured but unverified without a health contra
   assert.equal(result.providerIdentity, null);
   assert.equal(result.connectivity, "not_tested");
   assert.equal(result.readOnlyHealthCheck, "not_defined");
-  assert.ok(result.limitations.some(item => item.includes("downstream email/SMS vendors")));
+  assert.ok(result.limitations.some(item => item.includes("downstream email, SMS, WhatsApp or RCS vendors")));
   const serialized = JSON.stringify(result);
   assert.equal(serialized.includes("gateway.example.test"), false);
   assert.equal(serialized.includes(valid.UNIBUD_VERIFICATION_DELIVERY_TOKEN), false);
@@ -92,5 +92,6 @@ test("invalid endpoint URL is classified without exposing its value", () => {
 test("diagnostic contract explicitly avoids sending test messages or verification data", () => {
   const result = buildVerificationDeliveryStatus(valid);
   assert.ok(result.limitations.some(item => item.includes("No delivery request, test message")));
+  assert.ok(result.limitations.some(item => item.includes("WhatsApp or RCS routing")));
   assert.equal("deliver" in result, false);
 });
