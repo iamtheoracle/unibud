@@ -39,7 +39,7 @@ function createStepUpProof(
   const nonce = randomUUID();
   const payloadDigest = createHash("sha256").update(pinHashPhc, "utf8").digest("hex");
   const message = [
-    "flow-pin-step-up:v1", accountId, sessionId, action,
+    "flow-step-up:v1", accountId, sessionId, action,
     payloadDigest, String(expiresEpoch), nonce
   ].join(":");
   const signature = createHmac("sha256", Buffer.from(rawKey, "hex"))
