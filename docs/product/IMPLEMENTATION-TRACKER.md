@@ -956,11 +956,12 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 
 ### Flow next dependencies
 
-1. Complete exact-head PostgreSQL 16 migration and invariant tests, including CI workflow wiring.
-2. Add intent-creation rate limiting, then implement PIN verification and transaction-specific authorization procedures under the same authenticated session context.
-3. Implement Argon2id PIN enrollment/verification/recovery and database-backed lockout/rate limiting.
-4. Implement WebAuthn challenge/assertion verification with replay-resistant counters; no biometric template collection.
-5. Implement canonical transaction digest construction and one-use challenge consumption bound to the exact intent and session.
-6. Inspect the MoneyLead repository and its authoritative ledger when access is available; define a scoped integration contract before enabling internal transfers or settlement ingestion.
-7. Only then add provider/issuer/settlement adapters after contracts, permissions and legal arrangements are verified.
+1. Complete exact-head CI for the current branch head, including migrations 0048–0050, the SQL invariants, the independent-session idempotency race, web tests and build.
+2. Add database-backed intent-creation rate limiting and abuse controls.
+3. Implement Argon2id PIN enrollment, verification, recovery, lockout and audited reset.
+4. Implement WebAuthn registration/assertion verification with origin/RP-ID validation, challenge binding and replay-resistant signature counters. No biometric template collection.
+5. Implement authorization-challenge creation and one-time consumption. PIN/WebAuthn proof must bind the exact recipient, amount, currency, fees, source Flow account, payment-intent reference, expiry and persisted session.
+6. Implement lifecycle/status procedures for authorization, submission, acceptance, settlement, failure, cancellation, refund and reversal. Settlement must require verified MoneyLead evidence.
+7. Inspect the MoneyLead repository and authoritative ledger when access is restored; define a scoped integration contract before enabling internal transfers or settlement ingestion.
+8. Add external provider, issuer and settlement adapters only after contracts, legal permissions, credentials, callback verification and reconciliation evidence are verified.
 
