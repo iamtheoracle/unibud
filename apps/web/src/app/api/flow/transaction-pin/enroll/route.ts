@@ -27,17 +27,28 @@ function createPinService(): FlowPinService {
 export async function POST(request: NextRequest) {
   if (!hasSameOrigin(request)) return reply({ ok: false, error: "Forbidden." }, 403);
   const body = await readJsonObject(request);
-  if (!body || typeof body.pin !== "string" ||
+  if (!body ||
+      (body.channel !== "email" && body.channel !== "phone") ||
+      typeof body.identifier !== "string" ||
+      typeof body.password !== "string" ||
+      typeof body.pin !== "string" ||
       typeof body.confirmation !== "string") {
-    return reply({ ok: false, error: "A transaction PIN and confirmation are required." }, 400);
+    return reply({ ok: false, error: "Password reauthentication and a transaction PIN confirmation are required." }, 400);
   }
   const token = readSessionCookie(request);
   if (!token) return reply({ ok: false, error: "Authentication is required." }, 401);
 
   try {
-    const { sessions } = createConfiguredIdentityServices();
+    const { sessions, authentication } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return reply({ ok: false, error: "Authentication is required." }, 401);
+    const reauthenticated = await authentication.verifyCredentialsForAccount({
+      accountId: validation.account.id,
+      channel: body.channel,
+      identifier: body.identifier,
+      password: body.password
+    });
+    if (!reauthenticated) return reply({ ok: false, error: "Account password reauthentication failed." }, 401);
     const enrolled = await createPinService().enroll({
       accountId: validation.account.id,
       sessionId: validation.session.id,
