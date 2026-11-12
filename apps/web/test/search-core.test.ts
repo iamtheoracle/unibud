@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { SqlClient } from "../src/lib/server/database/account-context-core.ts";
-import { consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
+import { assertSearchProfileContext, consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
 
 test("people search normalizes Unicode and whitespace without accepting short or oversized terms", () => {
   assert.equal(normalizePeopleSearchTerm("  Ａda   Lovelace "), "Ada Lovelace");
@@ -111,4 +111,34 @@ test("Search discovery readiness exposes only a boolean derived from PostgreSQL"
   };
   assert.equal(await isSearchDiscoveryReady(client), false);
   assert.match(statement, /account_discovery_viewer_verified/);
+});
+
+
+test("Search revalidates the persisted active profile before running a query", async () => {
+  let statement = "";
+  let parameters: readonly unknown[] = [];
+  const client: SqlClient = {
+    async query<Row = unknown>(sql: string, values?: readonly unknown[]) {
+      statement = sql;
+      parameters = values ?? [];
+      return { rows: [{ allowed: true }] as Row[] };
+    },
+    release() {}
+  };
+  await assertSearchProfileContext(client, "52000000-0000-4000-8000-000000000001");
+  assert.match(statement, /profile_authorize_action/);
+  assert.deepEqual(parameters, ["52000000-0000-4000-8000-000000000001"]);
+});
+
+test("Search denies a profile whose membership has been revoked", async () => {
+  const client: SqlClient = {
+    async query<Row = unknown>() {
+      return { rows: [{ allowed: false }] as Row[] };
+    },
+    release() {}
+  };
+  await assert.rejects(
+    assertSearchProfileContext(client, "52000000-0000-4000-8000-000000000001"),
+    { name: "SearchProfileContextError" }
+  );
 });
