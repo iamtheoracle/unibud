@@ -1,4 +1,4 @@
--- General application role must not authorize Flow transactions.
+-- Final role boundary after migration 0056: only the Flow runtime can authorize.
 \set ON_ERROR_STOP on
 BEGIN;
 
@@ -34,32 +34,32 @@ BEGIN
   END IF;
 
   IF NOT has_function_privilege(
-    'unibud_auth',
+    'unibud_flow_auth',
     'public.flow_pin_begin_verification()',
     'EXECUTE'
   ) THEN
-    RAISE EXCEPTION 'Dedicated auth role cannot verify Flow PIN';
+    RAISE EXCEPTION 'Dedicated Flow runtime role cannot verify Flow PIN';
   END IF;
   IF NOT has_function_privilege(
-    'unibud_auth',
+    'unibud_flow_auth',
     'public.flow_webauthn_list_credentials()',
     'EXECUTE'
   ) THEN
-    RAISE EXCEPTION 'Dedicated auth role cannot verify Flow WebAuthn';
+    RAISE EXCEPTION 'Dedicated Flow runtime role cannot verify Flow WebAuthn';
   END IF;
   IF NOT has_function_privilege(
-    'unibud_auth',
+    'unibud_flow_auth',
     'public.flow_authorize_payment_intent(uuid,bytea,bigint,uuid,text,bytea,bigint)',
     'EXECUTE'
   ) THEN
-    RAISE EXCEPTION 'Dedicated auth role cannot authorize a user-confirmed Flow intent';
+    RAISE EXCEPTION 'Dedicated Flow runtime role cannot authorize a user-confirmed Flow intent';
   END IF;
 
-  IF has_table_privilege('unibud_auth','public.flow_transaction_credentials','SELECT')
+  IF has_table_privilege('unibud_flow_auth','public.flow_transaction_credentials','SELECT')
      OR has_table_privilege('unibud_auth','public.flow_biometric_credentials','SELECT')
      OR has_table_privilege('unibud_auth','public.flow_authorization_challenges','SELECT')
      OR has_table_privilege('unibud_auth','public.flow_transaction_rate_limits','SELECT') THEN
-    RAISE EXCEPTION 'Dedicated auth role has direct access to sensitive Flow tables';
+    RAISE EXCEPTION 'Dedicated Flow runtime role has direct access to sensitive Flow tables';
   END IF;
 END
 $privileges$;
