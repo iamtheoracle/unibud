@@ -952,7 +952,7 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Payment intent payload fields are immutable and lifecycle transitions are constrained. Migration 0049 and the authenticated `/api/flow/payment-intents` route can create an instruction with database-enforced idempotency; migration 0050 binds authorization challenges to the exact persisted session and transaction digest. No API can authorize, submit or settle an instruction yet.
 - `unibud_flow_ingest` is NOLOGIN and intentionally has no table privileges until a verified MoneyLead event-authentication gateway exists.
 - MoneyLead repository lookup returned 404 during this pass. No integration endpoint, API credentials, provider, issuer or settlement capability was assumed.
-- **Status:** schema, idempotent database procedure, encrypted recipient handling, authenticated payment-intent route and independent-session idempotency harness are added. Exact-head CI for the expanded branch is pending; the earlier schema-only head passed. PR #19 remains draft/open/unmerged. Not deployed and not operational.
+- **Status:** schema, idempotent database procedure, encrypted recipient handling, authenticated payment-intent route and independent-session idempotency harness are added. Exact-head CI PASSED at `e74d966c125737321f0da30a4d13d6ab4cba478c`: Foundation `43201302301`, Web/Database `43201302659`, Oracle Arc API `43201302321`. PR #19 remains draft/open/unmerged. Not deployed and not operational.
 
 ### Flow next dependencies
 

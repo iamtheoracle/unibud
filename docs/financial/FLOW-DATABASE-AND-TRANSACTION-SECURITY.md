@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migrations 0048–0050, synthetic PostgreSQL tests, a session-bound payment-intent database procedure and an authenticated payment-intent HTTP endpoint are implemented on the Flow foundation branch. Exact-head CI is pending for the expanded branch. Not merged or deployed. No live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
+**Status:** Migrations 0048–0050, synthetic PostgreSQL tests, a session-bound payment-intent database procedure and an authenticated payment-intent HTTP endpoint are implemented on the Flow foundation branch. Exact-head CI PASSED at `e74d966c125737321f0da30a4d13d6ab4cba478c`: Foundation `43201302301`, Web/Database `43201302659` and Oracle Arc API `43201302321`. Not merged or deployed. No live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
 
 ## Ownership boundary
 
