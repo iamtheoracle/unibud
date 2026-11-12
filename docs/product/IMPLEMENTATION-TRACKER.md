@@ -956,7 +956,7 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 
 ### Flow next dependencies
 
-1. Complete exact-head CI for migrations 0051–0054, PIN/WebAuthn/authorization SQL tests, independent-session concurrency, service/route security tests, typecheck, lint, browser E2E and production build; fix any failures.
+1. Keep exact-head CI green for every subsequent Flow schema, service, route or security change; the current PIN/WebAuthn/authorization foundation passed all three workflows.
 2. Add risk-aware abuse controls, device/IP anomaly signals and customer security notifications beyond the account-scoped rate limits.
 3. Implement MoneyLead transactional outbox/adapter only after the actual MoneyLead repository, authoritative ledger contract, authentication scheme, idempotency semantics and signed event contract are verified. The current gateway port deliberately has no active adapter.
 4. Implement submitted/accepted/failed/settled/refunded/reversed lifecycle transitions only from authenticated MoneyLead evidence and reconciliation. Never infer settlement from request acceptance.
