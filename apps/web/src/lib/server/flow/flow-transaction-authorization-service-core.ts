@@ -198,7 +198,10 @@ export class FlowTransactionAuthorizationService {
     authorizationId: string;
     options: Awaited<ReturnType<typeof generateAuthenticationOptions>>;
     confirmation: FlowPaymentConfirmation;
-  } | { state: "intent_unavailable" | "details_changed" | "authenticator_not_registered" | "challenge_unavailable" }> {
+  } | { state: "intent_unavailable" }
+    | { state: "details_changed" }
+    | { state: "authenticator_not_registered" }
+    | { state: "challenge_unavailable" }> {
     const confirmation = await this.getConfirmation(input);
     if (!confirmation) return { state: "intent_unavailable" };
     if (!/^[0-9a-f]{64}$/i.test(input.confirmationDigest) ||
