@@ -250,6 +250,7 @@ BEGIN
     FROM public.flow_webauthn_list_credentials()
    WHERE credential_id=v_credential_id;
   IF v_counter<>1 THEN RAISE EXCEPTION 'WebAuthn signature counter was not atomically advanced'; END IF;
+  PERFORM set_config('test.flow_authorized_pin_intent_id',v_intent_pin::TEXT,true);
   PERFORM set_config('test.flow_authorized_intent_id',v_intent_webauthn::TEXT,true);
 
   -- Another account cannot read the intent confirmation or consume its challenge.
@@ -296,9 +297,15 @@ DECLARE
 BEGIN
   SELECT status,authorized_at INTO v_status,v_authorized_at
     FROM public.flow_payment_intents
+   WHERE payment_intent_id=current_setting('test.flow_authorized_pin_intent_id')::UUID;
+  IF v_status<>'authorized' OR v_authorized_at IS NULL THEN
+    RAISE EXCEPTION 'PIN authorization did not produce the authorized lifecycle state';
+  END IF;
+  SELECT status,authorized_at INTO v_status,v_authorized_at
+    FROM public.flow_payment_intents
    WHERE payment_intent_id=current_setting('test.flow_authorized_intent_id')::UUID;
   IF v_status<>'authorized' OR v_authorized_at IS NULL THEN
-    RAISE EXCEPTION 'Authorization did not produce the expected authorized lifecycle state';
+    RAISE EXCEPTION 'WebAuthn authorization did not produce the authorized lifecycle state';
   END IF;
   SELECT status INTO v_status
     FROM public.flow_payment_intents
