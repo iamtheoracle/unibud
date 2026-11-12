@@ -569,3 +569,7 @@ The grant console now has an isolated browser E2E fixture in web CI covering the
 ### Verification checkpoint — 2026-11-12
 
 Branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation run 43159461223, Web and Database run 43159461527, and Oracle Arc API run 43159461117. The grant notification migration and PostgreSQL test, web contract checks, grant console browser E2E and production build passed. This verifies the feature branch in CI, not production deployment. Independent grant concurrency testing and independent security review remain open.
+
+### Grant lifecycle concurrency coverage
+
+A dedicated Foundation CI harness now exercises approval/rejection, approval/cancellation, cancellation after exact-session MFA step-up expiry during a row-lock wait, and approval versus bounded request expiry using independent PostgreSQL sessions. It asserts one terminal transition, consistent grant/audit outcomes and SKIP LOCKED worker behavior. Verification remains pending until CI for the new commit completes.
