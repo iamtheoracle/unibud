@@ -256,6 +256,8 @@ export class FlowTransactionAuthorizationService {
     }
 
     const config = getFlowWebAuthnConfiguration();
+    const publicKey = new Uint8Array(credential.publicKeyCose.byteLength);
+    publicKey.set(credential.publicKeyCose);
     let verification: Awaited<ReturnType<typeof verifyAuthenticationResponse>>;
     try {
       verification = await this.verifyAssertion({
@@ -265,7 +267,7 @@ export class FlowTransactionAuthorizationService {
         expectedRPID: config.rpId,
         credential: {
           id: credential.credentialId.toString("base64url"),
-          publicKey: new Uint8Array(credential.publicKeyCose),
+          publicKey,
           counter: credential.signatureCounter,
           transports: credential.transports as never
         },
