@@ -4,11 +4,11 @@
 
 The ecosystem may share identity, navigation, search, messaging, notifications, media infrastructure, trust and safety, and authorised AI assistance. Each space must retain its own purpose, interface conventions, data ownership, access rules, and lifecycle.
 
-## Academic versus general media
 ## Quad versus Connect
 
 Quad is a distinct discovery space and must not be merged into Connect or treated as a renamed Connect surface. Preserve its separate purpose, navigation, feature set, interaction model, permissions, privacy settings, safety boundaries, and lifecycle. Its exact founder-approved feature contract is not present in the currently inspected canonical repository documents; recover that record before implementing Quad-specific behaviour. Do not invent a substitute concept or infer its functionality from Connect.
 
+## Academic versus general media
 
 Bud owns academic learning and student support. Board is a campus workspace inside Bud, not a news feed. It maps real school locations and gives access to school-specific resources and services. Academic lectures, seminars, podcasts, and educational recordings belong in Bud's academic media/library context.
 
