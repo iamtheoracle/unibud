@@ -3,7 +3,7 @@ import { createSignedAccountContextFromEnvironment, withSignedAccountTransaction
 import { getAppDatabasePool } from "../../../lib/server/database/postgres-pool";
 import { readSessionCookie, routeError } from "../../../lib/server/identity/http";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
-import { assertSearchProfileContext, consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
+import { assertSearchProfileContext, consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeExplicitSearchScope, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -22,7 +22,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "Choose an active profile before searching." }, { status: 409 });
     }
 
-    const classification = routeGlobalSearch(term);
+    const requestedScope = request.nextUrl.searchParams.get("scope");
+    const classification = requestedScope === null
+      ? routeGlobalSearch(term)
+      : routeExplicitSearchScope(requestedScope);
+    if (!classification) {
+      return NextResponse.json({ ok: false, error: "The requested search space is not available." }, { status: 400 });
+    }
     const context = createSignedAccountContextFromEnvironment(validation.account.id);
     const results = await withSignedAccountTransaction(
       getAppDatabasePool(),
