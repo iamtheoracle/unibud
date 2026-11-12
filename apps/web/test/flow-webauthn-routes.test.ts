@@ -10,11 +10,9 @@ test("WebAuthn registration options require exact-account password step-up and s
   const route = source("../src/app/api/flow/biometric/registration/options/route.ts");
   assert.ok(route.includes("hasSameOrigin(request)"));
   assert.ok(route.includes("getFlowAuthDatabasePool"));
-  assert.doesNotMatch(route, /getAppDatabasePool/);
+  assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
   assert.ok(route.includes("readSessionCookie(request)"));
   assert.ok(route.includes("sessions.validate(token)"));
-  assert.ok(route.includes("getFlowAuthDatabasePool"));
-  assert.doesNotMatch(route, /getAppDatabasePool/);
   assert.ok(route.includes("authentication.verifyCredentialsForAccount"));
   assert.ok(route.includes("accountId: validation.account.id"));
   assert.ok(route.includes("sessionId: validation.session.id"));
