@@ -827,3 +827,11 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **UNIBUD Web and Database:** PASSED, run `43147456659`; TypeScript, contract/security tests, lint, existing profile browser E2E, migration validation and production build passed.
 - **Oracle Arc API:** PASSED, run `43147456542`.
 - **Still outstanding:** dedicated browser E2E for the grant console and cancellation, independent-connection race tests specifically for grant approval/rejection/cancellation/expiry, grant notifications, monitoring/alert routing, accessibility review, bootstrap permission provisioning and independent security review. No bootstrap grants, production migration, production deployment or operator activation occurred.
+
+### Operations grant cancellation lock-wait hardening — migration 0046
+
+- **Implemented:** migration 0046 replaces the cancellation function so wall-clock time is captured only after the request row lock is acquired. It then revalidates request/assertion expiry, the exact persisted requester session, live grant, active authenticator and exact-session MFA step-up before cancellation.
+- **Why:** migration 0044 captured its timestamp before the row-lock wait. That allowed security state to become stale during a long wait even though the final request-state update still had a pending/expiry predicate.
+- **Test:** added database/tests/0046_operations_grant_cancellation_post_lock_revalidation.test.sql to check function ordering, SECURITY DEFINER ownership, app-role execute access and protected-table isolation. Foundation CI applies migration 0046 and runs this test.
+- **Not yet verified:** independent-connection grant races (approve/reject, approve/cancel, cancellation while step-up expires, and approval versus bounded expiry) still require a dedicated concurrency harness. The catalog contract test alone does not prove those runtime races.
+- **Release boundary:** migration is feature-branch code only. No production migration, grants, deployment or operator activation occurred.
