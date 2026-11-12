@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     if (!validation.valid) return noStoreJson({ ok: false, error: "Authentication is required." }, 401);
 
     const cryptography = createOperationsMfaCryptographyFromEnvironment();
-    const digest = cryptography.digestRecoveryCode(validation.account.id, body.code).toString("hex");
+    const digests = cryptography.digestRecoveryCodeCandidates(validation.account.id, body.code).map(digest => digest.toString("hex"));
     const assertion = createOperationsMfaAssertionFromEnvironment({
       accountId: validation.account.id,
       sessionId: validation.session.id,
@@ -55,8 +55,8 @@ export async function POST(request: NextRequest) {
     const pool = getAppDatabasePool();
     const redeemed = await withSignedSessionTransaction(pool, context, async client => {
       const result = await client.query<{ redeemed: boolean }>(
-        "SELECT public.unibud_operator_mfa_redeem_recovery_code($1,$2,$3,$4,$5) AS redeemed",
-        [digest, assertion.issuedAt, assertion.expiresAt, assertion.nonce, assertion.signature]
+        "SELECT public.unibud_operator_mfa_redeem_recovery_code_candidates($1::text[],$2,$3,$4,$5) AS redeemed",
+        [digests, assertion.issuedAt, assertion.expiresAt, assertion.nonce, assertion.signature]
       );
       return result.rows[0]?.redeemed === true;
     });
