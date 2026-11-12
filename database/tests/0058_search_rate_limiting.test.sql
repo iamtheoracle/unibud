@@ -26,18 +26,17 @@ FROM context;
 SET LOCAL ROLE unibud_app;
 DO $rate$
 DECLARE
-  v_digest BYTEA := decode(repeat('7d',32),'hex');
   i INTEGER;
   allowed BOOLEAN;
 BEGIN
   FOR i IN 1..60 LOOP
-    SELECT public.search_consume_rate_limit(v_digest) INTO allowed;
+    SELECT public.search_consume_rate_limit() INTO allowed;
     IF allowed IS DISTINCT FROM TRUE THEN
       RAISE EXCEPTION 'Search request % was denied before the configured limit',i;
     END IF;
   END LOOP;
 
-  SELECT public.search_consume_rate_limit(v_digest) INTO allowed;
+  SELECT public.search_consume_rate_limit() INTO allowed;
   IF allowed IS DISTINCT FROM FALSE THEN
     RAISE EXCEPTION 'Search request beyond the configured limit was allowed';
   END IF;
@@ -53,5 +52,15 @@ BEGIN
 END;
 $rate$;
 RESET ROLE;
+
+DO $bucket$
+DECLARE bucket_count INTEGER;
+BEGIN
+  SELECT count(*) INTO bucket_count FROM public.search_rate_limit_buckets;
+  IF bucket_count <> 1 THEN
+    RAISE EXCEPTION 'Expected exactly one opaque account bucket, found %',bucket_count;
+  END IF;
+END;
+$bucket$;
 
 ROLLBACK;
