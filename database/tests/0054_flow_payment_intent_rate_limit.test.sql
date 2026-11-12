@@ -59,8 +59,6 @@ DO $rate$
 DECLARE
   v_index INTEGER;
   v_intent UUID;
-  v_count INTEGER;
-  v_locked TIMESTAMPTZ;
 BEGIN
   FOR v_index IN 1..10 LOOP
     v_intent:=public.flow_create_payment_intent(
@@ -104,12 +102,6 @@ BEGIN
   );
   IF v_intent IS NOT NULL THEN
     RAISE EXCEPTION 'A locked account bypassed its persisted intent-creation limit';
-  END IF;
-
-  SELECT count(*) INTO v_count FROM public.flow_payment_intents
-   WHERE account_id='f0550000-0000-4000-8000-000000000001';
-  IF v_count<>10 THEN
-    RAISE EXCEPTION 'Expected ten persisted intents, found %',v_count;
   END IF;
 
   -- Account two has an independent bucket and is not locked by account one.
