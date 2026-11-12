@@ -7,6 +7,9 @@ ALTER TABLE public.flow_authorization_challenges
 ALTER TABLE public.flow_authorization_challenges
   ADD CONSTRAINT flow_authorization_challenges_challenge_length_check
   CHECK(challenge IS NULL OR octet_length(challenge)=32);
+ALTER TABLE public.flow_authorization_challenges
+  ADD CONSTRAINT flow_authorization_challenges_challenge_digest_check
+  CHECK(challenge IS NULL OR public.digest(challenge,'sha256')=challenge_digest);
 
 GRANT SELECT,UPDATE ON public.flow_payment_intents TO unibud_flow_owner;
 GRANT SELECT,INSERT,UPDATE ON public.flow_authorization_challenges TO unibud_flow_owner;
@@ -62,7 +65,7 @@ DECLARE
 BEGIN
   IF v_account IS NULL OR v_session IS NULL
      OR p_payment_intent_id IS NULL
-     OR p_auth_method NOT IN ('transaction_pin','webauthn')
+     OR p_auth_method IS NULL OR p_auth_method NOT IN ('transaction_pin','webauthn')
      OR p_challenge IS NULL OR octet_length(p_challenge)<>32
      OR p_expires_at IS NULL
      OR p_expires_at<=clock_timestamp()+interval '30 seconds'
@@ -239,6 +242,9 @@ BEGIN
      AND c.expires_at>clock_timestamp()
    FOR UPDATE;
   IF NOT FOUND THEN RETURN false; END IF;
+  IF v_challenge.challenge IS NULL OR public.digest(v_challenge.challenge,'sha256')<>v_challenge.challenge_digest THEN
+    RETURN false;
+  END IF;
 
   v_expires_epoch:=floor(extract(epoch FROM v_challenge.expires_at))::BIGINT;
   IF v_challenge.auth_method='transaction_pin' THEN
