@@ -41,7 +41,7 @@ BEGIN
    ORDER BY created_at DESC
    LIMIT 1;
   IF v_key IS NULL OR octet_length(v_key) < 32 THEN
-    RAISE EXCEPTION 'Search rate-limit key unavailable' USING ERRCODE = '55000';
+    RAISE EXCEPTION 'Search rate-limit key not configured' USING ERRCODE = '58000';
   END IF;
 
   v_digest := public.hmac(
@@ -99,7 +99,7 @@ BEGIN
    ORDER BY created_at DESC
    LIMIT 1;
   IF v_key IS NULL OR octet_length(v_key) < 32 THEN
-    RAISE EXCEPTION 'Account action rate-limit key unavailable' USING ERRCODE = '55000';
+    RAISE EXCEPTION 'Account action rate-limit key not configured' USING ERRCODE = '58000';
   END IF;
 
   v_digest := public.hmac(
