@@ -147,7 +147,6 @@ export class VerificationChallengeService {
     await this.limiter.assertAllowed({
       accountId: input.accountId,
       channel: input.channel,
-      deliveryMethod,
       purpose: input.purpose,
       targetDigest,
       now: createdAt
