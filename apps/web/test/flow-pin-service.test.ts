@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { createHash, createHmac } from "node:crypto";
 import { FlowPinService } from "../src/lib/server/flow/flow-pin-service.ts";
 import type { FlowPinRepository } from "../src/lib/server/flow/flow-pin-repository.ts";
 
@@ -58,6 +59,13 @@ test("Flow PIN enrollment stores an Argon2id verifier and verifies without retur
   assert.match(repository.lastProof?.nonce ?? "", /^[0-9a-f-]{36}$/i);
   assert.equal(repository.lastProof?.signature.length, 64);
   assert.ok((repository.lastProof?.expiresEpoch ?? 0) > Math.floor(Date.now() / 1000));
+  const proof = repository.lastProof!;
+  const payloadDigest = createHash("sha256").update(repository.pinHash!, "utf8").digest("hex");
+  const message = ["flow-pin-step-up:v1", ACCOUNT, SESSION, "pin_enroll",
+    payloadDigest, String(proof.expiresEpoch), proof.nonce].join(":");
+  const expectedSignature = createHmac("sha256", Buffer.from(process.env.UNIBUD_FLOW_PIN_STEP_UP_HMAC_KEY!, "hex"))
+    .update(message, "utf8").digest("hex");
+  assert.equal(proof.signature, expectedSignature);
   assert.deepEqual(await service.verify({ accountId: ACCOUNT, sessionId: SESSION, pin: "482917" }), {
     state: "verified"
   });
