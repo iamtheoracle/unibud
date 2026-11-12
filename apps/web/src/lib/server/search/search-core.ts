@@ -27,6 +27,25 @@ export function routeGlobalSearch(query: string): {
   return { intent, route: routeSearchIntent(intent) };
 }
 
+export class SearchProfileContextError extends Error {
+  constructor() {
+    super("The active profile is no longer authorized for Search.");
+    this.name = "SearchProfileContextError";
+  }
+}
+
+/** Re-check the session's persisted active profile against current DB membership. */
+export async function assertSearchProfileContext(
+  client: SqlClient,
+  trustedActiveProfileId: string
+): Promise<void> {
+  const result = await client.query<{ allowed: boolean }>(
+    "SELECT public.profile_authorize_action($1, unibud_private.current_account_id(), 'profile.read') AS allowed",
+    [trustedActiveProfileId]
+  );
+  if (result.rows[0]?.allowed !== true) throw new SearchProfileContextError();
+}
+
 export class SearchRateLimitExceededError extends Error {
   constructor() {
     super("Search request limit exceeded.");
