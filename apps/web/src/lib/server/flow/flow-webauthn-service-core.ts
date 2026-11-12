@@ -141,7 +141,7 @@ export class FlowWebAuthnService {
     const credential = registrationInfo?.credential;
     // Require a non-backup-eligible, single-device platform credential. A
     // synced/multi-device passkey is not accepted as a device-bound factor.
-    if (!verification.verified || !credential ||
+    if (!verification.verified || !registrationInfo || !credential ||
         registrationInfo.credentialDeviceType !== "singleDevice" ||
         registrationInfo.credentialBackedUp) {
       await this.repository.failRegistrationChallenge(
