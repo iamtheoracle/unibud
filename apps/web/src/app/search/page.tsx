@@ -9,14 +9,18 @@ export default async function SearchPage() {
   const token = (await cookies()).get(sessionCookieName())?.value;
   if (!token) redirect("/login");
 
+  let valid = false;
+  let activeProfile = false;
   try {
     const { sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
-    if (!validation.valid) redirect("/login");
-    if (!validation.session.activeProfileId) redirect("/onboarding");
+    valid = validation.valid;
+    activeProfile = validation.valid && Boolean(validation.session.activeProfileId);
   } catch {
     redirect("/login");
   }
+  if (!valid) redirect("/login");
+  if (!activeProfile) redirect("/onboarding");
 
   return (
     <main className="shell search-shell">
