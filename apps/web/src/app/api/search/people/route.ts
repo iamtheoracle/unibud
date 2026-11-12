@@ -18,6 +18,9 @@ export async function GET(request: NextRequest) {
     const { sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return NextResponse.json({ ok: false }, { status: 401 });
+    if (!validation.session.activeProfileId) {
+      return NextResponse.json({ ok: false, error: "Choose an active profile before searching." }, { status: 409 });
+    }
 
     const context = createSignedAccountContextFromEnvironment(validation.account.id);
     const profiles = await withSignedAccountTransaction(
