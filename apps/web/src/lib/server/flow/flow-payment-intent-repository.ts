@@ -61,6 +61,15 @@ export class FlowPaymentIntentRepository {
     this.pool = pool;
   }
 
+  private async withSession<T>(
+    accountId: string,
+    sessionId: string,
+    work: (client: SqlClient) => Promise<T>
+  ): Promise<T> {
+    const context = createSignedSessionContextFromEnvironment(accountId, sessionId);
+    return withSignedSessionTransaction(this.pool, context, work);
+  }
+
   async getConfirmationDetails(
     accountId: string,
     sessionId: string,
