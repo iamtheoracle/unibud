@@ -20,7 +20,7 @@ BEGIN
   IF position('requester_session_id<>v_session' IN v_source)=0
      OR position('requester_account_id<>v_actor' IN v_source)=0
      OR position('consume_operations_password_reauth_assertion' IN v_source)=0
-     OR position('current_session_has_mfa_step_up' IN v_source)=0
+     OR position('unibud_operator_has_permission' IN v_source)=0
      OR position('grant_cancel' IN v_source)=0
      OR position('state=''cancelled''' IN v_source)=0 THEN
     RAISE EXCEPTION 'Cancellation function is missing requester/session/MFA/reauth/rate-limit/state checks';
