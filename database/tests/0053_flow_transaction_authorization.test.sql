@@ -254,7 +254,7 @@ BEGIN
   END IF;
 
   BEGIN
-    EXECUTE 'SELECT payment_intent_id FROM public.flow_payment_intents';
+    EXECUTE 'SELECT recipient_ref_ciphertext FROM public.flow_payment_intents';
     RAISE EXCEPTION 'Application role can directly read Flow payment intents';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
