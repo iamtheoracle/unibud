@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-export PGHOST="\${PGHOST:-localhost}"
-export PGPORT="\${PGPORT:-5432}"
-export PGUSER="\${PGUSER:-unibud_test}"
-export PGDATABASE="\${PGDATABASE:-unibud_test}"
-: "\${PGPASSWORD:?PGPASSWORD must be set for the disposable PostgreSQL test database}"
+export PGHOST="${PGHOST:-localhost}"
+export PGPORT="${PGPORT:-5432}"
+export PGUSER="${PGUSER:-unibud_test}"
+export PGDATABASE="${PGDATABASE:-unibud_test}"
+: "${PGPASSWORD:?PGPASSWORD must be set for the disposable PostgreSQL test database}"
 
 ACCOUNT="f0520000-0000-4000-8000-000000000001"
 SESSION="f0520000-0000-4000-8000-000000000011"
@@ -21,7 +21,7 @@ INSERT INTO public.account_sessions(
  clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'
 );
 INSERT INTO public.flow_transaction_credentials(account_id,pin_hash_phc)
-VALUES('$ACCOUNT',E'\\$argon2id\\$v=19\\$m=65536,t=3,p=1\\$c2FsdA\\$dmVyaWZpZXI=');
+VALUES('$ACCOUNT',chr(36)||'argon2id'||chr(36)||'v=19'||chr(36)||'m=65536,t=3,p=1'||chr(36)||'c2FsdA'||chr(36)||'dmVyaWZpZXI=');
 
 UPDATE unibud_private.context_signing_keys SET active=false WHERE active;
 UPDATE unibud_private.session_context_signing_keys SET active=false WHERE active;
@@ -63,11 +63,13 @@ tmpdir="$(mktemp -d)"
 cleanup() { rm -rf "$tmpdir"; }
 trap cleanup EXIT
 
+pids=()
 for i in $(seq 1 10); do
   nonce="$(printf 'f0520000-0000-4000-8000-%012x' "$i")"
   run_verify "$nonce" >"$tmpdir/$i.out" &
+  pids+=("$!")
 done
-wait
+for pid in "${pids[@]}"; do wait "$pid"; done
 
 allowed_count="$(grep -hxc 't' "$tmpdir"/*.out | awk '{sum += $1} END {print sum+0}')"
 denied_count="$(grep -hxc 'f' "$tmpdir"/*.out | awk '{sum += $1} END {print sum+0}')"
