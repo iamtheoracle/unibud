@@ -19,7 +19,7 @@ type SearchSpace = "connect" | "quad" | "bud_board" | "square" | "soullync" | "r
 type SearchResponse = {
   ok: boolean;
   intent?: "academic" | "general_discovery" | "adult_dating" | "space_scoped";
-  route?: { kind: string; space?: string; parentSpace?: string; requiresAdultEligibility?: boolean; requiresIndependentConsent?: boolean };
+  route?: { kind: string; space?: string; parentSpace?: string; applicationId?: SearchSpace; requiresAdultEligibility?: boolean; requiresIndependentConsent?: boolean };
   category?: "people" | "communities" | "creators" | "institutions" | "opportunities" | "services" | "food" | "events" | "trips";
   discoveryState?: "ready" | "age_assurance_required" | "category_not_available";
   results?: SearchProfile[];
