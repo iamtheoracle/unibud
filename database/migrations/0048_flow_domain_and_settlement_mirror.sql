@@ -338,19 +338,8 @@ GRANT SELECT(payment_intent_id,flow_account_id,account_id,amount,currency,fee_am
   ON public.flow_payment_intents TO unibud_readonly;
 GRANT SELECT ON public.flow_journal_entries,public.flow_journal_postings TO unibud_app,unibud_readonly;
 
--- Only the future MoneyLead settlement-ingestion principal may append mirrored
--- journal rows. It receives no UPDATE/DELETE rights and no credential access.
-GRANT USAGE ON SCHEMA public TO unibud_flow_ingest;
-GRANT SELECT,INSERT ON public.flow_journal_entries,public.flow_journal_postings TO unibud_flow_ingest;
-GRANT SELECT ON public.flow_customer_accounts,public.flow_payment_intents TO unibud_flow_ingest;
-CREATE POLICY flow_journal_entries_ingest ON public.flow_journal_entries
-  FOR INSERT TO unibud_flow_ingest WITH CHECK(true);
-CREATE POLICY flow_journal_postings_ingest ON public.flow_journal_postings
-  FOR INSERT TO unibud_flow_ingest WITH CHECK(true);
-CREATE POLICY flow_customer_accounts_ingest_read ON public.flow_customer_accounts
-  FOR SELECT TO unibud_flow_ingest USING(true);
-CREATE POLICY flow_payment_intents_ingest_read ON public.flow_payment_intents
-  FOR SELECT TO unibud_flow_ingest USING(true);
+-- unibud_flow_ingest is reserved as a NOLOGIN role. It receives no table
+-- privileges until a verified MoneyLead event-authentication gateway exists.
 
 REVOKE UPDATE,DELETE,TRUNCATE,REFERENCES,TRIGGER ON
   public.flow_customer_accounts,public.flow_payment_intents,
