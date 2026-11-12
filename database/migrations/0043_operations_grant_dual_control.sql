@@ -144,7 +144,7 @@ AS $function$
       ]::TEXT[]
     ELSE FALSE
   END
-  AND cardinality(p_permissions)=cardinality(ARRAY(SELECT DISTINCT x FROM unnest(p_permissions) x));
+  AND cardinality(p_permissions)=cardinality(ARRAY(SELECT DISTINCT permission FROM unnest(p_permissions) AS item(permission)));
 $function$;
 ALTER FUNCTION unibud_private.operations_grant_permissions_valid(TEXT,TEXT[]) OWNER TO unibud_ops_owner;
 REVOKE ALL ON FUNCTION unibud_private.operations_grant_permissions_valid(TEXT,TEXT[]) FROM PUBLIC;
