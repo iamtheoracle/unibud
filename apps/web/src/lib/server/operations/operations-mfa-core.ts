@@ -48,6 +48,10 @@ export function verifyTotpCode(secret:Uint8Array,code:string,timestampMs:number,
   return null;
 }
 export interface OperationsMfaEncryptionKey { id: string; key: Uint8Array; }
+export interface OperationsMfaRecoveryKeyring {
+  activeKeyId: string;
+  keys: OperationsMfaEncryptionKey[];
+}
 
 export function createOperationsMfaCryptographyFromEnvironment(): OperationsMfaCryptography {
   const readKey = (name: string): Buffer => {
@@ -59,8 +63,35 @@ export function createOperationsMfaCryptographyFromEnvironment(): OperationsMfaC
   };
   const legacyEncryptionKey = readKey("UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY");
   const recoveryKey = readKey("UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY");
+  const recoveryKeyringRaw = process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEYRING_JSON?.trim();
+  let recoveryKeyring: OperationsMfaRecoveryKeyring | undefined;
+  if (recoveryKeyringRaw) {
+    let parsedRecovery: unknown;
+    try { parsedRecovery = JSON.parse(recoveryKeyringRaw); } catch { throw new Error("Operations MFA recovery keyring must be valid JSON."); }
+    if (!parsedRecovery || typeof parsedRecovery !== "object" || Array.isArray(parsedRecovery)) {
+      throw new Error("Operations MFA recovery keyring has an invalid shape.");
+    }
+    const config = parsedRecovery as { activeKeyId?: unknown; keys?: unknown };
+    if (typeof config.activeKeyId !== "string" || !Array.isArray(config.keys)
+        || config.keys.length < 1 || config.keys.length > 2) {
+      throw new Error("Operations MFA recovery keyring must contain one or two keys and an active key ID.");
+    }
+    const keys: OperationsMfaEncryptionKey[] = config.keys.map((item: unknown) => {
+      if (!item || typeof item !== "object" || Array.isArray(item)) throw new Error("Operations MFA recovery keyring entry is invalid.");
+      const entry = item as { id?: unknown; keyHex?: unknown };
+      if (typeof entry.id !== "string" || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(entry.id)
+          || typeof entry.keyHex !== "string" || !/^(?:[0-9a-f]{2}){32}$/i.test(entry.keyHex)) {
+        throw new Error("Operations MFA recovery keyring entry must contain a valid ID and 32-byte hex key.");
+      }
+      return { id: entry.id, key: Buffer.from(entry.keyHex, "hex") };
+    });
+    if (new Set(keys.map(key => key.id)).size !== keys.length || !keys.some(key => key.id === config.activeKeyId)) {
+      throw new Error("Operations MFA recovery keyring IDs must be unique and include the active key.");
+    }
+    recoveryKeyring = { activeKeyId: config.activeKeyId, keys };
+  }
   const keyringRaw = process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON?.trim();
-  if (!keyringRaw) return new OperationsMfaCryptography(legacyEncryptionKey, recoveryKey);
+  if (!keyringRaw) return new OperationsMfaCryptography(legacyEncryptionKey, recoveryKey, undefined, recoveryKeyring);
 
   let parsed: unknown;
   try { parsed = JSON.parse(keyringRaw); } catch { throw new Error("Operations MFA encryption keyring must be valid JSON."); }
@@ -89,7 +120,7 @@ export function createOperationsMfaCryptographyFromEnvironment(): OperationsMfaC
   }
   return new OperationsMfaCryptography(legacyEncryptionKey, recoveryKey, {
     activeKeyId: config.activeKeyId, keys
-  });
+  }, recoveryKeyring);
 }
 
 export interface EncryptedTotpSecret {ciphertext:string;}
@@ -102,9 +133,25 @@ export class OperationsMfaCryptography {
   private readonly recoveryKey:Buffer;
   private readonly encryptionKeys:Map<string,Buffer>;
   private readonly activeEncryptionKeyId:string|null;
-  constructor(encryptionKey:Uint8Array,recoveryKey:Uint8Array,keyring?:OperationsMfaEncryptionKeyring){
+  private readonly legacyRecoveryKey:Buffer;
+  private readonly recoveryKeys:Map<string,Buffer>;
+  private readonly activeRecoveryKeyId:string|null;
+  constructor(encryptionKey:Uint8Array,recoveryKey:Uint8Array,keyring?:OperationsMfaEncryptionKeyring,recoveryKeyring?:OperationsMfaRecoveryKeyring){
     if(encryptionKey.byteLength!==32||recoveryKey.byteLength!==32) throw new Error("Operations MFA keys must each be exactly 32 bytes.");
     this.legacyEncryptionKey=Buffer.from(encryptionKey);this.recoveryKey=Buffer.from(recoveryKey);
+    this.legacyRecoveryKey=Buffer.from(recoveryKey);
+    this.recoveryKeys=new Map();this.activeRecoveryKeyId=null;
+    if(recoveryKeyring){
+      if(!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(recoveryKeyring.activeKeyId)
+          ||recoveryKeyring.keys.length<1||recoveryKeyring.keys.length>2
+          ||new Set(recoveryKeyring.keys.map(item=>item.id)).size!==recoveryKeyring.keys.length
+          ||!recoveryKeyring.keys.some(item=>item.id===recoveryKeyring.activeKeyId)
+          ||recoveryKeyring.keys.some(item=>!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(item.id)||item.key.byteLength!==32)){
+        throw new Error("Invalid Operations MFA recovery keyring.");
+      }
+      for(const item of recoveryKeyring.keys)this.recoveryKeys.set(item.id,Buffer.from(item.key));
+      this.activeRecoveryKeyId=recoveryKeyring.activeKeyId;
+    }
     this.encryptionKeys=new Map();
     this.activeEncryptionKeyId=null;
     if(keyring){
@@ -176,12 +223,36 @@ export class OperationsMfaCryptography {
     if(!Number.isInteger(count)||count<8||count>16) throw new Error("Recovery-code count must be between 8 and 16.");
     return Array.from({length:count},()=>randomBytes(10).toString("hex").toUpperCase().match(/.{1,5}/g)!.join("-"));
   }
-  digestRecoveryCode(accountId:string,code:string):Buffer{
+  private normalizedRecoveryCode(accountId:string,code:string):string{
     if(!validAccount(accountId)||!/^[A-F0-9]{5}(?:-[A-F0-9]{5}){3}$/i.test(code)) throw new Error("Invalid Operations recovery code.");
-    return createHmac("sha256",this.recoveryKey).update("unibud:operations-recovery:v1:"+accountId+":"+code.replace(/-/g,"").toUpperCase()).digest();
+    return code.replace(/-/g,"").toUpperCase();
+  }
+  digestRecoveryCode(accountId:string,code:string):Buffer{
+    const normalized=this.normalizedRecoveryCode(accountId,code);
+    const keyId=this.activeRecoveryKeyId;
+    const key=keyId?this.recoveryKeys.get(keyId):this.legacyRecoveryKey;
+    if(!key) throw new Error("Operations MFA recovery key is unavailable.");
+    const version=keyId?"v2:"+keyId:"v1";
+    return createHmac("sha256",key).update("unibud:operations-recovery:"+version+":"+accountId+":"+normalized).digest();
+  }
+  digestRecoveryCodeCandidates(accountId:string,code:string):Buffer[]{
+    const normalized=this.normalizedRecoveryCode(accountId,code);
+    const candidates=[createHmac("sha256",this.legacyRecoveryKey)
+      .update("unibud:operations-recovery:v1:"+accountId+":"+normalized).digest()];
+    for(const [keyId,key] of this.recoveryKeys){
+      candidates.push(createHmac("sha256",key)
+        .update("unibud:operations-recovery:v2:"+keyId+":"+accountId+":"+normalized).digest());
+    }
+    return candidates;
   }
   recoveryCodeMatches(expected:Uint8Array,accountId:string,code:string):boolean{
     if(expected.byteLength!==32)return false;
-    try{return timingSafeEqual(Buffer.from(expected),this.digestRecoveryCode(accountId,code));}catch{return false;}
+    try{
+      let matched=0;
+      for(const candidate of this.digestRecoveryCodeCandidates(accountId,code)){
+        matched|=Number(timingSafeEqual(Buffer.from(expected),candidate));
+      }
+      return matched===1;
+    }catch{return false;}
   }
 }
