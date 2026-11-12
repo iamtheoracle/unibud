@@ -16,7 +16,8 @@ const PERMISSIONS = new Set([
   "operations.audit.read", "operations.accounts.support_read",
   "operations.mfa.security.request", "operations.mfa.security.approve"
 ]);
-type ActiveGrantRow = { grant_id: string; account_id: string; operator_role: string; permissions: string[]; granted_by: string | null; granted_at: Date | string; expires_at: Date | string | null };\ntype GrantRequestRow = {
+type ActiveGrantRow = { grant_id: string; account_id: string; operator_role: string; permissions: string[]; granted_by: string | null; granted_at: Date | string; expires_at: Date | string | null };
+type GrantRequestRow = {
   request_id: string; requested_action: "grant" | "revoke"; target_account_id: string;
   target_grant_id: string | null; requested_role: string | null; requested_permissions: string[] | null;
   requested_expires_at: Date | string | null; state: string; requester_account_id: string;
