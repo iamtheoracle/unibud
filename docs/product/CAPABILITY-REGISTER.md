@@ -491,3 +491,12 @@ At branch head `12510f70bbdec1300768bc54084e8656ce61d86b`, all three GitHub Acti
 ### Operations maintenance worker safety verification — 2026-11-12
 
 The worker safety-contract harness `scripts/test-operations-mfa-maintenance-worker.sh` now checks connection URI parsing, credential isolation, TLS policy, batch bounds, timeout configuration and failure propagation. Foundation CI passed this harness and the disposable least-privilege worker invocation at branch head `4cc1cd09d377933e02c0067b6c94761159db791f` (run `43136999522`); Web/Database (run `43136999469`) and Oracle Arc API (run `43136999501`) also passed. This remains CI evidence, not a production scheduler or secret-manager deployment. Monitoring, retries, alert delivery, recurring schedule, production credentials and independent security review remain outstanding.
+
+
+### Operations MFA key lifecycle and security controls — 2026-11-12
+
+Operations MFA now has checked-in support across migrations 0021–0040 for non-forgeable database actor attribution, session-bound MFA, dual-control lifecycle, bounded maintenance, a restricted non-login scheduler execution role, transactional in-app security notifications, and overlapping database HMAC verification keys. Migrations 0037–0040 have corresponding PostgreSQL tests; the true dual-control races are exercised by the independent-connection Foundation harness.
+
+The web application now supports overlapping versioned TOTP seed-encryption keys: legacy v1 ciphertext remains decryptable while configured v2 key IDs are used for new encryption. Unit coverage has been added for overlap and fail-closed unknown-key behavior. This application change is awaiting exact-head CI.
+
+**Not production-ready:** no production secret-manager binding or key rotation has been performed; recovery-code HMAC rotation is not implemented; the scheduler role is not a recurring production scheduler; in-app notifications do not establish external email/SMS delivery; monitoring/alert routing, independent security review, Issue #16 disposition, grant-management UI and audit search/export remain outstanding. PR #15 remains draft/open/unmerged.
