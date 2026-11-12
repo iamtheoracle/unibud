@@ -135,6 +135,7 @@ test("grant lifecycle concurrency harness exercises independent sessions and all
   assert.match(grantConcurrencyScript, /run_cancel "\$REQUEST_B"/);
   assert.match(grantConcurrencyScript, /exact-session MFA step-up expired/);
   assert.match(grantConcurrencyScript, /maintain_operations_mfa_ephemeral_state/);
+  assert.match(grantConcurrencyScript, /request_expired.*account_id IN/s);
   assert.match(grantConcurrencyScript, /FOR UPDATE/);
   assert.match(grantConcurrencyScript, /skip the locked request/i);
   assert.match(workflow, /test-operations-grant-concurrency\.sh/);
