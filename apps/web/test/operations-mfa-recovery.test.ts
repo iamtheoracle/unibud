@@ -18,7 +18,7 @@ test("recovery redemption is same-origin and tied to the validated account/sessi
 });
 
 test("recovery code is keyed-digested server-side and redeemed once by PostgreSQL", () => {
-  assert.match(route, /digestRecoveryCodeCandidates\\(validation\\.account\\.id, body\\.code\\)/);\n  assert.match(route, /unibud_operator_mfa_redeem_recovery_code_candidates/);
+  assert.match(route, /digestRecoveryCodeCandidates\(validation\.account\.id, body\.code\)/);
   assert.match(route, /unibud_operator_mfa_redeem_recovery_code_candidates/);
   assert.match(route, /unibud_operator_mfa_record_failed_attempt/);
   assert.match(route, /Cache-Control.*no-store/);
