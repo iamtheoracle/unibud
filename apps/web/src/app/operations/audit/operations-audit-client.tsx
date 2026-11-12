@@ -109,6 +109,6 @@ export default function OperationsAuditClient() {
           <tbody>{events.map(item => <tr key={item.event_id}><td><time dateTime={item.occurred_at}>{new Date(item.occurred_at).toLocaleString()}</time></td><td>{item.permission}</td><td>{item.outcome}</td><td>{item.actor_account_id ?? "—"}</td><td>{item.session_id ?? "—"}</td><td>{item.request_id}</td></tr>)}</tbody></table></div>}
       {cursor && <button className="mfa-button" type="button" disabled={loading} onClick={() => void search(true)}>{loading ? "Loading…" : "Load more"}</button>}
     </section>
-    <p className="mfa-small"><Link href="/operations/security/mfa">Return to authenticator security</Link></p>
+    <p className="mfa-small"><Link href="/operations/security/mfa">Authenticator security</Link> · <Link href="/operations/grants">Operator grants</Link></p>
   </main>;
 }
