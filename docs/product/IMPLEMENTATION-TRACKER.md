@@ -952,7 +952,7 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Payment intent payload fields are immutable and lifecycle transitions are constrained. No application procedure/API can yet create, authorize, submit or settle an intent.
 - `unibud_flow_ingest` is NOLOGIN and intentionally has no table privileges until a verified MoneyLead event-authentication gateway exists.
 - MoneyLead repository lookup returned 404 during this pass. No integration endpoint, API credentials, provider, issuer or settlement capability was assumed.
-- **Status:** schema and test added; PostgreSQL CI has not yet completed on this branch. Not merged, not deployed, and not operational.
+- **Status:** schema and test added; exact-head CI PASSED at `66d490e4b908f0392fb648880f9a6f8d5165a74a`: Foundation `43199174906`, Web/Database `43199174820`, Oracle Arc API `43199174775`. PR #19 remains draft/open/unmerged. Not deployed and not operational.
 
 ### Flow next dependencies
 
