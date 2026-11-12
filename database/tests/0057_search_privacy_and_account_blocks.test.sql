@@ -55,6 +55,7 @@ DECLARE visible_d INTEGER;
 DECLARE visible_e INTEGER;
 DECLARE audit_count INTEGER;
 DECLARE viewer_ready BOOLEAN;
+DECLARE listed_blocks INTEGER;
 BEGIN
  SELECT public.account_discovery_viewer_verified() INTO viewer_ready;
  IF viewer_ready IS DISTINCT FROM TRUE THEN
@@ -82,6 +83,12 @@ BEGIN
     AND action='account.block.create' AND outcome='success';
  IF audit_count <> 1 THEN
   RAISE EXCEPTION 'Block creation was not audited exactly once';
+ END IF;
+ SELECT count(*) INTO listed_blocks
+   FROM public.account_list_blocked_profiles()
+  WHERE handle='discover-b';
+ IF listed_blocks <> 1 THEN
+  RAISE EXCEPTION 'Blocker could not list its own active blocked profile';
  END IF;
 
  BEGIN
@@ -189,6 +196,7 @@ SET LOCAL ROLE unibud_app;
 DO $unblock$
 DECLARE visible_b INTEGER;
 DECLARE audit_count INTEGER;
+DECLARE listed_blocks INTEGER;
 BEGIN
  IF public.account_unblock_handle('discover-b') IS DISTINCT FROM TRUE THEN
   RAISE EXCEPTION 'Account A could not revoke its block';
@@ -196,6 +204,12 @@ BEGIN
  SELECT count(*) INTO visible_b FROM public.profiles WHERE handle_normalized='discover-b';
  IF visible_b <> 1 THEN
   RAISE EXCEPTION 'Unblocked public account did not return to discovery';
+ END IF;
+ SELECT count(*) INTO listed_blocks
+   FROM public.account_list_blocked_profiles()
+  WHERE handle='discover-b';
+ IF listed_blocks <> 0 THEN
+  RAISE EXCEPTION 'Revoked block remained in blocked-profile listing';
  END IF;
  SELECT count(*) INTO audit_count FROM public.security_audit_events
   WHERE actor_account_id='51000000-0000-4000-8000-000000000001'
