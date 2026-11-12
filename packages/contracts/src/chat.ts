@@ -6,9 +6,11 @@ import type { SessionId } from "./session.ts";
  * universal chat features or authorize access to any conversation.
  * Riff and SouLync retain independent product policy and lifecycle controls.
  */
+export type ChatSpaceKey = "bud" | "connect";
+
 export interface ConversationScope {
   applicationId: ApplicationId;
-  spaceKey: string;
+  spaceKey: ChatSpaceKey;
   resourceType: string;
   resourceId: ResourceId;
 }
@@ -41,6 +43,59 @@ export interface MessageBoundary {
   authorAccountId: AccountId;
   authorProfileId: ProfileId;
   createdAt: string;
+}
+
+/**
+ * Facts are constructed by a trusted server adapter after loading persisted
+ * account, session, profile, conversation and space-policy records. Never
+ * accept this object from a client or treat this pure evaluator as auth proof.
+ */
+export interface ChatAuthorizationFacts {
+  verifiedSession: boolean;
+  activeAccount: boolean;
+  activeProfileAuthorized: boolean;
+  conversationParticipant: boolean;
+  /** Includes the exact space's contact, membership and resource rules. */
+  spacePolicyAllowed: boolean;
+  /** False if either participant blocks the other. */
+  blockPolicyAllowed: boolean;
+  moderationAllowed: boolean;
+}
+
+export type ChatAuthorizationReason =
+  | "session_unverified"
+  | "account_inactive"
+  | "profile_not_authorized"
+  | "not_a_conversation_participant"
+  | "space_policy_denied"
+  | "blocked"
+  | "moderation_denied";
+
+export type ChatAuthorizationDecision =
+  | { allowed: true }
+  | { allowed: false; reason: ChatAuthorizationReason };
+
+/**
+ * Fail-closed common gate for Bud and Connect only. Riff and SouLync must use
+ * their own separately authorized adapters; they cannot opt into this shared
+ * contract by setting additional booleans on a generic request.
+ */
+export function evaluateChatAccess(
+  spaceKey: ChatSpaceKey,
+  facts: ChatAuthorizationFacts
+): ChatAuthorizationDecision {
+  if (spaceKey !== "bud" && spaceKey !== "connect") {
+    return { allowed: false, reason: "space_policy_denied" };
+  }
+  if (!facts.verifiedSession) return { allowed: false, reason: "session_unverified" };
+  if (!facts.activeAccount) return { allowed: false, reason: "account_inactive" };
+  if (!facts.activeProfileAuthorized) return { allowed: false, reason: "profile_not_authorized" };
+  if (!facts.conversationParticipant) return { allowed: false, reason: "not_a_conversation_participant" };
+  if (!facts.spacePolicyAllowed) return { allowed: false, reason: "space_policy_denied" };
+  if (!facts.blockPolicyAllowed) return { allowed: false, reason: "blocked" };
+  if (!facts.moderationAllowed) return { allowed: false, reason: "moderation_denied" };
+
+  return { allowed: true };
 }
 
 /**

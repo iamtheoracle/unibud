@@ -4,9 +4,20 @@ import type { ApplicationId, ResourceId } from "./identity.ts";
  * Search intent is classified by trusted server logic. A client-provided
  * destination or intent is only a hint and must never grant access.
  */
+export type ConnectSearchCategory =
+  | "people"
+  | "communities"
+  | "creators"
+  | "institutions"
+  | "opportunities"
+  | "services"
+  | "food"
+  | "events"
+  | "trips";
+
 export type SearchIntent =
   | { kind: "academic" }
-  | { kind: "general_discovery" }
+  | { kind: "general_discovery"; category: ConnectSearchCategory }
   | { kind: "adult_dating" }
   | { kind: "space_scoped"; applicationId: ApplicationId; resourceId?: ResourceId };
 
@@ -25,7 +36,13 @@ export type SearchRoute =
   | { kind: "space"; space: "bud_board"; parentSpace: "bud" }
   | { kind: "space"; space: "connect" }
   | { kind: "space"; space: "soullync"; requiresAdultEligibility: true; requiresIndependentConsent: true }
-  | { kind: "scoped"; applicationId: ApplicationId; resourceId?: ResourceId };
+  | {
+      kind: "scoped";
+      applicationId: ApplicationId;
+      resourceId?: ResourceId;
+      requiresAdultEligibility?: true;
+      requiresIndependentConsent?: true;
+    };
 
 /**
  * Routes a server-classified intent to its product space. This is navigation
@@ -50,7 +67,10 @@ export function routeSearchIntent(intent: SearchIntent): SearchRoute {
       return {
         kind: "scoped",
         applicationId: intent.applicationId,
-        ...(intent.resourceId ? { resourceId: intent.resourceId } : {})
+        ...(intent.resourceId ? { resourceId: intent.resourceId } : {}),
+        ...(intent.applicationId === "soullync"
+          ? { requiresAdultEligibility: true as const, requiresIndependentConsent: true as const }
+          : {})
       };
   }
 }

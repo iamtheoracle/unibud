@@ -237,3 +237,43 @@ footer { padding: 42px 0 30px; color: var(--muted); font-size: 12px; }
 .mfa-audit-table caption{padding:0 0 10px;color:var(--ink);font-size:12px;font-weight:700;text-align:left}
 .mfa-notification-list button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.mfa-shell *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
+
+.search-shell{padding-bottom:40px}
+.search-page{max-width:760px;margin:0 auto;padding:84px 0 54px}
+.search-page>h1{margin:16px 0 12px;font-size:clamp(46px,8vw,76px);line-height:.98;letter-spacing:-.07em}
+.search-intro{max-width:640px;color:var(--muted);font-size:15px;line-height:1.75}
+.search-form{margin:34px 0 22px;padding:22px;border:1px solid var(--line);border-radius:15px;background:var(--surface)}
+.search-form>label{display:block;margin-bottom:11px;font-size:12px;font-weight:750}
+.search-input-row{display:flex;gap:9px}
+.search-input-row input{min-width:0;flex:1;border:1px solid var(--line);border-radius:9px;padding:14px;font:inherit;color:var(--ink);background:#fff}
+.search-input-row input:focus{outline:2px solid rgba(49,92,72,.2);border-color:var(--accent)}
+.search-form>select{display:block;width:100%;max-width:100%;margin:0 0 12px;border:1px solid var(--line);border-radius:9px;padding:13px 14px;font:inherit;color:var(--ink);background:#fff}
+.search-form>select:focus{outline:2px solid rgba(49,92,72,.2);border-color:var(--accent)}
+.search-submit{border:0;border-radius:9px;padding:0 20px;background:var(--accent);color:#fff;font-size:13px;font-weight:750;cursor:pointer}
+.search-submit:disabled{opacity:.55;cursor:not-allowed}
+.search-hint{margin:10px 0 0;color:var(--muted);font-size:11px;line-height:1.5}
+.search-results{min-height:90px}
+.search-message{margin:14px 0;padding:20px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--muted);font-size:13px;line-height:1.7}
+.search-message h2{margin:8px 0;font-size:20px;letter-spacing:-.035em;color:var(--ink)}
+.search-message p:last-child{margin-bottom:0}
+.search-error{border-color:#e7c9c5;background:#fff8f7;color:#9b3028}
+.search-result-label{margin:25px 0 12px}
+.search-result-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.search-result{display:flex;align-items:center;gap:13px;padding:13px;border:1px solid var(--line);border-radius:11px;background:#fff}
+.search-result-avatar{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:50%;background:#e9f0eb;color:var(--accent);font-weight:750}
+.search-result-copy{display:grid;gap:3px;min-width:0;flex:1}
+.search-result-copy strong{font-size:13px}
+.search-result-copy span{color:var(--muted);font-size:11px}
+.search-result-kind{color:var(--muted);font-size:10px;text-transform:capitalize}
+@media(max-width:520px){.search-page{padding:60px 0 38px}.search-form{padding:16px}.search-input-row{flex-direction:column}.search-submit{min-height:44px}.search-result-kind{display:none}}
+
+.search-result-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.search-result-actions span{max-width:190px;color:var(--muted);font-size:10px;line-height:1.4}
+.search-result-actions button,.blocked-load,.blocked-unblock{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#f6f8f6;color:var(--ink);font-size:11px;font-weight:700;cursor:pointer}
+.search-result-actions button:first-of-type{background:#f4eeed;color:#8e3c35;border-color:#ead8d5}
+.search-result-actions button:disabled,.blocked-load:disabled,.blocked-unblock:disabled{opacity:.55;cursor:not-allowed}
+.blocked-management{margin-top:44px;padding-top:26px;border-top:1px solid var(--line)}
+.blocked-heading{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:15px}
+.blocked-heading h2{margin:7px 0 0;font-size:22px;letter-spacing:-.04em}
+.blocked-unblock{background:#eef4ef;color:var(--accent)}
+@media(max-width:620px){.search-result{flex-wrap:wrap}.search-result-actions{width:100%;justify-content:flex-start;margin-left:53px}.blocked-heading{align-items:flex-start;flex-direction:column}}
