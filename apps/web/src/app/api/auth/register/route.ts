@@ -10,6 +10,7 @@ export async function POST(request:NextRequest){
  const channel=body.channel;
  const identifier=body.identifier;
  const password=body.password;
+ const deliveryMethod=body.deliveryMethod;
  if((channel!=="email"&&channel!=="phone")||typeof identifier!=="string"||typeof password!=="string"||
    (deliveryMethod!==undefined && !["email","sms","whatsapp","rcs"].includes(String(deliveryMethod))) ||
    (channel==="email" && deliveryMethod!==undefined && deliveryMethod!=="email") ||
