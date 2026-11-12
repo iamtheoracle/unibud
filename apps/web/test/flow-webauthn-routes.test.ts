@@ -32,7 +32,9 @@ test("WebAuthn registration verification is bound to active persisted session an
   assert.ok(service.includes("verifyRegistrationResponse"));
   assert.ok(service.includes("UNIBUD_WEBAUTHN_RP_ID"));
   assert.ok(service.includes("UNIBUD_WEBAUTHN_ORIGIN"));
-  assert.ok(service.includes("flow-step-up:v1"));
+  assert.ok(service.includes("createFlowStepUpProof"));
+  const stepUp = source("../src/lib/server/flow/flow-step-up-core.ts");
+  assert.ok(stepUp.includes("flow-step-up:v1"));
   assert.doesNotMatch(route, /body\.(accountId|sessionId|role|approved|authorized)/);
 });
 
