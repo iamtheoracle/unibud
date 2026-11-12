@@ -946,22 +946,21 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 ## Current Flow financial foundation — 2026-11-12
 
 - Branch: `foundation/flow-domain-ledger-v1`, based on the audit branch for PR #18.
-- Migrations `0048_flow_domain_and_settlement_mirror.sql` through `0050_flow_authorization_binding_constraints.sql` introduce Flow-owned account mapping, payment intents/idempotency, PIN credential storage contract, WebAuthn public-key credential storage, transaction authorization challenge records, rate-limit state, an immutable balanced settlement-mirror journal, a session-bound intent-creation procedure with concurrent idempotency enforcement, and composite foreign keys binding authorization challenges to the exact account-owned session and immutable intent digest.
+- Migrations `0048_flow_domain_and_settlement_mirror.sql` through `0051_flow_transaction_pin_security.sql` introduce Flow-owned account mapping, payment intents/idempotency, PIN credential storage, WebAuthn public-key credential storage, transaction authorization challenge records, database-backed PIN rate limits, an immutable balanced settlement-mirror journal, a session-bound intent-creation procedure with concurrent idempotency enforcement, exact-session/digest challenge constraints, and one-time password-step-up assertion storage.
 - PostgreSQL RLS binds every Flow row to the signed authenticated UNIBUD account. Direct app-table access is read-only and column-limited; the app role can invoke only the narrow session-bound intent-creation procedure. Sensitive PIN/biometric/challenge material is not exposed to the app SQL role.
 - Journal entries require at least two postings and equal debit/credit totals at deferred constraint evaluation. Journal records cannot be updated or deleted. They mirror verified MoneyLead settlement events and are not a spendable balance source.
 - Payment intent payload fields are immutable and lifecycle transitions are constrained. Migration 0049 and the authenticated `/api/flow/payment-intents` route can create an instruction with database-enforced idempotency; migration 0050 binds authorization challenges to the exact persisted session and transaction digest. No API can authorize, submit or settle an instruction yet.
 - `unibud_flow_ingest` is NOLOGIN and intentionally has no table privileges until a verified MoneyLead event-authentication gateway exists.
 - MoneyLead repository lookup returned 404 during this pass. No integration endpoint, API credentials, provider, issuer or settlement capability was assumed.
-- **Status:** schema, idempotent database procedure, encrypted recipient handling, authenticated payment-intent route and independent-session idempotency harness are added. Exact-head CI PASSED at `e74d966c125737321f0da30a4d13d6ab4cba478c`: Foundation `43201302301`, Web/Database `43201302659`, Oracle Arc API `43201302321`. PR #19 remains draft/open/unmerged. Not deployed and not operational.
+- **Implemented in current branch:** schema and session-bound idempotent payment-intent procedure; encrypted recipient handling and authenticated payment-intent route; Argon2id PIN enrollment, verification and password-reauthenticated recovery; database-backed attempt counters/lockouts; single-use server HMAC step-up assertions bound to account/session/action/verifier digest; and audited PIN lifecycle procedures. Exact-head CI for migrations 0051 and the expanded web service is pending. PR #19 remains draft/open/unmerged. Not deployed and not operational.
 
 ### Flow next dependencies
 
-1. Complete exact-head CI for the current branch head, including migrations 0048–0050, the SQL invariants, the independent-session idempotency race, web tests and build.
-2. Add database-backed intent-creation rate limiting and abuse controls.
-3. Implement Argon2id PIN enrollment, verification, recovery, lockout and audited reset.
-4. Implement WebAuthn registration/assertion verification with origin/RP-ID validation, challenge binding and replay-resistant signature counters. No biometric template collection.
-5. Implement authorization-challenge creation and one-time consumption. PIN/WebAuthn proof must bind the exact recipient, amount, currency, fees, source Flow account, payment-intent reference, expiry and persisted session.
-6. Implement lifecycle/status procedures for authorization, submission, acceptance, settlement, failure, cancellation, refund and reversal. Settlement must require verified MoneyLead evidence.
-7. Inspect the MoneyLead repository and authoritative ledger when access is restored; define a scoped integration contract before enabling internal transfers or settlement ingestion.
-8. Add external provider, issuer and settlement adapters only after contracts, legal permissions, credentials, callback verification and reconciliation evidence are verified.
-
+1. Complete exact-head CI for migrations 0051, the PostgreSQL PIN security test, Argon2id service tests, authenticated route tests, typecheck, lint, browser E2E and production build; fix any failures.
+2. Implement transaction-bound authorization challenge creation and one-time consumption. PIN verification must bind to the exact recipient, amount, currency, fees, source Flow account, intent reference, expiry and persisted session; it must not yield a reusable approval token.
+3. Implement WebAuthn registration/assertion verification with strict origin/RP-ID checks, credential ownership, user-verification flags and replay-resistant signature counters.
+4. Implement payment-intent lifecycle transition procedures and status APIs. Settlement requires verified MoneyLead evidence; AI/plugins cannot authorize or post.
+5. Add payment-intent creation rate limiting and risk-aware abuse controls.
+6. Inspect the MoneyLead repository and authoritative ledger when access is restored; define a scoped integration contract before enabling internal transfers or settlement ingestion.
+7. Add external provider, issuer and settlement adapters only after contracts, legal permissions, credentials, callback verification and reconciliation evidence are verified.
+8. Add user-facing security notifications for PIN enrollment/recovery and suspicious verification activity.
