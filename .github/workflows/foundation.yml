@@ -76,6 +76,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0039_operations_mfa_security_notifications.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0040_signing_key_rotation_overlap.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0041_operations_mfa_recovery_key_rotation.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0042_operations_audit_search_export.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -119,6 +120,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0039_operations_mfa_security_notifications.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0040_signing_key_rotation_overlap.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0041_operations_mfa_recovery_key_rotation.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0042_operations_audit_search_export.test.sql
       - name: Verify concurrent Operations dual-control terminal transitions
         env:
           PGPASSWORD: unibud_test_only
