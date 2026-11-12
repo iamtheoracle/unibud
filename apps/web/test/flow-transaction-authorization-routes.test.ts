@@ -8,6 +8,8 @@ function source(path: string): string {
 
 test("confirmation details are read from the authenticated server-side intent", () => {
   const route = source("../src/app/api/flow/payment-intents/[paymentIntentId]/confirmation/route.ts");
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
   assert.ok(route.includes("hasSameOrigin(request)"));
   assert.ok(route.includes("sessions.validate(token)"));
   assert.ok(route.includes("validation.account.id"));
@@ -18,6 +20,8 @@ test("confirmation details are read from the authenticated server-side intent", 
 
 test("PIN authorization requires the reviewed immutable digest and PIN, not client payment fields", () => {
   const route = source("../src/app/api/flow/payment-intents/[paymentIntentId]/authorize-pin/route.ts");
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
   assert.ok(route.includes("hasSameOrigin(request)"));
   assert.ok(route.includes("sessions.validate(token)"));
   assert.ok(route.includes("confirmationDigest: body.confirmationDigest"));
@@ -28,7 +32,11 @@ test("PIN authorization requires the reviewed immutable digest and PIN, not clie
 
 test("WebAuthn transaction authorization uses one-time challenge and exact confirmation digest", () => {
   const options = source("../src/app/api/flow/payment-intents/[paymentIntentId]/authorize-webauthn/options/route.ts");
+  assert.ok(options.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(options, /getAuthDatabasePool|getAppDatabasePool/);
   const verify = source("../src/app/api/flow/payment-intents/authorize-webauthn/verify/route.ts");
+  assert.ok(verify.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(verify, /getAuthDatabasePool|getAppDatabasePool/);
   assert.ok(options.includes("confirmationDigest: body.confirmationDigest"));
   assert.ok(options.includes("createWebAuthnAuthorizationOptions"));
   assert.ok(options.includes("sessions.validate(token)"));
@@ -52,6 +60,8 @@ test("authorization service binds payload digest to challenge, intent digest, me
 
 test("payment cancellation is account/session scoped and only a server lifecycle procedure can apply it", () => {
   const route = source("../src/app/api/flow/payment-intents/[paymentIntentId]/cancel/route.ts");
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
   assert.ok(route.includes("hasSameOrigin(request)"));
   assert.ok(route.includes("sessions.validate(token)"));
   assert.ok(route.includes("validation.account.id"));
