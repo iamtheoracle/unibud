@@ -228,3 +228,10 @@ The complete code-change validation checkpoint at commit `308bfe4a92c92d5b978443
 - UNIBUD Web and Database `43013208441`: **PASSED**. PostgreSQL migration validation, TypeScript typecheck, contract tests, server security tests, lint, profile browser E2E and production build all passed.
 
 The branch subsequently advanced through documentation-only commits to `c0d65a273a025376bd144e184018a8af40e1aa20`. Fresh CI for that documentation-only head was queued/in progress when this addendum was prepared. The three successful runs above validate the code-change head; they do not establish deployment or production verification.
+
+ 
+## OTP delivery transport decision — 2026-11-12
+
+DEC-021 approves user-selectable OTP delivery: email identities use email; phone identities may request SMS, WhatsApp or RCS. The account identity remains the verified email/E.164 phone, independent of delivery transport. Signup and recovery expose the preference and server-side verification services validate it before passing it to the authenticated verification gateway. Existing phone flows default to SMS.
+
+This does not assert that WhatsApp or RCS delivery is live. The configured gateway/provider contract, sender/template approval, consent, device/carrier eligibility, delivery receipts, retries, fallback policy and production credentials remain unverified. No provider-specific API or credentials are exposed to clients. See the implementation tracker and FIRST-PARTY-AUTHENTICATION.md.
