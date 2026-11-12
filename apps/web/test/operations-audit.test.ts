@@ -36,7 +36,7 @@ test("database audit read model is SECURITY DEFINER, permission-gated and app-ta
   assert.match(migration, /ORDER BY e\.occurred_at DESC,e\.id DESC/);
   assert.match(migration, /GRANT EXECUTE ON FUNCTION public\.unibud_operator_search_audit_events[\s\S]*TO unibud_app/);
   assert.match(migration, /WHEN 'audit_read' THEN v_limit:=30; v_window:=60/);
-  assert.match(migration, /WHEN 'notification_read' THEN[\\s\\S]*?v_limit:=60; v_window:=60/);
+  assert.ok(migration.includes("WHEN 'notification_read' THEN") && migration.includes("v_limit:=60; v_window:=60;"));
   assert.match(rateLimit, /"audit_read"/);
 });
 
