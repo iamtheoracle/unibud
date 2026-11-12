@@ -334,22 +334,74 @@ BEGIN
 END
 $function$;
 
+CREATE FUNCTION public.flow_cancel_payment_intent(p_payment_intent_id UUID)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+DECLARE
+  v_account UUID:=unibud_private.current_account_id();
+  v_session UUID:=unibud_private.current_session_id();
+  v_status TEXT;
+BEGIN
+  IF v_account IS NULL OR v_session IS NULL OR p_payment_intent_id IS NULL THEN
+    RETURN false;
+  END IF;
+  SELECT i.status INTO v_status
+    FROM public.flow_payment_intents i
+   WHERE i.account_id=v_account AND i.payment_intent_id=p_payment_intent_id
+   FOR UPDATE;
+  IF NOT FOUND THEN RETURN false; END IF;
+  IF v_status='cancelled' THEN RETURN true; END IF;
+  IF v_status NOT IN ('created','awaiting_authorization','authorized') THEN
+    INSERT INTO public.security_audit_events(
+      id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
+      request_id,session_reference,reason_code,event_data
+    ) VALUES(gen_random_uuid(),v_account,'flow','flow.payment_intent.cancel','denied',
+      'flow_payment_intent',p_payment_intent_id,gen_random_uuid()::TEXT,v_session::TEXT,
+      'cancellation_not_allowed_after_submission','{}'::jsonb);
+    RETURN false;
+  END IF;
+
+  UPDATE public.flow_authorization_challenges
+     SET failed_at=clock_timestamp()
+   WHERE account_id=v_account AND payment_intent_id=p_payment_intent_id
+     AND consumed_at IS NULL AND failed_at IS NULL;
+  UPDATE public.flow_payment_intents
+     SET status='cancelled',cancelled_at=clock_timestamp()
+   WHERE account_id=v_account AND payment_intent_id=p_payment_intent_id
+     AND status IN ('created','awaiting_authorization','authorized');
+
+  INSERT INTO public.security_audit_events(
+    id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
+    request_id,session_reference,event_data
+  ) VALUES(gen_random_uuid(),v_account,'flow','flow.payment_intent.cancel','success',
+    'flow_payment_intent',p_payment_intent_id,gen_random_uuid()::TEXT,v_session::TEXT,
+    jsonb_build_object('previous_status',v_status));
+  RETURN true;
+END;
+$function$;
+
 ALTER FUNCTION public.flow_get_payment_intent_confirmation_details(UUID) OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_create_authorization_challenge(UUID,TEXT,BYTEA,TIMESTAMPTZ) OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_get_authorization_challenge(UUID) OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_fail_authorization_challenge(UUID) OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT)
   OWNER TO unibud_flow_owner;
+ALTER FUNCTION public.flow_cancel_payment_intent(UUID) OWNER TO unibud_flow_owner;
 
 REVOKE ALL ON FUNCTION public.flow_get_payment_intent_confirmation_details(UUID),
   public.flow_create_authorization_challenge(UUID,TEXT,BYTEA,TIMESTAMPTZ),
   public.flow_get_authorization_challenge(UUID),public.flow_fail_authorization_challenge(UUID),
-  public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT)
+  public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT),
+  public.flow_cancel_payment_intent(UUID)
   FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.flow_get_payment_intent_confirmation_details(UUID),
   public.flow_create_authorization_challenge(UUID,TEXT,BYTEA,TIMESTAMPTZ),
   public.flow_get_authorization_challenge(UUID),public.flow_fail_authorization_challenge(UUID),
-  public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT)
+  public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT),
+  public.flow_cancel_payment_intent(UUID)
   TO unibud_app;
 
 COMMENT ON FUNCTION public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT) IS
