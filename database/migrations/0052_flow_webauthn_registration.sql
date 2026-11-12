@@ -2,7 +2,6 @@
 -- This stores platform public keys only; biometric templates remain on devices.
 BEGIN;
 
-GRANT SELECT,INSERT,UPDATE ON public.flow_webauthn_registration_challenges TO unibud_flow_owner;
 GRANT SELECT,INSERT ON public.flow_biometric_credentials TO unibud_flow_owner;
 GRANT INSERT ON public.security_audit_events TO unibud_flow_owner;
 GRANT EXECUTE ON FUNCTION public.flow_consume_flow_rate_limit(TEXT) TO unibud_flow_owner;
@@ -33,6 +32,7 @@ CREATE POLICY flow_webauthn_registration_challenges_owner_scope
 CREATE UNIQUE INDEX flow_webauthn_one_active_registration_per_session
   ON public.flow_webauthn_registration_challenges(account_id,session_id)
   WHERE consumed_at IS NULL AND failed_at IS NULL;
+GRANT SELECT,INSERT,UPDATE ON public.flow_webauthn_registration_challenges TO unibud_flow_owner;
 REVOKE ALL ON public.flow_webauthn_registration_challenges
   FROM PUBLIC,unibud_app,unibud_readonly,unibud_migrator,unibud_flow_ingest;
 
