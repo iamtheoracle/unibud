@@ -224,7 +224,7 @@ export class FlowTransactionAuthorizationService {
       state: "options",
       authorizationId: challenge.authorizationId,
       options,
-      confirmation: { ...confirmation, expiresAt: challenge.expiresAt }
+      confirmation: { ...confirmation, status: "awaiting_authorization", expiresAt: challenge.expiresAt }
     };
   }
 
