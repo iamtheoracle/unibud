@@ -61,7 +61,10 @@ export async function POST(request: NextRequest) {
     }, 409);
     return reply({ ok: true, state: "pin_enrolled" }, 201);
   } catch (error) {
-    if (error instanceof Error && /transaction PIN|UNIBUD_(?:FLOW_|DB_)/i.test(error.message)) {
+    if (error instanceof Error && /UNIBUD_(?:FLOW_|DB_)/.test(error.message)) {
+      return reply({ ok: false, error: "PIN enrollment is not configured." }, 503);
+    }
+    if (error instanceof Error && /transaction PIN/i.test(error.message)) {
       return reply({ ok: false, error: "The PIN request could not be completed." }, 400);
     }
     return routeError(error);
