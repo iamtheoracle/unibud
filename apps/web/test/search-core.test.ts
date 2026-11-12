@@ -29,8 +29,8 @@ test("people search uses a bound term and returns only safe public profile field
     release() {}
   };
 
-  const results = await searchPublicProfiles(client, "ada");
-  assert.deepEqual(parameters, ["ada"]);
+  const results = await searchPublicProfiles(client, "ada", "people");
+  assert.deepEqual(parameters, ["ada", "personal"]);
   assert.match(statement, /p\.visibility = 'public'/);
   assert.match(statement, /p\.status = 'active'/);
   assert.match(statement, /account_interaction_blocked/);
@@ -141,4 +141,43 @@ test("Search denies a profile whose membership has been revoked", async () => {
     assertSearchProfileContext(client, "52000000-0000-4000-8000-000000000001"),
     { name: "SearchProfileContextError" }
   );
+});
+
+
+test("Connect category classification prevents non-profile categories from being treated as people", () => {
+  assert.deepEqual(routeGlobalSearch("Find local events").intent, {
+    kind: "general_discovery",
+    category: "events"
+  });
+  assert.deepEqual(routeGlobalSearch("Find a photographer").intent, {
+    kind: "general_discovery",
+    category: "services"
+  });
+  assert.deepEqual(routeGlobalSearch("Find a job").intent, {
+    kind: "general_discovery",
+    category: "opportunities"
+  });
+  assert.deepEqual(routeGlobalSearch("Find a local community").intent, {
+    kind: "general_discovery",
+    category: "communities"
+  });
+});
+
+test("Connect people, creator and community profile searches use distinct profile kinds", async () => {
+  const seen: unknown[][] = [];
+  const client: SqlClient = {
+    async query<Row = unknown>(_sql: string, values?: readonly unknown[]) {
+      seen.push([...(values ?? [])]);
+      return { rows: [] as Row[] };
+    },
+    release() {}
+  };
+  await searchPublicProfiles(client, "ada", "people");
+  await searchPublicProfiles(client, "ada", "creators");
+  await searchPublicProfiles(client, "ada", "communities");
+  assert.deepEqual(seen, [
+    ["ada", "personal"],
+    ["ada", "creator"],
+    ["ada", "page_community"]
+  ]);
 });
