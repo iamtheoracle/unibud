@@ -224,16 +224,11 @@ BEGIN
   END IF;
   PERFORM public.flow_fail_authorization_challenge(v_authorization);
 
-  SELECT status,authorized_at INTO v_status,v_authorized_at
-    FROM public.flow_payment_intents WHERE payment_intent_id=v_intent_webauthn;
-  IF v_status<>'authorized' OR v_authorized_at IS NULL THEN
-    RAISE EXCEPTION 'Authorization did not produce the expected authorized lifecycle state';
-  END IF;
   SELECT signature_counter INTO v_counter
-    FROM public.flow_biometric_credentials
-   WHERE account_id='f0540000-0000-4000-8000-000000000001'
-     AND credential_id=v_credential_id;
+    FROM public.flow_webauthn_list_credentials()
+   WHERE credential_id=v_credential_id;
   IF v_counter<>1 THEN RAISE EXCEPTION 'WebAuthn signature counter was not atomically advanced'; END IF;
+  PERFORM set_config('test.flow_authorized_intent_id',v_intent_webauthn::TEXT,true);
 
   -- Another account cannot read the intent confirmation or consume its challenge.
   v_context_nonce:=gen_random_uuid()::TEXT;
@@ -271,5 +266,19 @@ BEGIN
 END
 $authorization$;
 RESET ROLE;
+
+DO $persisted$
+DECLARE
+  v_status TEXT;
+  v_authorized_at TIMESTAMPTZ;
+BEGIN
+  SELECT status,authorized_at INTO v_status,v_authorized_at
+    FROM public.flow_payment_intents
+   WHERE payment_intent_id=current_setting('test.flow_authorized_intent_id')::UUID;
+  IF v_status<>'authorized' OR v_authorized_at IS NULL THEN
+    RAISE EXCEPTION 'Authorization did not produce the expected authorized lifecycle state';
+  END IF;
+END
+$persisted$;
 
 ROLLBACK;
