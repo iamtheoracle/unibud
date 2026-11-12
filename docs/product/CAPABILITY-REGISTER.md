@@ -551,3 +551,9 @@ The database tests cover grant, revocation and rejection transitions, independen
 - **UNIBUD Web and Database:** PASSED, run `43147456659`; TypeScript, contract/security tests, lint, existing profile browser E2E, migration validation and production build passed.
 - **Oracle Arc API:** PASSED, run `43147456542`.
 - **Still outstanding:** dedicated browser E2E for the grant console and cancellation, independent-connection race tests specifically for grant approval/rejection/cancellation/expiry, grant notifications, monitoring/alert routing, accessibility review, bootstrap permission provisioning and independent security review. No bootstrap grants, production migration, production deployment or operator activation occurred.
+
+### Operations grant cancellation lock-wait hardening — migration 0046
+
+Migration 0046 corrects the cancellation transition's time-of-check ordering: after it obtains the request row lock, it captures wall-clock time and revalidates request/assertion expiry, the original exact session, active scoped grant, authenticator and exact-session MFA step-up. Foundation CI now applies the migration and checks the function's post-lock ordering, SECURITY DEFINER owner and app-role privilege boundary.
+
+**Verification boundary:** this catalog/function-contract test does not establish concurrent runtime correctness. Independent PostgreSQL connection races for approval/rejection, approval/cancellation, step-up expiry during cancellation and approval versus bounded expiry remain outstanding. No production migration, bootstrap grant or deployment has occurred.
