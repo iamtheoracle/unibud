@@ -3,7 +3,7 @@ import { createSignedAccountContextFromEnvironment, withSignedAccountTransaction
 import { getAppDatabasePool } from "../../../lib/server/database/postgres-pool";
 import { readSessionCookie, routeError } from "../../../lib/server/identity/http";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
-import { consumeSearchRateLimit, normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
+import { consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -27,7 +27,8 @@ export async function GET(request: NextRequest) {
       async client => {
         await consumeSearchRateLimit(client);
         if (classification.intent.kind !== "general_discovery") return null;
-        return searchPublicProfiles(client, term);
+        if (!(await isSearchDiscoveryReady(client))) return { state: "age_assurance_required" as const, profiles: [] };
+        return { state: "ready" as const, profiles: await searchPublicProfiles(client, term) };
       }
     );
 
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
       ok: true,
       intent: classification.intent.kind,
       route: classification.route,
-      ...(results === null ? {} : { results })
+      ...(results === null ? {} : { discoveryState: results.state, results: results.profiles })
     });
   } catch (error) {
     return routeError(error);
