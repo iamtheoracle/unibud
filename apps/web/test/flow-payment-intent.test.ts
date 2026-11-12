@@ -46,6 +46,6 @@ test("payment-intent HTTP route derives identity from a validated session and ca
   assert.match(route, /validation\.account\.id/);
   assert.match(route, /validation\.session\.id/);
   assert.match(route, /FlowPaymentIntentRepository/);
-  assert.match(route, /authorizationRequiredBeforeProcessing: true/);
+  assert.match(route, /status: paymentIntent\.status/);
   assert.doesNotMatch(route, /body\.(accountId|sessionId|status|balance|approved)/);
 });
