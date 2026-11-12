@@ -1,5 +1,6 @@
 import type { SqlClient } from "../database/account-context-core.ts";
-import { routeSearchIntent, type ConnectSearchCategory, type SearchIntent, type SearchRoute } from "../../../../../../packages/contracts/src/search.ts";
+import { routeSearchIntent, type ConnectSearchCategory, type SearchIntent, type SearchRoute, type SearchSpace } from "../../../../../../packages/contracts/src/search.ts";
+import type { ApplicationId } from "../../../../../../packages/contracts/src/identity.ts";
 
 
 /**
@@ -41,6 +42,20 @@ export function classifyGlobalSearchIntent(query: string): SearchIntent {
     return { kind: "general_discovery", category: "trips" };
   }
   return { kind: "general_discovery", category: "people" };
+}
+
+const EXPLICIT_SEARCH_SPACES: readonly SearchSpace[] = [
+  "connect", "quad", "bud_board", "square", "soullync", "riff", "wayward", "quarter", "flow"
+];
+
+/** Explicit scope is accepted only as a navigation request, never as access proof. */
+export function routeExplicitSearchScope(scope: unknown): {
+  intent: SearchIntent;
+  route: SearchRoute;
+} | null {
+  if (typeof scope !== "string" || !EXPLICIT_SEARCH_SPACES.includes(scope as SearchSpace)) return null;
+  const intent: SearchIntent = { kind: "space_scoped", applicationId: scope as ApplicationId };
+  return { intent, route: routeSearchIntent(intent) };
 }
 
 export function routeGlobalSearch(query: string): {
