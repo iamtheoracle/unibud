@@ -49,3 +49,13 @@ test("authorization service binds payload digest to challenge, intent digest, me
   assert.ok(service.includes("newSignatureCounter"));
   assert.doesNotMatch(service, /postLedger|settleFunds|debitAccount|paymentCompleted/i);
 });
+
+test("payment cancellation is account/session scoped and only a server lifecycle procedure can apply it", () => {
+  const route = source("../src/app/api/flow/payment-intents/[paymentIntentId]/cancel/route.ts");
+  assert.ok(route.includes("hasSameOrigin(request)"));
+  assert.ok(route.includes("sessions.validate(token)"));
+  assert.ok(route.includes("validation.account.id"));
+  assert.ok(route.includes("validation.session.id"));
+  assert.ok(route.includes("cancelPaymentIntent"));
+  assert.doesNotMatch(route, /body\.(recipient|amount|currency|feeAmount|accountId|sessionId|approved|authorized)/);
+});
