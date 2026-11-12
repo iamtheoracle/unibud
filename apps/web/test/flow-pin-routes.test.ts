@@ -17,6 +17,8 @@ test("PIN enrollment and verification derive account/session only from validated
     assert.match(route, /validation\.session\.id/);
     assert.doesNotMatch(route, /body\.(accountId|sessionId|role|approved|authorized)/);
   }
+  assert.match(enroll, /authentication\\.verifyCredentialsForAccount/);
+  assert.match(enroll, /if \\(!reauthenticated\\)/);
   assert.match(verify, /not a reusable payment-authorization proof/);
   assert.doesNotMatch(verify, /flow_create_payment_intent|flow_post|settle|transfer/i);
 });
