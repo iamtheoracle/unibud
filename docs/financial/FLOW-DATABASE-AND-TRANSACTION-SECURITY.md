@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migrations 0048–0052, the authenticated payment-intent endpoint, Argon2id PIN lifecycle, database-backed PIN controls and session-bound WebAuthn credential registration are implemented on the Flow foundation branch. Exact-head CI for the expanded work is pending. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
+**Status:** Migrations 0048–0053, authenticated payment-intent/confirmation/authorization routes, Argon2id PIN lifecycle, platform WebAuthn registration and transaction assertion verification, one-time transaction-bound authorization, and pre-submission cancellation are implemented on the Flow foundation branch. Latest exact-head CI is being verified. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment submission or settlement is established by this work.
 
 ## Ownership boundary
 
@@ -16,14 +16,14 @@
 - Account ownership is enforced by composite foreign keys and signed-session RLS.
 - Idempotency is scoped to a Flow account and stores only a SHA-256 digest of the caller-provided high-entropy key.
 - Recipient references and MoneyLead identifiers are stored as ciphertext plus keyed lookup digests. AES-256-GCM and account/Flow-account-scoped HMAC protection are implemented; production key provisioning and rotation remain deployment requirements.
-- Payment payload columns are immutable after intent creation. Lifecycle transitions include settlement, refund, reversal, failure and cancellation; refunds/reversals are represented as separate MoneyLead mirror events.
+- Payment payload columns are immutable after intent creation. The database lifecycle vocabulary reserves submission, acceptance, settlement, failure, cancellation, refund and reversal states, but only creation, authorization and pre-submission cancellation procedures are currently exposed. Settlement/refund/reversal transitions require verified MoneyLead evidence and are not implemented.
 - Migration 0049 adds `flow_create_payment_intent`, a SECURITY DEFINER procedure owned by the NOLOGIN Flow owner. It requires both signed account and exact persisted-session context, verifies Flow-account ownership, stores a database-computed transaction digest, audits creation/replay/mismatch and uses a unique constraint plus `ON CONFLICT DO NOTHING` to make concurrent duplicate submissions idempotent. It creates an instruction only; it does not debit, reserve, submit or settle funds.
 - Authorization challenges are single-use, expiry-bound, session-bound and tied to the exact `details_digest` of the intent. Migration 0050 adds composite foreign keys that make cross-account session binding and altered intent-digest binding impossible at the database constraint layer.
 - PIN verifiers use Argon2id (64 MiB memory, three iterations, one lane, 32-byte output). Enrollment and recovery require password reauthentication for the same active account and a short-lived, single-use HMAC assertion bound to account, session, action and exact verifier digest. PostgreSQL consumes the assertion nonce and enforces per-account rate limits. No plaintext PIN is persisted.
-- Biometric storage contains WebAuthn credential identifiers, public keys, signature counters and supported transport metadata only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
+- Biometric storage contains WebAuthn credential identifiers, public keys, signature counters and supported transport metadata only. Registration requires a platform authenticator and user verification. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
 - Journal postings are append-only and deferred constraint-trigger validation requires at least two postings with equal debit and credit totals per journal entry/currency.
 - Direct app-table access is read-only and column-limited. `unibud_app` has no direct table access to PIN verifiers, step-up assertions, biometric public keys, authorization challenges or rate-limit records; it can invoke only narrowly scoped session-bound procedures. The PIN verification procedure returns the current account's Argon2id verifier only to the trusted server-side caller after atomic database rate limiting.
-- The payment-intent HTTP route validates the active persisted session, derives account/session identity server-side, encrypts recipient references, requires a 32-byte high-entropy idempotency key and returns an instruction state only. It does not process a payment. PIN enrollment, verification and recovery endpoints are now present, but PIN verification does not produce a reusable token or authorize an intent; the transaction-bound authorization challenge flow is still pending. Intent-creation rate limiting is also pending.
+- The payment-intent HTTP route validates the active persisted session, derives account/session identity server-side, encrypts recipient references, requires a 32-byte high-entropy idempotency key and returns an instruction state only. It does not process a payment. The confirmation endpoint decrypts the recipient only inside the server boundary and returns the exact immutable details digest. PIN and WebAuthn authorization endpoints require that digest; they do not accept client-supplied recipient, amount, currency, fee or source-account fields. Intent-creation rate limiting is still pending.
 - The `unibud_flow_ingest` role is NOLOGIN and has no table privileges. It is reserved for a future verified gateway; a dedicated integration login, secrets, signed event verification and scoped account resolution are required before any ingestion privilege is granted.
 
 ## Transaction PIN implementation — migration 0051
@@ -45,14 +45,30 @@
 - Only the credential ID, COSE public key, signature counter and transport metadata are stored. No biometric template, face image, fingerprint or device biometric secret is sent to or stored by UNIBUD.
 - Required configuration: `UNIBUD_WEBAUTHN_RP_ID`, `UNIBUD_WEBAUTHN_ORIGIN` and optional `UNIBUD_WEBAUTHN_RP_NAME`. Production requires HTTPS and an origin host equal to the RP ID or one of its subdomains.
 - Registration is not payment authorization. WebAuthn assertion verification must still be performed against the one-time transaction authorization challenge before it can confirm any payment.
+## Transaction-bound confirmation and authorization — migration 0053
+
+- GET /api/flow/payment-intents/{paymentIntentId}/confirmation returns the owner-scoped source Flow account, decrypted recipient reference, amount, currency, fee, exact decimal total, purpose, transaction reference and confirmation digest. The database audits the sensitive read. The server verifies AES-256-GCM authentication and the keyed lookup digest before returning the recipient.
+- POST /api/flow/payment-intents/{paymentIntentId}/authorize-pin requires the exact confirmation digest and transaction PIN. It verifies the PIN with Argon2id and the database-backed PIN limiter, creates a 110-second one-time challenge and generates a server-only HMAC assertion. The client cannot supply or change the financial payload.
+- POST /api/flow/payment-intents/{paymentIntentId}/authorize-webauthn/options requires the reviewed confirmation digest and a registered platform authenticator. It returns WebAuthn authentication options and the same confirmation details.
+- POST /api/flow/payment-intents/authorize-webauthn/verify validates the active session, exact challenge, configured origin/RP ID, signature and required user verification. PostgreSQL locks and advances the credential signature counter in the same transaction that consumes the challenge and authorizes the intent.
+- Authorization payload digests bind the authorization ID, random challenge digest, immutable intent details digest, authentication method, challenge expiry, and (for WebAuthn) credential ID and new signature counter. The database verifies and consumes a 60-second single-use HMAC step-up assertion. Replays, altered digests, cross-account/session use, expired challenges and non-increasing WebAuthn counters are rejected.
+- Authorization changes the payment intent to authorized only. It does not debit, reserve, submit, post or settle funds.
+- POST /api/flow/payment-intents/{paymentIntentId}/cancel allows the owner to cancel only before submission. Cancellation is idempotent and invalidates any active authorization challenge. Once an instruction is submitted, customer-side cancellation is no longer exposed.
+- Authorization challenge creation is limited to five per account per 15 minutes. WebAuthn verification is separately rate-limited; PIN verification uses the five-attempt/15-minute limiter and lockout.
+
+## MoneyLead gateway boundary
+
+- The version-1 adapter port exposes only authorized-instruction submission and idempotency lookup. It has no balance, debit, credit, account-management or settlement methods.
+- The default UnconfiguredFlowMoneyLeadGateway fails closed. No adapter is active.
+- The internal acknowledgement states accepted/rejected/unknown are UNIBUD normalization semantics, not verified MoneyLead API capabilities. Acceptance is not settlement.
+- See docs/financial/FLOW-MONEYLead-GATEWAY-CONTRACT.md. The MoneyLead repository lookup returned 404; no endpoint, service identity, key, ledger contract or settlement semantics have been invented.
+
 ## Deliberate deferrals
 
-1. Transaction-bound authorization challenge creation and one-time consumption. PIN verification must be consumed against the exact recipient, amount, currency, fees, source Flow account, payment-intent reference, expiry and persisted session. The standalone PIN endpoint cannot authorize a payment.
-2. WebAuthn assertion verification for transaction authorization, including origin/RP-ID checks, exact payment challenge binding, user-presence/user-verification flags and replay-resistant signature-counter handling. Credential registration is implemented; Face ID/Touch ID templates remain on the device.
-3. Payment-intent lifecycle transition procedures and status APIs for authorization, submission, acceptance, settlement, failure, cancellation, refund and reversal. Settlement requires verified MoneyLead evidence.
-4. Intent-creation rate limiting and broader fraud/risk controls. PIN endpoint rate limits are implemented; payment-intent creation has not yet been rate-limited.
-5. Internal transfers: blocked until MoneyLead provides a verified scoped integration and authoritative posting contract. Flow must not simulate a bank transfer locally.
-6. MoneyLead integration gateway: blocked on access to the MoneyLead repository and a verified service contract. The repository lookup returned 404 during this pass.
-7. External providers, issuers, settlement adapters and live operations: blocked on verified legal arrangements, provider capabilities, credentials, webhook verification, reconciliation evidence and founder approval.
+1. Payment-intent creation rate limiting, risk-aware abuse controls and customer security notifications.
+2. Submission, acceptance, failure, settlement, refund and reversal transition procedures. These must be driven by authenticated MoneyLead evidence; no Flow-only or client-only status change may claim posting or settlement.
+3. Internal transfers: blocked until MoneyLead provides a verified scoped integration and authoritative posting contract. Flow must not simulate a bank transfer locally.
+4. The MoneyLead adapter implementation and transactional outbox are blocked on repository/API contract verification. The narrow port exists, but the default adapter fails closed.
+5. External providers, issuers, settlement adapters and live operations: blocked on verified legal arrangements, provider capabilities, credentials, webhook verification, reconciliation evidence and founder approval.
 
-Concierge, Oracle Arc, plugins and other agents have no database write or approval grant. They may only prepare instructions for the same authenticated Flow confirmation path once that service is implemented.
+Concierge, Oracle Arc, plugins and other agents have no transaction-authorization route, HMAC step-up signing capability, biometric private key or direct database approval grant. They may prepare payment instructions only. Authorization requires the active persisted human account session plus the user's transaction PIN or platform authenticator assertion; neither agent instructions nor plugin output can authorize or post a payment.
