@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import OperationsGrantNotifications from "./operations-grant-notifications";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type Grant = {
@@ -137,6 +138,7 @@ export default function OperationsGrantsClient() {
     </section>
     {error && <p className="mfa-alert mfa-error" role="alert">{error}</p>}
     {notice && <p className="mfa-alert" role="status">{notice}</p>}
+    <OperationsGrantNotifications />
     <section className="mfa-card">
       <div className="mfa-card-head"><div><p className="eyebrow">Access request</p><h2>Request a grant change</h2></div><span className="mfa-state">Dual control</span></div>
       <form onSubmit={submitRequest}>
