@@ -563,3 +563,5 @@ Migration 0046 corrects the cancellation transition's time-of-check ordering: af
 Grant lifecycle events now produce account-scoped in-app notices for submission, approval, rejection, cancellation and expiry. Notices are written in the same transaction as the grant-request lifecycle change, with idempotency by account/request/event. The requester, target and independent approver are the only possible recipients. The notification table is RLS-protected, inaccessible directly to the app role, and read/marked through SECURITY DEFINER functions using verified signed session context and the existing notification-read rate limit.
 
 **Capability boundary:** this is an in-app inbox only. It does not send email or SMS, create an external delivery receipt, or provide provider retry/worker behavior. Grant transition concurrency and dedicated browser E2E remain outstanding.
+
+The grant console now has an isolated browser E2E fixture in web CI covering the notification inbox, mark-read, approval, cancellation and request submission. It is disabled in production and uses mocked API responses; database enforcement is tested separately in Foundation PostgreSQL CI.
