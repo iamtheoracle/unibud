@@ -83,12 +83,15 @@ BEGIN
     RAISE EXCEPTION 'The eleventh payment-intent request bypassed the account rate limit';
   END IF;
 
-  SELECT request_count,locked_until INTO v_count,v_locked
-    FROM public.flow_transaction_rate_limits
-   WHERE account_id='f0550000-0000-4000-8000-000000000001'
-     AND action='payment_intent_create';
-  IF v_count<>11 OR v_locked<=clock_timestamp() THEN
-    RAISE EXCEPTION 'Intent creation rate-limit state was not persisted atomically';
+  v_intent:=public.flow_create_payment_intent(
+    'f0550000-0000-4000-8000-000000000021',
+    digest('intent-rate-key-12','sha256'),
+    decode(repeat('aa',29),'hex'),
+    digest('intent-rate-recipient','sha256'),
+    100.00,'NGN',1.00,'member_transfer'
+  );
+  IF v_intent IS NOT NULL THEN
+    RAISE EXCEPTION 'A locked account bypassed its persisted intent-creation limit';
   END IF;
 
   SELECT count(*) INTO v_count FROM public.flow_payment_intents
