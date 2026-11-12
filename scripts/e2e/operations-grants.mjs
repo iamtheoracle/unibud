@@ -62,7 +62,7 @@ try{
   return json(route,404,{ok:false,error:"Not found"});
  });
  await page.goto(baseURL+"/e2e/operations-grants");
- await page.getByRole("heading",{name:"Operator grants"}).waitFor();
+ await page.getByRole("heading",{name:"Operator grants",exact:true}).waitFor();
  await page.getByRole("heading",{name:"Grant notifications"}).waitFor();
  await page.getByText("2 unread",{exact:true}).waitFor();
  const firstNotice=page.locator(".mfa-notification-list li").first();
