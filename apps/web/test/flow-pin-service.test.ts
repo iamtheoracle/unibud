@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash, createHmac } from "node:crypto";
-import { FlowPinService } from "../src/lib/server/flow/flow-pin-service.ts";
+import { FlowPinService } from "../src/lib/server/flow/flow-pin-service-core.ts";
 import type { FlowPinRepository } from "../src/lib/server/flow/flow-pin-repository.ts";
 
 class MemoryPinRepository {
