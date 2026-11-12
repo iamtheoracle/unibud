@@ -37,6 +37,7 @@ export default async function AuthenticatedHomePage(){
   <header className="topbar">
    <Link className="wordmark" href="/">unibud<span>.</span></Link>
    <span className="eyebrow">Your connected world</span>
+   <Link className="small-link" href="/search">Search</Link>
    <Link className="small-link" href="/profiles">Manage profiles</Link>
    <form action="/api/auth/logout" method="post"><button className="small-link" type="submit">Log out</button></form>
   </header>
