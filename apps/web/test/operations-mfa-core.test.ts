@@ -86,7 +86,7 @@ test("encryption key rotation reads legacy v1 and overlapping v2 keys while writ
  });
  assert.equal(rotating.decryptSecret(accountId,legacyEnvelope).equals(secret),true);
  const rotatedEnvelope=rotating.encryptSecret(accountId,secret);
- assert.match(rotatedEnvelope.ciphertext,/^v2\\.2026-11-new\\./);
+ assert.match(rotatedEnvelope.ciphertext,/^v2\.2026-11-new\./);
  assert.equal(rotating.decryptSecret(accountId,rotatedEnvelope).equals(secret),true);
  const oldWriter=new OperationsMfaCryptography(legacy,recovery,{
   activeKeyId:"2026-11-old",keys:[{id:"2026-11-old",key:oldKey},{id:"2026-11-new",key:newKey}]
@@ -121,7 +121,7 @@ test("environment keyring enables versioned encryption without losing legacy v1 
   });
   const configured=createOperationsMfaCryptographyFromEnvironment();
   const secret=configured.generateSecret();
-  assert.match(configured.encryptSecret(accountId,secret).ciphertext,/^v2\\.rotation-2026-11\\./);
+  assert.match(configured.encryptSecret(accountId,secret).ciphertext,/^v2\.rotation-2026-11\./);
   delete process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON;
   const legacyConfigured=createOperationsMfaCryptographyFromEnvironment();
   const legacyEnvelope=legacyConfigured.encryptSecret(accountId,secret);
