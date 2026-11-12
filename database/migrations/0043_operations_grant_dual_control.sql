@@ -87,7 +87,10 @@ BEGIN
     WHEN 'audit_read' THEN v_limit:=30; v_window:=60; v_permission:='operations.audit.read';
     WHEN 'grant_request' THEN v_limit:=5; v_window:=900; v_permission:='operations.grants.request';
     WHEN 'grant_decide' THEN v_limit:=10; v_window:=900; v_permission:='operations.grants.approve';
-    WHEN 'grant_read' THEN v_limit:=60; v_window:=60; v_permission:='operations.grants.approve';
+    WHEN 'grant_read' THEN
+      v_limit:=60; v_window:=60;
+      IF NOT (public.unibud_operator_has_permission('operations.grants.approve')
+        OR public.unibud_operator_has_permission('operations.grants.request')) THEN RETURN FALSE; END IF;
     ELSE RETURN FALSE;
   END CASE;
   IF v_permission IS NOT NULL AND NOT public.unibud_operator_has_permission(v_permission) THEN RETURN FALSE; END IF;
@@ -412,13 +415,17 @@ BEGIN
   END IF;
   IF unibud_private.current_account_id() IS NULL
      OR unibud_private.current_session_id() IS NULL
-     OR NOT public.unibud_operator_has_permission('operations.grants.approve')
+     OR NOT (public.unibud_operator_has_permission('operations.grants.approve')
+       OR public.unibud_operator_has_permission('operations.grants.request'))
      OR NOT public.unibud_operator_mfa_consume_api_rate_limit('grant_read') THEN RETURN; END IF;
   IF p_request_id IS NOT NULL THEN
     RETURN QUERY SELECT r.request_id,r.requested_action,r.target_account_id,r.target_grant_id,
       r.requested_role,r.requested_permissions,r.requested_expires_at,r.state,
       r.requester_account_id,r.approver_account_id,r.reason_code,r.created_at,r.expires_at,r.decided_at
-      FROM public.unibud_operator_grant_requests r WHERE r.request_id=p_request_id;
+      FROM public.unibud_operator_grant_requests r WHERE r.request_id=p_request_id
+        AND (public.unibud_operator_has_permission('operations.grants.approve')
+          OR (r.requester_account_id=unibud_private.current_account_id()
+            AND r.requester_session_id=unibud_private.current_session_id()));
     RETURN;
   END IF;
   RETURN QUERY SELECT r.request_id,r.requested_action,r.target_account_id,r.target_grant_id,
@@ -426,6 +433,9 @@ BEGIN
     r.requester_account_id,r.approver_account_id,r.reason_code,r.created_at,r.expires_at,r.decided_at
     FROM public.unibud_operator_grant_requests r
     WHERE r.state='pending'
+      AND (public.unibud_operator_has_permission('operations.grants.approve')
+        OR (r.requester_account_id=unibud_private.current_account_id()
+          AND r.requester_session_id=unibud_private.current_session_id()))
       AND (p_before_created_at IS NULL OR
         (r.created_at,r.request_id)<(p_before_created_at,p_before_request_id))
     ORDER BY r.created_at DESC,r.request_id DESC LIMIT p_limit;
