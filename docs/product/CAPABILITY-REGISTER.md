@@ -565,3 +565,7 @@ Grant lifecycle events now produce account-scoped in-app notices for submission,
 **Capability boundary:** this is an in-app inbox only. It does not send email or SMS, create an external delivery receipt, or provide provider retry/worker behavior. Grant transition concurrency and dedicated browser E2E remain outstanding.
 
 The grant console now has an isolated browser E2E fixture in web CI covering the notification inbox, mark-read, approval, cancellation and request submission. It is disabled in production and uses mocked API responses; database enforcement is tested separately in Foundation PostgreSQL CI.
+
+### Verification checkpoint — 2026-11-12
+
+Branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation run 43159461223, Web and Database run 43159461527, and Oracle Arc API run 43159461117. The grant notification migration and PostgreSQL test, web contract checks, grant console browser E2E and production build passed. This verifies the feature branch in CI, not production deployment. Independent grant concurrency testing and independent security review remain open.
