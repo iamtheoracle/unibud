@@ -81,9 +81,9 @@ export default function SearchClient() {
           ...current,
           results: current.results?.filter(item => item.handle !== profile.handle)
         } : current);
-        setBlockedProfiles(current => current
-          ? [{ handle: profile.handle, displayName: profile.displayName, blockedAt: new Date().toISOString() }, ...current]
-          : current);
+        // The block API does not return an authoritative server timestamp.
+        // Invalidate the cached list instead of inventing one in the browser.
+        setBlockedProfiles(null);
         setBlockNotice(`@${profile.handle} is blocked across your UNIBUD account.`);
       } else {
         setBlockedProfiles(current => current?.filter(item => item.handle !== profile.handle) ?? []);
