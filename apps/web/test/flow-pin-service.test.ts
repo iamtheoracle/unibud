@@ -39,6 +39,8 @@ class MemoryPinRepository {
   }
 }
 
+process.env.UNIBUD_FLOW_PIN_STEP_UP_HMAC_KEY = Buffer.alloc(32, 9).toString("hex");
+
 const ACCOUNT = "f0500000-0000-4000-8000-000000000001";
 const SESSION = "f0500000-0000-4000-8000-000000000011";
 
