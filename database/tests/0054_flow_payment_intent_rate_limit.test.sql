@@ -13,6 +13,9 @@ INSERT INTO public.account_sessions(
   clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'),
  ('f0550000-0000-4000-8000-000000000012','f0550000-0000-4000-8000-000000000002',
   decode(repeat('d2',32),'hex'),clock_timestamp()-interval '1 minute',clock_timestamp(),
+  clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'),
+ ('f0550000-0000-4000-8000-000000000013','f0550000-0000-4000-8000-000000000001',
+  decode(repeat('d5',32),'hex'),clock_timestamp()-interval '1 minute',clock_timestamp(),
   clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day');
 
 INSERT INTO public.flow_customer_accounts(
@@ -71,6 +74,15 @@ BEGIN
       RAISE EXCEPTION 'Valid payment-intent request % was unexpectedly rate limited',v_index;
     END IF;
   END LOOP;
+
+  -- A second session for the same account must share the account-wide bucket.
+  PERFORM set_config('unibud.session_id','f0550000-0000-4000-8000-000000000013',true);
+  PERFORM set_config('unibud.session_context_signature',
+    encode(public.hmac(convert_to(
+      'v1:f0550000-0000-4000-8000-000000000001:f0550000-0000-4000-8000-000000000013:'||
+      current_setting('unibud.context_expiry')||':'||
+      current_setting('unibud.context_nonce'),'UTF8'),
+      decode(repeat('d4',32),'hex'),'sha256'),'hex'),true);
 
   v_intent:=public.flow_create_payment_intent(
     'f0550000-0000-4000-8000-000000000021',
