@@ -64,7 +64,7 @@ BEGIN
   v_nonce:=gen_random_uuid();
   v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
   v_digest:=public.digest(convert_to(v_hash,'UTF8'),'sha256');
-  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
+  v_message:='flow-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
     encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
   v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
   v_enrolled:=public.flow_pin_enroll(v_hash,v_expiry,v_nonce,v_signature);
@@ -72,7 +72,7 @@ BEGIN
 
   v_nonce:=gen_random_uuid();
   v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
-  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
+  v_message:='flow-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
     encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
   v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
   IF public.flow_pin_enroll(v_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM false THEN
@@ -110,7 +110,7 @@ BEGIN
   v_nonce:=gen_random_uuid();
   v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
   v_digest:=public.digest(convert_to(v_new_hash,'UTF8'),'sha256');
-  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_recovery:'||
+  v_message:='flow-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_recovery:'||
     encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
   v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
   IF public.flow_pin_recover(v_new_hash,v_expiry,v_nonce,repeat('0',64)) IS DISTINCT FROM false THEN
@@ -196,7 +196,7 @@ BEGIN
   -- A valid assertion signed for account one/session one must not enroll a
   -- credential for account two/session two.
   v_digest:=public.digest(convert_to(v_test_hash,'UTF8'),'sha256');
-  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
+  v_message:='flow-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
     encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
   v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
   IF public.flow_pin_enroll(v_test_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM false THEN
