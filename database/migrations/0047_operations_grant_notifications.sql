@@ -25,6 +25,14 @@ CREATE POLICY unibud_operator_grant_notifications_account_scope
   ON public.unibud_operator_grant_notifications
   USING (account_id=unibud_private.current_account_id())
   WITH CHECK (account_id=unibud_private.current_account_id());
+-- SECURITY DEFINER trigger/functions are owned by this restricted database role.
+-- This permits system expiry maintenance to enqueue notices without a user session;
+-- public read/mark functions still enforce the verified account identifier explicitly.
+CREATE POLICY unibud_operator_grant_notifications_owner
+  ON public.unibud_operator_grant_notifications
+  TO unibud_ops_owner
+  USING (true)
+  WITH CHECK (true);
 REVOKE ALL ON public.unibud_operator_grant_notifications
   FROM PUBLIC,unibud_app,unibud_auth,unibud_readonly,unibud_migrator;
 
