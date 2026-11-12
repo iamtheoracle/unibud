@@ -942,3 +942,25 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Next dependency:** implement Flow as a first-class canonical domain: schema ownership/least-privilege roles, append-only double-entry journal, payment intents, idempotency, then transaction PIN/device-bound authorization and the single-use transaction-digest confirmation protocol. Only after that implement internal transfers and generic provider contracts.
 - **External rails/card issuance deferred:** provider, issuer, regulatory permissions, credentials, callback contract and settlement arrangement are not evidenced. No provider selected, no real payment executed, no production deployment.
 - **Security prerequisite:** resolve Issue #16 and independent review of PR #15 before treating privileged platform controls as production-safe. Flow mandate tracked in Issue #17.
+
+## Current Flow financial foundation — 2026-11-12
+
+- Branch: `foundation/flow-domain-ledger-v1`, based on the audit branch for PR #18.
+- Migration `0048_flow_domain_and_settlement_mirror.sql` introduces Flow-owned account mapping, payment intents/idempotency, PIN credential storage contract, WebAuthn public-key credential storage, transaction authorization challenge records, rate-limit state, and an immutable balanced settlement-mirror journal.
+- PostgreSQL RLS binds every Flow row to the signed authenticated UNIBUD account. App access is read-only and column-limited; sensitive PIN/biometric/challenge material is not exposed to the app SQL role.
+- Journal entries require at least two postings and equal debit/credit totals at deferred constraint evaluation. Journal records cannot be updated or deleted. They mirror verified MoneyLead settlement events and are not a spendable balance source.
+- Payment intent payload fields are immutable and lifecycle transitions are constrained. No application procedure/API can yet create, authorize, submit or settle an intent.
+- `unibud_flow_ingest` is NOLOGIN and intentionally has no table privileges until a verified MoneyLead event-authentication gateway exists.
+- MoneyLead repository lookup returned 404 during this pass. No integration endpoint, API credentials, provider, issuer or settlement capability was assumed.
+- **Status:** schema and test added; PostgreSQL CI has not yet completed on this branch. Not merged, not deployed, and not operational.
+
+### Flow next dependencies
+
+1. Complete exact-head PostgreSQL 16 migration and invariant tests, including CI workflow wiring.
+2. Implement server-side intent creation, idempotency conflict handling and state-transition procedures under authenticated session context.
+3. Implement Argon2id PIN enrollment/verification/recovery and database-backed lockout/rate limiting.
+4. Implement WebAuthn challenge/assertion verification with replay-resistant counters; no biometric template collection.
+5. Implement canonical transaction digest construction and one-use challenge consumption bound to the exact intent and session.
+6. Inspect the MoneyLead repository and its authoritative ledger when access is available; define a scoped integration contract before enabling internal transfers or settlement ingestion.
+7. Only then add provider/issuer/settlement adapters after contracts, permissions and legal arrangements are verified.
+
