@@ -12,7 +12,8 @@ type SearchResponse = {
   ok: boolean;
   intent?: "academic" | "general_discovery" | "adult_dating" | "space_scoped";
   route?: { kind: string; space?: string; parentSpace?: string; requiresAdultEligibility?: boolean; requiresIndependentConsent?: boolean };
-  discoveryState?: "ready" | "age_assurance_required";
+  category?: "people" | "communities" | "creators" | "institutions" | "opportunities" | "services" | "food" | "events" | "trips";
+  discoveryState?: "ready" | "age_assurance_required" | "category_not_available";
   results?: SearchProfile[];
   error?: string;
 };
@@ -63,7 +64,7 @@ export default function SearchClient() {
       <h1 id="search-title">Find your place.</h1>
       <p className="search-intro">
         Search is routed to the right space. Academic discovery belongs in Board inside Bud;
-        people and community discovery belongs in Connect; SouLync remains separate.
+        people, creator and community profiles belong in Connect. Other Connect categories only return results when their own searchable, permission-checked source is ready; SouLync remains separate.
       </p>
 
       <form className="search-form" onSubmit={submit} role="search">
@@ -85,7 +86,7 @@ export default function SearchClient() {
             {loading ? "Searching…" : "Search"}
           </button>
         </div>
-        <p id="search-hint" className="search-hint">2–40 characters. Results are limited by profile visibility, blocking and safety eligibility.</p>
+        <p id="search-hint" className="search-hint">2–40 characters. Public profile results are limited by profile visibility, blocking and safety eligibility. Other categories do not use profile records as substitutes.</p>
       </form>
 
       {error ? <p className="search-message search-error" role="alert">{error}</p> : null}
@@ -106,6 +107,14 @@ export default function SearchClient() {
             <p className="eyebrow">SouLync · separate space</p>
             <h2>SouLync has its own safety gates.</h2>
             <p>This search has not opened dating records. SouLync requires verified adult eligibility, independent consent and its own moderation controls before it can be available.</p>
+          </section>
+        ) : null}
+
+        {!loading && response?.intent === "general_discovery" && response.discoveryState === "category_not_available" ? (
+          <section className="search-message">
+            <p className="eyebrow">Connect · {response.category ?? "discovery"}</p>
+            <h2>This category is not searchable yet.</h2>
+            <p>Its dedicated data source and access rules are still being built. UNIBUD will not substitute unrelated people profiles or fabricate results.</p>
           </section>
         ) : null}
 
