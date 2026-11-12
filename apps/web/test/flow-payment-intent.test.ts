@@ -47,5 +47,7 @@ test("payment-intent HTTP route derives identity from a validated session and ca
   assert.match(route, /validation\.session\.id/);
   assert.match(route, /FlowPaymentIntentRepository/);
   assert.match(route, /status: paymentIntent\.status/);
+  assert.match(route, /UNIBUD_\(\?:FLOW_\|DB_\)/);
+  assert.match(route, /Flow payment-intent creation is not configured/);
   assert.doesNotMatch(route, /body\.(accountId|sessionId|status|balance|approved)/);
 });
