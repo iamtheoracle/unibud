@@ -212,3 +212,7 @@ Feature-branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation c
 ### Grant lifecycle concurrency verification
 
 Foundation CI now runs scripts/test-operations-grant-concurrency.sh against independent PostgreSQL connections. The harness races approval against rejection, approval against same-session requester cancellation, cancellation against expiry of the requester's MFA step-up while blocked on the request row, and approval against bounded request expiry. It asserts one terminal winner, consistent grant creation, one corresponding audit event, and safe SKIP LOCKED expiry behavior. This is a disposable CI fixture, not a production stress test or production operator exercise.
+
+### Grant lifecycle concurrency CI result — 2026-11-12
+
+The grant concurrency harness passed on feature-branch head 89c44575186176c4553db5fb962b90234e58ba83 in Foundation run 43160136952. It exercised approve/reject, approve/cancel, cancellation after the exact-session MFA step-up expired during a request-row lock wait, and approval versus bounded expiry using separate PostgreSQL connections. The harness asserted exactly one terminal winner and consistent grant/audit outcomes. Web and Database run 43160137016 and Oracle Arc API run 43160136965 also passed on that head. This remains disposable CI evidence, not a production stress test.
