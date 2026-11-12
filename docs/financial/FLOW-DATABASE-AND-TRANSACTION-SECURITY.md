@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migrations 0048–0049, synthetic PostgreSQL tests, a session-bound payment-intent database procedure and an authenticated payment-intent HTTP endpoint are implemented on the Flow foundation branch. Exact-head CI is pending for the expanded branch. Not merged or deployed. No live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
+**Status:** Migrations 0048–0050, synthetic PostgreSQL tests, a session-bound payment-intent database procedure and an authenticated payment-intent HTTP endpoint are implemented on the Flow foundation branch. Exact-head CI is pending for the expanded branch. Not merged or deployed. No live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
 
 ## Ownership boundary
 
@@ -18,7 +18,7 @@
 - Recipient references and MoneyLead identifiers are stored as ciphertext plus keyed lookup digests. AES-256-GCM and account/Flow-account-scoped HMAC protection are implemented; production key provisioning and rotation remain deployment requirements.
 - Payment payload columns are immutable after intent creation. Lifecycle transitions include settlement, refund, reversal, failure and cancellation; refunds/reversals are represented as separate MoneyLead mirror events.
 - Migration 0049 adds `flow_create_payment_intent`, a SECURITY DEFINER procedure owned by the NOLOGIN Flow owner. It requires both signed account and exact persisted-session context, verifies Flow-account ownership, stores a database-computed transaction digest, audits creation/replay/mismatch and uses a unique constraint plus `ON CONFLICT DO NOTHING` to make concurrent duplicate submissions idempotent. It creates an instruction only; it does not debit, reserve, submit or settle funds.
-- Authorization challenges are single-use, expiry-bound, session-bound and tied to the exact `details_digest` of the intent.
+- Authorization challenges are single-use, expiry-bound, session-bound and tied to the exact `details_digest` of the intent. Migration 0050 adds composite foreign keys that make cross-account session binding and altered intent-digest binding impossible at the database constraint layer.
 - PIN storage accepts only an Argon2id PHC hash. PIN verification, enrollment and recovery are not yet wired; never store plaintext PINs.
 - Biometric storage contains WebAuthn public keys and counters only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
 - Journal postings are append-only and deferred constraint-trigger validation requires at least two postings with equal debit and credit totals per journal entry/currency.
