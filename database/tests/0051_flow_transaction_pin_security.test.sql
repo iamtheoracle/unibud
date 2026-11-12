@@ -22,6 +22,9 @@ UPDATE unibud_private.session_context_signing_keys SET active=false WHERE active
 INSERT INTO unibud_private.session_context_signing_keys(key_id,secret,active)
 VALUES('flow-pin-ci-session',decode(repeat('85',32),'hex'),true);
 
+INSERT INTO unibud_private.flow_pin_step_up_signing_keys(key_id,secret,active)
+VALUES('flow-pin-ci-step-up',decode(repeat('86',32),'hex'),true);
+
 WITH ctx AS (
  SELECT 'f0510000-0000-4000-8000-000000000001'::TEXT AS account_id,
         'f0510000-0000-4000-8000-000000000011'::TEXT AS session_id,
@@ -52,10 +55,27 @@ DECLARE
   v_attempts SMALLINT;
   v_count INTEGER;
   v_index INTEGER;
+  v_nonce UUID;
+  v_expiry BIGINT;
+  v_digest BYTEA;
+  v_message TEXT;
+  v_signature TEXT;
 BEGIN
-  v_enrolled:=public.flow_pin_enroll(v_hash);
+  v_nonce:=gen_random_uuid();
+  v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
+  v_digest:=public.digest(convert_to(v_hash,'UTF8'),'sha256');
+  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
+    encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
+  v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
+  v_enrolled:=public.flow_pin_enroll(v_hash,v_expiry,v_nonce,v_signature);
   IF v_enrolled IS DISTINCT FROM true THEN RAISE EXCEPTION 'PIN enrollment failed'; END IF;
-  IF public.flow_pin_enroll(v_hash) IS DISTINCT FROM false THEN
+
+  v_nonce:=gen_random_uuid();
+  v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
+  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
+    encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
+  v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
+  IF public.flow_pin_enroll(v_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM false THEN
     RAISE EXCEPTION 'PIN enrollment replaced an existing PIN';
   END IF;
 
@@ -87,8 +107,17 @@ BEGIN
     RAISE EXCEPTION 'A locked PIN credential was reset without recovery';
   END IF;
 
-  IF public.flow_pin_recover(v_new_hash) IS DISTINCT FROM true THEN
+  v_nonce:=gen_random_uuid();
+  v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
+  v_digest:=public.digest(convert_to(v_new_hash,'UTF8'),'sha256');
+  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_recovery:'||
+    encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
+  v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
+  IF public.flow_pin_recover(v_new_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM true THEN
     RAISE EXCEPTION 'Password-reauthenticated PIN recovery procedure failed';
+  END IF;
+  IF public.flow_pin_recover(v_new_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'A password step-up assertion was replayed successfully';
   END IF;
   SELECT allowed,pin_hash_phc INTO v_allowed,v_returned_hash
     FROM public.flow_pin_begin_verification();
