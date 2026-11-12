@@ -8,7 +8,7 @@ ALTER TABLE public.flow_authorization_challenges
   ADD CONSTRAINT flow_authorization_challenges_challenge_length_check
   CHECK(challenge IS NULL OR octet_length(challenge)=32);
 ALTER TABLE public.flow_authorization_challenges
-  ADD CONSTRAINT flow_authorization_challenges_challenge_digest_check
+  ADD CONSTRAINT flow_authorization_challenges_challenge_digest_matches_check
   CHECK(challenge IS NULL OR public.digest(challenge,'sha256')=challenge_digest);
 
 GRANT SELECT,UPDATE ON public.flow_payment_intents TO unibud_flow_owner;
