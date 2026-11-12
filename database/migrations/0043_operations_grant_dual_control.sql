@@ -398,7 +398,7 @@ CREATE FUNCTION public.unibud_operator_list_grant_requests(
   created_at TIMESTAMPTZ,expires_at TIMESTAMPTZ,decided_at TIMESTAMPTZ
 )
 LANGUAGE plpgsql
-STABLE
+VOLATILE
 SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
 AS $function$
