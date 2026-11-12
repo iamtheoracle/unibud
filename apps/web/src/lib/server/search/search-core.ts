@@ -66,18 +66,7 @@ export async function searchPublicProfiles(
           position(lower($1) in lower(p.handle)) > 0
           OR position(lower($1) in lower(p.display_name)) > 0
         )
-        AND NOT EXISTS (
-          SELECT 1
-            FROM public.account_blocks b
-           WHERE b.status = 'active'
-             AND (
-               (b.blocker_account_id = unibud_private.current_account_id()
-                 AND b.blocked_account_id = p.owner_account_id)
-               OR
-               (b.blocker_account_id = p.owner_account_id
-                 AND b.blocked_account_id = unibud_private.current_account_id())
-             )
-        )
+        AND NOT public.account_interaction_blocked(p.owner_account_id)
       ORDER BY lower(p.handle), p.id
       LIMIT 20`,
     [normalizedTerm]
