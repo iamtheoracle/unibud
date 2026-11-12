@@ -73,6 +73,8 @@ test("WebAuthn verification checks challenge, origin, RP ID and signs exact cred
     return {
       verified: true,
       registrationInfo: {
+        credentialDeviceType: "singleDevice",
+        credentialBackedUp: false,
         credential: {
           id: Buffer.from("new-credential").toString("base64url"),
           publicKey: new Uint8Array([9, 8, 7, 6]),
@@ -119,6 +121,54 @@ test("WebAuthn verification checks challenge, origin, RP ID and signs exact cred
   const expectedSignature = createHmac("sha256", Buffer.from(process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY!, "hex"))
     .update(message, "utf8").digest("hex");
   assert.equal(proof.signature, expectedSignature);
+});
+
+
+test("WebAuthn rejects synced or backup-eligible credentials for the device-bound factor", async () => {
+  for (const registrationInfo of [
+    {
+      credentialDeviceType: "multiDevice",
+      credentialBackedUp: true,
+      credential: {
+        id: Buffer.from("synced-credential").toString("base64url"),
+        publicKey: new Uint8Array([1, 2, 3]),
+        counter: 1,
+        transports: ["internal"]
+      }
+    },
+    {
+      credentialDeviceType: "singleDevice",
+      credentialBackedUp: true,
+      credential: {
+        id: Buffer.from("backup-eligible-credential").toString("base64url"),
+        publicKey: new Uint8Array([4, 5, 6]),
+        counter: 1,
+        transports: ["internal"]
+      }
+    }
+  ]) {
+    const repository = new MemoryWebAuthnRepository();
+    const challenge = randomBytes(32);
+    repository.challenge = {
+      id: REGISTRATION,
+      challenge,
+      challengeDigest: createHash("sha256").update(challenge).digest(),
+      expiresAt: new Date(Date.now() + 60_000).toISOString()
+    };
+    const fakeVerify = async () => ({ verified: true, registrationInfo });
+    const service = new FlowWebAuthnService(
+      repository as unknown as FlowWebAuthnRepository,
+      fakeVerify as unknown as typeof verifyRegistrationResponse
+    );
+    assert.equal(await service.verifyRegistration({
+      accountId: ACCOUNT,
+      sessionId: SESSION,
+      registrationId: REGISTRATION,
+      response: { id: "credential-response" }
+    }), false);
+    assert.equal(repository.failed, true);
+    assert.equal(repository.registered, null);
+  }
 });
 
 test("invalid WebAuthn registration response consumes the challenge", async () => {
