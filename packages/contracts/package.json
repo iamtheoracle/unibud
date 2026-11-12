@@ -8,7 +8,9 @@
     "./profile": "./src/profile.ts",
     "./education": "./src/education.ts",
     "./session": "./src/session.ts",
-    "./profile-experience": "./src/profile-experience.ts"
+    "./profile-experience": "./src/profile-experience.ts",
+    "./search": "./src/search.ts",
+    "./chat": "./src/chat.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
