@@ -610,7 +610,7 @@ Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delive
 
 ## Flow financial foundation status — 2026-11-12
 
-- **Building:** migration 0048 adds account-scoped Flow financial domain tables, MoneyLead account mapping, idempotent payment intents, lifecycle constraints, transaction PIN hash storage contract, WebAuthn public-key credential storage, exact-intent authorization challenge records, rate-limit state and balanced immutable settlement-mirror journal.
+- **Building:** migrations 0048–0049 add account-scoped Flow financial domain tables, MoneyLead account mapping, idempotent payment intents, lifecycle constraints, transaction PIN hash storage contract, WebAuthn public-key credential storage, exact-intent authorization challenge records, rate-limit state, balanced immutable settlement-mirror journal and a signed-session database procedure for payment-intent creation with concurrent idempotency enforcement.
 - **Database security:** signed-session RLS on every Flow table; column-limited read-only app access; no direct app access to PIN hashes, WebAuthn keys, authorization challenges or rate-limit records. Journal ingestion is deliberately not enabled.
 - **Ledger boundary:** Flow journal is a mirror of externally verified MoneyLead settlement events only. It is not the authoritative bank ledger and cannot be used to calculate spendable balances or independently execute transfers.
 - **Not yet implemented:** intent/API procedures, PIN service, WebAuthn verification, challenge creation/consumption, transfer orchestration, MoneyLead gateway, provider/issuer/settlement adapters.
