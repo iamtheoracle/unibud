@@ -746,3 +746,13 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - The previously verified migrations 0037–0040 provide dual-control concurrency hardening, the non-login maintenance execution role, transactional in-app MFA notices, and two-key HMAC verifier overlap. Notifications are in-app only; external email/SMS delivery is not established.
 - Issue #16 remediation is present in migration 0021 and its PostgreSQL integration test: actor identity is derived from cryptographically verified database context, and the actor-selectable legacy function signatures are dropped. Issue #16 remains open pending independent review and formal disposition.
 - PR #15 remains open, draft and unmerged. No production deployment, recurring production scheduler, production Operations grants or regulated financial functionality is enabled.
+
+
+### Operations MFA recovery-code HMAC rotation support — 2026-11-12
+
+- Added a versioned recovery-code HMAC keyring in operations-mfa-core.ts. Legacy v1 digests remain verifiable; newly generated recovery codes use the active v2 key ID and a domain-separated HMAC input.
+- Recovery redemption now computes at most three candidates (legacy key plus the one/two configured v2 keys) and calls the new bounded PostgreSQL candidate wrapper. The wrapper delegates to the existing atomic one-time redemption procedure; the application role no longer has execute permission on the legacy single-digest entry point.
+- Added migration 0041_operations_mfa_recovery_key_rotation.sql, its PostgreSQL privilege-boundary test, application tests for legacy/new key compatibility and keyring validation, environment documentation and a rotation runbook.
+- The legacy recovery HMAC key remains required while any legacy recovery-code set may still be outstanding. Digest rows intentionally do not expose their key ID; retirement requires controlled replacement evidence and must not be inferred from successful deployment alone.
+- CI status: exact-head Foundation, Web/Database and Oracle Arc API workflows must complete successfully before this implementation is marked verified. Do not rotate production keys as part of this code change.
+- No production secrets, secret-manager bindings, recovery-code regeneration, production grant changes or deployment were performed. PR #15 remains open/draft/unmerged; Issue #16 remains open pending independent security review.
