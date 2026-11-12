@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type Grant = {
   grant_id: string; account_id: string; operator_role: string; permissions: string[];
@@ -61,7 +61,7 @@ export default function OperationsGrantsClient() {
 
   useEffect(() => { void load(); }, [load]);
 
-  async function submitRequest(event: React.FormEvent<HTMLFormElement>) {
+  async function submitRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setLoading(true); setError(""); setNotice("");
     try {
       if (!identifier.trim() || !password) throw new Error("Enter your sign-in identifier and password for reauthentication.");
