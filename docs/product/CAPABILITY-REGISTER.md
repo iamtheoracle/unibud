@@ -13,6 +13,18 @@ This register is the scope-preservation ledger for the complete UNIBUD ecosystem
 
 The initial repository foundation is documentation and service scaffolding. The spaces below are not represented as fully implemented.
 
+## Current Operations capability status — 2026-11-12
+
+This section supersedes older Operations checkpoint language below wherever historical entries describe implemented work as still absent. Those older entries remain as implementation history.
+
+- **Non-forgeable actor provenance:** migrations 0021 and 0023 replace actor-selectable UUID function signatures with signed account and exact persisted-session verification. Tests 0021/0023 cover forged GUCs, cross-account session binding, expiry, revocation, key/verifier isolation and audit attribution. Issue #16 is technically remediated in code but remains open for independent security review.
+- **MFA and step-up:** enrollment, confirmation, challenge, recovery, regeneration, status, lockout, key rotation, exact-session step-up and browser coverage exist in code. It is not production-enabled; key provisioning, operational lifecycle controls and independent review remain gates.
+- **Grant governance:** migrations 0043–0047 implement dual-control grant/revocation, requester same-session cancellation, bounded expiry, post-lock revalidation and transactional in-app notifications. The browser console supports request/review/decision/cancel, active inventory and notification read state.
+- **Concurrency:** independent-connection PostgreSQL CI races approve/reject, approve/cancel, cancellation after step-up expiry during lock wait, and approval versus bounded expiry; the expiry case also checks requester/target notification fan-out.
+- **Accessibility:** targeted keyboard/table/live-status/reduced-motion improvements are CI-verified. A complete WCAG/assistive-technology audit is not complete.
+- **External delivery and observability:** email/SMS notification delivery, alert routing, monitoring, retry/receipt processing and operational backup/recovery evidence are not implemented or production-verified.
+- **Release boundary:** PR #15 remains draft/open/unmerged. Latest fully verified code head 302a604b10f44ea8172cb1381850258e04f0eb71 passed Foundation 43160660473, Web/Database 43160660441 and Oracle Arc API 43160660395. The later documentation commits 91e19ded5c77d94ab4c942dbca9289153c37ef2b and f698170f434c19bb8c987e2e0127b43cc999c4ee are undergoing their own exact-head CI; do not treat them as fully verified until all workflows finish. No production migrations, signing-key provisioning, grants, worker activation, MFA activation or deployment are claimed.
+
 ## Platform foundations
 
 | Capability | Scope to preserve | Initial state |
@@ -28,7 +40,7 @@ The initial repository foundation is documentation and service scaffolding. The 
 | Payments and bookings | Provider-backed transactions, confirmation, idempotency, reconciliation, refunds and disputes | Target |
 | AI assistance | Oracle Arc integration with scoped memory, agent permissions, confirmation and audit | Designed |
 | Accessibility and localisation | Responsive layouts, accessible interaction, language/currency/time-zone support | Target |
-| Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | Target |
+| Operations and observability | Audit, logs, metrics, alerts, backups, recovery, support tooling | In progress — session-derived non-forgeable actor/session context, MFA/step-up, append-only audit/search/export, dual-control grants/revocation, bounded expiry, in-app notifications, grant console and targeted accessibility refinements are implemented and CI-verified on the Operations foundation branch; independent security review, full accessibility audit, alerting/monitoring, external notification delivery, secret-manager/production key provisioning, backup/recovery operations and production rollout remain outstanding |
 
 
 ## Identity onboarding
