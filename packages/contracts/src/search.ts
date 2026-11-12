@@ -4,9 +4,20 @@ import type { ApplicationId, ResourceId } from "./identity.ts";
  * Search intent is classified by trusted server logic. A client-provided
  * destination or intent is only a hint and must never grant access.
  */
+export type ConnectSearchCategory =
+  | "people"
+  | "communities"
+  | "creators"
+  | "institutions"
+  | "opportunities"
+  | "services"
+  | "food"
+  | "events"
+  | "trips";
+
 export type SearchIntent =
   | { kind: "academic" }
-  | { kind: "general_discovery" }
+  | { kind: "general_discovery"; category: ConnectSearchCategory }
   | { kind: "adult_dating" }
   | { kind: "space_scoped"; applicationId: ApplicationId; resourceId?: ResourceId };
 
