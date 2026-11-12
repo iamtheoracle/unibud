@@ -16,28 +16,28 @@ export function classifyGlobalSearchIntent(query: string): SearchIntent {
   if (/\b(school|campus|university|universities|college|colleges|faculty|department|departments|course|courses|class|classes|exam|exams|assignment|assignments|tutor|tutors|lecturer|lecturers|study group|scholarship|scholarships|lecture|lectures|coursework)\b/u.test(normalized)) {
     return { kind: "academic" };
   }
-  if (/\\b(community|communities|groups|clubs)\\b/u.test(normalized)) {
+  if (/\b(community|communities|groups|clubs)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "communities" };
   }
-  if (/\\b(creator|creators|influencer|influencers|content creator)\\b/u.test(normalized)) {
+  if (/\b(creator|creators|influencer|influencers|content creator)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "creators" };
   }
-  if (/\\b(institution|institutions|organisation|organization|company|companies)\\b/u.test(normalized)) {
+  if (/\b(institution|institutions|organisation|organization|company|companies)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "institutions" };
   }
-  if (/\\b(job|jobs|career|careers|internship|internships|opportunity|opportunities)\\b/u.test(normalized)) {
+  if (/\b(job|jobs|career|careers|internship|internships|opportunity|opportunities)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "opportunities" };
   }
-  if (/\\b(service|services|photographer|photographers|plumber|plumbers|electrician|electricians|designer|designers)\\b/u.test(normalized)) {
+  if (/\b(service|services|photographer|photographers|plumber|plumbers|electrician|electricians|designer|designers)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "services" };
   }
-  if (/\\b(food|restaurant|restaurants|cafe|cafes|coffee|catering)\\b/u.test(normalized)) {
+  if (/\b(food|restaurant|restaurants|cafe|cafes|coffee|catering)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "food" };
   }
-  if (/\\b(event|events|meetup|meetups|concert|concerts|festival|festivals)\\b/u.test(normalized)) {
+  if (/\b(event|events|meetup|meetups|concert|concerts|festival|festivals)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "events" };
   }
-  if (/\\b(trip|trips|travel|adventure|adventures|tour|tours)\\b/u.test(normalized)) {
+  if (/\b(trip|trips|travel|adventure|adventures|tour|tours)\b/u.test(normalized)) {
     return { kind: "general_discovery", category: "trips" };
   }
   return { kind: "general_discovery", category: "people" };
