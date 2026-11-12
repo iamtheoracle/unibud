@@ -135,6 +135,12 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0047_operations_grant_notifications.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0048_flow_domain_and_settlement_mirror.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0049_flow_payment_intent_procedures.test.sql
+      - name: Verify concurrent Flow payment intent idempotency
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          bash -n scripts/test-flow-idempotency-concurrency.sh
+          bash scripts/test-flow-idempotency-concurrency.sh
       - name: Verify concurrent Operations dual-control terminal transitions
         env:
           PGPASSWORD: unibud_test_only
