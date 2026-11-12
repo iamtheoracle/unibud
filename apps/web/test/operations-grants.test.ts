@@ -16,6 +16,9 @@ const cancellationMigration = readFileSync(new URL("../../../database/migrations
 const cancellationTest = readFileSync(new URL("../../../database/tests/0044_operations_grant_request_cancellation.test.sql", import.meta.url), "utf8");
 const databaseTest = readFileSync(new URL("../../../database/tests/0043_operations_grant_dual_control.test.sql", import.meta.url), "utf8");
 const workflow = readFileSync(new URL("../../../.github/workflows/foundation.yml", import.meta.url), "utf8");
+const webWorkflow = readFileSync(new URL("../../../.github/workflows/web.yml", import.meta.url), "utf8");
+const grantE2e = readFileSync(new URL("../../../scripts/e2e/operations-grants.mjs", import.meta.url), "utf8");
+const grantE2ePage = readFileSync(new URL("../src/app/e2e/operations-grants/page.tsx", import.meta.url), "utf8");
 
 test("grant request API uses a validated same-origin session and fresh password assertion", () => {
   assert.match(grantsRoute, /hasSameOrigin\(request\)/);
@@ -105,4 +108,16 @@ test("grant lifecycle notifications are transactional, account-scoped and explic
   assert.match(client, /OperationsGrantNotifications/);
   assert.match(workflow, /database\/migrations\/0047_operations_grant_notifications\.sql/);
   assert.match(workflow, /database\/tests\/0047_operations_grant_notifications\.test\.sql/);
+});
+
+
+test("grant console browser E2E is isolated from production and runs in web CI", () => {
+  assert.match(grantE2ePage, /process\.env\.NODE_ENV === "production"/);
+  assert.match(grantE2ePage, /UNIBUD_E2E_TEST_MODE !== "true"/);
+  assert.match(grantE2e, /Grant notifications/);
+  assert.match(grantE2e, /Mark as read/);
+  assert.match(grantE2e, /Approve/);
+  assert.match(grantE2e, /Cancel my request/);
+  assert.match(grantE2e, /Submit for independent approval/);
+  assert.match(webWorkflow, /scripts\/e2e\/operations-grants\.mjs/);
 });
