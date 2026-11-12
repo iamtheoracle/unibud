@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { UnconfiguredFlowMoneyLeadGateway } from "../src/lib/server/flow/flow-moneylead-gateway.ts";
+import { UnconfiguredFlowMoneyLeadGateway } from "../src/lib/server/flow/flow-moneylead-gateway-core.ts";
 import type { FlowMoneyLeadGateway } from "../src/lib/server/flow/flow-moneylead-gateway-contract.ts";
 
 test("MoneyLead gateway fails closed until a verified adapter is installed", async () => {
