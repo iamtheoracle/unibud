@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FlowWebAuthnRepository } from "@/lib/server/flow/flow-webauthn-repository";
 import { FlowWebAuthnService } from "@/lib/server/flow/flow-webauthn-service";
-import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
+import { getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import {
   hasSameOrigin,
