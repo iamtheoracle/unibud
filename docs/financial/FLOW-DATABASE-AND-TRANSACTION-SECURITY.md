@@ -16,7 +16,8 @@
 - Account ownership is enforced by composite foreign keys and signed-session RLS.
 - Idempotency is scoped to a Flow account and stores only a SHA-256 digest of the caller-provided high-entropy key.
 - Recipient references and MoneyLead identifiers are stored as ciphertext plus keyed lookup digests; the application encryption/key management is a separate deployment requirement.
-- Payment payload columns are immutable after intent creation. Lifecycle transitions are constrained to the allowed forward path; reversals are new external settlement mirror events.
+- Payment payload columns are immutable after intent creation. Lifecycle transitions include settlement, refund, reversal, failure and cancellation; refunds/reversals are represented as separate MoneyLead mirror events.
+- Migration 0049 adds `flow_create_payment_intent`, a SECURITY DEFINER procedure owned by the NOLOGIN Flow owner. It requires both signed account and exact persisted-session context, verifies Flow-account ownership, stores a database-computed transaction digest, audits creation/replay/mismatch and uses a unique constraint plus `ON CONFLICT DO NOTHING` to make concurrent duplicate submissions idempotent. It creates an instruction only; it does not debit, reserve, submit or settle funds.
 - Authorization challenges are single-use, expiry-bound, session-bound and tied to the exact `details_digest` of the intent.
 - PIN storage accepts only an Argon2id PHC hash. PIN verification, enrollment and recovery are not yet wired; never store plaintext PINs.
 - Biometric storage contains WebAuthn public keys and counters only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
