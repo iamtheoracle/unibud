@@ -64,5 +64,31 @@ The application supports a separate, versioned AES-256-GCM keyring for encrypted
 
 - `apps/web/test/operations-mfa-core.test.ts` covers legacy v1 reads, v2 active-key writes, old/new key overlap, unknown/retired key rejection, key-ID validation and environment keyring parsing.
 - This is application-level rotation support, not a production secret-manager integration or a completed live rotation.
-- The recovery-code HMAC key has no versioned digest/key-ID format yet. Do not rotate `UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY` until a separate backwards-compatible digest migration is implemented and verified.
+## Operations MFA recovery-code HMAC rotation
+
+Recovery-code digests use a separate key domain from TOTP seed encryption and assertion signing. Never reuse keys between these purposes.
+
+- Legacy recovery digests remain HMAC-SHA-256 with the legacy key and the v1 domain-separated account/code input.
+- When UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEYRING_JSON is configured, newly generated recovery codes use the active key and a key-ID-separated v2 domain.
+- The keyring accepts one or two unique 32-byte keys and requires the active key ID to exist. The existing UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY remains required as the legacy v1 verification key while legacy recovery codes may still exist.
+- Redemption computes the legacy digest and every configured v2 candidate. The application submits no more than three fixed-length digest candidates to a bounded PostgreSQL SECURITY DEFINER wrapper. The wrapper delegates each candidate to the original atomic redemption primitive; a successful code is still redeemed once, invalid attempts do not consume the assertion nonce, and application roles cannot execute the legacy single-digest function directly.
+- PostgreSQL continues to store only keyed 32-byte digests. It does not store plaintext codes or HMAC keys.
+
+### Rotation procedure
+
+1. Generate an independent 32-byte recovery HMAC key in the approved secret manager. Never place key material in Git, tickets, logs or chat.
+2. Keep UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY unchanged as the legacy v1 key. Configure the new key as the active key in UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEYRING_JSON; during overlap, retain the previous v2 key as the second key.
+3. Roll out the configuration to every application instance. New recovery-code sets are written using the active v2 key. Redemption checks the legacy key and all configured v2 keys, so previously issued codes remain usable.
+4. Verify both legacy-code redemption and newly generated-code redemption in a non-production environment, including wrong-account rejection, invalid-code rejection and replay rejection. Verify the PostgreSQL application role can execute only the candidate wrapper.
+5. Do not remove a v2 key while any outstanding recovery-code set may contain digests made with it. Because digest rows intentionally do not reveal their key ID, retirement requires a controlled account-by-account recovery-code regeneration/replacement exercise and independent evidence that the old set is no longer needed.
+6. Retain the legacy v1 key until all outstanding legacy recovery-code sets have been replaced or redeemed and the database/backup recovery procedure no longer requires it. There is no automatic key migration or plaintext recovery-code reconstruction.
+7. For a subsequent rotation, keep the active and previous v2 keys in the two-entry keyring. Do not exceed the two-key overlap bound; do not retire a key until the outstanding-code replacement evidence is complete.
+
+### Verification and limitations
+
+- apps/web/test/operations-mfa-core.test.ts covers legacy digest compatibility, active-key writes, old/new key candidate verification, keyring bounds and environment parsing.
+- database/tests/0041_operations_mfa_recovery_key_rotation.test.sql verifies the bounded candidate wrapper, SECURITY DEFINER ownership/search path, application-role execute boundaries and continued denial of direct recovery-table access.
+- apps/web/test/operations-mfa-recovery.test.ts verifies that the same-origin recovery endpoint submits bounded digest candidates to PostgreSQL.
+- This is rotation support, not a live production key rotation. No production key has been provisioned, no secret manager has been connected, and no user recovery codes have been regenerated.
+- Production secret-manager access policy, staged rollout, recovery-code replacement evidence, backup recovery and independent security review remain required.
 - Production key provisioning, secret-manager access policy, deployment rollout, backup recovery and independent security review remain required.
