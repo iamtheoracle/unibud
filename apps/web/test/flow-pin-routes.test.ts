@@ -11,8 +11,12 @@ test("PIN enrollment and verification derive account/session only from validated
   const verify = source("../src/app/api/flow/transaction-pin/verify/route.ts");
   for (const route of [enroll, verify]) {
     assert.ok(route.includes("hasSameOrigin(request)"));
+    assert.ok(route.includes("getFlowAuthDatabasePool"));
+    assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
     assert.ok(route.includes("readSessionCookie(request)"));
     assert.ok(route.includes("sessions.validate(token)"));
+  assert.ok(route.includes("getFlowAuthDatabasePool"));
+  assert.doesNotMatch(route, /getAuthDatabasePool|getAppDatabasePool/);
     assert.ok(route.includes("validation.account.id"));
     assert.ok(route.includes("validation.session.id"));
     assert.doesNotMatch(route, /body\.(accountId|sessionId|role|approved|authorized)/);
