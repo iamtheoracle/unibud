@@ -7,6 +7,10 @@ const decisionRoute = readFileSync(new URL("../src/app/api/internal/operations/g
 const cancelRoute = readFileSync(new URL("../src/app/api/internal/operations/grants/[requestId]/cancel/route.ts", import.meta.url), "utf8");
 const client = readFileSync(new URL("../src/app/operations/grants/operations-grants-client.tsx", import.meta.url), "utf8");
 const page = readFileSync(new URL("../src/app/operations/grants/page.tsx", import.meta.url), "utf8");
+const grantNotificationsRoute = readFileSync(new URL("../src/app/api/internal/operations/grants/notifications/route.ts", import.meta.url), "utf8");
+const grantNotificationsClient = readFileSync(new URL("../src/app/operations/grants/operations-grant-notifications.tsx", import.meta.url), "utf8");
+const grantNotificationsMigration = readFileSync(new URL("../../../database/migrations/0047_operations_grant_notifications.sql", import.meta.url), "utf8");
+const grantNotificationsTest = readFileSync(new URL("../../../database/tests/0047_operations_grant_notifications.test.sql", import.meta.url), "utf8");
 const migration = readFileSync(new URL("../../../database/migrations/0043_operations_grant_dual_control.sql", import.meta.url), "utf8");
 const cancellationMigration = readFileSync(new URL("../../../database/migrations/0044_operations_grant_request_cancellation.sql", import.meta.url), "utf8");
 const cancellationTest = readFileSync(new URL("../../../database/tests/0044_operations_grant_request_cancellation.test.sql", import.meta.url), "utf8");
@@ -75,4 +79,30 @@ test("grant database lifecycle keeps rate-limited queue reads volatile and prote
   assert.match(databaseTest, /state='rejected'/);
   assert.match(workflow, /database\/migrations\/0043_operations_grant_dual_control\.sql/);
   assert.match(workflow, /database\/tests\/0043_operations_grant_dual_control\.test\.sql/);
+});
+
+
+test("grant lifecycle notifications are transactional, account-scoped and explicitly in-app", () => {
+  assert.match(grantNotificationsMigration, /AFTER INSERT OR UPDATE OF state ON public\.unibud_operator_grant_requests/);
+  assert.match(grantNotificationsMigration, /request_submitted/);
+  assert.match(grantNotificationsMigration, /request_approved/);
+  assert.match(grantNotificationsMigration, /request_rejected/);
+  assert.match(grantNotificationsMigration, /request_cancelled/);
+  assert.match(grantNotificationsMigration, /request_expired/);
+  assert.match(grantNotificationsMigration, /ENABLE ROW LEVEL SECURITY/);
+  assert.match(grantNotificationsMigration, /FORCE ROW LEVEL SECURITY/);
+  assert.match(grantNotificationsMigration, /UNIQUE\(account_id,request_id,event_type\)/);
+  assert.match(grantNotificationsMigration, /does not represent external email\/SMS delivery/i);
+  assert.match(grantNotificationsTest, /Submitted request did not notify requester and target exactly once/);
+  assert.match(grantNotificationsTest, /Rejected request did not notify requester, target and approver exactly once/);
+  assert.match(grantNotificationsRoute, /hasSameOrigin\(request\)/);
+  assert.match(grantNotificationsRoute, /sessions\.validate\(token\)/);
+  assert.match(grantNotificationsRoute, /createSignedSessionContextFromEnvironment/);
+  assert.match(grantNotificationsRoute, /unibud_operator_list_grant_notifications/);
+  assert.match(grantNotificationsRoute, /unibud_operator_mark_grant_notification_read/);
+  assert.match(grantNotificationsClient, /Grant notifications/);
+  assert.match(grantNotificationsClient, /do not indicate external email or SMS delivery/);
+  assert.match(client, /OperationsGrantNotifications/);
+  assert.match(workflow, /database\/migrations\/0047_operations_grant_notifications\.sql/);
+  assert.match(workflow, /database\/tests\/0047_operations_grant_notifications\.test\.sql/);
 });
