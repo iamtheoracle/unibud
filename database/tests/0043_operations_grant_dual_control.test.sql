@@ -242,4 +242,73 @@ BEGIN
  END IF;
 END
 $verify_revoke$;
+-- Rejection records the independent reviewer rather than erasing the decision actor.
+WITH x AS (
+ SELECT 'f0430000-0000-4000-8000-000000000001'::text a,
+ 'f0430000-0000-4000-8000-000000000011'::text s,
+ floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+ 'f0430000-0000-4000-8000-000000000081'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d1',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d2',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $reject_request$
+DECLARE i BIGINT; e BIGINT; n UUID; sig TEXT; rid UUID;
+BEGIN
+ i:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; e:=i+60;
+ n:='f0430000-0000-4000-8000-000000000082';
+ sig:=encode(public.hmac(convert_to(
+  'v1:f0430000-0000-4000-8000-000000000001:f0430000-0000-4000-8000-000000000011:password_reauth:'||
+  i::TEXT||':'||e::TEXT||':'||n::TEXT||':-','UTF8'),decode(repeat('d3',32),'hex'),'sha256'),'hex');
+ rid:=public.unibud_operator_request_grant_change(
+  'grant','f0430000-0000-4000-8000-000000000003',NULL,'support_readonly',
+  ARRAY['operations.audit.read']::text[],clock_timestamp()+interval '20 days',
+  'second_review',i,e,n,sig);
+ IF rid IS NULL THEN RAISE EXCEPTION 'Second grant request was not created'; END IF;
+ PERFORM set_config('test.reject_request_id',rid::TEXT,true);
+END
+$reject_request$;
+RESET ROLE;
+WITH x AS (
+ SELECT 'f0430000-0000-4000-8000-000000000002'::text a,
+ 'f0430000-0000-4000-8000-000000000012'::text s,
+ floor(extract(epoch FROM clock_timestamp())+60)::bigint::text e,
+ 'f0430000-0000-4000-8000-000000000091'::text n
+)
+SELECT set_config('unibud.account_id',a,true),set_config('unibud.session_id',s,true),
+ set_config('unibud.context_expiry',e,true),set_config('unibud.context_nonce',n,true),
+ set_config('unibud.context_signature',encode(public.hmac(convert_to(a||':'||e||':'||n,'UTF8'),decode(repeat('d1',32),'hex'),'sha256'),'hex'),true),
+ set_config('unibud.session_context_signature',encode(public.hmac(convert_to('v1:'||a||':'||s||':'||e||':'||n,'UTF8'),decode(repeat('d2',32),'hex'),'sha256'),'hex'),true)
+FROM x;
+SET LOCAL ROLE unibud_app;
+DO $reject_decision$
+DECLARE i BIGINT; e BIGINT; n UUID; sig TEXT;
+BEGIN
+ i:=floor(extract(epoch FROM clock_timestamp()))::BIGINT; e:=i+60;
+ n:='f0430000-0000-4000-8000-000000000092';
+ sig:=encode(public.hmac(convert_to(
+  'v1:f0430000-0000-4000-8000-000000000002:f0430000-0000-4000-8000-000000000012:password_reauth:'||
+  i::TEXT||':'||e::TEXT||':'||n::TEXT||':-','UTF8'),decode(repeat('d3',32),'hex'),'sha256'),'hex');
+ IF NOT public.unibud_operator_decide_grant_change(
+  current_setting('test.reject_request_id')::UUID,'reject','rejected_after_review',i,e,n,sig) THEN
+  RAISE EXCEPTION 'Independent grant rejection failed';
+ END IF;
+END
+$reject_decision$;
+RESET ROLE;
+DO $verify_rejection$
+BEGIN
+ IF NOT EXISTS(SELECT 1 FROM public.unibud_operator_grant_requests
+   WHERE request_id=current_setting('test.reject_request_id')::UUID
+   AND state='rejected'
+   AND requester_account_id='f0430000-0000-4000-8000-000000000001'
+   AND approver_account_id='f0430000-0000-4000-8000-000000000002'
+   AND decision_reason_code='rejected_after_review') THEN
+   RAISE EXCEPTION 'Rejected request did not retain the independent approver';
+ END IF;
+END
+$verify_rejection$;
 ROLLBACK;
