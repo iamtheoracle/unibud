@@ -66,14 +66,42 @@ BEGIN
     RETURN NULL;
   END IF;
 
-  -- A repeated idempotency key returns the original intent only when all
-  -- transaction-defining fields match. It never creates a second instruction.
-  SELECT * INTO v_existing
-    FROM public.flow_payment_intents
-   WHERE flow_account_id=p_flow_account_id
-     AND account_id=v_actor
-     AND idempotency_key_digest=p_idempotency_key_digest;
-  IF FOUND THEN
+  -- Build the immutable transaction digest before the insert. The unique
+  -- constraint plus ON CONFLICT is the concurrency gate: two simultaneous
+  -- requests with one idempotency key can create only one intent.
+  v_intent_id:=gen_random_uuid();
+  v_details_digest:=public.digest(convert_to(
+    jsonb_build_object(
+      'account_id',v_actor::TEXT,
+      'flow_account_id',p_flow_account_id::TEXT,
+      'payment_intent_id',v_intent_id::TEXT,
+      'recipient_ref_digest',encode(p_recipient_ref_digest,'hex'),
+      'amount',p_amount::TEXT,
+      'currency',p_currency,
+      'fee_amount',p_fee_amount::TEXT,
+      'purpose_code',p_purpose_code
+    )::TEXT,'UTF8'),'sha256');
+
+  INSERT INTO public.flow_payment_intents(
+    payment_intent_id,flow_account_id,account_id,idempotency_key_digest,
+    recipient_ref_ciphertext,recipient_ref_digest,amount,currency,fee_amount,
+    details_digest,purpose_code,status,created_at
+  ) VALUES(
+    v_intent_id,p_flow_account_id,v_actor,p_idempotency_key_digest,
+    p_recipient_ref_ciphertext,p_recipient_ref_digest,p_amount,p_currency,
+    p_fee_amount,v_details_digest,p_purpose_code,'created',v_now
+  )
+  ON CONFLICT(flow_account_id,idempotency_key_digest) DO NOTHING
+  RETURNING payment_intent_id INTO v_intent_id;
+
+  IF NOT FOUND THEN
+    SELECT * INTO v_existing
+      FROM public.flow_payment_intents
+     WHERE flow_account_id=p_flow_account_id
+       AND account_id=v_actor
+       AND idempotency_key_digest=p_idempotency_key_digest;
+    IF NOT FOUND THEN RETURN NULL; END IF;
+
     IF v_existing.recipient_ref_digest<>p_recipient_ref_digest
        OR v_existing.amount<>p_amount
        OR v_existing.currency<>p_currency
@@ -100,29 +128,6 @@ BEGIN
     );
     RETURN v_existing.payment_intent_id;
   END IF;
-
-  v_intent_id:=gen_random_uuid();
-  v_details_digest:=public.digest(convert_to(
-    jsonb_build_object(
-      'account_id',v_actor::TEXT,
-      'flow_account_id',p_flow_account_id::TEXT,
-      'payment_intent_id',v_intent_id::TEXT,
-      'recipient_ref_digest',encode(p_recipient_ref_digest,'hex'),
-      'amount',p_amount::TEXT,
-      'currency',p_currency,
-      'fee_amount',p_fee_amount::TEXT,
-      'purpose_code',p_purpose_code
-    )::TEXT,'UTF8'),'sha256');
-
-  INSERT INTO public.flow_payment_intents(
-    payment_intent_id,flow_account_id,account_id,idempotency_key_digest,
-    recipient_ref_ciphertext,recipient_ref_digest,amount,currency,fee_amount,
-    details_digest,purpose_code,status,created_at
-  ) VALUES(
-    v_intent_id,p_flow_account_id,v_actor,p_idempotency_key_digest,
-    p_recipient_ref_ciphertext,p_recipient_ref_digest,p_amount,p_currency,
-    p_fee_amount,v_details_digest,p_purpose_code,'created',v_now
-  );
 
   INSERT INTO public.security_audit_events(
     id,actor_account_id,application_id,action,outcome,
