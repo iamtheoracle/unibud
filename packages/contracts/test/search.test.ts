@@ -78,3 +78,25 @@ test("explicit SouLync scope retains independent adult eligibility and consent g
     requiresIndependentConsent: true
   });
 });
+
+test("every selectable space scope is preserved without crossing into another space", () => {
+  const spaces = [
+    "connect", "quad", "bud_board", "square", "soullync", "riff", "wayward", "quarter", "flow"
+  ] as const;
+  for (const space of spaces) {
+    const route = routeSearchIntent({
+      kind: "space_scoped",
+      applicationId: space as ApplicationId
+    });
+    assert.equal(route.kind, "scoped");
+    if (route.kind !== "scoped") continue;
+    assert.equal(route.applicationId, space);
+    if (space === "soullync") {
+      assert.equal(route.requiresAdultEligibility, true);
+      assert.equal(route.requiresIndependentConsent, true);
+    } else {
+      assert.equal(route.requiresAdultEligibility, undefined);
+      assert.equal(route.requiresIndependentConsent, undefined);
+    }
+  }
+});
