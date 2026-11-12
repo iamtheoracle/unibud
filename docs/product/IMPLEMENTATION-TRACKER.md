@@ -871,3 +871,10 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Oracle Arc API:** run 43160136965 passed.
 - **Remaining:** independent security review Issue #16, grant-console accessibility review, and any future external email/SMS delivery integration. In-app notifications are not external delivery.
 - **Release boundary:** branch/PR CI only; no production migration, grant provisioning, deployment or operator activation.
+
+### Grant console accessibility refinements
+
+- Added table captions and `scope=col` headers to the pending request and active grant tables.
+- Made horizontally scrollable table regions keyboard-focusable and gave each a descriptive accessible name.
+- Added visible keyboard focus indicators, polite live announcement for unread notifications and reduced-motion handling.
+- Added web contract assertions. Full assistive-technology and WCAG review remains outstanding; these targeted changes do not claim conformance.
