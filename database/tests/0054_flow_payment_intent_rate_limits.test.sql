@@ -3,7 +3,8 @@
 BEGIN;
 
 INSERT INTO public.accounts(id,status) VALUES
- ('f0550000-0000-4000-8000-000000000001','active');
+ ('f0550000-0000-4000-8000-000000000001','active'),
+ ('f0550000-0000-4000-8000-000000000002','active');
 INSERT INTO public.account_sessions(
  id,account_id,credential_digest,issued_at,last_seen_at,idle_expires_at,absolute_expires_at
 ) VALUES
@@ -12,6 +13,9 @@ INSERT INTO public.account_sessions(
   clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'),
  ('f0550000-0000-4000-8000-000000000012','f0550000-0000-4000-8000-000000000001',
   decode(repeat('d2',32),'hex'),clock_timestamp()-interval '1 minute',clock_timestamp(),
+  clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day'),
+ ('f0550000-0000-4000-8000-000000000013','f0550000-0000-4000-8000-000000000002',
+  decode(repeat('d5',32),'hex'),clock_timestamp()-interval '1 minute',clock_timestamp(),
   clock_timestamp()+interval '1 hour',clock_timestamp()+interval '1 day');
 INSERT INTO public.flow_customer_accounts(
  flow_account_id,account_id,moneylead_customer_ref_ciphertext,moneylead_customer_ref_digest,
@@ -101,6 +105,31 @@ BEGIN
     1.00,'NGN',0.00,'member_transfer'
   ) IS NOT NULL THEN
     RAISE EXCEPTION 'Payment intent limit was bypassed with a second session';
+  END IF;
+
+  -- A separate account has its own bucket and remains able to create an intent.
+  v_nonce:=gen_random_uuid()::TEXT;
+  v_expiry:=floor(extract(epoch FROM clock_timestamp())+60)::TEXT;
+  PERFORM set_config('unibud.account_id','f0550000-0000-4000-8000-000000000002',true);
+  PERFORM set_config('unibud.session_id','f0550000-0000-4000-8000-000000000013',true);
+  PERFORM set_config('unibud.context_expiry',v_expiry,true);
+  PERFORM set_config('unibud.context_nonce',v_nonce,true);
+  PERFORM set_config('unibud.context_signature',
+    encode(public.hmac(convert_to(
+      'f0550000-0000-4000-8000-000000000002:'||v_expiry||':'||v_nonce,'UTF8'),
+      decode(repeat('d3',32),'hex'),'sha256'),'hex'),true);
+  PERFORM set_config('unibud.session_context_signature',
+    encode(public.hmac(convert_to(
+      'v1:f0550000-0000-4000-8000-000000000002:f0550000-0000-4000-8000-000000000013:'||
+      v_expiry||':'||v_nonce,'UTF8'),
+      decode(repeat('d4',32),'hex'),'sha256'),'hex'),true);
+  IF public.flow_create_payment_intent(
+    'f0550000-0000-4000-8000-000000000022',
+    digest('flow-limit-idempotency-account-two','sha256'),
+    decode(repeat('bc',29),'hex'),digest('flow-limit-recipient-account-two','sha256'),
+    2.00,'NGN',0.00,'member_transfer'
+  ) IS NULL THEN
+    RAISE EXCEPTION 'One account rate limit incorrectly blocked a different account';
   END IF;
 
   BEGIN
