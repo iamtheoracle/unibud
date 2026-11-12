@@ -139,3 +139,16 @@ Session step-up is invalidated by the database's verified session binding: revok
 The MFA setup UI now generates a QR image locally from the short-lived provisioning URI using the `qrcode` package. The QR is a browser data URL held only in component state; it is not uploaded to an external QR provider and is not stored in browser persistence. A manual setup key remains visible for fallback. The Playwright MFA flow now checks for the accessible QR image before continuing enrollment.
 
 This UI improvement does not change the backend trust model or activate MFA by itself. Exact-head CI is pending. Outstanding release controls include dual-approved disable/reset, configured notifications, lifecycle invalidation/cleanup, secret-manager provisioning and key rotation/recovery, production-like migration review and independent security review.
+
+## Dual-control operator grant lifecycle — migration 0043
+
+Migration 0043 adds a database-authoritative request/approval lifecycle for ordinary operator grants and revocations. It does not add an HTTP route or browser console yet.
+
+- Bootstrap permissions `operations.grants.request` and `operations.grants.approve` are allow-listed but must be provisioned only by a trusted DBA through a controlled out-of-band process. The workflow cannot grant either permission, directly or indirectly.
+- Grant requests require the request permission, current exact-session MFA step-up and a short-lived, single-use password reauthentication assertion. The requester cannot target their own account.
+- Approval/rejection requires the separate approval permission, current exact-session MFA step-up and its own password reauthentication assertion. The requester and target cannot approve; the original requester account/session/grant/MFA state and the approver's live session are revalidated after locking the request.
+- Grants are limited to the four existing operator roles and their role-specific permission allow-lists. Grant expiry is mandatory and limited to more than one hour and at most 90 days. No grant-management permission can be assigned through this workflow.
+- Revocation is also a request followed by independent approval. The application role cannot directly read the request table or mutate the operator-grant table. Successful request and decision transitions append audit events.
+- Requests expire after 30 minutes. The application role has only narrow SECURITY DEFINER function execution; no direct table access is granted.
+
+The migration and PostgreSQL test are wired into Foundation CI. The HTTP API, operator grant inventory UI, notification delivery, request cancellation/expiry worker, concurrency stress coverage, and independent security review remain outstanding. Existing DBA-controlled provisioning/revocation remains the bootstrap and emergency path until those controls are reviewed. Do not provision bootstrap permissions or apply this migration in production without an approved database change and independent security review.
