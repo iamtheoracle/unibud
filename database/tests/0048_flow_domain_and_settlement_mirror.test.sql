@@ -48,6 +48,18 @@ INSERT INTO public.flow_journal_postings(journal_entry_id,currency,account_code,
  ('f0480000-0000-4000-8000-000000000041','NGN','CUSTOMER_CLEARING','debit',1260.00),
  ('f0480000-0000-4000-8000-000000000041','NGN','SETTLEMENT_CONTROL','credit',1260.00);
 SET CONSTRAINTS flow_journal_entry_balance_check IMMEDIATE;
+INSERT INTO public.flow_journal_entries(
+ journal_entry_id,account_id,flow_account_id,payment_intent_id,source_system,
+ source_event_ref_digest,currency,entry_kind,effective_at
+) VALUES (
+ 'f0480000-0000-4000-8000-000000000043','f0480000-0000-4000-8000-000000000001',
+ 'f0480000-0000-4000-8000-000000000021','f0480000-0000-4000-8000-000000000031',
+ 'moneylead',digest('refund-event-1','sha256'),'NGN','refund',clock_timestamp()
+);
+INSERT INTO public.flow_journal_postings(journal_entry_id,currency,account_code,side,amount) VALUES
+ ('f0480000-0000-4000-8000-000000000043','NGN','SETTLEMENT_CONTROL','debit',1260.00),
+ ('f0480000-0000-4000-8000-000000000043','NGN','CUSTOMER_CLEARING','credit',1260.00);
+SET CONSTRAINTS flow_journal_entry_balance_check IMMEDIATE;
 SET CONSTRAINTS flow_journal_entry_balance_check DEFERRED;
 
 DO $constraints$
@@ -165,7 +177,7 @@ BEGIN
  SELECT count(*) INTO v_accounts FROM public.flow_customer_accounts;
  SELECT count(*) INTO v_intents FROM public.flow_payment_intents;
  SELECT count(*) INTO v_journal FROM public.flow_journal_entries;
- IF v_accounts<>1 OR v_intents<>1 OR v_journal<>1 THEN
+ IF v_accounts<>1 OR v_intents<>1 OR v_journal<>2 THEN
    RAISE EXCEPTION 'Flow RLS did not isolate account A: %, %, %',v_accounts,v_intents,v_journal;
  END IF;
  IF unibud_private.current_account_id()<>'f0480000-0000-4000-8000-000000000001'::UUID THEN
