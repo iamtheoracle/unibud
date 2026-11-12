@@ -19,7 +19,7 @@ Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED
 
 - State: OPEN, DRAFT, NOT MERGED.
 - Branch: `foundation/session-derived-operations-rbac-v2`.
-- Latest inspected and verified code head: `9cf961e4658146b3bc24fe50a238aa9f7f144178`.
+- Latest inspected and verified code head: `4cc1cd09d377933e02c0067b6c94761159db791f`.
 - Exact-head GitHub Actions at `c16e9e8cff39dc6926c11bc6b8c3851d52ca5604`: **PASS** for Foundation checks (run `42925640430`), Oracle Arc API (run `42925640442`), and UNIBUD Web and Database (run `42925640425`). The Web workflow completed type check, contract tests, server security unit tests, lint, profile browser E2E and production build; PostgreSQL migration validation passed. Foundation applied all identity/auth migrations and passed PostgreSQL 16 RLS isolation and foundation integrity.
 - Review submissions and inline review threads: none returned by the latest inspection.
 - Merge/deploy/production migration: not performed.
@@ -725,3 +725,11 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - The earlier concurrency concern is resolved by existing checked-in scripts and their Foundation CI execution; no additional concurrency patch was needed in this checkpoint.
 - PR #15 remains OPEN, DRAFT and UNMERGED. Issue #16 remains an independent security-review blocker. No production deployment, production key rotation, recurring scheduler activation, or live Operations grant provisioning is claimed.
 - **Next acceptance work:** complete independent security review and Issue #16 disposition; select and approve the production scheduler/runtime and secret-manager binding before activation; verify worker monitoring/retry/alert delivery; define notification retention against audit retention; complete key provisioning/rotation evidence, Operations grant-management UI, audit search/export and security alerting.
+
+
+### Maintenance worker safety-contract verification — 2026-11-12
+
+- Added `scripts/test-operations-mfa-maintenance-worker.sh` and wired it into Foundation CI before the disposable database worker smoke test.
+- The test verifies percent-encoded PostgreSQL URI parsing, that `DATABASE_URL` is removed before `psql`, that credentials do not appear in process arguments, required libpq environment, TLS downgrade rejection, unsupported URI-parameter rejection, batch bounds, the configured 45-second hard timeout arguments, and propagation of psql/timeout failures.
+- **Verified at exact branch head `4cc1cd09d377933e02c0067b6c94761159db791f`:** Foundation `43136999522` PASSED, including the new safety-contract test and the actual worker invocation through the disposable least-privilege scheduler login; UNIBUD Web and Database `43136999469` PASSED; Oracle Arc API `43136999501` PASSED.
+- This does not establish production scheduler configuration, production credentials/secret-manager integration, external alert delivery, recurring execution, or production deployment. PR #15 remains draft/open/unmerged and Issue #16 remains open pending independent review/disposition.
