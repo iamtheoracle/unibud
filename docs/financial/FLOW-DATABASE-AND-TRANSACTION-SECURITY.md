@@ -22,7 +22,7 @@
 - Biometric storage contains WebAuthn public keys and counters only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
 - Journal postings are append-only and deferred constraint-trigger validation requires at least two postings with equal debit and credit totals per journal entry/currency.
 - App runtime access is read-only and column-limited. PIN hashes, biometric public keys, authorization challenges, recovery digests and rate-limit records are not directly readable or writable by `unibud_app`.
-- The `unibud_flow_ingest` role is NOLOGIN and can append only journal rows. A dedicated integration login, secrets and scoped MoneyLead event verification are still required before it can be used.
+- The `unibud_flow_ingest` role is NOLOGIN and has no table privileges. It is reserved for a future verified gateway; a dedicated integration login, secrets, signed event verification and scoped account resolution are required before any ingestion privilege is granted.
 
 ## Deliberate deferrals
 
