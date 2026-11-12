@@ -54,7 +54,12 @@ DECLARE visible_c INTEGER;
 DECLARE visible_d INTEGER;
 DECLARE visible_e INTEGER;
 DECLARE audit_count INTEGER;
+DECLARE viewer_ready BOOLEAN;
 BEGIN
+ SELECT public.account_discovery_viewer_verified() INTO viewer_ready;
+ IF viewer_ready IS DISTINCT FROM TRUE THEN
+  RAISE EXCEPTION 'Verified account A should be eligible for discovery';
+ END IF;
  SELECT count(*) INTO visible_b FROM public.profiles WHERE handle_normalized='discover-b';
  SELECT count(*) INTO visible_c FROM public.profiles WHERE handle_normalized='discover-c';
  SELECT count(*) INTO visible_d FROM public.profiles WHERE handle_normalized='discover-d';
@@ -109,7 +114,12 @@ FROM context;
 SET LOCAL ROLE unibud_app;
 DO $unknown_viewer$
 DECLARE visible_a INTEGER;
+DECLARE viewer_ready BOOLEAN;
 BEGIN
+ SELECT public.account_discovery_viewer_verified() INTO viewer_ready;
+ IF viewer_ready IS DISTINCT FROM FALSE THEN
+  RAISE EXCEPTION 'Unverified viewer should receive a fail-closed discovery status';
+ END IF;
  SELECT count(*) INTO visible_a FROM public.profiles WHERE handle_normalized='discover-a';
  IF visible_a <> 0 THEN
   RAISE EXCEPTION 'Viewer without verified age cohort discovered another account';
