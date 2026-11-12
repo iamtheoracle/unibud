@@ -766,3 +766,14 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Oracle Arc API:** PASSED, run 43142923010.
 - CI initially exposed two test integration defects: migration 0041 had not been included in the Foundation migration/test command list, and the new test used pgTAP although the Foundation PostgreSQL service does not install that extension. Both were corrected: migration/test 0041 are explicitly wired into Foundation CI and the new test now uses native SQL assertions. The subsequent exact-head Foundation and Web/Database runs passed.
 - No production key was generated or provisioned; no secret-manager binding, user recovery-code replacement, production deployment, production Operations grant or live key rotation was performed. The legacy recovery HMAC key must remain configured while legacy codes may exist. PR #15 remains open/draft/unmerged; Issue #16 remains open pending independent security review.
+
+
+### Operations audit search and CSV export — 2026-11-12
+
+- Added migration 0042 with a bounded, exact-session/MFA-step-up-protected SECURITY DEFINER audit read model. It filters by a mandatory time window (maximum 90 days), optional permission/outcome/actor and keyset cursor, and caps results at 1,000.
+- Added an `audit_read` database-enforced rate-limit bucket (30 requests/minute) mapped to `operations.audit.read`.
+- Added authenticated `GET /api/internal/operations/audit` with JSON pages (maximum 100), CSV export (maximum 1,000), no-store headers, server-side validation, and append-only audit records for successful, denied and failed access attempts.
+- Added `/operations/audit` search console with time, permission, outcome and actor filters, pagination and CSV export.
+- Added PostgreSQL authorization/filter/bounds/table-isolation coverage and application route contract tests; migration and SQL test are included in Foundation CI.
+- Grant provisioning/revocation remains controlled database-administrator work. No HTTP grant-management endpoint was added: doing so without a reviewed independent dual-control grant lifecycle would expand privileged authority prematurely.
+- Exact-head CI for this new checkpoint is pending. No production deployment, grants or permissions were provisioned.
