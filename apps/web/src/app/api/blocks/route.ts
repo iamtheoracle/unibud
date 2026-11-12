@@ -24,11 +24,17 @@ export async function POST(request: NextRequest) {
     const result = await withVerifiedAccount(request, async accountId => {
       const context = createSignedAccountContextFromEnvironment(accountId);
       return withSignedAccountTransaction(getAppDatabasePool(), context, async client => {
-        await client.query("SELECT public.account_block_handle($1)", [body.handle]);
-        return true;
+        const result = await client.query<{ changed: boolean }>(
+          "SELECT public.account_block_handle($1) AS changed",
+          [body.handle]
+        );
+        return result.rows[0]?.changed === true;
       });
     });
     if ("response" in result) return result.response;
+    if (!result.value) {
+      return NextResponse.json({ ok: false, error: "The block change could not be applied." }, { status: 409 });
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     return routeError(error);
@@ -46,11 +52,17 @@ export async function DELETE(request: NextRequest) {
     const result = await withVerifiedAccount(request, async accountId => {
       const context = createSignedAccountContextFromEnvironment(accountId);
       return withSignedAccountTransaction(getAppDatabasePool(), context, async client => {
-        await client.query("SELECT public.account_unblock_handle($1)", [body.handle]);
-        return true;
+        const result = await client.query<{ changed: boolean }>(
+          "SELECT public.account_unblock_handle($1) AS changed",
+          [body.handle]
+        );
+        return result.rows[0]?.changed === true;
       });
     });
     if ("response" in result) return result.response;
+    if (!result.value) {
+      return NextResponse.json({ ok: false, error: "The block change could not be applied." }, { status: 409 });
+    }
     return NextResponse.json({ ok: true });
   } catch (error) {
     return routeError(error);
