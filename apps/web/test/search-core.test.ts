@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { SqlClient } from "../src/lib/server/database/account-context-core.ts";
-import { normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
+import { consumeSearchRateLimit, normalizePeopleSearchTerm, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
 
 test("people search normalizes Unicode and whitespace without accepting short or oversized terms", () => {
   assert.equal(normalizePeopleSearchTerm("  Ａda   Lovelace "), "Ada Lovelace");
@@ -66,4 +66,51 @@ test("ordinary discovery routes to Connect", () => {
     kind: "space",
     space: "connect"
   });
+});
+
+
+test("Search rate limiting sends only a keyed opaque account digest to PostgreSQL", async () => {
+  const previous = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
+  process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = "6a".repeat(32);
+  let statement = "";
+  let parameters: readonly unknown[] = [];
+  const client: SqlClient = {
+    async query<Row = unknown>(sql: string, values?: readonly unknown[]) {
+      statement = sql;
+      parameters = values ?? [];
+      return { rows: [{ allowed: true }] as Row[] };
+    },
+    release() {}
+  };
+  try {
+    await consumeSearchRateLimit(client, "51000000-0000-4000-8000-000000000001");
+    assert.match(statement, /search_consume_rate_limit/);
+    assert.equal(parameters.length, 1);
+    assert.ok(parameters[0] instanceof Buffer);
+    assert.equal((parameters[0] as Buffer).length, 32);
+    assert.equal((parameters[0] as Buffer).toString("hex").includes("51000000"), false);
+  } finally {
+    if (previous === undefined) delete process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
+    else process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = previous;
+  }
+});
+
+test("Search rate limiting fails closed when PostgreSQL denies the account budget", async () => {
+  const previous = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
+  process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = "6a".repeat(32);
+  const client: SqlClient = {
+    async query<Row = unknown>() {
+      return { rows: [{ allowed: false }] as Row[] };
+    },
+    release() {}
+  };
+  try {
+    await assert.rejects(
+      consumeSearchRateLimit(client, "51000000-0000-4000-8000-000000000001"),
+      SearchRateLimitExceededError
+    );
+  } finally {
+    if (previous === undefined) delete process.env.UNIBUD_DB_CONTEXT_HMAC_KEY;
+    else process.env.UNIBUD_DB_CONTEXT_HMAC_KEY = previous;
+  }
 });
