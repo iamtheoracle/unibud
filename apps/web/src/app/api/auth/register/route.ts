@@ -10,12 +10,15 @@ export async function POST(request:NextRequest){
  const channel=body.channel;
  const identifier=body.identifier;
  const password=body.password;
- if((channel!=="email"&&channel!=="phone")||typeof identifier!=="string"||typeof password!=="string"){
+ if((channel!=="email"&&channel!=="phone")||typeof identifier!=="string"||typeof password!=="string"||
+   (deliveryMethod!==undefined && !["email","sms","whatsapp","rcs"].includes(String(deliveryMethod))) ||
+   (channel==="email" && deliveryMethod!==undefined && deliveryMethod!=="email") ||
+   (channel==="phone" && deliveryMethod==="email")){
   return NextResponse.json({ok:false,error:"Provide an email or E.164 phone number and password."},{status:400});
  }
  try{
   const {authentication}=createConfiguredIdentityServices();
-  const result=await authentication.register({channel,identifier,password});
+  const result=await authentication.register({channel,deliveryMethod:deliveryMethod as "email"|"sms"|"whatsapp"|"rcs"|undefined,identifier,password});
   return NextResponse.json(result,{status:202});
  }catch(error){
   if(error instanceof Error && /password length policy|email address|E\.164/.test(error.message)){
