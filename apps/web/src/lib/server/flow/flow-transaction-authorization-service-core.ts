@@ -135,14 +135,14 @@ export class FlowTransactionAuthorizationService {
     confirmationDigest: string;
     pin: string;
   }): Promise<FlowTransactionAuthorizationResult> {
-    const details = await this.payments.getConfirmationDetails(
-      input.accountId,
-      input.sessionId,
-      input.paymentIntentId
-    );
-    if (!details) return { state: "intent_unavailable" };
+    const confirmation = await this.getConfirmation({
+      accountId: input.accountId,
+      sessionId: input.sessionId,
+      paymentIntentId: input.paymentIntentId
+    });
+    if (!confirmation) return { state: "intent_unavailable" };
     if (!/^[0-9a-f]{64}$/i.test(input.confirmationDigest) ||
-        !timingSafeEqual(Buffer.from(input.confirmationDigest,"hex"),Buffer.from(details.detailsDigest))) {
+        !timingSafeEqual(Buffer.from(input.confirmationDigest,"hex"),Buffer.from(confirmation.confirmationDigest,"hex"))) {
       return { state: "details_changed" };
     }
 
