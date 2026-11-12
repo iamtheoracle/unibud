@@ -39,3 +39,9 @@ Onboarding derives the account only from a verified session, requires explicit t
 ## Verification status
 
 GitHub Actions applies migrations 0001–0010 to disposable PostgreSQL 16 and runs synthetic SQL isolation/immutability tests. Web CI runs pure service tests, TypeScript checks, lint, and build. Passing CI is not evidence that production secrets, pools, providers, delivery channels, cookie settings, backups, or operations are deployed.
+
+ 
+## OTP delivery transport boundary — 2026-11-12
+The verified identity method (`email` or `phone`) is separate from the requested OTP transport (`email`, `sms`, `whatsapp`, `rcs`). Email identities are email-only; phone identities may request SMS, WhatsApp or RCS. The server validates the combination and sends the selected `deliveryMethod` through the authenticated HTTPS verification gateway with the existing challenge ID idempotency key, bounded timeout, redirect rejection and no-store request. The browser never receives gateway credentials and does not call messaging providers directly. Legacy phone callers default to SMS.
+
+This is a transport-selection contract, not evidence of provider support. The current database challenge persists the identity channel and keyed destination/code digests, but does not persist the selected transport. A follow-up migration is required if delivery transport must be queryable in audit/operations; provider receipt/outbox state must be separately modelled rather than overloading the verification challenge. WhatsApp sender/template approval, user consent, RCS carrier/device capability, delivery receipts, retry/fallback rules and provider-specific security review remain outstanding. Do not claim delivery until the gateway and provider have been independently verified.
