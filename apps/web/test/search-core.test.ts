@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { SqlClient } from "../src/lib/server/database/account-context-core.ts";
-import { consumeSearchRateLimit, normalizePeopleSearchTerm, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
+import { consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
 
 test("people search normalizes Unicode and whitespace without accepting short or oversized terms", () => {
   assert.equal(normalizePeopleSearchTerm("  Ａda   Lovelace "), "Ada Lovelace");
@@ -97,4 +97,18 @@ test("Search rate limiting fails closed when PostgreSQL denies the verified acco
     consumeSearchRateLimit(client),
     SearchRateLimitExceededError
   );
+});
+
+
+test("Search discovery readiness exposes only a boolean derived from PostgreSQL", async () => {
+  let statement = "";
+  const client: SqlClient = {
+    async query<Row = unknown>(sql: string) {
+      statement = sql;
+      return { rows: [{ ready: false }] as Row[] };
+    },
+    release() {}
+  };
+  assert.equal(await isSearchDiscoveryReady(client), false);
+  assert.match(statement, /account_discovery_viewer_verified/);
 });
