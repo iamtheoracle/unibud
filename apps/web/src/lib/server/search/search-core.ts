@@ -1,3 +1,4 @@
+import { createHmac } from "node:crypto";
 import type { SqlClient } from "../database/account-context-core.ts";
 import { routeSearchIntent, type SearchIntent, type SearchRoute } from "../../../../../../packages/contracts/src/search.ts";
 
@@ -25,6 +26,40 @@ export function routeGlobalSearch(query: string): {
 } {
   const intent = classifyGlobalSearchIntent(query);
   return { intent, route: routeSearchIntent(intent) };
+}
+
+export class SearchRateLimitExceededError extends Error {
+  constructor() {
+    super("Search request limit exceeded.");
+    this.name = "SearchRateLimitExceededError";
+  }
+}
+
+/**
+ * Account-bound Search budget. The database stores only an opaque HMAC digest,
+ * not the account identifier. Uses the same server-only key already required
+ * to sign trusted transaction context; never accepts a digest from a client.
+ */
+export async function consumeSearchRateLimit(
+  client: SqlClient,
+  trustedAccountId: string
+): Promise<void> {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(trustedAccountId)) {
+    throw new Error("Search requires a trusted account identity.");
+  }
+  const keyHex = process.env.UNIBUD_DB_CONTEXT_HMAC_KEY?.trim() ?? "";
+  if (!/^(?:[0-9a-f]{2}){32,}$/iu.test(keyHex)) {
+    throw new Error("Search rate-limit signing key is not configured.");
+  }
+  const digest = createHmac("sha256", Buffer.from(keyHex, "hex"))
+    .update(`unibud-search-rate-limit:v1:${trustedAccountId}`, "utf8")
+    .digest();
+
+  const result = await client.query<{ allowed: boolean }>(
+    "SELECT public.search_consume_rate_limit($1) AS allowed",
+    [digest]
+  );
+  if (result.rows[0]?.allowed !== true) throw new SearchRateLimitExceededError();
 }
 
 export interface PublicProfileSearchResult {
