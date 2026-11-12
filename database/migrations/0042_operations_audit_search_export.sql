@@ -31,6 +31,9 @@ BEGIN
       v_limit:=60; v_window:=60;
       IF NOT (public.unibud_operator_has_permission('operations.mfa.security.approve')
         OR public.unibud_operator_has_permission('operations.mfa.security.request')) THEN RETURN FALSE; END IF;
+    WHEN 'notification_read' THEN
+      -- Security notices remain available to validated sessions before step-up.
+      v_limit:=60; v_window:=60;
     WHEN 'audit_read' THEN v_limit:=30; v_window:=60; v_permission:='operations.audit.read';
     ELSE RETURN FALSE;
   END CASE;
