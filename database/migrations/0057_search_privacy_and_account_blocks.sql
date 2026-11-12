@@ -99,6 +99,28 @@ ALTER FUNCTION public.account_discovery_allowed(UUID) OWNER TO unibud_profile_ow
 REVOKE ALL ON FUNCTION public.account_discovery_allowed(UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.account_discovery_allowed(UUID) TO unibud_app;
 
+CREATE OR REPLACE FUNCTION public.account_discovery_viewer_verified()
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+  SELECT EXISTS (
+    SELECT 1
+      FROM public.account_discovery_eligibility viewer
+     WHERE viewer.account_id = unibud_private.current_account_id()
+       AND viewer.status = 'verified'
+       AND viewer.verified_at <= statement_timestamp()
+       AND viewer.expires_at > statement_timestamp()
+  )
+$function$;
+
+ALTER FUNCTION public.account_discovery_viewer_verified() OWNER TO unibud_profile_owner;
+REVOKE ALL ON FUNCTION public.account_discovery_viewer_verified() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.account_discovery_viewer_verified() TO unibud_app;
+
+
 CREATE OR REPLACE FUNCTION public.account_interaction_blocked(p_target_account_id UUID)
 RETURNS BOOLEAN
 LANGUAGE SQL
@@ -241,6 +263,8 @@ COMMENT ON TABLE public.account_blocks IS
   'Account-level block relationships. Search and messaging must enforce both directions before returning records or permitting interaction.';
 COMMENT ON TABLE public.account_discovery_eligibility IS
   'Minimal age-assurance cohort gate for discovery. No client write path exists; unknown, expired or unverified accounts are undiscoverable.';
+COMMENT ON FUNCTION public.account_discovery_viewer_verified() IS
+  'Returns only whether the current signed account has current verified age-discovery eligibility; no cohort or age data is exposed.';
 COMMENT ON FUNCTION public.account_discovery_allowed(UUID) IS
   'Allows discovery only when viewer and target have current verified matching cohorts from an approved age-assurance source.';
 COMMENT ON FUNCTION public.account_block_handle(TEXT) IS
