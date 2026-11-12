@@ -145,6 +145,12 @@ jobs:
         run: |
           bash -n scripts/test-flow-idempotency-concurrency.sh
           bash scripts/test-flow-idempotency-concurrency.sh
+      - name: Verify concurrent Flow PIN rate limiting
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          bash -n scripts/test-flow-pin-rate-limit-concurrency.sh
+          bash scripts/test-flow-pin-rate-limit-concurrency.sh
       - name: Verify concurrent Operations dual-control terminal transitions
         env:
           PGPASSWORD: unibud_test_only
