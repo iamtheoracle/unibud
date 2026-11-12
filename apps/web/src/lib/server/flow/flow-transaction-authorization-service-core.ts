@@ -3,12 +3,12 @@ import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse
 } from "@simplewebauthn/server";
-import { createFlowStepUpProof } from "./flow-step-up-core";
-import { FlowDataProtection, createFlowDataProtectionFromEnvironment } from "./flow-crypto";
-import { FlowPinService } from "./flow-pin-service-core";
+import { createFlowStepUpProof } from "./flow-step-up-core.ts";
+import { FlowDataProtection, createFlowDataProtectionFromEnvironment } from "./flow-crypto.ts";
+import { FlowPinService } from "./flow-pin-service-core.ts";
 import type { FlowWebAuthnRepository } from "./flow-webauthn-repository";
 import type { FlowPaymentIntentRepository, FlowAuthorizationChallenge } from "./flow-payment-intent-repository";
-import { getFlowWebAuthnConfiguration } from "./flow-webauthn-service-core";
+import { getFlowWebAuthnConfiguration } from "./flow-webauthn-service-core.ts";
 
 export interface FlowPaymentConfirmation {
   paymentIntentId: string;
