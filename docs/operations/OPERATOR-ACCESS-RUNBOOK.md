@@ -202,3 +202,5 @@ Grant requests now generate durable in-app notices transactionally when submitte
 The inbox is account-scoped, RLS-protected and exposed only through SECURITY DEFINER list/mark-read functions using the current verified signed session. Application roles have no direct table access. The existing notification-read rate limit is reused and remains available without MFA step-up so security notices can still be read after authenticator lockout. Trusted system expiry maintenance can enqueue expiry notices through the restricted Operations owner policy; the public functions still filter by the verified account.
 
 These are in-app notifications only. No email/SMS provider, external delivery queue, delivery receipt or retry worker is implemented by this migration.
+
+The web CI also runs the isolated Operator grants browser fixture at /e2e/operations-grants. It exercises the grant notification inbox and mark-read, independent approval, requester cancellation and grant submission through intercepted HTTP boundaries. The fixture is explicitly unavailable when NODE_ENV is production or the E2E flag is absent; browser mocks do not replace PostgreSQL authorization tests.
