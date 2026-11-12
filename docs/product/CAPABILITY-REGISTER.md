@@ -597,3 +597,13 @@ The Operations grants console now has captioned tables with scoped headers, name
  
 ### User-selectable OTP delivery transports — 2026-11-12
 Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delivery preferences; email identities remain email-only. The server validates transport compatibility and passes the selected `deliveryMethod` to the existing authenticated HTTPS verification gateway. The gateway/provider has not yet been verified to implement these transports. No WhatsApp/RCS delivery, template approval, carrier reachability, provider receipts, fallback or production activation is claimed. See DEC-021 and the implementation tracker.
+
+
+### Flow × MoneyLead integration audit — 2026-11-12
+
+- **Designed / mandated:** Flow remains the customer-facing financial identity inside UNIBUD; MoneyLead remains an independent platform and institution. All UNIBUD financial entry points use one server-enforced transaction-specific user authorization protocol. Concierge/AI/plugins may prepare but cannot authorize or post.
+- **Canonical implementation status:** Flow payment execution, transaction PIN, device-bound biometric assertion, payment-intent digest, double-entry ledger, MoneyLead gateway, provider adapter, card issuing, settlement, reconciliation, refund/dispute lifecycle are **not implemented** in the reviewed canonical branch.
+- **Legacy-only:** an older UNIBUD repository has wallet balance mutation functions; these lack atomic double-entry and transaction-specific confirmation and are not approved for production reuse. Vantoriss Base44 entities are not a verified payment processor or immutable ledger.
+- **Provider status:** undecided / not verified. Generic payment-processor registry capability does not indicate an integration.
+- **Evidence:** see `docs/financial/FLOW-MONEYLead-UNIBUD-PAYMENT-ARCHITECTURE-AUDIT.md` and Issue #17.
+- **Next dependency:** first-party Flow domain schema and immutable journal, followed by transaction-bound PIN/device authentication and internal transfer lifecycle. External settlement/card capabilities remain blocked on verified provider/issuer and regulatory arrangements.

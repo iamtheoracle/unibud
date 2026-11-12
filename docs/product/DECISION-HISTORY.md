@@ -192,3 +192,15 @@
 - **Dependencies / risks:** the configured gateway must implement the declared `deliveryMethod` contract and independently verify WhatsApp/RCS sender registration, template/consent requirements, destination eligibility, delivery receipts, retries and regional availability. RCS support varies by carrier/device. No provider has been selected or verified by this code change.
 - **Supersedes / superseded by:** none.
 - **Implementation evidence:** PR #15, OTP delivery-method contract in verification services and signup/recovery interfaces; external provider integration remains NOT VERIFIED.
+
+
+### DEC-022 — Flow and MoneyLead financial integration boundary
+- **Recorded:** 2026-11-12
+- **Status:** APPROVED
+- **Decision:** Flow remains the customer-facing financial experience and card identity inside UNIBUD. MoneyLead remains a separate banking institution/platform with independent applications, infrastructure, records, products and commercial opportunities. UNIBUD financial actions must use a common server-enforced transaction-specific authorization protocol. AI agents and plugins may prepare instructions but cannot authorize or finalize them. Banking data is not social-platform data and is exposed only through narrow, authenticated, consented interfaces.
+- **Rationale:** deliver a connected financial experience without collapsing product identities, compromising customer consent or creating unrestricted cross-platform access.
+- **Alternatives considered:** relabel Flow as MoneyLead or merge both applications/data stores (rejected by founder direction).
+- **Affected areas:** Flow, MoneyLead integration gateway, Identity/Sessions, Concierge, Oracle Arc tools, plugins, The Quarter, Wayward and financial audit.
+- **Dependencies / risks:** canonical UNIBUD currently has no Flow payment implementation or verified payment provider. Legacy wallet code is not a safe ledger. Transaction PIN/device-bound authorization, immutable journal, idempotency, limits, risk controls, provider evidence, reconciliation and regulatory arrangements must be implemented/verified before live use.
+- **Supersedes / superseded by:** none.
+- **Implementation evidence:** Issue #17; audit artifact `docs/financial/FLOW-MONEYLead-UNIBUD-PAYMENT-ARCHITECTURE-AUDIT.md`; implementation remains in progress.
