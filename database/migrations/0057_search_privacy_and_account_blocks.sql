@@ -238,6 +238,38 @@ BEGIN
 END;
 $function$;
 
+CREATE OR REPLACE FUNCTION public.account_list_blocked_profiles()
+RETURNS TABLE(handle TEXT, display_name TEXT, blocked_at TIMESTAMPTZ)
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+  WITH canonical_profiles AS (
+    SELECT DISTINCT ON (b.blocked_account_id)
+      p.handle,
+      p.display_name,
+      b.created_at AS blocked_at
+    FROM public.account_blocks b
+    JOIN public.profiles p
+      ON p.owner_account_id = b.blocked_account_id
+     AND p.status = 'active'
+    JOIN public.accounts a
+      ON a.id = b.blocked_account_id
+     AND a.status = 'active'
+    WHERE b.blocker_account_id = unibud_private.current_account_id()
+      AND b.status = 'active'
+    ORDER BY b.blocked_account_id, p.handle
+  )
+  SELECT handle, display_name, blocked_at
+    FROM canonical_profiles
+   ORDER BY blocked_at DESC, handle
+$function$;
+
+ALTER FUNCTION public.account_list_blocked_profiles() OWNER TO unibud_profile_owner;
+REVOKE ALL ON FUNCTION public.account_list_blocked_profiles() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.account_list_blocked_profiles() TO unibud_app;
+
 ALTER FUNCTION public.account_block_handle(TEXT) OWNER TO unibud_profile_owner;
 ALTER FUNCTION public.account_unblock_handle(TEXT) OWNER TO unibud_profile_owner;
 REVOKE ALL ON FUNCTION public.account_block_handle(TEXT) FROM PUBLIC;
@@ -267,6 +299,8 @@ COMMENT ON FUNCTION public.account_discovery_viewer_verified() IS
   'Returns only whether the current signed account has current verified age-discovery eligibility; no cohort or age data is exposed.';
 COMMENT ON FUNCTION public.account_discovery_allowed(UUID) IS
   'Allows discovery only when viewer and target have current verified matching cohorts from an approved age-assurance source.';
+COMMENT ON FUNCTION public.account_list_blocked_profiles() IS
+  'Lists only the current account’s active blocks as safe profile handles; never returns account IDs or incoming block records.';
 COMMENT ON FUNCTION public.account_block_handle(TEXT) IS
   'Creates or reactivates an account-level block by handle using only verified transaction account context; never accepts account IDs from clients.';
 COMMENT ON FUNCTION public.account_unblock_handle(TEXT) IS
