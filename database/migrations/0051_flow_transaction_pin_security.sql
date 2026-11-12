@@ -121,6 +121,7 @@ BEGIN
   END IF;
   CASE p_action
     WHEN 'pin_verify' THEN v_window:=900; v_limit:=5; v_lock:=900;
+    WHEN 'webauthn_verify' THEN v_window:=900; v_limit:=5; v_lock:=900;
     WHEN 'pin_enroll' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
     WHEN 'pin_recovery' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
     WHEN 'webauthn_register' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
