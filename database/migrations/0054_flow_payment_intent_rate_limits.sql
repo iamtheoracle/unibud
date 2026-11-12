@@ -106,23 +106,6 @@ BEGIN
     RETURN NULL;
   END IF;
 
-  IF NOT EXISTS(
-    SELECT 1 FROM public.flow_customer_accounts f
-     WHERE f.flow_account_id=p_flow_account_id
-       AND f.account_id=v_actor
-       AND f.status='active'
-  ) THEN
-    INSERT INTO public.security_audit_events(
-      id,actor_account_id,application_id,action,outcome,
-      resource_type,resource_id,request_id,session_reference,reason_code,event_data
-    ) VALUES(
-      gen_random_uuid(),v_actor,'flow','flow.payment_intent.create','denied',
-      'flow_account',p_flow_account_id,v_request_id::TEXT,v_session::TEXT,
-      'flow_account_unavailable','{}'::jsonb
-    );
-    RETURN NULL;
-  END IF;
-
   SELECT r.allowed,r.request_count,r.locked_until
     INTO v_allowed,v_request_count,v_locked_until
     FROM public.flow_consume_flow_rate_limit('payment_intent_create') r;
@@ -136,6 +119,23 @@ BEGIN
       'rate_limited',jsonb_build_object(
         'request_count',v_request_count,'locked_until',v_locked_until
       )
+    );
+    RETURN NULL;
+  END IF;
+
+  IF NOT EXISTS(
+    SELECT 1 FROM public.flow_customer_accounts f
+     WHERE f.flow_account_id=p_flow_account_id
+       AND f.account_id=v_actor
+       AND f.status='active'
+  ) THEN
+    INSERT INTO public.security_audit_events(
+      id,actor_account_id,application_id,action,outcome,
+      resource_type,resource_id,request_id,session_reference,reason_code,event_data
+    ) VALUES(
+      gen_random_uuid(),v_actor,'flow','flow.payment_intent.create','denied',
+      'flow_account',p_flow_account_id,v_request_id::TEXT,v_session::TEXT,
+      'flow_account_unavailable','{}'::jsonb
     );
     RETURN NULL;
   END IF;
