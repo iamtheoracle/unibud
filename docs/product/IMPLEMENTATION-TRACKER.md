@@ -862,3 +862,12 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Uses separate PostgreSQL connections and signed session contexts to race approve/reject, approve/cancel, cancellation after MFA step-up expiry during a lock wait, and approval versus the bounded expiry worker.
 - Asserts exactly one terminal winner, no duplicate/inconsistent grant, correct audit attribution and expiry worker SKIP LOCKED behavior.
 - The test is committed and awaiting CI on the new branch head; it is not yet reported as passed until the workflow completes.
+
+### Grant lifecycle concurrency — verified checkpoint
+
+- **Code head:** 89c44575186176c4553db5fb962b90234e58ba83.
+- **Foundation:** run 43160136952 passed. The new independent-connection grant race harness passed alongside the existing MFA concurrency tests, PostgreSQL 16 migration/RLS tests through 0047, and bounded maintenance checks.
+- **Web and Database:** run 43160137016 passed, including TypeScript, contract/security tests, lint, grant console browser E2E, production build and migration validation.
+- **Oracle Arc API:** run 43160136965 passed.
+- **Remaining:** independent security review Issue #16, grant-console accessibility review, and any future external email/SMS delivery integration. In-app notifications are not external delivery.
+- **Release boundary:** branch/PR CI only; no production migration, grant provisioning, deployment or operator activation.
