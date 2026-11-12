@@ -65,6 +65,43 @@ try{
  await page.getByRole("heading",{name:"Operator grants",exact:true}).waitFor();
  await page.getByRole("heading",{name:"Grant notifications"}).waitFor();
  await page.getByText("2 unread",{exact:true}).waitFor();
+
+ // Automated semantic accessibility smoke checks; these do not replace a WCAG audit.
+ const accessibility = await page.evaluate(() => {
+  const unnamed = Array.from(document.querySelectorAll(
+   'button,a[href],input:not([type="hidden"]),select,textarea,[role="button"]'
+  )).filter(element => {
+   const labelledBy = element.getAttribute("aria-labelledby");
+   const hasLabelledBy = labelledBy && labelledBy.split(/\\s+/).some(id => document.getElementById(id)?.textContent?.trim());
+   const hasNativeLabel = "labels" in element && element.labels?.length > 0;
+   return !(
+    element.getAttribute("aria-label")?.trim() ||
+    hasLabelledBy ||
+    hasNativeLabel ||
+    element.getAttribute("title")?.trim() ||
+    element.textContent?.trim()
+   );
+  }).map(element => element.tagName.toLowerCase());
+  const missingImageAlt = Array.from(document.querySelectorAll("img:not([alt])")).length;
+  const tablesWithoutHeaders = Array.from(document.querySelectorAll("table")).filter(table =>
+   !table.querySelector("caption") ||
+   !Array.from(table.querySelectorAll("th")).some(header => header.getAttribute("scope") === "col")
+  ).length;
+  return {
+   mainLandmarks: document.querySelectorAll("main").length,
+   h1Count: document.querySelectorAll("h1").length,
+   unnamed,
+   missingImageAlt,
+   tablesWithoutHeaders
+  };
+ });
+ assert.deepEqual(accessibility, {
+  mainLandmarks: 1,
+  h1Count: 1,
+  unnamed: [],
+  missingImageAlt: 0,
+  tablesWithoutHeaders: 0
+ }, "Operations grants page must retain its semantic accessibility baseline");
  const firstNotice=page.locator(".mfa-notification-list li").first();
  await firstNotice.getByRole("button",{name:"Mark as read"}).click();
  await page.getByText("1 unread",{exact:true}).waitFor();
