@@ -607,3 +607,12 @@ Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delive
 - **Provider status:** undecided / not verified. Generic payment-processor registry capability does not indicate an integration.
 - **Evidence:** see `docs/financial/FLOW-MONEYLead-UNIBUD-PAYMENT-ARCHITECTURE-AUDIT.md` and Issue #17.
 - **Next dependency:** first-party Flow domain schema and immutable journal, followed by transaction-bound PIN/device authentication and internal transfer lifecycle. External settlement/card capabilities remain blocked on verified provider/issuer and regulatory arrangements.
+
+## Flow financial foundation status — 2026-11-12
+
+- **Building:** migration 0048 adds account-scoped Flow financial domain tables, MoneyLead account mapping, idempotent payment intents, lifecycle constraints, transaction PIN hash storage contract, WebAuthn public-key credential storage, exact-intent authorization challenge records, rate-limit state and balanced immutable settlement-mirror journal.
+- **Database security:** signed-session RLS on every Flow table; column-limited read-only app access; no direct app access to PIN hashes, WebAuthn keys, authorization challenges or rate-limit records. Journal ingestion is deliberately not enabled.
+- **Ledger boundary:** Flow journal is a mirror of externally verified MoneyLead settlement events only. It is not the authoritative bank ledger and cannot be used to calculate spendable balances or independently execute transfers.
+- **Not yet implemented:** intent/API procedures, PIN service, WebAuthn verification, challenge creation/consumption, transfer orchestration, MoneyLead gateway, provider/issuer/settlement adapters.
+- **Verification:** migration and synthetic SQL test are wired into Foundation CI, but this branch's exact-head CI result is pending. No production database migration, payment, provider activation, merge or deployment is claimed.
+
