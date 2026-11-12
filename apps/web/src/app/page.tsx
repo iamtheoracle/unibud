@@ -59,7 +59,7 @@ export default async function HomePage() {
         <div className="space-grid">
           {spaces.map((space, index) => (
             <article className="space" key={space.name}>
-              <span className="space-number">0{String(index + 1).padStart(2, "0")}</span><span className="space-status">In development</span>
+              <span className="space-number">{String(index + 1).padStart(2, "0")}</span><span className="space-status">In development</span>
               <h3>{space.name}</h3>
               <p>{space.description}</p>
             </article>
