@@ -155,7 +155,8 @@ BEGIN
 END
 $balance$;
 
--- Signed context proves account A sees only its own Flow objects.
+-- Signed context proves the forced-RLS table owner sees only account A's Flow objects.
+-- Migration 0056 separately proves generic app/auth roles have no direct table reads.
 UPDATE unibud_private.context_signing_keys SET active=false WHERE active;
 INSERT INTO unibud_private.context_signing_keys(key_id,secret,active)
 VALUES('flow-ci-key',decode(repeat('6f',32),'hex'),true);
@@ -171,7 +172,7 @@ SELECT set_config('unibud.account_id',account_id,true),
          encode(public.hmac(convert_to(account_id||':'||expiry||':'||nonce,'UTF8'),
            decode(repeat('6f',32),'hex'),'sha256'),'hex'),true)
 FROM ctx;
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_owner;
 DO $rls$
 DECLARE v_accounts INTEGER; v_intents INTEGER; v_journal INTEGER;
 BEGIN
