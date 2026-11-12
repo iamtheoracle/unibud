@@ -188,7 +188,6 @@ CREATE INDEX flow_journal_postings_entry_idx
 CREATE FUNCTION public.flow_assert_journal_entry_balanced()
 RETURNS TRIGGER
 LANGUAGE plpgsql
-SECURITY DEFINER
 SET search_path=pg_catalog,public
 AS $function$
 DECLARE
@@ -312,8 +311,6 @@ CREATE POLICY flow_transaction_rate_limits_owner_scope ON public.flow_transactio
 CREATE POLICY flow_journal_entries_owner_scope ON public.flow_journal_entries
   USING(account_id=unibud_private.current_account_id())
   WITH CHECK(account_id=unibud_private.current_account_id());
-CREATE POLICY flow_journal_postings_owner_check ON public.flow_journal_postings
-  FOR SELECT TO unibud_flow_owner USING(true);
 CREATE POLICY flow_journal_postings_owner_scope ON public.flow_journal_postings
   USING(EXISTS(
     SELECT 1 FROM public.flow_journal_entries e
