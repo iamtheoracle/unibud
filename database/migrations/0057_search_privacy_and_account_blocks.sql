@@ -142,27 +142,7 @@ REVOKE ALL ON FUNCTION public.account_unblock_handle(TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.account_block_handle(TEXT) TO unibud_app;
 GRANT EXECUTE ON FUNCTION public.account_unblock_handle(TEXT) TO unibud_app;
 
--- Public-profile discovery is an explicit opt-in through profile visibility.
--- It does not expose private/limited profiles or profiles blocked in either direction.
-CREATE POLICY profiles_public_discovery ON public.profiles
-  FOR SELECT
-  USING (
-    status='active'
-    AND visibility='public'
-    AND owner_account_id <> unibud_private.current_account_id()
-    AND public.account_discovery_allowed(owner_account_id)
-    AND NOT EXISTS (
-      SELECT 1 FROM public.account_blocks b
-      WHERE b.status='active'
-        AND (
-          (b.blocker_account_id=unibud_private.current_account_id()
-            AND b.blocked_account_id=profiles.owner_account_id)
-          OR
-          (b.blocker_account_id=profiles.owner_account_id
-            AND b.blocked_account_id=unibud_private.current_account_id())
-        )
-    )
-  );
+
 
 COMMENT ON TABLE public.account_discovery_eligibility IS
   'Minimal age-assurance cohort gate for discovery. No client write path exists; unknown, expired or unverified accounts are undiscoverable.';
@@ -338,6 +318,7 @@ CREATE POLICY profiles_public_discovery ON public.profiles
     status='active'
     AND visibility='public'
     AND owner_account_id <> unibud_private.current_account_id()
+    AND public.account_discovery_allowed(owner_account_id)
     AND NOT EXISTS (
       SELECT 1 FROM public.account_blocks b
       WHERE b.status='active'
