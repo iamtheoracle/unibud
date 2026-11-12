@@ -4,9 +4,12 @@ import { readFileSync } from "node:fs";
 
 const grantsRoute = readFileSync(new URL("../src/app/api/internal/operations/grants/route.ts", import.meta.url), "utf8");
 const decisionRoute = readFileSync(new URL("../src/app/api/internal/operations/grants/[requestId]/decision/route.ts", import.meta.url), "utf8");
+const cancelRoute = readFileSync(new URL("../src/app/api/internal/operations/grants/[requestId]/cancel/route.ts", import.meta.url), "utf8");
 const client = readFileSync(new URL("../src/app/operations/grants/operations-grants-client.tsx", import.meta.url), "utf8");
 const page = readFileSync(new URL("../src/app/operations/grants/page.tsx", import.meta.url), "utf8");
 const migration = readFileSync(new URL("../../../database/migrations/0043_operations_grant_dual_control.sql", import.meta.url), "utf8");
+const cancellationMigration = readFileSync(new URL("../../../database/migrations/0044_operations_grant_request_cancellation.sql", import.meta.url), "utf8");
+const cancellationTest = readFileSync(new URL("../../../database/tests/0044_operations_grant_request_cancellation.test.sql", import.meta.url), "utf8");
 const databaseTest = readFileSync(new URL("../../../database/tests/0043_operations_grant_dual_control.test.sql", import.meta.url), "utf8");
 const workflow = readFileSync(new URL("../../../.github/workflows/foundation.yml", import.meta.url), "utf8");
 
@@ -35,6 +38,20 @@ test("grant decision API delegates approval and rejection to the database", () =
   assert.doesNotMatch(decisionRoute, /UPDATE\s+public\.unibud_operator_grants/i);
 });
 
+
+test("grant cancellation is same-origin, reauthenticated and delegated to the database", () => {
+  assert.match(cancelRoute, /hasSameOrigin\\(request\\)/);
+  assert.match(cancelRoute, /sessions\\.validate\\(token\\)/);
+  assert.match(cancelRoute, /verifyCredentialsForAccount\\(/);
+  assert.match(cancelRoute, /purpose: "password_reauth"/);
+  assert.match(cancelRoute, /unibud_operator_cancel_grant_change/);
+  assert.match(cancelRoute, /withSignedSessionTransaction\\(/);
+  assert.match(cancelRoute, /Cache-Control.*no-store/);
+  assert.match(cancellationMigration, /requester_session_id<>v_session/);
+  assert.match(cancellationMigration, /grant_cancel/);
+  assert.match(cancellationTest, /SECURITY DEFINER/);
+});
+
 test("grant console is session-gated and exposes request, review, inventory and revocation workflows", () => {
   assert.match(page, /sessions\.validate\(token\)/);
   assert.match(page, /redirect\("\/login"\)/);
@@ -43,6 +60,7 @@ test("grant console is session-gated and exposes request, review, inventory and 
   assert.match(client, /Reject/);
   assert.match(client, /Active operator grants/);
   assert.match(client, /Request revocation/);
+  assert.match(client, /Cancel my request/);
   assert.match(client, /cache: "no-store"/);
 });
 
