@@ -9,7 +9,7 @@ import type {
   FlowWebAuthnCredential
 } from "./flow-webauthn-repository";
 
-function webAuthnConfiguration(): { rpId: string; origin: string; rpName: string } {
+export function getFlowWebAuthnConfiguration(): { rpId: string; origin: string; rpName: string } {
   const rpId = process.env.UNIBUD_WEBAUTHN_RP_ID?.trim().toLowerCase() ?? "";
   const configuredOrigin = process.env.UNIBUD_WEBAUTHN_ORIGIN?.trim() ?? "";
   const rpName = process.env.UNIBUD_WEBAUTHN_RP_NAME?.trim() || "UNIBUD Flow";
@@ -69,7 +69,7 @@ export class FlowWebAuthnService {
     accountId: string;
     sessionId: string;
   }): Promise<{ registrationId: string; options: Awaited<ReturnType<typeof generateRegistrationOptions>> }> {
-    const config = webAuthnConfiguration();
+    const config = getFlowWebAuthnConfiguration();
     const credentials: FlowWebAuthnCredential[] = await this.repository.listCredentials(
       input.accountId,
       input.sessionId
