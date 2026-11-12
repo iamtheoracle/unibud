@@ -16,7 +16,7 @@ const PERMISSIONS = new Set([
   "operations.audit.read", "operations.accounts.support_read",
   "operations.mfa.security.request", "operations.mfa.security.approve"
 ]);
-type GrantRequestRow = {
+type ActiveGrantRow = { grant_id: string; account_id: string; operator_role: string; permissions: string[]; granted_by: string | null; granted_at: Date | string; expires_at: Date | string | null };\ntype GrantRequestRow = {
   request_id: string; requested_action: "grant" | "revoke"; target_account_id: string;
   target_grant_id: string | null; requested_role: string | null; requested_permissions: string[] | null;
   requested_expires_at: Date | string | null; state: string; requester_account_id: string;
@@ -52,6 +52,18 @@ export async function GET(request: NextRequest) {
     const validation = await sessions.validate(token);
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
     const sessionContext = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
+    if (params.get("view") === "active-grants") {
+      const accountId = params.get("accountId");
+      if (accountId !== null && !UUID.test(accountId)) return response({ ok: false, error: "Invalid account identifier." }, 400);
+      const grants = await withSignedSessionTransaction(getAppDatabasePool(), sessionContext, async client => {
+        const result = await client.query<ActiveGrantRow>(
+          "SELECT * FROM public.unibud_operator_list_active_grants($1,$2)",
+          [accountId, limit]
+        );
+        return result.rows;
+      });
+      return response({ ok: true, viewerAccountId: validation.account.id, grants });
+    }
     const rows = await withSignedSessionTransaction(getAppDatabasePool(), sessionContext, async client => {
       const result = await client.query<GrantRequestRow>(
         "SELECT * FROM public.unibud_operator_list_grant_requests($1,$2,$3,$4)",
@@ -62,7 +74,9 @@ export async function GET(request: NextRequest) {
     return response({
       ok: true, viewerAccountId: validation.account.id, requests: rows,
       nextCursor: requestId || rows.length < limit ? null : {
-        beforeCreatedAt: new Date(rows[rows.length - 1]!.created_at).toISOString(),
+        beforeCreatedAt: rows[rows.length - 1]!.created_at instanceof Date
+          ? (rows[rows.length - 1]!.created_at as Date).toISOString()
+          : new Date(rows[rows.length - 1]!.created_at as string).toISOString(),
         beforeRequestId: rows[rows.length - 1]!.request_id
       }
     });
