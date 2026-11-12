@@ -43,7 +43,7 @@ SELECT set_config('unibud.account_id',account_id,true),
            decode(repeat('a5',32),'hex'),'sha256'),'hex'),true)
 FROM ctx;
 
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_auth;
 DO $webauthn$
 DECLARE
   v_challenge BYTEA:=decode(repeat('b1',32),'hex');
@@ -143,7 +143,7 @@ BEGIN
 
   BEGIN
     EXECUTE 'SELECT credential_id FROM public.flow_biometric_credentials';
-    RAISE EXCEPTION 'Application role can directly read biometric credential table';
+    RAISE EXCEPTION 'Flow transaction runtime can directly read biometric credential table';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
 END
@@ -170,7 +170,7 @@ SELECT set_config('unibud.account_id',account_id,true),
            decode(repeat('a5',32),'hex'),'sha256'),'hex'),true)
 FROM ctx;
 
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_auth;
 DO $isolation$
 DECLARE v_count INTEGER;
 BEGIN
