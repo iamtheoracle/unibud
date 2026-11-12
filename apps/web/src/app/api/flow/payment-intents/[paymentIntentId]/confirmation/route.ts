@@ -4,7 +4,7 @@ import { FlowPinRepository } from "@/lib/server/flow/flow-pin-repository";
 import { FlowPinService } from "@/lib/server/flow/flow-pin-service";
 import { FlowWebAuthnRepository } from "@/lib/server/flow/flow-webauthn-repository";
 import { FlowTransactionAuthorizationService } from "@/lib/server/flow/flow-transaction-authorization-service";
-import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
+import { getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import {
   hasSameOrigin,
@@ -26,7 +26,7 @@ function reply(body: Record<string, unknown>, status = 200): NextResponse {
 }
 
 function createAuthorizationService(): FlowTransactionAuthorizationService {
-  const pool = getAppDatabasePool();
+  const pool = getAuthDatabasePool();
   return new FlowTransactionAuthorizationService({
     payments: new FlowPaymentIntentRepository(pool),
     pins: new FlowPinService(new FlowPinRepository(pool)),
