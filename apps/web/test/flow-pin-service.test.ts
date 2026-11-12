@@ -7,10 +7,12 @@ class MemoryPinRepository {
   pinHash: string | null = null;
   failures = 0;
   locked = false;
+  lastProof: { expiresEpoch: number; nonce: string; signature: string } | null = null;
 
-  async enroll(_accountId: string, _sessionId: string, hash: string) {
+  async enroll(_accountId: string, _sessionId: string, hash: string, proof: { expiresEpoch: number; nonce: string; signature: string }) {
     if (this.pinHash) return false;
     this.pinHash = hash;
+    this.lastProof = proof;
     return true;
   }
   async beginVerification() {
@@ -30,9 +32,10 @@ class MemoryPinRepository {
     this.failures = 0;
     return true;
   }
-  async recover(_accountId: string, _sessionId: string, hash: string) {
+  async recover(_accountId: string, _sessionId: string, hash: string, proof: { expiresEpoch: number; nonce: string; signature: string }) {
     if (!this.pinHash) return false;
     this.pinHash = hash;
+    this.lastProof = proof;
     this.failures = 0;
     this.locked = false;
     return true;
@@ -62,9 +65,11 @@ test("Flow PIN enrollment stores an Argon2id verifier and verifies without retur
 test("Flow PIN enrollment rejects weak PINs and mismatched confirmation", async () => {
   const repository = new MemoryPinRepository();
   const service = new FlowPinService(repository as unknown as FlowPinRepository);
-  await assert.rejects(service.enroll({
-    accountId: ACCOUNT, sessionId: SESSION, pin: "123456", confirmation: "123456"
-  }), /six-digit/);
+  for (const weakPin of ["123456", "654321", "234567", "987654", "111111"]) {
+    await assert.rejects(service.enroll({
+      accountId: ACCOUNT, sessionId: SESSION, pin: weakPin, confirmation: weakPin
+    }), /six-digit/);
+  }
   await assert.rejects(service.enroll({
     accountId: ACCOUNT, sessionId: SESSION, pin: "482917", confirmation: "482918"
   }), /does not match/);
