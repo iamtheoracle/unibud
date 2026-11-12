@@ -41,3 +41,28 @@ Rotate one trust domain at a time. Do not rotate all three together unless an ap
 - Foundation CI applies migration 0040 and runs its PostgreSQL 16 integration test.
 - This migration changes database verification only. It does not provision production keys, update secret-manager values, rotate deployed application instances, revoke sessions, or perform a live production rotation.
 - Rotation is not complete until the application signer rollout and post-retirement rejection checks are observed in the target environment. CI is not evidence of production key rotation.
+
+## Operations MFA TOTP seed-encryption key rotation
+
+The application supports a separate, versioned AES-256-GCM keyring for encrypted TOTP seeds. This is distinct from the three database-verified HMAC signing-key domains above and must never reuse their keys.
+
+- Legacy ciphertext remains in the existing `v1.<iv>.<tag>.<ciphertext>` envelope and is decrypted only with `UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY`.
+- When `UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON` is configured, new ciphertext uses `v2.<key-id>.<iv>.<tag>.<ciphertext>`. The account and key ID are authenticated as AES-GCM additional data.
+- The keyring JSON has the shape `{"activeKeyId":"new-id","keys":[{"id":"old-id","keyHex":"<64 hex chars>"},{"id":"new-id","keyHex":"<64 hex chars>"}]}`. It accepts one or two unique key IDs, each with exactly 32 bytes of key material, and requires the active ID to exist in the keyring.
+- The legacy environment key remains required while any v1 ciphertext exists. Do not remove or replace it until a separately controlled inventory/re-encryption exercise proves no v1 records remain and the old key is no longer needed for recovery.
+
+### Rotation procedure
+
+1. Generate a new independent 32-byte key in the approved secret manager. Never place key material in Git, tickets, logs or chat.
+2. Bind the new key as the active key in the JSON keyring. During overlap, retain the previous v2 key in the keyring and retain the original v1 key in `UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY`.
+3. Deploy the configuration to one environment at a time. New TOTP enrollment/resumption writes v2 envelopes; reads continue to accept legacy v1 and either configured v2 key.
+4. Verify new enrollments can be decrypted by the deployed application and existing v1 enrollments remain usable. Do not disable or reset member MFA as a rotation shortcut.
+5. Retire a previous v2 key only after inventory proves no active ciphertext references its key ID. Removing a key while ciphertext still references it causes fail-closed decryption errors.
+6. Retain the legacy v1 key until a separately approved re-encryption and backup-retention procedure has completed. No automatic database re-encryption is performed by this code.
+
+### Verification and limitations
+
+- `apps/web/test/operations-mfa-core.test.ts` covers legacy v1 reads, v2 active-key writes, old/new key overlap, unknown/retired key rejection, key-ID validation and environment keyring parsing.
+- This is application-level rotation support, not a production secret-manager integration or a completed live rotation.
+- The recovery-code HMAC key has no versioned digest/key-ID format yet. Do not rotate `UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY` until a separate backwards-compatible digest migration is implemented and verified.
+- Production key provisioning, secret-manager access policy, deployment rollout, backup recovery and independent security review remain required.
