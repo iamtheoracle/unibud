@@ -113,7 +113,7 @@ export function normalizePeopleSearchTerm(value: unknown): string | null {
 }
 
 /**
- * Connect people discovery only. The caller must establish a transaction with
+ * Connect public profile discovery for people, creators or communities only. The caller must establish a transaction with
  * a signed account context derived from a verified persisted session.
  * PostgreSQL RLS independently limits rows to active public profiles and
  * excludes accounts blocked in either direction. Never add IDs to this DTO.
