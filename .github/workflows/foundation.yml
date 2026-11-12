@@ -135,6 +135,12 @@ jobs:
         env:
           PGPASSWORD: unibud_test_only
         run: bash scripts/test-operations-mfa-dual-control-concurrency.sh
+      - name: Verify concurrent Operations grant lifecycle transitions
+        env:
+          PGPASSWORD: unibud_test_only
+        run: |
+          bash -n scripts/test-operations-grant-concurrency.sh
+          bash scripts/test-operations-grant-concurrency.sh
       - name: Verify concurrent MFA assertion replay prevention
         env:
           PGPASSWORD: unibud_test_only
