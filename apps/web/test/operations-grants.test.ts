@@ -40,12 +40,12 @@ test("grant decision API delegates approval and rejection to the database", () =
 
 
 test("grant cancellation is same-origin, reauthenticated and delegated to the database", () => {
-  assert.match(cancelRoute, /hasSameOrigin\\(request\\)/);
-  assert.match(cancelRoute, /sessions\\.validate\\(token\\)/);
-  assert.match(cancelRoute, /verifyCredentialsForAccount\\(/);
+  assert.match(cancelRoute, /hasSameOrigin\(request\)/);
+  assert.match(cancelRoute, /sessions\.validate\(token\)/);
+  assert.match(cancelRoute, /verifyCredentialsForAccount\(/);
   assert.match(cancelRoute, /purpose: "password_reauth"/);
   assert.match(cancelRoute, /unibud_operator_cancel_grant_change/);
-  assert.match(cancelRoute, /withSignedSessionTransaction\\(/);
+  assert.match(cancelRoute, /withSignedSessionTransaction\(/);
   assert.match(cancelRoute, /Cache-Control.*no-store/);
   assert.match(cancellationMigration, /requester_session_id<>v_session/);
   assert.match(cancellationMigration, /grant_cancel/);
