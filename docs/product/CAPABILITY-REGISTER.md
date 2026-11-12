@@ -577,3 +577,7 @@ A dedicated Foundation CI harness now exercises approval/rejection, approval/can
 ### Grant lifecycle concurrency — CI verified
 
 The independent-connection grant lifecycle harness passed on code head 89c44575186176c4553db5fb962b90234e58ba83 (Foundation run 43160136952). It verified approve/reject and approve/cancel serialization, post-lock MFA step-up expiry rejection, and approval versus bounded expiry with SKIP LOCKED behavior. Web and Database run 43160137016 and Oracle Arc API run 43160136965 also passed. These are CI results, not production activation. Independent security review remains open.
+
+### Grant console accessibility refinements
+
+The Operations grants console now has captioned tables with scoped headers, named keyboard-focusable horizontal scroll regions, explicit keyboard focus indicators, polite unread-count announcements and reduced-motion styling. These are targeted improvements; a full WCAG/assistive-technology audit remains outstanding.
