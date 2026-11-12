@@ -48,7 +48,7 @@ CREATE TABLE public.flow_payment_intents (
   status TEXT NOT NULL DEFAULT 'created'
     CHECK (status IN (
       'created','awaiting_authorization','authorized','submitted','accepted',
-      'settled','failed','cancelled','reversed'
+      'settled','failed','cancelled','reversed','refunded'
     )),
   external_instruction_ref_ciphertext BYTEA,
   external_instruction_ref_digest BYTEA
@@ -60,16 +60,18 @@ CREATE TABLE public.flow_payment_intents (
   failed_at TIMESTAMPTZ,
   cancelled_at TIMESTAMPTZ,
   reversed_at TIMESTAMPTZ,
+  refunded_at TIMESTAMPTZ,
   FOREIGN KEY(account_id,flow_account_id)
     REFERENCES public.flow_customer_accounts(account_id,flow_account_id) ON DELETE RESTRICT,
   UNIQUE(flow_account_id,idempotency_key_digest),
   UNIQUE(account_id,payment_intent_id),
   CHECK ((status='authorized')=(authorized_at IS NOT NULL)
-      OR status IN ('submitted','accepted','settled','failed','cancelled','reversed')),
-  CHECK (status NOT IN ('settled','reversed') OR settled_at IS NOT NULL),
+      OR status IN ('submitted','accepted','settled','failed','cancelled','reversed','refunded')),
+  CHECK (status NOT IN ('settled','reversed','refunded') OR settled_at IS NOT NULL),
   CHECK (status<>'failed' OR failed_at IS NOT NULL),
   CHECK (status<>'cancelled' OR cancelled_at IS NOT NULL),
   CHECK (status<>'reversed' OR reversed_at IS NOT NULL),
+  CHECK (status<>'refunded' OR refunded_at IS NOT NULL),
   CHECK (external_instruction_ref_ciphertext IS NULL OR external_instruction_ref_digest IS NOT NULL),
   CHECK (external_instruction_ref_digest IS NULL OR external_instruction_ref_ciphertext IS NOT NULL)
 );
@@ -259,7 +261,7 @@ BEGIN
     OR (OLD.status='authorized' AND NEW.status IN ('submitted','cancelled','failed'))
     OR (OLD.status='submitted' AND NEW.status IN ('accepted','settled','failed'))
     OR (OLD.status='accepted' AND NEW.status IN ('settled','failed'))
-    OR (OLD.status='settled' AND NEW.status='reversed')
+    OR (OLD.status='settled' AND NEW.status IN ('reversed','refunded'))
     OR OLD.status=NEW.status
   ) THEN
     RAISE EXCEPTION 'Invalid Flow payment intent lifecycle transition: % -> %',OLD.status,NEW.status
