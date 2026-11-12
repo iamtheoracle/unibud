@@ -163,7 +163,7 @@
 ## Implementation history pointers
 
 - **Authentication and profile foundations:** see the migration history, implementation tracker and capability register. These are implementation artefacts and may contain work completed after the original product decisions.
-- **Operations MFA:** migrations 0022–0035 are tracked in the security contract and implementation tracker. They are a privileged platform-security workstream, not the full Operations product.
+- **Operations MFA:** migrations 0021–0040 and their tests are tracked in the security contract and implementation tracker. Migration 0021 removes actor-selectable Operations authorization/audit interfaces in favour of cryptographically verified transaction identity; migration 0040 adds database-side overlapping HMAC verifier keys. Application-level versioned TOTP seed-encryption overlap is documented separately. This is a privileged platform-security workstream, not the full Operations product.
 - **Oracle Arc:** API and infrastructure work must be linked to Oracle Arc decisions above; a passing API test does not prove a deployed model runtime.
 - **Master scope:** see [UNIBUD-ORACLE-ARC-MASTER-PLAN.md](UNIBUD-ORACLE-ARC-MASTER-PLAN.md).
 
