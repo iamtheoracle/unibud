@@ -53,12 +53,9 @@ CREATE TABLE public.account_discovery_eligibility (
 
 ALTER TABLE public.account_blocks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.account_blocks FORCE ROW LEVEL SECURITY;
-CREATE POLICY account_blocks_participant_read ON public.account_blocks
+CREATE POLICY account_blocks_blocker_read ON public.account_blocks
   FOR SELECT
-  USING (
-    blocker_account_id = unibud_private.current_account_id()
-    OR blocked_account_id = unibud_private.current_account_id()
-  );
+  USING (blocker_account_id = unibud_private.current_account_id());
 
 ALTER TABLE public.account_discovery_eligibility ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.account_discovery_eligibility FORCE ROW LEVEL SECURITY;
@@ -101,6 +98,35 @@ $function$;
 ALTER FUNCTION public.account_discovery_allowed(UUID) OWNER TO unibud_profile_owner;
 REVOKE ALL ON FUNCTION public.account_discovery_allowed(UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.account_discovery_allowed(UUID) TO unibud_app;
+
+CREATE OR REPLACE FUNCTION public.account_interaction_blocked(p_target_account_id UUID)
+RETURNS BOOLEAN
+LANGUAGE SQL
+STABLE
+SECURITY DEFINER
+SET search_path = pg_catalog, public, unibud_private
+AS $function$
+  SELECT CASE
+    WHEN unibud_private.current_account_id() IS NULL OR p_target_account_id IS NULL THEN TRUE
+    ELSE EXISTS (
+      SELECT 1
+        FROM public.account_blocks b
+       WHERE b.status = 'active'
+         AND (
+           (b.blocker_account_id = unibud_private.current_account_id()
+             AND b.blocked_account_id = p_target_account_id)
+           OR
+           (b.blocker_account_id = p_target_account_id
+             AND b.blocked_account_id = unibud_private.current_account_id())
+         )
+    )
+  END
+$function$;
+
+ALTER FUNCTION public.account_interaction_blocked(UUID) OWNER TO unibud_profile_owner;
+REVOKE ALL ON FUNCTION public.account_interaction_blocked(UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.account_interaction_blocked(UUID) TO unibud_app;
+
 
 CREATE OR REPLACE FUNCTION public.account_block_handle(p_handle TEXT)
 RETURNS BOOLEAN
@@ -206,20 +232,11 @@ CREATE POLICY profiles_public_discovery ON public.profiles
     AND visibility = 'public'
     AND owner_account_id <> unibud_private.current_account_id()
     AND public.account_discovery_allowed(owner_account_id)
-    AND NOT EXISTS (
-      SELECT 1
-        FROM public.account_blocks b
-       WHERE b.status = 'active'
-         AND (
-           (b.blocker_account_id = unibud_private.current_account_id()
-             AND b.blocked_account_id = profiles.owner_account_id)
-           OR
-           (b.blocker_account_id = profiles.owner_account_id
-             AND b.blocked_account_id = unibud_private.current_account_id())
-         )
-    )
+    AND NOT public.account_interaction_blocked(owner_account_id)
   );
 
+COMMENT ON FUNCTION public.account_interaction_blocked(UUID) IS
+  'Returns whether either account blocks the other without revealing incoming block records to the target account.';
 COMMENT ON TABLE public.account_blocks IS
   'Account-level block relationships. Search and messaging must enforce both directions before returning records or permitting interaction.';
 COMMENT ON TABLE public.account_discovery_eligibility IS
