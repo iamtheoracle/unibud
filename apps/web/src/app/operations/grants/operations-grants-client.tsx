@@ -105,6 +105,24 @@ export default function OperationsGrantsClient() {
     } finally { setLoading(false); }
   }
 
+  async function cancelRequest(requestId: string) {
+    setLoading(true); setError(""); setNotice("");
+    try {
+      if (!identifier.trim() || !password) throw new Error("Enter your sign-in identifier and password for reauthentication.");
+      const response = await fetch("/api/internal/operations/grants/" + requestId + "/cancel", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reasonCode: "requester_cancelled", channel, identifier: identifier.trim(), password })
+      });
+      const data = await response.json() as ApiResult;
+      if (!response.ok || !data.ok) throw new Error(data.error || "The request could not be cancelled.");
+      setPassword(""); setNotice("Your request was cancelled from this session.");
+      await load();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Request cancellation failed.");
+    } finally { setLoading(false); }
+  }
+
   function beginRevocation(grant: Grant) {
     setAction("revoke"); setTargetAccountId(grant.account_id); setTargetGrantId(grant.grant_id);
     setReasonCode("staff_access_change");
@@ -145,7 +163,7 @@ export default function OperationsGrantsClient() {
     <section className="mfa-card">
       <div className="mfa-card-head"><div><p className="eyebrow">Review queue</p><h2>Pending requests</h2></div><span className="mfa-state">{requests.length} shown</span></div>
       {requests.length === 0 ? <p className="mfa-small">No pending requests are available to this reviewer.</p> : <div className="mfa-table-wrap"><table className="mfa-audit-table"><thead><tr><th>Action</th><th>Target</th><th>Requested by</th><th>Role / grant</th><th>Reason</th><th>Expires</th><th>Decision</th></tr></thead><tbody>
-        {requests.map(item => <tr key={item.request_id}><td>{item.requested_action}</td><td>{item.target_account_id}</td><td>{item.requester_account_id}</td><td>{item.requested_role ?? item.target_grant_id ?? "—"}{item.requested_permissions?.length ? <small>{item.requested_permissions.join(", ")}</small> : null}</td><td>{item.reason_code}</td><td><time dateTime={item.expires_at}>{new Date(item.expires_at).toLocaleString()}</time></td><td>{item.requester_account_id === viewer || item.target_account_id === viewer ? <span>Not eligible to approve</span> : <div className="mfa-actions"><button type="button" className="mfa-button mfa-primary" disabled={loading} onClick={() => void decide(item.request_id, "approve")}>Approve</button><button type="button" className="mfa-button" disabled={loading} onClick={() => void decide(item.request_id, "reject")}>Reject</button></div>}</td></tr>)}
+        {requests.map(item => <tr key={item.request_id}><td>{item.requested_action}</td><td>{item.target_account_id}</td><td>{item.requester_account_id}</td><td>{item.requested_role ?? item.target_grant_id ?? "—"}{item.requested_permissions?.length ? <small>{item.requested_permissions.join(", ")}</small> : null}</td><td>{item.reason_code}</td><td><time dateTime={item.expires_at}>{new Date(item.expires_at).toLocaleString()}</time></td><td>{item.requester_account_id === viewer ? <button type="button" className="mfa-button" disabled={loading} onClick={() => void cancelRequest(item.request_id)}>Cancel my request</button> : item.target_account_id === viewer ? <span>Not eligible to approve</span> : <div className="mfa-actions"><button type="button" className="mfa-button mfa-primary" disabled={loading} onClick={() => void decide(item.request_id, "approve")}>Approve</button><button type="button" className="mfa-button" disabled={loading} onClick={() => void decide(item.request_id, "reject")}>Reject</button></div>}</td></tr>)}
       </tbody></table></div>}
       <label>Decision reason code<input value={decisionReason} onChange={e => setDecisionReason(e.target.value)} pattern="[a-z][a-z0-9_]{2,47}" maxLength={48} /></label>
       <p className="mfa-muted">Approval and rejection require the approver&apos;s own fresh password reauthentication, live MFA step-up and distinct operator authority.</p>
