@@ -21,7 +21,7 @@ function reply(body: Record<string, unknown>, status = 200): NextResponse {
 }
 
 function createWebAuthnService(): FlowWebAuthnService {
-  return new FlowWebAuthnService(new FlowWebAuthnRepository(getAppDatabasePool()));
+  return new FlowWebAuthnService(new FlowWebAuthnRepository(getFlowAuthDatabasePool()));
 }
 
 export async function POST(request: NextRequest) {
