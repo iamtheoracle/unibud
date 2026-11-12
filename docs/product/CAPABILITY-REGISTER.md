@@ -479,3 +479,10 @@ The complete code-change validation checkpoint at commit `308bfe4a92c92d5b978443
 - UNIBUD Web and Database `43013208441`: **PASSED**. PostgreSQL migration validation, TypeScript typecheck, contract tests, server security tests, lint, profile browser E2E and production build all passed.
 
 The branch subsequently advanced through documentation-only commits to `c0d65a273a025376bd144e184018a8af40e1aa20`. Fresh CI for that documentation-only head was queued/in progress when this addendum was prepared. The three successful runs above validate the code-change head; they do not establish deployment or production verification.
+
+
+### Exact-head Operations security verification — 2026-11-12
+
+At branch head `12510f70bbdec1300768bc54084e8656ce61d86b`, all three GitHub Actions workflows passed: Foundation `43058291877`, UNIBUD Web and Database `43058291884`, and Oracle Arc API `43058292045`. Foundation executed PostgreSQL 16 migration/RLS tests plus the independent-connection dual-control approve/reject, approve/cancel and approval/expiry races, assertion replay concurrency and recovery-code redemption concurrency. The Web/Database PostgreSQL migration validation and build/type checks passed. This supersedes older pending exact-head CI notes above; it does not supersede the production-readiness blockers.
+
+**Still not production-ready:** PR #15 is draft/open/unmerged; Issue #16 and independent security review remain open; production signing-key provisioning/rotation, a trusted recurring scheduler and its secret binding, monitoring/alert routing and retry verification, notification retention, Operations grant-management UI, audit search/export and security alerting remain outstanding. No production deployment or Operations enablement is claimed.
