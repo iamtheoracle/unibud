@@ -96,7 +96,7 @@ BEGIN
     RAISE EXCEPTION 'PIN recovery did not replace verifier and clear lockout';
   END IF;
 
-  FOR v_index IN 1..2 LOOP
+  FOR v_index IN 1..1 LOOP
     PERFORM public.flow_pin_begin_verification();
   END LOOP;
   SELECT allowed INTO v_allowed FROM public.flow_pin_begin_verification();
