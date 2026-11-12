@@ -98,7 +98,7 @@ BEGIN
   ) VALUES(gen_random_uuid(),v_account,'flow','flow.webauthn.registration.create','success',
     'flow_biometric_credential',v_account,gen_random_uuid()::TEXT,v_session::TEXT,'{}'::jsonb);
   RETURN v_id;
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_webauthn_get_registration_challenge(p_registration_id UUID)
@@ -133,7 +133,7 @@ BEGIN
      AND c.account_id=v_account AND c.session_id=v_session
      AND c.consumed_at IS NULL AND c.failed_at IS NULL
      AND c.expires_at>clock_timestamp();
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_webauthn_fail_registration_challenge(p_registration_id UUID)
@@ -165,7 +165,7 @@ BEGIN
       'invalid_registration_response','{}'::jsonb);
   END IF;
   RETURN v_updated=1;
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_webauthn_list_credentials()
@@ -184,7 +184,7 @@ BEGIN
     FROM public.flow_biometric_credentials c
    WHERE c.account_id=v_account AND c.status='active'
    ORDER BY c.created_at;
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_webauthn_register_credential(
@@ -289,7 +289,7 @@ BEGIN
     'flow_biometric_credential',v_account,v_request::TEXT,v_session::TEXT,
     jsonb_build_object('signature_counter',p_signature_counter,'transport_count',cardinality(p_transports)));
   RETURN true;
-END
+END;
 $function$;
 
 ALTER FUNCTION public.flow_webauthn_create_registration_challenge(BYTEA,TIMESTAMPTZ) OWNER TO unibud_flow_owner;
