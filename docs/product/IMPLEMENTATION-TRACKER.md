@@ -846,3 +846,12 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Verification:** migration/test 0047 is included in Foundation PostgreSQL CI; web contract coverage checks route, UI and privilege boundaries. Independent grant transition concurrency and browser E2E remain outstanding.
 
 - **Browser coverage added:** isolated /e2e/operations-grants fixture and scripts/e2e/operations-grants.mjs now run in web CI. Coverage includes grant notifications and mark-read, approval, requester cancellation and request submission with mocked HTTP responses. This verifies UI behavior only; PostgreSQL tests remain authoritative for database authorization and persistence.
+
+### Verified implementation checkpoint — 2026-11-12
+
+- **Code head:** 0b0cbbde74221e37fd01f8abe3299f266267b351.
+- **Foundation:** run 43159461223 passed, including PostgreSQL 16 migrations and RLS tests through migration 0047.
+- **Web and Database:** run 43159461527 passed, including TypeScript, contract/security tests, lint, profile/MFA/Operations-grants browser E2E, production build and migration validation.
+- **Oracle Arc API:** run 43159461117 passed.
+- **Still outstanding:** dedicated independent-connection grant lifecycle concurrency coverage, external email/SMS delivery infrastructure (not claimed by in-app notifications), and independent security review Issue #16.
+- **Release boundary:** branch/PR CI only; no production migrations, grants, deployment or operator activation.
