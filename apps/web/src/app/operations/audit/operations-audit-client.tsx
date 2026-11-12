@@ -35,7 +35,7 @@ export default function OperationsAuditClient() {
   const [searched, setSearched] = useState(false);
 
   const query = useMemo(() => {
-    const params = new URLSearchParams({ from: toIso(from), to: toIso(to), limit: "100" });
+    const params = new URLSearchParams({ from: from ? toIso(from) : "", to: to ? toIso(to) : "", limit: "100" });
     if (permission.trim()) params.set("permission", permission.trim());
     if (outcome) params.set("outcome", outcome);
     if (actor.trim()) params.set("actorAccountId", actor.trim());
@@ -45,6 +45,9 @@ export default function OperationsAuditClient() {
   async function search(append = false) {
     setLoading(true); setError("");
     try {
+      if (!from || !to || !Number.isFinite(Date.parse(from)) || !Number.isFinite(Date.parse(to))) {
+        throw new Error("Choose a valid start and end time before searching.");
+      }
       const params = new URLSearchParams(query);
       if (append && cursor) {
         params.set("beforeOccurredAt", cursor.beforeOccurredAt);
@@ -66,7 +69,7 @@ export default function OperationsAuditClient() {
   }
 
   const exportUrl = "/api/internal/operations/audit?" + new URLSearchParams({
-    from: toIso(from), to: toIso(to), format: "csv", limit: "1000",
+    from: from ? toIso(from) : "", to: to ? toIso(to) : "", format: "csv", limit: "1000",
     ...(permission.trim() ? { permission: permission.trim() } : {}),
     ...(outcome ? { outcome } : {}),
     ...(actor.trim() ? { actorAccountId: actor.trim() } : {})
