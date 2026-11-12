@@ -79,6 +79,10 @@ export async function GET(request: NextRequest) {
     accountId = validation.account.id;
     sessionId = validation.session.id;
     if (!await consumeOperationsMfaApiRateLimit(accountId, sessionId, "audit_read")) {
+      const context = createSignedSessionContextFromEnvironment(accountId, sessionId);
+      await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
+        await client.query("SELECT public.unibud_operator_record_access($1,$2,$3)", ["operations.audit.read", "denied", requestId]);
+      });
       return json({ ok: false, error: "Audit access is unavailable or rate-limited. Verify your Operations audit permission and current MFA step-up." }, 403);
     }
     const context = createSignedSessionContextFromEnvironment(accountId, sessionId);
