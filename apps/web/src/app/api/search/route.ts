@@ -31,8 +31,12 @@ export async function GET(request: NextRequest) {
         await assertSearchProfileContext(client, validation.session.activeProfileId!);
         await consumeSearchRateLimit(client);
         if (classification.intent.kind !== "general_discovery") return null;
+        const category = classification.intent.category;
+        if (category !== "people" && category !== "communities" && category !== "creators") {
+          return { state: "category_not_available" as const, profiles: [] };
+        }
         if (!(await isSearchDiscoveryReady(client))) return { state: "age_assurance_required" as const, profiles: [] };
-        return { state: "ready" as const, profiles: await searchPublicProfiles(client, term) };
+        return { state: "ready" as const, profiles: await searchPublicProfiles(client, term, category) };
       }
     );
 
@@ -40,6 +44,7 @@ export async function GET(request: NextRequest) {
       ok: true,
       intent: classification.intent.kind,
       route: classification.route,
+      ...(classification.intent.kind === "general_discovery" ? { category: classification.intent.category } : {}),
       ...(results === null ? {} : { discoveryState: results.state, results: results.profiles })
     });
   } catch (error) {
