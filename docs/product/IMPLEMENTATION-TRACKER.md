@@ -1,5 +1,13 @@
 ## Current delivery evidence correction — 2026-11-12 (supersedes earlier checkpoint rows)
 
+## Oracle Arc delivery gate — 2026-11-12
+
+- Issue #23 is OPEN and tracks implementation of Oracle Arc as an independent governed AI core: app registration and service identity, model/provider gateway, inference, agent/tool grants, ORACLE reasoning, SPARK user-controlled memory, ORBITS controlled media, evaluation, audit and UNIBUD integrations.
+- Current API evidence remains limited to health/readiness and non-secret integration status. No production model/provider adapter, inference endpoint, app registry, agent runtime, tool dispatch, SPARK memory store, ORBITS media pipeline, quotas/usage, evaluation harness or deployment has been verified.
+- No local inference hardware or production hosting capacity has been confirmed. Remote inference requires explicit provider, privacy, data-residency and cost approval. Consequential actions remain subject to the relevant human authorization and must not be delegated to an autonomous agent.
+- This is an implementation gate, not a claim of completion. Keep Oracle Arc independent from individual UNIBUD spaces and preserve ORACLE, SPARK and ORBITS boundaries.
+
+
 This section is the authoritative repository checkpoint for the active PR stack. Older checkpoint details below are retained as history; where they conflict with this section, use the current evidence here.
 
 ### PR #20 — Next.js security dependency update
