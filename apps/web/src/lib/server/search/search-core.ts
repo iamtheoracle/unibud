@@ -10,10 +10,10 @@ import { routeSearchIntent, type SearchIntent, type SearchRoute } from "../../..
  */
 export function classifyGlobalSearchIntent(query: string): SearchIntent {
   const normalized = query.toLocaleLowerCase("en");
-  if (/\\b(dating|romantic|soulmate|relationship advice|find a date)\\b/u.test(normalized)) {
+  if (/\b(dating|romantic|soulmate|relationship advice|find a date)\b/u.test(normalized)) {
     return { kind: "adult_dating" };
   }
-  if (/\\b(school|campus|university|universities|college|colleges|faculty|department|departments|course|courses|class|classes|exam|exams|assignment|assignments|tutor|tutors|lecturer|lecturers|study group|scholarship|scholarships|lecture|lectures|coursework)\\b/u.test(normalized)) {
+  if (/\b(school|campus|university|universities|college|colleges|faculty|department|departments|course|courses|class|classes|exam|exams|assignment|assignments|tutor|tutors|lecturer|lecturers|study group|scholarship|scholarships|lecture|lectures|coursework)\b/u.test(normalized)) {
     return { kind: "academic" };
   }
   return { kind: "general_discovery" };
