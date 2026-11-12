@@ -101,6 +101,10 @@ BEGIN
      SET status='settled',settled_at=clock_timestamp()
    WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
 
+  UPDATE public.flow_payment_intents
+     SET status='refunded',refunded_at=clock_timestamp()
+   WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
+
   IF has_table_privilege('unibud_app','public.flow_transaction_credentials','SELECT')
      OR has_table_privilege('unibud_app','public.flow_authorization_challenges','SELECT')
      OR has_table_privilege('unibud_app','public.flow_biometric_credentials','SELECT')
