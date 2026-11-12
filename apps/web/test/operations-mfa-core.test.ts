@@ -73,3 +73,64 @@ test("configured MFA cryptography requires distinct exact-length encryption and 
   else process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY=previousRecovery;
  }
 });
+
+
+test("encryption key rotation reads legacy v1 and overlapping v2 keys while writing only with the active key",()=>{
+ const legacy=Buffer.alloc(32,0x11),oldKey=Buffer.alloc(32,0x22),newKey=Buffer.alloc(32,0x33),recovery=Buffer.alloc(32,0x44);
+ const original=new OperationsMfaCryptography(legacy,recovery);
+ const secret=original.generateSecret();
+ const legacyEnvelope=original.encryptSecret(accountId,secret);
+ const rotating=new OperationsMfaCryptography(legacy,recovery,{
+  activeKeyId:"2026-11-new",
+  keys:[{id:"2026-11-old",key:oldKey},{id:"2026-11-new",key:newKey}]
+ });
+ assert.equal(rotating.decryptSecret(accountId,legacyEnvelope).equals(secret),true);
+ const rotatedEnvelope=rotating.encryptSecret(accountId,secret);
+ assert.match(rotatedEnvelope.ciphertext,/^v2\\.2026-11-new\\./);
+ assert.equal(rotating.decryptSecret(accountId,rotatedEnvelope).equals(secret),true);
+ const oldWriter=new OperationsMfaCryptography(legacy,recovery,{
+  activeKeyId:"2026-11-old",keys:[{id:"2026-11-old",key:oldKey},{id:"2026-11-new",key:newKey}]
+ });
+ const oldEnvelope=oldWriter.encryptSecret(accountId,secret);
+ assert.equal(rotating.decryptSecret(accountId,oldEnvelope).equals(secret),true);
+ assert.throws(()=>new OperationsMfaCryptography(legacy,recovery,{
+  activeKeyId:"2026-11-new",keys:[{id:"2026-11-new",key:newKey}]
+ }).decryptSecret(accountId,oldEnvelope));
+});
+
+test("configured encryption keyring validates key IDs, uniqueness, active key and overlap bound",()=>{
+ const legacy=Buffer.alloc(32,0x11),recovery=Buffer.alloc(32,0x44),a=Buffer.alloc(32,0x22),b=Buffer.alloc(32,0x33),c=Buffer.alloc(32,0x55);
+ assert.throws(()=>new OperationsMfaCryptography(legacy,recovery,{activeKeyId:"missing",keys:[{id:"known",key:a}]}));
+ assert.throws(()=>new OperationsMfaCryptography(legacy,recovery,{activeKeyId:"same",keys:[{id:"same",key:a},{id:"same",key:b}]}));
+ assert.throws(()=>new OperationsMfaCryptography(legacy,recovery,{activeKeyId:"a",keys:[{id:"a",key:a},{id:"b",key:b},{id:"c",key:c}]}));
+ assert.throws(()=>new OperationsMfaCryptography(legacy,recovery,{activeKeyId:"bad/id",keys:[{id:"bad/id",key:a}]}));
+});
+
+test("environment keyring enables versioned encryption without losing legacy v1 decryption",()=>{
+ const names=["UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY","UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY","UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON"];
+ const previous=Object.fromEntries(names.map(name=>[name,process.env[name]]));
+ try{
+  const legacy=Buffer.alloc(32,0x11),recovery=Buffer.alloc(32,0x44),active=Buffer.alloc(32,0x33),old=Buffer.alloc(32,0x22);
+  process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY=legacy.toString("hex");
+  process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY=recovery.toString("hex");
+  process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON=JSON.stringify({
+   activeKeyId:"rotation-2026-11",keys:[
+    {id:"legacy-overlap",keyHex:old.toString("hex")},
+    {id:"rotation-2026-11",keyHex:active.toString("hex")}
+   ]
+  });
+  const configured=createOperationsMfaCryptographyFromEnvironment();
+  const secret=configured.generateSecret();
+  assert.match(configured.encryptSecret(accountId,secret).ciphertext,/^v2\\.rotation-2026-11\\./);
+  delete process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON;
+  const legacyConfigured=createOperationsMfaCryptographyFromEnvironment();
+  const legacyEnvelope=legacyConfigured.encryptSecret(accountId,secret);
+  assert.equal(configured.decryptSecret(accountId,legacyEnvelope).equals(secret),true);
+  process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON=JSON.stringify({
+   activeKeyId:"missing",keys:[{id:"known",keyHex:active.toString("hex")}]
+  });
+  assert.throws(()=>createOperationsMfaCryptographyFromEnvironment());
+ }finally{
+  for(const name of names){const value=previous[name];if(value===undefined)delete process.env[name];else process.env[name]=value;}
+ }
+});
