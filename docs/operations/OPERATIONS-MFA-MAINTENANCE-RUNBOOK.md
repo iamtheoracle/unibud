@@ -65,3 +65,10 @@ After the hosting provider and scheduler are approved, configure a single recurr
 - The worker script, scheduler role migration and role-isolation test are repository implementation artifacts.
 - CI can verify the migration and exercise the worker using its disposable PostgreSQL service account.
 - No hosting provider, production scheduler, production login principal, production secret, production database grant, live recurring invocation, alert route or production deployment is claimed.
+
+
+## Worker safety-contract test evidence
+
+- `scripts/test-operations-mfa-maintenance-worker.sh` runs without a database and verifies URI parsing, percent-encoded credentials, removal of `DATABASE_URL` before `psql`, libpq connection environment, absence of credentials from command arguments, TLS downgrade rejection, supported URI parameters, batch-size bounds, the configured 45-second timeout arguments, and propagation of database/timeout failures.
+- The test is wired into Foundation CI. It passed on exact branch head `4cc1cd09d377933e02c0067b6c94761159db791f` in Foundation run `43136999522`. The same run also passed the live disposable-PostgreSQL worker entrypoint smoke test using the dedicated CI scheduler login.
+- This is worker-contract and disposable-CI evidence only. It does not test a hosted scheduler, production secret manager, production database identity, alert delivery, or recurring execution.
