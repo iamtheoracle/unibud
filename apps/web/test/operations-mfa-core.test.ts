@@ -134,3 +134,58 @@ test("environment keyring enables versioned encryption without losing legacy v1 
   for(const name of names){const value=previous[name];if(value===undefined)delete process.env[name];else process.env[name]=value;}
  }
 });
+
+
+test("recovery HMAC rotation preserves legacy digests and writes with the active key",()=>{
+ const legacy=Buffer.alloc(32,0x72),oldKey=Buffer.alloc(32,0x21),newKey=Buffer.alloc(32,0x32);
+ const original=new OperationsMfaCryptography(encryptionKey,legacy);
+ const code=original.generateRecoveryCodes(8)[0];
+ const legacyDigest=original.digestRecoveryCode(accountId,code);
+ const rotating=new OperationsMfaCryptography(encryptionKey,legacy,undefined,{
+  activeKeyId:"recovery-2026-11",
+  keys:[{id:"recovery-old",key:oldKey},{id:"recovery-2026-11",key:newKey}]
+ });
+ assert.equal(rotating.recoveryCodeMatches(legacyDigest,accountId,code),true);
+ const rotatedDigest=rotating.digestRecoveryCode(accountId,code);
+ assert.notEqual(rotatedDigest.toString("hex"),legacyDigest.toString("hex"));
+ assert.equal(rotating.recoveryCodeMatches(rotatedDigest,accountId,code),true);
+ assert.equal(rotating.recoveryCodeMatches(legacyDigest,accountId,rotating.generateRecoveryCodes(8)[0]),false);
+ const oldKeyDigest=new OperationsMfaCryptography(encryptionKey,legacy,undefined,{
+  activeKeyId:"recovery-old",keys:[{id:"recovery-old",key:oldKey},{id:"recovery-2026-11",key:newKey}]
+ }).digestRecoveryCode(accountId,code);
+ assert.equal(rotating.recoveryCodeMatches(oldKeyDigest,accountId,code),true);
+});
+
+test("recovery keyring rejects malformed, duplicate, missing-active and oversized configurations",()=>{
+ const legacy=Buffer.alloc(32,0x72),a=Buffer.alloc(32,0x21),b=Buffer.alloc(32,0x32),c=Buffer.alloc(32,0x43);
+ assert.throws(()=>new OperationsMfaCryptography(encryptionKey,legacy,undefined,{activeKeyId:"missing",keys:[{id:"known",key:a}]}));
+ assert.throws(()=>new OperationsMfaCryptography(encryptionKey,legacy,undefined,{activeKeyId:"same",keys:[{id:"same",key:a},{id:"same",key:b}]}));
+ assert.throws(()=>new OperationsMfaCryptography(encryptionKey,legacy,undefined,{activeKeyId:"a",keys:[{id:"a",key:a},{id:"b",key:b},{id:"c",key:c}]}));
+ assert.throws(()=>new OperationsMfaCryptography(encryptionKey,legacy,undefined,{activeKeyId:"bad/id",keys:[{id:"bad/id",key:a}]}));
+});
+
+test("environment recovery keyring retains legacy verification and validates active key",()=>{
+ const names=["UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY","UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY","UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEYRING_JSON"];
+ const previous=Object.fromEntries(names.map(name=>[name,process.env[name]]));
+ try{
+  const oldKey=Buffer.alloc(32,0x21),active=Buffer.alloc(32,0x32);
+  process.env.UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY=encryptionKey.toString("hex");
+  process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEY=recoveryKey.toString("hex");
+  process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEYRING_JSON=JSON.stringify({
+   activeKeyId:"recovery-2026-11",keys:[
+    {id:"recovery-old",keyHex:oldKey.toString("hex")},
+    {id:"recovery-2026-11",keyHex:active.toString("hex")}
+   ]
+  });
+  const configured=createOperationsMfaCryptographyFromEnvironment();
+  const code=configured.generateRecoveryCodes(8)[0];
+  assert.equal(configured.digestRecoveryCodeCandidates(accountId,code).length,3);
+  assert.match(configured.digestRecoveryCode(accountId,code).toString("hex"),/^[0-9a-f]{64}$/);
+  process.env.UNIBUD_OPERATIONS_MFA_RECOVERY_HMAC_KEYRING_JSON=JSON.stringify({
+   activeKeyId:"missing",keys:[{id:"known",keyHex:active.toString("hex")}]
+  });
+  assert.throws(()=>createOperationsMfaCryptographyFromEnvironment());
+ }finally{
+  for(const name of names){const value=previous[name];if(value===undefined)delete process.env[name];else process.env[name]=value;}
+ }
+});
