@@ -39,13 +39,21 @@ BEGIN
   END IF;
 
   IF has_any_column_privilege('unibud_app','public.flow_customer_accounts','SELECT')
+     OR has_any_column_privilege('unibud_auth','public.flow_customer_accounts','SELECT')
+     OR has_any_column_privilege('unibud_flow_auth','public.flow_customer_accounts','SELECT')
      OR has_any_column_privilege('unibud_readonly','public.flow_customer_accounts','SELECT')
      OR has_any_column_privilege('unibud_app','public.flow_payment_intents','SELECT')
+     OR has_any_column_privilege('unibud_auth','public.flow_payment_intents','SELECT')
+     OR has_any_column_privilege('unibud_flow_auth','public.flow_payment_intents','SELECT')
      OR has_any_column_privilege('unibud_readonly','public.flow_payment_intents','SELECT')
      OR has_table_privilege('unibud_app','public.flow_journal_entries','SELECT')
+     OR has_table_privilege('unibud_app','public.flow_journal_postings','SELECT')
      OR has_table_privilege('unibud_readonly','public.flow_journal_entries','SELECT')
+     OR has_table_privilege('unibud_readonly','public.flow_journal_postings','SELECT')
      OR has_table_privilege('unibud_auth','public.flow_journal_entries','SELECT')
-     OR has_table_privilege('unibud_flow_auth','public.flow_journal_entries','SELECT') THEN
+     OR has_table_privilege('unibud_auth','public.flow_journal_postings','SELECT')
+     OR has_table_privilege('unibud_flow_auth','public.flow_journal_entries','SELECT')
+     OR has_table_privilege('unibud_flow_auth','public.flow_journal_postings','SELECT') THEN
     RAISE EXCEPTION 'Generic app/auth runtime role retains direct financial table read access';
   END IF;
 
