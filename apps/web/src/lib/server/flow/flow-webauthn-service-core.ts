@@ -137,8 +137,13 @@ export class FlowWebAuthnService {
       return false;
     }
 
-    const credential = verification.registrationInfo?.credential;
-    if (!verification.verified || !credential) {
+    const registrationInfo = verification.registrationInfo;
+    const credential = registrationInfo?.credential;
+    // Require a non-backup-eligible, single-device platform credential. A
+    // synced/multi-device passkey is not accepted as a device-bound factor.
+    if (!verification.verified || !credential ||
+        registrationInfo.credentialDeviceType !== "singleDevice" ||
+        registrationInfo.credentialBackedUp) {
       await this.repository.failRegistrationChallenge(
         input.accountId,
         input.sessionId,
