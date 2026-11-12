@@ -1,7 +1,5 @@
-import "server-only";
-
 import { hash, verify, argon2id } from "argon2";
-import { FlowPinRepository } from "./flow-pin-repository";
+import type { FlowPinRepository } from "./flow-pin-repository";
 
 const PIN_PATTERN = /^[0-9]{6}$/;
 const WEAK_PINS = new Set([
