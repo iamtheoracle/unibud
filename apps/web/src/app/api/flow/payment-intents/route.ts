@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     );
     const idempotencyKeyDigest = protection.digestIdempotencyKey(body.idempotencyKey);
     const repository = new FlowPaymentIntentRepository(getAppDatabasePool());
-    const paymentIntentId = await repository.create({
+    const paymentIntent = await repository.create({
       accountId: validation.account.id,
       sessionId: validation.session.id,
       flowAccountId: body.flowAccountId,
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       purposeCode: body.purposeCode
     });
 
-    if (!paymentIntentId) {
+    if (!paymentIntent) {
       return response({
         ok: false,
         error: "The Flow account is unavailable or the idempotency key was already used with different details."
@@ -81,9 +81,8 @@ export async function POST(request: NextRequest) {
     return response({
       ok: true,
       paymentIntent: {
-        id: paymentIntentId,
-        status: "created",
-        authorizationRequiredBeforeProcessing: true
+        id: paymentIntent.id,
+        status: paymentIntent.status
       }
     });
   } catch (error) {
