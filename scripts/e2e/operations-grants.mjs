@@ -72,7 +72,7 @@ try{
    'button,a[href],input:not([type="hidden"]),select,textarea,[role="button"]'
   )).filter(element => {
    const labelledBy = element.getAttribute("aria-labelledby");
-   const hasLabelledBy = labelledBy && labelledBy.split(/\\s+/).some(id => document.getElementById(id)?.textContent?.trim());
+   const hasLabelledBy = labelledBy && labelledBy.split(/\s+/).some(id => document.getElementById(id)?.textContent?.trim());
    const hasNativeLabel = "labels" in element && element.labels?.length > 0;
    return !(
     element.getAttribute("aria-label")?.trim() ||
