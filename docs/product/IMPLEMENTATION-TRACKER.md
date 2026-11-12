@@ -777,3 +777,13 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Added PostgreSQL authorization/filter/bounds/table-isolation coverage and application route contract tests; migration and SQL test are included in Foundation CI.
 - Grant provisioning/revocation remains controlled database-administrator work. No HTTP grant-management endpoint was added: doing so without a reviewed independent dual-control grant lifecycle would expand privileged authority prematurely.
 - Exact-head CI for this new checkpoint is pending. No production deployment, grants or permissions were provisioned.
+
+
+### Operations audit search/export — exact-head verification — 2026-11-12
+
+- **Verified code head:** b944b41be9cdcbcb6cbfac0de9b9f74c4a3d979f.
+- **Foundation checks:** PASSED, run 43144303648. PostgreSQL 16 applied migrations 0001–0042 and the full database/RLS suite passed, including migration 0042 audit permission, date-range, outcome-filter, row-bound and direct-table-isolation assertions. Existing notification access without MFA step-up and the complete recovery/dual-control concurrency checks also passed.
+- **UNIBUD Web and Database:** PASSED, run 43144297258. PostgreSQL migration validation, TypeScript type check, contract tests, server security unit tests (including the new audit route contract), lint, profile browser E2E and production build passed.
+- **Oracle Arc API:** PASSED, run 43144303769.
+- CI initially found that migration 0042's replacement rate-limit function/table constraint had dropped the pre-existing notification_read action. The action and its no-MFA notification semantics were restored in migration 0042, and the full Foundation suite subsequently passed. This was a regression caught and corrected before accepting the checkpoint.
+- No production grants, production database changes, production deployment or self-service grant-management endpoint were introduced. Grant provisioning/revocation remains restricted to controlled DBA procedures pending an independently reviewed dual-control lifecycle. PR #15 remains draft/open/unmerged; Issue #16 remains open for independent review.
