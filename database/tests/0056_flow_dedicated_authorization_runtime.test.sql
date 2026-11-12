@@ -3,8 +3,6 @@
 BEGIN;
 
 DO $privileges$
-DECLARE
-  v_flag RECORD;
 BEGIN
   IF NOT EXISTS(
     SELECT 1 FROM pg_roles
@@ -14,20 +12,16 @@ BEGIN
     RAISE EXCEPTION 'unibud_flow_auth is not a restricted NOLOGIN role';
   END IF;
 
-  FOREACH v_flag IN ARRAY ARRAY[
-    ROW('unibud_app','public.flow_pin_begin_verification()')::RECORD,
-    ROW('unibud_auth','public.flow_pin_begin_verification()')::RECORD,
-    ROW('unibud_app','public.flow_webauthn_list_credentials()')::RECORD,
-    ROW('unibud_auth','public.flow_webauthn_list_credentials()')::RECORD,
-    ROW('unibud_app','public.flow_authorize_payment_intent(uuid,bytea,bigint,uuid,text,bytea,bigint)')::RECORD,
-    ROW('unibud_auth','public.flow_authorize_payment_intent(uuid,bytea,bigint,uuid,text,bytea,bigint)')::RECORD,
-    ROW('unibud_app','public.flow_cancel_payment_intent(uuid)')::RECORD,
-    ROW('unibud_auth','public.flow_cancel_payment_intent(uuid)')::RECORD
-  ] LOOP
-    IF has_function_privilege(v_flag.f1::TEXT,v_flag.f2::TEXT,'EXECUTE') THEN
-      RAISE EXCEPTION 'Generic role % retains privileged Flow execution on %',v_flag.f1,v_flag.f2;
-    END IF;
-  END LOOP;
+  IF has_function_privilege('unibud_app','public.flow_pin_begin_verification()','EXECUTE')
+     OR has_function_privilege('unibud_auth','public.flow_pin_begin_verification()','EXECUTE')
+     OR has_function_privilege('unibud_app','public.flow_webauthn_list_credentials()','EXECUTE')
+     OR has_function_privilege('unibud_auth','public.flow_webauthn_list_credentials()','EXECUTE')
+     OR has_function_privilege('unibud_app','public.flow_authorize_payment_intent(uuid,bytea,bigint,uuid,text,bytea,bigint)','EXECUTE')
+     OR has_function_privilege('unibud_auth','public.flow_authorize_payment_intent(uuid,bytea,bigint,uuid,text,bytea,bigint)','EXECUTE')
+     OR has_function_privilege('unibud_app','public.flow_cancel_payment_intent(uuid)','EXECUTE')
+     OR has_function_privilege('unibud_auth','public.flow_cancel_payment_intent(uuid)','EXECUTE') THEN
+    RAISE EXCEPTION 'Generic app/auth role retains privileged Flow execution';
+  END IF;
 
   IF NOT has_function_privilege('unibud_flow_auth','public.flow_pin_begin_verification()','EXECUTE')
      OR NOT has_function_privilege('unibud_flow_auth','public.flow_webauthn_list_credentials()','EXECUTE')
@@ -37,29 +31,30 @@ BEGIN
   END IF;
 
   IF has_function_privilege('unibud_flow_auth','public.flow_create_payment_intent(uuid,bytea,bytea,bytea,numeric,text,numeric,text)','EXECUTE') THEN
-    RAISE EXCEPTION 'Flow auth role can create payment intents outside the general instruction boundary';
+    RAISE EXCEPTION 'Flow auth role can create payment intents outside the instruction boundary';
   END IF;
   IF NOT has_function_privilege('unibud_app','public.flow_create_payment_intent(uuid,bytea,bytea,bytea,numeric,text,numeric,text)','EXECUTE')
      OR NOT has_function_privilege('unibud_app','public.flow_get_payment_intent_status(uuid)','EXECUTE') THEN
-    RAISE EXCEPTION 'General app role cannot create an instruction and read only its status';
+    RAISE EXCEPTION 'General app role cannot create an instruction and read only its lifecycle status';
   END IF;
 
-  IF has_table_privilege('unibud_app','public.flow_payment_intents','SELECT')
-     OR has_table_privilege('unibud_auth','public.flow_payment_intents','SELECT')
-     OR has_table_privilege('unibud_flow_auth','public.flow_payment_intents','SELECT')
+  IF has_any_column_privilege('unibud_app','public.flow_customer_accounts','SELECT')
+     OR has_any_column_privilege('unibud_readonly','public.flow_customer_accounts','SELECT')
+     OR has_any_column_privilege('unibud_app','public.flow_payment_intents','SELECT')
+     OR has_any_column_privilege('unibud_readonly','public.flow_payment_intents','SELECT')
      OR has_table_privilege('unibud_app','public.flow_journal_entries','SELECT')
+     OR has_table_privilege('unibud_readonly','public.flow_journal_entries','SELECT')
      OR has_table_privilege('unibud_auth','public.flow_journal_entries','SELECT')
      OR has_table_privilege('unibud_flow_auth','public.flow_journal_entries','SELECT') THEN
-    RAISE EXCEPTION 'A generic or Flow auth runtime role has direct financial table read access';
+    RAISE EXCEPTION 'Generic app/auth runtime role retains direct financial table read access';
   END IF;
 
   IF has_table_privilege('unibud_flow_auth','public.flow_transaction_credentials','SELECT')
      OR has_table_privilege('unibud_flow_auth','public.flow_biometric_credentials','SELECT')
      OR has_table_privilege('unibud_flow_auth','public.flow_authorization_challenges','SELECT')
      OR has_table_privilege('unibud_flow_auth','public.flow_transaction_rate_limits','SELECT') THEN
-    RAISE EXCEPTION 'Flow auth role has direct sensitive credential or challenge table access';
+    RAISE EXCEPTION 'Flow auth role has direct credential or challenge table access';
   END IF;
 END
-$privileges$;
 
 ROLLBACK;
