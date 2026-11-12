@@ -210,6 +210,10 @@ CREATE CONSTRAINT TRIGGER flow_journal_entry_balance_check
   AFTER INSERT ON public.flow_journal_postings
   DEFERRABLE INITIALLY DEFERRED
   FOR EACH ROW EXECUTE FUNCTION public.flow_assert_journal_entry_balanced();
+CREATE CONSTRAINT TRIGGER flow_journal_parent_balance_check
+  AFTER INSERT ON public.flow_journal_entries
+  DEFERRABLE INITIALLY DEFERRED
+  FOR EACH ROW EXECUTE FUNCTION public.flow_assert_journal_entry_balanced();
 
 CREATE FUNCTION public.flow_reject_financial_record_mutation()
 RETURNS TRIGGER
