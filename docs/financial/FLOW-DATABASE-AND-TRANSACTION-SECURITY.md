@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migrations 0048–0053, authenticated payment-intent/confirmation/authorization routes, Argon2id PIN lifecycle, platform WebAuthn registration and transaction assertion verification, one-time transaction-bound authorization, and pre-submission cancellation are implemented on the Flow foundation branch. Latest exact-head CI is being verified. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment submission or settlement is established by this work.
+**Status:** Migrations 0048–0053, authenticated payment-intent/confirmation/authorization routes, Argon2id PIN lifecycle, platform WebAuthn registration and transaction assertion verification, one-time transaction-bound authorization, and pre-submission cancellation are implemented on the Flow foundation branch. Application/SQL code head `edafb67943eaf616e4489130f62aee56e7e42b04` passed exact-head Foundation `43211209969`, Web/Database `43211209933` and Oracle Arc API `43211210115`. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment submission or settlement is established by this work.
 
 ## Ownership boundary
 
