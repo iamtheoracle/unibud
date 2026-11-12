@@ -48,6 +48,7 @@ INSERT INTO public.flow_journal_postings(journal_entry_id,currency,account_code,
  ('f0480000-0000-4000-8000-000000000041','NGN','CUSTOMER_CLEARING','debit',1260.00),
  ('f0480000-0000-4000-8000-000000000041','NGN','SETTLEMENT_CONTROL','credit',1260.00);
 SET CONSTRAINTS flow_journal_entry_balance_check IMMEDIATE;
+SET CONSTRAINTS flow_journal_entry_balance_check DEFERRED;
 INSERT INTO public.flow_journal_entries(
  journal_entry_id,account_id,flow_account_id,payment_intent_id,source_system,
  source_event_ref_digest,currency,entry_kind,effective_at
