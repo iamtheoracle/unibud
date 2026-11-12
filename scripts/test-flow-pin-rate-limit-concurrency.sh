@@ -37,7 +37,7 @@ run_verify() {
     -v account="$ACCOUNT" -v session="$SESSION" \
     -v context_nonce="$nonce" -v context_expiry="$EXPIRES" <<'SQL'
 BEGIN;
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_auth;
 WITH claim AS (
  SELECT :'account'::text a,:'session'::text s,
         :'context_expiry'::text e,:'context_nonce'::text n
@@ -80,4 +80,4 @@ if [[ "$allowed_count" -ne 5 || "$denied_count" -ne 5 ]]; then
   exit 1
 fi
 
-echo "Flow PIN rate-limit concurrency invariant passed: 10 independent sessions yielded exactly 5 allowed attempts."
+echo "Flow PIN rate-limit concurrency invariant passed: 10 concurrent database sessions yielded exactly 5 allowed attempts."
