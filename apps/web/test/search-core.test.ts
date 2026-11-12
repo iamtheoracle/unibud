@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { SqlClient } from "../src/lib/server/database/account-context-core.ts";
-import { normalizePeopleSearchTerm, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
+import { normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
 
 test("people search normalizes Unicode and whitespace without accepting short or oversized terms", () => {
   assert.equal(normalizePeopleSearchTerm("  Ａda   Lovelace "), "Ada Lovelace");
@@ -44,4 +44,28 @@ test("people search uses a bound term and returns only safe public profile field
   }]);
   assert.equal("id" in results[0], false);
   assert.equal("ownerAccountId" in results[0], false);
+});
+
+test("global search routes academic intent to Board inside Bud", () => {
+  assert.deepEqual(routeGlobalSearch("Find a tutor for my university course").route, {
+    kind: "space",
+    space: "bud_board",
+    parentSpace: "bud"
+  });
+});
+
+test("global dating intent is routed to gated SouLync without searching its records", () => {
+  assert.deepEqual(routeGlobalSearch("dating and romantic relationships").route, {
+    kind: "space",
+    space: "soullync",
+    requiresAdultEligibility: true,
+    requiresIndependentConsent: true
+  });
+});
+
+test("ordinary discovery routes to Connect", () => {
+  assert.deepEqual(routeGlobalSearch("photographers and local services").route, {
+    kind: "space",
+    space: "connect"
+  });
 });
