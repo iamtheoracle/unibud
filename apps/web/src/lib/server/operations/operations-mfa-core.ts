@@ -130,7 +130,6 @@ export interface OperationsMfaEncryptionKeyring {
 }
 export class OperationsMfaCryptography {
   private readonly legacyEncryptionKey:Buffer;
-  private readonly recoveryKey:Buffer;
   private readonly encryptionKeys:Map<string,Buffer>;
   private readonly activeEncryptionKeyId:string|null;
   private readonly legacyRecoveryKey:Buffer;
@@ -138,7 +137,7 @@ export class OperationsMfaCryptography {
   private readonly activeRecoveryKeyId:string|null;
   constructor(encryptionKey:Uint8Array,recoveryKey:Uint8Array,keyring?:OperationsMfaEncryptionKeyring,recoveryKeyring?:OperationsMfaRecoveryKeyring){
     if(encryptionKey.byteLength!==32||recoveryKey.byteLength!==32) throw new Error("Operations MFA keys must each be exactly 32 bytes.");
-    this.legacyEncryptionKey=Buffer.from(encryptionKey);this.recoveryKey=Buffer.from(recoveryKey);
+    this.legacyEncryptionKey=Buffer.from(encryptionKey);
     this.legacyRecoveryKey=Buffer.from(recoveryKey);
     this.recoveryKeys=new Map();this.activeRecoveryKeyId=null;
     if(recoveryKeyring){
