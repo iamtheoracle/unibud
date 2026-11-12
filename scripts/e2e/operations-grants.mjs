@@ -70,7 +70,6 @@ try{
  await page.getByText("1 unread",{exact:true}).waitFor();
 
  const pendingOther=page.locator("tr").filter({hasText:requester});
- await pendingOther.getByRole("button",{name:"Approve"}).click();
  await page.getByLabel("Decision reason code").fill("reviewed_access");
  await page.getByLabel("Sign-in identifier").fill("operator@example.com");
  await page.getByLabel("Password").fill("fresh-password");
@@ -78,11 +77,12 @@ try{
  await page.getByText("Request approved.",{exact:true}).waitFor();
 
  const ownRequest=page.locator("tr").filter({hasText:viewer});
+ await page.getByLabel("Password").fill("fresh-password");
  await ownRequest.getByRole("button",{name:"Cancel my request"}).click();
  await page.getByText("Your request was cancelled from this session.",{exact:true}).waitFor();
 
  await page.getByLabel("Target account UUID").fill("b1000000-0000-4000-8000-000000000005");
- await page.getByLabel("Reason code").fill("staff_access");
+ await page.getByLabel("Reason code",{exact:true}).fill("staff_access");
  await page.getByLabel("Sign-in identifier").fill("operator@example.com");
  await page.getByLabel("Password").fill("fresh-password");
  await page.getByRole("button",{name:"Submit for independent approval"}).click();
