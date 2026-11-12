@@ -191,9 +191,12 @@ CREATE TABLE public.unibud_operator_grant_requests (
     (state='approved' AND approver_account_id IS NOT NULL AND approver_session_id IS NOT NULL
       AND decided_at IS NOT NULL AND decision_reason_code IS NOT NULL)
     OR
-    (state IN ('rejected','cancelled','expired') AND decided_at IS NOT NULL
+    (state='rejected' AND approver_account_id IS NOT NULL AND approver_session_id IS NOT NULL
+      AND decided_at IS NOT NULL AND decision_reason_code IS NOT NULL AND created_grant_id IS NULL)
+    OR
+    (state IN ('cancelled','expired') AND decided_at IS NOT NULL
       AND approver_account_id IS NULL AND approver_session_id IS NULL
-      AND created_grant_id IS NULL)
+      AND decision_reason_code IS NOT NULL AND created_grant_id IS NULL)
   )
 );
 CREATE UNIQUE INDEX unibud_operator_grant_one_pending_target_idx
