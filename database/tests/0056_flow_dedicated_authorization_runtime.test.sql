@@ -56,5 +56,6 @@ BEGIN
     RAISE EXCEPTION 'Flow auth role has direct credential or challenge table access';
   END IF;
 END
+$privileges$;
 
 ROLLBACK;
