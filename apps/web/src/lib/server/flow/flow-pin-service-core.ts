@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { createFlowStepUpProof } from "./flow-step-up-core";
+import { createFlowStepUpProof } from "./flow-step-up-core.ts";
 import { hash, verify, argon2id } from "argon2";
 import type { FlowPinRepository } from "./flow-pin-repository";
 
