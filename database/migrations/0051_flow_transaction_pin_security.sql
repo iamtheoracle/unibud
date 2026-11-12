@@ -17,7 +17,7 @@ ALTER TABLE public.flow_transaction_rate_limits
 CREATE TABLE public.flow_step_up_assertions (
   account_id UUID NOT NULL REFERENCES public.accounts(id) ON DELETE RESTRICT,
   session_id UUID NOT NULL REFERENCES public.account_sessions(id) ON DELETE RESTRICT,
-  action TEXT NOT NULL CHECK(action IN ('pin_enroll','pin_recovery','webauthn_register')),
+  action TEXT NOT NULL CHECK(action IN ('pin_enroll','pin_recovery','webauthn_register','transaction_pin_authorize','transaction_webauthn_authorize')),
   payload_digest BYTEA NOT NULL CHECK(octet_length(payload_digest)=32),
   nonce_digest BYTEA NOT NULL CHECK(octet_length(nonce_digest)=32),
   expires_at TIMESTAMPTZ NOT NULL,
@@ -67,7 +67,7 @@ DECLARE
   v_now BIGINT:=floor(extract(epoch FROM clock_timestamp()))::BIGINT;
 BEGIN
   IF v_account IS NULL OR v_session IS NULL
-     OR p_action IS NULL OR p_action NOT IN ('pin_enroll','pin_recovery','webauthn_register')
+     OR p_action IS NULL OR p_action NOT IN ('pin_enroll','pin_recovery','webauthn_register','transaction_pin_authorize','transaction_webauthn_authorize')
      OR p_payload_digest IS NULL OR octet_length(p_payload_digest)<>32
      OR p_expires_epoch IS NULL OR p_expires_epoch<=v_now OR p_expires_epoch>v_now+120
      OR p_nonce IS NULL OR p_signature IS NULL OR p_signature !~ '^[0-9a-f]{64}$' THEN
@@ -125,6 +125,7 @@ BEGIN
     WHEN 'pin_enroll' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
     WHEN 'pin_recovery' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
     WHEN 'webauthn_register' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
+    WHEN 'authorization_create' THEN v_window:=900; v_limit:=5; v_lock:=900;
     ELSE RAISE EXCEPTION 'Unsupported Flow PIN rate-limit action' USING ERRCODE='22023';
   END CASE;
 
