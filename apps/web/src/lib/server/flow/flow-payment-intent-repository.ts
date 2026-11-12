@@ -258,7 +258,7 @@ export class FlowPaymentIntentRepository {
       const paymentIntentId = result.rows[0]?.payment_intent_id ?? null;
       if (!paymentIntentId) return null;
       const current = await client.query<{ status: string }>(
-        `SELECT status FROM public.flow_payment_intents WHERE payment_intent_id=$1::uuid`,
+        `SELECT status FROM public.flow_get_payment_intent_status($1::uuid)`,
         [paymentIntentId]
       );
       const status = current.rows[0]?.status;
