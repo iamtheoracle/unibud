@@ -4,13 +4,16 @@ import { getAppDatabasePool } from "../../../lib/server/database/postgres-pool";
 import { hasSameOrigin, readJsonObject, readSessionCookie, routeError } from "../../../lib/server/identity/http";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
 
-async function withVerifiedAccount<T>(request: NextRequest, work: (accountId: string) => Promise<T>) {
+async function withVerifiedAccount<T>(request: NextRequest, work: (accountId: string, activeProfileId: string) => Promise<T>) {
   const token = readSessionCookie(request);
   if (!token) return { response: NextResponse.json({ ok: false }, { status: 401 }) };
   const { sessions } = createConfiguredIdentityServices();
   const validation = await sessions.validate(token);
   if (!validation.valid) return { response: NextResponse.json({ ok: false }, { status: 401 }) };
-  return { value: await work(validation.account.id) };
+  if (!validation.session.activeProfileId) {
+    return { response: NextResponse.json({ ok: false, error: "Choose an active profile before changing block settings." }, { status: 409 }) };
+  }
+  return { value: await work(validation.account.id, validation.session.activeProfileId) };
 }
 
 export async function POST(request: NextRequest) {
@@ -21,18 +24,30 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const result = await withVerifiedAccount(request, async accountId => {
+    const result = await withVerifiedAccount(request, async (accountId, activeProfileId) => {
       const context = createSignedAccountContextFromEnvironment(accountId);
       return withSignedAccountTransaction(getAppDatabasePool(), context, async client => {
+        const profile = await client.query<{ allowed: boolean }>(
+          "SELECT public.profile_authorize_action($1, unibud_private.current_account_id(), 'profile.read') AS allowed",
+          [activeProfileId]
+        );
+        if (profile.rows[0]?.allowed !== true) return { status: "profile_denied" as const };
+        const budget = await client.query<{ allowed: boolean }>(
+          "SELECT public.account_block_consume_rate_limit() AS allowed"
+        );
+        if (budget.rows[0]?.allowed !== true) return { status: "rate_limited" as const };
         const result = await client.query<{ changed: boolean }>(
           "SELECT public.account_block_handle($1) AS changed",
           [body.handle]
         );
-        return result.rows[0]?.changed === true;
+        return { status: result.rows[0]?.changed === true ? "changed" as const : "not_changed" as const };
       });
     });
     if ("response" in result) return result.response;
-    if (!result.value) {
+    if (result.value.status === "rate_limited") {
+      return NextResponse.json({ ok: false, error: "Too many block changes. Please wait a minute and try again." }, { status: 429 });
+    }
+    if (result.value.status !== "changed") {
       return NextResponse.json({ ok: false, error: "The block change could not be applied." }, { status: 409 });
     }
     return NextResponse.json({ ok: true });
@@ -52,15 +67,27 @@ export async function DELETE(request: NextRequest) {
     const result = await withVerifiedAccount(request, async accountId => {
       const context = createSignedAccountContextFromEnvironment(accountId);
       return withSignedAccountTransaction(getAppDatabasePool(), context, async client => {
+        const profile = await client.query<{ allowed: boolean }>(
+          "SELECT public.profile_authorize_action($1, unibud_private.current_account_id(), 'profile.read') AS allowed",
+          [activeProfileId]
+        );
+        if (profile.rows[0]?.allowed !== true) return { status: "profile_denied" as const };
+        const budget = await client.query<{ allowed: boolean }>(
+          "SELECT public.account_block_consume_rate_limit() AS allowed"
+        );
+        if (budget.rows[0]?.allowed !== true) return { status: "rate_limited" as const };
         const result = await client.query<{ changed: boolean }>(
           "SELECT public.account_unblock_handle($1) AS changed",
           [body.handle]
         );
-        return result.rows[0]?.changed === true;
+        return { status: result.rows[0]?.changed === true ? "changed" as const : "not_changed" as const };
       });
     });
     if ("response" in result) return result.response;
-    if (!result.value) {
+    if (result.value.status === "rate_limited") {
+      return NextResponse.json({ ok: false, error: "Too many block changes. Please wait a minute and try again." }, { status: 429 });
+    }
+    if (result.value.status !== "changed") {
       return NextResponse.json({ ok: false, error: "The block change could not be applied." }, { status: 409 });
     }
     return NextResponse.json({ ok: true });
