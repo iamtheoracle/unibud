@@ -89,7 +89,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0052_flow_webauthn_registration.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0053_flow_transaction_authorization.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0054_flow_payment_intent_rate_limits.sql
-          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0054_flow_payment_intent_rate_limit.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -146,7 +145,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0052_flow_webauthn_registration.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0053_flow_transaction_authorization.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0054_flow_payment_intent_rate_limits.test.sql
-          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0054_flow_payment_intent_rate_limit.test.sql
       - name: Verify concurrent Flow payment intent idempotency
         env:
           PGPASSWORD: unibud_test_only
