@@ -614,5 +614,5 @@ Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delive
 - **Database security:** signed-session RLS on every Flow table; column-limited read-only app access; no direct app access to PIN hashes, WebAuthn keys, authorization challenges or rate-limit records. Journal ingestion is deliberately not enabled.
 - **Ledger boundary:** Flow journal is a mirror of externally verified MoneyLead settlement events only. It is not the authoritative bank ledger and cannot be used to calculate spendable balances or independently execute transfers.
 - **Not yet implemented:** intent/API procedures, PIN service, WebAuthn verification, challenge creation/consumption, transfer orchestration, MoneyLead gateway, provider/issuer/settlement adapters.
-- **Verification:** migration and synthetic SQL test are wired into Foundation CI, but this branch's exact-head CI result is pending. No production database migration, payment, provider activation, merge or deployment is claimed.
+- **Verification:** exact-head CI PASSED at `66d490e4b908f0392fb648880f9a6f8d5165a74a`: Foundation `43199174906`, Web/Database `43199174820`, Oracle Arc API `43199174775`. PR #19 remains draft/open/unmerged. No production database migration, payment, provider activation or deployment is claimed.
 
