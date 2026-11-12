@@ -57,6 +57,13 @@ REVOKE SELECT ON public.flow_customer_accounts,public.flow_payment_intents,
   public.flow_journal_entries,public.flow_journal_postings
   FROM PUBLIC,unibud_app,unibud_auth,unibud_readonly,unibud_migrator,unibud_flow_auth;
 
+REVOKE SELECT(flow_account_id,account_id,status,created_at)
+  ON public.flow_customer_accounts FROM unibud_app,unibud_readonly;
+REVOKE SELECT(payment_intent_id,flow_account_id,account_id,amount,currency,fee_amount,
+  purpose_code,status,created_at,authorized_at,submitted_at,settled_at,failed_at,
+  cancelled_at,reversed_at)
+  ON public.flow_payment_intents FROM unibud_app,unibud_readonly;
+
 CREATE FUNCTION public.flow_get_payment_intent_status(p_payment_intent_id UUID)
 RETURNS TABLE(payment_intent_id UUID,status TEXT)
 LANGUAGE plpgsql
