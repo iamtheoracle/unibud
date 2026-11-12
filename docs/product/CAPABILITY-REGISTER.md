@@ -593,3 +593,7 @@ The independent-connection grant lifecycle harness passed on code head 89c445751
 ### Grant console accessibility refinements
 
 The Operations grants console now has captioned tables with scoped headers, named keyboard-focusable horizontal scroll regions, explicit keyboard focus indicators, polite unread-count announcements and reduced-motion styling. These are targeted improvements; a full WCAG/assistive-technology audit remains outstanding.
+
+ 
+### User-selectable OTP delivery transports — 2026-11-12
+Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delivery preferences; email identities remain email-only. The server validates transport compatibility and passes the selected `deliveryMethod` to the existing authenticated HTTPS verification gateway. The gateway/provider has not yet been verified to implement these transports. No WhatsApp/RCS delivery, template approval, carrier reachability, provider receipts, fallback or production activation is claimed. See DEC-021 and the implementation tracker.
