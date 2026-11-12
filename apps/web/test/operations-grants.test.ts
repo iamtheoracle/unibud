@@ -106,6 +106,10 @@ test("grant lifecycle notifications are transactional, account-scoped and explic
   assert.match(grantNotificationsRoute, /unibud_operator_mark_grant_notification_read/);
   assert.match(grantNotificationsClient, /Grant notifications/);
   assert.match(grantNotificationsClient, /do not indicate external email or SMS delivery/);
+  assert.match(grantNotificationsClient, /aria-live="polite"/);
+  assert.match(client, /role="region" aria-label="Pending operator grant requests" tabIndex=\{0\}/);
+  assert.match(client, /<caption>Active operator grants<\/caption>/);
+  assert.match(client, /scope="col"/);
   assert.match(client, /OperationsGrantNotifications/);
   assert.match(workflow, /database\/migrations\/0047_operations_grant_notifications\.sql/);
   assert.match(workflow, /database\/tests\/0047_operations_grant_notifications\.test\.sql/);
