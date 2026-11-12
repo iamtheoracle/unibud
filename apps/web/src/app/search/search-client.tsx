@@ -8,6 +8,12 @@ type SearchProfile = {
   kind: "personal" | "creator" | "page_community";
 };
 
+type BlockedProfile = {
+  handle: string;
+  displayName: string;
+  blockedAt: string;
+};
+
 type SearchResponse = {
   ok: boolean;
   intent?: "academic" | "general_discovery" | "adult_dating" | "space_scoped";
@@ -23,6 +29,70 @@ export default function SearchClient() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [response, setResponse] = useState<SearchResponse | null>(null);
+  const [blockedProfiles, setBlockedProfiles] = useState<BlockedProfile[] | null>(null);
+  const [pendingBlockHandle, setPendingBlockHandle] = useState<string | null>(null);
+  const [blockBusy, setBlockBusy] = useState(false);
+  const [blockNotice, setBlockNotice] = useState("");
+
+  async function loadBlockedProfiles() {
+    setBlockBusy(true);
+    setBlockNotice("");
+    try {
+      const result = await fetch("/api/blocks", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+        credentials: "same-origin"
+      });
+      const payload = await result.json() as { ok: boolean; blockedProfiles?: BlockedProfile[]; error?: string };
+      if (!result.ok || !payload.ok) {
+        setError(payload.error ?? "Blocked profiles could not be loaded.");
+        return;
+      }
+      setBlockedProfiles(payload.blockedProfiles ?? []);
+    } catch {
+      setError("Blocked profiles could not be loaded. Try again.");
+    } finally {
+      setBlockBusy(false);
+    }
+  }
+
+  async function changeBlock(method: "POST" | "DELETE", profile: { handle: string; displayName: string }) {
+    setBlockBusy(true);
+    setError("");
+    setBlockNotice("");
+    try {
+      const result = await fetch("/api/blocks", {
+        method,
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ handle: profile.handle })
+      });
+      const payload = await result.json() as { ok: boolean; error?: string };
+      if (!result.ok || !payload.ok) {
+        setError(payload.error ?? "The block setting could not be changed.");
+        return;
+      }
+      if (method === "POST") {
+        setResponse(current => current ? {
+          ...current,
+          results: current.results?.filter(item => item.handle !== profile.handle)
+        } : current);
+        setBlockedProfiles(current => current
+          ? [{ handle: profile.handle, displayName: profile.displayName, blockedAt: new Date().toISOString() }, ...current]
+          : current);
+        setBlockNotice(`@${profile.handle} is blocked across your UNIBUD account.`);
+      } else {
+        setBlockedProfiles(current => current?.filter(item => item.handle !== profile.handle) ?? []);
+        setBlockNotice(`@${profile.handle} is unblocked.`);
+      }
+      setPendingBlockHandle(null);
+    } catch {
+      setError("The block setting could not be changed. Try again.");
+    } finally {
+      setBlockBusy(false);
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -142,12 +212,54 @@ export default function SearchClient() {
                     <span>@{profile.handle}</span>
                   </div>
                   <span className="search-result-kind">{profile.kind.replace("_", " ")}</span>
+                  <div className="search-result-actions">
+                    {pendingBlockHandle === profile.handle ? (
+                      <>
+                        <span>Block this account across all profiles?</span>
+                        <button type="button" disabled={blockBusy} onClick={() => void changeBlock("POST", profile)}>Confirm</button>
+                        <button type="button" disabled={blockBusy} onClick={() => setPendingBlockHandle(null)}>Cancel</button>
+                      </>
+                    ) : (
+                      <button type="button" disabled={blockBusy} onClick={() => setPendingBlockHandle(profile.handle)}>Block</button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
           </section>
         ) : null}
       </div>
+
+      {blockNotice ? <p className="search-message" role="status">{blockNotice}</p> : null}
+      {error ? null : null}
+      <section className="blocked-management" aria-labelledby="blocked-title">
+        <div className="blocked-heading">
+          <div>
+            <p className="eyebrow">Account safety</p>
+            <h2 id="blocked-title">Blocked accounts</h2>
+          </div>
+          <button type="button" className="blocked-load" disabled={blockBusy} onClick={() => void loadBlockedProfiles()}>
+            {blockBusy ? "Loading…" : blockedProfiles === null ? "View blocked accounts" : "Refresh"}
+          </button>
+        </div>
+        {blockedProfiles !== null ? (
+          blockedProfiles.length === 0
+            ? <p className="search-message">You have no active account blocks.</p>
+            : <ul className="search-result-list">
+                {blockedProfiles.map(profile => (
+                  <li className="search-result" key={profile.handle}>
+                    <div className="search-result-copy">
+                      <strong>{profile.displayName}</strong>
+                      <span>@{profile.handle}</span>
+                    </div>
+                    <button type="button" className="blocked-unblock" disabled={blockBusy} onClick={() => void changeBlock("DELETE", profile)}>Unblock</button>
+                  </li>
+                ))}
+              </ul>
+        ) : (
+          <p className="search-hint">Blocks apply at account level across the person’s profiles. You can review or reverse your own blocks here.</p>
+        )}
+      </section>
     </section>
   );
 }
