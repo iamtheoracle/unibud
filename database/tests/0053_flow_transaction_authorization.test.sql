@@ -59,6 +59,7 @@ DECLARE
   v_intent_pin UUID;
   v_intent_webauthn UUID;
   v_intent_replay UUID;
+  v_intent_cancel UUID;
   v_authorization UUID;
   v_challenge BYTEA;
   v_challenge_digest BYTEA;
@@ -224,6 +225,27 @@ BEGIN
   END IF;
   PERFORM public.flow_fail_authorization_challenge(v_authorization);
 
+  v_intent_cancel:=public.flow_create_payment_intent(
+    v_flow_account,digest('cancel-idempotency','sha256'),v_recipient_cipher,v_recipient_digest,
+    22.00,'NGN',0.50,'member_transfer'
+  );
+  SELECT authorization_id INTO v_authorization
+    FROM public.flow_create_authorization_challenge(
+      v_intent_cancel,'transaction_pin',decode(repeat('e4',32),'hex'),
+      clock_timestamp()+interval '110 seconds'
+    );
+  IF v_authorization IS NULL THEN RAISE EXCEPTION 'Cancellation test challenge was not created'; END IF;
+  IF public.flow_cancel_payment_intent(v_intent_cancel) IS DISTINCT FROM true THEN
+    RAISE EXCEPTION 'Pre-submission payment intent cancellation failed';
+  END IF;
+  IF public.flow_cancel_payment_intent(v_intent_cancel) IS DISTINCT FROM true THEN
+    RAISE EXCEPTION 'Payment intent cancellation is not idempotent';
+  END IF;
+  SELECT count(*) INTO v_count
+    FROM public.flow_get_authorization_challenge(v_authorization);
+  IF v_count<>0 THEN RAISE EXCEPTION 'Cancellation did not invalidate active authorization challenge'; END IF;
+  PERFORM set_config('test.flow_cancelled_intent_id',v_intent_cancel::TEXT,true);
+
   SELECT signature_counter INTO v_counter
     FROM public.flow_webauthn_list_credentials()
    WHERE credential_id=v_credential_id;
@@ -277,6 +299,12 @@ BEGIN
    WHERE payment_intent_id=current_setting('test.flow_authorized_intent_id')::UUID;
   IF v_status<>'authorized' OR v_authorized_at IS NULL THEN
     RAISE EXCEPTION 'Authorization did not produce the expected authorized lifecycle state';
+  END IF;
+  SELECT status INTO v_status
+    FROM public.flow_payment_intents
+   WHERE payment_intent_id=current_setting('test.flow_cancelled_intent_id')::UUID;
+  IF v_status<>'cancelled' THEN
+    RAISE EXCEPTION 'Pre-submission cancellation did not persist the cancelled lifecycle state';
   END IF;
 END
 $persisted$;
