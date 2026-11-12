@@ -1,5 +1,5 @@
 import type { SqlClient } from "../database/account-context-core.ts";
-import { routeSearchIntent, type SearchIntent, type SearchRoute } from "../../../../../../packages/contracts/src/search.ts";
+import { routeSearchIntent, type ConnectSearchCategory, type SearchIntent, type SearchRoute } from "../../../../../../packages/contracts/src/search.ts";
 
 
 /**
@@ -16,7 +16,31 @@ export function classifyGlobalSearchIntent(query: string): SearchIntent {
   if (/\b(school|campus|university|universities|college|colleges|faculty|department|departments|course|courses|class|classes|exam|exams|assignment|assignments|tutor|tutors|lecturer|lecturers|study group|scholarship|scholarships|lecture|lectures|coursework)\b/u.test(normalized)) {
     return { kind: "academic" };
   }
-  return { kind: "general_discovery" };
+  if (/\\b(community|communities|groups|clubs)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "communities" };
+  }
+  if (/\\b(creator|creators|influencer|influencers|content creator)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "creators" };
+  }
+  if (/\\b(institution|institutions|organisation|organization|company|companies)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "institutions" };
+  }
+  if (/\\b(job|jobs|career|careers|internship|internships|opportunity|opportunities)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "opportunities" };
+  }
+  if (/\\b(service|services|photographer|photographers|plumber|plumbers|electrician|electricians|designer|designers)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "services" };
+  }
+  if (/\\b(food|restaurant|restaurants|cafe|cafes|coffee|catering)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "food" };
+  }
+  if (/\\b(event|events|meetup|meetups|concert|concerts|festival|festivals)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "events" };
+  }
+  if (/\\b(trip|trips|travel|adventure|adventures|tour|tours)\\b/u.test(normalized)) {
+    return { kind: "general_discovery", category: "trips" };
+  }
+  return { kind: "general_discovery", category: "people" };
 }
 
 export function routeGlobalSearch(query: string): {
@@ -96,8 +120,14 @@ export function normalizePeopleSearchTerm(value: unknown): string | null {
  */
 export async function searchPublicProfiles(
   client: SqlClient,
-  normalizedTerm: string
+  normalizedTerm: string,
+  category: Extract<ConnectSearchCategory, "people" | "communities" | "creators">
 ): Promise<PublicProfileSearchResult[]> {
+  const profileKind = category === "people"
+    ? "personal"
+    : category === "creators"
+      ? "creator"
+      : "page_community";
   const result = await client.query<{
     handle: string;
     display_name: string;
@@ -107,6 +137,7 @@ export async function searchPublicProfiles(
        FROM public.profiles p
       WHERE p.status = 'active'
         AND p.visibility = 'public'
+        AND p.kind = $2
         AND p.owner_account_id <> unibud_private.current_account_id()
         AND (
           position(lower($1) in lower(p.handle)) > 0
@@ -115,7 +146,7 @@ export async function searchPublicProfiles(
         AND NOT public.account_interaction_blocked(p.owner_account_id)
       ORDER BY lower(p.handle), p.id
       LIMIT 20`,
-    [normalizedTerm]
+    [normalizedTerm, profileKind]
   );
 
   return result.rows.map(row => ({
