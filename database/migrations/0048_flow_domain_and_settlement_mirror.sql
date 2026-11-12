@@ -66,6 +66,10 @@ CREATE TABLE public.flow_payment_intents (
   UNIQUE(account_id,payment_intent_id),
   CHECK ((status='authorized')=(authorized_at IS NOT NULL)
       OR status IN ('submitted','accepted','settled','failed','cancelled','reversed')),
+  CHECK (status NOT IN ('settled','reversed') OR settled_at IS NOT NULL),
+  CHECK (status<>'failed' OR failed_at IS NOT NULL),
+  CHECK (status<>'cancelled' OR cancelled_at IS NOT NULL),
+  CHECK (status<>'reversed' OR reversed_at IS NOT NULL),
   CHECK (external_instruction_ref_ciphertext IS NULL OR external_instruction_ref_digest IS NOT NULL),
   CHECK (external_instruction_ref_digest IS NULL OR external_instruction_ref_ciphertext IS NOT NULL)
 );
