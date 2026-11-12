@@ -7,11 +7,17 @@ GRANT SELECT,INSERT,UPDATE ON public.flow_transaction_rate_limits TO unibud_flow
 GRANT INSERT ON public.security_audit_events TO unibud_flow_owner;
 GRANT EXECUTE ON FUNCTION unibud_private.current_account_id() TO unibud_flow_owner;
 GRANT EXECUTE ON FUNCTION unibud_private.current_session_id() TO unibud_flow_owner;
+ALTER TABLE public.flow_transaction_rate_limits
+  DROP CONSTRAINT flow_transaction_rate_limits_action_check;
+ALTER TABLE public.flow_transaction_rate_limits
+  ADD CONSTRAINT flow_transaction_rate_limits_action_check CHECK(action IN (
+    'pin_verify','pin_enroll','pin_recovery','webauthn_verify','webauthn_register','authorization_create'
+  ));
 
-CREATE TABLE public.flow_pin_step_up_assertions (
+CREATE TABLE public.flow_step_up_assertions (
   account_id UUID NOT NULL REFERENCES public.accounts(id) ON DELETE RESTRICT,
   session_id UUID NOT NULL REFERENCES public.account_sessions(id) ON DELETE RESTRICT,
-  action TEXT NOT NULL CHECK(action IN ('pin_enroll','pin_recovery')),
+  action TEXT NOT NULL CHECK(action IN ('pin_enroll','pin_recovery','webauthn_register')),
   payload_digest BYTEA NOT NULL CHECK(octet_length(payload_digest)=32),
   nonce_digest BYTEA NOT NULL CHECK(octet_length(nonce_digest)=32),
   expires_at TIMESTAMPTZ NOT NULL,
@@ -20,28 +26,28 @@ CREATE TABLE public.flow_pin_step_up_assertions (
   FOREIGN KEY(session_id,account_id)
     REFERENCES public.account_sessions(id,account_id) ON DELETE RESTRICT
 );
-ALTER TABLE public.flow_pin_step_up_assertions OWNER TO unibud_flow_owner;
-ALTER TABLE public.flow_pin_step_up_assertions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.flow_pin_step_up_assertions FORCE ROW LEVEL SECURITY;
-CREATE POLICY flow_pin_step_up_assertions_owner_scope ON public.flow_pin_step_up_assertions
+ALTER TABLE public.flow_step_up_assertions OWNER TO unibud_flow_owner;
+ALTER TABLE public.flow_step_up_assertions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.flow_step_up_assertions FORCE ROW LEVEL SECURITY;
+CREATE POLICY flow_step_up_assertions_owner_scope ON public.flow_step_up_assertions
   USING(account_id=unibud_private.current_account_id())
   WITH CHECK(account_id=unibud_private.current_account_id());
-REVOKE ALL ON public.flow_pin_step_up_assertions
+REVOKE ALL ON public.flow_step_up_assertions
   FROM PUBLIC,unibud_app,unibud_readonly,unibud_migrator,unibud_flow_ingest;
 
-CREATE TABLE unibud_private.flow_pin_step_up_signing_keys (
+CREATE TABLE unibud_private.flow_step_up_signing_keys (
   key_id TEXT PRIMARY KEY,
   secret BYTEA NOT NULL CHECK(octet_length(secret)>=32),
   active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
-CREATE UNIQUE INDEX flow_pin_step_up_one_active_key
-  ON unibud_private.flow_pin_step_up_signing_keys(active) WHERE active;
-REVOKE ALL ON unibud_private.flow_pin_step_up_signing_keys
+CREATE UNIQUE INDEX flow_step_up_one_active_key
+  ON unibud_private.flow_step_up_signing_keys(active) WHERE active;
+REVOKE ALL ON unibud_private.flow_step_up_signing_keys
   FROM PUBLIC,unibud_app,unibud_readonly,unibud_migrator;
-GRANT SELECT ON unibud_private.flow_pin_step_up_signing_keys TO unibud_flow_owner;
+GRANT SELECT ON unibud_private.flow_step_up_signing_keys TO unibud_flow_owner;
 
-CREATE FUNCTION public.flow_consume_pin_step_up_assertion(
+CREATE FUNCTION public.flow_consume_step_up_assertion(
   p_action TEXT,p_payload_digest BYTEA,p_expires_epoch BIGINT,p_nonce UUID,p_signature TEXT
 ) RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -61,14 +67,14 @@ DECLARE
   v_now BIGINT:=floor(extract(epoch FROM clock_timestamp()))::BIGINT;
 BEGIN
   IF v_account IS NULL OR v_session IS NULL
-     OR p_action IS NULL OR p_action NOT IN ('pin_enroll','pin_recovery')
+     OR p_action IS NULL OR p_action NOT IN ('pin_enroll','pin_recovery','webauthn_register')
      OR p_payload_digest IS NULL OR octet_length(p_payload_digest)<>32
      OR p_expires_epoch IS NULL OR p_expires_epoch<=v_now OR p_expires_epoch>v_now+120
      OR p_nonce IS NULL OR p_signature IS NULL OR p_signature !~ '^[0-9a-f]{64}$' THEN
     RETURN false;
   END IF;
   SELECT secret INTO v_key
-    FROM unibud_private.flow_pin_step_up_signing_keys
+    FROM unibud_private.flow_step_up_signing_keys
    WHERE active ORDER BY created_at DESC LIMIT 1;
   IF v_key IS NULL THEN RETURN false; END IF;
 
@@ -81,9 +87,9 @@ BEGIN
   END LOOP;
   IF v_diff<>0 THEN RETURN false; END IF;
 
-  DELETE FROM public.flow_pin_step_up_assertions
+  DELETE FROM public.flow_step_up_assertions
    WHERE account_id=v_account AND expires_at<clock_timestamp()-interval '1 day';
-  INSERT INTO public.flow_pin_step_up_assertions(
+  INSERT INTO public.flow_step_up_assertions(
     account_id,session_id,action,payload_digest,nonce_digest,expires_at
   ) VALUES(
     v_account,v_session,p_action,p_payload_digest,
@@ -95,7 +101,7 @@ BEGIN
 END
 $function$;
 
-CREATE FUNCTION public.flow_consume_pin_rate_limit(p_action TEXT)
+CREATE FUNCTION public.flow_consume_flow_rate_limit(p_action TEXT)
 RETURNS TABLE(allowed BOOLEAN,request_count INTEGER,locked_until TIMESTAMPTZ)
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -117,6 +123,7 @@ BEGIN
     WHEN 'pin_verify' THEN v_window:=900; v_limit:=5; v_lock:=900;
     WHEN 'pin_enroll' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
     WHEN 'pin_recovery' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
+    WHEN 'webauthn_register' THEN v_window:=3600; v_limit:=3; v_lock:=3600;
     ELSE RAISE EXCEPTION 'Unsupported Flow PIN rate-limit action' USING ERRCODE='22023';
   END CASE;
 
@@ -167,7 +174,7 @@ BEGIN
   END IF;
   SELECT r.allowed,r.request_count,r.locked_until
     INTO v_allowed,v_count,v_locked
-    FROM public.flow_consume_pin_rate_limit('pin_enroll') r;
+    FROM public.flow_consume_flow_rate_limit('pin_enroll') r;
   IF NOT COALESCE(v_allowed,false) THEN
     INSERT INTO public.security_audit_events(
       id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
@@ -177,7 +184,7 @@ BEGIN
       'rate_limited','{}'::jsonb);
     RETURN false;
   END IF;
-  IF NOT public.flow_consume_pin_step_up_assertion(
+  IF NOT public.flow_consume_step_up_assertion(
     'pin_enroll',public.digest(convert_to(p_pin_hash_phc,'UTF8'),'sha256'),
     p_expires_epoch,p_nonce,p_signature
   ) THEN
@@ -234,7 +241,7 @@ BEGIN
   END IF;
   SELECT r.allowed,r.request_count,r.locked_until
     INTO v_allowed,v_count,v_rate_lock
-    FROM public.flow_consume_pin_rate_limit('pin_verify') r;
+    FROM public.flow_consume_flow_rate_limit('pin_verify') r;
   IF NOT COALESCE(v_allowed,false) THEN
     INSERT INTO public.security_audit_events(
       id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
@@ -348,7 +355,7 @@ BEGIN
   END IF;
   SELECT r.allowed,r.request_count,r.locked_until
     INTO v_allowed,v_count,v_locked
-    FROM public.flow_consume_pin_rate_limit('pin_recovery') r;
+    FROM public.flow_consume_flow_rate_limit('pin_recovery') r;
   IF NOT COALESCE(v_allowed,false) THEN
     INSERT INTO public.security_audit_events(
       id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
@@ -358,7 +365,7 @@ BEGIN
       'rate_limited','{}'::jsonb);
     RETURN false;
   END IF;
-  IF NOT public.flow_consume_pin_step_up_assertion(
+  IF NOT public.flow_consume_step_up_assertion(
     'pin_recovery',public.digest(convert_to(p_pin_hash_phc,'UTF8'),'sha256'),
     p_expires_epoch,p_nonce,p_signature
   ) THEN
@@ -386,16 +393,16 @@ BEGIN
 END
 $function$;
 
-ALTER FUNCTION public.flow_consume_pin_rate_limit(TEXT) OWNER TO unibud_flow_owner;
-ALTER FUNCTION public.flow_consume_pin_step_up_assertion(TEXT,BYTEA,BIGINT,UUID,TEXT) OWNER TO unibud_flow_owner;
+ALTER FUNCTION public.flow_consume_flow_rate_limit(TEXT) OWNER TO unibud_flow_owner;
+ALTER FUNCTION public.flow_consume_step_up_assertion(TEXT,BYTEA,BIGINT,UUID,TEXT) OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_pin_enroll(TEXT,BIGINT,UUID,TEXT) OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_pin_begin_verification() OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_pin_record_failure() OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_pin_record_success() OWNER TO unibud_flow_owner;
 ALTER FUNCTION public.flow_pin_recover(TEXT,BIGINT,UUID,TEXT) OWNER TO unibud_flow_owner;
 
-REVOKE ALL ON FUNCTION public.flow_consume_pin_rate_limit(TEXT),
-  public.flow_consume_pin_step_up_assertion(TEXT,BYTEA,BIGINT,UUID,TEXT),
+REVOKE ALL ON FUNCTION public.flow_consume_flow_rate_limit(TEXT),
+  public.flow_consume_step_up_assertion(TEXT,BYTEA,BIGINT,UUID,TEXT),
   public.flow_pin_enroll(TEXT,BIGINT,UUID,TEXT),public.flow_pin_begin_verification(),
   public.flow_pin_record_failure(),public.flow_pin_record_success(),
   public.flow_pin_recover(TEXT,BIGINT,UUID,TEXT)
