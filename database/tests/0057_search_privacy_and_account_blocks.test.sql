@@ -5,14 +5,27 @@ BEGIN;
 INSERT INTO public.accounts(id,status) VALUES
  ('51000000-0000-4000-8000-000000000001','active'),
  ('51000000-0000-4000-8000-000000000002','active'),
- ('51000000-0000-4000-8000-000000000003','active');
+ ('51000000-0000-4000-8000-000000000003','active'),
+ ('51000000-0000-4000-8000-000000000004','active'),
+ ('51000000-0000-4000-8000-000000000005','active');
 
 INSERT INTO public.profiles(
  id,owner_account_id,kind,handle,handle_normalized,display_name,visibility
 ) VALUES
  ('52000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001','personal','discover-a','discover-a','Discover A','public'),
  ('52000000-0000-4000-8000-000000000002','51000000-0000-4000-8000-000000000002','personal','discover-b','discover-b','Discover B','public'),
- ('52000000-0000-4000-8000-000000000003','51000000-0000-4000-8000-000000000003','personal','discover-c','discover-c','Discover C','private');
+ ('52000000-0000-4000-8000-000000000003','51000000-0000-4000-8000-000000000003','personal','discover-c','discover-c','Discover C','public'),
+ ('52000000-0000-4000-8000-000000000004','51000000-0000-4000-8000-000000000004','personal','discover-d','discover-d','Discover D','public'),
+ ('52000000-0000-4000-8000-000000000005','51000000-0000-4000-8000-000000000005','personal','discover-e','discover-e','Discover E','private');
+
+
+INSERT INTO public.account_discovery_eligibility(
+ account_id,status,cohort_key,verified_at,expires_at
+) VALUES
+ ('51000000-0000-4000-8000-000000000001','verified','cohort-a',clock_timestamp(),clock_timestamp()+interval '30 days'),
+ ('51000000-0000-4000-8000-000000000002','verified','cohort-a',clock_timestamp(),clock_timestamp()+interval '30 days'),
+ ('51000000-0000-4000-8000-000000000004','verified','cohort-b',clock_timestamp(),clock_timestamp()+interval '30 days'),
+ ('51000000-0000-4000-8000-000000000005','verified','cohort-a',clock_timestamp(),clock_timestamp()+interval '30 days');
 
 UPDATE unibud_private.context_signing_keys SET active=false WHERE active;
 INSERT INTO unibud_private.context_signing_keys(key_id,secret,active)
@@ -38,12 +51,16 @@ SET LOCAL ROLE unibud_app;
 DO $test$
 DECLARE visible_b INTEGER;
 DECLARE visible_c INTEGER;
+DECLARE visible_d INTEGER;
+DECLARE visible_e INTEGER;
 DECLARE audit_count INTEGER;
 BEGIN
  SELECT count(*) INTO visible_b FROM public.profiles WHERE handle_normalized='discover-b';
  SELECT count(*) INTO visible_c FROM public.profiles WHERE handle_normalized='discover-c';
- IF visible_b <> 1 OR visible_c <> 0 THEN
-  RAISE EXCEPTION 'Only public profiles should be discoverable; public %, private %',visible_b,visible_c;
+ SELECT count(*) INTO visible_d FROM public.profiles WHERE handle_normalized='discover-d';
+ SELECT count(*) INTO visible_e FROM public.profiles WHERE handle_normalized='discover-e';
+ IF visible_b <> 1 OR visible_c <> 0 OR visible_d <> 0 OR visible_e <> 0 THEN
+  RAISE EXCEPTION 'Discovery must require public visibility and a verified matching cohort; B %, unknown C %, other cohort D %, private E %',visible_b,visible_c,visible_d,visible_e;
  END IF;
 
  IF public.account_block_handle('discover-b') IS DISTINCT FROM TRUE THEN
