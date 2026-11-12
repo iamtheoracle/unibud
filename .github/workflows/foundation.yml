@@ -87,7 +87,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0050_flow_authorization_binding_constraints.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0051_flow_transaction_pin_security.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0052_flow_webauthn_registration.sql
-          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/migrations/0052_flow_webauthn_registration.sql
       - name: Verify identity and RLS isolation
         env:
           PGPASSWORD: unibud_test_only
@@ -141,7 +140,6 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0049_flow_payment_intent_procedures.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0050_flow_authorization_binding_constraints.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0051_flow_transaction_pin_security.test.sql
-          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0052_flow_webauthn_registration.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0052_flow_webauthn_registration.test.sql
       - name: Verify concurrent Flow payment intent idempotency
         env:
