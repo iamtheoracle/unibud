@@ -844,3 +844,5 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **System expiry:** restricted owner policy permits the existing trusted bounded maintenance worker to enqueue expiry notices without a user session. The list/mark functions still enforce the verified account identity.
 - **Not implemented:** email/SMS dispatch, external delivery receipts, provider retries or a separate delivery worker. In-app notification persistence is not evidence of external delivery.
 - **Verification:** migration/test 0047 is included in Foundation PostgreSQL CI; web contract coverage checks route, UI and privilege boundaries. Independent grant transition concurrency and browser E2E remain outstanding.
+
+- **Browser coverage added:** isolated /e2e/operations-grants fixture and scripts/e2e/operations-grants.mjs now run in web CI. Coverage includes grant notifications and mark-read, approval, requester cancellation and request submission with mocked HTTP responses. This verifies UI behavior only; PostgreSQL tests remain authoritative for database authorization and persistence.
