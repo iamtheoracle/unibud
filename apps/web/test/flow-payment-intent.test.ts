@@ -63,3 +63,14 @@ test("payment-intent HTTP route derives identity from a validated session and ca
   assert.match(route, /Flow payment-intent creation is not configured/);
   assert.doesNotMatch(route, /body\.(accountId|sessionId|status|balance|approved)/);
 });
+
+
+test("payment-intent repository reads only the owner-scoped lifecycle status procedure", async () => {
+  const { readFileSync } = await import("node:fs");
+  const repository = readFileSync(
+    new URL("../src/lib/server/flow/flow-payment-intent-repository.ts", import.meta.url),
+    "utf8"
+  );
+  assert.match(repository, /flow_get_payment_intent_status/);
+  assert.doesNotMatch(repository, /SELECT status FROM public\.flow_payment_intents/);
+});
