@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
       getAppDatabasePool(),
       context,
       async client => {
-        await consumeSearchRateLimit(client, validation.account.id);
+        await consumeSearchRateLimit(client);
         if (classification.intent.kind !== "general_discovery") return null;
         return searchPublicProfiles(client, term);
       }
