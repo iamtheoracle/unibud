@@ -1,6 +1,6 @@
 # Flow PostgreSQL Domain and Transaction-Security Foundation
 
-**Status:** Migrations 0048–0051, the authenticated payment-intent endpoint, Argon2id PIN service, password-step-up enrollment/recovery, session-bound verification and database-backed PIN rate limiting are implemented on the Flow foundation branch. Exact-head CI for this expanded work is pending. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
+**Status:** Migrations 0048–0052, the authenticated payment-intent endpoint, Argon2id PIN lifecycle, database-backed PIN controls and session-bound WebAuthn credential registration are implemented on the Flow foundation branch. Exact-head CI for the expanded work is pending. PR #19 remains draft/open/unmerged. Not deployed; no live MoneyLead connection, customer balance, payment execution or settlement is established by this work.
 
 ## Ownership boundary
 
@@ -20,7 +20,7 @@
 - Migration 0049 adds `flow_create_payment_intent`, a SECURITY DEFINER procedure owned by the NOLOGIN Flow owner. It requires both signed account and exact persisted-session context, verifies Flow-account ownership, stores a database-computed transaction digest, audits creation/replay/mismatch and uses a unique constraint plus `ON CONFLICT DO NOTHING` to make concurrent duplicate submissions idempotent. It creates an instruction only; it does not debit, reserve, submit or settle funds.
 - Authorization challenges are single-use, expiry-bound, session-bound and tied to the exact `details_digest` of the intent. Migration 0050 adds composite foreign keys that make cross-account session binding and altered intent-digest binding impossible at the database constraint layer.
 - PIN verifiers use Argon2id (64 MiB memory, three iterations, one lane, 32-byte output). Enrollment and recovery require password reauthentication for the same active account and a short-lived, single-use HMAC assertion bound to account, session, action and exact verifier digest. PostgreSQL consumes the assertion nonce and enforces per-account rate limits. No plaintext PIN is persisted.
-- Biometric storage contains WebAuthn public keys and counters only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
+- Biometric storage contains WebAuthn credential identifiers, public keys, signature counters and supported transport metadata only. Face ID/Touch ID biometric templates are never collected or stored by UNIBUD.
 - Journal postings are append-only and deferred constraint-trigger validation requires at least two postings with equal debit and credit totals per journal entry/currency.
 - Direct app-table access is read-only and column-limited. `unibud_app` has no direct table access to PIN verifiers, step-up assertions, biometric public keys, authorization challenges or rate-limit records; it can invoke only narrowly scoped session-bound procedures. The PIN verification procedure returns the current account's Argon2id verifier only to the trusted server-side caller after atomic database rate limiting.
 - The payment-intent HTTP route validates the active persisted session, derives account/session identity server-side, encrypts recipient references, requires a 32-byte high-entropy idempotency key and returns an instruction state only. It does not process a payment. PIN enrollment, verification and recovery endpoints are now present, but PIN verification does not produce a reusable token or authorize an intent; the transaction-bound authorization challenge flow is still pending. Intent-creation rate limiting is also pending.
@@ -36,10 +36,19 @@
 - Required deployment secret: `UNIBUD_FLOW_STEP_UP_HMAC_KEY` (32 random bytes, hex) must match the active secret provisioned in `unibud_private.flow_step_up_signing_keys`. If either side is missing or mismatched, enrollment/recovery fail closed. Provision and rotate through the production secret-management process; never commit key material.
 - Password reauthentication uses the existing verified email/phone identity and password credential for the same session account. Recovery notification delivery and security-alert UX remain a follow-up.
 
+## WebAuthn credential registration — migration 0052
+
+- `POST /api/flow/biometric/registration/options` requires a valid persisted session and password reauthentication for the same active account before generating registration options.
+- `POST /api/flow/biometric/registration/verify` verifies the authenticator response through `@simplewebauthn/server`, with the exact configured origin and RP ID and `userVerification: required`.
+- Registration challenges are 32-byte random challenges, account/session-bound in PostgreSQL, expire within five minutes, allow only one active challenge per session and are consumed or failed once. Registration creation is limited to three per hour; verification reads are limited to five per fifteen minutes.
+- The server computes a canonical digest over the challenge, credential ID, COSE public key, signature counter and sorted transport list. PostgreSQL independently recomputes the digest and requires a short-lived single-use `webauthn_register` step-up assertion before inserting the credential.
+- Only the credential ID, COSE public key, signature counter and transport metadata are stored. No biometric template, face image, fingerprint or device biometric secret is sent to or stored by UNIBUD.
+- Required configuration: `UNIBUD_WEBAUTHN_RP_ID`, `UNIBUD_WEBAUTHN_ORIGIN` and optional `UNIBUD_WEBAUTHN_RP_NAME`. Production requires HTTPS and an origin host equal to the RP ID or one of its subdomains.
+- Registration is not payment authorization. WebAuthn assertion verification must still be performed against the one-time transaction authorization challenge before it can confirm any payment.
 ## Deliberate deferrals
 
 1. Transaction-bound authorization challenge creation and one-time consumption. PIN verification must be consumed against the exact recipient, amount, currency, fees, source Flow account, payment-intent reference, expiry and persisted session. The standalone PIN endpoint cannot authorize a payment.
-2. WebAuthn registration and assertion verification, including origin/RP-ID checks, credential ownership, challenge binding, user-presence/user-verification flags and replay-resistant signature-counter handling. Face ID/Touch ID templates remain on the device.
+2. WebAuthn assertion verification for transaction authorization, including origin/RP-ID checks, exact payment challenge binding, user-presence/user-verification flags and replay-resistant signature-counter handling. Credential registration is implemented; Face ID/Touch ID templates remain on the device.
 3. Payment-intent lifecycle transition procedures and status APIs for authorization, submission, acceptance, settlement, failure, cancellation, refund and reversal. Settlement requires verified MoneyLead evidence.
 4. Intent-creation rate limiting and broader fraud/risk controls. PIN endpoint rate limits are implemented; payment-intent creation has not yet been rate-limited.
 5. Internal transfers: blocked until MoneyLead provides a verified scoped integration and authoritative posting contract. Flow must not simulate a bank transfer locally.
