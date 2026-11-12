@@ -18,6 +18,7 @@ UNIBUD brings together useful digital spaces and real-world services without for
 | Space | Primary purpose |
 |---|---|
 | Connect | Discover and connect with people, communities, institutions, creators, opportunities, and services |
+| Quad | Distinct discovery experience; preserve its separate identity and recover its exact founder-approved feature contract before implementation |
 | Bud | Academic companion, learning, study, and academic resources |
 | Board (inside Bud) | Digital campus: places, school information, academic services, and campus resources |
 | Square | General entertainment, creator media, podcasts, and live content |
