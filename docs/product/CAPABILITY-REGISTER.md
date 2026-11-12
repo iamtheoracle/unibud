@@ -573,3 +573,7 @@ Branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation run 43159
 ### Grant lifecycle concurrency coverage
 
 A dedicated Foundation CI harness now exercises approval/rejection, approval/cancellation, cancellation after exact-session MFA step-up expiry during a row-lock wait, and approval versus bounded request expiry using independent PostgreSQL sessions. It asserts one terminal transition, consistent grant/audit outcomes and SKIP LOCKED worker behavior. Verification remains pending until CI for the new commit completes.
+
+### Grant lifecycle concurrency — CI verified
+
+The independent-connection grant lifecycle harness passed on code head 89c44575186176c4553db5fb962b90234e58ba83 (Foundation run 43160136952). It verified approve/reject and approve/cancel serialization, post-lock MFA step-up expiry rejection, and approval versus bounded expiry with SKIP LOCKED behavior. Web and Database run 43160137016 and Oracle Arc API run 43160136965 also passed. These are CI results, not production activation. Independent security review remains open.
