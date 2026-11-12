@@ -228,3 +228,10 @@ footer { padding: 42px 0 30px; color: var(--muted); font-size: 12px; }
 .mfa-audit-table td{max-width:260px;overflow-wrap:anywhere}
 .mfa-audit-table td:last-child{white-space:normal;min-width:190px}
 @media(max-width:520px){.mfa-form-grid{grid-template-columns:1fr}.mfa-wide{grid-column:auto}.mfa-actions{align-items:stretch;flex-direction:column}.mfa-actions>*{width:100%}}
+
+.mfa-button:focus-visible,.mfa-secondary:focus-visible,.mfa-header a:focus-visible,.mfa-small a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.mfa-table-wrap{overscroll-behavior-inline:contain;scrollbar-gutter:stable}
+.mfa-table-wrap:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+.mfa-audit-table caption{padding:0 0 10px;color:var(--ink);font-size:12px;font-weight:700;text-align:left}
+.mfa-notification-list button:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.mfa-shell *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
