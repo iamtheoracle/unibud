@@ -231,7 +231,6 @@ export default function SearchClient() {
       </div>
 
       {blockNotice ? <p className="search-message" role="status">{blockNotice}</p> : null}
-      {error ? null : null}
       <section className="blocked-management" aria-labelledby="blocked-title">
         <div className="blocked-heading">
           <div>
