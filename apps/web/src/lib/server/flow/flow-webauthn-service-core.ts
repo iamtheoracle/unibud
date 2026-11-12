@@ -15,7 +15,12 @@ function webAuthnConfiguration(): { rpId: string; origin: string; rpName: string
   if (!rpId || !configuredOrigin) {
     throw new Error("UNIBUD_WEBAUTHN_RP_ID and UNIBUD_WEBAUTHN_ORIGIN are required.");
   }
-  const parsed = new URL(configuredOrigin);
+  let parsed: URL;
+  try {
+    parsed = new URL(configuredOrigin);
+  } catch {
+    throw new Error("UNIBUD_WEBAUTHN_ORIGIN must be a valid origin URL.");
+  }
   if (parsed.origin !== configuredOrigin.replace(/\/$/, "") ||
       parsed.pathname !== "/" || parsed.search || parsed.hash) {
     throw new Error("UNIBUD_WEBAUTHN_ORIGIN must be an exact origin without a path.");
