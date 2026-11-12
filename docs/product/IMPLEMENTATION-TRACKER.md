@@ -756,3 +756,13 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - The legacy recovery HMAC key remains required while any legacy recovery-code set may still be outstanding. Digest rows intentionally do not expose their key ID; retirement requires controlled replacement evidence and must not be inferred from successful deployment alone.
 - CI status: exact-head Foundation, Web/Database and Oracle Arc API workflows must complete successfully before this implementation is marked verified. Do not rotate production keys as part of this code change.
 - No production secrets, secret-manager bindings, recovery-code regeneration, production grant changes or deployment were performed. PR #15 remains open/draft/unmerged; Issue #16 remains open pending independent security review.
+
+
+### Recovery-code HMAC rotation — exact-head verification — 2026-11-12
+
+- **Verified code head:** d2a30e19cb46c1f3c80ce88db512f42a7cd91912.
+- **Foundation checks:** PASSED, run 43142922889. PostgreSQL 16 applied migrations 0001–0041; the complete database/RLS suite passed, including the new recovery candidate-wrapper privilege test, the recovery redemption integration test with a mismatching candidate before the valid digest, and the existing independent-connection one-time redemption concurrency harness.
+- **UNIBUD Web and Database:** PASSED, run 43142922820. PostgreSQL migration validation, TypeScript type check, contract tests, server security unit tests (including recovery keyring compatibility), lint, profile browser E2E and production build all passed.
+- **Oracle Arc API:** PASSED, run 43142923010.
+- CI initially exposed two test integration defects: migration 0041 had not been included in the Foundation migration/test command list, and the new test used pgTAP although the Foundation PostgreSQL service does not install that extension. Both were corrected: migration/test 0041 are explicitly wired into Foundation CI and the new test now uses native SQL assertions. The subsequent exact-head Foundation and Web/Database runs passed.
+- No production key was generated or provisioned; no secret-manager binding, user recovery-code replacement, production deployment, production Operations grant or live key rotation was performed. The legacy recovery HMAC key must remain configured while legacy codes may exist. PR #15 remains open/draft/unmerged; Issue #16 remains open pending independent security review.
