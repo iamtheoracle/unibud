@@ -34,7 +34,9 @@ test("PIN recovery requires password reauthentication for the exact active accou
 });
 
 test("PIN service uses Argon2id and does not issue a reusable authorization token", () => {
-  const service = source("../src/lib/server/flow/flow-pin-service.ts");
+  const wrapper = source("../src/lib/server/flow/flow-pin-service.ts");
+  const service = source("../src/lib/server/flow/flow-pin-service-core.ts");
+  assert.ok(wrapper.includes('import "server-only"'));
   assert.ok(service.includes("argon2id"));
   assert.ok(service.includes("memoryCost: 65_536"));
   assert.ok(service.includes("timeCost: 3"));
