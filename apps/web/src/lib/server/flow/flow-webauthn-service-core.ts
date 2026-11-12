@@ -110,7 +110,7 @@ export class FlowWebAuthnService {
     registrationId: string;
     response: unknown;
   }): Promise<boolean> {
-    const config = webAuthnConfiguration();
+    const config = getFlowWebAuthnConfiguration();
     const challenge = await this.repository.getRegistrationChallenge(
       input.accountId,
       input.sessionId,
