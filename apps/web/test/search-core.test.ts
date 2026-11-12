@@ -185,13 +185,19 @@ test("Connect people, creator and community profile searches use distinct profil
 
 
 test("explicit space-scoped search preserves the selected boundary without granting access", () => {
-  for (const space of ["connect", "quad", "bud_board", "square", "soullync", "riff", "wayward", "quarter", "flow"]) {
+  for (const space of ["connect", "quad", "bud_board", "square", "riff", "wayward", "quarter", "flow"]) {
     const routed = routeExplicitSearchScope(space);
     assert.deepEqual(routed?.route, {
       kind: "scoped",
       applicationId: space
     });
   }
+  assert.deepEqual(routeExplicitSearchScope("soullync")?.route, {
+    kind: "scoped",
+    applicationId: "soullync",
+    requiresAdultEligibility: true,
+    requiresIndependentConsent: true
+  });
   assert.equal(routeExplicitSearchScope("unknown-space"), null);
   assert.equal(routeExplicitSearchScope(null), null);
 });
