@@ -33,9 +33,7 @@ test("people search uses a bound term and returns only safe public profile field
   assert.deepEqual(parameters, ["ada"]);
   assert.match(statement, /p\.visibility = 'public'/);
   assert.match(statement, /p\.status = 'active'/);
-  assert.match(statement, /account_blocks/);
-  assert.match(statement, /blocker_account_id/);
-  assert.match(statement, /blocked_account_id/);
+  assert.match(statement, /account_interaction_blocked/);
   assert.match(statement, /LIMIT 20/);
   assert.deepEqual(results, [{
     handle: "ada",
