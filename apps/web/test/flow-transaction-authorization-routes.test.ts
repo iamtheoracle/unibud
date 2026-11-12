@@ -69,3 +69,16 @@ test("payment cancellation is account/session scoped and only a server lifecycle
   assert.ok(route.includes("cancelPaymentIntent"));
   assert.doesNotMatch(route, /body\.(recipient|amount|currency|feeAmount|accountId|sessionId|approved|authorized)/);
 });
+
+
+test("Flow authorization uses its own required database URL with no generic pool fallback", () => {
+  const pool = source("../src/lib/server/database/postgres-pool.ts");
+  assert.ok(pool.includes("UNIBUD_FLOW_AUTH_DATABASE_URL"));
+  assert.ok(pool.includes("unibud-flow-auth-runtime"));
+  assert.ok(pool.includes("flowAuthPool"));
+  assert.ok(pool.includes("flowAuthPool = undefined"));
+  assert.doesNotMatch(
+    pool.slice(pool.indexOf("export function getFlowAuthDatabasePool"), pool.indexOf("/** Tenant-scoped application pool")),
+    /UNIBUD_AUTH_DATABASE_URL|UNIBUD_APP_DATABASE_URL/
+  );
+});
