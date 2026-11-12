@@ -43,7 +43,7 @@ SELECT set_config('unibud.account_id',account_id,true),
            decode(repeat('85',32),'hex'),'sha256'),'hex'),true)
 FROM ctx;
 
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_auth;
 DO $pin$
 DECLARE
   v_hash TEXT:='$argon2id$v=19$m=65536,t=3,p=1$c29tZXNhbHQ$Y2hhbmdlZGlnaWVzdA';
@@ -142,13 +142,13 @@ BEGIN
 
   BEGIN
     EXECUTE 'SELECT pin_hash_phc FROM public.flow_transaction_credentials';
-    RAISE EXCEPTION 'Application role can directly read stored PIN hashes';
+    RAISE EXCEPTION 'Flow transaction runtime can directly read stored PIN hashes';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
 
   BEGIN
     PERFORM public.flow_consume_flow_rate_limit('pin_verify');
-    RAISE EXCEPTION 'Application role can invoke the internal PIN rate-limit primitive directly';
+    RAISE EXCEPTION 'Flow transaction runtime can invoke the internal PIN rate-limit primitive directly';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
 END
@@ -175,7 +175,7 @@ SELECT set_config('unibud.account_id',account_id,true),
            decode(repeat('85',32),'hex'),'sha256'),'hex'),true)
 FROM ctx;
 
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_auth;
 DO $isolation$
 DECLARE
   v_allowed BOOLEAN;
