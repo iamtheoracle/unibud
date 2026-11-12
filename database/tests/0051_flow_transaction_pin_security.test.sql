@@ -113,6 +113,9 @@ BEGIN
   v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_recovery:'||
     encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
   v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
+  IF public.flow_pin_recover(v_new_hash,v_expiry,v_nonce,repeat('0',64)) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'Invalid password step-up signature was accepted';
+  END IF;
   IF public.flow_pin_recover(v_new_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM true THEN
     RAISE EXCEPTION 'Password-reauthenticated PIN recovery procedure failed';
   END IF;
@@ -174,12 +177,30 @@ FROM ctx;
 
 SET LOCAL ROLE unibud_app;
 DO $isolation$
-DECLARE v_allowed BOOLEAN; v_hash TEXT;
+DECLARE
+  v_allowed BOOLEAN;
+  v_hash TEXT;
+  v_nonce UUID:=gen_random_uuid();
+  v_expiry BIGINT:=floor(extract(epoch FROM clock_timestamp())+60)::BIGINT;
+  v_digest BYTEA;
+  v_message TEXT;
+  v_signature TEXT;
+  v_test_hash TEXT:='$argon2id$v=19$m=65536,t=3,p=1$YW5vdGhlcnNhbHQ$YW5vdGhlcmRpZ2VzdA';
 BEGIN
   SELECT allowed,pin_hash_phc INTO v_allowed,v_hash
     FROM public.flow_pin_begin_verification();
   IF v_allowed IS DISTINCT FROM false OR v_hash IS NOT NULL THEN
     RAISE EXCEPTION 'A different account observed another account PIN credential';
+  END IF;
+
+  -- A valid assertion signed for account one/session one must not enroll a
+  -- credential for account two/session two.
+  v_digest:=public.digest(convert_to(v_test_hash,'UTF8'),'sha256');
+  v_message:='flow-pin-step-up:v1:f0510000-0000-4000-8000-000000000001:f0510000-0000-4000-8000-000000000011:pin_enroll:'||
+    encode(v_digest,'hex')||':'||v_expiry::TEXT||':'||v_nonce::TEXT;
+  v_signature:=encode(public.hmac(convert_to(v_message,'UTF8'),decode(repeat('86',32),'hex'),'sha256'),'hex');
+  IF public.flow_pin_enroll(v_test_hash,v_expiry,v_nonce,v_signature) IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'A step-up assertion from another account/session was accepted';
   END IF;
 END
 $isolation$;
