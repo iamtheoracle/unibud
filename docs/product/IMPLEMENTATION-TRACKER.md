@@ -1,6 +1,6 @@
 # UNIBUD / My Realm Network implementation tracker
 
-Last verified: 2026-11-11
+Last verified: 2026-11-12
 Repository: `iamtheoracle/unibud`
 Tracking rule: a requirement remains **NOT STARTED**, **IN PROGRESS**, **BLOCKED**, or **NOT VERIFIED** until its backend, authorization, user experience, tests, documentation and operational evidence are all present. A screen, schema, mock, CI run or plan alone does not establish production capability.
 
@@ -714,3 +714,14 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Exact-head Web/Database PostgreSQL validation exposed that baseline test 0002 attempted to insert a second active account-context signing key. The baseline migration already provisions one active key and enforces a single-active-key unique index.
 - Updated the isolated test transaction to deactivate the seeded key before installing its CI-only synthetic active key. The test's final `ROLLBACK` restores the original baseline state; production migrations and key material are unchanged.
 - **Correction commit:** `3c352a508e2a0466d876487367de18e8043452b2`. Exact-head Foundation and Web/Database CI must verify the correction. The independent migration 0039 notification assertion failure and hosted-runner browser dependency failure remain separate items to validate against the new head.
+
+
+### Exact-head CI verification — 2026-11-12
+
+- **Current branch head:** `12510f70bbdec1300768bc54084e8656ce61d86b` on `foundation/session-derived-operations-rbac-v2`.
+- **Foundation integrity:** PASSED, run `43058291877`. PostgreSQL 16 migration/RLS job and foundation integrity job both completed successfully. The workflow includes the independent-connection Operations dual-control approve/reject, approve/cancel and approval/expiry race harness; MFA assertion replay concurrency; and recovery-code redemption concurrency.
+- **UNIBUD Web and Database:** PASSED, run `43058291884`. PostgreSQL migration validation and web build/type checks both completed successfully; the successful Web job includes its configured browser E2E/build stages.
+- **Oracle Arc API:** PASSED, run `43058292045`.
+- The earlier concurrency concern is resolved by existing checked-in scripts and their Foundation CI execution; no additional concurrency patch was needed in this checkpoint.
+- PR #15 remains OPEN, DRAFT and UNMERGED. Issue #16 remains an independent security-review blocker. No production deployment, production key rotation, recurring scheduler activation, or live Operations grant provisioning is claimed.
+- **Next acceptance work:** complete independent security review and Issue #16 disposition; select and approve the production scheduler/runtime and secret-manager binding before activation; verify worker monitoring/retry/alert delivery; define notification retention against audit retention; complete key provisioning/rotation evidence, Operations grant-management UI, audit search/export and security alerting.
