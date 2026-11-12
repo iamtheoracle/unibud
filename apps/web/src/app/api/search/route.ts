@@ -3,7 +3,7 @@ import { createSignedAccountContextFromEnvironment, withSignedAccountTransaction
 import { getAppDatabasePool } from "../../../lib/server/database/postgres-pool";
 import { readSessionCookie, routeError } from "../../../lib/server/identity/http";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
-import { normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
+import { consumeSearchRateLimit, normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -20,28 +20,22 @@ export async function GET(request: NextRequest) {
     if (!validation.valid) return NextResponse.json({ ok: false }, { status: 401 });
 
     const classification = routeGlobalSearch(term);
-    if (classification.intent.kind !== "general_discovery") {
-      // Board and SouLync destination services enforce their own authorization.
-      // No records are queried or returned by this global routing endpoint.
-      return NextResponse.json({
-        ok: true,
-        intent: classification.intent.kind,
-        route: classification.route
-      });
-    }
-
     const context = createSignedAccountContextFromEnvironment(validation.account.id);
     const results = await withSignedAccountTransaction(
       getAppDatabasePool(),
       context,
-      client => searchPublicProfiles(client, term)
+      async client => {
+        await consumeSearchRateLimit(client, validation.account.id);
+        if (classification.intent.kind !== "general_discovery") return null;
+        return searchPublicProfiles(client, term);
+      }
     );
 
     return NextResponse.json({
       ok: true,
       intent: classification.intent.kind,
       route: classification.route,
-      results
+      ...(results === null ? {} : { results })
     });
   } catch (error) {
     return routeError(error);
