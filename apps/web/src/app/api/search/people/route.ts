@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       getAppDatabasePool(),
       context,
       async client => {
-        await consumeSearchRateLimit(client, validation.account.id);
+        await consumeSearchRateLimit(client);
         return searchPublicProfiles(client, term);
       }
     );
