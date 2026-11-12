@@ -30,12 +30,10 @@ BEGIN
     RAISE EXCEPTION 'Dedicated Flow auth role is missing a required user-confirmation procedure';
   END IF;
 
-  IF has_function_privilege('unibud_flow_auth','public.flow_create_payment_intent(uuid,bytea,bytea,bytea,numeric,text,numeric,text)','EXECUTE') THEN
-    RAISE EXCEPTION 'Flow auth role can create payment intents outside the instruction boundary';
-  END IF;
-  IF NOT has_function_privilege('unibud_app','public.flow_create_payment_intent(uuid,bytea,bytea,bytea,numeric,text,numeric,text)','EXECUTE')
+  IF NOT has_function_privilege('unibud_flow_auth','public.flow_create_payment_intent(uuid,bytea,bytea,bytea,numeric,text,numeric,text)','EXECUTE')
+     OR NOT has_function_privilege('unibud_app','public.flow_create_payment_intent(uuid,bytea,bytea,bytea,numeric,text,numeric,text)','EXECUTE')
      OR NOT has_function_privilege('unibud_app','public.flow_get_payment_intent_status(uuid)','EXECUTE') THEN
-    RAISE EXCEPTION 'General app role cannot create an instruction and read only its lifecycle status';
+    RAISE EXCEPTION 'Flow or app role cannot create a scoped instruction and the app role cannot read only its lifecycle status';
   END IF;
 
   IF has_any_column_privilege('unibud_app','public.flow_customer_accounts','SELECT')
