@@ -92,11 +92,11 @@ BEGIN
    FOR UPDATE;
   IF NOT FOUND THEN RETURN; END IF;
 
-  UPDATE public.flow_authorization_challenges
+  UPDATE public.flow_authorization_challenges AS c
      SET failed_at=clock_timestamp()
-   WHERE payment_intent_id=p_payment_intent_id
-     AND account_id=v_account AND consumed_at IS NULL AND failed_at IS NULL
-     AND expires_at<=clock_timestamp();
+   WHERE c.payment_intent_id=p_payment_intent_id
+     AND c.account_id=v_account AND c.consumed_at IS NULL AND c.failed_at IS NULL
+     AND c.expires_at<=clock_timestamp();
 
   v_challenge_digest:=public.digest(p_challenge,'sha256');
   INSERT INTO public.flow_authorization_challenges(
