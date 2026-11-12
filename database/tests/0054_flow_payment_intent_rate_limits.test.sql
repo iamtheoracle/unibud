@@ -23,7 +23,10 @@ INSERT INTO public.flow_customer_accounts(
 ) VALUES(
  'f0550000-0000-4000-8000-000000000021','f0550000-0000-4000-8000-000000000001',
  decode(repeat('01',32),'hex'),digest('customer-55','sha256'),
- decode(repeat('02',32),'hex'),digest('account-55','sha256'),'active'
+ decode(repeat('02',32),'hex'),digest('account-55','sha256'),'active'),
+ ('f0550000-0000-4000-8000-000000000022','f0550000-0000-4000-8000-000000000002',
+  decode(repeat('03',32),'hex'),digest('customer-55b','sha256'),
+  decode(repeat('04',32),'hex'),digest('account-55b','sha256'),'active'
 );
 
 UPDATE unibud_private.context_signing_keys SET active=false WHERE active;
@@ -55,7 +58,6 @@ SET LOCAL ROLE unibud_app;
 DO $limit$
 DECLARE
   v_intent UUID;
-  v_count INTEGER;
   v_nonce TEXT;
   v_expiry TEXT;
   i INTEGER;
