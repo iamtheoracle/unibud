@@ -557,3 +557,9 @@ The database tests cover grant, revocation and rejection transitions, independen
 Migration 0046 corrects the cancellation transition's time-of-check ordering: after it obtains the request row lock, it captures wall-clock time and revalidates request/assertion expiry, the original exact session, active scoped grant, authenticator and exact-session MFA step-up. Foundation CI now applies the migration and checks the function's post-lock ordering, SECURITY DEFINER owner and app-role privilege boundary.
 
 **Verification boundary:** this catalog/function-contract test does not establish concurrent runtime correctness. Independent PostgreSQL connection races for approval/rejection, approval/cancellation, step-up expiry during cancellation and approval versus bounded expiry remain outstanding. No production migration, bootstrap grant or deployment has occurred.
+
+### Operations grant lifecycle notifications — migration 0047
+
+Grant lifecycle events now produce account-scoped in-app notices for submission, approval, rejection, cancellation and expiry. Notices are written in the same transaction as the grant-request lifecycle change, with idempotency by account/request/event. The requester, target and independent approver are the only possible recipients. The notification table is RLS-protected, inaccessible directly to the app role, and read/marked through SECURITY DEFINER functions using verified signed session context and the existing notification-read rate limit.
+
+**Capability boundary:** this is an in-app inbox only. It does not send email or SMS, create an external delivery receipt, or provide provider retry/worker behavior. Grant transition concurrency and dedicated browser E2E remain outstanding.
