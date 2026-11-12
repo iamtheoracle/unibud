@@ -28,12 +28,12 @@ function validateNewPin(pin: string): void {
 function createStepUpProof(
   accountId: string,
   sessionId: string,
-  action: "pin_enroll" | "pin_recovery",
+  action: "pin_enroll" | "pin_recovery" | "webauthn_register",
   pinHashPhc: string
 ): { expiresEpoch: number; nonce: string; signature: string } {
-  const rawKey = process.env.UNIBUD_FLOW_PIN_STEP_UP_HMAC_KEY?.trim() ?? "";
+  const rawKey = process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY?.trim() ?? "";
   if (!/^(?:[0-9a-f]{2}){32}$/i.test(rawKey)) {
-    throw new Error("UNIBUD_FLOW_PIN_STEP_UP_HMAC_KEY must be exactly 32 random bytes encoded as hex.");
+    throw new Error("UNIBUD_FLOW_STEP_UP_HMAC_KEY must be exactly 32 random bytes encoded as hex.");
   }
   const expiresEpoch = Math.floor(Date.now() / 1000) + 60;
   const nonce = randomUUID();
