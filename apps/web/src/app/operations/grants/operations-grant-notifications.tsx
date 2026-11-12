@@ -59,7 +59,7 @@ export default function OperationsGrantNotifications(){
  return <section className="mfa-card" aria-labelledby="grant-notifications-title">
   <div className="mfa-card-head">
    <div><p className="eyebrow">Access governance</p><h2 id="grant-notifications-title">Grant notifications</h2></div>
-   <span className="mfa-state">{unread} unread</span>
+   <span className="mfa-state" role="status" aria-live="polite">{unread} unread</span>
   </div>
   <p className="mfa-muted">In-app updates for grant requests involving this account. These notices do not indicate external email or SMS delivery.</p>
   {error&&<p className="mfa-alert mfa-error" role="alert">{error}</p>}
