@@ -64,7 +64,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    const result = await withVerifiedAccount(request, async accountId => {
+    const result = await withVerifiedAccount(request, async (accountId, activeProfileId) => {
       const context = createSignedAccountContextFromEnvironment(accountId);
       return withSignedAccountTransaction(getAppDatabasePool(), context, async client => {
         const profile = await client.query<{ allowed: boolean }>(
