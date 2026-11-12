@@ -733,3 +733,16 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - The test verifies percent-encoded PostgreSQL URI parsing, that `DATABASE_URL` is removed before `psql`, that credentials do not appear in process arguments, required libpq environment, TLS downgrade rejection, unsupported URI-parameter rejection, batch bounds, the configured 45-second hard timeout arguments, and propagation of psql/timeout failures.
 - **Verified at exact branch head `4cc1cd09d377933e02c0067b6c94761159db791f`:** Foundation `43136999522` PASSED, including the new safety-contract test and the actual worker invocation through the disposable least-privilege scheduler login; UNIBUD Web and Database `43136999469` PASSED; Oracle Arc API `43136999501` PASSED.
 - This does not establish production scheduler configuration, production credentials/secret-manager integration, external alert delivery, recurring execution, or production deployment. PR #15 remains draft/open/unmerged and Issue #16 remains open pending independent review/disposition.
+
+
+### Operations MFA encryption-key overlap support — 2026-11-12
+
+- Added versioned TOTP seed encryption envelopes in `apps/web/src/lib/server/operations/operations-mfa-core.ts`: legacy v1 ciphertext remains readable; when a keyring is configured, new writes use v2 with a key ID authenticated as AES-256-GCM additional data.
+- The optional `UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEYRING_JSON` configuration accepts one or two unique 32-byte keys and requires the active key ID to be present. The existing `UNIBUD_OPERATIONS_MFA_SEED_ENCRYPTION_KEY` remains the legacy v1 decryption key.
+- Added tests for v1 compatibility, v2 active-key writes, two-key overlap, unknown/retired key failure, invalid keyring bounds/IDs and environment parsing.
+- Updated `.env.example` and `docs/security/SIGNING-KEY-ROTATION.md` with the safe rollout and retirement procedure.
+- **Not yet CI verified at this addendum:** the implementation commits are on the active PR branch and require fresh exact-head Foundation, Web/Database and Oracle Arc API workflows.
+- **Not production rotation:** no secret-manager binding, production key provisioning, ciphertext inventory/re-encryption, deployment rollout or production key retirement has occurred. Recovery-code HMAC key rotation remains unsupported and must not be attempted until a versioned digest migration exists.
+- The previously verified migrations 0037–0040 provide dual-control concurrency hardening, the non-login maintenance execution role, transactional in-app MFA notices, and two-key HMAC verifier overlap. Notifications are in-app only; external email/SMS delivery is not established.
+- Issue #16 remediation is present in migration 0021 and its PostgreSQL integration test: actor identity is derived from cryptographically verified database context, and the actor-selectable legacy function signatures are dropped. Issue #16 remains open pending independent review and formal disposition.
+- PR #15 remains open, draft and unmerged. No production deployment, recurring production scheduler, production Operations grants or regulated financial functionality is enabled.
