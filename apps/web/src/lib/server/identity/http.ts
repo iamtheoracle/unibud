@@ -68,6 +68,9 @@ export function clearSessionCookie(response: NextResponse): void {
 }
 
 export function routeError(error: unknown): NextResponse {
+  if (error instanceof Error && error.name === "SearchRateLimitExceededError") {
+    return NextResponse.json({ ok: false, error: "Search limit reached. Please wait a minute and try again." }, { status: 429 });
+  }
   if (error instanceof AuthRateLimitExceededError) {
     return NextResponse.json({ ok: false, error: "Too many attempts. Please wait and try again." }, { status: 429 });
   }
