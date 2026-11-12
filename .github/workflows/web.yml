@@ -118,6 +118,7 @@ jobs:
           PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/profiles.mjs
           PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/operations-mfa.mjs
           PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/operations-mfa-dual-control.mjs
+          PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/operations-grants.mjs
           PLAYWRIGHT_MODULE="$(npm root -g)/playwright/index.mjs" node scripts/e2e/external-dependency-readiness.mjs
       - name: Build
         run: pnpm build
