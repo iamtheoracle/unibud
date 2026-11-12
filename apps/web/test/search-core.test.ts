@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import type { SqlClient } from "../src/lib/server/database/account-context-core.ts";
-import { assertSearchProfileContext, consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
+import { assertSearchProfileContext, consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeExplicitSearchScope, routeGlobalSearch, SearchRateLimitExceededError, searchPublicProfiles } from "../src/lib/server/search/search-core.ts";
 
 test("people search normalizes Unicode and whitespace without accepting short or oversized terms", () => {
   assert.equal(normalizePeopleSearchTerm("  Ａda   Lovelace "), "Ada Lovelace");
@@ -181,4 +181,17 @@ test("Connect people, creator and community profile searches use distinct profil
     ["ada", "creator"],
     ["ada", "page_community"]
   ]);
+});
+
+
+test("explicit space-scoped search preserves the selected boundary without granting access", () => {
+  for (const space of ["connect", "quad", "bud_board", "square", "soullync", "riff", "wayward", "quarter", "flow"]) {
+    const routed = routeExplicitSearchScope(space);
+    assert.deepEqual(routed?.route, {
+      kind: "scoped",
+      applicationId: space
+    });
+  }
+  assert.equal(routeExplicitSearchScope("unknown-space"), null);
+  assert.equal(routeExplicitSearchScope(null), null);
 });
