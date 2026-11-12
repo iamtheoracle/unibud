@@ -84,14 +84,17 @@ BEGIN
     RAISE EXCEPTION 'Changed amount reused an idempotency key';
   END IF;
 
-  SELECT count(*) INTO v_count FROM public.flow_payment_intents
-   WHERE account_id='f0490000-0000-4000-8000-000000000001';
-  IF v_count<>1 THEN RAISE EXCEPTION 'Idempotency created duplicate intents: %',v_count; END IF;
+  SELECT count(*) INTO v_count
+    FROM public.flow_get_payment_intent_status(v_first)
+   WHERE status='created';
+  IF v_count<>1 THEN
+    RAISE EXCEPTION 'Idempotency did not persist exactly one owner-scoped created intent: %',v_count;
+  END IF;
 
   SELECT count(*) INTO v_count FROM public.security_audit_events
    WHERE actor_account_id='f0490000-0000-4000-8000-000000000001'
      AND application_id='flow' AND action LIKE 'flow.payment_intent.%';
-  IF v_count<>3 THEN RAISE EXCEPTION 'Expected create, replay and mismatch audit events; found %',v_count; END IF;
+  IF v_count<>4 THEN RAISE EXCEPTION 'Expected create, replay, mismatch and status-read audit events; found %',v_count; END IF;
 END
 $test$;
 RESET ROLE;
