@@ -27,7 +27,8 @@
 
 ## Deliberate deferrals
 
-1. Transaction PIN service (Argon2id verification, recovery, lockout and rate limiting): next stage.
+1. HTTP payment-intent endpoint and repository adapter for the database procedure: next stage. No payment-intent HTTP route is exposed yet.
+2. Transaction PIN service (Argon2id verification, recovery, lockout and rate limiting): next stage.
 2. WebAuthn registration/assertion verification and signature-counter handling: next stage. The device performs biometric verification; server receives cryptographic assertions, not biometrics.
 3. Transaction-bound challenge creation/consumption procedures: next stage. The schema binds challenge rows to the payment intent digest and exact session, but no API can approve or post a payment yet.
 4. Payment intent creation, idempotent API and state-transition procedures: next stage.
