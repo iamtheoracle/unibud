@@ -310,7 +310,7 @@ expired="$(run_expiry | tail -n 1 | tr -d '[:space:]')"
 
 psql -q -v ON_ERROR_STOP=1 <<SQL
 DO \$check\$
-DECLARE v_state text; v_events integer; v_grants integer;
+DECLARE v_state text; v_events integer; v_grants integer; v_notifications integer;
 BEGIN
  SELECT state INTO v_state FROM public.unibud_operator_grant_requests WHERE request_id='$REQUEST_C';
  SELECT count(*) INTO v_events FROM public.unibud_operator_audit_events
@@ -318,8 +318,11 @@ BEGIN
     AND outcome='allowed' AND actor_account_id IS NULL AND session_id IS NULL;
  SELECT count(*) INTO v_grants FROM public.unibud_operator_grants
   WHERE account_id='$TARGET_C' AND revoked_at IS NULL;
- IF v_state<>'expired' OR v_events<>1 OR v_grants<>0 THEN
-  RAISE EXCEPTION 'Grant expiry race left inconsistent state, grant or system audit count';
+ SELECT count(*) INTO v_notifications FROM public.unibud_operator_grant_notifications
+  WHERE request_id='$REQUEST_C' AND event_type='request_expired'
+    AND account_id IN ('$REQUESTER','$TARGET_C');
+ IF v_state<>'expired' OR v_events<>1 OR v_grants<>0 OR v_notifications<>2 THEN
+  RAISE EXCEPTION 'Grant expiry race left inconsistent state, grant, system audit or requester/target notification count';
  END IF;
 END
 \$check\$;
