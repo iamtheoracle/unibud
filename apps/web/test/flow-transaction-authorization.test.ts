@@ -3,8 +3,8 @@ import assert from "node:assert/strict";
 import { createHash, createHmac } from "node:crypto";
 import { FlowTransactionAuthorizationService } from "../src/lib/server/flow/flow-transaction-authorization-service-core.ts";
 import { FlowDataProtection } from "../src/lib/server/flow/flow-crypto.ts";
-import type { FlowPaymentIntentRepository } from "../src/lib/server/flow/flow-payment-intent-repository.ts";
-import type { FlowPinService } from "../src/lib/server/flow/flow-pin-service-core.ts";
+import type { FlowPaymentIntentRepository, FlowPaymentIntentConfirmationDetails, FlowAuthorizationChallenge, FlowStepUpProof } from "../src/lib/server/flow/flow-payment-intent-repository.ts";
+import type { FlowPinService, FlowPinVerificationResult } from "../src/lib/server/flow/flow-pin-service-core.ts";
 import type { FlowWebAuthnRepository } from "../src/lib/server/flow/flow-webauthn-repository.ts";
 import type { verifyAuthenticationResponse } from "@simplewebauthn/server";
 
@@ -18,10 +18,20 @@ const INTENT = "f0540000-0000-4000-8000-000000000101";
 const AUTHORIZATION = "f0540000-0000-4000-8000-000000000111";
 const FLOW_ACCOUNT = "f0540000-0000-4000-8000-000000000021";
 
+interface TestAuthorizationInput {
+  accountId: string;
+  sessionId: string;
+  authorizationId: string;
+  payloadDigest: Buffer;
+  proof: FlowStepUpProof;
+  credentialId?: Buffer;
+  newSignatureCounter?: number;
+}
+
 class MemoryPayments {
-  details: any;
-  challenge: any = null;
-  authorizationInput: any = null;
+  details!: FlowPaymentIntentConfirmationDetails;
+  challenge: FlowAuthorizationChallenge | null = null;
+  authorizationInput: TestAuthorizationInput | null = null;
   failed = false;
   authorizeResult = true;
 
@@ -40,7 +50,7 @@ class MemoryPayments {
   }
   async getAuthorizationChallenge() { return this.challenge; }
   async failAuthorizationChallenge() { this.failed = true; return true; }
-  async authorizePaymentIntent(input: any) { this.authorizationInput = input; return this.authorizeResult; }
+  async authorizePaymentIntent(input: TestAuthorizationInput) { this.authorizationInput = input; return this.authorizeResult; }
 }
 
 class MemoryWebAuthn {
@@ -53,7 +63,7 @@ class MemoryWebAuthn {
   async listCredentials() { return this.credentials; }
 }
 
-function createService(pinState: any = { state: "verified" }, verifyAssertion?: typeof verifyAuthenticationResponse) {
+function createService(pinState: FlowPinVerificationResult = { state: "verified" }, verifyAssertion?: typeof verifyAuthenticationResponse) {
   const protection = new FlowDataProtection(Buffer.alloc(32, 1), Buffer.alloc(32, 2));
   const protectedReference = protection.protectRecipientReference(ACCOUNT, FLOW_ACCOUNT, "member:recipient");
   const payments = new MemoryPayments();
@@ -148,6 +158,7 @@ test("WebAuthn transaction authorization verifies RP, challenge, user verificati
   });
   assert.equal(options.state, "options");
   if (options.state !== "options") return;
+  assert.ok(payments.challenge);
   assert.equal(options.confirmation.recipient, "member:recipient");
   assert.equal(options.confirmation.expiresAt, payments.challenge.expiresAt);
 
@@ -161,5 +172,6 @@ test("WebAuthn transaction authorization verifies RP, challenge, user verificati
   assert.equal(verificationInputs[0]?.expectedRPID, "example.test");
   assert.equal(verificationInputs[0]?.requireUserVerification, true);
   assert.equal((verificationInputs[0]?.credential as { counter: number }).counter, 1);
+  assert.ok(payments.authorizationInput);
   assert.equal(payments.authorizationInput.newSignatureCounter, 2);
 });
