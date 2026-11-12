@@ -29,6 +29,9 @@ test("WebAuthn registration verification is bound to active persisted session an
   assert.ok(service.includes("expectedOrigin: config.origin"));
   assert.ok(service.includes("expectedRPID: config.rpId"));
   assert.ok(service.includes("requireUserVerification: true"));
+  assert.ok(service.includes("verifyRegistrationResponse"));
+  assert.ok(service.includes("UNIBUD_WEBAUTHN_RP_ID"));
+  assert.ok(service.includes("UNIBUD_WEBAUTHN_ORIGIN"));
   assert.ok(service.includes("flow-step-up:v1"));
   assert.doesNotMatch(route, /body\.(accountId|sessionId|role|approved|authorized)/);
 });
