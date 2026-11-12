@@ -14,6 +14,8 @@ type BlockedProfile = {
   blockedAt: string;
 };
 
+type SearchSpace = "connect" | "quad" | "bud_board" | "square" | "soullync" | "riff" | "wayward" | "quarter" | "flow";
+
 type SearchResponse = {
   ok: boolean;
   intent?: "academic" | "general_discovery" | "adult_dating" | "space_scoped";
@@ -26,6 +28,7 @@ type SearchResponse = {
 
 export default function SearchClient() {
   const [query, setQuery] = useState("");
+  const [scope, setScope] = useState<"global" | SearchSpace>("global");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [response, setResponse] = useState<SearchResponse | null>(null);
@@ -107,7 +110,9 @@ export default function SearchClient() {
     setError("");
     setResponse(null);
     try {
-      const result = await fetch(`/api/search?q=${encodeURIComponent(normalized)}`, {
+      const params = new URLSearchParams({ q: normalized });
+      if (scope !== "global") params.set("scope", scope);
+      const result = await fetch(`/api/search?${params.toString()}`, {
         method: "GET",
         headers: { Accept: "application/json" },
         cache: "no-store",
@@ -156,7 +161,25 @@ export default function SearchClient() {
             {loading ? "Searching…" : "Search"}
           </button>
         </div>
-        <p id="search-hint" className="search-hint">2–40 characters. Public profile results are limited by profile visibility, blocking and safety eligibility. Other categories do not use profile records as substitutes.</p>
+        <label htmlFor="unibud-search-scope">Search in</label>
+        <select
+          id="unibud-search-scope"
+          name="scope"
+          value={scope}
+          onChange={event => setScope(event.target.value as "global" | SearchSpace)}
+        >
+          <option value="global">All relevant spaces</option>
+          <option value="bud_board">Board · inside Bud</option>
+          <option value="connect">Connect</option>
+          <option value="quad">Quad</option>
+          <option value="square">Square</option>
+          <option value="soullync">SouLync · separate adult space</option>
+          <option value="riff">Riff</option>
+          <option value="wayward">Wayward</option>
+          <option value="quarter">The Quarter</option>
+          <option value="flow">Flow</option>
+        </select>
+        <p id="search-hint" className="search-hint">2–40 characters. Global search routes academic intent to Board and broad discovery to Connect. An explicit space selection preserves that boundary; it does not bypass that space’s permissions or imply its search service is live.</p>
       </form>
 
       {error ? <p className="search-message search-error" role="alert">{error}</p> : null}
@@ -169,6 +192,31 @@ export default function SearchClient() {
             <p className="eyebrow">Board · inside Bud</p>
             <h2>Academic search belongs in Board.</h2>
             <p>The query was routed correctly. Board’s academic records and search service are not yet available, so no substitute results are shown.</p>
+          </section>
+        ) : null}
+
+        {!loading && response?.intent === "space_scoped" && response.route?.applicationId === "soullync" ? (
+          <section className="search-message">
+            <p className="eyebrow">SouLync · separate space</p>
+            <h2>SouLync keeps its own safety gates.</h2>
+            <p>The search scope is preserved, but no dating records are queried. SouLync requires verified adult eligibility, independent consent and its own moderation controls.</p>
+          </section>
+        ) : null}
+
+        {!loading && response?.intent === "space_scoped" && response.route?.applicationId !== "soullync" ? (
+          <section className="search-message">
+            <p className="eyebrow">Space-scoped search</p>
+            <h2>{({
+              connect: "Connect",
+              quad: "Quad",
+              bud_board: "Board · inside Bud",
+              square: "Square",
+              riff: "Riff",
+              wayward: "Wayward",
+              quarter: "The Quarter",
+              flow: "Flow"
+            } as Record<string, string>)[response.route?.applicationId ?? ""] ?? "Selected space"}</h2>
+            <p>The selected space boundary is preserved. Its dedicated searchable records and authorization adapter must be available before results can be returned; no cross-space results are substituted.</p>
           </section>
         ) : null}
 
