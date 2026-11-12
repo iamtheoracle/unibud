@@ -11,6 +11,7 @@
     "build": "pnpm --filter @unibud/web build",
     "lint": "pnpm --filter @unibud/web lint",
     "typecheck": "pnpm --filter @unibud/web typecheck && pnpm --filter @unibud/contracts typecheck",
-    "check:docs": "bash scripts/check-docs.sh"
+    "check:docs": "bash scripts/check-docs.sh",
+    "check:space-inventory": "node scripts/check-space-inventory.mjs"
   }
 }
