@@ -90,6 +90,40 @@ END;
 $test$;
 RESET ROLE;
 
+-- An account without verified age eligibility cannot discover even verified public profiles.
+WITH context AS (
+ SELECT
+  '51000000-0000-4000-8000-000000000003'::TEXT AS account_id,
+  floor(extract(epoch FROM clock_timestamp()) + 60)::BIGINT::TEXT AS expiry,
+  'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee'::TEXT AS nonce
+)
+SELECT
+ set_config('unibud.account_id',account_id,true),
+ set_config('unibud.context_expiry',expiry,true),
+ set_config('unibud.context_nonce',nonce,true),
+ set_config('unibud.context_signature',
+  encode(public.hmac(convert_to(account_id || ':' || expiry || ':' || nonce,'UTF8'),
+    decode(repeat('6b',32),'hex'),'sha256'),'hex'),true)
+FROM context;
+
+SET LOCAL ROLE unibud_app;
+DO $unknown_viewer$
+DECLARE visible_a INTEGER;
+BEGIN
+ SELECT count(*) INTO visible_a FROM public.profiles WHERE handle_normalized='discover-a';
+ IF visible_a <> 0 THEN
+  RAISE EXCEPTION 'Viewer without verified age cohort discovered another account';
+ END IF;
+ BEGIN
+  PERFORM 1 FROM public.account_discovery_eligibility;
+  RAISE EXCEPTION 'Application role unexpectedly read age-assurance cohort records';
+ EXCEPTION WHEN insufficient_privilege THEN
+  NULL;
+ END;
+END;
+$unknown_viewer$;
+RESET ROLE;
+
 -- Account B must also be unable to discover A because A blocked B.
 WITH context AS (
  SELECT
