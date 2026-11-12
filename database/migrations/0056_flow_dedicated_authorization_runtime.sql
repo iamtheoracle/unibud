@@ -32,7 +32,8 @@ REVOKE ALL ON FUNCTION public.flow_pin_enroll(TEXT,BIGINT,UUID,TEXT),
   public.flow_authorize_payment_intent(UUID,BYTEA,BIGINT,UUID,TEXT,BYTEA,BIGINT),
   public.flow_cancel_payment_intent(UUID)
   FROM PUBLIC,unibud_app,unibud_auth,unibud_readonly;
-GRANT EXECUTE ON FUNCTION public.flow_pin_enroll(TEXT,BIGINT,UUID,TEXT),
+GRANT EXECUTE ON FUNCTION public.flow_create_payment_intent(UUID,BYTEA,BYTEA,BYTEA,NUMERIC,TEXT,NUMERIC,TEXT),
+  public.flow_pin_enroll(TEXT,BIGINT,UUID,TEXT),
   public.flow_pin_begin_verification(),
   public.flow_pin_record_failure(),
   public.flow_pin_record_success(),
@@ -102,7 +103,7 @@ REVOKE ALL ON FUNCTION public.flow_get_payment_intent_status(UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.flow_get_payment_intent_status(UUID) TO unibud_app;
 
 COMMENT ON ROLE unibud_flow_auth IS
-'NOLOGIN dedicated Flow transaction-security service role. May execute account/session-bound PIN, WebAuthn, confirmation, authorization and cancellation procedures only. No direct table access, payment-intent creation, ledger posting, provider dispatch or settlement.';
+'NOLOGIN dedicated Flow transaction-security service role. May execute account/session-bound payment-intent creation, PIN, WebAuthn, confirmation, authorization and cancellation procedures only. No direct table access, ledger posting, provider dispatch or settlement.';
 COMMENT ON FUNCTION public.flow_get_payment_intent_status(UUID) IS
 'Returns only the owner-scoped lifecycle state of a newly created instruction. Does not reveal recipient, amount, currency, fee, account references or ledger data.';
 
