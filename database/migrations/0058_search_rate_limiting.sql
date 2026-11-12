@@ -1,6 +1,6 @@
 -- Account-bound, atomic rate limiting for authenticated Search endpoints.
--- Bucket digests are HMACed in the trusted server; raw account identifiers are
--- never persisted in this table. Limits are fixed here, not caller-selectable.
+-- The database derives the opaque bucket from its verified signed account
+-- context and private signing key; callers cannot select another bucket.
 BEGIN;
 
 CREATE TABLE public.search_rate_limit_buckets (
@@ -16,25 +16,44 @@ REVOKE ALL ON public.search_rate_limit_buckets
   FROM PUBLIC, unibud_app, unibud_readonly;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.search_rate_limit_buckets
   TO unibud_profile_owner;
+GRANT SELECT ON unibud_private.context_signing_keys TO unibud_profile_owner;
 
-CREATE OR REPLACE FUNCTION public.search_consume_rate_limit(p_bucket_digest BYTEA)
+CREATE OR REPLACE FUNCTION public.search_consume_rate_limit()
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = pg_catalog, public
+SET search_path = pg_catalog, public, unibud_private
 AS $function$
 DECLARE
+  v_account_id UUID := unibud_private.current_account_id();
+  v_key BYTEA;
+  v_digest BYTEA;
   v_now TIMESTAMPTZ := clock_timestamp();
   v_count INTEGER;
 BEGIN
-  IF p_bucket_digest IS NULL OR octet_length(p_bucket_digest) <> 32 THEN
-    RAISE EXCEPTION 'Invalid search rate-limit bucket' USING ERRCODE = '22023';
+  IF v_account_id IS NULL THEN
+    RAISE EXCEPTION 'Verified account context required' USING ERRCODE = '42501';
   END IF;
+
+  SELECT secret INTO v_key
+    FROM unibud_private.context_signing_keys
+   WHERE active
+   ORDER BY created_at DESC
+   LIMIT 1;
+  IF v_key IS NULL OR octet_length(v_key) < 32 THEN
+    RAISE EXCEPTION 'Search rate-limit key unavailable' USING ERRCODE = '55000';
+  END IF;
+
+  v_digest := public.hmac(
+    convert_to('unibud-search-rate-limit:v1:' || v_account_id::TEXT, 'UTF8'),
+    v_key,
+    'sha256'
+  );
 
   INSERT INTO public.search_rate_limit_buckets(
     bucket_digest, window_started_at, request_count, updated_at
   ) VALUES (
-    p_bucket_digest, v_now, 1, v_now
+    v_digest, v_now, 1, v_now
   )
   ON CONFLICT (bucket_digest) DO UPDATE
     SET window_started_at = CASE
@@ -46,7 +65,6 @@ BEGIN
         updated_at = v_now
   RETURNING request_count INTO v_count;
 
-  -- One account bucket per account; stale rows are bounded by this cleanup.
   DELETE FROM public.search_rate_limit_buckets
    WHERE updated_at < v_now - interval '1 day';
 
@@ -54,11 +72,11 @@ BEGIN
 END;
 $function$;
 
-ALTER FUNCTION public.search_consume_rate_limit(BYTEA) OWNER TO unibud_profile_owner;
-REVOKE ALL ON FUNCTION public.search_consume_rate_limit(BYTEA) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.search_consume_rate_limit(BYTEA) TO unibud_app;
+ALTER FUNCTION public.search_consume_rate_limit() OWNER TO unibud_profile_owner;
+REVOKE ALL ON FUNCTION public.search_consume_rate_limit() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.search_consume_rate_limit() TO unibud_app;
 
-COMMENT ON FUNCTION public.search_consume_rate_limit(BYTEA) IS
-  'Atomically permits at most 60 authenticated Search requests per account per rolling fixed window; accepts only an opaque 32-byte HMAC digest.';
+COMMENT ON FUNCTION public.search_consume_rate_limit() IS
+  'Atomically permits at most 60 authenticated Search requests per verified account per one-minute window. The database derives an opaque HMAC bucket from signed transaction context; callers cannot select buckets.';
 
 COMMIT;
