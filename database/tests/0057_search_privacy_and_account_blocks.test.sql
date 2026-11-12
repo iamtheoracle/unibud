@@ -143,10 +143,17 @@ FROM context;
 SET LOCAL ROLE unibud_app;
 DO $reverse$
 DECLARE visible_a INTEGER;
+DECLARE incoming_block_rows INTEGER;
 BEGIN
  SELECT count(*) INTO visible_a FROM public.profiles WHERE handle_normalized='discover-a';
  IF visible_a <> 0 THEN
   RAISE EXCEPTION 'Block target could still discover blocker';
+ END IF;
+ SELECT count(*) INTO incoming_block_rows FROM public.account_blocks
+  WHERE blocker_account_id='51000000-0000-4000-8000-000000000001'
+    AND blocked_account_id='51000000-0000-4000-8000-000000000002';
+ IF incoming_block_rows <> 0 THEN
+  RAISE EXCEPTION 'Block target can enumerate incoming block records';
  END IF;
 END;
 $reverse$;
