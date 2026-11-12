@@ -79,6 +79,28 @@ BEGIN
   EXCEPTION WHEN SQLSTATE '55000' THEN NULL;
   END;
 
+  -- The lifecycle cannot jump from creation directly to settlement.
+  BEGIN
+    UPDATE public.flow_payment_intents
+       SET status='settled',settled_at=clock_timestamp()
+     WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
+    RAISE EXCEPTION 'Payment intent skipped authorization and submission';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+
+  UPDATE public.flow_payment_intents
+     SET status='awaiting_authorization'
+   WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
+  UPDATE public.flow_payment_intents
+     SET status='authorized',authorized_at=clock_timestamp()
+   WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
+  UPDATE public.flow_payment_intents
+     SET status='submitted',submitted_at=clock_timestamp()
+   WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
+  UPDATE public.flow_payment_intents
+     SET status='settled',settled_at=clock_timestamp()
+   WHERE payment_intent_id='f0480000-0000-4000-8000-000000000031';
+
   IF has_table_privilege('unibud_app','public.flow_transaction_credentials','SELECT')
      OR has_table_privilege('unibud_app','public.flow_authorization_challenges','SELECT')
      OR has_table_privilege('unibud_app','public.flow_biometric_credentials','SELECT')
