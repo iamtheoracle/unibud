@@ -1,4 +1,4 @@
-import type { SqlClient } from "./database/account-context-core.ts";
+import type { SqlClient } from "../database/account-context-core.ts";
 
 export interface PublicProfileSearchResult {
   handle: string;
