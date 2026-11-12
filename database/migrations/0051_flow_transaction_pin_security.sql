@@ -78,7 +78,7 @@ BEGIN
    WHERE active ORDER BY created_at DESC LIMIT 1;
   IF v_key IS NULL THEN RETURN false; END IF;
 
-  v_message:='flow-pin-step-up:v1:'||v_account::TEXT||':'||v_session::TEXT||':'||
+  v_message:='flow-step-up:v1:'||v_account::TEXT||':'||v_session::TEXT||':'||
     p_action||':'||encode(p_payload_digest,'hex')||':'||p_expires_epoch::TEXT||':'||p_nonce::TEXT;
   v_expected:=public.hmac(convert_to(v_message,'UTF8'),v_key,'sha256');
   v_supplied:=decode(p_signature,'hex');
