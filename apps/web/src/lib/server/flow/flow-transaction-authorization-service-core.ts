@@ -43,13 +43,15 @@ function toScaled(value: string): bigint {
     throw new Error("Stored Flow monetary value has an invalid numeric representation.");
   }
   const [whole, fraction = ""] = value.split(".");
-  return BigInt(whole) * 10_000n + BigInt((fraction + "0000").slice(0, 4));
+  const scale = BigInt(10_000);
+  return BigInt(whole) * scale + BigInt((fraction + "0000").slice(0, 4));
 }
 
 function formatScaled(value: bigint): string {
-  if (value < 0n) throw new Error("Flow monetary total cannot be negative.");
-  const whole = value / 10_000n;
-  const fraction = String(value % 10_000n).padStart(4, "0");
+  const scale = BigInt(10_000);
+  if (value < BigInt(0)) throw new Error("Flow monetary total cannot be negative.");
+  const whole = value / scale;
+  const fraction = String(value % scale).padStart(4, "0");
   return whole.toString() + "." + fraction;
 }
 
@@ -263,7 +265,7 @@ export class FlowTransactionAuthorizationService {
         expectedRPID: config.rpId,
         credential: {
           id: credential.credentialId.toString("base64url"),
-          publicKey: credential.publicKeyCose,
+          publicKey: new Uint8Array(credential.publicKeyCose),
           counter: credential.signatureCounter,
           transports: credential.transports as never
         },
