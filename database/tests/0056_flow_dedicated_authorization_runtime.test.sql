@@ -12,6 +12,12 @@ BEGIN
     RAISE EXCEPTION 'unibud_flow_auth is not a restricted NOLOGIN role';
   END IF;
 
+  IF pg_has_role('unibud_app','unibud_flow_auth','MEMBER')
+     OR pg_has_role('unibud_auth','unibud_flow_auth','MEMBER')
+     OR pg_has_role('unibud_flow_auth','unibud_flow_owner','MEMBER') THEN
+    RAISE EXCEPTION 'Generic roles inherit Flow authorization or Flow runtime inherits table-owner privileges';
+  END IF;
+
   IF has_function_privilege('unibud_app','public.flow_pin_begin_verification()','EXECUTE')
      OR has_function_privilege('unibud_auth','public.flow_pin_begin_verification()','EXECUTE')
      OR has_function_privilege('unibud_app','public.flow_webauthn_list_credentials()','EXECUTE')
