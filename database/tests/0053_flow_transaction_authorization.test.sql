@@ -52,7 +52,7 @@ SELECT set_config('unibud.account_id',account_id,true),
            decode(repeat('c4',32),'hex'),'sha256'),'hex'),true)
 FROM ctx;
 
-SET LOCAL ROLE unibud_app;
+SET LOCAL ROLE unibud_flow_auth;
 DO $authorization$
 DECLARE
   v_flow_account UUID:='f0540000-0000-4000-8000-000000000021';
@@ -278,12 +278,12 @@ BEGIN
 
   BEGIN
     EXECUTE 'SELECT recipient_ref_ciphertext FROM public.flow_payment_intents';
-    RAISE EXCEPTION 'Application role can directly read Flow payment intents';
+    RAISE EXCEPTION 'Flow transaction runtime can directly read Flow payment intents';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
   BEGIN
     EXECUTE 'SELECT authorization_id FROM public.flow_authorization_challenges';
-    RAISE EXCEPTION 'Application role can directly read authorization challenges';
+    RAISE EXCEPTION 'Flow transaction runtime can directly read authorization challenges';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
 END
