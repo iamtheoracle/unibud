@@ -916,3 +916,10 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Added web contract assertions. Full assistive-technology and WCAG review remains outstanding; these targeted changes do not claim conformance.
 
 - **Additional expiry-notice assertion:** the concurrency harness now also requires exactly one `request_expired` in-app notification for both requester and target when the bounded worker expires a locked-then-released request. This is part of the next Foundation CI checkpoint.
+
+ 
+### OTP transport choice — 2026-11-12
+- **Implemented in application code:** signup, verification resend and password recovery accept a server-validated `deliveryMethod`; phone identities can request `sms`, `whatsapp` or `rcs`, while email identities can only use `email`. Existing callers default to email or SMS. UI exposes the phone transport choice on signup and recovery.
+- **Security:** compatibility is validated again in the server-side challenge service; no provider credentials or direct WhatsApp/RCS API calls are exposed to the browser. Challenge codes remain short-lived, one-use and persisted only as keyed digests. Delivery failure revokes the challenge.
+- **Tests added:** service tests for SMS/WhatsApp/RCS selection, invalid cross-channel combinations, email-only routing, and authentication-flow tests for WhatsApp/RCS plus SMS default.
+- **Not verified / deferred:** the gateway receives `deliveryMethod` in its authenticated, idempotent payload, but no gateway/provider implementation or delivery receipt contract has been inspected or verified. Persistent per-challenge transport audit, provider fallback policy/consent, WhatsApp template approval, RCS carrier/device capability detection, delivery receipts/retries and production configuration remain outstanding. Do not claim OTP delivery over WhatsApp/RCS until the gateway provider confirms it.
