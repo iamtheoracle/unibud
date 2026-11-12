@@ -41,7 +41,7 @@ BEGIN
     FROM public.flow_payment_intents i
    WHERE i.account_id=v_account AND i.payment_intent_id=p_payment_intent_id
      AND i.status IN ('created','awaiting_authorization');
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_create_authorization_challenge(
@@ -132,7 +132,7 @@ BEGIN
     'flow_payment_intent',p_payment_intent_id,v_request::TEXT,v_session::TEXT,
     jsonb_build_object('authorization_id',v_authorization,'auth_method',p_auth_method));
   RETURN QUERY SELECT v_authorization,v_challenge_digest,v_intent.details_digest,p_expires_at;
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_get_authorization_challenge(p_authorization_id UUID)
@@ -173,7 +173,7 @@ BEGIN
      AND c.account_id=v_account AND c.session_id=v_session
      AND c.consumed_at IS NULL AND c.failed_at IS NULL
      AND c.expires_at>clock_timestamp();
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_fail_authorization_challenge(p_authorization_id UUID)
@@ -203,7 +203,7 @@ BEGIN
       'authorization_challenge_failed','{}'::jsonb);
   END IF;
   RETURN v_updated=1;
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_authorize_payment_intent(
@@ -331,7 +331,7 @@ BEGIN
     'flow_payment_intent',v_challenge.payment_intent_id,v_request::TEXT,v_session::TEXT,
     jsonb_build_object('authorization_id',p_authorization_id,'auth_method',v_challenge.auth_method));
   RETURN true;
-END
+END;
 $function$;
 
 CREATE FUNCTION public.flow_cancel_payment_intent(p_payment_intent_id UUID)
