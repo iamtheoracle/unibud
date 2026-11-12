@@ -130,8 +130,11 @@ export function normalizePeopleSearchTerm(value: unknown): string | null {
 /**
  * Connect public profile discovery for people, creators or communities only. The caller must establish a transaction with
  * a signed account context derived from a verified persisted session.
- * PostgreSQL RLS independently limits rows to active public profiles and
- * excludes accounts blocked in either direction. Never add IDs to this DTO.
+ * The explicit eligibility predicate is intentional: RLS policies for an
+ * account's existing profile memberships may independently permit row reads,
+ * but membership must never bypass discovery age-cohort eligibility.
+ * PostgreSQL RLS independently limits rows and excludes accounts blocked in
+ * either direction. Never add IDs to this DTO.
  */
 export async function searchPublicProfiles(
   client: SqlClient,
@@ -154,11 +157,12 @@ export async function searchPublicProfiles(
         AND p.visibility = 'public'
         AND p.kind = $2
         AND p.owner_account_id <> unibud_private.current_account_id()
+        AND public.account_discovery_allowed(p.owner_account_id)
+        AND NOT public.account_interaction_blocked(p.owner_account_id)
         AND (
           position(lower($1) in lower(p.handle)) > 0
           OR position(lower($1) in lower(p.display_name)) > 0
         )
-        AND NOT public.account_interaction_blocked(p.owner_account_id)
       ORDER BY lower(p.handle), p.id
       LIMIT 20`,
     [normalizedTerm, profileKind]
