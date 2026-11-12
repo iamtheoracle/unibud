@@ -6,9 +6,11 @@ import type { SessionId } from "./session.ts";
  * universal chat features or authorize access to any conversation.
  * Riff and SouLync retain independent product policy and lifecycle controls.
  */
+export type ChatSpaceKey = "bud" | "connect" | "riff" | "soullync";
+
 export interface ConversationScope {
   applicationId: ApplicationId;
-  spaceKey: string;
+  spaceKey: ChatSpaceKey;
   resourceType: string;
   resourceId: ResourceId;
 }
@@ -87,9 +89,12 @@ export type ChatAuthorizationDecision =
  * must still derive facts from trusted storage and enforce additional rules.
  */
 export function evaluateChatAccess(
-  spaceKey: string,
+  spaceKey: ChatSpaceKey,
   facts: ChatAuthorizationFacts
 ): ChatAuthorizationDecision {
+  if (!(["bud", "connect", "riff", "soullync"] as const).includes(spaceKey)) {
+    return { allowed: false, reason: "space_policy_denied" };
+  }
   if (!facts.verifiedSession) return { allowed: false, reason: "session_unverified" };
   if (!facts.activeAccount) return { allowed: false, reason: "account_inactive" };
   if (!facts.activeProfileAuthorized) return { allowed: false, reason: "profile_not_authorized" };
