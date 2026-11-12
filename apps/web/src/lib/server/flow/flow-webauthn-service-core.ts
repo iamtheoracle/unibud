@@ -86,6 +86,7 @@ export class FlowWebAuthnService {
         transports: credential.transports as never
       })),
       authenticatorSelection: {
+        authenticatorAttachment: "platform",
         residentKey: "preferred",
         userVerification: "required"
       },
