@@ -26,10 +26,10 @@ function webAuthnConfiguration(): { rpId: string; origin: string; rpName: string
     throw new Error("UNIBUD_WEBAUTHN_ORIGIN must be an exact origin without a path.");
   }
   if (process.env.NODE_ENV === "production" && parsed.protocol !== "https:") {
-    throw new Error("WebAuthn requires HTTPS in production.");
+    throw new Error("UNIBUD_WEBAUTHN_ORIGIN must use HTTPS in production.");
   }
   if (parsed.hostname !== rpId && !parsed.hostname.endsWith("." + rpId)) {
-    throw new Error("The WebAuthn RP ID must be the origin host or a parent domain.");
+    throw new Error("UNIBUD_WEBAUTHN_RP_ID must be the origin host or a parent domain.");
   }
   return { rpId, origin: parsed.origin, rpName };
 }
