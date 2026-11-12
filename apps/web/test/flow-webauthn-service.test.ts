@@ -66,9 +66,9 @@ test("WebAuthn verification checks challenge, origin, RP ID and signs exact cred
     challengeDigest: createHash("sha256").update(challenge).digest(),
     expiresAt: new Date(Date.now() + 60_000).toISOString()
   };
-  let verificationInput: Record<string, unknown> | null = null;
+  const verificationInputs: Record<string, unknown>[] = [];
   const fakeVerify = async (input: Record<string, unknown>) => {
-    verificationInput = input;
+    verificationInputs.push(input);
     return {
       verified: true,
       registrationInfo: {
@@ -92,10 +92,10 @@ test("WebAuthn verification checks challenge, origin, RP ID and signs exact cred
     response: { id: "credential-response" }
   }), true);
 
-  assert.equal(verificationInput?.expectedChallenge, challenge.toString("base64url"));
-  assert.equal(verificationInput?.expectedOrigin, "https://example.test");
-  assert.equal(verificationInput?.expectedRPID, "example.test");
-  assert.equal(verificationInput?.requireUserVerification, true);
+  assert.equal(verificationInputs[0]?.expectedChallenge, challenge.toString("base64url"));
+  assert.equal(verificationInputs[0]?.expectedOrigin, "https://example.test");
+  assert.equal(verificationInputs[0]?.expectedRPID, "example.test");
+  assert.equal(verificationInputs[0]?.requireUserVerification, true);
 
   const registered = repository.registered!;
   assert.equal((registered.credentialId as Buffer).toString(), Buffer.from("new-credential").toString());
