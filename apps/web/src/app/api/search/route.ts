@@ -3,7 +3,7 @@ import { createSignedAccountContextFromEnvironment, withSignedAccountTransaction
 import { getAppDatabasePool } from "../../../lib/server/database/postgres-pool";
 import { readSessionCookie, routeError } from "../../../lib/server/identity/http";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
-import { consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
+import { assertSearchProfileContext, consumeSearchRateLimit, isSearchDiscoveryReady, normalizePeopleSearchTerm, routeGlobalSearch, searchPublicProfiles } from "../../../lib/server/search/search-core";
 
 export async function GET(request: NextRequest) {
   const token = readSessionCookie(request);
@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
       getAppDatabasePool(),
       context,
       async client => {
+        await assertSearchProfileContext(client, validation.session.activeProfileId!);
         await consumeSearchRateLimit(client);
         if (classification.intent.kind !== "general_discovery") return null;
         if (!(await isSearchDiscoveryReady(client))) return { state: "age_assurance_required" as const, profiles: [] };
