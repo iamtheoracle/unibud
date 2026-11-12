@@ -68,6 +68,9 @@ export function clearSessionCookie(response: NextResponse): void {
 }
 
 export function routeError(error: unknown): NextResponse {
+  if (error instanceof Error && error.name === "SearchProfileContextError") {
+    return NextResponse.json({ ok: false, error: "Your active profile is no longer available for this action. Choose another profile." }, { status: 403 });
+  }
   if (error instanceof Error && error.name === "SearchRateLimitExceededError") {
     return NextResponse.json({ ok: false, error: "Search limit reached. Please wait a minute and try again." }, { status: 429 });
   }
