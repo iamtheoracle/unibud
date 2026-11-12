@@ -49,7 +49,7 @@ export default async function AuthenticatedHomePage(){
    <div className="section-heading"><div><p className="eyebrow">Your spaces</p><h2 id="spaces-title">A place for every part of life</h2></div></div>
    <div className="space-grid">
     {spaces.map(([name,description],index)=><article className="space" key={name}>
-     <span className="space-number">0{String(index+1).padStart(2,"0")}</span><span className="space-status">In development</span><h3>{name}</h3><p>{description}</p>
+     <span className="space-number">{String(index+1).padStart(2,"0")}</span><span className="space-status">In development</span><h3>{name}</h3><p>{description}</p>
     </article>)}
    </div>
   </section>
