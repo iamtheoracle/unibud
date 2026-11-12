@@ -48,12 +48,12 @@ BEGIN
   'v1:f0270000-0000-4000-8000-000000000001:f0270000-0000-4000-8000-000000000011:recovery:'||
   issued::TEXT||':'||expires::TEXT||':'||nonce::TEXT||':-','UTF8'),
   decode(repeat('93',32),'hex'),'sha256'),'hex');
- IF public.unibud_operator_mfa_redeem_recovery_code_candidates(ARRAY[repeat('a',64)]::text[],issued,expires,nonce,repeat('0',64)) THEN
+ IF public.unibud_operator_mfa_redeem_recovery_code_candidates(ARRAY[repeat('b',64),repeat('a',64)]::text[],issued,expires,nonce,repeat('0',64)) THEN
   RAISE EXCEPTION 'Forged recovery assertion was accepted';
  END IF;
- redeemed:=public.unibud_operator_mfa_redeem_recovery_code_candidates(ARRAY[repeat('a',64)]::text[],issued,expires,nonce,signature);
+ redeemed:=public.unibud_operator_mfa_redeem_recovery_code_candidates(ARRAY[repeat('b',64),repeat('a',64)]::text[],issued,expires,nonce,signature);
  IF redeemed IS DISTINCT FROM TRUE THEN RAISE EXCEPTION 'Valid recovery code was not redeemed'; END IF;
- IF public.unibud_operator_mfa_redeem_recovery_code_candidates(ARRAY[repeat('a',64)]::text[],issued,expires,nonce,signature) THEN
+ IF public.unibud_operator_mfa_redeem_recovery_code_candidates(ARRAY[repeat('b',64),repeat('a',64)]::text[],issued,expires,nonce,signature) THEN
   RAISE EXCEPTION 'Recovery code or assertion was replayed';
  END IF;
  BEGIN
