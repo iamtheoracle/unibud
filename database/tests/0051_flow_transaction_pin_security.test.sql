@@ -22,7 +22,7 @@ UPDATE unibud_private.session_context_signing_keys SET active=false WHERE active
 INSERT INTO unibud_private.session_context_signing_keys(key_id,secret,active)
 VALUES('flow-pin-ci-session',decode(repeat('85',32),'hex'),true);
 
-INSERT INTO unibud_private.flow_pin_step_up_signing_keys(key_id,secret,active)
+INSERT INTO unibud_private.flow_step_up_signing_keys(key_id,secret,active)
 VALUES('flow-pin-ci-step-up',decode(repeat('86',32),'hex'),true);
 
 WITH ctx AS (
@@ -147,7 +147,7 @@ BEGIN
   END;
 
   BEGIN
-    PERFORM public.flow_consume_pin_rate_limit('pin_verify');
+    PERFORM public.flow_consume_flow_rate_limit('pin_verify');
     RAISE EXCEPTION 'Application role can invoke the internal PIN rate-limit primitive directly';
   EXCEPTION WHEN insufficient_privilege THEN NULL;
   END;
