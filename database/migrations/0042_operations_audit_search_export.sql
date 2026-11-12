@@ -5,7 +5,7 @@ ALTER TABLE public.unibud_operator_mfa_api_rate_limits
   DROP CONSTRAINT unibud_operator_mfa_api_rate_limits_action_check;
 ALTER TABLE public.unibud_operator_mfa_api_rate_limits
   ADD CONSTRAINT unibud_operator_mfa_api_rate_limits_action_check
-  CHECK (action IN ('request_create','request_decide','request_cancel','request_read','audit_read'));
+  CHECK (action IN ('request_create','request_decide','request_cancel','request_read','notification_read','audit_read'));
 
 CREATE OR REPLACE FUNCTION public.unibud_operator_mfa_consume_api_rate_limit(p_action TEXT)
 RETURNS BOOLEAN
