@@ -95,3 +95,48 @@ export async function DELETE(request: NextRequest) {
     return routeError(error);
   }
 }
+
+
+export async function GET(request: NextRequest) {
+  try {
+    const result = await withVerifiedAccount(request, async (accountId, activeProfileId) => {
+      const context = createSignedAccountContextFromEnvironment(accountId);
+      return withSignedAccountTransaction(getAppDatabasePool(), context, async client => {
+        const profile = await client.query<{ allowed: boolean }>(
+          "SELECT public.profile_authorize_action($1, unibud_private.current_account_id(), 'profile.read') AS allowed",
+          [activeProfileId]
+        );
+        if (profile.rows[0]?.allowed !== true) return { status: "profile_denied" as const, profiles: [] };
+        const budget = await client.query<{ allowed: boolean }>(
+          "SELECT public.search_consume_rate_limit() AS allowed"
+        );
+        if (budget.rows[0]?.allowed !== true) return { status: "rate_limited" as const, profiles: [] };
+        const blocked = await client.query<{
+          handle: string;
+          display_name: string;
+          blocked_at: string;
+        }>(
+          "SELECT handle, display_name, blocked_at FROM public.account_list_blocked_profiles()"
+        );
+        return {
+          status: "ready" as const,
+          profiles: blocked.rows.map(profile => ({
+            handle: profile.handle,
+            displayName: profile.display_name,
+            blockedAt: profile.blocked_at
+          }))
+        };
+      });
+    });
+    if ("response" in result) return result.response;
+    if (result.value.status === "rate_limited") {
+      return NextResponse.json({ ok: false, error: "Too many requests. Please wait a minute and try again." }, { status: 429 });
+    }
+    if (result.value.status !== "ready") {
+      return NextResponse.json({ ok: false, error: "Your active profile is no longer available." }, { status: 403 });
+    }
+    return NextResponse.json({ ok: true, blockedProfiles: result.value.profiles });
+  } catch (error) {
+    return routeError(error);
+  }
+}
