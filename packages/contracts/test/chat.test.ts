@@ -12,8 +12,12 @@ const permittedFacts: ChatAuthorizationFacts = {
   moderationAllowed: true
 };
 
-test("ordinary space chat requires every common server-derived authorization gate", () => {
+test("Bud and Connect use the shared Chat authorization contract", () => {
+  assert.deepEqual(evaluateChatAccess("bud", permittedFacts), { allowed: true });
   assert.deepEqual(evaluateChatAccess("connect", permittedFacts), { allowed: true });
+});
+
+test("ordinary space chat requires every common server-derived authorization gate", () => {
   const deniedFacts: Array<[keyof ChatAuthorizationFacts, ChatAuthorizationFacts[keyof ChatAuthorizationFacts], string]> = [
     ["verifiedSession", false, "session_unverified"],
     ["activeAccount", false, "account_inactive"],
@@ -31,44 +35,11 @@ test("ordinary space chat requires every common server-derived authorization gat
   }
 });
 
-test("SouLync requires independently verified adult eligibility and current consent", () => {
-  assert.deepEqual(evaluateChatAccess("soullync", permittedFacts), {
-    allowed: false,
-    reason: "adult_eligibility_unverified"
-  });
-  assert.deepEqual(evaluateChatAccess("soullync", {
-    ...permittedFacts,
-    adultEligibilityVerified: true
-  }), {
-    allowed: false,
-    reason: "independent_consent_missing"
-  });
-  assert.deepEqual(evaluateChatAccess("soullync", {
-    ...permittedFacts,
-    adultEligibilityVerified: true,
-    independentConsentGranted: true
-  }), { allowed: true });
-});
-
-test("Riff remains subject to its own lifecycle adapter", () => {
-  assert.deepEqual(evaluateChatAccess("riff", permittedFacts), {
-    allowed: false,
-    reason: "riff_lifecycle_denied"
-  });
-  assert.deepEqual(evaluateChatAccess("riff", {
-    ...permittedFacts,
-    riffLifecycleAllowed: true
-  }), { allowed: true });
-});
-
-
-test("spaces without an approved shared Chat adapter fail closed", () => {
-  assert.deepEqual(evaluateChatAccess("quad" as ChatSpaceKey, permittedFacts), {
-    allowed: false,
-    reason: "space_policy_denied"
-  });
-  assert.deepEqual(evaluateChatAccess("square" as ChatSpaceKey, permittedFacts), {
-    allowed: false,
-    reason: "space_policy_denied"
-  });
+test("Riff and SouLync cannot opt into the generic Chat authorization contract", () => {
+  for (const space of ["riff", "soullync", "quad", "square"] as const) {
+    assert.deepEqual(
+      evaluateChatAccess(space as unknown as ChatSpaceKey, permittedFacts),
+      { allowed: false, reason: "space_policy_denied" }
+    );
+  }
 });
