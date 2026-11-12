@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FlowPinRepository } from "@/lib/server/flow/flow-pin-repository";
 import { FlowPinService } from "@/lib/server/flow/flow-pin-service";
-import { getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
+import { getFlowAuthDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import {
   hasSameOrigin,
@@ -21,7 +21,7 @@ function reply(body: Record<string, unknown>, status = 200): NextResponse {
 }
 
 function createPinService(): FlowPinService {
-  return new FlowPinService(new FlowPinRepository(getAuthDatabasePool()));
+  return new FlowPinService(new FlowPinRepository(getFlowAuthDatabasePool()));
 }
 
 export async function POST(request: NextRequest) {
