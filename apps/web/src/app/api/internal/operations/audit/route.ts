@@ -40,6 +40,8 @@ function validIso(value: string | null): value is string {
 }
 
 export async function GET(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  if (origin && origin !== request.nextUrl.origin) return json({ ok: false, error: "Forbidden." }, 403);
   const requestId = randomUUID();
   const params = request.nextUrl.searchParams;
   const now = Date.now();
