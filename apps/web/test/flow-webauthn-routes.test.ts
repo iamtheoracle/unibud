@@ -34,6 +34,8 @@ test("WebAuthn registration verification is bound to active persisted session an
   assert.ok(service.includes("expectedRPID: config.rpId"));
   assert.ok(service.includes("requireUserVerification: true"));
   assert.ok(service.includes("verifyRegistrationResponse"));
+  assert.ok(service.includes("credentialDeviceType !== \"singleDevice\""));
+  assert.ok(service.includes("registrationInfo.credentialBackedUp"));
   assert.ok(service.includes("UNIBUD_WEBAUTHN_RP_ID"));
   assert.ok(service.includes("UNIBUD_WEBAUTHN_ORIGIN"));
   assert.ok(service.includes("createFlowStepUpProof"));
