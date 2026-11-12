@@ -878,3 +878,5 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - Made horizontally scrollable table regions keyboard-focusable and gave each a descriptive accessible name.
 - Added visible keyboard focus indicators, polite live announcement for unread notifications and reduced-motion handling.
 - Added web contract assertions. Full assistive-technology and WCAG review remains outstanding; these targeted changes do not claim conformance.
+
+- **Additional expiry-notice assertion:** the concurrency harness now also requires exactly one `request_expired` in-app notification for both requester and target when the bounded worker expires a locked-then-released request. This is part of the next Foundation CI checkpoint.
