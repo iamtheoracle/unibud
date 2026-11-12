@@ -611,8 +611,9 @@ Phone-based registration and recovery now expose SMS, WhatsApp and RCS as delive
 ## Flow financial foundation status — 2026-11-12
 
 - **Building:** migrations 0048–0049 add account-scoped Flow financial domain tables, MoneyLead account mapping, idempotent payment intents, lifecycle constraints, transaction PIN hash storage contract, WebAuthn public-key credential storage, exact-intent authorization challenge records, rate-limit state, balanced immutable settlement-mirror journal and a signed-session database procedure for payment-intent creation with concurrent idempotency enforcement.
-- **Database security:** signed-session RLS on every Flow table; column-limited read-only app access; no direct app access to PIN hashes, WebAuthn keys, authorization challenges or rate-limit records. Journal ingestion is deliberately not enabled.
+- **Database/security:** signed-session RLS on every Flow table; column-limited read-only direct app-table access plus one narrow intent-creation procedure; no direct app access to PIN hashes, WebAuthn keys, authorization challenges or rate-limit records. Recipient references are AES-256-GCM encrypted with keyed lookup digests. Journal ingestion is deliberately not enabled.
 - **Ledger boundary:** Flow journal is a mirror of externally verified MoneyLead settlement events only. It is not the authoritative bank ledger and cannot be used to calculate spendable balances or independently execute transfers.
-- **Not yet implemented:** payment-intent HTTP route/repository, PIN service, WebAuthn verification, challenge creation/consumption, transfer orchestration, MoneyLead gateway, provider/issuer/settlement adapters.
+- **Implemented:** authenticated payment-intent HTTP route/repository, encrypted recipient-reference handling and session-bound database creation procedure with idempotency.
+- **Not yet implemented:** intent-creation rate limiting, PIN service, WebAuthn verification, challenge creation/consumption, transfer orchestration, MoneyLead gateway, provider/issuer/settlement adapters.
 - **Verification:** exact-head CI PASSED at `66d490e4b908f0392fb648880f9a6f8d5165a74a`: Foundation `43199174906`, Web/Database `43199174820`, Oracle Arc API `43199174775`. PR #19 remains draft/open/unmerged. No production database migration, payment, provider activation or deployment is claimed.
 
