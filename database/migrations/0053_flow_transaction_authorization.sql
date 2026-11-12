@@ -32,6 +32,7 @@ AS $function$
 DECLARE
   v_account UUID:=unibud_private.current_account_id();
   v_session UUID:=unibud_private.current_session_id();
+  v_request UUID:=gen_random_uuid();
 BEGIN
   IF v_account IS NULL OR v_session IS NULL OR p_payment_intent_id IS NULL THEN RETURN; END IF;
   RETURN QUERY
@@ -41,6 +42,13 @@ BEGIN
     FROM public.flow_payment_intents i
    WHERE i.account_id=v_account AND i.payment_intent_id=p_payment_intent_id
      AND i.status IN ('created','awaiting_authorization');
+  IF FOUND THEN
+    INSERT INTO public.security_audit_events(
+      id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
+      request_id,session_reference,event_data
+    ) VALUES(gen_random_uuid(),v_account,'flow','flow.payment_intent.confirmation.view','success',
+      'flow_payment_intent',p_payment_intent_id,v_request::TEXT,v_session::TEXT,'{}'::jsonb);
+  END IF;
 END;
 $function$;
 
@@ -149,6 +157,7 @@ DECLARE
   v_session UUID:=unibud_private.current_session_id();
   v_method TEXT;
   v_allowed BOOLEAN;
+  v_request UUID:=gen_random_uuid();
 BEGIN
   IF v_account IS NULL OR v_session IS NULL OR p_authorization_id IS NULL THEN RETURN; END IF;
   SELECT c.auth_method INTO v_method
@@ -173,6 +182,14 @@ BEGIN
      AND c.account_id=v_account AND c.session_id=v_session
      AND c.consumed_at IS NULL AND c.failed_at IS NULL
      AND c.expires_at>clock_timestamp();
+  IF FOUND THEN
+    INSERT INTO public.security_audit_events(
+      id,actor_account_id,application_id,action,outcome,resource_type,resource_id,
+      request_id,session_reference,event_data
+    ) VALUES(gen_random_uuid(),v_account,'flow','flow.payment.authorization.challenge.read','success',
+      'flow_payment_intent',p_authorization_id,v_request::TEXT,v_session::TEXT,
+      jsonb_build_object('auth_method',v_method));
+  END IF;
 END;
 $function$;
 
