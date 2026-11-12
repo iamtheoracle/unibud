@@ -835,3 +835,12 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Test:** added database/tests/0046_operations_grant_cancellation_post_lock_revalidation.test.sql to check function ordering, SECURITY DEFINER ownership, app-role execute access and protected-table isolation. Foundation CI applies migration 0046 and runs this test.
 - **Not yet verified:** independent-connection grant races (approve/reject, approve/cancel, cancellation while step-up expires, and approval versus bounded expiry) still require a dedicated concurrency harness. The catalog contract test alone does not prove those runtime races.
 - **Release boundary:** migration is feature-branch code only. No production migration, grants, deployment or operator activation occurred.
+
+### Operations grant lifecycle notifications — migration 0047
+
+- **Implemented:** transactional notification fan-out for request submitted, approved, rejected, cancelled and expired events. Requester and target receive submission notices; requester, target and independent approver receive terminal decision notices when applicable.
+- **Data boundary:** separate unibud_operator_grant_notifications table; account-scoped RLS; no direct app-role table access; SECURITY DEFINER list/mark-read functions; verified signed session identity; bounded list size; existing notification_read rate limit; idempotency key on account/request/event.
+- **UI/API:** added /api/internal/operations/grants/notifications and the Grant notifications inbox on the Operator grants page. Responses are no-store and same-origin/session validated.
+- **System expiry:** restricted owner policy permits the existing trusted bounded maintenance worker to enqueue expiry notices without a user session. The list/mark functions still enforce the verified account identity.
+- **Not implemented:** email/SMS dispatch, external delivery receipts, provider retries or a separate delivery worker. In-app notification persistence is not evidence of external delivery.
+- **Verification:** migration/test 0047 is included in Foundation PostgreSQL CI; web contract coverage checks route, UI and privilege boundaries. Independent grant transition concurrency and browser E2E remain outstanding.
