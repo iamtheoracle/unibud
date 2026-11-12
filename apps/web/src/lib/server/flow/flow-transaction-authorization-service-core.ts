@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import {
   generateAuthenticationOptions,
   verifyAuthenticationResponse
@@ -20,6 +20,7 @@ export interface FlowPaymentConfirmation {
   totalAmount: string;
   purposeCode: string;
   transactionReference: string;
+  confirmationDigest: string;
   status: string;
   createdAt: string;
   expiresAt?: string;
@@ -33,6 +34,7 @@ export type FlowTransactionAuthorizationResult =
   | { state: "authenticator_not_registered" }
   | { state: "invalid_authenticator" }
   | { state: "intent_unavailable" }
+  | { state: "details_changed" }
   | { state: "challenge_unavailable" }
   | { state: "unavailable" };
 
@@ -118,6 +120,7 @@ export class FlowTransactionAuthorizationService {
       totalAmount: formatScaled(amount + fee),
       purposeCode: row.purposeCode,
       transactionReference: row.paymentIntentId,
+      confirmationDigest: row.detailsDigest.toString("hex"),
       status: row.status,
       createdAt: row.createdAt
     };
@@ -127,6 +130,7 @@ export class FlowTransactionAuthorizationService {
     accountId: string;
     sessionId: string;
     paymentIntentId: string;
+    confirmationDigest: string;
     pin: string;
   }): Promise<FlowTransactionAuthorizationResult> {
     const details = await this.payments.getConfirmationDetails(
@@ -135,6 +139,10 @@ export class FlowTransactionAuthorizationService {
       input.paymentIntentId
     );
     if (!details) return { state: "intent_unavailable" };
+    if (!/^[0-9a-f]{64}$/i.test(input.confirmationDigest) ||
+        !timingSafeEqual(Buffer.from(input.confirmationDigest,"hex"),Buffer.from(details.detailsDigest))) {
+      return { state: "details_changed" };
+    }
 
     const challenge = await this.createChallenge(
       input.accountId,input.sessionId,input.paymentIntentId,"transaction_pin"
@@ -182,14 +190,19 @@ export class FlowTransactionAuthorizationService {
     accountId: string;
     sessionId: string;
     paymentIntentId: string;
+    confirmationDigest: string;
   }): Promise<{
     state: "options";
     authorizationId: string;
     options: Awaited<ReturnType<typeof generateAuthenticationOptions>>;
     confirmation: FlowPaymentConfirmation;
-  } | { state: "intent_unavailable" | "authenticator_not_registered" | "challenge_unavailable" }> {
+  } | { state: "intent_unavailable" | "details_changed" | "authenticator_not_registered" | "challenge_unavailable" }> {
     const confirmation = await this.getConfirmation(input);
     if (!confirmation) return { state: "intent_unavailable" };
+    if (!/^[0-9a-f]{64}$/i.test(input.confirmationDigest) ||
+        !timingSafeEqual(Buffer.from(input.confirmationDigest,"hex"),Buffer.from(confirmation.confirmationDigest,"hex"))) {
+      return { state: "details_changed" };
+    }
     const credentials = await this.webAuthn.listCredentials(input.accountId,input.sessionId);
     if (credentials.length === 0) return { state: "authenticator_not_registered" };
     const config = getFlowWebAuthnConfiguration();
