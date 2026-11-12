@@ -1,4 +1,5 @@
-import { createHash, createHmac, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
+import { createFlowStepUpProof } from "./flow-step-up-core";
 import { hash, verify, argon2id } from "argon2";
 import type { FlowPinRepository } from "./flow-pin-repository";
 
@@ -25,28 +26,6 @@ function validateNewPin(pin: string): void {
   }
 }
 
-function createStepUpProof(
-  accountId: string,
-  sessionId: string,
-  action: "pin_enroll" | "pin_recovery" | "webauthn_register",
-  pinHashPhc: string
-): { expiresEpoch: number; nonce: string; signature: string } {
-  const rawKey = process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY?.trim() ?? "";
-  if (!/^(?:[0-9a-f]{2}){32}$/i.test(rawKey)) {
-    throw new Error("UNIBUD_FLOW_STEP_UP_HMAC_KEY must be exactly 32 random bytes encoded as hex.");
-  }
-  const expiresEpoch = Math.floor(Date.now() / 1000) + 60;
-  const nonce = randomUUID();
-  const payloadDigest = createHash("sha256").update(pinHashPhc, "utf8").digest("hex");
-  const message = [
-    "flow-step-up:v1", accountId, sessionId, action,
-    payloadDigest, String(expiresEpoch), nonce
-  ].join(":");
-  const signature = createHmac("sha256", Buffer.from(rawKey, "hex"))
-    .update(message, "utf8")
-    .digest("hex");
-  return { expiresEpoch, nonce, signature };
-}
 
 async function hashPin(pin: string): Promise<string> {
   return hash(pin, {
@@ -74,7 +53,7 @@ export class FlowPinService {
     validateNewPin(input.pin);
     if (input.pin !== input.confirmation) throw new Error("Transaction PIN confirmation does not match.");
     const verifier = await hashPin(input.pin);
-    const proof = createStepUpProof(input.accountId, input.sessionId, "pin_enroll", verifier);
+    const proof = createFlowStepUpProof(input.accountId, input.sessionId, "pin_enroll", createHash("sha256").update(verifier, "utf8").digest());
     return this.repository.enroll(input.accountId, input.sessionId, verifier, proof);
   }
 
@@ -117,7 +96,7 @@ export class FlowPinService {
     validateNewPin(input.newPin);
     if (input.newPin !== input.confirmation) throw new Error("Transaction PIN confirmation does not match.");
     const verifier = await hashPin(input.newPin);
-    const proof = createStepUpProof(input.accountId, input.sessionId, "pin_recovery", verifier);
+    const proof = createFlowStepUpProof(input.accountId, input.sessionId, "pin_recovery", createHash("sha256").update(verifier, "utf8").digest());
     return this.repository.recover(input.accountId, input.sessionId, verifier, proof);
   }
 }
