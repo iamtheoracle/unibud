@@ -13,6 +13,18 @@ test("recipient references are encrypted with account and Flow-account binding",
   assert.ok(first.ciphertext.length >= 29);
   assert.notDeepEqual(first.ciphertext, second.ciphertext, "AES-GCM uses a fresh nonce");
   assert.deepEqual(first.lookupDigest, second.lookupDigest);
+  assert.equal(
+    protection.unprotectRecipientReference(ACCOUNT, FLOW_ACCOUNT, first.ciphertext, first.lookupDigest),
+    "member:oracle"
+  );
+  assert.throws(() => protection.unprotectRecipientReference(
+    "f0500000-0000-4000-8000-000000000002", FLOW_ACCOUNT, first.ciphertext, first.lookupDigest
+  ));
+  const tampered = Buffer.from(first.ciphertext);
+  tampered[tampered.length - 1] ^= 1;
+  assert.throws(() => protection.unprotectRecipientReference(
+    ACCOUNT, FLOW_ACCOUNT, tampered, first.lookupDigest
+  ));
 });
 
 test("recipient lookup digests are scoped to account and Flow account", () => {
