@@ -45,7 +45,7 @@ SELECT
   set_config('unibud.context_signature',
     encode(public.hmac(convert_to(account_id || ':' || expiry || ':' || nonce,'UTF8'),
       signing_key,'sha256'),'hex'),true)
-FROM claim \\gset
+FROM claim \gset
 SELECT :function_sql;
 COMMIT;
 SQL
