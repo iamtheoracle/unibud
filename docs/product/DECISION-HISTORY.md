@@ -204,3 +204,13 @@
 - **Dependencies / risks:** canonical UNIBUD currently has no Flow payment implementation or verified payment provider. Legacy wallet code is not a safe ledger. Transaction PIN/device-bound authorization, immutable journal, idempotency, limits, risk controls, provider evidence, reconciliation and regulatory arrangements must be implemented/verified before live use.
 - **Supersedes / superseded by:** none.
 - **Implementation evidence:** Issue #17; audit artifact `docs/financial/FLOW-MONEYLead-UNIBUD-PAYMENT-ARCHITECTURE-AUDIT.md`; implementation remains in progress.
+
+### DEC-023 — Flow's journal is a settlement mirror, not a second bank ledger
+- **Recorded:** 2026-11-12
+- **Status:** APPROVED
+- **Decision:** Flow owns its customer-facing account mapping, payment instructions, transaction authentication challenges and audit/lifecycle state. MoneyLead remains independent and is the intended authoritative banking ledger and settlement boundary. Flow may maintain an immutable, balanced mirror of verified MoneyLead settlement events, but that mirror must never be used as a spendable-balance source or as an independent authority to debit, credit or settle customer funds.
+- **Rationale:** preserve Flow's identity and useful first-party financial domain without creating competing balances or a shadow bank ledger. An integration boundary must be explicit before transfers or settlement ingestion are enabled.
+- **Areas:** Flow, MoneyLead gateway, transaction security, journal/reconciliation.
+- **Implementation reference:** migration `0048_flow_domain_and_settlement_mirror.sql`; test `0048_flow_domain_and_settlement_mirror.test.sql`; PR branch `foundation/flow-domain-ledger-v1`.
+- **Release boundary:** no MoneyLead repository or verified integration contract was available during implementation. No ingestion role privileges, provider activation, live transfers, or production financial operation are enabled.
+

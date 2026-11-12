@@ -62,6 +62,7 @@ export class PostgresSqlPool implements SqlPool {
 }
 
 let authPool: PostgresSqlPool | undefined;
+let flowAuthPool: PostgresSqlPool | undefined;
 let appPool: PostgresSqlPool | undefined;
 
 /** Auth RPC pool: login principal granted unibud_auth, never direct table access. */
@@ -72,6 +73,16 @@ export function getAuthDatabasePool(): PostgresSqlPool {
     authPool = new PostgresSqlPool(connectionString, "unibud-auth-runtime");
   }
   return authPool;
+}
+
+/** Flow transaction-security pool: login principal granted only unibud_flow_auth. */
+export function getFlowAuthDatabasePool(): PostgresSqlPool {
+  if (!flowAuthPool) {
+    const connectionString = process.env.UNIBUD_FLOW_AUTH_DATABASE_URL?.trim();
+    if (!connectionString) throw new Error("UNIBUD_FLOW_AUTH_DATABASE_URL is not configured.");
+    flowAuthPool = new PostgresSqlPool(connectionString, "unibud-flow-auth-runtime");
+  }
+  return flowAuthPool;
 }
 
 /** Tenant-scoped application pool: login principal granted unibud_app, never BYPASSRLS. */
@@ -85,8 +96,9 @@ export function getAppDatabasePool(): PostgresSqlPool {
 }
 
 export async function closeDatabasePools(): Promise<void> {
-  const pools = [authPool, appPool].filter((pool): pool is PostgresSqlPool => Boolean(pool));
+  const pools = [authPool, flowAuthPool, appPool].filter((pool): pool is PostgresSqlPool => Boolean(pool));
   authPool = undefined;
+  flowAuthPool = undefined;
   appPool = undefined;
   await Promise.all(pools.map(pool => pool.close()));
 }
