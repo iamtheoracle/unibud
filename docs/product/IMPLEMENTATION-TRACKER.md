@@ -805,3 +805,12 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Verification pending:** current exact-head Foundation, Web/Database and Oracle Arc API CI runs must pass. Web typecheck, contract/security tests, lint, E2E and production build are required.
 - **Still outstanding:** requester cancellation, bounded expiry worker, independent-connection grant concurrency tests, notifications, browser E2E for this console, accessibility review and independent security review.
 - **Release boundary:** no bootstrap permissions or grants were provisioned; no production migration or deployment was performed. PR #15 remains draft/open/unmerged; Issue #16 remains open.
+
+### Operations grant management — exact code-head verification — 2026-11-12
+
+- **Verified code head:** `8a4ce7d78dac9ad86259ccdc5bd086343b864d6b`.
+- **Foundation checks:** PASSED, run `43146549452`. PostgreSQL 16 applied migrations through 0043 and ran `database/tests/0043_operations_grant_dual_control.test.sql`, covering request creation, self-approval denial, independent approval, grant creation, revocation, rejection/approver attribution, audit evidence, direct-table isolation and bootstrap permission non-escalation. Existing RLS and concurrent Operations/MFA controls passed.
+- **UNIBUD Web and Database:** PASSED, run `43146549394`. TypeScript typecheck, web contract tests (including the grant route/console contracts), server security tests, lint, existing profile browser E2E, PostgreSQL migration validation and production build passed.
+- **Oracle Arc API:** PASSED, run `43146549362`.
+- The first Web typecheck run caught a literal escaped newline in the new grant route type declaration. It was corrected in the verified code head; all three workflows subsequently passed.
+- This verifies the database lifecycle, API contract and build, but does not constitute grant-console browser E2E or independent security review. No bootstrap grant, production migration, production deployment or operator activation occurred.
