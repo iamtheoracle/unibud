@@ -51,8 +51,8 @@ BEGIN
       ELSE current_bucket.locked_until END,
     updated_at=v_now
   RETURNING
-    (request_count<=v_limit AND (locked_until IS NULL OR locked_until<=v_now)),
-    request_count,locked_until;
+    (current_bucket.request_count<=v_limit AND (current_bucket.locked_until IS NULL OR current_bucket.locked_until<=v_now)),
+    current_bucket.request_count,current_bucket.locked_until;
 END
 $function$;
 
