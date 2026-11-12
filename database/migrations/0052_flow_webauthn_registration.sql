@@ -202,6 +202,7 @@ DECLARE
   v_challenge public.flow_webauthn_registration_challenges%ROWTYPE;
   v_expected_digest BYTEA;
   v_canonical_transports TEXT;
+  v_sorted_transports TEXT[];
   v_inserted INTEGER;
   v_request UUID:=gen_random_uuid();
 BEGIN
@@ -225,11 +226,11 @@ BEGIN
    FOR UPDATE;
   IF NOT FOUND THEN RETURN false; END IF;
 
-  SELECT COALESCE(string_agg(value,',' ORDER BY value),'')
-    INTO v_canonical_transports
+  SELECT COALESCE(array_agg(value ORDER BY value),ARRAY[]::TEXT[]),
+         COALESCE(string_agg(value,',' ORDER BY value),'')
+    INTO v_sorted_transports,v_canonical_transports
     FROM (SELECT DISTINCT unnest(p_transports) AS value) t;
-  IF p_transports<>CASE WHEN v_canonical_transports='' THEN ARRAY[]::TEXT[]
-    ELSE string_to_array(v_canonical_transports,',') END THEN
+  IF p_transports IS DISTINCT FROM v_sorted_transports THEN
     RETURN false;
   END IF;
 
