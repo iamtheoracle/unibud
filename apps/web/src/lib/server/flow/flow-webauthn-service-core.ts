@@ -1,4 +1,5 @@
-import { createHash, createHmac, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
+import { createFlowStepUpProof } from "./flow-step-up-core";
 import {
   generateRegistrationOptions,
   verifyRegistrationResponse
@@ -34,26 +35,6 @@ function webAuthnConfiguration(): { rpId: string; origin: string; rpName: string
   return { rpId, origin: parsed.origin, rpName };
 }
 
-function createRegistrationStepUpProof(
-  accountId: string,
-  sessionId: string,
-  payloadDigest: Buffer
-): { expiresEpoch: number; nonce: string; signature: string } {
-  const rawKey = process.env.UNIBUD_FLOW_STEP_UP_HMAC_KEY?.trim() ?? "";
-  if (!/^(?:[0-9a-f]{2}){32}$/i.test(rawKey)) {
-    throw new Error("UNIBUD_FLOW_STEP_UP_HMAC_KEY must be exactly 32 random bytes encoded as hex.");
-  }
-  const expiresEpoch = Math.floor(Date.now() / 1000) + 60;
-  const nonce = randomUUID();
-  const message = [
-    "flow-step-up:v1", accountId, sessionId, "webauthn_register",
-    payloadDigest.toString("hex"), String(expiresEpoch), nonce
-  ].join(":");
-  const signature = createHmac("sha256", Buffer.from(rawKey, "hex"))
-    .update(message, "utf8")
-    .digest("hex");
-  return { expiresEpoch, nonce, signature };
-}
 
 function canonicalCredentialDigest(input: {
   challengeDigest: Buffer;
@@ -176,9 +157,10 @@ export class FlowWebAuthnService {
       signatureCounter,
       transports
     });
-    const proof = createRegistrationStepUpProof(
+    const proof = createFlowStepUpProof(
       input.accountId,
       input.sessionId,
+      "webauthn_register",
       payloadDigest
     );
 
