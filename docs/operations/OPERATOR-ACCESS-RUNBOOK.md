@@ -204,3 +204,7 @@ The inbox is account-scoped, RLS-protected and exposed only through SECURITY DEF
 These are in-app notifications only. No email/SMS provider, external delivery queue, delivery receipt or retry worker is implemented by this migration.
 
 The web CI also runs the isolated Operator grants browser fixture at /e2e/operations-grants. It exercises the grant notification inbox and mark-read, independent approval, requester cancellation and grant submission through intercepted HTTP boundaries. The fixture is explicitly unavailable when NODE_ENV is production or the E2E flag is absent; browser mocks do not replace PostgreSQL authorization tests.
+
+### Verified checkpoint — 2026-11-12
+
+Feature-branch head 0b0cbbde74221e37fd01f8abe3299f266267b351 passed Foundation checks run 43159461223, UNIBUD Web and Database run 43159461527, and Oracle Arc API run 43159461117. The Web run includes typecheck, contract/security tests, lint, the Operations grants browser E2E, production build and migration validation. Foundation includes PostgreSQL 16 migration/RLS verification through migration 0047. This is CI verification only; no production deployment, production migration or grant provisioning occurred.
