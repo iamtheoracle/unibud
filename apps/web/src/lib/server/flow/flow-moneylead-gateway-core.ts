@@ -1,10 +1,16 @@
 import type {
   FlowMoneyLeadAcknowledgement,
+  FlowMoneyLeadAccountSnapshot,
   FlowMoneyLeadAuthorizedInstruction,
   FlowMoneyLeadGateway
 } from "./flow-moneylead-gateway-contract.ts";
 
 export class UnconfiguredFlowMoneyLeadGateway implements FlowMoneyLeadGateway {
+  async getAccountSnapshot(_accountReference: string): Promise<FlowMoneyLeadAccountSnapshot> {
+    void _accountReference;
+    throw new Error("MoneyLead account service is not configured or verified.");
+  }
+
   async submitAuthorizedInstruction(
     _instruction: FlowMoneyLeadAuthorizedInstruction
   ): Promise<FlowMoneyLeadAcknowledgement> {
