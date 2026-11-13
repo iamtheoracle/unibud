@@ -41,6 +41,8 @@ export type FlowMoneyLeadAcknowledgement =
     };
 
 export interface FlowMoneyLeadGateway {
+  getAccountSnapshot(accountReference: string): Promise<FlowMoneyLeadAccountSnapshot>;
+
   submitAuthorizedInstruction(
     instruction: FlowMoneyLeadAuthorizedInstruction
   ): Promise<FlowMoneyLeadAcknowledgement>;
