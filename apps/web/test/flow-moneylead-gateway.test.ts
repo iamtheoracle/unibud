@@ -7,6 +7,10 @@ import type { FlowMoneyLeadGateway } from "../src/lib/server/flow/flow-moneylead
 test("MoneyLead gateway fails closed until a verified adapter is installed", async () => {
   const gateway: FlowMoneyLeadGateway = new UnconfiguredFlowMoneyLeadGateway();
   await assert.rejects(
+    gateway.getAccountSnapshot("opaque-account-reference"),
+    /account service is not configured or verified/
+  );
+  await assert.rejects(
     gateway.submitAuthorizedInstruction({
       contractVersion: 1,
       paymentIntentId: "f0540000-0000-4000-8000-000000000101",
@@ -39,6 +43,10 @@ test("MoneyLead gateway port is limited to authorized instruction submit and ide
   const source = readFileSync(new URL("../src/lib/server/flow/flow-moneylead-gateway-contract.ts", import.meta.url), "utf8");
   assert.ok(source.includes("submitAuthorizedInstruction"));
   assert.ok(source.includes("lookupByIdempotencyKey"));
+  assert.ok(source.includes("getAccountSnapshot"));
+  assert.ok(source.includes("FlowMoneyLeadFinancialEvent"));
+  assert.ok(source.includes("branch_cash"));
+  assert.ok(source.includes("awaiting_settlement"));
   assert.doesNotMatch(source, /getBalance|debitAccount|creditAccount|createAccount|settleFunds/i);
   assert.doesNotMatch(source, /outcome: "settled"/);
 });
