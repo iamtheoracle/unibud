@@ -163,14 +163,15 @@ export async function recordWorkforceLogin(
   pool: SqlPool,
   username: string,
   outcome: "success" | "failure",
-  requestId: string
+  requestId: string,
+  sessionId: string | null = null
 ): Promise<void> {
   const digest = workforceUsernameDigest(username);
   const client = await pool.connect();
   try {
     await client.query(
-      "SELECT public.unibud_workforce_record_login($1,$2,$3,$4)",
-      [digest, username, outcome, requestId]
+      "SELECT public.unibud_workforce_record_login($1,$2,$3,$4,$5)",
+      [digest, username, outcome, requestId, sessionId]
     );
   } finally {
     client.release();
