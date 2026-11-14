@@ -23,7 +23,7 @@ From this directory:
    uvicorn app.main:app --reload --port 8100
    ```
 
-The migration creates a separate `oracle_arc` schema, non-login owner, runtime role, app registry, credential registry, replay store, quota buckets, and immutable audit events. Runtime access is through narrow SECURITY DEFINER procedures; the runtime role receives no direct table access.
+The migration creates a separate `oracle_arc` schema, non-login owner, runtime role, maintenance role, app registry, credential registry, replay store, quota buckets, and immutable audit events. Runtime access is through narrow SECURITY DEFINER procedures; the runtime role receives no direct table access. A separately granted maintenance role can purge expired nonces and old rate-limit buckets in bounded batches of at most 1,000 rows per table. No scheduler is included or claimed.
 
 ## Application authentication
 
