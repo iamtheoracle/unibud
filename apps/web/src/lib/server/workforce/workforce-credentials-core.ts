@@ -58,7 +58,7 @@ function passcodePrehash(
   pepper: Uint8Array
 ): string {
   if (!/^ub-(staff|operator|admin)-[a-f0-9]{16}$/.test(username)
-      || !/^\\d{6}$/.test(passcode) || pepper.byteLength < 32) {
+      || !/^\d{6}$/.test(passcode) || pepper.byteLength < 32) {
     throw new Error("A six-digit workforce passcode and valid username-bound pepper are required.");
   }
   return createHmac("sha256", pepper)
