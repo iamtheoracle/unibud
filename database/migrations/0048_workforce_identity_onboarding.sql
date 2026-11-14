@@ -192,7 +192,7 @@ CREATE TABLE public.unibud_workforce_invitation_requests (
   approver_session_id UUID REFERENCES public.account_sessions(id) ON DELETE RESTRICT,
   reason_code TEXT NOT NULL CHECK (reason_code ~ '^[a-z][a-z0-9_]{2,47}$'),
   decision_reason_code TEXT CHECK (decision_reason_code IS NULL OR decision_reason_code ~ '^[a-z][a-z0-9_]{2,47}$'),
-  workforce_account_id UUID REFERENCES public.unibud_workforce_accounts(workforce_id) ON DELETE RESTRICT,
+  workforce_account_id UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   expires_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()+interval '30 minutes',
   decided_at TIMESTAMPTZ,
@@ -244,11 +244,16 @@ CREATE TABLE public.unibud_workforce_accounts (
           AND passcode_hash IS NULL AND passcode_changed_at IS NULL)
       OR (first_name IS NOT NULL AND last_name IS NOT NULL AND email_identity_id IS NOT NULL
           AND passcode_hash IS NOT NULL AND passcode_changed_at IS NOT NULL)),
-  CHECK ((activation_consumed_at IS NULL) = (status='invited')),
+  CHECK (status<>'invited' OR activation_consumed_at IS NULL),
+  CHECK (status NOT IN ('email_verification_pending','mfa_enrollment_required','active') OR activation_consumed_at IS NOT NULL),
   CHECK ((email_verified_at IS NULL) OR email_identity_id IS NOT NULL),
   CHECK ((mfa_enrolled_at IS NULL) OR email_verified_at IS NOT NULL),
-  CHECK ((onboarding_completed_at IS NULL) = (status<>'active'))
+  CHECK (status<>'active' OR onboarding_completed_at IS NOT NULL)
 );
+
+ALTER TABLE public.unibud_workforce_invitation_requests
+  ADD CONSTRAINT unibud_workforce_invitation_workforce_fk
+  FOREIGN KEY (workforce_account_id) REFERENCES public.unibud_workforce_accounts(workforce_id) ON DELETE RESTRICT;
 
 CREATE INDEX unibud_workforce_status_idx
   ON public.unibud_workforce_accounts(status,created_at DESC);
