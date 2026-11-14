@@ -53,12 +53,12 @@ export function workforceUsernameDigest(
 }
 
 function passcodePrehash(
-  accountId: string,
+  username: string,
   passcode: string,
   pepper: Uint8Array
 ): string {
-  if (!/^[0-9a-f-]{36}$/i.test(accountId) || !/^\d{6}$/.test(passcode)
-      || pepper.byteLength < 32) {
+  if (!/^ub-(staff|operator|admin)-[a-f0-9]{16}$/.test(username)
+      || !/^\\d{6}$/.test(passcode) || pepper.byteLength < 32) {
     throw new Error("A six-digit workforce passcode and valid username-bound pepper are required.");
   }
   return createHmac("sha256", pepper)
