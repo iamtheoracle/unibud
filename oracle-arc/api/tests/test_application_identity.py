@@ -244,7 +244,7 @@ def test_audit_events_are_immutable() -> None:
             (app_id,),
         ).fetchone()[0]
 
-    with pytest.raises(psycopg.errors.RaiseException):
+    with pytest.raises(psycopg.errors.ObjectNotInPrerequisiteState):
         with psycopg.connect(os.environ["ORACLE_ARC_TEST_ADMIN_DATABASE_URL"]) as connection:
             connection.execute(
                 "UPDATE oracle_arc.audit_events SET outcome='denied' WHERE event_id=%s",
