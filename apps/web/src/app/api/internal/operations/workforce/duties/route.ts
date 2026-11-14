@@ -33,12 +33,16 @@ export async function POST(request: NextRequest) {
     const { sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return noStore({ ok: false, error: "Authentication is required." }, 401);
+    const workforceId = body.workforceId as string;
+    const dutyCode = body.dutyCode as string;
+    const title = (body.title as string).trim();
+    const description = (body.description as string).trim();
+    const dueAt = typeof body.dueAt === "string" ? new Date(body.dueAt).toISOString() : null;
     const context = createSignedSessionContextFromEnvironment(validation.account.id, validation.session.id);
     const assignmentId = await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
       const result = await client.query<{ assignment_id: string | null }>(
         "SELECT public.unibud_workforce_assign_duty($1,$2,$3,$4,$5,$6) AS assignment_id",
-        [body.workforceId,body.dutyCode,body.title.trim(),body.description.trim(),
-          body.dueAt ?? null,randomUUID()]
+        [workforceId,dutyCode,title,description,dueAt,randomUUID()]
       );
       return result.rows[0]?.assignment_id ?? null;
     });
