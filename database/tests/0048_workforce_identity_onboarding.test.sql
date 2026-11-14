@@ -136,14 +136,14 @@ END
 $test$;
 
 SELECT public.unibud_workforce_record_login(
-  decode(repeat('ef',32),'hex'),'ub-staff-0123456789abcdef','success',
-  'f0480000-0000-4000-8000-000000000099'
+  decode(repeat('ef',32),'hex'),'ub-staff-0123456789abcdef','failure',
+  'f0480000-0000-4000-8000-000000000099',NULL
 );
 DO $test$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.unibud_workforce_audit_events
     WHERE request_id='f0480000-0000-4000-8000-000000000099'
-      AND event_type='workforce.login.success'
+      AND event_type='workforce.login.failure'
       AND subject_account_id='f0480000-0000-4000-8000-000000000003'
       AND actor_account_id IS NULL AND actor_session_id IS NULL) THEN
     RAISE EXCEPTION 'Pre-session workforce login audit is missing or forged';
