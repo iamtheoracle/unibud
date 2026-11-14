@@ -1,5 +1,6 @@
 import { NextRequest,NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "../../../../lib/server/identity/identity-runtime";
+import { getWorkforceSessionGate } from "../../../../lib/server/workforce/workforce-session-gate";
 import { hasSameOrigin,readJsonObject,readSessionCookie,routeError } from "../../../../lib/server/identity/http";
 
 export async function POST(request:NextRequest){
@@ -19,7 +20,11 @@ export async function POST(request:NextRequest){
   return NextResponse.json({ok:false,error:"Account setup is temporarily unavailable while the final legal policies are reviewed."},{status:503});
  }
  try{
-  const {onboarding}=createConfiguredIdentityServices();
+  const {onboarding,sessions}=createConfiguredIdentityServices();
+  const validation=await sessions.validate(token);
+  if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+  const workforceGate=await getWorkforceSessionGate(validation.account.id,validation.session.id);
+  if(workforceGate!=="not_workforce") return NextResponse.json({ok:false,error:"Workforce identities cannot create personal profiles. Complete workforce security onboarding first."},{status:403});
   const result=await onboarding.complete({
    sessionToken:token,handle:body.handle,displayName:body.displayName,
    termsVersion,privacyVersion,
