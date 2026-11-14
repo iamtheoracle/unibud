@@ -18,7 +18,8 @@ def main() -> None:
     if not migrations:
         raise SystemExit("No Oracle Arc migrations were found.")
 
-    with psycopg.connect(database_url) as connection:
+    # Each migration owns its explicit BEGIN/COMMIT boundary.
+    with psycopg.connect(database_url, autocommit=True) as connection:
         for migration in migrations:
             sql = migration.read_text(encoding="utf-8")
             connection.execute(sql, prepare=False)
