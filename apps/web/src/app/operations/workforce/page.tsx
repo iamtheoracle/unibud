@@ -21,6 +21,12 @@ type InvitationRequest = {
   created_at: string;
   expires_at: string;
 };
+type WorkforceMetrics = {
+  total: number; active: number; invited: number; emailVerificationPending: number;
+  mfaEnrollmentRequired: number; suspended: number; staff: number; operators: number;
+  administrators: number; eventsLast24Hours: number; loginFailuresLast24Hours: number;
+  dutyEventsLast7Days: number; dutyFailuresLast7Days: number;
+};
 type ActivityRow = {
   event_id: string;
   occurred_at: string;
@@ -36,6 +42,7 @@ type ActivityRow = {
 export default function WorkforceOperationsPage() {
   const [directory, setDirectory] = useState<WorkforceRow[]>([]);
   const [requests, setRequests] = useState<InvitationRequest[]>([]);
+  const [metrics, setMetrics] = useState<WorkforceMetrics | null>(null);
   const [activity, setActivity] = useState<ActivityRow[]>([]);
   const [selected, setSelected] = useState("");
   const [role, setRole] = useState<"staff" | "operator" | "admin">("staff");
@@ -54,6 +61,7 @@ export default function WorkforceOperationsPage() {
     if (!response.ok || !result.ok) throw new Error(result.error ?? "Workforce records are unavailable.");
     setDirectory(result.directory ?? []);
     setRequests(result.pendingInvitations ?? []);
+    setMetrics(result.metrics ?? null);
   }, []);
 
   useEffect(() => {
@@ -66,6 +74,7 @@ export default function WorkforceOperationsPage() {
       if (active) {
         setDirectory(result.directory ?? []);
         setRequests(result.pendingInvitations ?? []);
+        setMetrics(result.metrics ?? null);
       }
     }).catch(reason => {
       if (active) setError(reason instanceof Error ? reason.message : "Workforce records are unavailable.");
@@ -130,8 +139,7 @@ export default function WorkforceOperationsPage() {
     }
   }
 
-  const activeCount = directory.filter(item => item.status === "active").length;
-  const onboardingCount = directory.filter(item => ["invited", "email_verification_pending", "mfa_enrollment_required"].includes(item.status)).length;
+
 
   return <main className="shell workforce-page">
     <header className="topbar">
@@ -159,9 +167,12 @@ export default function WorkforceOperationsPage() {
     </section>}
 
     <section className="workforce-summary">
-      <article className="workforce-panel"><p className="eyebrow">Registered workforce</p><h2>{loading ? "…" : directory.length}</h2><p>Current roster records returned by the database.</p></article>
-      <article className="workforce-panel"><p className="eyebrow">Active</p><h2>{loading ? "…" : activeCount}</h2><p>Email verified and authenticator onboarding completed.</p></article>
-      <article className="workforce-panel"><p className="eyebrow">Onboarding / invitation</p><h2>{loading ? "…" : onboardingCount}</h2><p>Invited, verifying email or required to enrol MFA.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Registered workforce</p><h2>{loading ? "…" : metrics?.total ?? 0}</h2><p>Database count across all workforce roles.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Active</p><h2>{loading ? "…" : metrics?.active ?? 0}</h2><p>Email verified and authenticator onboarding completed.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Awaiting onboarding</p><h2>{loading ? "…" : (metrics?.invited ?? 0) + (metrics?.emailVerificationPending ?? 0) + (metrics?.mfaEnrollmentRequired ?? 0)}</h2><p>Invited, email verification or MFA enrollment outstanding.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Activity · 24 hours</p><h2>{loading ? "…" : metrics?.eventsLast24Hours ?? 0}</h2><p>Recorded workforce access and duty events.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Duty events · 7 days</p><h2>{loading ? "…" : metrics?.dutyEventsLast7Days ?? 0}</h2><p>{metrics?.dutyFailuresLast7Days ?? 0} denied or failed events.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Login failures · 24 hours</p><h2>{loading ? "…" : metrics?.loginFailuresLast24Hours ?? 0}</h2><p>Failed username sign-in attempts recorded.</p></article>
     </section>
 
     <section className="workforce-panel">
