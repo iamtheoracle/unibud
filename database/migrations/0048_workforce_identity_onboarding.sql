@@ -159,7 +159,9 @@ BEGIN
     WHEN 'workforce_request' THEN v_limit:=5; v_window:=900; v_permission:='operations.workforce.request';
     WHEN 'workforce_decide' THEN v_limit:=10; v_window:=900; v_permission:='operations.workforce.approve';
     WHEN 'workforce_read' THEN
-      v_limit:=60; v_window:=60; v_permission:='operations.workforce.read';
+      v_limit:=60; v_window:=60;
+      IF NOT (public.unibud_operator_has_permission('operations.workforce.read')
+        OR public.unibud_operator_has_permission('operations.workforce.approve')) THEN RETURN FALSE; END IF;
     ELSE RETURN FALSE;
   END CASE;
   IF v_permission IS NOT NULL AND NOT public.unibud_operator_has_permission(v_permission) THEN RETURN FALSE; END IF;
@@ -351,7 +353,8 @@ SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
 AS $function$
 BEGIN
-  IF NOT public.unibud_operator_has_permission('operations.workforce.read')
+  IF NOT (public.unibud_operator_has_permission('operations.workforce.read')
+       OR public.unibud_operator_has_permission('operations.workforce.approve'))
      OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_read')
      OR p_limit IS NULL OR p_limit<1 OR p_limit>100 THEN RETURN; END IF;
   RETURN QUERY SELECT r.request_id,r.requested_role,r.state,r.requester_account_id,r.created_at,r.expires_at
