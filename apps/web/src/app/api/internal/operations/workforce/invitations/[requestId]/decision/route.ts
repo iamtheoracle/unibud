@@ -1,4 +1,4 @@
-import { createWorkforceUsername, createWorkforceActivationCode, workforceActivationDigest } from "@/lib/server/workforce/workforce-credentials-core";
+import { assertWorkforceKeySeparation, createWorkforceUsername, createWorkforceActivationCode, workforceActivationDigest } from "@/lib/server/workforce/workforce-credentials-core";
 import { NextRequest, NextResponse } from "next/server";
 import {
   createSignedSessionContextFromEnvironment,
@@ -38,6 +38,7 @@ export async function POST(request: NextRequest, context: Context) {
     const validation = await sessions.validate(token);
     if (!validation.valid) return noStore({ ok: false, error: "Authentication is required." }, 401);
 
+    assertWorkforceKeySeparation();
     const sessionContext = createSignedSessionContextFromEnvironment(
       validation.account.id, validation.session.id
     );
