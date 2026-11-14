@@ -125,7 +125,7 @@ ALTER TABLE public.unibud_operator_mfa_api_rate_limits
   CHECK (action IN (
     'request_create','request_decide','request_cancel','request_read',
     'notification_read','audit_read','grant_request','grant_decide','grant_read',
-    'workforce_request','workforce_decide','workforce_read'
+    'workforce_request','workforce_decide','workforce_read','workforce_self_read','workforce_self_update'
   ));
 
 CREATE OR REPLACE FUNCTION public.unibud_operator_mfa_consume_api_rate_limit(p_action TEXT)
@@ -162,6 +162,10 @@ BEGIN
       v_limit:=60; v_window:=60;
       IF NOT (public.unibud_operator_has_permission('operations.workforce.read')
         OR public.unibud_operator_has_permission('operations.workforce.approve')) THEN RETURN FALSE; END IF;
+    WHEN 'workforce_self_read' THEN
+      v_limit:=60; v_window:=60; v_permission:='operations.workforce.self_access';
+    WHEN 'workforce_self_update' THEN
+      v_limit:=30; v_window:=60; v_permission:='operations.workforce.self_access';
     ELSE RETURN FALSE;
   END CASE;
   IF v_permission IS NOT NULL AND NOT public.unibud_operator_has_permission(v_permission) THEN RETURN FALSE; END IF;
@@ -810,7 +814,8 @@ BEGIN
      OR p_outcome IS NULL OR p_outcome NOT IN ('allowed','denied','success','failure')
      OR p_request_id IS NULL OR p_event_data IS NULL
      OR jsonb_typeof(p_event_data)<>'object' OR octet_length(p_event_data::TEXT)>4096
-     OR NOT public.unibud_operator_has_permission('operations.workforce.self_access') THEN
+     OR NOT public.unibud_operator_has_permission('operations.workforce.self_access')
+     OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_self_update') THEN
     RETURN FALSE;
   END IF;
   SELECT workforce_id INTO v_workforce FROM public.unibud_workforce_accounts
@@ -2386,6 +2391,7 @@ DECLARE v_actor UUID; v_workforce UUID;
 BEGIN
   v_actor:=unibud_private.current_account_id();
   IF v_actor IS NULL OR NOT public.unibud_operator_has_permission('operations.workforce.self_access')
+     OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_self_read')
      OR p_limit IS NULL OR p_limit<1 OR p_limit>100 THEN RETURN; END IF;
   SELECT workforce_id INTO v_workforce FROM public.unibud_workforce_accounts
     WHERE account_id=v_actor AND status='active';
