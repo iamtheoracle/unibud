@@ -759,6 +759,12 @@ BEGIN
     'staff', (SELECT count(*) FROM public.unibud_workforce_accounts WHERE workforce_role='staff'),
     'operators', (SELECT count(*) FROM public.unibud_workforce_accounts WHERE workforce_role='operator'),
     'administrators', (SELECT count(*) FROM public.unibud_workforce_accounts WHERE workforce_role='admin'),
+    'dutiesAssigned', (SELECT count(*) FROM public.unibud_workforce_duty_assignments),
+    'dutiesSubmitted', (SELECT count(*) FROM public.unibud_workforce_duty_assignments WHERE status='submitted'),
+    'dutiesCompleted', (SELECT count(*) FROM public.unibud_workforce_duty_assignments WHERE status='completed'),
+    'dutiesRejected', (SELECT count(*) FROM public.unibud_workforce_duty_assignments WHERE status='rejected'),
+    'dutiesOverdue', (SELECT count(*) FROM public.unibud_workforce_duty_assignments
+      WHERE due_at<statement_timestamp() AND status NOT IN ('completed','rejected','cancelled')),
     'eventsLast24Hours', (SELECT count(*) FROM public.unibud_workforce_audit_events WHERE occurred_at>=statement_timestamp()-interval '24 hours'),
     'loginFailuresLast24Hours', (SELECT count(*) FROM public.unibud_workforce_audit_events
       WHERE event_type='workforce.login.failure' AND occurred_at>=statement_timestamp()-interval '24 hours'),
