@@ -5,6 +5,7 @@ import { getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { hasSameOrigin, readJsonObject, routeError } from "@/lib/server/identity/http";
 import {
+  assertWorkforceKeySeparation,
   hashWorkforcePasscode,
   workforceActivationDigest
 } from "@/lib/server/workforce/workforce-credentials-core";
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    assertWorkforceKeySeparation();
     const identityId = randomUUID();
     const activationDigest = workforceActivationDigest(username, body.activationCode);
     const passcodeHash = await hashWorkforcePasscode(username, body.passcode);
