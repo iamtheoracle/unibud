@@ -612,13 +612,79 @@ BEGIN
     'firstName',v_workforce.first_name,'lastName',v_workforce.last_name,
     'emailVerifiedAt',v_workforce.email_verified_at,
     'mfaEnrolledAt',v_workforce.mfa_enrolled_at,
-    'onboardingCompletedAt',v_workforce.onboarding_completed_at
+    'onboardingCompletedAt',v_workforce.onboarding_completed_at,
+    'recentActivity',COALESCE((
+      SELECT jsonb_agg(jsonb_build_object(
+        'eventType',activity.event_type,'outcome',activity.outcome,
+        'occurredAt',activity.occurred_at,'resourceType',activity.resource_type,
+        'resourceId',activity.resource_id
+      ) ORDER BY activity.occurred_at DESC)
+      FROM (
+        SELECT event_type,outcome,occurred_at,resource_type,resource_id
+        FROM public.unibud_workforce_audit_events
+        WHERE workforce_id=v_workforce.workforce_id
+        ORDER BY occurred_at DESC,event_id DESC LIMIT 20
+      ) activity
+    ),'[]'::JSONB)
   );
 END
 $function$;
 ALTER FUNCTION public.unibud_workforce_get_self() OWNER TO unibud_ops_owner;
 REVOKE ALL ON FUNCTION public.unibud_workforce_get_self() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.unibud_workforce_get_self() TO unibud_app;
+
+CREATE FUNCTION public.unibud_workforce_list_directory(p_limit INTEGER DEFAULT 50)
+RETURNS TABLE(
+  workforce_id UUID,username TEXT,workforce_role TEXT,status TEXT,
+  first_name TEXT,last_name TEXT,created_at TIMESTAMPTZ,
+  onboarding_completed_at TIMESTAMPTZ
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+BEGIN
+  IF NOT (public.unibud_operator_has_permission('operations.workforce.read')
+       OR public.unibud_operator_has_permission('operations.workforce.approve'))
+     OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_read')
+     OR p_limit IS NULL OR p_limit<1 OR p_limit>100 THEN RETURN; END IF;
+  RETURN QUERY
+    SELECT w.workforce_id,w.username,w.workforce_role,w.status,
+      w.first_name,w.last_name,w.created_at,w.onboarding_completed_at
+    FROM public.unibud_workforce_accounts w
+    ORDER BY w.created_at DESC,w.workforce_id LIMIT p_limit;
+END
+$function$;
+ALTER FUNCTION public.unibud_workforce_list_directory(INTEGER) OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION public.unibud_workforce_list_directory(INTEGER) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.unibud_workforce_list_directory(INTEGER) TO unibud_app;
+
+CREATE FUNCTION public.unibud_workforce_list_activity(p_workforce_id UUID,p_limit INTEGER DEFAULT 50)
+RETURNS TABLE(
+  event_id BIGINT,occurred_at TIMESTAMPTZ,actor_account_id UUID,actor_session_id UUID,
+  event_type TEXT,outcome TEXT,request_id UUID,resource_type TEXT,resource_id UUID
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+BEGIN
+  IF p_workforce_id IS NULL
+     OR NOT (public.unibud_operator_has_permission('operations.workforce.read')
+       OR public.unibud_operator_has_permission('operations.workforce.approve'))
+     OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_read')
+     OR p_limit IS NULL OR p_limit<1 OR p_limit>100 THEN RETURN; END IF;
+  RETURN QUERY
+    SELECT e.event_id,e.occurred_at,e.actor_account_id,e.actor_session_id,
+      e.event_type,e.outcome,e.request_id,e.resource_type,e.resource_id
+    FROM public.unibud_workforce_audit_events e
+    WHERE e.workforce_id=p_workforce_id
+    ORDER BY e.occurred_at DESC,e.event_id DESC LIMIT p_limit;
+END
+$function$;
+ALTER FUNCTION public.unibud_workforce_list_activity(UUID,INTEGER) OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION public.unibud_workforce_list_activity(UUID,INTEGER) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.unibud_workforce_list_activity(UUID,INTEGER) TO unibud_app;
 
 CREATE FUNCTION public.unibud_workforce_record_activity(
   p_event_type TEXT,p_resource_type TEXT,p_resource_id UUID,p_outcome TEXT,
