@@ -38,21 +38,29 @@ export async function POST(request: NextRequest, context: Context) {
     const validation = await sessions.validate(token);
     if (!validation.valid) return noStore({ ok: false, error: "Authentication is required." }, 401);
 
-    const username = body.decision === "approve"
-      ? createWorkforceUsername((body.role === "staff" || body.role === "operator" || body.role === "admin")
-        ? body.role : "staff")
-      : null;
-    const activationCode = body.decision === "approve" ? createWorkforceActivationCode() : null;
-    const digest = username && activationCode
-      ? workforceActivationDigest(username, activationCode)
-      : null;
     const sessionContext = createSignedSessionContextFromEnvironment(
       validation.account.id, validation.session.id
     );
-    const decision = await withSignedSessionTransaction(
+    const outcome = await withSignedSessionTransaction(
       getAppDatabasePool(),
       sessionContext,
       async client => {
+        let username: string | null = null;
+        let activationCode: string | null = null;
+        let digest: Buffer | null = null;
+        if (body.decision === "approve") {
+          const pending = await client.query<{ request_id: string; requested_role: string }>(
+            "SELECT request_id,requested_role FROM public.unibud_workforce_list_invitation_requests($1)",
+            [100]
+          );
+          const requested = pending.rows.find(row => row.request_id === requestId);
+          if (!requested || !["staff", "operator", "admin"].includes(requested.requested_role)) {
+            return null;
+          }
+          username = createWorkforceUsername(requested.requested_role as "staff" | "operator" | "admin");
+          activationCode = createWorkforceActivationCode();
+          digest = workforceActivationDigest(username, activationCode);
+        }
         const result = await client.query<{
           workforce_id: string | null;
           account_id: string | null;
@@ -62,10 +70,12 @@ export async function POST(request: NextRequest, context: Context) {
           "SELECT * FROM public.unibud_workforce_decide_invitation($1,$2,$3,$4,$5)",
           [requestId, body.decision, body.reasonCode, username, digest]
         );
-        return result.rows[0] ?? null;
+        return { decision: result.rows[0] ?? null, username, activationCode };
       }
     );
-    if (!decision || decision.decision_state !== body.decision + "d" && decision.decision_state !== body.decision) {
+    const decision = outcome?.decision ?? null;
+    const expectedState = body.decision === "approve" ? "approved" : "rejected";
+    if (!decision || decision.decision_state !== expectedState) {
       return noStore({
         ok: false,
         error: "The invitation decision was not accepted. It may be expired, already decided, or outside your independent approval authority."
@@ -79,7 +89,7 @@ export async function POST(request: NextRequest, context: Context) {
       state: "approved",
       workforceId: decision.workforce_id,
       username: decision.username,
-      activationCode,
+      activationCode: outcome?.activationCode,
       activationExpiresInSeconds: 900,
       deliveryInstruction: "Share this one-time code with the named person through a verified, separate company-controlled channel. It is shown only once."
     }, 201);
