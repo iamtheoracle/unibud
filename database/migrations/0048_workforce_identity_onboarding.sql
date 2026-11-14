@@ -456,7 +456,7 @@ BEGIN
     account_id,operator_role,permissions,granted_by,expires_at
   ) VALUES(
     v_account,'workforce_self',ARRAY['operations.workforce.self_access']::TEXT[],
-    v_actor,clock_timestamp()+interval '90 days'
+    v_actor,NULL
   );
   UPDATE public.unibud_workforce_invitation_requests SET state='approved',
     approver_account_id=v_actor,approver_session_id=v_session,
