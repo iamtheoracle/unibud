@@ -6,8 +6,10 @@ import os
 import secrets
 import time
 import uuid
+from datetime import UTC, datetime, timedelta
 
 import psycopg
+import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from fastapi.testclient import TestClient
@@ -20,6 +22,7 @@ client = TestClient(app)
 def register_application(
     *,
     scopes: list[str] | None = None,
+    credential_scopes: list[str] | None = None,
     quota: int = 60,
     environment: str = "development",
 ) -> tuple[uuid.UUID, uuid.UUID, Ed25519PrivateKey]:
@@ -32,6 +35,7 @@ def register_application(
     credential_id = uuid.uuid4()
     slug = "test-app-" + uuid.uuid4().hex[:12]
     granted_scopes = scopes or ["identity.read"]
+    key_scopes = credential_scopes or granted_scopes
 
     with psycopg.connect(os.environ["ORACLE_ARC_TEST_ADMIN_DATABASE_URL"]) as connection:
         connection.execute(
@@ -48,7 +52,7 @@ def register_application(
                 credential_id,app_id,public_key,scopes
             ) VALUES (%s,%s,%s,%s)
             """,
-            (credential_id, app_id, public_key, granted_scopes),
+            (credential_id, app_id, public_key, key_scopes),
         )
     return app_id, credential_id, private_key
 
@@ -91,16 +95,29 @@ def test_signed_request_returns_only_the_calling_application_identity() -> None:
 
     assert response.status_code == 200
     payload = response.json()
-    assert payload == {
-        "slug": payload["slug"],
-        "display_name": "Oracle Arc Identity Test",
-        "environment": "development",
-        "scopes": ["identity.read"],
-        "requests_per_minute": 60,
-    }
+    assert payload["slug"].startswith("test-app-")
+    assert payload["display_name"] == "Oracle Arc Identity Test"
+    assert payload["environment"] == "development"
+    assert payload["scopes"] == ["identity.read"]
+    assert payload["requests_per_minute"] == 60
     assert "app_id" not in payload
     assert "credential_id" not in payload
     assert "public_key" not in response.text
+
+
+def test_credential_scopes_cannot_expand_application_grants() -> None:
+    _, credential_id, private_key = register_application(
+        scopes=["identity.read", "identity.admin"],
+        credential_scopes=["identity.read"],
+    )
+
+    response = client.get(
+        "/v1/apps/me",
+        headers=signed_headers(credential_id, private_key),
+    )
+
+    assert response.status_code == 200
+    assert response.json()["scopes"] == ["identity.read"]
 
 
 def test_invalid_ed25519_signature_is_rejected() -> None:
@@ -209,7 +226,78 @@ def test_database_enforces_per_application_request_quota() -> None:
     assert second.status_code == 429
 
 
-def test_runtime_database_role_cannot_read_registry_or_audit_tables() -> None:
+def test_audit_events_are_immutable() -> None:
+    app_id, credential_id, private_key = register_application()
+    response = client.get(
+        "/v1/apps/me",
+        headers=signed_headers(credential_id, private_key),
+    )
+    assert response.status_code == 200
+
+    with psycopg.connect(os.environ["ORACLE_ARC_TEST_ADMIN_DATABASE_URL"]) as connection:
+        event_id = connection.execute(
+            """
+            SELECT event_id FROM oracle_arc.audit_events
+            WHERE app_id=%s AND event_type='request.authenticated'
+            ORDER BY created_at DESC LIMIT 1
+            """,
+            (app_id,),
+        ).fetchone()[0]
+
+    with pytest.raises(psycopg.errors.RaiseException):
+        with psycopg.connect(os.environ["ORACLE_ARC_TEST_ADMIN_DATABASE_URL"]) as connection:
+            connection.execute(
+                "UPDATE oracle_arc.audit_events SET outcome='denied' WHERE event_id=%s",
+                (event_id,),
+            )
+
+
+def test_bounded_maintenance_purges_expired_state_without_a_scheduler() -> None:
+    app_id, _, _ = register_application()
+    old_time = datetime.now(UTC) - timedelta(days=2)
+    with psycopg.connect(os.environ["ORACLE_ARC_TEST_ADMIN_DATABASE_URL"]) as connection:
+        connection.execute(
+            """
+            INSERT INTO oracle_arc.request_nonces(app_id,nonce,expires_at)
+            VALUES (%s,%s,%s),(%s,%s,%s)
+            """,
+            (
+                app_id,
+                secrets.token_urlsafe(24),
+                datetime.now(UTC) - timedelta(minutes=1),
+                app_id,
+                secrets.token_urlsafe(24),
+                datetime.now(UTC) - timedelta(minutes=2),
+            ),
+        )
+        connection.execute(
+            """
+            INSERT INTO oracle_arc.rate_limit_buckets(app_id,window_started_at,request_count)
+            VALUES (%s,%s,1),(%s,%s,1)
+            """,
+            (app_id, old_time, app_id, old_time - timedelta(minutes=1)),
+        )
+        connection.execute("SET ROLE oracle_arc_maintenance")
+        result = connection.execute(
+            "SELECT * FROM oracle_arc.purge_expired_runtime_state(1)"
+        ).fetchone()
+        connection.execute("RESET ROLE")
+
+        remaining_nonces = connection.execute(
+            "SELECT count(*) FROM oracle_arc.request_nonces WHERE app_id=%s",
+            (app_id,),
+        ).fetchone()[0]
+        remaining_buckets = connection.execute(
+            "SELECT count(*) FROM oracle_arc.rate_limit_buckets WHERE app_id=%s",
+            (app_id,),
+        ).fetchone()[0]
+
+    assert result == (1, 1)
+    assert remaining_nonces == 1
+    assert remaining_buckets == 1
+
+
+def test_runtime_database_role_has_only_narrow_procedure_access() -> None:
     with psycopg.connect(os.environ["ORACLE_ARC_DATABASE_URL"]) as connection:
         privileges = connection.execute(
             """
@@ -217,9 +305,14 @@ def test_runtime_database_role_cannot_read_registry_or_audit_tables() -> None:
               has_table_privilege(current_user,'oracle_arc.application_clients','SELECT'),
               has_table_privilege(current_user,'oracle_arc.application_credentials','SELECT'),
               has_table_privilege(current_user,'oracle_arc.audit_events','SELECT'),
+              has_table_privilege(current_user,'oracle_arc.audit_events','UPDATE'),
               has_function_privilege(current_user,
-                'oracle_arc.authenticate_application(uuid,text)','EXECUTE')
+                'oracle_arc.authenticate_application(uuid,text)','EXECUTE'),
+              has_function_privilege(current_user,
+                'oracle_arc.purge_expired_runtime_state(integer)','EXECUTE'),
+              has_function_privilege('oracle_arc_maintenance',
+                'oracle_arc.purge_expired_runtime_state(integer)','EXECUTE')
             """
         ).fetchone()
 
-    assert privileges == (False, False, False, True)
+    assert privileges == (False, False, False, False, True, False, True)
