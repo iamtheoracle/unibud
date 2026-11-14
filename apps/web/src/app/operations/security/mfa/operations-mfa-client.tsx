@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { FormEvent, useEffect, useState } from "react";
 
@@ -26,6 +27,7 @@ type ApiResult = {
 };
 
 export default function OperationsMfaClient() {
+  const router = useRouter();
   const [status, setStatus] = useState<MfaStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -201,6 +203,14 @@ export default function OperationsMfaClient() {
     try {
       await post("/api/internal/operations/mfa/challenge", { code: challengeCode });
       setChallengeCode("");
+      const workforceResponse = await fetch("/api/internal/workforce/me", {
+        credentials: "same-origin", cache: "no-store"
+      });
+      const workforceResult = await workforceResponse.json();
+      if (workforceResponse.ok && workforceResult.ok && workforceResult.workforce) {
+        router.replace("/workforce/home");
+        return;
+      }
       setNotice("This session is verified for Operations for five minutes.");
       await refreshStatus();
     } catch (reason) {
