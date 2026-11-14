@@ -8,17 +8,22 @@ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END
 $roles$;
-
 DO $roles$
 BEGIN
   CREATE ROLE oracle_arc_runtime NOLOGIN;
 EXCEPTION WHEN duplicate_object THEN NULL;
 END
 $roles$;
+DO $roles$
+BEGIN
+  CREATE ROLE oracle_arc_maintenance NOLOGIN;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END
+$roles$;
 
 CREATE SCHEMA IF NOT EXISTS oracle_arc AUTHORIZATION oracle_arc_owner;
 REVOKE ALL ON SCHEMA oracle_arc FROM PUBLIC;
-GRANT USAGE ON SCHEMA oracle_arc TO oracle_arc_runtime;
+GRANT USAGE ON SCHEMA oracle_arc TO oracle_arc_runtime,oracle_arc_maintenance;
 
 CREATE TABLE oracle_arc.application_clients (
   app_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -26,7 +31,9 @@ CREATE TABLE oracle_arc.application_clients (
   display_name TEXT NOT NULL CHECK (length(display_name) BETWEEN 2 AND 120),
   environment TEXT NOT NULL CHECK (environment IN ('development','staging','production')),
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended','revoked')),
-  scopes TEXT[] NOT NULL CHECK (cardinality(scopes) BETWEEN 1 AND 32),
+  scopes TEXT[] NOT NULL
+    CHECK (cardinality(scopes) BETWEEN 1 AND 32)
+    CHECK (array_to_string(scopes, ',') ~ '^[a-z][a-z0-9_.-]{1,63}(,[a-z][a-z0-9_.-]{1,63})*$'),
   requests_per_minute INTEGER NOT NULL DEFAULT 60 CHECK (requests_per_minute BETWEEN 1 AND 6000),
   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
@@ -36,7 +43,9 @@ CREATE TABLE oracle_arc.application_credentials (
   credential_id UUID PRIMARY KEY,
   app_id UUID NOT NULL REFERENCES oracle_arc.application_clients(app_id) ON DELETE CASCADE,
   public_key BYTEA NOT NULL CHECK (octet_length(public_key) = 32),
-  scopes TEXT[] NOT NULL CHECK (cardinality(scopes) BETWEEN 1 AND 32),
+  scopes TEXT[] NOT NULL
+    CHECK (cardinality(scopes) BETWEEN 1 AND 32)
+    CHECK (array_to_string(scopes, ',') ~ '^[a-z][a-z0-9_.-]{1,63}(,[a-z][a-z0-9_.-]{1,63})*$'),
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','revoked')),
   key_version INTEGER NOT NULL DEFAULT 1 CHECK (key_version > 0),
   created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
@@ -227,6 +236,47 @@ END
 $function$;
 ALTER FUNCTION oracle_arc.record_app_event(UUID,TEXT,TEXT,UUID,JSONB) OWNER TO oracle_arc_owner;
 
+CREATE FUNCTION oracle_arc.purge_expired_runtime_state(p_limit INTEGER)
+RETURNS TABLE(nonces_deleted INTEGER,buckets_deleted INTEGER)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, oracle_arc
+AS $function$
+DECLARE
+  v_nonces INTEGER;
+  v_buckets INTEGER;
+BEGIN
+  IF p_limit IS NULL OR p_limit<1 OR p_limit>1000 THEN
+    RAISE EXCEPTION 'Maintenance batch must be between 1 and 1000' USING ERRCODE='22023';
+  END IF;
+
+  WITH expired AS (
+    SELECT ctid FROM oracle_arc.request_nonces
+    WHERE expires_at<=clock_timestamp()
+    ORDER BY expires_at
+    LIMIT p_limit
+  )
+  DELETE FROM oracle_arc.request_nonces AS target
+  USING expired
+  WHERE target.ctid=expired.ctid;
+  GET DIAGNOSTICS v_nonces=ROW_COUNT;
+
+  WITH expired AS (
+    SELECT ctid FROM oracle_arc.rate_limit_buckets
+    WHERE window_started_at<date_trunc('minute',clock_timestamp())-interval '24 hours'
+    ORDER BY window_started_at
+    LIMIT p_limit
+  )
+  DELETE FROM oracle_arc.rate_limit_buckets AS target
+  USING expired
+  WHERE target.ctid=expired.ctid;
+  GET DIAGNOSTICS v_buckets=ROW_COUNT;
+
+  RETURN QUERY SELECT v_nonces,v_buckets;
+END
+$function$;
+ALTER FUNCTION oracle_arc.purge_expired_runtime_state(INTEGER) OWNER TO oracle_arc_owner;
+
 CREATE FUNCTION oracle_arc.reject_audit_mutation()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -241,12 +291,13 @@ CREATE TRIGGER audit_events_immutable
   BEFORE UPDATE OR DELETE ON oracle_arc.audit_events
   FOR EACH ROW EXECUTE FUNCTION oracle_arc.reject_audit_mutation();
 
-REVOKE ALL ON ALL TABLES IN SCHEMA oracle_arc FROM PUBLIC, oracle_arc_runtime;
-REVOKE ALL ON ALL SEQUENCES IN SCHEMA oracle_arc FROM PUBLIC, oracle_arc_runtime;
+REVOKE ALL ON ALL TABLES IN SCHEMA oracle_arc FROM PUBLIC, oracle_arc_runtime, oracle_arc_maintenance;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA oracle_arc FROM PUBLIC, oracle_arc_runtime, oracle_arc_maintenance;
 REVOKE ALL ON ALL FUNCTIONS IN SCHEMA oracle_arc FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION oracle_arc.authenticate_application(UUID,TEXT) TO oracle_arc_runtime;
 GRANT EXECUTE ON FUNCTION oracle_arc.consume_request_nonce(UUID,TEXT,TIMESTAMPTZ) TO oracle_arc_runtime;
 GRANT EXECUTE ON FUNCTION oracle_arc.consume_app_rate_limit(UUID) TO oracle_arc_runtime;
 GRANT EXECUTE ON FUNCTION oracle_arc.record_app_event(UUID,TEXT,TEXT,UUID,JSONB) TO oracle_arc_runtime;
+GRANT EXECUTE ON FUNCTION oracle_arc.purge_expired_runtime_state(INTEGER) TO oracle_arc_maintenance;
 
 COMMIT;
