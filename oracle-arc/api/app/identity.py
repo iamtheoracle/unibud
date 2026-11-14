@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import json
+import os
 import re
 import time
 import uuid
@@ -34,7 +36,7 @@ class ApplicationContext:
 
 
 def _database_url() -> str:
-    value = __import__("os").getenv("ORACLE_ARC_DATABASE_URL", "").strip()
+    value = os.getenv("ORACLE_ARC_DATABASE_URL", "").strip()
     if not value:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -72,7 +74,7 @@ async def _record_event(
         async with await psycopg.AsyncConnection.connect(_database_url()) as conn:
             await conn.execute(
                 "SELECT oracle_arc.record_app_event(%s,%s,%s,%s,%s::jsonb)",
-                (app_id, event_type, outcome, request_id, __import__("json").dumps(event_data)),
+                (app_id, event_type, outcome, request_id, json.dumps(event_data)),
             )
     except psycopg.Error as exc:
         raise HTTPException(
@@ -93,8 +95,7 @@ async def authenticate_application(request: Request) -> ApplicationContext:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid signed request.")
 
     timestamp = int(timestamp_text)
-    now = int(time.time())
-    if abs(now - timestamp) > 60:
+    if abs(int(time.time()) - timestamp) > 60:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Signed request has expired.")
 
     try:
@@ -103,7 +104,7 @@ async def authenticate_application(request: Request) -> ApplicationContext:
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid signed request.") from exc
 
-    environment = __import__("os").getenv("ORACLE_ARC_ENVIRONMENT", "development").strip()
+    environment = os.getenv("ORACLE_ARC_ENVIRONMENT", "development").strip()
     if environment not in _ALLOWED_ENVIRONMENTS:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -173,9 +174,7 @@ async def authenticate_application(request: Request) -> ApplicationContext:
                             "request.authenticated",
                             "allowed",
                             request_id,
-                            __import__("json").dumps(
-                                {"method": request.method.upper(), "path": request.url.path}
-                            ),
+                            json.dumps({"method": request.method.upper(), "path": request.url.path}),
                         ),
                     )
     except HTTPException:
