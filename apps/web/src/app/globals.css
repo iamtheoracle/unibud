@@ -252,3 +252,18 @@ footer { padding: 42px 0 30px; color: var(--muted); font-size: 12px; }
 .workforce-activity-list span,.workforce-activity-list time{color:var(--muted);font-size:11px}
 .workforce-activity-list time{text-align:right;white-space:nowrap}
 @media(max-width:720px){.workforce-summary{grid-template-columns:1fr}.workforce-intro{padding:48px 0 26px}.workforce-activity-list li{align-items:flex-start;flex-direction:column;gap:6px}.workforce-activity-list time{text-align:left}}
+
+.workforce-request-form{display:grid;grid-template-columns:1fr 1fr auto;align-items:end;gap:12px;margin-top:20px}
+.workforce-request-form label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:700}
+.workforce-request-form input,.workforce-request-form select{width:100%;min-width:0;padding:12px 13px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink);font:inherit;font-weight:400}
+.workforce-record-list{display:grid;gap:0}
+.workforce-record{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:16px 0;border-top:1px solid var(--line)}
+.workforce-record>div:first-child{min-width:0}
+.workforce-record strong{font-size:14px}
+.workforce-record p{margin:5px 0;color:var(--muted);font-size:12px}
+.workforce-record small{color:var(--muted);font-size:11px}
+.workforce-record-actions{display:flex;gap:8px;flex-wrap:wrap}
+.workforce-issued{margin:18px 0;border-color:#d7b46c;background:#fffaf0}
+.workforce-issued h2{font-size:22px}
+.workforce-activation-code{display:inline-block;margin:4px 0 10px;padding:10px 14px;border:1px dashed #b48b42;border-radius:9px;background:white;font-size:25px;letter-spacing:.2em}
+@media(max-width:760px){.workforce-request-form{grid-template-columns:1fr}.workforce-record{align-items:flex-start;flex-direction:column}.workforce-record-actions{width:100%}.workforce-record-actions button{flex:1}}
