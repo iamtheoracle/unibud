@@ -122,12 +122,13 @@ SET search_path = pg_catalog, oracle_arc
 AS $function$
   SELECT a.app_id,a.slug,a.display_name,a.environment,
     ARRAY(
-      SELECT scope_name
-      FROM unnest(a.scopes) AS scope_name
-      INTERSECT
-      SELECT scope_name
-      FROM unnest(c.scopes) AS scope_name
-      ORDER BY scope_name
+      SELECT granted.scope
+      FROM (
+        SELECT unnest(a.scopes) AS scope
+        INTERSECT
+        SELECT unnest(c.scopes) AS scope
+      ) AS granted
+      ORDER BY granted.scope
     ),
     a.requests_per_minute,c.public_key
   FROM oracle_arc.application_credentials AS c
@@ -154,7 +155,7 @@ DECLARE v_inserted BOOLEAN;
 BEGIN
   IF p_app_id IS NULL OR p_nonce IS NULL OR length(p_nonce)<22 OR length(p_nonce)>86
      OR p_expires_at IS NULL OR p_expires_at<=clock_timestamp()
-     OR p_expires_at>clock_timestamp()+interval '5 minutes' THEN
+     OR p_expires_at>clock_timestamp()+interval '6 minutes' THEN
     RETURN FALSE;
   END IF;
   IF NOT EXISTS (
@@ -210,7 +211,7 @@ SET search_path = pg_catalog, oracle_arc
 AS $function$
 BEGIN
   IF p_event_type IS NULL OR p_event_type !~ '^[a-z][a-z0-9_.-]{1,95}$'
-     OR p_outcome NOT IN ('allowed','denied','rejected')
+     OR p_outcome IS NULL OR p_outcome NOT IN ('allowed','denied','rejected')
      OR p_request_id IS NULL OR p_event_data IS NULL
      OR octet_length(p_event_data::text)>4096 THEN
     RAISE EXCEPTION 'Invalid Oracle Arc audit event' USING ERRCODE='22023';
