@@ -56,7 +56,10 @@ export async function GET(request: NextRequest) {
         "SELECT * FROM public.unibud_workforce_list_invitation_requests($1)",
         [limit]
       );
-      return { directory: directory.rows, pendingInvitations: requests.rows };
+      const metrics = await client.query<{ metrics: Record<string, number> | null }>(
+        "SELECT public.unibud_workforce_get_metrics() AS metrics"
+      );
+      return { directory: directory.rows, pendingInvitations: requests.rows, metrics: metrics.rows[0]?.metrics ?? null };
     });
     if (!data) return noStore({ ok: false, error: "Workforce directory access is not assigned to this account." }, 403);
     return noStore({ ok: true, ...data });
