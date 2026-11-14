@@ -161,7 +161,8 @@ BEGIN
   EXCEPTION WHEN object_not_in_prerequisite_state THEN NULL;
   END;
   IF has_table_privilege('unibud_app','public.unibud_workforce_accounts','SELECT')
-     OR has_table_privilege('unibud_auth','public.unibud_workforce_accounts','SELECT') THEN
+     OR has_table_privilege('unibud_auth','public.unibud_workforce_accounts','SELECT')
+     OR has_table_privilege('unibud_app','public.unibud_workforce_duty_assignments','SELECT') THEN
     RAISE EXCEPTION 'Runtime role has direct workforce table access';
   END IF;
   IF NOT has_function_privilege('unibud_auth',
@@ -199,6 +200,28 @@ BEGIN
       'f0480000-0000-4000-8000-000000000098','{}'::JSONB
   ) THEN
     RAISE EXCEPTION 'Duty activity was recorded without an authenticated MFA session';
+  END IF;
+  IF public.unibud_workforce_assign_duty(
+      'f0480000-0000-4000-8000-000000000010','member_review','Review record',
+      'Review the assigned record and report the outcome.',NULL,
+      'f0480000-0000-4000-8000-000000000097'
+  ) IS NOT NULL THEN
+    RAISE EXCEPTION 'A duty was assigned without a manager session and MFA step-up';
+  END IF;
+  IF public.unibud_workforce_update_duty(
+      'f0480000-0000-4000-8000-000000000096','accepted',NULL,NULL,
+      'f0480000-0000-4000-8000-000000000095'
+  ) THEN RAISE EXCEPTION 'A duty transition bypassed workforce session authorization'; END IF;
+  IF public.unibud_workforce_review_duty(
+      'f0480000-0000-4000-8000-000000000096','approve','reviewed_ok',
+      'f0480000-0000-4000-8000-000000000094'
+  ) THEN RAISE EXCEPTION 'A duty was reviewed without manager MFA step-up'; END IF;
+  IF EXISTS (SELECT 1 FROM public.unibud_workforce_list_my_duties(50)) THEN
+    RAISE EXCEPTION 'Duty assignments were returned without workforce self-access';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.unibud_workforce_list_duties(
+      'f0480000-0000-4000-8000-000000000010',50)) THEN
+    RAISE EXCEPTION 'Duty assignments were returned without manager access';
   END IF;
 END
 $test$;
