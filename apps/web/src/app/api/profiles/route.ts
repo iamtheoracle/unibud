@@ -2,6 +2,7 @@ import { NextRequest,NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "../../../lib/server/identity/identity-runtime";
 import { ProfileAccessDeniedError } from "../../../lib/server/profiles/profile-service-core";
 import { hasSameOrigin,readJsonObject,readSessionCookie,routeError } from "../../../lib/server/identity/http";
+import { getWorkforceSessionGate } from "../../../lib/server/workforce/workforce-session-gate";
 
 export async function GET(request:NextRequest){
  const token=readSessionCookie(request);
@@ -10,6 +11,8 @@ export async function GET(request:NextRequest){
   const {sessions,profiles}=createConfiguredIdentityServices();
   const validation=await sessions.validate(token);
   if(!validation.valid) return NextResponse.json({ok:false},{status:401});
+  const workforceGate=await getWorkforceSessionGate(validation.account.id,validation.session.id);
+  if(workforceGate!=="not_workforce") return NextResponse.json({ok:false,error:"Workforce identities cannot access personal profile records."},{status:403});
   return NextResponse.json({ok:true,profiles:await profiles.listAccessibleProfiles(validation.account.id)});
  }catch(error){
   if(error instanceof ProfileAccessDeniedError) return NextResponse.json({ok:false,error:"Profile access denied."},{status:403});
@@ -33,6 +36,8 @@ export async function POST(request:NextRequest){
   const {sessions,profiles}=createConfiguredIdentityServices();
   const validation=await sessions.validate(token);
   if(!validation.valid) return NextResponse.json({ok:false,error:"Authentication required."},{status:401});
+  const workforceGate=await getWorkforceSessionGate(validation.account.id,validation.session.id);
+  if(workforceGate!=="not_workforce") return NextResponse.json({ok:false,error:"Workforce identities cannot create personal profiles."},{status:403});
   const profile=await profiles.createOwnedProfile(validation.account.id,{
    kind:body.kind as "creator"|"page_community",
    handle:body.handle,displayName:body.displayName,
