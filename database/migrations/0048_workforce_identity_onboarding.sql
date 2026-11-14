@@ -590,6 +590,33 @@ ALTER FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID) OWNER 
 REVOKE ALL ON FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID) TO unibud_auth;
 
+CREATE FUNCTION public.unibud_workforce_get_session_gate()
+RETURNS TEXT
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path=pg_catalog,public,unibud_private
+AS $function$
+DECLARE v_actor UUID; v_session UUID; v_status TEXT;
+BEGIN
+  v_actor:=unibud_private.current_account_id();
+  v_session:=unibud_private.current_session_id();
+  IF v_actor IS NULL OR v_session IS NULL THEN RETURN NULL; END IF;
+  SELECT status INTO v_status FROM public.unibud_workforce_accounts
+    WHERE account_id=v_actor;
+  IF NOT FOUND THEN RETURN 'not_workforce'; END IF;
+  IF v_status='mfa_enrollment_required' THEN RETURN 'mfa_enrollment_required'; END IF;
+  IF v_status<>'active' THEN RETURN 'blocked'; END IF;
+  IF NOT unibud_private.current_session_has_mfa_step_up() THEN
+    RETURN 'mfa_verification_required';
+  END IF;
+  RETURN 'ready';
+END
+$function$;
+ALTER FUNCTION public.unibud_workforce_get_session_gate() OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION public.unibud_workforce_get_session_gate() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.unibud_workforce_get_session_gate() TO unibud_app;
+
 CREATE FUNCTION public.unibud_workforce_get_self()
 RETURNS JSONB
 LANGUAGE plpgsql
