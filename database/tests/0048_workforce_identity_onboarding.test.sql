@@ -177,6 +177,22 @@ BEGIN
   IF public.unibud_workforce_request_invitation('staff','test_reason') IS NOT NULL THEN
     RAISE EXCEPTION 'Unauthenticated caller created a workforce invitation request';
   END IF;
+  IF public.unibud_workforce_get_metrics() IS NOT NULL THEN
+    RAISE EXCEPTION 'Workforce metrics were returned without an explicit workforce-read grant';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.unibud_workforce_list_directory(50)) THEN
+    RAISE EXCEPTION 'Workforce directory was returned without an explicit workforce-read grant';
+  END IF;
+  IF EXISTS (SELECT 1 FROM public.unibud_workforce_list_activity(
+      'f0480000-0000-4000-8000-000000000010',50)) THEN
+    RAISE EXCEPTION 'Workforce activity was returned without an explicit workforce-read grant';
+  END IF;
+  IF public.unibud_workforce_record_activity(
+      'duty.tested','test_resource',NULL,'success',
+      'f0480000-0000-4000-8000-000000000098','{}'::JSONB
+  ) THEN
+    RAISE EXCEPTION 'Duty activity was recorded without an authenticated MFA session';
+  END IF;
 END
 $test$;
 
