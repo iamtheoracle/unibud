@@ -62,26 +62,26 @@ function passcodePrehash(
     throw new Error("A six-digit workforce passcode and valid account-bound pepper are required.");
   }
   return createHmac("sha256", pepper)
-    .update(`unibud:workforce:passcode:v1:${accountId}:${passcode}`, "utf8")
+    .update(`unibud:workforce:passcode:v1:${username}:${passcode}`, "utf8")
     .digest("hex");
 }
 
 export async function hashWorkforcePasscode(
-  accountId: string,
+  username: string,
   passcode: string,
   pepper: Uint8Array = readHexKey("UNIBUD_WORKFORCE_PASSCODE_PEPPER")
 ): Promise<string> {
-  return hashPassword(passcodePrehash(accountId, passcode, pepper));
+  return hashPassword(passcodePrehash(username, passcode, pepper));
 }
 
 export async function verifyWorkforcePasscode(
-  accountId: string,
+  username: string,
   passcode: string,
   encoded: string,
   pepper: Uint8Array = readHexKey("UNIBUD_WORKFORCE_PASSCODE_PEPPER")
 ): Promise<boolean> {
   try {
-    return await verifyPassword(passcodePrehash(accountId, passcode, pepper), encoded);
+    return await verifyPassword(passcodePrehash(username, passcode, pepper), encoded);
   } catch {
     return false;
   }
@@ -164,7 +164,7 @@ export async function verifyWorkforcePasscodeForAccount(input: {
       || !["mfa_enrollment_required", "active"].includes(record.workforceStatus)) {
     return false;
   }
-  return verifyWorkforcePasscode(record.accountId, input.passcode, record.passcodeHash);
+  return verifyWorkforcePasscode(input.username, input.passcode, record.passcodeHash);
 }
 
 export function workforceSecret(name: "UNIBUD_WORKFORCE_ACTIVATION_HMAC_KEY" | "UNIBUD_WORKFORCE_PASSCODE_PEPPER"): Buffer {
