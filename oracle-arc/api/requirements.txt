@@ -1,3 +1,5 @@
 fastapi==0.119.1
 uvicorn[standard]==0.38.0
 pydantic-settings==2.11.0
+cryptography==45.0.7
+psycopg[binary]==3.2.10
