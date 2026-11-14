@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const { sessions } = createConfiguredIdentityServices();
     const issued = await sessions.issue({ id: workforce.accountId, status: "active" });
     try {
-      await recordWorkforceLogin(authPool, username, "success", requestId);
+      await recordWorkforceLogin(authPool, username, "success", requestId, issued.session.id);
     } catch (error) {
       await sessions.revoke(issued.token, new Date(), "workforce_login_audit_failure");
       throw error;
