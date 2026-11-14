@@ -709,14 +709,14 @@ BEGIN
     'staff', (SELECT count(*) FROM public.unibud_workforce_accounts WHERE workforce_role='staff'),
     'operators', (SELECT count(*) FROM public.unibud_workforce_accounts WHERE workforce_role='operator'),
     'administrators', (SELECT count(*) FROM public.unibud_workforce_accounts WHERE workforce_role='admin'),
-    'eventsLast24Hours', (SELECT count(*) FROM public.unibud_workforce_audit_events WHERE occurred_at>=clock_timestamp()-interval '24 hours'),
+    'eventsLast24Hours', (SELECT count(*) FROM public.unibud_workforce_audit_events WHERE occurred_at>=statement_timestamp()-interval '24 hours'),
     'loginFailuresLast24Hours', (SELECT count(*) FROM public.unibud_workforce_audit_events
-      WHERE event_type='workforce.login.failure' AND occurred_at>=clock_timestamp()-interval '24 hours'),
+      WHERE event_type='workforce.login.failure' AND occurred_at>=statement_timestamp()-interval '24 hours'),
     'dutyEventsLast7Days', (SELECT count(*) FROM public.unibud_workforce_audit_events
-      WHERE event_type LIKE 'duty.%' AND occurred_at>=clock_timestamp()-interval '7 days'),
+      WHERE event_type LIKE 'duty.%' AND occurred_at>=statement_timestamp()-interval '7 days'),
     'dutyFailuresLast7Days', (SELECT count(*) FROM public.unibud_workforce_audit_events
       WHERE event_type LIKE 'duty.%' AND outcome IN ('denied','failure')
-        AND occurred_at>=clock_timestamp()-interval '7 days')
+        AND occurred_at>=statement_timestamp()-interval '7 days')
   );
 END
 $function$;
