@@ -177,6 +177,13 @@ BEGIN
   IF public.unibud_workforce_request_invitation('staff','test_reason') IS NOT NULL THEN
     RAISE EXCEPTION 'Unauthenticated caller created a workforce invitation request';
   END IF;
+  IF public.unibud_workforce_get_session_gate() IS NOT NULL THEN
+    RAISE EXCEPTION 'Workforce dashboard gate returned an authenticated state without a signed session';
+  END IF;
+  IF NOT has_function_privilege('unibud_app',
+      'public.unibud_workforce_get_session_gate()','EXECUTE') THEN
+    RAISE EXCEPTION 'Application runtime cannot invoke the workforce dashboard gate';
+  END IF;
   IF public.unibud_workforce_get_metrics() IS NOT NULL THEN
     RAISE EXCEPTION 'Workforce metrics were returned without an explicit workforce-read grant';
   END IF;
