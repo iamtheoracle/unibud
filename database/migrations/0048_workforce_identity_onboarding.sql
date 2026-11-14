@@ -367,7 +367,7 @@ GRANT EXECUTE ON FUNCTION public.unibud_workforce_list_invitation_requests(INTEG
 CREATE FUNCTION public.unibud_workforce_decide_invitation(
   p_request_id UUID,p_decision TEXT,p_reason_code TEXT,
   p_username TEXT,p_activation_digest BYTEA
-) RETURNS TABLE(workforce_id UUID,account_id UUID,username TEXT)
+) RETURNS TABLE(workforce_id UUID,account_id UUID,username TEXT,decision_state TEXT)
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path=pg_catalog,public,unibud_private
@@ -425,6 +425,7 @@ BEGIN
       actor_account_id,actor_session_id,event_type,outcome,request_id,event_data
     ) VALUES(v_actor,v_session,'workforce.invitation.rejected','success',p_request_id,
       jsonb_build_object('requestedRole',v_request.requested_role,'reasonCode',p_reason_code));
+    RETURN QUERY SELECT NULL::UUID,NULL::UUID,NULL::TEXT,'rejected'::TEXT;
     RETURN;
   END IF;
 
@@ -464,7 +465,7 @@ BEGIN
     event_type,outcome,request_id,event_data
   ) VALUES(v_actor,v_session,v_account,v_workforce,'workforce.invitation.approved','success',p_request_id,
     jsonb_build_object('workforceRole',v_request.requested_role,'username',p_username,'reasonCode',p_reason_code));
-  RETURN QUERY SELECT v_workforce,v_account,p_username;
+  RETURN QUERY SELECT v_workforce,v_account,p_username,'approved'::TEXT;
 END
 $function$;
 ALTER FUNCTION public.unibud_workforce_decide_invitation(UUID,TEXT,TEXT,TEXT,BYTEA) OWNER TO unibud_ops_owner;
