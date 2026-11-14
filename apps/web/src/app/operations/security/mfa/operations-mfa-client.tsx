@@ -34,6 +34,9 @@ export default function OperationsMfaClient() {
   const [channel, setChannel] = useState<"email" | "phone">("email");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [reauthMode, setReauthMode] = useState<"account" | "workforce">("account");
+  const [workforceUsername, setWorkforceUsername] = useState("");
+  const [workforcePasscode, setWorkforcePasscode] = useState("");
   const [provisioningUri, setProvisioningUri] = useState("");
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [qrError, setQrError] = useState("");
@@ -108,15 +111,50 @@ export default function OperationsMfaClient() {
     return data;
   }
 
+  function reauthenticationBody(): Record<string, string> {
+    return reauthMode === "workforce"
+      ? { username: workforceUsername.trim().toLowerCase(), passcode: workforcePasscode }
+      : { channel, identifier, password };
+  }
+
+  function reauthenticationFields() {
+    return <>
+      <label>Credential type
+        <select value={reauthMode} onChange={event => setReauthMode(event.target.value as "account" | "workforce")}>
+          <option value="account">Personal account password</option>
+          <option value="workforce">Workforce username and passcode</option>
+        </select>
+      </label>
+      {reauthMode === "workforce" ? <>
+        <label>System-issued username
+          <input autoComplete="username" value={workforceUsername} onChange={event => setWorkforceUsername(event.target.value.trim().toLowerCase())} required maxLength={32} pattern="ub-(staff|operator|admin)-[a-f0-9]{16}" />
+        </label>
+        <label>Six-digit workforce passcode
+          <input type="password" inputMode="numeric" autoComplete="current-password" pattern="[0-9]{6}" maxLength={6} value={workforcePasscode} onChange={event => setWorkforcePasscode(event.target.value.replace(/\\D/g, "").slice(0, 6))} required />
+        </label>
+      </> : <>
+        <label>Account identifier type
+          <select value={channel} onChange={event => setChannel(event.target.value as "email" | "phone")}>
+            <option value="email">Email</option><option value="phone">Phone</option>
+          </select>
+        </label>
+        <label>{channel === "email" ? "Email address" : "Phone number"}
+          <input autoComplete="username" value={identifier} onChange={event => setIdentifier(event.target.value)} required maxLength={254} />
+        </label>
+        <label>Current account password
+          <input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required maxLength={128} />
+        </label>
+      </>}
+    </>;
+  }
+
   async function startEnrollment(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true); setError(""); setNotice("");
     try {
-      const data = await post("/api/internal/operations/mfa/enrollment/start", {
-        channel, identifier, password
-      });
+      const data = await post("/api/internal/operations/mfa/enrollment/start", reauthenticationBody());
       setProvisioningUri(data.provisioningUri || "");
-      setPassword("");
+      setPassword(""); setWorkforcePasscode("");
       setNotice("Pending authenticator setup created. Add it to your authenticator, then enter its current code.");
       await refreshStatus();
     } catch (reason) {
@@ -128,12 +166,10 @@ export default function OperationsMfaClient() {
     event.preventDefault();
     setBusy(true); setError(""); setNotice("");
     try {
-      const data = await post("/api/internal/operations/mfa/enrollment/resume", {
-        channel, identifier, password
-      });
+      const data = await post("/api/internal/operations/mfa/enrollment/resume", reauthenticationBody());
       setProvisioningUri(data.provisioningUri || "");
-      setPassword("");
-      setNotice("Your pending setup has been securely retrieved after password reauthentication.");
+      setPassword(""); setWorkforcePasscode("");
+      setNotice("Your pending setup has been securely retrieved after reauthentication.");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Pending enrollment could not be resumed.");
     } finally { setBusy(false); }
@@ -177,15 +213,13 @@ export default function OperationsMfaClient() {
     event.preventDefault();
     setBusy(true); setError(""); setNotice("");
     try {
-      const data = await post("/api/internal/operations/mfa/recovery/regenerate", {
-        channel, identifier, password
-      });
+      const data = await post("/api/internal/operations/mfa/recovery/regenerate", reauthenticationBody());
       if (data.recoveryCodesShownOnce !== true || !Array.isArray(data.recoveryCodes) || data.recoveryCodes.length < 8) {
         throw new Error("The replacement recovery codes were not returned. Do not continue without saving them.");
       }
       setRecoveryCodes(data.recoveryCodes);
       setAcknowledged(false);
-      setPassword("");
+      setPassword(""); setWorkforcePasscode("");
       setNotice(data.message || "Recovery codes regenerated. Save the new set now.");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Recovery codes could not be regenerated.");
@@ -246,18 +280,16 @@ export default function OperationsMfaClient() {
 
       {(status.credentialState === "none" || status.credentialState === "expired") && !status.locked && <section className="mfa-card">
         <p className="eyebrow">Step 1</p><h2>Set up an authenticator</h2>
-        <p className="mfa-muted">Re-enter the password for this account. A new authenticator seed is generated and stored encrypted on the server.</p>
+        <p className="mfa-muted">Reauthenticate with your personal password or workforce passcode. A new authenticator seed is generated and stored encrypted on the server.</p>
         <form className="mfa-form" onSubmit={startEnrollment}>
-          <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
-          <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
-          <label>Authenticator setup password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
+          {reauthenticationFields()}
           <button className="mfa-button" type="submit" disabled={busy}>{busy ? "Please wait…" : "Begin authenticator setup"}</button>
         </form>
       </section>}
 
       {status.credentialState === "pending" && !provisioningUri && !status.locked && <section className="mfa-card">
         <p className="eyebrow">Resume setup</p><h2>Continue your pending enrollment</h2>
-        <p className="mfa-muted">If you closed the original setup screen, re-enter your password to retrieve the pending authenticator setup. This does not create a new seed.</p>
+        <p className="mfa-muted">If you closed the original setup screen, reauthenticate to retrieve the pending authenticator setup. This does not create a new seed.</p>
         <form className="mfa-form" onSubmit={resumeEnrollment}>
           <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
           <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
@@ -298,11 +330,9 @@ export default function OperationsMfaClient() {
 
       {status.credentialState === "active" && status.stepUpExpiresAt && !status.locked && recoveryCodes.length === 0 && <section className="mfa-card">
         <p className="eyebrow">Recovery maintenance</p><h2>Regenerate recovery codes</h2>
-        <p className="mfa-muted">This replaces every existing recovery code. It requires your password and a fresh authenticator challenge in this exact session.</p>
+        <p className="mfa-muted">This replaces every existing recovery code. It requires your account password or workforce passcode and a fresh authenticator challenge in this exact session.</p>
         <form className="mfa-form" onSubmit={regenerateRecovery}>
-          <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
-          <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
-          <label>Current password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
+          {reauthenticationFields()}
           <button className="mfa-secondary" type="submit" disabled={busy}>{busy ? "Please wait…" : "Replace recovery codes"}</button>
         </form>
       </section>}
