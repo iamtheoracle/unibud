@@ -232,6 +232,11 @@ export default function WorkforceOperationsPage() {
       <article className="workforce-panel"><p className="eyebrow">Duties · completed</p><h2>{loading ? "…" : metrics?.dutiesCompleted ?? 0}</h2><p>{metrics?.dutiesRejected ?? 0} submissions rejected.</p></article>
       <article className="workforce-panel"><p className="eyebrow">Duty events · 7 days</p><h2>{loading ? "…" : metrics?.dutyEventsLast7Days ?? 0}</h2><p>{metrics?.dutyFailuresLast7Days ?? 0} denied or failed events.</p></article>
       <article className="workforce-panel"><p className="eyebrow">Login failures · 24 hours</p><h2>{loading ? "…" : metrics?.loginFailuresLast24Hours ?? 0}</h2><p>Failed username sign-in attempts recorded.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Overdue duties</p><h2>{loading ? "…" : metrics?.dutiesOverdue ?? 0}</h2><p>Open assignments past their due date.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Staff</p><h2>{loading ? "…" : metrics?.staff ?? 0}</h2><p>Staff designations in the directory.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Operators</p><h2>{loading ? "…" : metrics?.operators ?? 0}</h2><p>Operator designations in the directory.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Administrators</p><h2>{loading ? "…" : metrics?.administrators ?? 0}</h2><p>Administrator designations in the directory.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Suspended</p><h2>{loading ? "…" : metrics?.suspended ?? 0}</h2><p>Workforce identities currently blocked.</p></article>
     </section>
 
     <section className="workforce-panel">
