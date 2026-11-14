@@ -130,7 +130,7 @@ export default function OperationsMfaClient() {
           <input autoComplete="username" value={workforceUsername} onChange={event => setWorkforceUsername(event.target.value.trim().toLowerCase())} required maxLength={32} pattern="ub-(staff|operator|admin)-[a-f0-9]{16}" />
         </label>
         <label>Six-digit workforce passcode
-          <input type="password" inputMode="numeric" autoComplete="current-password" pattern="[0-9]{6}" maxLength={6} value={workforcePasscode} onChange={event => setWorkforcePasscode(event.target.value.replace(/\\D/g, "").slice(0, 6))} required />
+          <input type="password" inputMode="numeric" autoComplete="current-password" pattern="[0-9]{6}" maxLength={6} value={workforcePasscode} onChange={event => setWorkforcePasscode(event.target.value.replace(/\D/g, "").slice(0, 6))} required />
         </label>
       </> : <>
         <label>Account identifier type
