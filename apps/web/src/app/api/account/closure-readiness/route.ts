@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "../../../../lib/server/identity/identity-runtime";
 import { ProfileAccessDeniedError } from "../../../../lib/server/profiles/profile-service-core";
 import { readSessionCookie, routeError } from "../../../../lib/server/identity/http";
+import { getWorkforceSessionGate } from "../../../../lib/server/workforce/workforce-session-gate";
 import { buildClosureReadiness, type ClosureReadinessSnapshot } from "../../../../lib/account/closure-readiness";
 import { buildAccountDependencyInventory } from "../../../../lib/account/dependency-inventory";
 import { getAppDatabasePool } from "../../../../lib/server/database/postgres-pool";
@@ -15,6 +16,8 @@ export async function GET(request: NextRequest) {
     const { sessions, profiles, accountDependencies } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return NextResponse.json({ ok: false, error: "Authentication required." }, { status: 401 });
+    const workforceGate = await getWorkforceSessionGate(validation.account.id,validation.session.id);
+    if (workforceGate !== "not_workforce") return NextResponse.json({ ok: false, error: "Workforce identities cannot access personal account closure records." }, { status: 403 });
 
     const accountId = validation.account.id;
     const externalDependencies = new AccountExternalDependencyRepository(getAppDatabasePool());
