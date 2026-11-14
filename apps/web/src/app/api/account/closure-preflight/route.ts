@@ -2,6 +2,7 @@ import { NextRequest,NextResponse } from "next/server";
 import { createConfiguredIdentityServices } from "../../../../lib/server/identity/identity-runtime";
 import { ProfileAccessDeniedError } from "../../../../lib/server/profiles/profile-service-core";
 import { readSessionCookie,routeError } from "../../../../lib/server/identity/http";
+import { getWorkforceSessionGate } from "../../../../lib/server/workforce/workforce-session-gate";
 
 export async function GET(request:NextRequest){
  const token=readSessionCookie(request);
