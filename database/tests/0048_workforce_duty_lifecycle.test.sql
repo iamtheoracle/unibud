@@ -41,7 +41,7 @@ INSERT INTO public.unibud_workforce_accounts(
  clock_timestamp()-interval '1 day',clock_timestamp()-interval '1 day',
  'Grace','Hopper','f0490000-0000-4000-8000-000000000020',
  clock_timestamp()-interval '1 day',
- 'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+ 'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
  clock_timestamp()-interval '1 day',
  'f0490000-0000-4000-8000-000000000001',
  'f0490000-0000-4000-8000-000000000001',
