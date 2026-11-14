@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   }
   const workforceReauthentication =
     typeof body.username === "string" && /^ub-(staff|operator|admin)-[a-f0-9]{16}$/.test(body.username)
-    && typeof body.passcode === "string" && /^\\d{6}$/.test(body.passcode);
+    && typeof body.passcode === "string" && /^\d{6}$/.test(body.passcode);
   const accountReauthentication =
     (body.channel === "email" || body.channel === "phone")
     && typeof body.identifier === "string" && body.identifier.length <= 254
