@@ -4,6 +4,7 @@ import { getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { hasSameOrigin, readJsonObject, routeError, setSessionCookie } from "@/lib/server/identity/http";
 import {
+  assertWorkforceKeySeparation,
   consumeWorkforceLoginRateLimit,
   lookupWorkforceLogin,
   recordWorkforceLogin,
@@ -36,6 +37,7 @@ export async function POST(request: NextRequest) {
   const requestId = randomUUID();
 
   try {
+    assertWorkforceKeySeparation();
     const authPool = getAuthDatabasePool();
     if (!await consumeWorkforceLoginRateLimit(authPool, username)) {
       return noStore({ ok: false, error: "Too many attempts. Please wait before trying again." }, 429);
