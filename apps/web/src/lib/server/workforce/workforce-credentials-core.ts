@@ -183,6 +183,7 @@ export async function verifyWorkforcePasscodeForAccount(input: {
   username: string;
   passcode: string;
 }): Promise<boolean> {
+  assertWorkforceKeySeparation();
   const record = await lookupWorkforceLogin(input.pool, input.username);
   if (!record || record.accountId !== input.accountId
       || record.accountStatus !== "active"
