@@ -37,6 +37,10 @@ export async function GET(request: NextRequest) {
       validation.account.id, validation.session.id
     );
     const data = await withSignedSessionTransaction(getAppDatabasePool(), context, async client => {
+      const access = await client.query<{ allowed: boolean }>(
+        "SELECT (public.unibud_operator_has_permission('operations.workforce.read') OR public.unibud_operator_has_permission('operations.workforce.approve')) AS allowed"
+      );
+      if (access.rows[0]?.allowed !== true) return null;
       if (workforceId) {
         const activity = await client.query<Record<string, unknown>>(
           "SELECT * FROM public.unibud_workforce_list_activity($1,$2)",
@@ -54,6 +58,7 @@ export async function GET(request: NextRequest) {
       );
       return { directory: directory.rows, pendingInvitations: requests.rows };
     });
+    if (!data) return noStore({ ok: false, error: "Workforce directory access is not assigned to this account." }, 403);
     return noStore({ ok: true, ...data });
   } catch (error) {
     return routeError(error);
