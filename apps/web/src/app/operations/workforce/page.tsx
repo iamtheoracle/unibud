@@ -24,8 +24,14 @@ type InvitationRequest = {
 type WorkforceMetrics = {
   total: number; active: number; invited: number; emailVerificationPending: number;
   mfaEnrollmentRequired: number; suspended: number; staff: number; operators: number;
-  administrators: number; eventsLast24Hours: number; loginFailuresLast24Hours: number;
+  administrators: number; dutiesAssigned: number; dutiesSubmitted: number; dutiesCompleted: number;
+  dutiesRejected: number; dutiesOverdue: number; eventsLast24Hours: number; loginFailuresLast24Hours: number;
   dutyEventsLast7Days: number; dutyFailuresLast7Days: number;
+};
+type DutyRow = {
+  assignment_id: string; duty_code: string; title: string; description: string;
+  due_at: string | null; status: string; assigned_at: string; submitted_at: string | null;
+  completion_note: string | null; evidence_reference: string | null; review_reason_code: string | null;
 };
 type ActivityRow = {
   event_id: string;
@@ -44,6 +50,11 @@ export default function WorkforceOperationsPage() {
   const [requests, setRequests] = useState<InvitationRequest[]>([]);
   const [metrics, setMetrics] = useState<WorkforceMetrics | null>(null);
   const [activity, setActivity] = useState<ActivityRow[]>([]);
+  const [duties, setDuties] = useState<DutyRow[]>([]);
+  const [dutyCode, setDutyCode] = useState("member_support");
+  const [dutyTitle, setDutyTitle] = useState("");
+  const [dutyDescription, setDutyDescription] = useState("");
+  const [dutyDueAt, setDutyDueAt] = useState("");
   const [selected, setSelected] = useState("");
   const [role, setRole] = useState<"staff" | "operator" | "admin">("staff");
   const [reasonCode, setReasonCode] = useState("new_team_member");
@@ -126,7 +137,7 @@ export default function WorkforceOperationsPage() {
   }
 
   async function viewActivity(workforceId: string) {
-    setSelected(workforceId); setActivity([]); setError("");
+    setSelected(workforceId); setActivity([]); setDuties([]); setError("");
     try {
       const response = await fetch(`/api/internal/operations/workforce?workforceId=${encodeURIComponent(workforceId)}&limit=50`, {
         credentials: "same-origin", cache: "no-store"
@@ -134,12 +145,58 @@ export default function WorkforceOperationsPage() {
       const result = await response.json();
       if (!response.ok || !result.ok) throw new Error(result.error ?? "The activity record is unavailable.");
       setActivity(result.activity ?? []);
+      setDuties(result.duties ?? []);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "The activity record is unavailable.");
     }
   }
 
 
+
+
+  async function assignDuty(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!selected) return;
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/internal/operations/workforce/duties", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          workforceId: selected, dutyCode, title: dutyTitle,
+          description: dutyDescription, dueAt: dutyDueAt || null
+        })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error ?? "Duty assignment failed.");
+      setDutyTitle(""); setDutyDescription(""); setDutyDueAt("");
+      setNotice("Duty assigned. The employee must accept it, start it and submit a completion note before independent review.");
+      await viewActivity(selected);
+      await load();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Duty assignment failed.");
+    } finally { setBusy(false); }
+  }
+
+  async function reviewDuty(assignmentId: string, decision: "approve" | "reject") {
+    setBusy(true); setError(""); setNotice("");
+    try {
+      const response = await fetch("/api/internal/operations/workforce/duties/" + assignmentId + "/review", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          decision,
+          reasonCode: decision === "approve" ? "evidence_reviewed" : "evidence_not_accepted"
+        })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) throw new Error(result.error ?? "Duty review failed.");
+      setNotice(decision === "approve" ? "Duty completion approved and audited." : "Duty submission rejected and audited.");
+      if (selected) await viewActivity(selected);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Duty review failed.");
+    } finally { setBusy(false); }
+  }
 
   return <main className="shell workforce-page">
     <header className="topbar">
@@ -171,6 +228,8 @@ export default function WorkforceOperationsPage() {
       <article className="workforce-panel"><p className="eyebrow">Active</p><h2>{loading ? "…" : metrics?.active ?? 0}</h2><p>Email verified and authenticator onboarding completed.</p></article>
       <article className="workforce-panel"><p className="eyebrow">Awaiting onboarding</p><h2>{loading ? "…" : (metrics?.invited ?? 0) + (metrics?.emailVerificationPending ?? 0) + (metrics?.mfaEnrollmentRequired ?? 0)}</h2><p>Invited, email verification or MFA enrollment outstanding.</p></article>
       <article className="workforce-panel"><p className="eyebrow">Activity · 24 hours</p><h2>{loading ? "…" : metrics?.eventsLast24Hours ?? 0}</h2><p>Recorded workforce access and duty events.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Duties · assigned</p><h2>{loading ? "…" : metrics?.dutiesAssigned ?? 0}</h2><p>{metrics?.dutiesSubmitted ?? 0} awaiting review.</p></article>
+      <article className="workforce-panel"><p className="eyebrow">Duties · completed</p><h2>{loading ? "…" : metrics?.dutiesCompleted ?? 0}</h2><p>{metrics?.dutiesRejected ?? 0} submissions rejected.</p></article>
       <article className="workforce-panel"><p className="eyebrow">Duty events · 7 days</p><h2>{loading ? "…" : metrics?.dutyEventsLast7Days ?? 0}</h2><p>{metrics?.dutyFailuresLast7Days ?? 0} denied or failed events.</p></article>
       <article className="workforce-panel"><p className="eyebrow">Login failures · 24 hours</p><h2>{loading ? "…" : metrics?.loginFailuresLast24Hours ?? 0}</h2><p>Failed username sign-in attempts recorded.</p></article>
     </section>
@@ -215,7 +274,28 @@ export default function WorkforceOperationsPage() {
     </section>
 
     {selected && <section className="workforce-panel workforce-activity">
-      <div className="profile-section-heading"><div><p className="eyebrow">Immutable activity record</p><h2>Duty and access history</h2></div><button className="profile-action" type="button" onClick={() => { setSelected(""); setActivity([]); }}>Close</button></div>
+      <div className="profile-section-heading"><div><p className="eyebrow">Duty management</p><h2>Assign and review duties</h2></div><button className="profile-action" type="button" onClick={() => { setSelected(""); setActivity([]); setDuties([]); }}>Close</button></div>
+      <form className="workforce-request-form workforce-duty-form" onSubmit={assignDuty}>
+        <label>Duty code<input value={dutyCode} onChange={event => setDutyCode(event.target.value.trim().toLowerCase())} pattern="[a-z][a-z0-9_.-]{2,63}" maxLength={64} required /></label>
+        <label>Title<input value={dutyTitle} onChange={event => setDutyTitle(event.target.value)} minLength={3} maxLength={120} required /></label>
+        <label>Due date<input type="datetime-local" value={dutyDueAt} onChange={event => setDutyDueAt(event.target.value)} /></label>
+        <label className="workforce-description-field">Description<textarea value={dutyDescription} onChange={event => setDutyDescription(event.target.value)} minLength={3} maxLength={2000} required /></label>
+        <button className="profile-primary" type="submit" disabled={busy}>Assign duty</button>
+      </form>
+      <h3 className="workforce-subheading">Assigned work</h3>
+      {duties.length === 0 ? <p className="profile-empty">No duty assignments for this workforce account.</p> : <div className="workforce-record-list">
+        {duties.map(item => <article className="workforce-record" key={item.assignment_id}>
+          <div><strong>{item.title} · {item.status.replaceAll("_", " ")}</strong><p>{item.duty_code} · {item.description}</p>
+            {item.completion_note && <small>Submission: {item.completion_note}</small>}
+            {item.evidence_reference && <small>Evidence reference supplied: {item.evidence_reference}</small>}
+          </div>
+          {item.status === "submitted" && <div className="workforce-record-actions">
+            <button className="profile-primary" type="button" disabled={busy} onClick={() => reviewDuty(item.assignment_id,"approve")}>Approve completion</button>
+            <button className="profile-secondary" type="button" disabled={busy} onClick={() => reviewDuty(item.assignment_id,"reject")}>Reject submission</button>
+          </div>}
+        </article>)}
+      </div>}
+      <h3 className="workforce-subheading">Immutable duty and access history</h3>
       {activity.length === 0 ? <p className="profile-empty">No activity events were returned for this account.</p> : <ol className="workforce-activity-list">
         {activity.map(item => <li key={item.event_id}>
           <div><strong>{item.event_type.replaceAll(".", " ")}</strong><span>{item.outcome} · request {item.request_id}</span></div>
