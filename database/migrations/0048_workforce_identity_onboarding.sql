@@ -1569,7 +1569,8 @@ BEGIN
      OR (p_transition='submitted' AND (p_completion_note IS NULL
        OR length(trim(p_completion_note)) NOT BETWEEN 10 AND 2000))
      OR (p_evidence_reference IS NOT NULL AND length(p_evidence_reference)>2048)
-     OR NOT public.unibud_operator_has_permission('operations.workforce.self_access') THEN
+     OR NOT public.unibud_operator_has_permission('operations.workforce.self_access')
+     OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_self_update') THEN
     RETURN FALSE;
   END IF;
   SELECT workforce_id INTO v_workforce FROM public.unibud_workforce_accounts
