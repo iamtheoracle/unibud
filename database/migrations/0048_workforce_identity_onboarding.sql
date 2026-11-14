@@ -248,7 +248,7 @@ CREATE TABLE public.unibud_workforce_accounts (
   CHECK (status NOT IN ('email_verification_pending','mfa_enrollment_required','active') OR activation_consumed_at IS NOT NULL),
   CHECK ((email_verified_at IS NULL) OR email_identity_id IS NOT NULL),
   CHECK ((mfa_enrolled_at IS NULL) OR email_verified_at IS NOT NULL),
-  CHECK (status<>'active' OR onboarding_completed_at IS NOT NULL)
+  CHECK (status<>'active' OR (onboarding_completed_at IS NOT NULL AND mfa_enrolled_at IS NOT NULL))
 );
 
 ALTER TABLE public.unibud_workforce_invitation_requests
@@ -319,7 +319,7 @@ DECLARE v_actor UUID; v_session UUID; v_request UUID;
 BEGIN
   v_actor:=unibud_private.current_account_id();
   v_session:=unibud_private.current_session_id();
-  IF v_actor IS NULL OR v_session IS NULL
+  IF v_actor IS NULL OR v_session IS NULL OR p_role IS NULL
      OR p_role NOT IN ('staff','operator','admin')
      OR p_reason_code IS NULL OR p_reason_code !~ '^[a-z][a-z0-9_]{2,47}$'
      OR NOT public.unibud_operator_has_permission('operations.workforce.request')
@@ -379,7 +379,7 @@ BEGIN
   v_actor:=unibud_private.current_account_id();
   v_session:=unibud_private.current_session_id();
   IF v_actor IS NULL OR v_session IS NULL
-     OR p_request_id IS NULL OR p_decision NOT IN ('approve','reject')
+     OR p_request_id IS NULL OR p_decision IS NULL OR p_decision NOT IN ('approve','reject')
      OR p_reason_code IS NULL OR p_reason_code !~ '^[a-z][a-z0-9_]{2,47}$'
      OR NOT public.unibud_operator_has_permission('operations.workforce.approve')
      OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_decide') THEN RETURN; END IF;
@@ -571,7 +571,7 @@ DECLARE v_account UUID; v_workforce UUID;
 BEGIN
   IF p_username_digest IS NULL OR octet_length(p_username_digest)<>32
      OR p_username IS NULL OR length(p_username)>100
-     OR p_outcome NOT IN ('success','failure') OR p_request_id IS NULL THEN
+     OR p_outcome IS NULL OR p_outcome NOT IN ('success','failure') OR p_request_id IS NULL THEN
     RAISE EXCEPTION 'Invalid workforce login audit event' USING ERRCODE='22023';
   END IF;
   SELECT account_id,workforce_id INTO v_account,v_workforce
@@ -630,7 +630,7 @@ BEGIN
   v_session:=unibud_private.current_session_id();
   IF v_actor IS NULL OR v_session IS NULL
      OR p_event_type IS NULL OR p_event_type !~ '^duty\.[a-z][a-z0-9_.]{1,70}$'
-     OR p_outcome NOT IN ('allowed','denied','success','failure')
+     OR p_outcome IS NULL OR p_outcome NOT IN ('allowed','denied','success','failure')
      OR p_request_id IS NULL OR p_event_data IS NULL
      OR jsonb_typeof(p_event_data)<>'object' OR octet_length(p_event_data::TEXT)>4096
      OR NOT public.unibud_operator_has_permission('operations.workforce.self_access') THEN
