@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, randomInt } from "node:crypto";
 import type { SqlPool } from "../database/account-context-core";
-import { hashPassword, verifyPassword } from "../auth/credential-core";
+import { hashPassword, verifyPassword } from "../auth/credential-core.ts";
 
 export type WorkforceRole = "staff" | "operator" | "admin";
 export type WorkforceLoginRecord = {
