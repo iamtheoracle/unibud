@@ -33,7 +33,12 @@ export async function GET(request: NextRequest) {
         const result = await client.query<{ workforce: Record<string, unknown> | null }>(
           "SELECT public.unibud_workforce_get_self() AS workforce"
         );
-        return result.rows[0]?.workforce ?? null;
+        const workforce = result.rows[0]?.workforce ?? null;
+        if (!workforce) return null;
+        const duties = await client.query<Record<string, unknown>>(
+          "SELECT * FROM public.unibud_workforce_list_my_duties($1)", [50]
+        );
+        return { workforce, duties: duties.rows };
       }
     );
     if (!workforce) {
@@ -42,7 +47,7 @@ export async function GET(request: NextRequest) {
         error: "Workforce access is unavailable until email verification, MFA enrollment and session verification are complete."
       }, 403);
     }
-    return noStore({ ok: true, workforce });
+    return noStore({ ok: true, workforce: workforce.workforce, duties: workforce.duties });
   } catch (error) {
     return routeError(error);
   }
