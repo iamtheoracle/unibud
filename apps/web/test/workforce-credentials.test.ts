@@ -1,13 +1,12 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { randomBytes, randomUUID } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import {
   createWorkforceActivationCode,
   createWorkforceUsername,
   hashWorkforcePasscode,
   verifyWorkforcePasscode,
-  workforceActivationDigest,
-  workforceUsernameDigest
+  workforceActivationDigest
 } from "../src/lib/server/workforce/workforce-credentials-core.ts";
 
 test("workforce usernames are system-issued and role-bound", () => {
@@ -29,7 +28,7 @@ test("activation digests are keyed, username-bound and code-bound", () => {
   assert.throws(() => workforceActivationDigest(username, "12345", key));
 });
 
-test("workforce passcodes are six digits, account-bound and peppered before scrypt", async () => {
+test("workforce passcodes are six digits, username-bound and peppered before scrypt", async () => {
   const username = "ub-staff-0123456789abcdef";
   const pepper = randomBytes(32);
   const verifier = await hashWorkforcePasscode(username, "083194", pepper);
@@ -37,6 +36,6 @@ test("workforce passcodes are six digits, account-bound and peppered before scry
   assert.equal(await verifyWorkforcePasscode(username, "083194", verifier, pepper), true);
   assert.equal(await verifyWorkforcePasscode(username, "083195", verifier, pepper), false);
   assert.equal(await verifyWorkforcePasscode("ub-staff-1123456789abcdef", "083194", verifier, pepper), false);
-  assert.equal(await verifyWorkforcePasscode(accountId, "083194", verifier, randomBytes(32)), false);
+  assert.equal(await verifyWorkforcePasscode(username, "083194", verifier, randomBytes(32)), false);
   await assert.rejects(() => hashWorkforcePasscode(username, "12345", pepper));
 });
