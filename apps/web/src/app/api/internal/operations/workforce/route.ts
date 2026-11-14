@@ -46,7 +46,11 @@ export async function GET(request: NextRequest) {
           "SELECT * FROM public.unibud_workforce_list_activity($1,$2)",
           [workforceId, limit]
         );
-        return { activity: activity.rows };
+        const duties = await client.query<Record<string, unknown>>(
+          "SELECT * FROM public.unibud_workforce_list_duties($1,$2)",
+          [workforceId, limit]
+        );
+        return { activity: activity.rows, duties: duties.rows };
       }
       const directory = await client.query<Record<string, unknown>>(
         "SELECT * FROM public.unibud_workforce_list_directory($1)",
