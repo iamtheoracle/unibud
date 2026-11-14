@@ -164,7 +164,7 @@ export default function WorkforceOperationsPage() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
           workforceId: selected, dutyCode, title: dutyTitle,
-          description: dutyDescription, dueAt: dutyDueAt || null
+          description: dutyDescription, dueAt: dutyDueAt ? new Date(dutyDueAt).toISOString() : null
         })
       });
       const result = await response.json();
