@@ -30,6 +30,9 @@ export async function POST(request: NextRequest) {
     return noStore({ ok: false, error: "The sign-in details were not accepted." }, 401);
   }
   const username = body.username.trim().toLowerCase();
+  if (!/^ub-(staff|operator|admin)-[a-f0-9]{16}$/.test(username)) {
+    return noStore({ ok: false, error: "The sign-in details were not accepted." }, 401);
+  }
   const requestId = randomUUID();
 
   try {
