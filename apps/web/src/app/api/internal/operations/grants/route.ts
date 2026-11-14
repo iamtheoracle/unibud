@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createOperationsMfaAssertionFromEnvironment } from "@/lib/server/operations/operations-mfa-assertions";
 import { createSignedSessionContextFromEnvironment, withSignedSessionTransaction } from "@/lib/server/database/session-context";
-import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
+import { getAppDatabasePool, getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
+import { verifyWorkforcePasscodeForAccount } from "@/lib/server/workforce/workforce-credentials-core";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { hasSameOrigin, readJsonObject, readSessionCookie, routeError } from "@/lib/server/identity/http";
 
@@ -14,7 +15,8 @@ const ROLES = new Set(["platform_admin", "operations_admin", "integration_operat
 const PERMISSIONS = new Set([
   "integrations.verification_delivery.read", "integrations.oracle_arc.read", "dependencies.read",
   "operations.audit.read", "operations.accounts.support_read",
-  "operations.mfa.security.request", "operations.mfa.security.approve"
+  "operations.mfa.security.request", "operations.mfa.security.approve",
+  "operations.workforce.read", "operations.workforce.request", "operations.workforce.approve"
 ]);
 type ActiveGrantRow = { grant_id: string; account_id: string; operator_role: string; permissions: string[]; granted_by: string | null; granted_at: Date | string; expires_at: Date | string | null };
 type GrantRequestRow = {
@@ -94,11 +96,18 @@ export async function POST(request: NextRequest) {
   const body = await readJsonObject(request);
   if (!body || (body.action !== "grant" && body.action !== "revoke")
       || typeof body.targetAccountId !== "string" || !UUID.test(body.targetAccountId)
-      || typeof body.reasonCode !== "string" || !REASON.test(body.reasonCode)
-      || (body.channel !== "email" && body.channel !== "phone")
-      || typeof body.identifier !== "string" || body.identifier.length < 1 || body.identifier.length > 254
-      || typeof body.password !== "string" || body.password.length < 1 || body.password.length > 128) {
+      || typeof body.reasonCode !== "string" || !REASON.test(body.reasonCode)) {
     return response({ ok: false, error: "Invalid grant change request." }, 400);
+  }
+  const workforceReauthentication =
+    typeof body.username === "string" && /^ub-(staff|operator|admin)-[a-f0-9]{16}$/.test(body.username)
+    && typeof body.passcode === "string" && /^\\d{6}$/.test(body.passcode);
+  const accountReauthentication =
+    (body.channel === "email" || body.channel === "phone")
+    && typeof body.identifier === "string" && body.identifier.length >= 1 && body.identifier.length <= 254
+    && typeof body.password === "string" && body.password.length >= 1 && body.password.length <= 128;
+  if (!workforceReauthentication && !accountReauthentication) {
+    return response({ ok: false, error: "Reauthenticate with your account password or workforce passcode." }, 400);
   }
   let role: string | null = null;
   let permissions: string[] | null = null;
@@ -106,7 +115,7 @@ export async function POST(request: NextRequest) {
   let targetGrantId: string | null = null;
   if (body.action === "grant") {
     if (typeof body.role !== "string" || !ROLES.has(body.role)
-        || !Array.isArray(body.permissions) || body.permissions.length < 1 || body.permissions.length > 7
+        || !Array.isArray(body.permissions) || body.permissions.length < 1 || body.permissions.length > 13
         || !body.permissions.every((item: unknown) => typeof item === "string" && PERMISSIONS.has(item))
         || new Set(body.permissions).size !== body.permissions.length
         || typeof body.expiresAt !== "string" || !Number.isFinite(Date.parse(body.expiresAt))
@@ -129,10 +138,15 @@ export async function POST(request: NextRequest) {
     const { authentication, sessions } = createConfiguredIdentityServices();
     const validation = await sessions.validate(token);
     if (!validation.valid) return response({ ok: false, error: "Authentication is required." }, 401);
-    const passwordVerified = await authentication.verifyCredentialsForAccount({
-      accountId: validation.account.id, channel: body.channel,
-      identifier: body.identifier, password: body.password
-    });
+    const passwordVerified = workforceReauthentication
+      ? await verifyWorkforcePasscodeForAccount({
+          pool: getAuthDatabasePool(), accountId: validation.account.id,
+          username: body.username as string, passcode: body.passcode as string
+        })
+      : await authentication.verifyCredentialsForAccount({
+          accountId: validation.account.id, channel: body.channel as "email" | "phone",
+          identifier: body.identifier as string, password: body.password as string
+        });
     if (!passwordVerified) return response({ ok: false, error: "The sign-in details were not accepted." }, 401);
     const assertion = createOperationsMfaAssertionFromEnvironment({
       accountId: validation.account.id, sessionId: validation.session.id,
