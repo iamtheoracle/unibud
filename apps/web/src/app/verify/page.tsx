@@ -6,7 +6,7 @@ import { Suspense,useState } from "react";
 
 function VerifyForm(){
  const router=useRouter(),search=useSearchParams();
- const challengeId=search.get("challengeId")??"",purpose=search.get("purpose")??"";
+ const challengeId=search.get("challengeId")??"",purpose=search.get("purpose")??"",requestedNext=search.get("next")??"";
  const [code,setCode]=useState(""),[busy,setBusy]=useState(false),[error,setError]=useState(""),[done,setDone]=useState(false);
  async function submit(event:React.FormEvent<HTMLFormElement>){
   event.preventDefault();setBusy(true);setError("");
@@ -14,7 +14,7 @@ function VerifyForm(){
    const response=await fetch("/api/auth/verify",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({challengeId,purpose,code})});
    const result=await response.json();
    if(!response.ok||!result.ok) throw new Error(result.error??"The code could not be verified.");
-   setDone(true);setTimeout(()=>router.replace("/login?next=/onboarding"),900);
+   setDone(true);const next=requestedNext.startsWith("/")&&!requestedNext.startsWith("//")?requestedNext:"/onboarding";setTimeout(()=>router.replace("/login?next="+encodeURIComponent(next)),900);
   }catch(e){setError(e instanceof Error?e.message:"Verification is temporarily unavailable.");}
   finally{setBusy(false);}
  }
