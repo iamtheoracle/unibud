@@ -59,7 +59,7 @@ function passcodePrehash(
 ): string {
   if (!/^[0-9a-f-]{36}$/i.test(accountId) || !/^\d{6}$/.test(passcode)
       || pepper.byteLength < 32) {
-    throw new Error("A six-digit workforce passcode and valid account-bound pepper are required.");
+    throw new Error("A six-digit workforce passcode and valid username-bound pepper are required.");
   }
   return createHmac("sha256", pepper)
     .update(`unibud:workforce:passcode:v1:${username}:${passcode}`, "utf8")
