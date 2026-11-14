@@ -55,11 +55,15 @@ The append-only `unibud_workforce_audit_events` ledger records invitation reques
 
 - Authenticated events derive actor account and session from the signed database session context.
 - Pre-session login/activation events are explicitly recorded without a fabricated authenticated actor.
-- Duty activity writes use `unibud_workforce_record_activity`, which requires the active workforce identity, the exact signed session and a current MFA step-up.
+- The duty board uses `unibud_workforce_duty_assignments`: an authorised manager assigns work; the employee must accept, start and submit a completion note; a different workforce account with approval permission reviews the submission before it can become completed.
+- Employee transitions are constrained to `assigned → accepted → in_progress → submitted`. Employees cannot mark their own work completed or review their own submissions. Managers approve or reject submitted work through a separate MFA-gated endpoint.
+- Assignment, acceptance, start, submission, approval and rejection are written to the immutable workforce audit ledger with the actor account and exact session.
+- `unibud_workforce_record_activity` remains available for additional server-side operational events after the corresponding action has actually happened.
+- Employee workspace: `/workforce/home`. Manager directory, invitation queue, duty assignment and audit review: `/operations/workforce`.
 - Manager views expose a limited roster and activity fields, not encrypted email or passcode material.
-- Dashboard metrics are database aggregates with explicit windows: 24-hour access/login events and seven-day duty events. They are not synthetic progress indicators.
+- Database metrics report workforce counts by status and designation, duties assigned/submitted/completed/rejected/overdue, 24-hour access/login events and seven-day duty activity. These are database aggregates, not synthetic progress indicators.
 
-Only call the duty-event procedure from a server-side workflow after that workflow has actually performed or verified the action. Never let a browser submit a claimed completed duty directly as proof.
+The employee browser can submit a completion note and optional evidence reference, but the status remains `submitted` until an authorised manager reviews it. An evidence reference is not itself verified proof; the reviewer must validate it through the relevant approved workflow.
 
 ## Important commands and operator checks
 
@@ -87,14 +91,24 @@ FROM public.unibud_workforce_audit_events
 WHERE occurred_at >= statement_timestamp() - interval '24 hours'
 GROUP BY event_type, outcome
 ORDER BY event_type, outcome;
+
+SELECT status, count(*)
+FROM public.unibud_workforce_duty_assignments
+GROUP BY status
+ORDER BY status;
+
+SELECT duty_code, status, due_at, assigned_at, submitted_at, completed_at
+FROM public.unibud_workforce_duty_assignments
+WHERE status NOT IN ('completed','rejected','cancelled')
+ORDER BY due_at NULLS LAST, assigned_at;
 ```
 
 These queries are for controlled operator review only. Application code must use the granted procedures, not direct table access.
 
 ## Remaining work / explicit deferrals
 
-- Manager-side duty assignment, acceptance, submission and evidence-review lifecycle. Current audit hooks record actual server-side duty events, but no assignment board is claimed.
-- Workforce suspension, revocation, termination and session-revocation workflow with dual approval.
+- Workforce suspension, revocation, termination and immediate session-revocation workflow with dual approval.
+- Evidence upload, malware scanning, immutable attachment retention and automated evidence verification. The current duty board stores a user-supplied evidence reference and requires manager review; it does not claim to verify attachments.
 - Safe versioned rotation for activation/passcode peppers and employee passcode recovery/reset.
 - Manager notifications and scheduled expiry/cleanup of pending invitation requests and activation records.
 - Production secret provisioning, delivery-provider verification, database migration rehearsal, backup/restore evidence, monitoring and incident-response exercises.
