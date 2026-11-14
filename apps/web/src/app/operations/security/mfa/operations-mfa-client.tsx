@@ -291,9 +291,7 @@ export default function OperationsMfaClient() {
         <p className="eyebrow">Resume setup</p><h2>Continue your pending enrollment</h2>
         <p className="mfa-muted">If you closed the original setup screen, reauthenticate to retrieve the pending authenticator setup. This does not create a new seed.</p>
         <form className="mfa-form" onSubmit={resumeEnrollment}>
-          <label>Account identifier type<select value={channel} onChange={e => setChannel(e.target.value as "email" | "phone")}><option value="email">Email</option><option value="phone">Phone</option></select></label>
-          <label>{channel === "email" ? "Email address" : "Phone number"}<input autoComplete="username" value={identifier} onChange={e => setIdentifier(e.target.value)} required maxLength={254}/></label>
-          <label>Authenticator setup password<input type="password" autoComplete="current-password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128}/></label>
+          {reauthenticationFields()}
           <button className="mfa-button" type="submit" disabled={busy}>{busy ? "Please wait…" : "Resume pending setup"}</button>
         </form>
       </section>}
