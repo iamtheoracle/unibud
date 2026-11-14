@@ -565,7 +565,7 @@ REVOKE ALL ON FUNCTION public.unibud_workforce_lookup_login(TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.unibud_workforce_lookup_login(TEXT) TO unibud_auth;
 
 CREATE FUNCTION public.unibud_workforce_record_login(
-  p_username_digest BYTEA,p_username TEXT,p_outcome TEXT,p_request_id UUID
+  p_username_digest BYTEA,p_username TEXT,p_outcome TEXT,p_request_id UUID,p_session_id UUID
 ) RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -575,20 +575,38 @@ DECLARE v_account UUID; v_workforce UUID;
 BEGIN
   IF p_username_digest IS NULL OR octet_length(p_username_digest)<>32
      OR p_username IS NULL OR length(p_username)>100
-     OR p_outcome IS NULL OR p_outcome NOT IN ('success','failure') OR p_request_id IS NULL THEN
+     OR p_outcome IS NULL OR p_outcome NOT IN ('success','failure')
+     OR p_request_id IS NULL
+     OR (p_outcome='success' AND p_session_id IS NULL)
+     OR (p_outcome='failure' AND p_session_id IS NOT NULL) THEN
     RAISE EXCEPTION 'Invalid workforce login audit event' USING ERRCODE='22023';
   END IF;
   SELECT account_id,workforce_id INTO v_account,v_workforce
     FROM public.unibud_workforce_accounts WHERE username=lower(trim(p_username));
+  IF p_outcome='success' AND (v_account IS NULL OR NOT EXISTS (
+    SELECT 1 FROM public.accounts a
+    JOIN public.account_sessions s ON s.account_id=a.id
+    WHERE a.id=v_account AND a.status='active'
+      AND s.id=p_session_id AND s.status='active' AND s.revoked_at IS NULL
+      AND s.issued_at<=statement_timestamp()
+      AND s.idle_expires_at>statement_timestamp()
+      AND s.absolute_expires_at>statement_timestamp()
+  )) THEN
+    RAISE EXCEPTION 'Workforce login session is not active' USING ERRCODE='28000';
+  END IF;
   INSERT INTO public.unibud_workforce_audit_events(
-    subject_account_id,workforce_id,event_type,outcome,request_id,event_data
-  ) VALUES(v_account,v_workforce,'workforce.login.'||p_outcome,
-    p_outcome,p_request_id,jsonb_build_object('usernameDigest',encode(p_username_digest,'hex')));
+    actor_account_id,actor_session_id,subject_account_id,workforce_id,
+    event_type,outcome,request_id,event_data
+  ) VALUES(
+    CASE WHEN p_outcome='success' THEN v_account ELSE NULL END,
+    p_session_id,v_account,v_workforce,'workforce.login.'||p_outcome,
+    p_outcome,p_request_id,jsonb_build_object('usernameDigest',encode(p_username_digest,'hex'))
+  );
 END
 $function$;
-ALTER FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID) OWNER TO unibud_ops_owner;
-REVOKE ALL ON FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID) FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID) TO unibud_auth;
+ALTER FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID,UUID) OWNER TO unibud_ops_owner;
+REVOKE ALL ON FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID,UUID) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.unibud_workforce_record_login(BYTEA,TEXT,TEXT,UUID,UUID) TO unibud_auth;
 
 CREATE FUNCTION public.unibud_workforce_get_session_gate()
 RETURNS TEXT
