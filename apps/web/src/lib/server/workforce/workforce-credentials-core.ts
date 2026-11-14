@@ -18,6 +18,31 @@ function readHexKey(name: string, env: NodeJS.ProcessEnv = process.env): Buffer 
   return Buffer.from(value, "hex");
 }
 
+export function assertWorkforceKeySeparation(env: NodeJS.ProcessEnv = process.env): void {
+  const names = [
+    "UNIBUD_WORKFORCE_ACTIVATION_HMAC_KEY",
+    "UNIBUD_WORKFORCE_PASSCODE_PEPPER",
+    "UNIBUD_RATE_LIMIT_HMAC_KEY",
+    "UNIBUD_IDENTITY_ENCRYPTION_KEY",
+    "UNIBUD_IDENTITY_LOOKUP_HMAC_KEY"
+  ] as const;
+  const keys = names.map(name => {
+    const value = env[name]?.trim() ?? "";
+    if (!/^(?:[0-9a-f]{2}){32,}$/i.test(value)
+        || (name === "UNIBUD_IDENTITY_ENCRYPTION_KEY" && value.length !== 64)) {
+      throw new Error(name + " must be configured with valid independent key material.");
+    }
+    return Buffer.from(value, "hex");
+  });
+  for (let left = 0; left < keys.length; left += 1) {
+    for (let right = left + 1; right < keys.length; right += 1) {
+      if (keys[left]!.equals(keys[right]!)) {
+        throw new Error("Workforce, identity and rate-limit secrets must be cryptographically distinct.");
+      }
+    }
+  }
+}
+
 export function createWorkforceUsername(role: WorkforceRole): string {
   return `ub-${role}-${randomBytes(8).toString("hex")}`;
 }
