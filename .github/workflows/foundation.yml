@@ -133,6 +133,7 @@ jobs:
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0046_operations_grant_cancellation_post_lock_revalidation.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0047_operations_grant_notifications.test.sql
           psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0048_workforce_identity_onboarding.test.sql
+          psql -v ON_ERROR_STOP=1 -h localhost -U unibud_test -d unibud_test -f database/tests/0048_workforce_duty_lifecycle.test.sql
       - name: Verify concurrent Operations dual-control terminal transitions
         env:
           PGPASSWORD: unibud_test_only
