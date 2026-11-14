@@ -41,7 +41,7 @@ SELECT * FROM public.unibud_workforce_activate(
   public.hmac(convert_to('wrong-code','UTF8'),decode(repeat('aa',32),'hex'),'sha256'),
   'Ada','Lovelace','f0480000-0000-4000-8000-000000000020',
   decode(repeat('ab',32),'hex'),decode(repeat('cd',32),'hex'),
-  'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+  'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
 );
 DO $test$
 BEGIN
@@ -59,7 +59,7 @@ SELECT * FROM public.unibud_workforce_activate(
     decode(repeat('aa',32),'hex'),'sha256'),
   'Ada','Lovelace','f0480000-0000-4000-8000-000000000020',
   decode(repeat('ab',32),'hex'),decode(repeat('cd',32),'hex'),
-  'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+  'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
 );
 
 DO $test$
@@ -80,7 +80,7 @@ BEGIN
         decode(repeat('aa',32),'hex'),'sha256'),
       'Ada','Lovelace','f0480000-0000-4000-8000-000000000021',
       decode(repeat('ef',32),'hex'),decode(repeat('12',32),'hex'),
-      'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+      'scrypt$ln=17,r=8,p=1$aaaaaaaaaaaaaaaaaaaaaa$bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
   ))<>0 THEN RAISE EXCEPTION 'Activation code was reusable'; END IF;
 END
 $test$;
