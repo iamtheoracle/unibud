@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createOperationsMfaAssertionFromEnvironment } from "@/lib/server/operations/operations-mfa-assertions";
 import { createOperationsMfaCryptographyFromEnvironment } from "@/lib/server/operations/operations-mfa-core";
 import { createSignedSessionContextFromEnvironment, withSignedSessionTransaction } from "@/lib/server/database/session-context";
-import { getAppDatabasePool } from "@/lib/server/database/postgres-pool";
+import { getAppDatabasePool, getAuthDatabasePool } from "@/lib/server/database/postgres-pool";
+import { verifyWorkforcePasscodeForAccount } from "@/lib/server/workforce/workforce-credentials-core";
 import { createConfiguredIdentityServices } from "@/lib/server/identity/identity-runtime";
 import { hasSameOrigin, readJsonObject, readSessionCookie, routeError } from "@/lib/server/identity/http";
 
@@ -14,9 +15,17 @@ export async function POST(request: NextRequest) {
     return noStoreJson({ ok: false, error: "Forbidden." }, 403);
   }
   const body = await readJsonObject(request);
-  if (!body || (body.channel !== "email" && body.channel !== "phone")
-      || typeof body.identifier !== "string" || typeof body.password !== "string"
-      || body.identifier.length > 254 || body.password.length > 128) {
+  if (!body) {
+    return noStoreJson({ ok: false, error: "Invalid authenticator enrollment request." }, 400);
+  }
+  const workforceReauthentication =
+    typeof body.username === "string" && /^ub-(staff|operator|admin)-[a-f0-9]{16}$/.test(body.username)
+    && typeof body.passcode === "string" && /^\\d{6}$/.test(body.passcode);
+  const accountReauthentication =
+    (body.channel === "email" || body.channel === "phone")
+    && typeof body.identifier === "string" && body.identifier.length <= 254
+    && typeof body.password === "string" && body.password.length > 0 && body.password.length <= 128;
+  if (!workforceReauthentication && !accountReauthentication) {
     return noStoreJson({ ok: false, error: "Invalid authenticator enrollment request." }, 400);
   }
 
@@ -33,12 +42,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Reauthenticate the current account's password without creating or rotating a session.
-    const passwordVerified = await authentication.verifyCredentialsForAccount({
-      accountId: validation.account.id,
-      channel: body.channel,
-      identifier: body.identifier,
-      password: body.password
-    });
+    const passwordVerified = workforceReauthentication
+      ? await verifyWorkforcePasscodeForAccount({
+          pool: getAuthDatabasePool(),
+          accountId: validation.account.id,
+          username: body.username as string,
+          passcode: body.passcode as string
+        })
+      : await authentication.verifyCredentialsForAccount({
+          accountId: validation.account.id,
+          channel: body.channel as "email" | "phone",
+          identifier: body.identifier as string,
+          password: body.password as string
+        });
     if (!passwordVerified) {
       return noStoreJson({ ok: false, error: "The sign-in details were not accepted." }, 401);
     }
