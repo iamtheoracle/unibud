@@ -862,8 +862,8 @@ BEGIN
      OR (p_evidence_reference IS NOT NULL AND length(p_evidence_reference)>2048)
      OR NOT public.unibud_operator_has_permission('operations.workforce.self_access')
      OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_self_update') THEN RETURN FALSE; END IF;
-  SELECT workforce_id INTO v_workforce FROM public.unibud_workforce_accounts
-    WHERE account_id=v_actor AND status='active';
+  SELECT w.workforce_id INTO v_workforce FROM public.unibud_workforce_accounts AS w
+    WHERE w.account_id=v_actor AND w.status='active';
   IF v_workforce IS NULL THEN RETURN FALSE; END IF;
   SELECT * INTO v_assignment FROM public.unibud_workforce_duty_assignments
     WHERE assignment_id=p_assignment_id AND workforce_id=v_workforce FOR UPDATE;
@@ -950,8 +950,8 @@ BEGIN
   IF v_actor IS NULL OR NOT public.unibud_operator_has_permission('operations.workforce.self_access')
      OR NOT public.unibud_operator_mfa_consume_api_rate_limit('workforce_self_read')
      OR p_limit IS NULL OR p_limit<1 OR p_limit>100 THEN RETURN; END IF;
-  SELECT workforce_id INTO v_workforce FROM public.unibud_workforce_accounts
-    WHERE account_id=v_actor AND status='active';
+  SELECT w.workforce_id INTO v_workforce FROM public.unibud_workforce_accounts AS w
+    WHERE w.account_id=v_actor AND w.status='active';
   IF v_workforce IS NULL THEN RETURN; END IF;
   RETURN QUERY SELECT d.assignment_id,d.duty_code,d.title,d.description,d.due_at,d.status,
     d.assigned_at,d.accepted_at,d.started_at,d.submitted_at,d.completed_at,d.rejected_at,
@@ -1011,8 +1011,8 @@ BEGIN
      OR NOT public.unibud_operator_has_permission('operations.workforce.self_access') THEN
     RETURN FALSE;
   END IF;
-  SELECT workforce_id INTO v_workforce FROM public.unibud_workforce_accounts
-    WHERE account_id=v_actor AND status='active';
+  SELECT w.workforce_id INTO v_workforce FROM public.unibud_workforce_accounts AS w
+    WHERE w.account_id=v_actor AND w.status='active';
   IF v_workforce IS NULL THEN RETURN FALSE; END IF;
   INSERT INTO public.unibud_workforce_audit_events(
     actor_account_id,actor_session_id,subject_account_id,workforce_id,
