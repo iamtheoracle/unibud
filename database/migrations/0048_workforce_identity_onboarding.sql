@@ -237,7 +237,7 @@ CREATE TABLE public.unibud_workforce_accounts (
   email_verified_at TIMESTAMPTZ,
   passcode_hash TEXT CHECK (
     passcode_hash IS NULL OR
-    passcode_hash ~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$'
+    passcode_hash ~ '^scrypt[$]ln=17,r=8,p=1[$][A-Za-z0-9_-]{22}[$][A-Za-z0-9_-]{86}$'
   ),
   passcode_changed_at TIMESTAMPTZ,
   created_by_account_id UUID NOT NULL REFERENCES public.accounts(id) ON DELETE RESTRICT,
@@ -509,7 +509,7 @@ BEGIN
      OR p_email_ciphertext IS NULL OR octet_length(p_email_ciphertext)<30 OR octet_length(p_email_ciphertext)>2048
      OR p_email_lookup_digest IS NULL OR octet_length(p_email_lookup_digest)<>32
      OR p_passcode_hash IS NULL
-     OR p_passcode_hash !~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$' THEN
+     OR p_passcode_hash !~ '^scrypt[$]ln=17,r=8,p=1[$][A-Za-z0-9_-]{22}[$][A-Za-z0-9_-]{86}$' THEN
     RAISE EXCEPTION 'Invalid workforce activation payload' USING ERRCODE='22023';
   END IF;
 
@@ -972,7 +972,7 @@ BEGIN
   v_actor:=unibud_private.current_account_id();
   v_session:=unibud_private.current_session_id();
   IF v_actor IS NULL OR v_session IS NULL
-     OR p_event_type IS NULL OR p_event_type !~ '^duty\.[a-z][a-z0-9_.]{1,70}$'
+     OR p_event_type IS NULL OR p_event_type !~ '^duty[.][a-z][a-z0-9_.]{1,70}$'
      OR p_outcome NOT IN ('allowed','denied','success','failure')
      OR p_request_id IS NULL OR p_event_data IS NULL
      OR jsonb_typeof(p_event_data)<>'object' OR octet_length(p_event_data::TEXT)>4096
@@ -1319,7 +1319,7 @@ BEGIN
      OR p_email_ciphertext IS NULL OR octet_length(p_email_ciphertext)<30 OR octet_length(p_email_ciphertext)>2048
      OR p_email_lookup_digest IS NULL OR octet_length(p_email_lookup_digest)<>32
      OR p_passcode_hash IS NULL
-     OR p_passcode_hash !~ '^scrypt\$ln=17,r=8,p=1\$[A-Za-z0-9_-]{22}\$[A-Za-z0-9_-]{86}$' THEN
+     OR p_passcode_hash !~ '^scrypt[$]ln=17,r=8,p=1[$][A-Za-z0-9_-]{22}[$][A-Za-z0-9_-]{86}$' THEN
     RAISE EXCEPTION 'Invalid workforce activation payload' USING ERRCODE='22023';
   END IF;
 
@@ -1511,7 +1511,7 @@ BEGIN
   v_actor:=unibud_private.current_account_id();
   v_session:=unibud_private.current_session_id();
   IF v_actor IS NULL OR v_session IS NULL
-     OR p_event_type IS NULL OR p_event_type !~ '^duty\.[a-z][a-z0-9_.]{1,70}$'
+     OR p_event_type IS NULL OR p_event_type !~ '^duty[.][a-z][a-z0-9_.]{1,70}$'
      OR p_outcome NOT IN ('allowed','denied','success','failure')
      OR p_request_id IS NULL OR p_event_data IS NULL
      OR jsonb_typeof(p_event_data)<>'object' OR octet_length(p_event_data::TEXT)>4096
