@@ -42,14 +42,14 @@ try{
  await page.getByRole("button",{name:"Mark as read"}).waitFor({state:"detached"});
  await page.getByRole("heading",{name:"Set up an authenticator"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.getByLabel("Authenticator setup password").fill("test-password");
+ await page.getByLabel("Current account password").fill("test-password");
  await page.getByRole("button",{name:"Begin authenticator setup"}).click();
  await page.getByRole("heading",{name:"Add the authenticator"}).waitFor();
  await page.getByRole("img",{name:"Authenticator setup QR code"}).waitFor();
  await page.reload();
  await page.getByRole("heading",{name:"Continue your pending enrollment"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.getByLabel("Authenticator setup password").fill("test-password");
+ await page.getByLabel("Current account password").fill("test-password");
  await page.getByRole("button",{name:"Resume pending setup"}).click();
  await page.getByLabel("Six-digit authenticator code").fill("123456");
  await page.getByRole("button",{name:"Confirm and activate"}).click();
@@ -60,7 +60,7 @@ try{
  await page.getByRole("button",{name:"Verify this session"}).click();
  await page.getByRole("heading",{name:"Regenerate recovery codes"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.locator("section").filter({has: page.getByRole("heading",{name:"Regenerate recovery codes"})}).getByLabel("Current password").fill("test-password");
+ await page.locator("section").filter({has: page.getByRole("heading",{name:"Regenerate recovery codes"})}).getByLabel("Current account password").fill("test-password");
  await page.getByRole("button",{name:"Replace recovery codes"}).click();
  await page.getByRole("heading",{name:"Your recovery codes"}).waitFor();
  await page.getByLabel("I have saved these recovery codes somewhere secure.").check();

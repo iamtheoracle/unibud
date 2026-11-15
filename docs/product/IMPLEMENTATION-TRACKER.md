@@ -16,7 +16,26 @@ This current-state section supersedes older Operations status rows and historica
 - The verified Web/Database run passed PostgreSQL migration validation, TypeScript, contract tests, server security tests, lint, browser E2E and production build.
 - Runbook reconciliation commit 91e19ded5c77d94ab4c942dbca9289153c37ef2b is documentation-only; its exact-head Foundation and Web/Database workflows are currently running. Oracle Arc API has passed on that docs commit. Do not report 91e19d as fully green until all runs finish.
 
-### Operations security status
+### Workforce onboarding CI repair — 2026-11-15
+
+### PR #32 — exact-head evidence
+
+- State: OPEN, DRAFT, NOT MERGED. Branch: `foundation/fix-workforce-onboarding-ci-2026-11-15`; base: `foundation/workforce-identity-onboarding-v1`.
+- Verified code head: `f30ff79b396649f2b0013e3c370f52a47e6367c9`.
+- Foundation checks: run `43693035202` — PASS. Both Foundation integrity and PostgreSQL 16 migration/RLS isolation jobs passed.
+- UNIBUD Web and Database: run `43693035226` — PASS. Web build/type checks and PostgreSQL migration validation passed.
+- Oracle Arc API: run `43693035227` — PASS.
+- Migration 0048 repair: reconstructed the workforce duty table statement from the preserved definition fragments, retained its constraints/indexes and ownership/revocation grants, removed duplicated appended SQL/function definitions, and qualified workforce account status lookups. Exact-head PostgreSQL 16 migration/RLS tests passed.
+- MFA browser E2E: corrected the recovery-regeneration password locator to match the actual `Current account password` label. Exact-head Web/Database workflow passed.
+- Changed files: `database/migrations/0048_workforce_identity_onboarding.sql` and `scripts/e2e/operations-mfa.mjs` only.
+- TinyFish independently inspected the PR diff and corroborated the single complete duty table, unique function definitions and final COMMIT. Its CI summary lagged GitHub's final state; GitHub Actions exact-head runs above are authoritative.
+- No merge, production migration, secret provisioning, operator activation or deployment was performed.
+
+### Remaining gate
+
+Issue #16 remains OPEN. Migrations 0021 and 0023, their PostgreSQL negative tests, the server-side signed-session transaction helpers and the diagnostic route implement the non-forgeable account/session actor model. The required independent security review of signing-key provisioning/rotation, signed-assertion construction, SECURITY DEFINER ownership/search paths, complete role matrix, audit semantics and rollback remains outstanding. A TinyFish review attempt failed before producing findings; it is not counted as independent approval. Keep PR #15 and PR #32 draft/unmerged until the required review and owner approval are complete.
+
+## Operations security status
 
 | Requirement | Current status | Evidence / remaining gate |
 |---|---|---|
@@ -930,3 +949,28 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Tests added:** service and authentication-flow tests exercise SMS/WhatsApp/RCS, incompatible email/phone transport combinations, and legacy defaults; gateway status tests preserve the explicit unknown-provider boundary.
 - **CI:** exact-head Foundation run `43176348334`, Web/Database run `43176348450` and Oracle Arc API run `43176348494` were queued at the last inspection. Results are pending; do not report the new OTP code as CI-verified yet.
 - **Provider limitation:** the selected transport is passed to the configured HTTPS gateway, but no provider-specific WhatsApp/RCS integration, sender/template approval, RCS carrier/device capability, receipt/retry/fallback behavior or production credentials are verified. The transport is not yet persisted in the PostgreSQL challenge/audit record. Persistent delivery preference/outbox audit is deferred pending provider contract and retention design.
+
+## Founder-directed security and architecture corrections — 2026-11-15
+
+### Migration 0048 privilege comparison — generated from source files
+
+- Compared the base-branch migration blob `83cc53d31b1fd6d34200d40927904d11d2fb81e9` with the repaired branch blob `e81e588c51466850e62e697d4c5854bbce08196e`.
+- A source parser stripped SQL comments, split complete semicolon-terminated statements, selected GRANT/REVOKE statements, normalized whitespace/case, and compared the statement multisets.
+- Base source contains 77 GRANT/REVOKE statement occurrences; repaired source contains 49. The base contains duplicated privilege statements from the malformed appended tail; repaired contains one copy of each.
+- All unique GRANT statements are identical. All unique function-level REVOKE statements are identical. The base has one additional redundant table-level REVOKE covering invitation_requests, workforce_accounts and audit_events; both base and repaired files also contain the broader REVOKE covering those same tables plus duty_assignments. The repaired file retains that broader statement, so effective table revocation coverage is equivalent.
+- The ownership/privilege block was compared directly: `unibud_ops_owner` retains SELECT/INSERT/UPDATE on the invitation/workforce/audit/operator/MFA tables and the required account/authentication reads and writes; app/auth/readonly/migrator direct access remains revoked; function EXECUTE grants and sequence/schema grants remain.
+- Result: no privilege grant was lost; the repaired file preserves all effective base revocations and adds duty-assignment revocation. This is source-level equivalence/strengthening evidence, not a production catalog audit. Migration 0048 remains BUILT and CI VERIFIED; production privilege state is NOT VERIFIED.
+
+### Issue #16 — planned RLS remediation (gated)
+
+- Planned, NOT STARTED: add PostgreSQL RLS policies to `public.unibud_operator_grants` and `public.unibud_operator_audit_events`, with a documented policy matrix and least-privilege role grants. Revisit `unibud_ops_owner` from migration 0020, which is currently created with `BYPASSRLS`; the remediation must remove unjustified RLS bypass and enforce the intended owner/definer boundary rather than treating table ACLs as sufficient.
+- Planned acceptance: cross-actor negative tests for owner/requester/approver/target/unrelated account contexts; direct table access denial; row isolation for reads and writes; SECURITY DEFINER boundary tests; policy behavior under app/auth/readonly/migrator roles.
+- Planned migration must be additive and include a tested rollback procedure/migration that safely removes policies and restores the pre-change grants without opening direct table access.
+- Gate: do not start implementation until the independent Issue #16 security review answers the existing open questions on signed assertion construction, signing-key provisioning/rotation, SECURITY DEFINER ownership/search_path, complete role matrix, audit semantics and rollback. The current 0020–0023 tables are protected by ACLs/narrow SECURITY DEFINER functions, NOT by RLS; do not label them RLS-protected.
+
+### Oracle Arc API overlap — founder decision required
+
+- Found: this UNIBUD repository contains a separate Python API implementation at `oracle-arc/api/`, exercised by `.github/workflows/oracle-arc.yml` (job `api-tests`, working directory `oracle-arc/api`, pytest).
+- Found: the canonical Oracle Arc core is separately maintained in `iamtheoracle/arc-project-two`, branch `feat/oracle-arc-core`, with its own `oracle_arc/` package and `.github/workflows/oracle-arc-tests.yml`.
+- The UNIBUD subtree is a separate FastAPI service shell, not a copy of the `arc-project-two` source tree and not a second implementation of the Oracle Arc reasoning/tool engine. Its current `app/main.py` exposes only `/health`, degraded `/ready`, and bearer-authenticated `/v1/integration/status`; its five pytest cases cover those health/readiness/authentication/configuration responses. It does not currently implement the 51-agent registry, Oracle reasoning, tool execution, SPARK, ORBITS, or the PostgreSQL control plane. Record this as a parallel API-surface overlap and a duplicate service-boundary risk, not as duplicated core-engine code.
+- Do not extend `oracle-arc/api/` or add capabilities to its workflow until the founder decides which implementation is canonical. Keep both codebases unchanged pending that decision.
