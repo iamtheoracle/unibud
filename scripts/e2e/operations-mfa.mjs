@@ -42,7 +42,7 @@ try{
  await page.getByRole("button",{name:"Mark as read"}).waitFor({state:"detached"});
  await page.getByRole("heading",{name:"Set up an authenticator"}).waitFor();
  await page.getByLabel("Email address").fill("operator@example.com");
- await page.getByLabel("Authenticator setup password").fill("test-password");
+ await page.getByLabel("Current account password").fill("test-password");
  await page.getByRole("button",{name:"Begin authenticator setup"}).click();
  await page.getByRole("heading",{name:"Add the authenticator"}).waitFor();
  await page.getByRole("img",{name:"Authenticator setup QR code"}).waitFor();
