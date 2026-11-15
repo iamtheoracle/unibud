@@ -16,7 +16,26 @@ This current-state section supersedes older Operations status rows and historica
 - The verified Web/Database run passed PostgreSQL migration validation, TypeScript, contract tests, server security tests, lint, browser E2E and production build.
 - Runbook reconciliation commit 91e19ded5c77d94ab4c942dbca9289153c37ef2b is documentation-only; its exact-head Foundation and Web/Database workflows are currently running. Oracle Arc API has passed on that docs commit. Do not report 91e19d as fully green until all runs finish.
 
-### Operations security status
+### Workforce onboarding CI repair — 2026-11-15
+
+### PR #32 — exact-head evidence
+
+- State: OPEN, DRAFT, NOT MERGED. Branch: `foundation/fix-workforce-onboarding-ci-2026-11-15`; base: `foundation/workforce-identity-onboarding-v1`.
+- Verified code head: `f30ff79b396649f2b0013e3c370f52a47e6367c9`.
+- Foundation checks: run `43693035202` — PASS. Both Foundation integrity and PostgreSQL 16 migration/RLS isolation jobs passed.
+- UNIBUD Web and Database: run `43693035226` — PASS. Web build/type checks and PostgreSQL migration validation passed.
+- Oracle Arc API: run `43693035227` — PASS.
+- Migration 0048 repair: reconstructed the workforce duty table statement from the preserved definition fragments, retained its constraints/indexes and ownership/revocation grants, removed duplicated appended SQL/function definitions, and qualified workforce account status lookups. Exact-head PostgreSQL 16 migration/RLS tests passed.
+- MFA browser E2E: corrected the recovery-regeneration password locator to match the actual `Current account password` label. Exact-head Web/Database workflow passed.
+- Changed files: `database/migrations/0048_workforce_identity_onboarding.sql` and `scripts/e2e/operations-mfa.mjs` only.
+- TinyFish independently inspected the PR diff and corroborated the single complete duty table, unique function definitions and final COMMIT. Its CI summary lagged GitHub's final state; GitHub Actions exact-head runs above are authoritative.
+- No merge, production migration, secret provisioning, operator activation or deployment was performed.
+
+### Remaining gate
+
+Issue #16 remains OPEN. Migrations 0021 and 0023, their PostgreSQL negative tests, the server-side signed-session transaction helpers and the diagnostic route implement the non-forgeable account/session actor model. The required independent security review of signing-key provisioning/rotation, signed-assertion construction, SECURITY DEFINER ownership/search paths, complete role matrix, audit semantics and rollback remains outstanding. A TinyFish review attempt failed before producing findings; it is not counted as independent approval. Keep PR #15 and PR #32 draft/unmerged until the required review and owner approval are complete.
+
+## Operations security status
 
 | Requirement | Current status | Evidence / remaining gate |
 |---|---|---|
