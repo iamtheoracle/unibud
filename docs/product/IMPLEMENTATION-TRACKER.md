@@ -949,3 +949,28 @@ The branch subsequently advanced through documentation-only commits to `c0d65a27
 - **Tests added:** service and authentication-flow tests exercise SMS/WhatsApp/RCS, incompatible email/phone transport combinations, and legacy defaults; gateway status tests preserve the explicit unknown-provider boundary.
 - **CI:** exact-head Foundation run `43176348334`, Web/Database run `43176348450` and Oracle Arc API run `43176348494` were queued at the last inspection. Results are pending; do not report the new OTP code as CI-verified yet.
 - **Provider limitation:** the selected transport is passed to the configured HTTPS gateway, but no provider-specific WhatsApp/RCS integration, sender/template approval, RCS carrier/device capability, receipt/retry/fallback behavior or production credentials are verified. The transport is not yet persisted in the PostgreSQL challenge/audit record. Persistent delivery preference/outbox audit is deferred pending provider contract and retention design.
+
+## Founder-directed security and architecture corrections — 2026-11-15
+
+### Migration 0048 privilege comparison — generated from source files
+
+- Compared the base-branch migration blob `83cc53d31b1fd6d34200d40927904d11d2fb81e9` with the repaired branch blob `e81e588c51466850e62e697d4c5854bbce08196e`.
+- A source parser stripped SQL comments, split complete semicolon-terminated statements, selected GRANT/REVOKE statements, normalized whitespace/case, and compared the statement multisets.
+- Base source contains 77 GRANT/REVOKE statement occurrences; repaired source contains 49. The base contains duplicated privilege statements from the malformed appended tail; repaired contains one copy of each.
+- All effective GRANT statements are retained. Function-level REVOKE statements are retained. The only distinct table-level REVOKE difference is that the base has a narrower revoke covering invitation_requests, workforce_accounts and audit_events, while the repaired migration revokes the same roles on those three tables plus duty_assignments. The repaired revoke is strictly broader, not weaker.
+- The ownership/privilege block was compared directly: `unibud_ops_owner` retains SELECT/INSERT/UPDATE on the invitation/workforce/audit/operator/MFA tables and the required account/authentication reads and writes; app/auth/readonly/migrator direct access remains revoked; function EXECUTE grants and sequence/schema grants remain.
+- Result: no privilege grant was lost; the repaired file preserves all effective base revocations and adds duty-assignment revocation. This is source-level equivalence/strengthening evidence, not a production catalog audit. Migration 0048 remains BUILT and CI VERIFIED; production privilege state is NOT VERIFIED.
+
+### Issue #16 — planned RLS remediation (gated)
+
+- Planned, NOT STARTED: add PostgreSQL RLS policies to `public.unibud_operator_grants` and the relevant Operations audit table(s), with a documented policy matrix and least-privilege role grants.
+- Planned acceptance: cross-actor negative tests for owner/requester/approver/target/unrelated account contexts; direct table access denial; row isolation for reads and writes; SECURITY DEFINER boundary tests; policy behavior under app/auth/readonly/migrator roles.
+- Planned migration must be additive and include a tested rollback procedure/migration that safely removes policies and restores the pre-change grants without opening direct table access.
+- Gate: do not start implementation until the independent Issue #16 security review answers the existing open questions on signed assertion construction, signing-key provisioning/rotation, SECURITY DEFINER ownership/search_path, complete role matrix, audit semantics and rollback. The current 0020–0023 tables are protected by ACLs/narrow SECURITY DEFINER functions, NOT by RLS; do not label them RLS-protected.
+
+### Oracle Arc API overlap — founder decision required
+
+- Found: this UNIBUD repository contains a separate Python API implementation at `oracle-arc/api/`, exercised by `.github/workflows/oracle-arc.yml` (job `api-tests`, working directory `oracle-arc/api`, pytest).
+- Found: the canonical Oracle Arc core is separately maintained in `iamtheoracle/arc-project-two`, branch `feat/oracle-arc-core`, with its own `oracle_arc/` package and `.github/workflows/oracle-arc-tests.yml`.
+- These are two distinct code locations/workflows with overlapping Oracle Arc API/core responsibilities. The UNIBUD workflow is NOT a copy of the arc-project-two repository checkout; it tests the separate in-repo `oracle-arc/api` subtree. Treat this as a second implementation/overlap requiring reconciliation.
+- Do not extend `oracle-arc/api/` or add capabilities to its workflow until the founder decides which implementation is canonical. Keep both codebases unchanged pending that decision.
